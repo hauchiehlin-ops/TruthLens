@@ -1,0 +1,15 @@
+// Application-level settings for the Runner target.
+//
+// This may be replaced with something auto-generated from metadata (e.g., pubspec.yaml) in the
+// future. If not, the values below would default to using the project name when this becomes a
+// 'flutter create' template.
+
+// The application's name. By default this is also the title of the Flutter window.
+// 註：TruthLens 為暫定名（plan 審核項目），正式名確定後更新此處與各平台。
+PRODUCT_NAME = TruthLens
+
+// The application's bundle identifier
+PRODUCT_BUNDLE_IDENTIFIER = com.truthlens.truthlens
+
+// The copyright displayed in application information
+PRODUCT_COPYRIGHT = Copyright © 2026 com.truthlens. All rights reserved.
