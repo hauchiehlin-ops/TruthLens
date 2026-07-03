@@ -13,6 +13,36 @@
 
 ---
 
+## 2026-07-04 — [P2 AI引擎] 開源模型 + 首次啟動硬體感知佈建
+
+**做了什麼**
+- **採用開源預訓練模型**：確認可直接下載的開源偵測器 `joaopn/roberta-large-openai-detector-onnx-fp16`（現成 ONNX，710MB，HTTP 200 可下載），免自行訓練即有高品質英文偵測；搭配本專案 HC3 微調的多語言輕量版
+- **模型 catalog** [model_catalog.dart](lib/core/detection/model_catalog.dart) + [assets/model_catalog.json](assets/model_catalog.json)：各 role 列多個變體（含 min_ram_mb、tier、languages、url、來源、授權），`bestFor(tier, ram)` 依硬體挑最適且可下載者
+- **遠端 catalog** [model_catalog_service.dart](lib/core/detection/model_catalog_service.dart)：首啟抓遠端「目前最新」清單（GitHub raw，無伺服器，對應 plan 第八節），失敗回退打包的 asset
+- **裝置能力偵測** [device_capabilities.dart](lib/core/detection/device_capabilities.dart) + macOS 原生 [DevicePlugin.swift](macos/Runner/DevicePlugin.swift)（ProcessInfo 實體記憶體）→ low/mid/high tier
+- **佈建協調** [model_provisioner.dart](lib/core/detection/model_provisioner.dart)：結合 catalog + 裝置 + 安裝狀態產生計畫、執行下載
+- **安裝檢查機制**：ModelManager 改用 `installed.json` 清單（role→變體/檔名/版本），`refreshInstallStates` 檢查「清單有紀錄且檔案存在」；下載走 `.part`+原子 rename 熱替換、可選 sha256、tokenizer 另檔
+- **首次啟動引導** [onboarding_screen.dart](lib/features/onboarding/onboarding_screen.dart)：偵測硬體→顯示推薦模型→下載(進度)或略過；`prefs.firstRunHandled` + 核心模型未安裝才進引導（router 動態 initialLocation）
+- 設定的模型管理頁改用 catalog/provisioner（顯示裝置摘要 + 各 role 推薦變體）
+- 第一版訓練完成：**驗證準確率 98.4%、F1 0.983**（distilbert-multilingual，HC3 英+中，1 epoch）
+- 測試新增 catalog 選型 + manifest 安裝檢查，共 **44 項全過**，analyze 零問題
+
+**為什麼**
+- 使用者提議用開源模型並要求「首次啟動連結最新、適用本地硬體的模型 + 安裝檢查」。開源預訓練模型品質高於臨時訓練，且免等待
+
+**決策與取捨**
+- catalog 以「品質優先排序 + RAM 門檻」選型；無可下載變體時回退顯示「即將推出」
+- 安裝判定改 manifest（知道裝了哪個變體/版本），比純檔案存在更可靠、支援多變體與更新
+- 遠端 catalog 讓「最新模型」可不改 App 即更新（GitHub raw / CDN）
+- roberta-large 英文為主且 710MB；多語言輕量版（本專案訓練，待上傳）補中文與低階裝置
+
+**待辦/遺留問題**
+- 多語言輕量版與 LLM 尚未上傳 host（catalog url 待填）；填入即可下載
+- 下載後的實際推論仍需各平台 ONNX Runtime 原生 plugin（契約已定）
+- roberta tokenizer 為 HF tokenizer.json，原生端需對應的 tokenizer 實作
+
+---
+
 ## 2026-07-03 — [P4 打磨上架] 多語系測試 + 上架準備起步
 
 **做了什麼**

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/detection/device_capabilities.dart';
+import '../../core/detection/model_catalog.dart';
 import '../../core/detection/model_manager.dart';
-import '../../core/detection/model_registry.dart';
+import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 
 /// 設定頁：信心閾值、ESL 修正、主題；模型管理（P2）與語言包（P4）後續加入
@@ -82,94 +84,134 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// 模型管理頁：列出登記模型的安裝狀態，提供下載 / 移除。
-class ModelManagerScreen extends StatelessWidget {
+/// 模型管理頁：依裝置能力列出各 role 的推薦開源模型與安裝狀態，提供下載 / 移除。
+class ModelManagerScreen extends StatefulWidget {
   const ModelManagerScreen({super.key});
 
-  String _size(int bytes) {
-    if (bytes >= 1024 * 1024 * 1024) {
-      return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
-    }
-    return '${(bytes / (1024 * 1024)).round()} MB';
+  @override
+  State<ModelManagerScreen> createState() => _ModelManagerScreenState();
+}
+
+class _ModelManagerScreenState extends State<ModelManagerScreen> {
+  DeviceCapabilities? _device;
+  List<ProvisionPlan> _plans = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
   }
+
+  Future<void> _load() async {
+    final provisioner = context.read<ModelProvisioner>();
+    final device = await DeviceCapabilities.detect();
+    final plans = await provisioner.plan(device);
+    if (mounted) {
+      setState(() {
+        _device = device;
+        _plans = plans;
+        _loading = false;
+      });
+    }
+  }
+
+  String _size(int bytes) => bytes >= 1024 * 1024 * 1024
+      ? '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB'
+      : '${(bytes / (1024 * 1024)).round()} MB';
 
   @override
   Widget build(BuildContext context) {
-    final manager = context.watch<ModelManager>();
     return Scaffold(
       appBar: AppBar(title: const Text('AI 模型管理')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                '檢測模型與 LLM 皆在裝置端執行，下載後完全離線。'
-                '未安裝的模型不參與檢測，系統會自動以其餘引擎加權投票。',
-              ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '模型皆在裝置端執行，下載後完全離線。'
+                          '未安裝的模型不參與檢測，系統以其餘引擎加權投票。',
+                        ),
+                        if (_device != null) ...[
+                          const SizedBox(height: 8),
+                          Text('裝置：${_device!.summary}',
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                for (final plan in _plans) _planCard(plan),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          for (final status in manager.statuses.values)
-            Card(
-              child: ListTile(
-                title: Text(status.spec.name),
-                subtitle: _subtitle(context, status),
-                trailing: _trailing(context, manager, status),
-              ),
-            ),
-        ],
-      ),
     );
   }
 
-  Widget _subtitle(BuildContext context, ModelStatus status) {
-    final base = '${_size(status.spec.sizeBytes)} · ${_tierLabel(status.spec.tier)}';
-    return switch (status.state) {
-      InstallState.downloading => Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: LinearProgressIndicator(value: status.progress),
-        ),
-      InstallState.failed => Text(
-          '$base · 失敗：${status.error ?? '未知錯誤'}',
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
-        ),
+  Widget _planCard(ProvisionPlan plan) {
+    final v = plan.recommended;
+    return Consumer<ModelManager>(
+      builder: (context, manager, _) {
+        final status = manager.statusFor(plan.role);
+        final state = status?.state ?? InstallState.notInstalled;
+        return Card(
+          child: ListTile(
+            title: Text(plan.roleName),
+            subtitle: _subtitle(context, plan, v, status),
+            trailing: _trailing(context, plan, v, state, status?.progress ?? 0),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _subtitle(BuildContext context, ProvisionPlan plan, ModelVariant? v,
+      ModelStatus? status) {
+    if (status?.state == InstallState.downloading) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: LinearProgressIndicator(value: status?.progress),
+      );
+    }
+    if (v == null) return const Text('無適用此裝置的變體');
+    final base = '${v.name} · ${_size(v.sizeBytes)} · ${v.languages.join('/')}';
+    return switch (status?.state) {
       InstallState.installed => Text('$base · 已安裝'),
-      InstallState.notInstalled => Text(base),
+      InstallState.failed => Text('$base · 失敗：${status?.error ?? ''}',
+          style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      _ => Text(base),
     };
   }
 
-  Widget _trailing(
-      BuildContext context, ModelManager manager, ModelStatus status) {
-    switch (status.state) {
+  Widget _trailing(BuildContext context, ProvisionPlan plan, ModelVariant? v,
+      InstallState state, double progress) {
+    switch (state) {
       case InstallState.installed:
         return IconButton(
           icon: const Icon(Icons.delete_outline),
           tooltip: '移除',
-          onPressed: () => manager.remove(status.spec.id),
+          onPressed: () => context.read<ModelManager>().remove(plan.role),
         );
       case InstallState.downloading:
         return const SizedBox(
-          width: 24, height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        );
+            width: 24, height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2));
       case InstallState.notInstalled:
       case InstallState.failed:
-        // 尚未發佈的模型顯示「即將推出」（無下載來源）
-        return status.spec.isDownloadable
-            ? FilledButton.tonal(
-                onPressed: () => manager.download(status.spec.id),
-                child: const Text('下載'),
-              )
-            : const Chip(label: Text('即將推出'));
+        if (v != null && v.isDownloadable) {
+          return FilledButton.tonal(
+            onPressed: () => context.read<ModelProvisioner>().download(plan),
+            child: const Text('下載'),
+          );
+        }
+        return const Chip(label: Text('即將推出'));
     }
   }
-
-  String _tierLabel(ModelTier tier) => switch (tier) {
-        ModelTier.bundled => '隨附',
-        ModelTier.core => '核心',
-        ModelTier.optional => '選配',
-        ModelTier.language => '語言包',
-      };
 }
