@@ -2,16 +2,18 @@ import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
 import '../model_manager.dart';
-import '../native_inference_service.dart';
+import '../perplexity_scorer.dart';
 
 /// 子模型 B：統計特徵分析器。
-/// 若 DistilGPT2 困惑度模型已安裝且原生端就緒，納入真 Perplexity；
+/// 若 DistilGPT2 困惑度模型（statistical role）已安裝，納入真 Perplexity（ONNX 端上）；
 /// 否則以 Burstiness / Entropy / TTR 的啟發式組合運作。此引擎恆可用（有回退）。
 class StatisticalEngine implements DetectionEngine {
   final ModelManager? modelManager;
-  final NativeInferenceService? native;
 
-  StatisticalEngine({this.modelManager, this.native});
+  PerplexityScorer? _scorer;
+  String? _loadedPath;
+
+  StatisticalEngine({this.modelManager});
 
   @override
   String get id => 'statistical';
@@ -41,16 +43,16 @@ class StatisticalEngine implements DetectionEngine {
     final ppl = await _tryPerplexity(text.raw);
     if (ppl != null) {
       features['perplexity'] = ppl;
-      // 經驗映射：ppl < 20 高度可疑、> 80 偏人類（實際閾值待模型校準）
-      if (ppl < 20) {
+      // 經 distilgpt2 校準：AI 風格文本 ~50、人類口語 ~500+。
+      if (ppl < 60) {
         score += 0.28;
-        reasons.add('語言模型困惑度極低（${ppl.toStringAsFixed(1)}），'
-            '文本高度可預測，是 AI 生成的強指標');
-      } else if (ppl > 80) {
+        reasons.add('語言模型困惑度偏低（${ppl.toStringAsFixed(0)}），'
+            '文本高度可預測，是 AI 生成的指標');
+      } else if (ppl > 150) {
         score -= 0.25;
-        reasons.add('語言模型困惑度偏高（${ppl.toStringAsFixed(1)}），符合人類寫作的不可預測性');
+        reasons.add('語言模型困惑度偏高（${ppl.toStringAsFixed(0)}），符合人類寫作的不可預測性');
       } else {
-        reasons.add('語言模型困惑度中等（${ppl.toStringAsFixed(1)}）');
+        reasons.add('語言模型困惑度中等（${ppl.toStringAsFixed(0)}）');
       }
     }
 
@@ -93,9 +95,25 @@ class StatisticalEngine implements DetectionEngine {
   }
 
   Future<double?> _tryPerplexity(String text) async {
-    if (modelManager == null || native == null) return null;
-    if (!modelManager!.canRunEngine('statistical')) return null;
-    if (!await native!.isSupported) return null;
-    return native!.perplexity('statistical', text);
+    final mm = modelManager;
+    if (mm == null) return null;
+    final active = mm.activeVariant('statistical');
+    if (active == null) return null;
+    final modelPath = await mm.activeModelPath('statistical');
+    final tokPath = await mm.activeTokenizerPath('statistical');
+    if (modelPath == null || tokPath == null) return null;
+    try {
+      if (_scorer == null || _loadedPath != modelPath) {
+        _scorer?.dispose();
+        _scorer = await PerplexityScorer.load(
+          modelPath: modelPath,
+          tokenizerJsonPath: tokPath,
+        );
+        _loadedPath = modelPath;
+      }
+      return await _scorer!.perplexity(text);
+    } catch (_) {
+      return null; // 載入/推論失敗 → 回退啟發式
+    }
   }
 }

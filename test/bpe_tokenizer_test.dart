@@ -46,4 +46,17 @@ void main() {
     expect(e.inputIds.last, 2); // </s>
     expect(e.attentionMask.length, e.inputIds.length);
   });
+
+  test('encodeRaw 不含特殊 token（供困惑度用）', () {
+    if (!File(path).existsSync()) {
+      markTestSkipped('缺少 roberta tokenizer.json；跳過');
+      return;
+    }
+    final tok = BpeTokenizer.fromTokenizerJson(File(path).readAsStringSync());
+    final full = tok.encode('Hello world').inputIds; // [0, ..., 2]
+    final raw = tok.encodeRaw('Hello world');
+    expect(raw, full.sublist(1, full.length - 1)); // 去掉 <s>/</s>
+    expect(raw.contains(0), isFalse);
+    expect(raw.contains(2), isFalse);
+  });
 }

@@ -52,6 +52,13 @@ class BpeTokenizer implements TextTokenizer {
 
   @override
   Encoded encode(String text, {int maxLen = 192}) {
+    final content = encodeRaw(text, maxLen: maxLen - 2); // 保留 <s> / </s>
+    final out = <int>[bosId, ...content, eosId];
+    return Encoded(out, List.filled(out.length, 1));
+  }
+
+  /// 僅回傳 byte-level BPE token ids，不加特殊 token（供困惑度計算等用途）。
+  List<int> encodeRaw(String text, {int maxLen = 192}) {
     final ids = <int>[];
     for (final match in _pat.allMatches(text)) {
       final piece = match.group(0)!;
@@ -64,10 +71,7 @@ class BpeTokenizer implements TextTokenizer {
         ids.add(vocab[tok] ?? unkId);
       }
     }
-    final limit = maxLen - 2; // 保留 <s> / </s>
-    final content = ids.length > limit ? ids.sublist(0, limit) : ids;
-    final out = <int>[bosId, ...content, eosId];
-    return Encoded(out, List.filled(out.length, 1));
+    return ids.length > maxLen ? ids.sublist(0, maxLen) : ids;
   }
 
   // BPE：對一個 byte-level 字串反覆合併排名最前的相鄰對

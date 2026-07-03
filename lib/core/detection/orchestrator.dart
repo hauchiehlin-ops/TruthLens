@@ -31,7 +31,7 @@ class EnsembleOrchestrator {
   ) =>
       [
         TransformerEngine(modelManager: mm),
-        StatisticalEngine(modelManager: mm, native: native),
+        StatisticalEngine(modelManager: mm),
         StylometryEngine(),
         AdversarialEngine(modelManager: mm, native: native),
       ];

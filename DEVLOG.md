@@ -13,6 +13,31 @@
 
 ---
 
+## 2026-07-04 — [P2 AI引擎] 統計 B 接真困惑度（DistilGPT2 端上）
+
+**做了什麼**
+- **真 Perplexity 端上計算**（統計引擎 B，plan 指定）：
+  - [export_gpt2.py](training/export_gpt2.py) 匯出 distilgpt2 為 ONNX + INT8（482MB→121MB）；transformers 5.x cache 追蹤問題以 LogitsOnly wrapper + use_cache=False 解決
+  - [perplexity_scorer.dart](lib/core/detection/perplexity_scorer.dart)：載入 distilgpt2、逐位置 logsumexp 計算負對數似然 → 困惑度；tokenizer 複用 BpeTokenizer 的 `encodeRaw`（byte-level BPE，不加特殊 token）
+  - StatisticalEngine 改用 PerplexityScorer（依 statistical role 使用中模型延遲載入、失敗回退啟發式），閾值以 distilgpt2 校準（<60 偏 AI、>150 偏人類）
+  - catalog 新增 statistical role（distilgpt2）
+- **macOS 整合測試驗證**：困惑度 AI 風格 **60.7** vs 人類口語 **542.7**（與 Python 參考 52/549 相符，清楚區分）；連同 WordPiece / RoBERTa 分類推論共 3 項整合測試全過
+- BpeTokenizer 加 `encodeRaw`（供困惑度）；單元測試涵蓋
+
+**為什麼**
+- 使用者要求補齊統計 B 的真困惑度，強化輸入內容判斷準確性
+
+**決策與取捨**
+- 困惑度用 distilgpt2（輕量、Apache-2.0）；byte-level BPE 複用既有實作
+- 閾值以實測校準（distilgpt2 困惑度整體偏高）；仍為啟發式映射，未來可學習式校準
+- 統計 B 維持「恆可用 + 有困惑度模型時增強」的降級設計
+
+**待辦/遺留問題**
+- distilgpt2 模型需 host 才能 app 內下載（本地已驗證）
+- 對抗 D、LLM、跨平台 OCR/建置、無障礙、動畫、PNG 匯出、效能量測 仍待（見 plan_status.md）
+
+---
+
 ## 2026-07-04 — [P2 AI引擎] RoBERTa BPE tokenizer + 準確性/體驗強化 + 計劃核對
 
 **做了什麼**

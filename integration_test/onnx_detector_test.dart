@@ -5,6 +5,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:truthlens/core/detection/onnx_detector.dart';
+import 'package:truthlens/core/detection/perplexity_scorer.dart';
 
 /// 在真實裝置/桌面上（原生 ONNX Runtime 可用）驗證端上推論。
 /// 使用本地訓練的 distilbert-multilingual INT8 模型。
@@ -81,5 +82,34 @@ void main() {
     detector.dispose();
     // ignore: avoid_print
     print('RoBERTa BPE 推論成功 → prob:$p1');
+  });
+
+  test('DistilGPT2 困惑度：AI 風格低於人類口語', () async {
+    final support = await getApplicationSupportDirectory();
+    final modelPath = p.join(support.path, 'models', 'verify_gpt2.onnx');
+    final tokPath =
+        p.join(support.path, 'models', 'verify_gpt2_tokenizer.json');
+    if (!File(modelPath).existsSync()) {
+      markTestSkipped('容器內無 distilgpt2 模型；跳過');
+      return;
+    }
+    final scorer = await PerplexityScorer.load(
+      modelPath: modelPath,
+      tokenizerJsonPath: tokPath,
+    );
+    final aiPpl = await scorer.perplexity(
+        'It is important to note that artificial intelligence is transforming '
+        'industries. Furthermore, these advancements offer significant benefits.');
+    final humanPpl = await scorer.perplexity(
+        'ugh my train was late again lol, ended up walking half way and my '
+        'coffee spilled everywhere, what a morning honestly');
+    scorer.dispose();
+
+    expect(aiPpl, isNotNull);
+    expect(humanPpl, isNotNull);
+    // AI 風格文本更可預測 → 困惑度較低
+    expect(aiPpl!, lessThan(humanPpl!));
+    // ignore: avoid_print
+    print('困惑度 → AI:$aiPpl human:$humanPpl');
   });
 }

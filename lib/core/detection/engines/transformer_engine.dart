@@ -98,6 +98,10 @@ class TransformerEngine implements DetectionEngine {
         aiProbability: 0.5,
         weight: defaultWeight,
         available: false,
-        reasons: const ['模型尚未安裝或使用中模型未支援，未參與本次投票'],
+        reasons: [
+          _loadError != null
+              ? '模型載入失敗，未參與本次投票（${_loadError!}）'
+              : '模型尚未安裝或使用中模型未支援，未參與本次投票',
+        ],
       );
 }

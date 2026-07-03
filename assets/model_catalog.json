@@ -49,6 +49,31 @@
       ]
     },
     {
+      "role": "statistical",
+      "name": "困惑度語言模型（統計分析）",
+      "variants": [
+        {
+          "id": "distilgpt2-ppl-int8",
+          "name": "DistilGPT2 困惑度模型（INT8）",
+          "backend": "transformer",
+          "tokenizer": "gpt2-bpe",
+          "languages": ["en", "multi"],
+          "quant": "int8",
+          "size_bytes": 82000000,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": null,
+          "tokenizer_url": "https://huggingface.co/distilbert/distilgpt2/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/distilbert/distilgpt2",
+          "sha256": null,
+          "version": "1.0",
+          "source": "distilbert/distilgpt2",
+          "license": "Apache-2.0",
+          "note": "為統計引擎提供真實困惑度指標；未安裝時以 burstiness/TTR 等啟發式運作"
+        }
+      ]
+    },
+    {
       "role": "llm",
       "name": "報告生成 LLM",
       "variants": [
