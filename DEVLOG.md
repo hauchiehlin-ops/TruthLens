@@ -13,7 +13,23 @@
 
 ---
 
-## 2026-07-04 — [P2 AI引擎] 開源模型 + 首次啟動硬體感知佈建
+## 2026-07-04 — [P2 AI引擎] 模型選項、必要性提示、略過後再提醒
+
+**做了什麼**（補齊使用者對佈建流程的完整需求）
+- **多模型選項**：`ProvisionPlan` 改帶該 role 的**所有變體**（非只推薦）；抽出共用 [model_options_list.dart](lib/features/onboarding/model_options_list.dart)，首啟引導與設定模型管理頁皆列出全部變體、標「推薦」、標示硬體是否吃得下，使用者可自選下載
+- **必要性說明**：共用文案 `kModelNecessityText`（[model_prompt.dart](lib/features/onboarding/model_prompt.dart)）——說明未裝模型僅有統計/風格分析、裝了神經模型大幅提升準確度；顯示於引導頁、模型管理頁、提示對話框
+- **略過後再提醒**：input 的「開始檢測」若核心偵測模型未安裝且未關閉提醒 → 彈出 `showModelDownloadPrompt`；選「前往下載」導向 `/models`、選「暫時略過/關閉」則以現有引擎繼續
+- **提示可關閉（預設）**：對話框 `barrierDismissible: true` + 右上關閉鈕 + 「不再提醒我」勾選（寫入 `prefs.modelPromptSuppressed`）
+- 安裝檢查沿用 installed.json manifest；新增 `/models` 路由指向模型管理頁
+- 測試：downloadVariant 以 MockClient 驗證「下載→寫檔→寫 manifest→標記已安裝→重掃仍已安裝」端到端；plan 選項/推薦/fits 邏輯；共 **50 項全過**，analyze 零問題，macOS build 綠燈
+
+**為什麼**
+- 使用者要求：首啟提供多下載選項、說明下載必要性、略過後在需模型的分析時再提醒、提示預設可關閉
+
+**決策與取捨**
+- 略過後分析不阻擋——仍以統計/風格引擎產出結果（優雅降級），只是提示可下載以提升準確度
+- 提示抑制用單一「不再提醒」旗標；使用者仍可隨時到設定→模型管理下載
+- 變體 UI 抽成共用元件，引導頁與設定頁一致、避免重複
 
 **做了什麼**
 - **採用開源預訓練模型**：確認可直接下載的開源偵測器 `joaopn/roberta-large-openai-detector-onnx-fp16`（現成 ONNX，710MB，HTTP 200 可下載），免自行訓練即有高品質英文偵測；搭配本專案 HC3 微調的多語言輕量版

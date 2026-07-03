@@ -25,5 +25,7 @@ GoRouter createRouter({required String initialLocation}) => GoRouter(
         ),
         GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
         GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+        GoRoute(
+            path: '/models', builder: (_, _) => const ModelManagerScreen()),
       ],
     );

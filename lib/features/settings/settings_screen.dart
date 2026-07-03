@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/device_capabilities.dart';
-import '../../core/detection/model_catalog.dart';
-import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
+import '../onboarding/model_options_list.dart';
+import '../onboarding/model_prompt.dart';
 
 /// 設定頁：信心閾值、ESL 修正、主題；模型管理（P2）與語言包（P4）後續加入
 class SettingsScreen extends StatelessWidget {
@@ -84,7 +84,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// 模型管理頁：依裝置能力列出各 role 的推薦開源模型與安裝狀態，提供下載 / 移除。
+/// 模型管理頁：依裝置能力列出各 role 的多個開源模型選項與安裝狀態，提供下載 / 移除。
 class ModelManagerScreen extends StatefulWidget {
   const ModelManagerScreen({super.key});
 
@@ -116,10 +116,6 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
     }
   }
 
-  String _size(int bytes) => bytes >= 1024 * 1024 * 1024
-      ? '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB'
-      : '${(bytes / (1024 * 1024)).round()} MB';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,10 +131,7 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '模型皆在裝置端執行，下載後完全離線。'
-                          '未安裝的模型不參與檢測，系統以其餘引擎加權投票。',
-                        ),
+                        const Text(kModelNecessityText),
                         if (_device != null) ...[
                           const SizedBox(height: 8),
                           Text('裝置：${_device!.summary}',
@@ -149,69 +142,9 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                for (final plan in _plans) _planCard(plan),
+                ModelOptionsList(plans: _plans),
               ],
             ),
     );
-  }
-
-  Widget _planCard(ProvisionPlan plan) {
-    final v = plan.recommended;
-    return Consumer<ModelManager>(
-      builder: (context, manager, _) {
-        final status = manager.statusFor(plan.role);
-        final state = status?.state ?? InstallState.notInstalled;
-        return Card(
-          child: ListTile(
-            title: Text(plan.roleName),
-            subtitle: _subtitle(context, plan, v, status),
-            trailing: _trailing(context, plan, v, state, status?.progress ?? 0),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _subtitle(BuildContext context, ProvisionPlan plan, ModelVariant? v,
-      ModelStatus? status) {
-    if (status?.state == InstallState.downloading) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 6),
-        child: LinearProgressIndicator(value: status?.progress),
-      );
-    }
-    if (v == null) return const Text('無適用此裝置的變體');
-    final base = '${v.name} · ${_size(v.sizeBytes)} · ${v.languages.join('/')}';
-    return switch (status?.state) {
-      InstallState.installed => Text('$base · 已安裝'),
-      InstallState.failed => Text('$base · 失敗：${status?.error ?? ''}',
-          style: TextStyle(color: Theme.of(context).colorScheme.error)),
-      _ => Text(base),
-    };
-  }
-
-  Widget _trailing(BuildContext context, ProvisionPlan plan, ModelVariant? v,
-      InstallState state, double progress) {
-    switch (state) {
-      case InstallState.installed:
-        return IconButton(
-          icon: const Icon(Icons.delete_outline),
-          tooltip: '移除',
-          onPressed: () => context.read<ModelManager>().remove(plan.role),
-        );
-      case InstallState.downloading:
-        return const SizedBox(
-            width: 24, height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2));
-      case InstallState.notInstalled:
-      case InstallState.failed:
-        if (v != null && v.isDownloadable) {
-          return FilledButton.tonal(
-            onPressed: () => context.read<ModelProvisioner>().download(plan),
-            child: const Text('下載'),
-          );
-        }
-        return const Chip(label: Text('即將推出'));
-    }
   }
 }

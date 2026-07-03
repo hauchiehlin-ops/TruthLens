@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/detection/model_manager.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
+import '../../core/services/preferences_service.dart';
+import '../onboarding/model_prompt.dart';
 
 /// 首頁：極簡輸入區 + 三個快捷入口（貼上 / 拍照 OCR / 匯入文件）
 class InputScreen extends StatefulWidget {
@@ -23,7 +26,7 @@ class _InputScreenState extends State<InputScreen> {
     super.dispose();
   }
 
-  void _startAnalysis() {
+  Future<void> _startAnalysis() async {
     final text = _controller.text.trim();
     if (text.length < 40) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -31,6 +34,22 @@ class _InputScreenState extends State<InputScreen> {
       );
       return;
     }
+
+    // 需模型分析：核心偵測模型未安裝且使用者未關閉提醒時，再次說明必要性
+    final prefs = context.read<PreferencesService>();
+    final manager = context.read<ModelManager>();
+    await manager.refreshInstallStates();
+    if (!manager.isInstalled('transformer') && !prefs.modelPromptSuppressed) {
+      if (!mounted) return;
+      final choice = await showModelDownloadPrompt(context);
+      if (!mounted) return;
+      if (choice == ModelPromptResult.download) {
+        context.push('/models'); // 前往下載，不繼續本次分析
+        return;
+      }
+      // skip / dismissed → 以現有引擎（統計/風格）繼續分析
+    }
+    if (!mounted) return;
     context.push('/analysis', extra: text);
   }
 

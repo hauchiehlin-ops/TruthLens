@@ -7,6 +7,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kThemeMode = 'theme_mode';
   static const _kEslCorrection = 'esl_correction';
   static const _kFirstRunHandled = 'first_run_handled';
+  static const _kModelPromptSuppressed = 'model_prompt_suppressed';
 
   SharedPreferences? _prefs;
 
@@ -14,6 +15,7 @@ class PreferencesService extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.dark; // 深色模式優先
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
+  bool modelPromptSuppressed = false; // 使用者選擇「不再提醒下載模型」
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -22,12 +24,19 @@ class PreferencesService extends ChangeNotifier {
         .byName(_prefs!.getString(_kThemeMode) ?? ThemeMode.dark.name);
     eslCorrectionEnabled = _prefs!.getBool(_kEslCorrection) ?? true;
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
+    modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
     notifyListeners();
   }
 
   Future<void> setFirstRunHandled() async {
     firstRunHandled = true;
     await _prefs?.setBool(_kFirstRunHandled, true);
+    notifyListeners();
+  }
+
+  Future<void> setModelPromptSuppressed(bool value) async {
+    modelPromptSuppressed = value;
+    await _prefs?.setBool(_kModelPromptSuppressed, value);
     notifyListeners();
   }
 
