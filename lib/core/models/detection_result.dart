@@ -35,6 +35,7 @@ class EngineScore {
   final bool available; // 模型是否已安裝可用
   final Map<String, double> features; // 可解釋特徵值（供報告呈現）
   final List<String> reasons; // 人類可讀的判定理由
+  final List<double>? sentenceScores; // 句子級 AI 機率（有神經模型時提供）
 
   const EngineScore({
     required this.engineId,
@@ -44,6 +45,7 @@ class EngineScore {
     this.available = true,
     this.features = const {},
     this.reasons = const [],
+    this.sentenceScores,
   });
 }
 

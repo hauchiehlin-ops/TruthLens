@@ -11,6 +11,7 @@
           "name": "RoBERTa-Large 偵測器（英文・高精度）",
           "backend": "transformer",
           "tokenizer": "roberta-bpe",
+          "ai_label_index": 0,
           "languages": ["en"],
           "quant": "fp16",
           "size_bytes": 710809104,
@@ -23,13 +24,14 @@
           "version": "1.0",
           "source": "joaopn/roberta-large-openai-detector-onnx-fp16",
           "license": "MIT",
-          "note": "OpenAI GPT-2 偵測器衍生，英文表現佳；體積較大，適合 4GB+ 裝置"
+          "note": "OpenAI GPT-2 偵測器衍生，英文佳；4GB+ 裝置。注意：此託管檔宣告了多餘 opset，端上載入前需以 training/fix_onnx_opset.py 清理並重新 host"
         },
         {
           "id": "truthlens-multilingual-distil-int8",
           "name": "多語言輕量偵測器（英+中・INT8）",
           "backend": "transformer",
           "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
           "languages": ["en", "zh", "multi"],
           "quant": "int8",
           "size_bytes": 141557760,

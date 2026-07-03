@@ -57,6 +57,29 @@ void main() {
 
     detector.dispose();
     // ignore: avoid_print
-    print('推論結果 → AI:$aiProb human:$humanProb zh:$zhProb');
+    print('WordPiece 推論 → AI:$aiProb human:$humanProb zh:$zhProb');
+  });
+
+  test('RoBERTa BPE 端上推論（若容器內有模型）', () async {
+    final support = await getApplicationSupportDirectory();
+    final modelPath = p.join(support.path, 'models', 'verify_roberta.onnx');
+    final tokPath =
+        p.join(support.path, 'models', 'verify_roberta_tokenizer.json');
+    if (!File(modelPath).existsSync()) {
+      markTestSkipped('容器內無 roberta 模型；跳過');
+      return;
+    }
+    final detector = await OnnxDetector.load(
+      modelPath: modelPath,
+      tokenizerJsonPath: tokPath,
+      tokenizerType: 'roberta-bpe',
+      aiLabelIndex: 0, // roberta-openai-detector：index 0 = fake/AI
+    );
+    final p1 = await detector.classify(
+        'The quick brown fox jumps over the lazy dog near the river bank.');
+    expect(p1, inInclusiveRange(0.0, 1.0));
+    detector.dispose();
+    // ignore: avoid_print
+    print('RoBERTa BPE 推論成功 → prob:$p1');
   });
 }

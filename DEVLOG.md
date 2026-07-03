@@ -13,7 +13,28 @@
 
 ---
 
-## 2026-07-04 — [P2 AI引擎] 多模型管理 + macOS ONNX Runtime 端上推論
+## 2026-07-04 — [P2 AI引擎] RoBERTa BPE tokenizer + 準確性/體驗強化 + 計劃核對
+
+**做了什麼**
+- **byte-level BPE tokenizer** [bpe_tokenizer.dart](lib/core/detection/bpe_tokenizer.dart)（GPT-2/RoBERTa）：GPT-2 前處理正則、bytes_to_unicode、BPE 合併；**與真實 RoBERTa tokenizer 逐 id 對齊**（英/標點/CJK 位元組/前導空白，單元測試比對）。抽出 [text_tokenizer.dart](lib/core/detection/text_tokenizer.dart) 介面，WordPiece/BPE 皆實作
+- **RoBERTa 端上推論打通**：發現 onnxruntime 套件不吃「輸出名 logits」硬編碼（roberta 輸出名為 `output`）→ 改讀全部輸出第一個；且 roberta label 0=AI（distilbert 1=AI）→ 加 `aiLabelIndex`（catalog/InstalledModel/engine 全鏈路）。托管檔宣告多餘 opset(ai.onnx.ml:5) 舊版 ORT 拒載 → 加 [fix_onnx_opset.py](training/fix_onnx_opset.py) 清未使用 opset；macOS 整合測試以清理後 roberta 驗證推論成功
+- **準確性強化**：EngineScore 新增 `sentenceScores`；Transformer 逐句機率餵入 orchestrator 的句子級評分（熱力圖改用神經模型逐句分數而非僅啟發式）
+- **體驗強化**：輸入頁加即時字元數 + 使用中模型指示（未安裝顯示「僅統計/風格分析」）
+- **健壯性**：模型載入失敗（opset 不相容/損毀）優雅回報 unavailable，不再讓分析崩潰
+- **計劃核對** [docs/plan_status.md](docs/plan_status.md)：逐模組完成度 + 四平台支援評估
+- 測試：BPE（2，逐 id 對照）、59 單元 + macOS 雙模型（WordPiece + RoBERTa）推論整合測試全過
+
+**為什麼**
+- 使用者要求補 BPE 讓 roberta 真正參與檢測、強化輸入內容判斷準確性與操作體驗、核對計劃與四平台
+
+**決策與取捨**
+- OnnxDetector 不再硬編碼輸出名、加 aiLabelIndex：支援不同 label 慣例的開源模型
+- roberta 托管檔的多餘 opset 是該檔問題（無實際節點使用）；提供清理工具，正式上架需清理後重新 host
+- 句子級改以神經逐句機率為基準、風格模式只微調（+0.05）：準確與可解釋兼顧
+
+**待辦/遺留問題**
+- 可下載的 roberta / 多語言模型都需 host 相容檔才能在 app 內下載即用（本地已驗證可跑）
+- 統計 B 真 perplexity、對抗 D 訓練、LLM llama.cpp、跨平台 OCR/裝置偵測、無障礙 仍待補（見 plan_status.md）
 
 **做了什麼**
 - **多變體並存管理**：ModelManager 由「每 role 單一變體」升級為「每 role 可並存多變體 + 使用中(active)指標」；installed.json 改記 `{role: {active, installed:{variantId:...}}}`。支援下載多個、`setActive` 切換使用中、`removeVariant` 刪除（刪到使用中會自動改用其餘）、`hasUpdate` 版本比對更新、原子熱替換

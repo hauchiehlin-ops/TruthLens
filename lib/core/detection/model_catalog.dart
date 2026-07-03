@@ -26,6 +26,7 @@ class ModelVariant {
   final String note;
   final String? pageUrl; // 模型頁面（HF model page），供「查看/取得最新」
   final String tokenizer; // bert-wordpiece / roberta-bpe / none
+  final int aiLabelIndex; // 輸出兩類中代表 AI 的索引（依模型 id2label）
 
   const ModelVariant({
     required this.id,
@@ -45,6 +46,7 @@ class ModelVariant {
     this.sha256,
     this.pageUrl,
     this.tokenizer = 'none',
+    this.aiLabelIndex = 1,
   });
 
   bool get isDownloadable => url != null && url!.isNotEmpty;
@@ -71,6 +73,7 @@ class ModelVariant {
         note: j['note'] as String? ?? '',
         pageUrl: j['page_url'] as String?,
         tokenizer: j['tokenizer'] as String? ?? 'none',
+        aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
       );
 }
 

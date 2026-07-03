@@ -67,7 +67,7 @@ class EnsembleOrchestrator {
 
     final eslAdjusted = eslCorrectionEnabled && _detectEslStyle(text);
     final overall = _weightedVote(scores, eslAdjusted: eslAdjusted);
-    final sentences = _scoreSentences(text, overall);
+    final sentences = _scoreSentences(text, overall, scores);
 
     return DetectionResult(
       id: started.microsecondsSinceEpoch.toString(),
@@ -107,18 +107,30 @@ class EnsembleOrchestrator {
     return text.typeTokenRatio < 0.38 && text.burstiness > 0.45;
   }
 
-  /// 句子級評分：以整體分數為基準，依單句命中的風格模式微調
-  List<SentenceScore> _scoreSentences(PreprocessedText text, double overall) {
+  /// 句子級評分：優先採用神經模型的逐句機率（若有），否則以整體分數為基準；
+  /// 再依單句命中的風格模式微調，兼顧準確度與可解釋性。
+  List<SentenceScore> _scoreSentences(
+    PreprocessedText text,
+    double overall,
+    List<EngineScore> scores,
+  ) {
+    // 取 Transformer 引擎的逐句機率（若可用）
+    final neural = scores
+        .where((s) => s.available && s.sentenceScores != null)
+        .map((s) => s.sentenceScores!)
+        .firstOrNull;
+
     final result = <SentenceScore>[];
     for (var i = 0; i < text.sentences.length; i++) {
       final s = text.sentences[i];
       final patterns = <String>[];
-      var p = overall;
+      // 基準：神經模型逐句機率優先；否則用整體分數
+      var p = (neural != null && i < neural.length) ? neural[i] : overall;
 
       for (final t in StylometryEngine.genericTransitions) {
         if (s.toLowerCase().contains(t.toLowerCase())) {
           patterns.add('通用過渡詞「$t」');
-          p += 0.08;
+          p += 0.05;
         }
       }
       result.add(SentenceScore(

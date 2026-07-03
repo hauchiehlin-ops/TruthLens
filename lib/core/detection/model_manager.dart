@@ -20,6 +20,7 @@ class InstalledModel {
   final String fileName;
   final String? tokenizerFileName;
   final String tokenizer; // bert-wordpiece / roberta-bpe / none
+  final int aiLabelIndex;
   final String version;
   final int sizeBytes;
 
@@ -31,6 +32,7 @@ class InstalledModel {
     required this.sizeBytes,
     this.tokenizerFileName,
     this.tokenizer = 'none',
+    this.aiLabelIndex = 1,
   });
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +41,7 @@ class InstalledModel {
         'file_name': fileName,
         'tokenizer_file_name': tokenizerFileName,
         'tokenizer': tokenizer,
+        'ai_label_index': aiLabelIndex,
         'version': version,
         'size_bytes': sizeBytes,
       };
@@ -49,6 +52,7 @@ class InstalledModel {
         fileName: j['file_name'] as String,
         tokenizerFileName: j['tokenizer_file_name'] as String?,
         tokenizer: j['tokenizer'] as String? ?? 'none',
+        aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
         version: j['version'] as String? ?? '0',
         sizeBytes: (j['size_bytes'] as num?)?.toInt() ?? 0,
       );
@@ -270,6 +274,7 @@ class ModelManager extends ChangeNotifier {
         fileName: fileName,
         tokenizerFileName: tokenizerFileName,
         tokenizer: variant.tokenizer,
+        aiLabelIndex: variant.aiLabelIndex,
         version: variant.version,
         sizeBytes: variant.sizeBytes,
       );

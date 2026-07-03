@@ -107,6 +107,24 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
+  /// 顯示目前使用中的偵測模型，或提示未安裝（僅統計/風格分析）
+  Widget _activeModelChip(BuildContext context) {
+    final active = context.watch<ModelManager>().activeVariant('transformer');
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(active != null ? Icons.memory : Icons.info_outline,
+            size: 14, color: scheme.onSurfaceVariant),
+        const SizedBox(width: 4),
+        Text(
+          active != null ? '模型：${active.variantId}' : '未安裝模型（僅統計/風格分析）',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -154,7 +172,18 @@ class _InputScreenState extends State<InputScreen> {
                     onChanged: (_) => setState(() {}),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    _activeModelChip(context),
+                    const Spacer(),
+                    Text(
+                      '${_controller.text.trim().length} 字元',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

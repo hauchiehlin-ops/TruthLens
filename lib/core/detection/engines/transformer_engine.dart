@@ -6,9 +6,11 @@ import '../onnx_detector.dart';
 
 /// 子模型 A：多語言 Transformer 分類器（ONNX Runtime 端上推論）。
 /// 使用 [ModelManager] 目前「使用中」的已安裝模型；載入後逐句推論、彙整為整體分數。
-/// 目前支援 WordPiece（BERT 系）tokenizer；RoBERTa BPE 待補（該類模型回報 unavailable）。
+/// 支援 WordPiece（BERT 系）與 byte-level BPE（RoBERTa 系）tokenizer。
 class TransformerEngine implements DetectionEngine {
   final ModelManager modelManager;
+
+  static const _supportedTokenizers = {'bert-wordpiece', 'roberta-bpe'};
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
@@ -22,35 +24,55 @@ class TransformerEngine implements DetectionEngine {
   @override
   double get defaultWeight => 0.40;
 
+  bool _supported(String tokenizer) => _supportedTokenizers.contains(tokenizer);
+
   @override
   Future<bool> isAvailable() async {
     final active = modelManager.activeVariant(id);
-    if (active == null || active.tokenizer != 'bert-wordpiece') return false;
+    if (active == null || !_supported(active.tokenizer)) return false;
     return (await modelManager.activeModelPath(id)) != null &&
         (await modelManager.activeTokenizerPath(id)) != null;
   }
 
+  String? _loadError;
+
   /// 依「使用中」模型延遲載入 / 快取 detector；模型切換時重新載入。
+  /// 載入失敗（如模型 opset 不相容、檔案損毀）回傳 null 並記錄原因，不拋出。
   Future<OnnxDetector?> _ensureLoaded() async {
     final active = modelManager.activeVariant(id);
-    if (active == null || active.tokenizer != 'bert-wordpiece') return null;
+    if (active == null || !_supported(active.tokenizer)) return null;
     final modelPath = await modelManager.activeModelPath(id);
     final tokPath = await modelManager.activeTokenizerPath(id);
     if (modelPath == null || tokPath == null) return null;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
-    _detector?.dispose();
-    _detector = await OnnxDetector.load(
-      modelPath: modelPath,
-      tokenizerJsonPath: tokPath,
-    );
-    _loadedModelPath = modelPath;
-    return _detector;
+    try {
+      _detector?.dispose();
+      _detector = await OnnxDetector.load(
+        modelPath: modelPath,
+        tokenizerJsonPath: tokPath,
+        tokenizerType: active.tokenizer,
+        aiLabelIndex: active.aiLabelIndex,
+      );
+      _loadedModelPath = modelPath;
+      _loadError = null;
+      return _detector;
+    } catch (e) {
+      _detector = null;
+      _loadedModelPath = null;
+      _loadError = e.toString();
+      return null;
+    }
   }
 
   @override
   Future<EngineScore> analyze(PreprocessedText text) async {
-    final detector = await _ensureLoaded();
-    if (detector == null || text.sentences.isEmpty) return _unavailable();
+    OnnxDetector? detector;
+    try {
+      detector = await _ensureLoaded();
+      if (detector == null || text.sentences.isEmpty) return _unavailable();
+    } catch (_) {
+      return _unavailable();
+    }
 
     final perSentence = await detector.classifySentences(text.sentences);
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
@@ -66,6 +88,7 @@ class TransformerEngine implements DetectionEngine {
         '${variant?.variantId ?? '模型'} 判定 ${perSentence.length} 句中有 '
             '$aiCount 句呈現 AI 特徵',
       ],
+      sentenceScores: perSentence,
     );
   }
 

@@ -1,16 +1,11 @@
 import 'dart:convert';
 
-/// 編碼結果：input_ids 與 attention_mask（供 ONNX 模型輸入）
-class Encoded {
-  final List<int> inputIds;
-  final List<int> attentionMask;
-  const Encoded(this.inputIds, this.attentionMask);
-}
+import 'text_tokenizer.dart';
 
 /// BERT WordPiece tokenizer（對應 bert-base-multilingual-cased）。
 /// 實作標準 BERT 前處理：清理 → CJK 逐字分隔 → 空白切分 → 標點切分 → WordPiece。
 /// 從 HuggingFace `tokenizer.json`（model.vocab）建構，行為與原生 tokenizer 一致。
-class WordPieceTokenizer {
+class WordPieceTokenizer implements TextTokenizer {
   final Map<String, int> vocab;
   final bool lowercase;
   final int clsId;
@@ -49,6 +44,7 @@ class WordPieceTokenizer {
   }
 
   /// 編碼為 [CLS] ... [SEP]，超過 maxLen 截斷。
+  @override
   Encoded encode(String text, {int maxLen = 192}) {
     final pieces = <int>[];
     for (final token in _basicTokenize(text)) {

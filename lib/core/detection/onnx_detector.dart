@@ -3,25 +3,30 @@ import 'dart:math' as math;
 
 import 'package:onnxruntime/onnxruntime.dart';
 
-import 'wordpiece_tokenizer.dart';
+import 'text_tokenizer.dart';
 
 /// 以 ONNX Runtime 執行 Transformer 分類器的端上推論。
 /// 底層為各平台原生 ONNX Runtime（onnxruntime 套件），支援 macOS/Windows/iOS/Android/Linux。
 ///
-/// 流程：文字 → WordPiece 編碼 → ONNX 推論 → softmax → AI 機率。
+/// 流程：文字 → tokenizer 編碼（WordPiece / BPE）→ ONNX 推論 → softmax → AI 機率。
 class OnnxDetector {
   final OrtSession _session;
-  final WordPieceTokenizer _tokenizer;
+  final TextTokenizer _tokenizer;
   final int maxLen;
+  final int aiLabelIndex; // 輸出中對應「AI」的類別索引（依模型 id2label）
 
-  OnnxDetector._(this._session, this._tokenizer, this.maxLen);
+  OnnxDetector._(this._session, this._tokenizer, this.maxLen, this.aiLabelIndex);
 
   static bool _envReady = false;
 
-  /// 載入模型與對應 tokenizer。tokenizerJson 為 HuggingFace tokenizer.json。
+  /// 載入模型與對應 tokenizer。
+  /// [tokenizerType]：bert-wordpiece / roberta-bpe。tokenizerJson 為 HuggingFace tokenizer.json。
+  /// [aiLabelIndex]：輸出兩類中哪一個代表 AI（distilbert=1、roberta-openai-detector=0）。
   static Future<OnnxDetector> load({
     required String modelPath,
     required String tokenizerJsonPath,
+    String tokenizerType = 'bert-wordpiece',
+    int aiLabelIndex = 1,
     int maxLen = 192,
   }) async {
     if (!_envReady) {
@@ -30,9 +35,9 @@ class OnnxDetector {
     }
     final options = OrtSessionOptions();
     final session = OrtSession.fromFile(File(modelPath), options);
-    final tokenizer = WordPieceTokenizer.fromTokenizerJson(
-        await File(tokenizerJsonPath).readAsString());
-    return OnnxDetector._(session, tokenizer, maxLen);
+    final tokenizer = buildTokenizer(
+        tokenizerType, await File(tokenizerJsonPath).readAsString());
+    return OnnxDetector._(session, tokenizer, maxLen, aiLabelIndex);
   }
 
   /// 對單句推論，回傳 AI 機率（0..1）。
@@ -45,19 +50,19 @@ class OnnxDetector {
         OrtValueTensor.createTensorWithDataList([enc.attentionMask], shape);
     final runOptions = OrtRunOptions();
     try {
+      // 不指定輸出名稱 → 回傳模型全部輸出（輸出名稱因模型而異：logits / output）
       final outputs = _session.run(
         runOptions,
         {'input_ids': inputIds, 'attention_mask': attentionMask},
-        ['logits'],
       );
-      // logits 形狀 [1,2] → 取第一列
+      // 輸出形狀 [1,2] → 取第一列
       final raw = outputs.first?.value as List;
       final row = (raw.first as List).cast<num>();
       final probs = _softmax([row[0].toDouble(), row[1].toDouble()]);
       for (final o in outputs) {
         o?.release();
       }
-      return probs[1]; // class 1 = AI
+      return probs[aiLabelIndex];
     } finally {
       inputIds.release();
       attentionMask.release();
