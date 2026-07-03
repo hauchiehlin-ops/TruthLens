@@ -2,16 +2,18 @@ import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
 import '../model_manager.dart';
-import '../native_inference_service.dart';
+import '../onnx_detector.dart';
 
-/// 子模型 A：XLM-RoBERTa 多語言分類器。
-/// 需下載量化模型檔（~120MB），經 [NativeInferenceService] 呼叫原生推論。
-/// 模型未安裝或原生端未就緒時回報 unavailable，協調器會重新分配權重。
+/// 子模型 A：多語言 Transformer 分類器（ONNX Runtime 端上推論）。
+/// 使用 [ModelManager] 目前「使用中」的已安裝模型；載入後逐句推論、彙整為整體分數。
+/// 目前支援 WordPiece（BERT 系）tokenizer；RoBERTa BPE 待補（該類模型回報 unavailable）。
 class TransformerEngine implements DetectionEngine {
   final ModelManager modelManager;
-  final NativeInferenceService native;
 
-  TransformerEngine({required this.modelManager, required this.native});
+  OnnxDetector? _detector;
+  String? _loadedModelPath;
+
+  TransformerEngine({required this.modelManager});
 
   @override
   String get id => 'transformer';
@@ -22,23 +24,38 @@ class TransformerEngine implements DetectionEngine {
 
   @override
   Future<bool> isAvailable() async {
-    if (!modelManager.canRunEngine(id)) return false;
-    return native.isSupported;
+    final active = modelManager.activeVariant(id);
+    if (active == null || active.tokenizer != 'bert-wordpiece') return false;
+    return (await modelManager.activeModelPath(id)) != null &&
+        (await modelManager.activeTokenizerPath(id)) != null;
+  }
+
+  /// 依「使用中」模型延遲載入 / 快取 detector；模型切換時重新載入。
+  Future<OnnxDetector?> _ensureLoaded() async {
+    final active = modelManager.activeVariant(id);
+    if (active == null || active.tokenizer != 'bert-wordpiece') return null;
+    final modelPath = await modelManager.activeModelPath(id);
+    final tokPath = await modelManager.activeTokenizerPath(id);
+    if (modelPath == null || tokPath == null) return null;
+    if (_detector != null && _loadedModelPath == modelPath) return _detector;
+    _detector?.dispose();
+    _detector = await OnnxDetector.load(
+      modelPath: modelPath,
+      tokenizerJsonPath: tokPath,
+    );
+    _loadedModelPath = modelPath;
+    return _detector;
   }
 
   @override
   Future<EngineScore> analyze(PreprocessedText text) async {
-    // 句子級推論後彙整為整體分數（每句獨立呼叫原生分類器）
-    final perSentence = <double>[];
-    for (final sentence in text.sentences) {
-      final score = await native.classify(id, sentence);
-      if (score != null) perSentence.add(score);
-    }
-    if (perSentence.isEmpty) {
-      return _unavailable();
-    }
+    final detector = await _ensureLoaded();
+    if (detector == null || text.sentences.isEmpty) return _unavailable();
+
+    final perSentence = await detector.classifySentences(text.sentences);
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     final aiCount = perSentence.where((s) => s >= 0.6).length;
+    final variant = modelManager.activeVariant(id);
     return EngineScore(
       engineId: id,
       engineName: name,
@@ -46,7 +63,8 @@ class TransformerEngine implements DetectionEngine {
       weight: defaultWeight,
       features: {'ai_sentence_ratio': aiCount / perSentence.length},
       reasons: [
-        '多語言分類器判定 ${perSentence.length} 句中有 $aiCount 句呈現 AI 特徵',
+        '${variant?.variantId ?? '模型'} 判定 ${perSentence.length} 句中有 '
+            '$aiCount 句呈現 AI 特徵',
       ],
     );
   }
@@ -57,6 +75,6 @@ class TransformerEngine implements DetectionEngine {
         aiProbability: 0.5,
         weight: defaultWeight,
         available: false,
-        reasons: const ['模型尚未安裝，未參與本次投票'],
+        reasons: const ['模型尚未安裝或使用中模型未支援，未參與本次投票'],
       );
 }

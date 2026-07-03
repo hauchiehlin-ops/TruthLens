@@ -13,11 +13,13 @@ import 'model_registry.dart';
 
 enum InstallState { notInstalled, downloading, installed, failed }
 
-/// 已安裝紀錄（寫入 models/installed.json，用於「判斷是否已安裝過模型」）
+/// 已安裝變體紀錄（多個變體可同時安裝於同一 role）
 class InstalledModel {
   final String role;
   final String variantId;
   final String fileName;
+  final String? tokenizerFileName;
+  final String tokenizer; // bert-wordpiece / roberta-bpe / none
   final String version;
   final int sizeBytes;
 
@@ -27,12 +29,16 @@ class InstalledModel {
     required this.fileName,
     required this.version,
     required this.sizeBytes,
+    this.tokenizerFileName,
+    this.tokenizer = 'none',
   });
 
   Map<String, dynamic> toJson() => {
         'role': role,
         'variant_id': variantId,
         'file_name': fileName,
+        'tokenizer_file_name': tokenizerFileName,
+        'tokenizer': tokenizer,
         'version': version,
         'size_bytes': sizeBytes,
       };
@@ -41,59 +47,72 @@ class InstalledModel {
         role: j['role'] as String,
         variantId: j['variant_id'] as String,
         fileName: j['file_name'] as String,
+        tokenizerFileName: j['tokenizer_file_name'] as String?,
+        tokenizer: j['tokenizer'] as String? ?? 'none',
         version: j['version'] as String? ?? '0',
         sizeBytes: (j['size_bytes'] as num?)?.toInt() ?? 0,
       );
 }
 
-class ModelStatus {
+/// 單一 role 的安裝狀態（可含多個已安裝變體 + 使用中變體 + 下載進度）
+class RoleState {
   final String role;
-  final InstallState state;
-  final double progress; // 0..1（下載中）
-  final InstalledModel? installed;
+  final Map<String, InstalledModel> installed; // variantId -> 紀錄
+  final String? activeVariantId;
+  final InstallState transientState; // 目前下載活動（idle 以 installed/notInstalled 表示）
+  final String? downloadingVariantId;
+  final double progress;
   final String? error;
 
-  const ModelStatus({
+  const RoleState({
     required this.role,
-    required this.state,
+    this.installed = const {},
+    this.activeVariantId,
+    this.transientState = InstallState.notInstalled,
+    this.downloadingVariantId,
     this.progress = 0,
-    this.installed,
     this.error,
   });
 
-  ModelStatus copyWith({
-    InstallState? state,
+  bool get hasInstalled => installed.isNotEmpty;
+  InstalledModel? get active =>
+      activeVariantId == null ? null : installed[activeVariantId];
+
+  RoleState copyWith({
+    Map<String, InstalledModel>? installed,
+    String? activeVariantId,
+    InstallState? transientState,
+    String? downloadingVariantId,
     double? progress,
-    InstalledModel? installed,
     String? error,
-    bool clearInstalled = false,
   }) =>
-      ModelStatus(
+      RoleState(
         role: role,
-        state: state ?? this.state,
+        installed: installed ?? this.installed,
+        activeVariantId: activeVariantId ?? this.activeVariantId,
+        transientState: transientState ?? this.transientState,
+        downloadingVariantId: downloadingVariantId,
         progress: progress ?? this.progress,
-        installed: clearInstalled ? null : (installed ?? this.installed),
         error: error,
       );
 }
 
-/// 模型檔案管理：安裝狀態偵測（installed.json）、變體下載（含進度）、
-/// sha256 校驗、原子熱替換、移除。目錄與 http client 可注入以供測試。
+/// 模型檔案管理：支援每個 role 並存多個變體、切換使用中變體、下載 / 刪除 / 更新。
+/// 狀態持久化於 models/installed.json。目錄與 http client 可注入以供測試。
 class ModelManager extends ChangeNotifier {
   final http.Client _client;
   final Directory? _dirOverride;
 
-  final Map<String, ModelStatus> _statuses = {
-    for (final m in kModelRegistry)
-      m.id: ModelStatus(role: m.id, state: InstallState.notInstalled),
+  final Map<String, RoleState> _roles = {
+    for (final m in kModelRegistry) m.id: RoleState(role: m.id),
   };
 
   ModelManager({http.Client? client, Directory? modelsDir})
       : _client = client ?? http.Client(),
         _dirOverride = modelsDir;
 
-  Map<String, ModelStatus> get statuses => Map.unmodifiable(_statuses);
-  ModelStatus? statusFor(String role) => _statuses[role];
+  RoleState? roleState(String role) => _roles[role];
+  Iterable<RoleState> get roles => _roles.values;
 
   Future<Directory> _modelsDir() async {
     final override = _dirOverride;
@@ -107,73 +126,123 @@ class ModelManager extends ChangeNotifier {
   Future<File> _manifestFile() async =>
       File(p.join((await _modelsDir()).path, 'installed.json'));
 
-  Future<Map<String, InstalledModel>> _readManifest() async {
+  // 持久化格式：{ role: { active: variantId, installed: { variantId: InstalledModel } } }
+  Future<void> _persist() async {
     final f = await _manifestFile();
-    if (!f.existsSync()) return {};
-    try {
-      final raw = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
-      return raw.map((role, v) =>
-          MapEntry(role, InstalledModel.fromJson(v as Map<String, dynamic>)));
-    } catch (_) {
-      return {};
+    final map = <String, dynamic>{};
+    for (final r in _roles.values) {
+      if (r.installed.isEmpty) continue;
+      map[r.role] = {
+        'active': r.activeVariantId,
+        'installed':
+            r.installed.map((k, v) => MapEntry(k, v.toJson())),
+      };
     }
+    f.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
   }
 
-  Future<void> _writeManifest(Map<String, InstalledModel> manifest) async {
-    final f = await _manifestFile();
-    f.writeAsStringSync(
-      const JsonEncoder.withIndent('  ')
-          .convert(manifest.map((k, v) => MapEntry(k, v.toJson()))),
-    );
-  }
-
-  /// 開機時掃描 installed.json 與檔案，更新每個 role 的安裝狀態。
+  /// 開機掃描 installed.json 與檔案，重建每個 role 的安裝狀態（含清理遺失檔案）。
   Future<void> refreshInstallStates() async {
-    final manifest = await _readManifest();
+    final f = await _manifestFile();
     final dir = await _modelsDir();
-    for (final role in _statuses.keys.toList()) {
-      final entry = manifest[role];
-      final ok = entry != null &&
-          File(p.join(dir.path, entry.fileName)).existsSync();
-      _statuses[role] = _statuses[role]!.copyWith(
-        state: ok ? InstallState.installed : InstallState.notInstalled,
-        progress: ok ? 1 : 0,
-        installed: ok ? entry : null,
-        clearInstalled: !ok,
+    Map<String, dynamic> raw = {};
+    if (f.existsSync()) {
+      try {
+        raw = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+
+    for (final role in _roles.keys.toList()) {
+      final entry = raw[role] as Map<String, dynamic>?;
+      final installed = <String, InstalledModel>{};
+      if (entry != null) {
+        final inst = (entry['installed'] as Map<String, dynamic>?) ?? {};
+        inst.forEach((variantId, v) {
+          final model = InstalledModel.fromJson(v as Map<String, dynamic>);
+          if (File(p.join(dir.path, model.fileName)).existsSync()) {
+            installed[variantId] = model;
+          }
+        });
+      }
+      var active = entry?['active'] as String?;
+      if (active == null || !installed.containsKey(active)) {
+        active = installed.keys.isNotEmpty ? installed.keys.first : null;
+      }
+      _roles[role] = RoleState(
+        role: role,
+        installed: installed,
+        activeVariantId: active,
+        transientState: installed.isNotEmpty
+            ? InstallState.installed
+            : InstallState.notInstalled,
+        progress: installed.isNotEmpty ? 1 : 0,
       );
     }
+    await _persist();
     notifyListeners();
   }
 
-  bool isInstalled(String role) =>
-      _statuses[role]?.state == InstallState.installed;
+  bool isInstalled(String role) => _roles[role]?.hasInstalled ?? false;
+  bool isVariantInstalled(String role, String variantId) =>
+      _roles[role]?.installed.containsKey(variantId) ?? false;
+  InstalledModel? activeVariant(String role) => _roles[role]?.active;
+  List<InstalledModel> installedVariants(String role) =>
+      _roles[role]?.installed.values.toList() ?? const [];
 
-  InstalledModel? installedInfo(String role) => _statuses[role]?.installed;
-
-  /// 可實際執行推論的引擎（已安裝且有原生後端）。純 Dart 引擎不在此列。
+  /// 可實際執行推論的引擎（有使用中的已安裝變體 + 原生後端）
   bool canRunEngine(String role) {
     final spec = modelSpecFor(role);
     if (spec == null || spec.backend == InferenceBackend.none) return false;
-    return isInstalled(role);
+    return activeVariant(role) != null;
   }
 
-  /// 下載並安裝某 role 的指定變體。回傳 true 表示成功。
-  /// 未提供下載來源（url 為 null）的變體會標記 failed。
+  /// 使用中變體的模型檔絕對路徑（供推論引擎載入）
+  Future<String?> activeModelPath(String role) async {
+    final active = activeVariant(role);
+    if (active == null) return null;
+    return p.join((await _modelsDir()).path, active.fileName);
+  }
+
+  Future<String?> activeTokenizerPath(String role) async {
+    final active = activeVariant(role);
+    if (active?.tokenizerFileName == null) return null;
+    return p.join((await _modelsDir()).path, active!.tokenizerFileName!);
+  }
+
+  /// 切換使用中變體（應用程式運行前可自由更換模型）
+  Future<void> setActive(String role, String variantId) async {
+    final r = _roles[role];
+    if (r == null || !r.installed.containsKey(variantId)) return;
+    _roles[role] = r.copyWith(activeVariantId: variantId);
+    await _persist();
+    notifyListeners();
+  }
+
+  /// 需要更新：已安裝的使用中變體版本落後於 catalog 提供的版本
+  bool hasUpdate(String role, ModelVariant catalogVariant) {
+    final installed = _roles[role]?.installed[catalogVariant.id];
+    return installed != null && installed.version != catalogVariant.version;
+  }
+
+  /// 下載並安裝變體。首個安裝的變體自動設為使用中。回傳 true 表示成功。
   Future<bool> downloadVariant(String role, ModelVariant variant) async {
     if (!variant.isDownloadable) {
-      _update(role, state: InstallState.failed, error: '此變體尚未提供下載來源');
+      _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
       return false;
     }
-    _update(role, state: InstallState.downloading, progress: 0);
+    _mark(role, InstallState.downloading,
+        downloadingVariantId: variant.id, progress: 0);
     final dir = await _modelsDir();
     final fileName = variant.fileName(role);
     final target = File(p.join(dir.path, fileName));
     final tmp = File('${target.path}.part');
+    String? tokenizerFileName;
 
     try {
       await _streamDownload(variant.url!, tmp, expected: variant.sizeBytes,
           onProgress: (r) {
-        _update(role, state: InstallState.downloading, progress: r);
+        _mark(role, InstallState.downloading,
+            downloadingVariantId: variant.id, progress: r);
       });
 
       if (variant.sha256 != null) {
@@ -184,36 +253,73 @@ class ModelManager extends ChangeNotifier {
         }
       }
 
-      // tokenizer 另檔（如 RoBERTa 的 tokenizer.json）
       if (variant.tokenizerUrl != null) {
-        final tokFile =
-            File(p.join(dir.path, '${role}__${variant.id}.tokenizer.json'));
-        await _streamDownload(variant.tokenizerUrl!, tokFile);
+        tokenizerFileName = '${role}__${variant.id}.tokenizer.json';
+        await _streamDownload(
+            variant.tokenizerUrl!, File(p.join(dir.path, tokenizerFileName)));
       }
 
       if (target.existsSync()) await target.delete();
-      await tmp.rename(target.path); // 原子替換（熱替換）
+      await tmp.rename(target.path); // 原子替換（熱替換 / 更新）
 
-      final manifest = await _readManifest();
-      manifest[role] = InstalledModel(
+      final r = _roles[role]!;
+      final installed = Map<String, InstalledModel>.from(r.installed);
+      installed[variant.id] = InstalledModel(
         role: role,
         variantId: variant.id,
         fileName: fileName,
+        tokenizerFileName: tokenizerFileName,
+        tokenizer: variant.tokenizer,
         version: variant.version,
         sizeBytes: variant.sizeBytes,
       );
-      await _writeManifest(manifest);
-
-      _update(role,
-          state: InstallState.installed,
-          progress: 1,
-          installed: manifest[role]);
+      _roles[role] = r.copyWith(
+        installed: installed,
+        activeVariantId: r.activeVariantId ?? variant.id, // 首個自動設為使用中
+        transientState: InstallState.installed,
+        progress: 1,
+      );
+      await _persist();
+      notifyListeners();
       return true;
     } catch (e) {
       if (tmp.existsSync()) await tmp.delete();
-      _update(role, state: InstallState.failed, error: e.toString());
+      _mark(role, InstallState.failed,
+          downloadingVariantId: variant.id, error: e.toString());
       return false;
     }
+  }
+
+  /// 移除指定變體。若移除的是使用中變體，改用其餘任一變體或清空。
+  Future<void> removeVariant(String role, String variantId) async {
+    final r = _roles[role];
+    if (r == null) return;
+    final entry = r.installed[variantId];
+    if (entry == null) return;
+    final dir = await _modelsDir();
+    final f = File(p.join(dir.path, entry.fileName));
+    if (f.existsSync()) await f.delete();
+    if (entry.tokenizerFileName != null) {
+      final tok = File(p.join(dir.path, entry.tokenizerFileName!));
+      if (tok.existsSync()) await tok.delete();
+    }
+    final installed = Map<String, InstalledModel>.from(r.installed)
+      ..remove(variantId);
+    var active = r.activeVariantId;
+    if (active == variantId) {
+      active = installed.keys.isNotEmpty ? installed.keys.first : null;
+    }
+    _roles[role] = RoleState(
+      role: role,
+      installed: installed,
+      activeVariantId: active,
+      transientState: installed.isNotEmpty
+          ? InstallState.installed
+          : InstallState.notInstalled,
+      progress: installed.isNotEmpty ? 1 : 0,
+    );
+    await _persist();
+    notifyListeners();
   }
 
   Future<void> _streamDownload(String url, File dest,
@@ -236,39 +342,19 @@ class ModelManager extends ChangeNotifier {
     await sink.close();
   }
 
-  Future<void> remove(String role) async {
-    final dir = await _modelsDir();
-    final manifest = await _readManifest();
-    final entry = manifest.remove(role);
-    if (entry != null) {
-      final f = File(p.join(dir.path, entry.fileName));
-      if (f.existsSync()) await f.delete();
-      final tok =
-          File(p.join(dir.path, '${role}__${entry.variantId}.tokenizer.json'));
-      if (tok.existsSync()) await tok.delete();
-      await _writeManifest(manifest);
-    }
-    _update(role,
-        state: InstallState.notInstalled, progress: 0, clearInstalled: true);
-  }
-
   Future<String> _sha256Of(File file) async {
     final digest = await sha256.bind(file.openRead()).first;
     return digest.toString();
   }
 
-  void _update(String role,
-      {required InstallState state,
-      double? progress,
-      InstalledModel? installed,
-      String? error,
-      bool clearInstalled = false}) {
-    _statuses[role] = _statuses[role]!.copyWith(
-      state: state,
-      progress: progress,
-      installed: installed,
+  void _mark(String role, InstallState state,
+      {String? downloadingVariantId, double? progress, String? error}) {
+    final r = _roles[role]!;
+    _roles[role] = r.copyWith(
+      transientState: state,
+      downloadingVariantId: downloadingVariantId,
+      progress: progress ?? (state == InstallState.downloading ? 0 : r.progress),
       error: error,
-      clearInstalled: clearInstalled,
     );
     notifyListeners();
   }

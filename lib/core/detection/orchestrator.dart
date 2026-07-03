@@ -30,7 +30,7 @@ class EnsembleOrchestrator {
     NativeInferenceService native,
   ) =>
       [
-        TransformerEngine(modelManager: mm, native: native),
+        TransformerEngine(modelManager: mm),
         StatisticalEngine(modelManager: mm, native: native),
         StylometryEngine(),
         AdversarialEngine(modelManager: mm, native: native),

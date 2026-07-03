@@ -24,6 +24,8 @@ class ModelVariant {
   final String source; // 出處（HF repo 等）
   final String license;
   final String note;
+  final String? pageUrl; // 模型頁面（HF model page），供「查看/取得最新」
+  final String tokenizer; // bert-wordpiece / roberta-bpe / none
 
   const ModelVariant({
     required this.id,
@@ -41,6 +43,8 @@ class ModelVariant {
     this.url,
     this.tokenizerUrl,
     this.sha256,
+    this.pageUrl,
+    this.tokenizer = 'none',
   });
 
   bool get isDownloadable => url != null && url!.isNotEmpty;
@@ -65,6 +69,8 @@ class ModelVariant {
         source: j['source'] as String? ?? '',
         license: j['license'] as String? ?? '',
         note: j['note'] as String? ?? '',
+        pageUrl: j['page_url'] as String?,
+        tokenizer: j['tokenizer'] as String? ?? 'none',
       );
 }
 

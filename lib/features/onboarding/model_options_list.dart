@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/detection/model_catalog.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 
-/// 共用的模型選項清單：每個 role 列出所有變體，標示硬體推薦與安裝狀態，
-/// 提供下載 / 移除。供首次啟動引導與設定的模型管理頁共用。
+/// 共用的模型選項清單：每個 role 列出所有變體，標示硬體推薦、安裝與使用中狀態，
+/// 提供下載 / 刪除 / 更新 / 設為使用中 / 查看模型頁面。
+/// 供首次啟動引導與設定的模型管理頁共用。
 class ModelOptionsList extends StatelessWidget {
   final List<ProvisionPlan> plans;
   const ModelOptionsList({super.key, required this.plans});
@@ -46,14 +48,25 @@ class _VariantTile extends StatelessWidget {
   final ModelVariant variant;
   const _VariantTile({required this.plan, required this.variant});
 
+  Future<void> _openPage() async {
+    final url = variant.pageUrl;
+    if (url != null) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ModelManager>(
       builder: (context, manager, _) {
-        final status = manager.statusFor(plan.role);
-        final isThisInstalled = status?.installed?.variantId == variant.id;
-        final downloading = status?.state == InstallState.downloading;
-        final fits = plan.fitsDevice(variant);
+        final rs = manager.roleState(plan.role);
+        final installed = manager.isVariantInstalled(plan.role, variant.id);
+        final isActive = rs?.activeVariantId == variant.id;
+        final downloadingThis = rs?.transientState == InstallState.downloading &&
+            rs?.downloadingVariantId == variant.id;
+        final failedThis = rs?.transientState == InstallState.failed &&
+            rs?.downloadingVariantId == variant.id;
+        final hasUpdate = installed && manager.hasUpdate(plan.role, variant);
         final recommended = plan.isRecommended(variant);
 
         return Container(
@@ -61,9 +74,12 @@ class _VariantTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             border: Border.all(
-              color: recommended
+              color: isActive
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).dividerColor,
+                  : recommended
+                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                      : Theme.of(context).dividerColor,
+              width: isActive ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -76,7 +92,13 @@ class _VariantTile extends StatelessWidget {
                     child: Text(variant.name,
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                  if (recommended)
+                  if (isActive)
+                    const Chip(
+                      avatar: Icon(Icons.check_circle, size: 16),
+                      label: Text('使用中'),
+                      visualDensity: VisualDensity.compact,
+                    )
+                  else if (recommended)
                     Chip(
                       label: const Text('推薦'),
                       visualDensity: VisualDensity.compact,
@@ -91,7 +113,7 @@ class _VariantTile extends StatelessWidget {
               Text(
                 '${ModelOptionsList.sizeLabel(variant.sizeBytes)} · '
                 '${variant.languages.join('/')} · '
-                '需 ${(variant.minRamMb / 1024).round()}GB RAM · 來源 ${variant.source}',
+                '需 ${(variant.minRamMb / 1024).round()}GB RAM · v${variant.version}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               if (variant.note.isNotEmpty)
@@ -101,7 +123,15 @@ class _VariantTile extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall),
                 ),
               const SizedBox(height: 8),
-              _action(context, status, isThisInstalled, downloading, fits),
+              if (downloadingThis)
+                LinearProgressIndicator(value: rs?.progress)
+              else
+                _actions(context, manager,
+                    installed: installed,
+                    isActive: isActive,
+                    hasUpdate: hasUpdate,
+                    failed: failedThis,
+                    error: rs?.error),
             ],
           ),
         );
@@ -109,51 +139,63 @@ class _VariantTile extends StatelessWidget {
     );
   }
 
-  Widget _action(BuildContext context, ModelStatus? status,
-      bool isThisInstalled, bool downloading, bool fits) {
-    if (isThisInstalled) {
-      return Row(
-        children: [
-          const Chip(
-            avatar: Icon(Icons.check_circle, size: 16),
-            label: Text('已安裝'),
+  Widget _actions(
+    BuildContext context,
+    ModelManager manager, {
+    required bool installed,
+    required bool isActive,
+    required bool hasUpdate,
+    required bool failed,
+    String? error,
+  }) {
+    final provisioner = context.read<ModelProvisioner>();
+    final fits = plan.fitsDevice(variant);
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (!installed && variant.isDownloadable)
+          FilledButton.tonalIcon(
+            onPressed: () => provisioner.downloadVariant(plan.role, variant),
+            icon: const Icon(Icons.download, size: 18),
+            label: Text('下載（${ModelOptionsList.sizeLabel(variant.sizeBytes)}）'),
           ),
-          const Spacer(),
+        if (!installed && !variant.isDownloadable)
+          const Chip(label: Text('即將推出')),
+        if (installed && !isActive)
+          OutlinedButton.icon(
+            onPressed: () => manager.setActive(plan.role, variant.id),
+            icon: const Icon(Icons.swap_horiz, size: 18),
+            label: const Text('設為使用中'),
+          ),
+        if (hasUpdate)
+          FilledButton.tonalIcon(
+            onPressed: () => provisioner.downloadVariant(plan.role, variant),
+            icon: const Icon(Icons.system_update_alt, size: 18),
+            label: const Text('更新'),
+          ),
+        if (installed)
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: '移除',
-            onPressed: () => context.read<ModelManager>().remove(plan.role),
+            tooltip: '刪除',
+            onPressed: () => manager.removeVariant(plan.role, variant.id),
           ),
-        ],
-      );
-    }
-    if (downloading) {
-      return LinearProgressIndicator(value: status?.progress);
-    }
-    if (!variant.isDownloadable) return const Chip(label: Text('即將推出'));
-
-    return Row(
-      children: [
-        FilledButton.tonalIcon(
-          onPressed: () =>
-              context.read<ModelProvisioner>().downloadVariant(plan.role, variant),
-          icon: const Icon(Icons.download, size: 18),
-          label: Text('下載（${ModelOptionsList.sizeLabel(variant.sizeBytes)}）'),
-        ),
-        if (!fits)
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Text('可能超出裝置記憶體',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.error, fontSize: 12)),
+        if (variant.pageUrl != null)
+          TextButton.icon(
+            onPressed: _openPage,
+            icon: const Icon(Icons.open_in_new, size: 16),
+            label: const Text('模型頁面'),
           ),
-        if (status?.state == InstallState.failed)
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Text('失敗：${status?.error ?? ''}',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.error, fontSize: 12)),
-          ),
+        if (!fits && !installed)
+          Text('可能超出裝置記憶體',
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.error, fontSize: 12)),
+        if (failed)
+          Text('失敗：${error ?? ''}',
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.error, fontSize: 12)),
       ],
     );
   }

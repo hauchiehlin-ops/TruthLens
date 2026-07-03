@@ -46,6 +46,8 @@ dependencies:
   pdf: ^3.13.0
   http: ^1.6.0
   crypto: ^3.0.7
+  onnxruntime: ^1.4.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +59,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

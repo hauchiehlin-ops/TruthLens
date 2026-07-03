@@ -13,7 +13,26 @@
 
 ---
 
-## 2026-07-04 — [P2 AI引擎] 模型選項、必要性提示、略過後再提醒
+## 2026-07-04 — [P2 AI引擎] 多模型管理 + macOS ONNX Runtime 端上推論
+
+**做了什麼**
+- **多變體並存管理**：ModelManager 由「每 role 單一變體」升級為「每 role 可並存多變體 + 使用中(active)指標」；installed.json 改記 `{role: {active, installed:{variantId:...}}}`。支援下載多個、`setActive` 切換使用中、`removeVariant` 刪除（刪到使用中會自動改用其餘）、`hasUpdate` 版本比對更新、原子熱替換
+- **UI（共用 ModelOptionsList）**：每 role 列出所有變體，標「推薦/使用中」、硬體是否吃得下；動作含下載/更新/設為使用中/刪除/「模型頁面」外連（url_launcher）。首啟引導與設定模型管理頁共用
+- **模型頁面連結**：catalog 變體新增 `page_url`（HF 模型頁）與 `tokenizer` 類型欄位
+- **真實 ONNX 端上推論**（需求 2/3 最後一塊）：
+  - 採用 `onnxruntime` Flutter 套件（底層各平台原生 ONNX Runtime，支援 macOS/Win/iOS/Android/Linux）——比手寫四份 plugin 更可攜、同為原生
+  - [wordpiece_tokenizer.dart](lib/core/detection/wordpiece_tokenizer.dart)：純 Dart BERT WordPiece，**與原生 tokenizer 逐 id 對齊**（英文+標點、中文逐字、## 續接，單元測試比對真實輸出）
+  - [onnx_detector.dart](lib/core/detection/onnx_detector.dart)：文字→編碼→ONNX 推論→softmax→AI 機率
+  - [transformer_engine.dart](lib/core/detection/engines/transformer_engine.dart) 改用 OnnxDetector，依「使用中」模型延遲載入、逐句推論、參與集成投票
+- 測試：WordPiece tokenizer（6，逐 id 對齊原生）、多變體管理/切換/更新/刪除；共 **57 項單元測試全過** + **macOS 整合測試以真實模型驗證端上推論通過**（AI 風格文本 0.269 vs 人類口語 0.0003，中文亦可推論）
+
+**為什麼**
+- 使用者要求：多模型並存/切換/更新、連模型頁面；並把「下載的模型實際參與檢測」做到真的能跑
+
+**決策與取捨**
+- ONNX Runtime 走 `onnxruntime` pub 套件（原生底層）而非手寫 Swift plugin：一份 Dart 碼涵蓋四平台，維護成本低
+- 第一版 tokenizer 先實作 WordPiece（BERT 系，對應本專案多語言模型）；RoBERTa BPE（catalog 的 roberta-large）待補，該類模型暫回報 unavailable
+- macOS 沙盒下模型須在 App 容器內（正式流程即下載到容器）；整合測試把模型放進容器以模擬
 
 **做了什麼**（補齊使用者對佈建流程的完整需求）
 - **多模型選項**：`ProvisionPlan` 改帶該 role 的**所有變體**（非只推薦）；抽出共用 [model_options_list.dart](lib/features/onboarding/model_options_list.dart)，首啟引導與設定模型管理頁皆列出全部變體、標「推薦」、標示硬體是否吃得下，使用者可自選下載

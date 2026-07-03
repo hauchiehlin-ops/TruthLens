@@ -1,6 +1,6 @@
 {
-  "catalog_version": "2026-07-03",
-  "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。",
+  "catalog_version": "2026-07-04",
+  "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
       "role": "transformer",
@@ -10,6 +10,7 @@
           "id": "roberta-large-openai-onnx-fp16",
           "name": "RoBERTa-Large 偵測器（英文・高精度）",
           "backend": "transformer",
+          "tokenizer": "roberta-bpe",
           "languages": ["en"],
           "quant": "fp16",
           "size_bytes": 710809104,
@@ -17,6 +18,7 @@
           "tier": "high",
           "url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16/resolve/main/model.onnx",
           "tokenizer_url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16",
           "sha256": null,
           "version": "1.0",
           "source": "joaopn/roberta-large-openai-detector-onnx-fp16",
@@ -27,15 +29,18 @@
           "id": "truthlens-multilingual-distil-int8",
           "name": "多語言輕量偵測器（英+中・INT8）",
           "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
           "languages": ["en", "zh", "multi"],
           "quant": "int8",
           "size_bytes": 141557760,
           "min_ram_mb": 2048,
           "tier": "low",
           "url": null,
+          "tokenizer_url": "https://huggingface.co/distilbert/distilbert-base-multilingual-cased/resolve/main/tokenizer.json",
           "sha256": null,
           "version": "0.1",
           "source": "training/ HC3 fine-tune (distilbert-multilingual)",
+          "page_url": "https://huggingface.co/distilbert/distilbert-base-multilingual-cased",
           "license": "資料源 HC3（研究用途；商用授權待確認）",
           "note": "本專案以 HC3 英+中微調，體積小、支援中文；上傳後填入 url 即可下載"
         }
@@ -49,6 +54,7 @@
           "id": "gemma-2b-it-q4",
           "name": "Gemma 2B Instruct（Q4）",
           "backend": "languageModel",
+          "tokenizer": "none",
           "languages": ["multi"],
           "quant": "q4",
           "size_bytes": 1350000000,
@@ -58,6 +64,7 @@
           "sha256": null,
           "version": "1.0",
           "source": "google/gemma-2-2b-it (GGUF 量化)",
+          "page_url": "https://huggingface.co/google/gemma-2-2b-it",
           "license": "Gemma Terms of Use",
           "note": "智慧報告生成；未安裝時自動回退至模板報告"
         }

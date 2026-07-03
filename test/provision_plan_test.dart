@@ -23,17 +23,12 @@ void main() {
     _v('small', 2048, url: 'https://x/small.onnx'),
   ];
 
-  ProvisionPlan plan({
-    required int ram,
-    ModelVariant? recommended,
-    bool installed = false,
-  }) =>
+  ProvisionPlan plan({required int ram, ModelVariant? recommended}) =>
       ProvisionPlan(
         role: 'transformer',
         roleName: '偵測器',
         variants: variants,
         recommended: recommended ?? variants[1],
-        alreadyInstalled: installed,
         deviceRamMb: ram,
       );
 
@@ -47,11 +42,6 @@ void main() {
     final p = plan(ram: 4096, recommended: variants[1]);
     expect(p.isRecommended(variants[1]), isTrue);
     expect(p.isRecommended(variants[0]), isFalse);
-  });
-
-  test('needsDownload：未安裝且有可下載推薦', () {
-    expect(plan(ram: 4096).needsDownload, isTrue);
-    expect(plan(ram: 4096, installed: true).needsDownload, isFalse);
   });
 
   test('列出全部變體供使用者選擇', () {
