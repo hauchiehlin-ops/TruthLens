@@ -13,6 +13,22 @@
 
 ---
 
+## 2026-07-04 — [修正] catalog 對抗模組 D 的下載網址指向開發機本地伺服器
+
+**做了什麼**
+- 使用者回報「AI 模型管理」畫面點「改寫偵測模型（INT8）」的下載時出現 `ClientException with SocketException: Connection refused ... address = 127.0.0.1, port = 60228`
+- 根因：[assets/model_catalog.json](assets/model_catalog.json) 的 `adversarial` 角色變體 `url`/`tokenizer_url` 指向 `http://127.0.0.1:8000/...`——這是開發機本地測試伺服器的位址，對任何真實使用者的裝置永遠是 Connection refused，這是我先前體檢時就注意到、當時判斷「非我本次異動範圍」而暫緩處理的項目，這次使用者實際回報了失敗畫面，故一併修正
+- **修法**：比照先前修正「多語言偵測器誤填情感分析模型網址」的方式，將 `url`/`tokenizer_url` 設回 `null`（誠實顯示「尚未上架」，UI 對應顯示「即將推出」而非會失敗的下載按鈕），note 註明模型本地已訓練驗證（98.1% 準確率）但尚未上架
+- 加強 [model_catalog_asset_test.dart](test/model_catalog_asset_test.dart) 的迴歸測試：新增「url/tokenizer_url 不得含 127.0.0.1/localhost/0.0.0.0/::1」的檢查，防止此類問題再發生
+- **實機驗證**：用 computer-use 重新啟動 App，捲到「對抗式防禦」區塊，確認按鈕已從會失敗的下載鈕變成「即將推出」，且不再嘗試連線
+- 驗證：78 單元測試全過（新增 1 項）、analyze 零問題、macOS build 綠燈，加上實機畫面確認
+
+**為什麼**
+- 使用者這次把實際失敗畫面秀出來，屬於「已授權處理的既知問題」正式浮現，故修正
+
+**決策與取捨**
+- 延續先前建立的「url 未上架時設 null」慣例，維持一致性，而非嘗試修復或移除本地伺服器依賴（那需要真正 host 到公開可存取的位置，超出目前範圍）
+
 ## 2026-07-04 — [修正] 模型匯入畫面第二個沙盒 bug：FilePicker 未帶 withData
 
 **做了什麼**

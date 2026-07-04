@@ -88,14 +88,14 @@
           "size_bytes": 141557760,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": "http://127.0.0.1:8000/adversarial_paraphrase_quantized.onnx",
-          "tokenizer_url": "http://127.0.0.1:8000/quantized_model/tokenizer.json",
+          "url": null,
+          "tokenizer_url": null,
           "sha256": null,
           "version": "1.0",
           "source": "training/ HC3 + T5 改寫對抗訓練",
           "page_url": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
           "license": "資料源 HC3（研究用途）",
-          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練。上傳後填入 url 即可下載"
+          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練（本地已驗證 98.1% 驗證準確率，改寫規避測試通過）。尚未上架 host，url 待填入後即可下載。切勿指向開發機本地伺服器（如 127.0.0.1），對真實使用者永遠無法連線"
         }
       ]
     },

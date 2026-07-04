@@ -53,4 +53,21 @@ void main() {
       }
     }
   });
+
+  test('regression: url/tokenizer_url 不得指向開發機本地位址', () {
+    // 曾發生：對抗模組 D 的 url 指向 127.0.0.1:8000（開發者本機測試伺服器），
+    // 對任何真實使用者的裝置都是 Connection refused，永遠無法下載成功。
+    // 尚未上架 host 時應設為 null（顯示「即將推出」），而非指向本機位址。
+    const localHostMarkers = ['127.0.0.1', 'localhost', '0.0.0.0', '::1'];
+    for (final model in catalog.models) {
+      for (final v in model.variants) {
+        for (final marker in localHostMarkers) {
+          expect(v.url ?? '', isNot(contains(marker)),
+              reason: '${v.id} 的 url 指向本機位址，真實使用者永遠無法下載');
+          expect(v.tokenizerUrl ?? '', isNot(contains(marker)),
+              reason: '${v.id} 的 tokenizer_url 指向本機位址，真實使用者永遠無法下載');
+        }
+      }
+    }
+  });
 }
