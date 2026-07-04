@@ -13,6 +13,25 @@
 
 ---
 
+## 2026-07-04 — [修正] 模型匯入畫面第二個沙盒 bug：FilePicker 未帶 withData
+
+**做了什麼**
+- 上一則修正（移除硬編碼自動偵測路徑）後，使用者用**正常的手動選檔流程**（點「瀏覽」選 .onnx 與 tokenizer.json）仍重現同樣的 `PathAccessException...errno=1`，證明還有第二個獨立的沙盒問題
+- 根因：`_pickModel()`/`_pickTokenizer()` 呼叫 `FilePicker.pickFiles()` 時沒有帶 `withData: true`。macOS App Sandbox 下，NSOpenPanel 授予的檔案存取權只在選檔當下短暫有效；只保留 `path` 字串、之後（`_runTest`/`_import` 按鈕觸發時）才用 `dart:io` 讀取/複製，會因授權已過期而失敗——這與 App 內另一個既有的正確流程（[document_importer.dart](lib/core/services/document_importer.dart) 已用 `withData: true`）形成對照
+- **修法**：新增 `_pickIntoSandbox()`，選檔當下立即以 `withData: true` 取得 bytes、寫入 `getTemporaryDirectory()`（App 沙盒內可寫目錄），之後一律對這個副本操作；另加 `_modelFileDisplayName`/`_tokenizerFileDisplayName` 避免 UI 顯示帶時間戳記前綴的醜檔名
+- **實機驗證**（非僅程式碼推理）：用 computer-use 工具實際啟動 build 出的 App、走使用者回報的完整重現步驟（選 `adversarial_paraphrase_quantized.onnx` → 選 `tokenizer.json` → 執行測試推論）：
+  - 測試推論成功，AI 機率 99.9%（先前為權限錯誤）
+  - 「確認匯入並啟用模型」也成功，首頁隨即顯示新匯入的 `custom_178317...` 已設為使用中模型
+- 驗證：77 單元測試全過、analyze 零問題、macOS build 綠燈，加上前述實機操作驗證
+
+**為什麼**
+- 使用者用手動選檔流程回報同一錯誤，證明第一次的修正（移除硬編碼路徑）只解決了一半問題
+
+**決策與取捨**
+- 這次沒有只憑程式碼推理就回報完成——先前的修正被同一個錯誤打臉過一次，這次改用 computer-use 實際點過完整流程再收尾，確保回報的是「已驗證」而非「應該可以」
+
+---
+
 ## 2026-07-04 — [修正] 模型匯入畫面「偵測到本機微調目錄」導致沙盒權限錯誤
 
 **做了什麼**

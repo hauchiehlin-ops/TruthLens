@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/model_manager.dart';
@@ -26,7 +28,9 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   );
 
   File? _modelFile;
+  String? _modelFileDisplayName;
   File? _tokenizerFile;
+  String? _tokenizerFileDisplayName;
   String _tokenizerType = 'bert-wordpiece';
   int _aiLabelIndex = 1;
   String _targetRole = 'transformer';
@@ -43,35 +47,53 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
     super.dispose();
   }
 
-  Future<void> _pickModel() async {
+  /// macOS App Sandbox 下，NSOpenPanel 授予的檔案存取權只在選檔當下短暫有效；
+  /// 若只保留 `path` 字串、之後才用 dart:io 讀取/複製，會因授權已過期而
+  /// 擲出 `Operation not permitted`（errno=1）。因此必須帶 `withData: true`
+  /// 讓 plugin 在選檔當下、授權仍有效時把 bytes 讀出，並立刻寫進 App 自己
+  /// 沙盒內可寫的暫存目錄，之後一律對著這個副本操作。回傳的 name 供預填欄位用。
+  Future<(File, String)?> _pickIntoSandbox(
+      {required List<String> extensions}) async {
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['onnx'],
+      allowedExtensions: extensions,
+      withData: true,
     );
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _modelFile = File(result.files.single.path!);
-        // Pre-fill model name with file basename without extension
-        final baseName = result.files.single.name;
-        _nameController.text = baseName.replaceAll('.onnx', '');
-        _testResult = null;
-        _testError = null;
-      });
-    }
+    final picked = result?.files.single;
+    if (picked?.bytes == null) return null;
+
+    final tmpDir = await getTemporaryDirectory();
+    final dest = File(p.join(
+      tmpDir.path,
+      '${DateTime.now().microsecondsSinceEpoch}_${picked!.name}',
+    ));
+    await dest.writeAsBytes(picked.bytes!);
+    return (dest, picked.name);
+  }
+
+  Future<void> _pickModel() async {
+    final picked = await _pickIntoSandbox(extensions: ['onnx']);
+    if (picked == null) return;
+    final (file, name) = picked;
+    setState(() {
+      _modelFile = file;
+      _modelFileDisplayName = name;
+      // Pre-fill model name with file basename without extension
+      _nameController.text = name.replaceAll('.onnx', '');
+      _testResult = null;
+      _testError = null;
+    });
   }
 
   Future<void> _pickTokenizer() async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _tokenizerFile = File(result.files.single.path!);
-        _testResult = null;
-        _testError = null;
-      });
-    }
+    final picked = await _pickIntoSandbox(extensions: ['json']);
+    if (picked == null) return;
+    setState(() {
+      _tokenizerFile = picked.$1;
+      _tokenizerFileDisplayName = picked.$2;
+      _testResult = null;
+      _testError = null;
+    });
   }
 
   Future<void> _runTest() async {
@@ -173,7 +195,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         Expanded(
                           child: Text(
                             _modelFile != null
-                                ? '已選擇: ${_modelFile!.path.split(Platform.pathSeparator).last}'
+                                ? '已選擇: ${_modelFileDisplayName ?? _modelFile!.path.split(Platform.pathSeparator).last}'
                                 : '未選擇模型檔案 (.onnx)',
                             style: TextStyle(
                               color: _modelFile != null ? cs.primary : cs.outline,
@@ -263,7 +285,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                           Expanded(
                             child: Text(
                               _tokenizerFile != null
-                                  ? '已選擇: ${_tokenizerFile!.path.split(Platform.pathSeparator).last}'
+                                  ? '已選擇: ${_tokenizerFileDisplayName ?? _tokenizerFile!.path.split(Platform.pathSeparator).last}'
                                   : '未選擇 Tokenizer 檔案 (.json)',
                               style: TextStyle(
                                 color: _tokenizerFile != null ? cs.primary : cs.outline,
