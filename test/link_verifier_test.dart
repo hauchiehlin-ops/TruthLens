@@ -1,9 +1,71 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:truthlens/core/services/link_verifier.dart';
 
 void main() {
+  group('LinkVerifier.isDoiUrl', () {
+    test('doi.org 網址判定為 DOI', () {
+      expect(LinkVerifier.isDoiUrl('https://doi.org/10.1038/nphys1170'), isTrue);
+      expect(LinkVerifier.isDoiUrl('https://dx.doi.org/10.1000/xyz123'), isTrue);
+    });
+
+    test('一般網址不判定為 DOI', () {
+      expect(LinkVerifier.isDoiUrl('https://example.com/10.1038/nphys1170'),
+          isFalse);
+      expect(LinkVerifier.isDoiUrl('https://doi.org/not-a-doi'), isFalse);
+    });
+  });
+
+  group('LinkVerifier.verifyAll — 期刊文獻目錄核實（DOI → Crossref）', () {
+    test('Crossref 查得到 DOI → 標記為期刊目錄已核實，並帶回期刊/篇名', () async {
+      final client = MockClient((req) async {
+        expect(req.url.host, 'api.crossref.org');
+        expect(req.url.path, '/works/10.1038/nphys1170');
+        return http.Response(
+          jsonEncode({
+            'message': {
+              'title': ['Some Article Title'],
+              'container-title': ['Nature Physics'],
+            }
+          }),
+          200,
+        );
+      });
+      final results = await LinkVerifier.verifyAll(
+        ['https://doi.org/10.1038/nphys1170'],
+        client: client,
+      );
+      final r = results.single;
+      expect(r.isCitationVerified, isTrue);
+      expect(r.status, LinkStatus.reachable);
+      expect(r.journalName, 'Nature Physics');
+      expect(r.articleTitle, 'Some Article Title');
+    });
+
+    test('Crossref 404 → 查無此 DOI 登記，判定為 notFound', () async {
+      final client = MockClient((_) async => http.Response('', 404));
+      final results = await LinkVerifier.verifyAll(
+        ['https://doi.org/10.9999/does-not-exist'],
+        client: client,
+      );
+      final r = results.single;
+      expect(r.isCitationVerified, isTrue);
+      expect(r.status, LinkStatus.notFound);
+    });
+
+    test('非 DOI 網址仍走一般連線可達性檢查（isCitationVerified 為 false）', () async {
+      final client = MockClient((_) async => http.Response('', 200));
+      final results = await LinkVerifier.verifyAll(
+        ['https://example.com/page'],
+        client: client,
+      );
+      expect(results.single.isCitationVerified, isFalse);
+    });
+  });
+
   group('LinkVerifier.extractUrls', () {
     test('從文字中抽取網址並依出現順序去重', () {
       final urls = LinkVerifier.extractUrls(

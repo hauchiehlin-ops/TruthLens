@@ -13,6 +13,36 @@
 
 ---
 
+## 2026-07-05 — [P2 AI引擎][P4 打磨上架] 取消「完全離線」原則、主動模型更新偵測、期刊文獻目錄核實
+
+**做了什麼**
+- **取消「完全離線」核心原則**：使用者指示移除此限制，因為模型更新偵測與超連結真偽判斷本質上需要連線才能「主動」進行。更新 [CLAUDE.md](CLAUDE.md)、[AGENTS.md](AGENTS.md)、[docs/implementation_plan.md](docs/implementation_plan.md) 的核心設計原則：由「完全離線：零伺服器、零隱私顧慮」改為「本地優先＋必要連線」——核心 AI 推論與使用者文件內容仍一律留在裝置端、不上傳；僅模型更新偵測與超連結／期刊文獻目錄驗證會視需要連線，且只送出版本號、網址或 DOI，使用者仍可在設定關閉
+- **主動模型更新偵測**（先前為「僅在使用者手動開啟『AI 模型管理』時被動檢查」，見 2026-07-03 的相關記錄）：
+  - [model_manager.dart](lib/core/detection/model_manager.dart) 新增 `checkForUpdates()`：連線抓取最新 catalog，比對所有已安裝角色的使用中版本，找出落後者；`hasAnyUpdate` / `roleHasUpdate()` 供 UI 查詢；連線失敗（離線）時靜默略過、不拋例外
+  - [input_screen.dart](lib/features/input/input_screen.dart) 在首頁 `initState` 主動呼叫一次；設定齒輪圖示與 [settings_screen.dart](lib/features/settings/settings_screen.dart) 的「AI 模型管理」項目上以 `Badge` 顯示提示點，不強制彈窗打斷使用者
+- **期刊文獻目錄核實規則**（使用者要求「定義判斷規則」）：判定依據為 **DOI**（`doi.org` / `dx.doi.org` 開頭且符合 `10.xxxx/...` 格式）——DOI 是出版社向 Crossref／DataCite 登記的學術文獻標準身分證，等同於該文獻在其期刊目錄中的正式登記。規則：
+  1. 偵測到 DOI 連結 → 查詢 Crossref 公開 metadata API（`api.crossref.org/works/{doi}`），**不下載全文**
+  2. 查得到（200）→ 判定「期刊目錄已核實」，回傳期刊名稱與篇名供比對
+  3. 查無此 DOI（404）→ 判定「查無登記紀錄，可能為虛構引用」（AI 幻覺引用的強訊號）
+  4. 連線失敗 → 「無法確認」
+  5. 非 DOI 的一般網址（如期刊首頁網址）→ 退回純連線可達性檢查，**不宣稱**「已列於目錄」，因為那需要逐一期刊網站的專屬解析，不具通用性、也超出本次範圍
+  - [link_verifier.dart](lib/core/services/link_verifier.dart) 新增 `isDoiUrl()`、Crossref 查詢邏輯與 `LinkCheckResult` 的 `isCitationVerified`/`journalName`/`articleTitle` 欄位；[report_screen.dart](lib/features/report/report_screen.dart) 依 `isCitationVerified` 顯示不同措辭
+- **超連結驗證改為預設開啟**：[preferences_service.dart](lib/core/services/preferences_service.dart) 的 `linkVerificationEnabled` 預設值由 `false` 改為 `true`（呼應「不再要求完全離線」），設定頁說明文字同步更新，移除「本 App 唯一需要連線的功能」的過時措辭（現在還有模型更新偵測）
+- 測試：[model_manager_test.dart](test/model_manager_test.dart) 新增 `checkForUpdates` 三種情境（有更新／版本相同／離線失敗）；[link_verifier_test.dart](test/link_verifier_test.dart) 新增 `isDoiUrl` 判定與 Crossref 查詢三種情境（查得到／404／非 DOI 網址）。全數 99 個單元測試通過，`flutter analyze` 乾淨
+
+**為什麼**
+- 使用者認為「完全離線」與「模型更新偵測」「超連結主動分析」兩項需求互相矛盾，指示取消該原則；並要求為「期刊文獻目錄格式」超連結定義具體判斷規則
+
+**決策與取捨**
+- 期刊目錄核實選擇 DOI + Crossref 作為唯一可靠依據，而非嘗試對任意期刊網址做通用性判斷：Crossref 是絕大多數主流期刊/出版社共同登記的中立公開資料庫，查詢結果具權威性且免費、無需授權；相較之下，逐一解析各期刊網站的搜尋結果頁面既不可靠也難以維護，因此明確排除在此規則之外
+- 「不需要有下載功能」→ 僅查詢 Crossref 的 metadata JSON（篇名、期刊名），不下載或顯示全文，符合使用者要求的範圍
+- 超連結驗證預設改為開啟，但保留設定開關（而非直接移除選項）：使用者仍可能因頻寬/隱私考量想關閉，維持一致於既有「使用者可覆蓋」的設定慣例（ESL 修正、各偵測引擎開關皆是「預設開、可關」）
+
+**待辦/遺留問題**
+- 無
+
+---
+
 ## 2026-07-05 — [P4 打磨上架] 輸入清除按鈕、選擇性超連結驗證、修正 PDF 匯出崩潰
 
 **做了什麼**

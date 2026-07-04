@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'model_catalog.dart';
+import 'model_catalog_service.dart';
 import 'model_registry.dart';
 import 'onnx_detector.dart';
 
@@ -131,6 +132,44 @@ class ModelManager extends ChangeNotifier {
         _dirOverride = modelsDir;
 
   RoleState? roleState(String role) => _roles[role];
+
+  Set<String> _rolesWithUpdate = {};
+
+  /// 是否有任一角色偵測到可用更新（供設定頁／首頁顯示提示徽章）。
+  bool get hasAnyUpdate => _rolesWithUpdate.isNotEmpty;
+  bool roleHasUpdate(String role) => _rolesWithUpdate.contains(role);
+
+  /// 主動連線抓取最新 catalog，比對所有已安裝角色的使用中版本是否落後。
+  /// 應用程式啟動時呼叫一次即可；離線或抓取失敗時靜默略過，不視為錯誤
+  /// （catalog 服務本身已有「遠端優先、失敗回退本地資產」的機制）。
+  Future<void> checkForUpdates(ModelCatalogService catalogService) async {
+    try {
+      final catalog = await catalogService.load();
+      final updated = <String>{};
+      for (final role in _roles.keys) {
+        final active = activeVariant(role);
+        if (active == null) continue;
+        final variants = catalog.forRole(role)?.variants ?? const [];
+        ModelVariant? variant;
+        for (final v in variants) {
+          if (v.id == active.variantId) {
+            variant = v;
+            break;
+          }
+        }
+        if (variant != null && hasUpdate(role, variant)) {
+          updated.add(role);
+        }
+      }
+      if (updated.length != _rolesWithUpdate.length ||
+          !updated.containsAll(_rolesWithUpdate)) {
+        _rolesWithUpdate = updated;
+        notifyListeners();
+      }
+    } catch (_) {
+      // 離線／連線失敗：保留目前已知狀態，不中斷使用者流程。
+    }
+  }
   Iterable<RoleState> get roles => _roles.values;
 
   Future<Directory> _modelsDir() async {

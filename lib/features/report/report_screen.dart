@@ -385,8 +385,8 @@ class _ReportScreenState extends State<ReportScreen> {
                       const SizedBox(height: 4),
                       const Text(
                         'AI 生成內容常附上看似合理但實際不存在的引用連結。'
-                        '驗證需連線，本 App 預設關閉此功能；可至「設定」開啟'
-                        '「超連結驗證」，或點擊下方按鈕做單次驗證。',
+                        '你已在「設定」關閉超連結驗證；可重新開啟以自動驗證，'
+                        '或點擊下方按鈕做單次驗證。',
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
@@ -434,11 +434,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${c.url}\n${switch (c.status) {
-                          LinkStatus.reachable => '可連線，網址存在',
-                          LinkStatus.notFound => '網址不存在（404），可能為虛構引用',
-                          LinkStatus.unreachable => '無法確認（連線逾時或伺服器無回應）',
-                        }}',
+                        '${c.url}\n${_linkStatusLabel(c)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -458,5 +454,23 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       ),
     );
+  }
+
+  /// 一般網址只做連線可達性描述；DOI 期刊文獻則說明是否經 Crossref 目錄核實。
+  String _linkStatusLabel(LinkCheckResult c) {
+    if (!c.isCitationVerified) {
+      return switch (c.status) {
+        LinkStatus.reachable => '可連線，網址存在',
+        LinkStatus.notFound => '網址不存在（404），可能為虛構引用',
+        LinkStatus.unreachable => '無法確認（連線逾時或伺服器無回應）',
+      };
+    }
+    return switch (c.status) {
+      LinkStatus.reachable => '期刊目錄核實：已登記於'
+          '${c.journalName != null ? '《${c.journalName}》' : '出版社目錄'}'
+          '${c.articleTitle != null ? '，篇名：${c.articleTitle}' : ''}',
+      LinkStatus.notFound => '查無此 DOI 登記紀錄，可能為虛構引用',
+      LinkStatus.unreachable => '無法確認（連線逾時或 Crossref 無回應）',
+    };
   }
 }

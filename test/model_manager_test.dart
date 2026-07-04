@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:truthlens/core/detection/model_catalog.dart';
+import 'package:truthlens/core/detection/model_catalog_service.dart';
 import 'package:truthlens/core/detection/model_manager.dart';
 
 ModelVariant _variant(String id,
@@ -136,5 +137,70 @@ void main() {
 
   test('canRunEngine 對未知 role 安全回傳 false', () {
     expect(manager.canRunEngine('nonexistent'), isFalse);
+  });
+
+  group('checkForUpdates（主動連線比對 catalog 版本）', () {
+    ModelCatalogService catalogServiceReturning(String version) {
+      final client = MockClient((req) async => http.Response(
+            jsonEncode({
+              'catalog_version': '1',
+              'models': [
+                {
+                  'role': 'transformer',
+                  'name': 'Transformer',
+                  'variants': [
+                    {
+                      'id': 'a',
+                      'name': 'a',
+                      'backend': 'transformer',
+                      'languages': ['en'],
+                      'quant': 'int8',
+                      'size_bytes': 2048,
+                      'min_ram_mb': 4096,
+                      'tier': 'high',
+                      'version': version,
+                      'source': 'hf',
+                      'license': 'mit',
+                    }
+                  ],
+                }
+              ],
+            }),
+            200,
+          ));
+      return ModelCatalogService(client: client);
+    }
+
+    test('catalog 版本較新時 hasAnyUpdate 為 true', () async {
+      await manager.downloadVariant(
+          'transformer', _variant('a', url: 'https://x/a.onnx', version: '1.0'));
+      expect(manager.hasAnyUpdate, isFalse);
+
+      await manager.checkForUpdates(catalogServiceReturning('2.0'));
+
+      expect(manager.hasAnyUpdate, isTrue);
+      expect(manager.roleHasUpdate('transformer'), isTrue);
+    });
+
+    test('catalog 版本相同時不標記更新', () async {
+      await manager.downloadVariant(
+          'transformer', _variant('a', url: 'https://x/a.onnx', version: '1.0'));
+
+      await manager.checkForUpdates(catalogServiceReturning('1.0'));
+
+      expect(manager.hasAnyUpdate, isFalse);
+    });
+
+    test('連線失敗（離線）時靜默略過，不拋出例外', () async {
+      final failingClient =
+          MockClient((req) async => throw Exception('offline'));
+      await manager.downloadVariant(
+          'transformer', _variant('a', url: 'https://x/a.onnx', version: '1.0'));
+
+      await manager.checkForUpdates(
+          ModelCatalogService(client: failingClient));
+
+      expect(manager.hasAnyUpdate, isFalse);
+    });
   });
 }

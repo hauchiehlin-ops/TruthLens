@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/device_capabilities.dart';
+import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 import '../onboarding/model_options_list.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prefs = context.watch<PreferencesService>();
+    final modelManager = context.watch<ModelManager>();
     return Scaffold(
       appBar: AppBar(title: const Text('設定')),
       body: ListView(
@@ -76,12 +78,13 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           SwitchListTile(
-            title: const Text('超連結驗證（需連線）'),
+            title: const Text('超連結驗證（含期刊文獻目錄核實）'),
             subtitle: const Text(
-              '開啟後，分析報告會對文件中偵測到的網址發出連線請求，確認是否'
-              '真的可解析存在（AI 生成內容常附上看似合理但實際不存在的引用連結）。'
-              '這是本 App 唯一需要連線的功能，預設關閉；開啟後僅傳送網址本身，'
-              '不會傳送文件內容。',
+              '分析報告會對文件中偵測到的網址發出連線請求，確認是否真的存在'
+              '（AI 生成內容常附上看似合理但實際不存在的引用連結）。DOI 格式的'
+              '學術文獻連結會進一步查詢 Crossref 公開登記資料，確認該期刊目錄'
+              '是否確實收錄這筆文獻。核心 AI 偵測模型仍完全在裝置端執行，不會'
+              '傳送文件內容，連線僅用於此驗證與模型更新偵測，可在此關閉。',
             ),
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
@@ -107,9 +110,14 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.download_outlined),
+            leading: Badge(
+              isLabelVisible: modelManager.hasAnyUpdate,
+              child: const Icon(Icons.download_outlined),
+            ),
             title: const Text('AI 模型管理'),
-            subtitle: const Text('下載檢測模型與報告 LLM，啟用完整推論能力'),
+            subtitle: Text(modelManager.hasAnyUpdate
+                ? '偵測到模型更新，建議前往查看'
+                : '下載檢測模型與報告 LLM，啟用完整推論能力'),
             trailing: TextButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ModelManagerScreen()),

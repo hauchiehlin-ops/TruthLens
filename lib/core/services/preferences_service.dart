@@ -18,9 +18,9 @@ class PreferencesService extends ChangeNotifier {
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
   bool modelPromptSuppressed = false; // 使用者選擇「不再提醒下載模型」
-  // 是否允許連線驗證文件中的超連結是否可解析；預設關閉以維持 100% 離線，
-  // 使用者需在設定中手動開啟才會發出網路請求。
-  bool linkVerificationEnabled = false;
+  // 是否允許連線驗證文件中的超連結／期刊引用是否真實存在；核心 AI 推論仍完全
+  // 在裝置端執行，但此為主動分析所需的必要連線功能，預設開啟，使用者可在設定關閉。
+  bool linkVerificationEnabled = true;
   Set<String> _disabledEngines = {};
 
   Future<void> load() async {
@@ -32,7 +32,7 @@ class PreferencesService extends ChangeNotifier {
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
     linkVerificationEnabled =
-        _prefs!.getBool(_kLinkVerificationEnabled) ?? false;
+        _prefs!.getBool(_kLinkVerificationEnabled) ?? true;
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
     notifyListeners();
   }

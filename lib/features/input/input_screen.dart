@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
@@ -19,6 +20,15 @@ class InputScreen extends StatefulWidget {
 
 class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // 主動、靜默地檢查模型是否有更新；離線或失敗時不影響任何功能。
+    context
+        .read<ModelManager>()
+        .checkForUpdates(context.read<ModelCatalogService>());
+  }
 
   @override
   void dispose() {
@@ -143,7 +153,10 @@ class _InputScreenState extends State<InputScreen> {
             onPressed: () => context.push('/history'),
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: Badge(
+              isLabelVisible: context.watch<ModelManager>().hasAnyUpdate,
+              child: const Icon(Icons.settings_outlined),
+            ),
             tooltip: '設定',
             onPressed: () => context.push('/settings'),
           ),
