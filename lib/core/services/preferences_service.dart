@@ -9,6 +9,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kFirstRunHandled = 'first_run_handled';
   static const _kModelPromptSuppressed = 'model_prompt_suppressed';
   static const _kDisabledEngines = 'disabled_engines';
+  static const _kLinkVerificationEnabled = 'link_verification_enabled';
 
   SharedPreferences? _prefs;
 
@@ -17,6 +18,9 @@ class PreferencesService extends ChangeNotifier {
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
   bool modelPromptSuppressed = false; // 使用者選擇「不再提醒下載模型」
+  // 是否允許連線驗證文件中的超連結是否可解析；預設關閉以維持 100% 離線，
+  // 使用者需在設定中手動開啟才會發出網路請求。
+  bool linkVerificationEnabled = false;
   Set<String> _disabledEngines = {};
 
   Future<void> load() async {
@@ -27,7 +31,15 @@ class PreferencesService extends ChangeNotifier {
     eslCorrectionEnabled = _prefs!.getBool(_kEslCorrection) ?? true;
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
+    linkVerificationEnabled =
+        _prefs!.getBool(_kLinkVerificationEnabled) ?? false;
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
+    notifyListeners();
+  }
+
+  Future<void> setLinkVerificationEnabled(bool value) async {
+    linkVerificationEnabled = value;
+    await _prefs?.setBool(_kLinkVerificationEnabled, value);
     notifyListeners();
   }
 

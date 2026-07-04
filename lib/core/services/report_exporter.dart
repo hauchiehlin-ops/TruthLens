@@ -15,6 +15,20 @@ import '../models/detection_result.dart';
 class ReportExporter {
   static final _composer = ReportComposer();
 
+  /// PDF「逐句分析」表格的列數上限。超長或含大量句子的文件（例如誤貼入原始
+  /// OOXML 標記、缺乏標點導致斷句失敗）逐句渲染會讓 pdf 套件的 MultiPage
+  /// 分頁安全機制丟出 PdfTooBigPageException；改用 CSV/JSON 匯出可取得完整資料。
+  static const _pdfMaxTableRows = 300;
+
+  /// 單一句子在 PDF 表格中顯示的字元數上限，避免單一儲存格內容過長
+  /// （例如缺乏斷句標點的超長字串）撐爆分頁演算法。
+  static const _pdfMaxCellChars = 600;
+
+  static String _truncateForPdf(String text) {
+    if (text.length <= _pdfMaxCellChars) return text;
+    return '${text.substring(0, _pdfMaxCellChars)}…';
+  }
+
   /// 結構化 JSON（plan 第九節：LMS / 系統整合）。
   static String buildJson(DetectionResult r) {
     final doc = _composer.compose(r);
@@ -204,11 +218,22 @@ class ReportExporter {
             ),
           pw.SizedBox(height: 10),
 
-          // 逐句分析
+          // 逐句分析（超過上限僅顯示前段，避免大量/超長句子撐爆 PDF 分頁）
           pw.Text('逐句分析',
               style:
                   pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 6),
+          if (r.sentences.length > _pdfMaxTableRows)
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(bottom: 6),
+              child: pw.Text(
+                '為維持 PDF 可讀性，僅顯示前 $_pdfMaxTableRows 句'
+                '（共 ${r.sentences.length} 句）；如需完整逐句資料，'
+                '請改用「匯出 CSV 數據」或「匯出 JSON」。',
+                style: const pw.TextStyle(
+                    fontSize: 9, color: PdfColors.grey700),
+              ),
+            ),
           pw.Table(
             columnWidths: {
               0: const pw.FixedColumnWidth(24),
@@ -225,12 +250,12 @@ class ReportExporter {
                   _cell('AI%', bold: true),
                 ],
               ),
-              for (final s in r.sentences)
+              for (final s in r.sentences.take(_pdfMaxTableRows))
                 pw.TableRow(children: [
                   _cell('${s.index + 1}'),
-                  _cell(s.patterns.isEmpty
+                  _cell(_truncateForPdf(s.patterns.isEmpty
                       ? s.text
-                      : '${s.text}\n→ ${s.patterns.join('、')}'),
+                      : '${s.text}\n→ ${s.patterns.join('、')}')),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(4),
                     child: pw.Text(

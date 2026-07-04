@@ -13,6 +13,37 @@
 
 ---
 
+## 2026-07-05 — [P4 打磨上架] 輸入清除按鈕、選擇性超連結驗證、修正 PDF 匯出崩潰
+
+**做了什麼**
+- **清除輸入內容**：[input_screen.dart](lib/features/input/input_screen.dart) 文字框右上角新增「X」清除按鈕（僅在有內容時顯示），一鍵清空貼上或匯入的文字，不需手動全選刪除
+- **選擇性超連結驗證**（新功能，預設關閉）：
+  - 新增 [link_verifier.dart](lib/core/services/link_verifier.dart)：`extractUrls()` 離線抽取文字中的網址（不連線）；`verifyAll()` 對網址發出 HEAD（405 時退回 GET）請求確認是否可解析，逾時／例外歸類為 unreachable，404/410 歸類為 notFound
+  - [preferences_service.dart](lib/core/services/preferences_service.dart) 新增 `linkVerificationEnabled`（持久化，預設 `false`）
+  - [settings_screen.dart](lib/features/settings/settings_screen.dart) 新增對應開關，說明文字明確告知「這是本 App 唯一需要連線的功能，僅傳送網址本身」
+  - [report_screen.dart](lib/features/report/report_screen.dart) 報告頁若偵測到網址：開關已開啟時自動連線驗證並顯示結果卡片；開關關閉時僅顯示「偵測到 N 個超連結，尚未驗證」的離線提示 + 「立即驗證（需連線）」單次按鈕，不會擅自連線
+  - 測試：[link_verifier_test.dart](test/link_verifier_test.dart)（抽取/去重/尾隨標點/HTTP 狀態分類/上限節流，含 `http/testing.dart` MockClient）
+- **修正 PDF 匯出崩潰**：使用者回報「分析完後的文件匯出功能當機」。用 `flutter test` 直接重現（而非臆測）：建立一個近 10 萬字元、幾乎無標點（模擬誤貼入的原始 OOXML 標記）的檢測結果餵給 `ReportExporter.buildPdf`，即時重現 `PdfTooBigPageException: This widget created more than 20 pages`——單一句子過長或句子數過多，都會讓 `pw.Table` 逐句渲染撐爆 pdf 套件內建的 20 頁分頁安全上限
+  - 根因不在「當機」字面意義的閃退，而是這個例外雖被 `report_screen.dart._export()` 的 try/catch 捕捉，但使用者實際遇到的情境（貼上大量無斷句內容）原本就不該讓 PDF 報告嘗試塞入所有原始資料
+  - 修正：[report_exporter.dart](lib/core/services/report_exporter.dart) 新增 `_pdfMaxTableRows`（300）與 `_pdfMaxCellChars`（600）上限，逐句表格超過列數上限時僅取前 300 句並附註「請改用 CSV/JSON 匯出取得完整資料」，每格文字超過字數上限則截斷加「…」
+  - 測試：[report_exporter_test.dart](test/report_exporter_test.dart) 新增超長單句與 2000 句兩種情境的迴歸測試
+- **實機驗證**（用 computer-use，非僅程式碼推理）：
+  - 清除按鈕：輸入文字後按 X，確認文字框正確清空
+  - 超連結驗證：貼入含一個 404 網址與一個不存在網域的文字並分析，於報告頁點擊「立即驗證（需連線）」，正確顯示「網址不存在（404），可能為虛構引用」與「無法確認（連線逾時或伺服器無回應）」
+  - PDF 匯出：用 pbcopy 灌入近 10.5 萬字元、幾乎無標點的內容（重現使用者回報的情境，分析後確實只切出「共 1 句」），執行「匯出 PDF 報告」，成功產生有效單頁 PDF（無崩潰、無錯誤訊息）
+
+**為什麼**
+- 使用者要求新增清除按鈕、超連結真實性驗證，並修正匯出崩潰的回報問題
+
+**決策與取捨**
+- 超連結驗證需要對外連線，與 CLAUDE.md 明定的「完全離線、零伺服器」核心原則有直接衝突；因此改為使用者詢問後選擇的「預設關閉、可在設定手動開啟」方案，且開啟後僅送出網址本身（不含文件內容），未開啟時仍能離線抽取並列出網址供使用者參考
+- PDF 修正選擇「限制表格列數/字數＋提示改用 CSV/JSON」而非單純調高 pdf 套件的 `maxPages`：後者只是延後問題發生點，遇到真正病態輸入（如本例）仍可能造成長時間的版面計算而非乾淨報錯；CSV/JSON 本來就無分頁限制，適合作為完整資料的匯出管道
+
+**待辦/遺留問題**
+- 無
+
+---
+
 ## 2026-07-05 — [P4 打磨上架] 清理重複自訂匯入 + 匯入前重複偵測
 
 **做了什麼**

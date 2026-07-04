@@ -91,6 +91,11 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
+  void _clearInput() {
+    _controller.clear();
+    setState(() {});
+  }
+
   Future<void> _importDocument() async {
     final doc = await DocumentImporter.pick();
     if (doc == null || !mounted) return;
@@ -161,15 +166,29 @@ class _InputScreenState extends State<InputScreen> {
                 ),
                 const SizedBox(height: 16),
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    maxLines: null,
-                    expands: true,
-                    textAlignVertical: TextAlignVertical.top,
-                    decoration: const InputDecoration(
-                      hintText: '在此輸入或貼上要檢測的文字…',
-                    ),
-                    onChanged: (_) => setState(() {}),
+                  child: Stack(
+                    children: [
+                      TextField(
+                        controller: _controller,
+                        maxLines: null,
+                        expands: true,
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: const InputDecoration(
+                          hintText: '在此輸入或貼上要檢測的文字…',
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      if (_controller.text.isNotEmpty)
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: IconButton(
+                            icon: const Icon(Icons.clear),
+                            tooltip: '清除內容',
+                            onPressed: _clearInput,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 6),

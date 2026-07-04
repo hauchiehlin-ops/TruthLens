@@ -96,5 +96,52 @@ void main() {
       // PDF 魔術數字 %PDF
       expect(String.fromCharCodes(bytes.take(4)), '%PDF');
     });
+
+    test('超長單句（如誤貼入的原始文件標記）不應丟出 PdfTooBigPageException', () async {
+      final regular =
+          File('assets/fonts/NotoSansTC-Regular.ttf').readAsBytesSync();
+      final bold = File('assets/fonts/NotoSansTC-Bold.ttf').readAsBytesSync();
+      final hugeLine = 'w:rPr w:color w:val="1f1f1f" ' * 3000; // ~90000 字元
+      final result = DetectionResult(
+        id: 'huge-1',
+        analyzedAt: DateTime(2026, 7, 5),
+        inputText: hugeLine,
+        aiProbability: 0.7,
+        verdict: Verdict.likelyAi,
+        engineScores: const [],
+        sentences: [SentenceScore(index: 0, text: hugeLine, aiProbability: 0.7)],
+      );
+      final bytes = await ReportExporter.buildPdf(
+        result,
+        regularFont: regular.buffer.asByteData(),
+        boldFont: bold.buffer.asByteData(),
+      );
+      expect(String.fromCharCodes(bytes.take(4)), '%PDF');
+    });
+
+    test('大量句子（超過 PDF 表格上限）應截斷而非丟出例外', () async {
+      final regular =
+          File('assets/fonts/NotoSansTC-Regular.ttf').readAsBytesSync();
+      final bold = File('assets/fonts/NotoSansTC-Bold.ttf').readAsBytesSync();
+      final sentences = List.generate(
+        2000,
+        (i) => SentenceScore(index: i, text: '第 $i 句測試內容。', aiProbability: 0.5),
+      );
+      final result = DetectionResult(
+        id: 'many-1',
+        analyzedAt: DateTime(2026, 7, 5),
+        inputText: sentences.map((s) => s.text).join(),
+        aiProbability: 0.6,
+        verdict: Verdict.mixed,
+        engineScores: const [],
+        sentences: sentences,
+      );
+      final bytes = await ReportExporter.buildPdf(
+        result,
+        regularFont: regular.buffer.asByteData(),
+        boldFont: bold.buffer.asByteData(),
+      );
+      expect(String.fromCharCodes(bytes.take(4)), '%PDF');
+    });
   });
 }

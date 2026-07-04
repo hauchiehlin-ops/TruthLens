@@ -75,6 +75,18 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
           ),
           const Divider(),
+          SwitchListTile(
+            title: const Text('超連結驗證（需連線）'),
+            subtitle: const Text(
+              '開啟後，分析報告會對文件中偵測到的網址發出連線請求，確認是否'
+              '真的可解析存在（AI 生成內容常附上看似合理但實際不存在的引用連結）。'
+              '這是本 App 唯一需要連線的功能，預設關閉；開啟後僅傳送網址本身，'
+              '不會傳送文件內容。',
+            ),
+            value: prefs.linkVerificationEnabled,
+            onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+          ),
+          const Divider(),
           ListTile(
             title: const Text('外觀主題'),
             trailing: SegmentedButton<ThemeMode>(
