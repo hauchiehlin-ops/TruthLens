@@ -18,7 +18,7 @@
 | :--- | :--- | :--- |
 | 確定性回退（模板+規則生成） | ✅ | ReportComposer 選版面 + 中文解讀 |
 | 動態版面決策 | ✅ | 依判定/混合/改寫選模板 |
-| 本地 LLM（Gemma, llama.cpp） | ✅ | 已整合 `llama.cpp` 原生端 FFI 載入與推論（具備低階 RAM 保護，<=4GB RAM 自動退回模板） |
+| 本地 LLM（Gemma, llama.cpp） | 🟡 | FFI 載入與推論已整合、<4GB RAM 保護、缺庫平台優雅退回模板。**libllama 目前僅 macOS + Android(arm64)**；iOS/Windows/Linux 需另編譯庫（見 [llm_platform.md](llm_platform.md)） |
 
 ## 模組 3：OCR
 | 平台 | 狀態 |
@@ -34,24 +34,24 @@
 | SQLite 歷史紀錄 | ✅ |
 | 偏好設定 | ✅ |
 | 模型檔管理（分層下載 + 多變體 + 硬體選型 + 更新/刪除/切換） | ✅ |
-| 匯出快取（PDF/CSV/JSON） | ✅（PNG 摘要卡 ❌） |
-| 自訂 ONNX 模型匯入 | ✅ 支持本機 ONNX 模型匯入、Tokenizer 設定、與匯入前推論測試（新增項目） |
+| 匯出（PDF/CSV/JSON/PNG） | ✅ PNG 摘要卡已實作（SummaryCard，macOS 實測） |
+| 自訂 ONNX 模型匯入 | ✅ 支持本機 ONNX 模型匯入、Tokenizer 設定、與匯入前推論測試 |
 
 ## UI/UX
 | 子項 | 狀態 |
 | :--- | :--- |
 | 五大畫面 + 首啟引導 | ✅ |
 | Material 3 深色優先、Inter/Noto | ✅ |
-| 分析動畫（粒子/波形） | 🟡 基本進度指示；精緻動畫未做 |
-| 無障礙（螢幕閱讀器/高對比/字級） | ❌ 未系統處理 |
-| 自訂模型匯入頁面 | ✅ 包含完整匯入設定、測試推論與儲存流程（新增項目） |
+| 分析動畫（粒子/波形） | ✅ AnalysisWave（脈動環 + 流動正弦波 CustomPainter） |
+| 無障礙（螢幕閱讀器語意） | 🟡 輸入/分析/報告/歷史已加 Semantics；設定/模型頁待補 |
+| 自訂模型匯入頁面 | ✅ 包含完整匯入設定、測試推論與儲存流程 |
 
 ## 其他
 | 項目 | 狀態 |
 | :--- | :--- |
 | 模型更新機制（遠端 catalog + 版本更新 + 熱替換） | ✅ |
-| 效能基準量測（第十節目標） | 🟡 未系統量測 |
-| 報告匯出 PNG 摘要卡 | ❌ |
+| 效能基準量測（第十節目標） | ✅ 500 字 0.35s、5000 字 1.06s（macOS 真實推論，遠低於目標） |
+| 報告匯出 PNG 摘要卡 | ✅ SummaryCard（macOS 實測渲染正確） |
 
 ## 四大作業系統支援
 | 面向 | iOS | Android | macOS | Windows |

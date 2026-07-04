@@ -48,3 +48,17 @@ app.*.map.json
 *.gguf
 /~/
 ~
+
+# Python training environment & outputs
+/training_tools/venv/
+/training_tools/results/
+/training_tools/fine_tuned_model/
+/training_tools/onnx_model/
+/training_tools/quantized_model/
+/training_tools/*.onnx
+/training_tools/*.bin
+/training_tools/*.pt
+/training_tools/*.pth
+/training_tools/model.onnx
+/training_tools/model.onnx.data
+/training_tools/adversarial_paraphrase_quantized.onnx

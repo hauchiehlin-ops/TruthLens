@@ -13,6 +13,42 @@
 
 ---
 
+## 2026-07-04 — [修正] 解決體檢發現的三個風險
+
+**做了什麼**
+- **風險 2/3（tokenizer='none' + 自動掃描孤兒模型）**：Transformer 引擎移除 'none' 支援（分類器必須有 tokenizer），並抽出 `_resolvePaths()` 統一檢查「使用中模型 + tokenizer 檔皆真的存在於磁碟」；isAvailable 據此判斷。自動掃描也改為只有在同目錄真有 `tokenizer.json` 時才登記該分類器。新增 [transformer_engine_test.dart](test/transformer_engine_test.dart)（4 項）鎖定行為
+- **風險 1（LLM 平台覆蓋）**：載入本已優雅降級（缺庫→模板，不崩潰）。補上誠實化：plan_status LLM 改標 🟡 並註明僅 macOS+Android(arm64)；catalog LLM note 加平台說明（UI 可見）；新增 [docs/llm_platform.md](docs/llm_platform.md)（平台矩陣 + 各平台補庫方式 + macOS bundle 嵌入注意）
+- 驗證：analyze 零問題、host 73 測試全過、macOS 完整分析管線再測通過（Transformer 引擎仍正常參與）
+
+**為什麼**
+- 使用者要求解決體檢發現的三個風險
+
+**決策與取捨**
+- 風險 1 無法在本機補 iOS/Windows/Linux 的 llama 庫（需各自工具鏈），故以「robust 降級 + 誠實標示 + 補庫文件」處理
+- isAvailable 改為做檔案存在性檢查（輕量 existsSync），根治「登記了但檔案缺失」的孤兒模型問題
+
+---
+
+## 2026-07-04 — [檢查] 合併版體檢 + 修正
+
+**做了什麼**
+- 對併行加入的變更（跨平台 OCR、llama.cpp FFI、模型匯入）做完整體檢：analyze 零問題、69 單元測試全過、macOS build 綠燈
+- **端到端驗證**：新增 [integration_test/full_analysis_test.dart](integration_test/full_analysis_test.dart)——匯入本機模型 → 完整 orchestrator 分析 → Transformer 引擎確實參與投票並產出逐句分數（macOS 實測通過，整體 AI 0.43）
+- **確認實作屬實**：iOS Vision / Android ML Kit / Windows.Media.Ocr 皆為真實原生 OCR；report_llm_service 已接 llama 生成並回退模板；importLocalModel / testModel 完整
+- **修正**：
+  - `plan_status.md` 被還原成舊狀態（分析動畫/無障礙/PNG/效能被標回未完成）→ 更正為實際狀態
+  - `testModel` 改為「先複製進容器再載入」：原生 ONNX Runtime 在 macOS 沙盒下無法直接開容器外的使用者選取檔（system error 1），複製後穩定，且與匯入走同一路徑
+
+**發現但未改（風險/建議，交由後續決定）**
+- **LLM 僅 macOS + Android(arm64) 有 libllama**；iOS/Windows/Linux 無對應庫，會回退模板（plan_status 的 LLM ✅ 實為部分平台）。Android 僅 arm64-v8a，無模擬器 x86_64
+- transformer_engine 允許 tokenizer='none' 時 isAvailable 為 true，但分類器無 tokenizer 實際無法推論（會優雅回退 unavailable，僅浪費一次嘗試）
+- model_manager 自動掃描硬編碼 `tokenizer.json` 裸檔名，若不存在該檔則掃描到的模型無法實際載入（優雅降級）
+
+**為什麼**
+- 使用者要求檢查合併後有無需修正/優化/未完成
+
+---
+
 ## 2026-07-04 — [P2 AI引擎 / P3 智慧報告 / P4 打磨上架] 跨平台 OCR + llama.cpp 原生端整合 + 自訂 ONNX 模型匯入與測試
 
 **做了什麼**
@@ -30,6 +66,7 @@
   - 更新 [settings_screen.dart](lib/features/settings/settings_screen.dart) 整合開啟匯入入口。
   - 新增 [NoneTokenizer](lib/core/detection/text_tokenizer.dart) 供不需 Tokenizer 的模型 (Unicode code units 映射)，並修改 [transformer_engine.dart](lib/core/detection/engines/transformer_engine.dart) 與 [onnx_detector.dart](lib/core/detection/onnx_detector.dart) 支援。
   - 新增 [model_import_test.dart](test/model_import_test.dart) 驗證檔案複製與 manifest 更新。
+  - **微調工具整合與路徑規範化**：已將原本位於 `Downloads` 的微調訓練環境移動至專案根目錄的 `training_tools/`，並在 `.gitignore` 與 `adversarial_training_guide.md` 中同步更新路徑，確保開發工具鏈版本可控且安全。
 - **並行推論與自訂引擎勾選 (Ensemble Optimization)**：
   - 修改 [orchestrator.dart](lib/core/detection/orchestrator.dart)：重構原本依序執行的分析迴圈，改為使用 `Future.wait` 進行**多引擎並行推論 (Parallel Execution)**，極大化利用多核心與 GPU 硬體算力。
   - 修改 [preferences_service.dart](lib/core/services/preferences_service.dart) 與 [settings_screen.dart](lib/features/settings/settings_screen.dart)：實作了對 4 個子引擎（分類器、統計、風格、對抗）的獨立啟用/禁用（Toggle）設定 UI。當某個引擎被使用者關閉時，分析協調器會自動將其排除並平滑重新分配加權權重。

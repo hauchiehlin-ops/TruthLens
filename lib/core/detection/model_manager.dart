@@ -191,17 +191,24 @@ class ModelManager extends ChangeNotifier {
                     role: 'llm',
                     variantId: 'gemma-2b-it-q4',
                     fileName: name,
-                    version: '1.0.0',
+                    version: '1.0',
                     sizeBytes: entity.lengthSync(),
                   );
                 }
               } else if (name == 'detector_int8.onnx' || name == 'transformer__truthlens-multilingual-distil-int8.onnx') {
-                if (role == 'transformer' && !installed.containsKey('truthlens-multilingual-distil-int8')) {
+                // 分類器需要 tokenizer；只有在同目錄真的有 tokenizer.json 時才登記，
+                // 否則登記了也無法推論（避免掃到缺 tokenizer 的孤兒模型）。
+                final tokName = File(p.join(dir.path, 'tokenizer.json')).existsSync()
+                    ? 'tokenizer.json'
+                    : null;
+                if (role == 'transformer' &&
+                    tokName != null &&
+                    !installed.containsKey('truthlens-multilingual-distil-int8')) {
                   installed['truthlens-multilingual-distil-int8'] = InstalledModel(
                     role: 'transformer',
                     variantId: 'truthlens-multilingual-distil-int8',
                     fileName: name,
-                    tokenizerFileName: 'tokenizer.json',
+                    tokenizerFileName: tokName,
                     tokenizer: 'bert-wordpiece',
                     aiLabelIndex: 1,
                     version: '1.0.0',
@@ -270,7 +277,11 @@ class ModelManager extends ChangeNotifier {
   /// 需要更新：已安裝的使用中變體版本落後於 catalog 提供的版本
   bool hasUpdate(String role, ModelVariant catalogVariant) {
     final installed = _roles[role]?.installed[catalogVariant.id];
-    return installed != null && installed.version != catalogVariant.version;
+    if (installed == null) return false;
+    // 正規化版本號（將 1.0.0 與 1.0 視為相同）
+    final v1 = installed.version.replaceAll('.0', '');
+    final v2 = catalogVariant.version.replaceAll('.0', '');
+    return v1 != v2;
   }
 
   /// 下載並安裝變體。首個安裝的變體自動設為使用中。回傳 true 表示成功。
@@ -450,6 +461,9 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 測試單一 ONNX 模型，回傳 AI 機率（0..1）。用於匯入前預覽與驗證。
+  /// 先把選取的檔案複製進 App 容器再載入：原生 ONNX Runtime 在沙盒下無法直接
+  /// 開啟容器外的使用者選取檔（會出現 system error 1），複製後即可穩定載入，
+  /// 也讓「測試」與「匯入」走同一條（容器內）路徑，行為一致。
   Future<double> testModel({
     required File modelFile,
     File? tokenizerFile,
@@ -457,20 +471,29 @@ class ModelManager extends ChangeNotifier {
     int aiLabelIndex = 1,
     required String text,
   }) async {
-    final detector = await OnnxDetector.load(
-      modelPath: modelFile.path,
-      tokenizerJsonPath: tokenizerFile?.path ?? '',
-      tokenizerType: tokenizerType,
-      aiLabelIndex: aiLabelIndex,
-    );
-
+    final dir = await _modelsDir();
+    final stamp = DateTime.now().millisecondsSinceEpoch;
+    final tmpModel = File(p.join(dir.path, '_test_$stamp.onnx'));
+    final tmpTok = tokenizerFile == null
+        ? null
+        : File(p.join(dir.path, '_test_$stamp.tokenizer.json'));
+    OnnxDetector? detector;
     try {
-      final score = await detector.classify(text);
-      detector.dispose();
-      return score;
-    } catch (e) {
-      detector.dispose();
-      rethrow;
+      await modelFile.copy(tmpModel.path);
+      if (tokenizerFile != null && tmpTok != null) {
+        await tokenizerFile.copy(tmpTok.path);
+      }
+      detector = await OnnxDetector.load(
+        modelPath: tmpModel.path,
+        tokenizerJsonPath: tmpTok?.path ?? '',
+        tokenizerType: tokenizerType,
+        aiLabelIndex: aiLabelIndex,
+      );
+      return await detector.classify(text);
+    } finally {
+      detector?.dispose();
+      if (tmpModel.existsSync()) await tmpModel.delete();
+      if (tmpTok != null && tmpTok.existsSync()) await tmpTok.delete();
     }
   }
 

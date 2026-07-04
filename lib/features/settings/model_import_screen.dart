@@ -33,6 +33,31 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   bool _importing = false;
 
   @override
+  void initState() {
+    super.initState();
+    _autoDetectLocalModel();
+  }
+
+  void _autoDetectLocalModel() {
+    const projectOnnxPath = '/Users/barretlin/GitProjects/TruthLens/training_tools/adversarial_paraphrase_quantized.onnx';
+    const projectTokenizerPath = '/Users/barretlin/GitProjects/TruthLens/training_tools/quantized_model/tokenizer.json';
+
+    final onnxFile = File(projectOnnxPath);
+    final tokenizerFile = File(projectTokenizerPath);
+
+    if (onnxFile.existsSync()) {
+      _modelFile = onnxFile;
+      _nameController.text = '對抗式改寫偵測分類器';
+      _targetRole = 'adversarial'; // 預設為對抗式引擎
+      _tokenizerType = 'bert-wordpiece';
+      _aiLabelIndex = 1;
+      if (tokenizerFile.existsSync()) {
+        _tokenizerFile = tokenizerFile;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _testController.dispose();

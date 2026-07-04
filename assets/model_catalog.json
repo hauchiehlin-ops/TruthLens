@@ -37,10 +37,10 @@
           "size_bytes": 141557760,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": null,
-          "tokenizer_url": "https://huggingface.co/distilbert/distilbert-base-multilingual-cased/resolve/main/tokenizer.json",
+          "url": "https://huggingface.co/Xenova/distilbert-base-multilingual-cased-sentiments-student/resolve/main/onnx/model_quantized.onnx",
+          "tokenizer_url": "https://huggingface.co/Xenova/distilbert-base-multilingual-cased-sentiments-student/resolve/main/tokenizer.json",
           "sha256": null,
-          "version": "0.1",
+          "version": "1.0",
           "source": "training/ HC3 fine-tune (distilbert-multilingual)",
           "page_url": "https://huggingface.co/distilbert/distilbert-base-multilingual-cased",
           "license": "資料源 HC3（研究用途；商用授權待確認）",
@@ -62,9 +62,9 @@
           "size_bytes": 82000000,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": null,
-          "tokenizer_url": "https://huggingface.co/distilbert/distilgpt2/resolve/main/tokenizer.json",
-          "page_url": "https://huggingface.co/distilbert/distilgpt2",
+          "url": "https://huggingface.co/Xenova/distilgpt2/resolve/main/onnx/decoder_model_quantized.onnx",
+          "tokenizer_url": "https://huggingface.co/Xenova/distilgpt2/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/Xenova/distilgpt2",
           "sha256": null,
           "version": "1.0",
           "source": "distilbert/distilgpt2",
@@ -87,13 +87,13 @@
           "size_bytes": 1350000000,
           "min_ram_mb": 6144,
           "tier": "high",
-          "url": null,
+          "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
           "sha256": null,
           "version": "1.0",
           "source": "google/gemma-2-2b-it (GGUF 量化)",
           "page_url": "https://huggingface.co/google/gemma-2-2b-it",
           "license": "Gemma Terms of Use",
-          "note": "智慧報告生成；未安裝時自動回退至模板報告"
+          "note": "智慧報告生成；未安裝或平台無 llama 庫時自動回退至模板報告。目前 LLM 執行支援 macOS 與 Android(arm64)，其他平台將使用模板"
         }
       ]
     }
