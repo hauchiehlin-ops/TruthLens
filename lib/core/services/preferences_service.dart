@@ -8,6 +8,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kEslCorrection = 'esl_correction';
   static const _kFirstRunHandled = 'first_run_handled';
   static const _kModelPromptSuppressed = 'model_prompt_suppressed';
+  static const _kDisabledEngines = 'disabled_engines';
 
   SharedPreferences? _prefs;
 
@@ -16,6 +17,7 @@ class PreferencesService extends ChangeNotifier {
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
   bool modelPromptSuppressed = false; // 使用者選擇「不再提醒下載模型」
+  Set<String> _disabledEngines = {};
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -25,6 +27,19 @@ class PreferencesService extends ChangeNotifier {
     eslCorrectionEnabled = _prefs!.getBool(_kEslCorrection) ?? true;
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
+    _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
+    notifyListeners();
+  }
+
+  bool isEngineEnabled(String engineId) => !_disabledEngines.contains(engineId);
+
+  Future<void> setEngineEnabled(String engineId, bool enabled) async {
+    if (enabled) {
+      _disabledEngines.remove(engineId);
+    } else {
+      _disabledEngines.add(engineId);
+    }
+    await _prefs?.setStringList(_kDisabledEngines, _disabledEngines.toList());
     notifyListeners();
   }
 

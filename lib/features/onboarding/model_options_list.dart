@@ -25,6 +25,9 @@ class ModelOptionsList extends StatelessWidget {
   }
 
   Widget _roleSection(BuildContext context, ProvisionPlan plan) {
+    final manager = context.watch<ModelManager>();
+    final customModels = manager.installedVariants(plan.role).where((m) => m.imported).toList();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -36,6 +39,15 @@ class ModelOptionsList extends StatelessWidget {
             const SizedBox(height: 8),
             for (final v in plan.variants)
               _VariantTile(plan: plan, variant: v),
+            if (customModels.isNotEmpty) ...[
+              const Divider(),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Text('自訂匯入的模型：', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+              for (final custom in customModels)
+                _CustomModelTile(role: plan.role, model: custom),
+            ],
           ],
         ),
       ),
@@ -197,6 +209,86 @@ class _VariantTile extends StatelessWidget {
               style: TextStyle(
                   color: Theme.of(context).colorScheme.error, fontSize: 12)),
       ],
+    );
+  }
+}
+
+class _CustomModelTile extends StatelessWidget {
+  final String role;
+  final InstalledModel model;
+  const _CustomModelTile({required this.role, required this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ModelManager>(
+      builder: (context, manager, _) {
+        final rs = manager.roleState(role);
+        final isActive = rs?.activeVariantId == model.variantId;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isActive
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).dividerColor,
+              width: isActive ? 2 : 1,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Chip(
+                    avatar: Icon(Icons.star, size: 16),
+                    label: Text('自訂'),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(model.displayName,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  if (isActive)
+                    const Chip(
+                      avatar: Icon(Icons.check_circle, size: 16),
+                      label: Text('使用中'),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '大小: ${ModelOptionsList.sizeLabel(model.sizeBytes)} · '
+                'Tokenizer: ${model.tokenizer} · '
+                'AI Label Index: ${model.aiLabelIndex}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  if (!isActive)
+                    OutlinedButton.icon(
+                      onPressed: () => manager.setActive(role, model.variantId),
+                      icon: const Icon(Icons.swap_horiz, size: 18),
+                      label: const Text('設為使用中'),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: '刪除',
+                    onPressed: () => manager.removeVariant(role, model.variantId),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

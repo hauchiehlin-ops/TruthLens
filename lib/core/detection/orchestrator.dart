@@ -1,4 +1,5 @@
 import '../models/detection_result.dart';
+import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
 import 'engines/adversarial_engine.dart';
@@ -10,7 +11,7 @@ import 'native_inference_service.dart';
 
 /// 分析協調器：驅動四個子模型並執行加權投票。
 /// 權重（A 40% / B 25% / C 20% / D 15%）會在兩種情況下重新分配：
-/// 1. 引擎不可用（模型未下載）→ 權重按比例分給可用引擎
+/// 1. 引擎不可用（模型未下載或使用者關閉）→ 權重按比例分給可用引擎
 /// 2. ESL 偏差修正 → 降低統計模型 (B) 權重，避免誤判非母語者
 class EnsembleOrchestrator {
   final List<DetectionEngine> engines;
@@ -43,14 +44,15 @@ class EnsembleOrchestrator {
     String input, {
     bool eslCorrectionEnabled = true,
     double threshold = 0.6,
+    PreferencesService? prefs,
     void Function(String engineId)? onEngineDone,
   }) async {
     final started = DateTime.now();
     final text = PreprocessedText.from(input);
 
-    final scores = <EngineScore>[];
-    for (final engine in engines) {
-      final available = await engine.isAvailable();
+    final futures = engines.map((engine) async {
+      final isEnabled = prefs == null || prefs.isEngineEnabled(engine.id);
+      final available = isEnabled && await engine.isAvailable();
       final score = available
           ? await engine.analyze(text)
           : EngineScore(
@@ -59,11 +61,15 @@ class EnsembleOrchestrator {
               aiProbability: 0.5,
               weight: engine.defaultWeight,
               available: false,
-              reasons: const ['模型尚未安裝，未參與本次投票'],
+              reasons: [
+                if (!isEnabled) '使用者在設定中關閉此引擎' else '模型尚未安裝，未參與本次投票'
+              ],
             );
-      scores.add(score);
       onEngineDone?.call(engine.id);
-    }
+      return score;
+    });
+
+    final scores = await Future.wait(futures);
 
     final eslAdjusted = eslCorrectionEnabled && _detectEslStyle(text);
     final overall = _weightedVote(scores, eslAdjusted: eslAdjusted);

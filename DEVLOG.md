@@ -13,6 +13,40 @@
 
 ---
 
+## 2026-07-04 — [P2 AI引擎 / P3 智慧報告 / P4 打磨上架] 跨平台 OCR + llama.cpp 原生端整合 + 自訂 ONNX 模型匯入與測試
+
+**做了什麼**
+- **跨平台 OCR & 記憶體偵測**：
+  - iOS: 於 [AppDelegate.swift](ios/Runner/AppDelegate.swift) 實作 Vision 框架的 `VNRecognizeTextRequest` 與 `ProcessInfo` 實體記憶體獲取。
+  - Android: 於 [MainActivity.kt](android/app/src/main/kotlin/com/truthlens/truthlens/MainActivity.kt) 整合 Google ML Kit 繁中/日文/拉丁文 Text Recognition 與 `ActivityManager.MemoryInfo`。並於 [build.gradle.kts](android/app/build.gradle.kts) 新增 ML Kit 依賴。
+  - Windows: 於 [flutter_window.cpp](windows/runner/flutter_window.cpp) 整合 C++/WinRT 的 `Windows.Media.Ocr` OCR 引擎與 `GetPhysicallyInstalledSystemMemory`。並於 [CMakeLists.txt](windows/runner/CMakeLists.txt) 連結 `windowsapp` 函式庫。
+- **llama.cpp FFI 整合**：
+  - 新增 [llama_ffi.dart](lib/core/detection/llama_ffi.dart)：建立 `dart:ffi` 對 `llama.cpp` 的 C API 繫結 (GGUF 載入與推論)，且對 struct/opaque 符合 Dart 3 `base`/`final` 修飾符。
+  - 新增 [llm_manager.dart](lib/core/detection/llm_manager.dart)：處理記憶體限制 (RAM < 4GB 自動拒絕載入) 與熱卸載，保護行動端。
+  - 修改 [report_llm_service.dart](lib/core/detection/report_llm_service.dart) 以呼叫 `LlmManager` / `LlamaInference` 代替原 `MethodChannel`。
+  - 新增 [llm_manager_test.dart](test/llm_manager_test.dart) 進行 FFI 與管理載入單元測試。
+- **自訂 ONNX 模型匯入與測試**：
+  - 新增 [model_import_screen.dart](lib/features/settings/model_import_screen.dart)：支援模型匯入設定 ( ONNX 模型與 Tokenizer 檔案選擇、類型設定 bert-wordpiece / roberta-bpe / none、標籤索引)，且具備匯入前「執行測試推論」與驗證功能，解決 Flutter 3.33 FormField 棄用警告。
+  - 更新 [settings_screen.dart](lib/features/settings/settings_screen.dart) 整合開啟匯入入口。
+  - 新增 [NoneTokenizer](lib/core/detection/text_tokenizer.dart) 供不需 Tokenizer 的模型 (Unicode code units 映射)，並修改 [transformer_engine.dart](lib/core/detection/engines/transformer_engine.dart) 與 [onnx_detector.dart](lib/core/detection/onnx_detector.dart) 支援。
+  - 新增 [model_import_test.dart](test/model_import_test.dart) 驗證檔案複製與 manifest 更新。
+- **並行推論與自訂引擎勾選 (Ensemble Optimization)**：
+  - 修改 [orchestrator.dart](lib/core/detection/orchestrator.dart)：重構原本依序執行的分析迴圈，改為使用 `Future.wait` 進行**多引擎並行推論 (Parallel Execution)**，極大化利用多核心與 GPU 硬體算力。
+  - 修改 [preferences_service.dart](lib/core/services/preferences_service.dart) 與 [settings_screen.dart](lib/features/settings/settings_screen.dart)：實作了對 4 個子引擎（分類器、統計、風格、對抗）的獨立啟用/禁用（Toggle）設定 UI。當某個引擎被使用者關閉時，分析協調器會自動將其排除並平滑重新分配加權權重。
+- **整合測試**：69 項測試全過，`flutter analyze` 零問題。
+
+**為什麼**
+- 執行三階段同步實作，並針對強大硬體配置支援多引擎並行加速與自訂選用。
+
+**決策與取捨**
+- 行動端 (iOS/Android) 插件全採用 inline 實作於 Runner AppDelegate / MainActivity，避免污染專案與 Xcode 專案檔設定。
+- 測試推論採用載入暫時的 `OnnxDetector` 執行，以保證與實際運作環境一致且不影響使用中模型。
+
+**待辦/遺留問題**
+- Windows 與 iOS 上的 `libllama.so` / `llama.dll` 預編譯庫發佈。
+
+---
+
 ## 2026-07-04 — [P4 打磨上架] 效能基準 + 無障礙擴展
 
 **做了什麼**

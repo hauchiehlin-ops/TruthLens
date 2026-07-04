@@ -20,11 +20,27 @@ abstract class TextTokenizer {
 ///   roberta-bpe    → [BpeTokenizer]（byte-level BPE）
 TextTokenizer buildTokenizer(String type, String tokenizerJson) {
   switch (type) {
+    case 'none':
+      return const NoneTokenizer();
     case 'roberta-bpe':
       return BpeTokenizer.fromTokenizerJson(tokenizerJson);
     case 'bert-wordpiece':
     default:
       return WordPieceTokenizer.fromTokenizerJson(tokenizerJson);
+  }
+}
+
+class NoneTokenizer implements TextTokenizer {
+  const NoneTokenizer();
+
+  @override
+  Encoded encode(String text, {int maxLen = 192}) {
+    final codes = text.codeUnits.take(maxLen).toList();
+    if (codes.isEmpty) {
+      return const Encoded([0], [1]);
+    }
+    final mask = List<int>.filled(codes.length, 1);
+    return Encoded(codes, mask);
   }
 }
 

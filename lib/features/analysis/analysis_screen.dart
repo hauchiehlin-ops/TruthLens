@@ -40,6 +40,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       widget.text,
       eslCorrectionEnabled: prefs.eslCorrectionEnabled,
       threshold: prefs.confidenceThreshold,
+      prefs: prefs,
       onEngineDone: (id) {
         if (mounted) setState(() => _done.add(id));
       },

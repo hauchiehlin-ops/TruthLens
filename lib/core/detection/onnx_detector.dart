@@ -35,8 +35,10 @@ class OnnxDetector {
     }
     final options = OrtSessionOptions();
     final session = OrtSession.fromFile(File(modelPath), options);
-    final tokenizer = buildTokenizer(
-        tokenizerType, await File(tokenizerJsonPath).readAsString());
+    final String tokenizerJson = (tokenizerType == 'none' || tokenizerJsonPath.isEmpty)
+        ? '{}'
+        : await File(tokenizerJsonPath).readAsString();
+    final tokenizer = buildTokenizer(tokenizerType, tokenizerJson);
     return OnnxDetector._(session, tokenizer, maxLen, aiLabelIndex);
   }
 

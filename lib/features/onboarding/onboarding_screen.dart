@@ -53,6 +53,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       appBar: AppBar(
         title: const Text('歡迎使用 TruthLens'),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: '設定',
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

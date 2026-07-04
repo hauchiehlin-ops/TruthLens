@@ -6,6 +6,7 @@ import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 import '../onboarding/model_options_list.dart';
 import '../onboarding/model_prompt.dart';
+import 'model_import_screen.dart';
 
 /// 設定頁：信心閾值、ESL 修正、主題；模型管理（P2）與語言包（P4）後續加入
 class SettingsScreen extends StatelessWidget {
@@ -42,6 +43,38 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) => prefs.setEslCorrection(v),
           ),
           const Divider(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              '子偵測引擎啟用設定 (Ensemble)',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
+          SwitchListTile(
+            title: const Text('多語言 AI 分類器 (Transformer)'),
+            subtitle: const Text('使用 Transformer 神經網路模型進行端上 AI 機率預測'),
+            value: prefs.isEngineEnabled('transformer'),
+            onChanged: (v) => prefs.setEngineEnabled('transformer', v),
+          ),
+          SwitchListTile(
+            title: const Text('統計分析引擎 (Statistical)'),
+            subtitle: const Text('透過句長波動度、Burstiness 及 PPL 判定語言規律'),
+            value: prefs.isEngineEnabled('statistical'),
+            onChanged: (v) => prefs.setEngineEnabled('statistical', v),
+          ),
+          SwitchListTile(
+            title: const Text('風格特徵分析 (Stylometry)'),
+            subtitle: const Text('分析語意流暢度、重複句式與過渡詞等寫作特徵'),
+            value: prefs.isEngineEnabled('stylometry'),
+            onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
+          ),
+          SwitchListTile(
+            title: const Text('對抗式改寫偵測 (Adversarial)'),
+            subtitle: const Text('辨識是否經過機器改寫或去 AI 痕跡處理'),
+            value: prefs.isEngineEnabled('adversarial'),
+            onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
+          ),
+          const Divider(),
           ListTile(
             title: const Text('外觀主題'),
             trailing: SegmentedButton<ThemeMode>(
@@ -72,6 +105,19 @@ class SettingsScreen extends StatelessWidget {
               child: const Text('開啟'),
             ),
           ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.file_upload_outlined),
+            title: const Text('自訂 ONNX 模型匯入與測試'),
+            subtitle: const Text('匯入本機的自訂 ONNX 模型與 Tokenizer 設定並進行推論測試'),
+            trailing: TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
+              ),
+              child: const Text('開啟'),
+            ),
+          ),
+          const Divider(),
           const ListTile(
             enabled: false,
             leading: Icon(Icons.language),
@@ -119,7 +165,23 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AI 模型管理')),
+      appBar: AppBar(
+        title: const Text('AI 模型管理'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_upload_outlined),
+            tooltip: '匯入本機 ONNX 模型',
+            onPressed: () async {
+              final imported = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
+              );
+              if (imported == true) {
+                _load();
+              }
+            },
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(

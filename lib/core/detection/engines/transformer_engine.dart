@@ -10,7 +10,7 @@ import '../onnx_detector.dart';
 class TransformerEngine implements DetectionEngine {
   final ModelManager modelManager;
 
-  static const _supportedTokenizers = {'bert-wordpiece', 'roberta-bpe'};
+  static const _supportedTokenizers = {'bert-wordpiece', 'roberta-bpe', 'none'};
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
@@ -30,8 +30,9 @@ class TransformerEngine implements DetectionEngine {
   Future<bool> isAvailable() async {
     final active = modelManager.activeVariant(id);
     if (active == null || !_supported(active.tokenizer)) return false;
-    return (await modelManager.activeModelPath(id)) != null &&
-        (await modelManager.activeTokenizerPath(id)) != null;
+    final hasModel = (await modelManager.activeModelPath(id)) != null;
+    final hasTokenizer = active.tokenizer == 'none' || (await modelManager.activeTokenizerPath(id)) != null;
+    return hasModel && hasTokenizer;
   }
 
   String? _loadError;
@@ -42,8 +43,8 @@ class TransformerEngine implements DetectionEngine {
     final active = modelManager.activeVariant(id);
     if (active == null || !_supported(active.tokenizer)) return null;
     final modelPath = await modelManager.activeModelPath(id);
-    final tokPath = await modelManager.activeTokenizerPath(id);
-    if (modelPath == null || tokPath == null) return null;
+    final String tokPath = active.tokenizer == 'none' ? '' : (await modelManager.activeTokenizerPath(id) ?? '');
+    if (modelPath == null || (active.tokenizer != 'none' && tokPath.isEmpty)) return null;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
     try {
       _detector?.dispose();

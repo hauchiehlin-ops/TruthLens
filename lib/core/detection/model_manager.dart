@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'model_catalog.dart';
 import 'model_registry.dart';
+import 'onnx_detector.dart';
 
 enum InstallState { notInstalled, downloading, installed, failed }
 
@@ -23,6 +24,8 @@ class InstalledModel {
   final int aiLabelIndex;
   final String version;
   final int sizeBytes;
+  final String? name; // 友善名稱（匯入的模型用）
+  final bool imported;
 
   const InstalledModel({
     required this.role,
@@ -33,7 +36,11 @@ class InstalledModel {
     this.tokenizerFileName,
     this.tokenizer = 'none',
     this.aiLabelIndex = 1,
+    this.name,
+    this.imported = false,
   });
+
+  String get displayName => name ?? variantId;
 
   Map<String, dynamic> toJson() => {
         'role': role,
@@ -44,6 +51,8 @@ class InstalledModel {
         'ai_label_index': aiLabelIndex,
         'version': version,
         'size_bytes': sizeBytes,
+        'name': name,
+        'imported': imported,
       };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) => InstalledModel(
@@ -55,6 +64,8 @@ class InstalledModel {
         aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
         version: j['version'] as String? ?? '0',
         sizeBytes: (j['size_bytes'] as num?)?.toInt() ?? 0,
+        name: j['name'] as String?,
+        imported: j['imported'] as bool? ?? false,
       );
 }
 
@@ -168,6 +179,40 @@ class ModelManager extends ChangeNotifier {
           }
         });
       }
+      // Auto-scan: list all files in directory and register them if they match known variant filenames
+      try {
+        if (dir.existsSync()) {
+          for (final entity in dir.listSync()) {
+            if (entity is File) {
+              final name = p.basename(entity.path);
+              if (name == 'gemma-2b-it-q4.gguf' || name == 'llm__gemma-2b-it-q4.gguf') {
+                if (role == 'llm' && !installed.containsKey('gemma-2b-it-q4')) {
+                  installed['gemma-2b-it-q4'] = InstalledModel(
+                    role: 'llm',
+                    variantId: 'gemma-2b-it-q4',
+                    fileName: name,
+                    version: '1.0.0',
+                    sizeBytes: entity.lengthSync(),
+                  );
+                }
+              } else if (name == 'detector_int8.onnx' || name == 'transformer__truthlens-multilingual-distil-int8.onnx') {
+                if (role == 'transformer' && !installed.containsKey('truthlens-multilingual-distil-int8')) {
+                  installed['truthlens-multilingual-distil-int8'] = InstalledModel(
+                    role: 'transformer',
+                    variantId: 'truthlens-multilingual-distil-int8',
+                    fileName: name,
+                    tokenizerFileName: 'tokenizer.json',
+                    tokenizer: 'bert-wordpiece',
+                    aiLabelIndex: 1,
+                    version: '1.0.0',
+                    sizeBytes: entity.lengthSync(),
+                  );
+                }
+              }
+            }
+          }
+        }
+      } catch (_) {}
       var active = entry?['active'] as String?;
       if (active == null || !installed.containsKey(active)) {
         active = installed.keys.isNotEmpty ? installed.keys.first : null;
@@ -345,6 +390,88 @@ class ModelManager extends ChangeNotifier {
       }
     }
     await sink.close();
+  }
+
+  /// 匯入本機 ONNX 模型檔。
+  Future<bool> importLocalModel({
+    required String role,
+    required String name,
+    required File modelFile,
+    File? tokenizerFile,
+    String tokenizerType = 'bert-wordpiece',
+    int aiLabelIndex = 1,
+  }) async {
+    final dir = await _modelsDir();
+    final variantId = 'custom_${DateTime.now().millisecondsSinceEpoch}';
+    final fileName = '${role}__$variantId.onnx';
+    final target = File(p.join(dir.path, fileName));
+
+    String? tokenizerFileName;
+
+    try {
+      // 複製模型檔
+      await modelFile.copy(target.path);
+
+      // 複製 tokenizer 檔
+      if (tokenizerFile != null && tokenizerType != 'none') {
+        tokenizerFileName = '${role}__$variantId.tokenizer.json';
+        await tokenizerFile.copy(p.join(dir.path, tokenizerFileName));
+      }
+
+      final r = _roles[role]!;
+      final installed = Map<String, InstalledModel>.from(r.installed);
+      installed[variantId] = InstalledModel(
+        role: role,
+        variantId: variantId,
+        fileName: fileName,
+        tokenizerFileName: tokenizerFileName,
+        tokenizer: tokenizerType,
+        aiLabelIndex: aiLabelIndex,
+        version: '1.0.0 (自訂匯入)',
+        sizeBytes: modelFile.lengthSync(),
+        name: name,
+        imported: true,
+      );
+
+      _roles[role] = r.copyWith(
+        installed: installed,
+        activeVariantId: variantId, // 自動設為使用中
+        transientState: InstallState.installed,
+        progress: 1,
+      );
+
+      await _persist();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('Failed to import local model: $e');
+      return false;
+    }
+  }
+
+  /// 測試單一 ONNX 模型，回傳 AI 機率（0..1）。用於匯入前預覽與驗證。
+  Future<double> testModel({
+    required File modelFile,
+    File? tokenizerFile,
+    String tokenizerType = 'bert-wordpiece',
+    int aiLabelIndex = 1,
+    required String text,
+  }) async {
+    final detector = await OnnxDetector.load(
+      modelPath: modelFile.path,
+      tokenizerJsonPath: tokenizerFile?.path ?? '',
+      tokenizerType: tokenizerType,
+      aiLabelIndex: aiLabelIndex,
+    );
+
+    try {
+      final score = await detector.classify(text);
+      detector.dispose();
+      return score;
+    } catch (e) {
+      detector.dispose();
+      rethrow;
+    }
   }
 
   Future<String> _sha256Of(File file) async {

@@ -5,6 +5,7 @@ import 'app/router.dart';
 import 'app/theme.dart';
 import 'core/detection/model_catalog_service.dart';
 import 'core/detection/model_manager.dart';
+import 'core/detection/llm_manager.dart';
 import 'core/detection/model_provisioner.dart';
 import 'core/detection/native_inference_service.dart';
 import 'core/detection/orchestrator.dart';
@@ -65,13 +66,18 @@ class TruthLensApp extends StatelessWidget {
         Provider.value(value: native),
         Provider.value(value: provisioner),
         Provider.value(value: provisioner.catalogService),
+        ChangeNotifierProvider(create: (_) => LlmManager(modelManager: modelManager)),
         Provider(
           create: (_) => EnsembleOrchestrator(
             modelManager: modelManager,
             native: native,
           ),
         ),
-        Provider(create: (_) => ReportLlmService(modelManager: modelManager)),
+        Provider(
+          create: (ctx) => ReportLlmService(
+            llmManager: ctx.read<LlmManager>(),
+          ),
+        ),
         Provider(create: (_) => OcrService()),
         Provider(create: (_) => HistoryRepository()),
       ],
