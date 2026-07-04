@@ -13,6 +13,24 @@
 
 ---
 
+## 2026-07-04 — [修正] 模型匯入畫面「偵測到本機微調目錄」導致沙盒權限錯誤
+
+**做了什麼**
+- 使用者回報 [model_import_screen.dart](lib/features/settings/model_import_screen.dart) 的「匯入自訂 ONNX 模型」畫面出現「模型匯入失敗，請檢查權限或日誌」
+- 根因：畫面的 `_autoDetectLocalModel()` 直接用硬編碼絕對路徑（`/Users/barretlin/GitProjects/TruthLens/training_tools/adversarial_paraphrase_quantized.onnx`）建立 `File` 物件，**繞過了 `FilePicker`**。macOS App Sandbox（`com.apple.security.app-sandbox`）下只有透過系統選檔對話框挑選的檔案才有讀取權限（`files.user-selected.read-write`），硬編碼路徑完全沒有授權，導致 `ModelManager.importLocalModel` 內的 `modelFile.copy(target.path)` 擲出權限例外
+- **驗證根因**：用不受沙盒限制的 `dart run` 直接讀該檔案成功（67MB 正常讀出），證明檔案本身無恙，問題確實出在沙盒化 App 對此路徑無存取權限；並確認 entitlements 檔只有 `files.user-selected.read-write`，無任何廣域檔案系統權限
+- **修法**：移除整段硬編碶自動偵測（`_autoDetectLocalModel`、`_hasLocalUpdate`/`_localFileTime` 狀態、對應的「一鍵下載安裝」提示卡片 UI），保留原本正確使用 `FilePicker` 的手動選檔流程（模型/tokenizer 皆經選檔對話框，此路徑本就正常運作，已由既有 model_import_test.dart 覆蓋）；並在類別上加註解說明為何不可用硬編碼路徑
+- 驗證：77 單元測試全過、analyze 零問題、macOS build 綠燈
+
+**為什麼**
+- 這個偵測功能即使排除沙盒問題也寫死指向單一開發者機器路徑，對任何真實使用者都不可能存在，屬於開發階段殘留的除錯輔助，非可上架功能
+
+**決策與取捨**
+- 未嘗試放寬 entitlements 讓沙盒能讀任意路徑：那需要更廣的檔案系統存取權限（如全碟存取），對一般消費性 App 是不必要的安全性倒退；正確做法就是一律經使用者主動選檔
+- 未改寫成「自動導向選檔對話框」：因為原本手動流程已經存在且正常，沒有必要為了保留「自動偵測」的形式而增加複雜度
+
+---
+
 ## 2026-07-04 — [P2 AI引擎] 對抗式防禦模組 D 訓練完成，並排除 MPS 記憶體暴衝
 
 **做了什麼**

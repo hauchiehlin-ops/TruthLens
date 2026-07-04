@@ -7,6 +7,10 @@ import 'package:provider/provider.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_registry.dart';
 
+/// 匯入自訂 ONNX 模型。所有檔案存取一律經 [FilePicker]（見 [_pickModel] /
+/// [_pickTokenizer]），這是 macOS App Sandbox 下唯一能取得讀取權限的方式；
+/// 不要改成直接用硬編碼路徑建立 File（例如指向開發機的專案目錄），沙盒化的
+/// App 對未經選檔對話框授權的路徑沒有讀取權限，會在 copy/讀取時失敗。
 class ModelImportScreen extends StatefulWidget {
   const ModelImportScreen({super.key});
 
@@ -31,42 +35,6 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   double? _testResult;
   String? _testError;
   bool _importing = false;
-
-  bool _hasLocalUpdate = false;
-  DateTime? _localFileTime;
-
-  @override
-  void initState() {
-    super.initState();
-    _autoDetectLocalModel();
-  }
-
-  void _autoDetectLocalModel() {
-    const projectOnnxPath = '/Users/barretlin/GitProjects/TruthLens/training_tools/adversarial_paraphrase_quantized.onnx';
-    const projectTokenizerPath = '/Users/barretlin/GitProjects/TruthLens/training_tools/quantized_model/tokenizer.json';
-
-    final onnxFile = File(projectOnnxPath);
-    final tokenizerFile = File(projectTokenizerPath);
-
-    if (onnxFile.existsSync()) {
-      _modelFile = onnxFile;
-      _nameController.text = '對抗式改寫偵測分類器';
-      _targetRole = 'adversarial'; // 預設為對抗式引擎
-      _tokenizerType = 'bert-wordpiece';
-      _aiLabelIndex = 1;
-      _localFileTime = onnxFile.lastModifiedSync();
-
-      final manager = context.read<ModelManager>();
-      final active = manager.activeModelFor('adversarial');
-      
-      // 如果未安裝任何 adversarial 模型，或者本地檔案存在，皆標示為有新模型可供一鍵安裝套用
-      _hasLocalUpdate = true;
-
-      if (tokenizerFile.existsSync()) {
-        _tokenizerFile = tokenizerFile;
-      }
-    }
-  }
 
   @override
   void dispose() {
@@ -190,57 +158,6 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            if (_hasLocalUpdate && _modelFile != null) ...[
-              Card(
-                color: cs.primaryContainer.withValues(alpha: 0.2),
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(color: cs.primary.withValues(alpha: 0.5), width: 1.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.system_update_alt, color: cs.primary, size: 28),
-                          const SizedBox(width: 8),
-                          Text(
-                            '偵測到本機微調目錄有新模型！',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: cs.onPrimaryContainer,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '本機路徑: training_tools/adversarial_paraphrase_quantized.onnx\n'
-                        '修改時間: ${_localFileTime?.toLocal().toString().split('.').first ?? '未知'}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _import,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: cs.primary,
-                            foregroundColor: cs.onPrimary,
-                          ),
-                          icon: const Icon(Icons.download_for_offline),
-                          label: const Text('一鍵下載、安裝及套用此模型'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
             // 1. Model File Picker
             Card(
               child: Padding(
