@@ -63,36 +63,19 @@ def main():
     print("保存 Tokenizer 配置文件...")
 
     print("=== 步驟 2-7: 將 PyTorch 模型導出為 ONNX 格式 ===")
-    onnx_path = "./model.onnx"
-    dummy_input = (
-        torch.zeros(1, 256, dtype=torch.long), # input_ids
-        torch.zeros(1, 256, dtype=torch.long)  # attention_mask
-    )
+    from optimum.onnxruntime import ORTModelForSequenceClassification
     
-    # 將 PyTorch 模型轉為 ONNX 格式
-    model.eval()
-    model.to("cpu")
-    torch.onnx.export(
-        model,
-        dummy_input,
-        onnx_path,
-        input_names=["input_ids", "attention_mask"],
-        output_names=["logits"],
-        dynamic_axes={
-            "input_ids": {0: "batch_size", 1: "sequence_length"},
-            "attention_mask": {0: "batch_size", 1: "sequence_length"},
-            "logits": {0: "batch_size"}
-        },
-        opset_version=14
-    )
-    print(f"ONNX 模型導出成功: {onnx_path}")
+    # 使用 Optimum 直接將微調好的模型導出為 ONNX（自動處理動態維度與 Tokenizer 映射）
+    ort_model = ORTModelForSequenceClassification.from_pretrained(output_model_dir, export=True)
+    onnx_model_dir = "./onnx_model"
+    ort_model.save_pretrained(onnx_model_dir)
+    print(f"ONNX 模型導出成功: {onnx_model_dir}")
 
     print("=== 步驟 2-8: 進行 ONNX 靜態 INT8 量化 (降低體積與加速) ===")
-    quantizer = ORTQuantizer.from_pretrained(output_model_dir, feature="sequence-classification")
-    qconfig = AutoQuantizationConfig.arm64(is_static=False, activated_ops=[]) # 動態量化適合 CPU 端上推論
+    quantizer = ORTQuantizer.from_pretrained(onnx_model_dir)
+    qconfig = AutoQuantizationConfig.arm64(is_static=False)
     
     # 執行量化
-    quantized_model_path = "./model_quantized.onnx"
     quantizer.quantize(
         save_dir="./quantized_model",
         quantization_config=qconfig
@@ -110,7 +93,7 @@ def main():
     print("\n恭喜！訓練與導出程序全部完成。")
     print("您獲得了兩個關鍵檔案：")
     print("1. 模型檔：./adversarial_paraphrase_quantized.onnx")
-    print("2. 詞表檔：./fine_tuned_model/tokenizer.json")
+    print("2. 詞表檔：./quantized_model/tokenizer.json")
 
 if __name__ == "__main__":
     main()
