@@ -7,24 +7,24 @@
       "name": "AI 文字偵測器",
       "variants": [
         {
-          "id": "roberta-large-openai-onnx-fp16",
-          "name": "RoBERTa-Large 偵測器（英文・高精度）",
+          "id": "chatgpt-detector-roberta-onnx-int8",
+          "name": "RoBERTa 偵測器（英文・ChatGPT 專用）",
           "backend": "transformer",
           "tokenizer": "roberta-bpe",
-          "ai_label_index": 0,
+          "ai_label_index": 1,
           "languages": ["en"],
-          "quant": "fp16",
-          "size_bytes": 710809104,
-          "min_ram_mb": 4096,
-          "tier": "high",
-          "url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16/resolve/main/model.onnx",
-          "tokenizer_url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16/resolve/main/tokenizer.json",
-          "page_url": "https://huggingface.co/joaopn/roberta-large-openai-detector-onnx-fp16",
+          "quant": "int8",
+          "size_bytes": 125855419,
+          "min_ram_mb": 2048,
+          "tier": "mid",
+          "url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/onnx/model_quantized.onnx",
+          "tokenizer_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX",
           "sha256": null,
           "version": "1.0",
-          "source": "joaopn/roberta-large-openai-detector-onnx-fp16",
+          "source": "onnx-community/chatgpt-detector-roberta-ONNX (Hello-SimpleAI/chatgpt-detector-roberta 的 ONNX 轉換)",
           "license": "MIT",
-          "note": "OpenAI GPT-2 偵測器衍生，英文佳；4GB+ 裝置。注意：此託管檔宣告了多餘 opset，端上載入前需以 training/fix_onnx_opset.py 清理並重新 host"
+          "note": "英文 Human/ChatGPT 二元分類器，opset 乾淨可直接下載使用（已實測 P(ChatGPT) 人類文本≈0、AI 風格文本明顯偏高）"
         },
         {
           "id": "truthlens-multilingual-distil-int8",
@@ -37,14 +37,14 @@
           "size_bytes": 141557760,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": "https://huggingface.co/Xenova/distilbert-base-multilingual-cased-sentiments-student/resolve/main/onnx/model_quantized.onnx",
-          "tokenizer_url": "https://huggingface.co/Xenova/distilbert-base-multilingual-cased-sentiments-student/resolve/main/tokenizer.json",
+          "url": null,
+          "tokenizer_url": null,
           "sha256": null,
           "version": "1.0",
           "source": "training/ HC3 fine-tune (distilbert-multilingual)",
           "page_url": "https://huggingface.co/distilbert/distilbert-base-multilingual-cased",
           "license": "資料源 HC3（研究用途；商用授權待確認）",
-          "note": "本專案以 HC3 英+中微調，體積小、支援中文；上傳後填入 url 即可下載"
+          "note": "本專案以 HC3 英+中微調（本地已驗證 98.4% 驗證準確率），體積小、支援中文；尚未上架 host，url 待填入後即可下載。切勿指向與此不符的其他模型（曾誤填情感分析模型網址，已移除）"
         }
       ]
     },
@@ -70,6 +70,32 @@
           "source": "distilbert/distilgpt2",
           "license": "Apache-2.0",
           "note": "為統計引擎提供真實困惑度指標；未安裝時以 burstiness/TTR 等啟發式運作"
+        }
+      ]
+    },
+    {
+      "role": "adversarial",
+      "name": "對抗式防禦（改寫偵測）",
+      "variants": [
+        {
+          "id": "truthlens-adversarial-distil-int8",
+          "name": "改寫偵測模型（INT8）",
+          "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
+          "languages": ["en"],
+          "quant": "int8",
+          "size_bytes": 141557760,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "http://127.0.0.1:8000/adversarial_paraphrase_quantized.onnx",
+          "tokenizer_url": "http://127.0.0.1:8000/quantized_model/tokenizer.json",
+          "sha256": null,
+          "version": "1.0",
+          "source": "training/ HC3 + T5 改寫對抗訓練",
+          "page_url": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
+          "license": "資料源 HC3（研究用途）",
+          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練。上傳後填入 url 即可下載"
         }
       ]
     },
