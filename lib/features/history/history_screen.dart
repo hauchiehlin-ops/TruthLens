@@ -65,30 +65,40 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           final e = _entries[i];
                           final color =
                               AppTheme.verdictColor(e.aiProbability);
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: color.withValues(alpha: 0.2),
-                              child: Text(
-                                '${(e.aiProbability * 100).round()}',
-                                style: TextStyle(
-                                    color: color, fontSize: 13,
-                                    fontWeight: FontWeight.bold),
+                          final time = e.analyzedAt
+                              .toLocal()
+                              .toString()
+                              .substring(0, 16);
+                          return Semantics(
+                            label: '${e.verdict.labelZh}，AI 機率 '
+                                '${(e.aiProbability * 100).round()}%，$time。'
+                                '${e.inputText}',
+                            child: ListTile(
+                              leading: ExcludeSemantics(
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      color.withValues(alpha: 0.2),
+                                  child: Text(
+                                    '${(e.aiProbability * 100).round()}',
+                                    style: TextStyle(
+                                        color: color,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
                               ),
-                            ),
-                            title: Text(
-                              e.inputText,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              '${e.verdict.labelZh} · '
-                              '${e.analyzedAt.toLocal().toString().substring(0, 16)}',
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.refresh),
-                              tooltip: '重新分析',
-                              onPressed: () =>
-                                  context.push('/analysis', extra: e.inputText),
+                              title: Text(
+                                e.inputText,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text('${e.verdict.labelZh} · $time'),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.refresh),
+                                tooltip: '重新分析',
+                                onPressed: () => context.push('/analysis',
+                                    extra: e.inputText),
+                              ),
                             ),
                           );
                         },

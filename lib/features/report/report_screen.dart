@@ -289,20 +289,25 @@ class _ReportScreenState extends State<ReportScreen> {
                 runSpacing: 6,
                 children: [
                   for (final s in result.sentences)
-                    Tooltip(
-                      message: s.patterns.isEmpty
-                          ? 'AI 機率 ${(s.aiProbability * 100).round()}%'
-                          : 'AI 機率 ${(s.aiProbability * 100).round()}%\n'
-                              '${s.patterns.join('、')}',
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppTheme.verdictColor(s.aiProbability)
-                              .withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(4),
+                    Semantics(
+                      label: '${s.text}。AI 機率 ${(s.aiProbability * 100).round()}%'
+                          '${s.patterns.isEmpty ? '' : '，${s.patterns.join('、')}'}',
+                      excludeSemantics: true,
+                      child: Tooltip(
+                        message: s.patterns.isEmpty
+                            ? 'AI 機率 ${(s.aiProbability * 100).round()}%'
+                            : 'AI 機率 ${(s.aiProbability * 100).round()}%\n'
+                                '${s.patterns.join('、')}',
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.verdictColor(s.aiProbability)
+                                .withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text('${s.text} '),
                         ),
-                        child: Text('${s.text} '),
                       ),
                     ),
                 ],

@@ -173,15 +173,17 @@ class _InputScreenState extends State<InputScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Row(
-                  children: [
-                    _activeModelChip(context),
-                    const Spacer(),
-                    Text(
-                      '${_controller.text.trim().length} 字元',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
+                MergeSemantics(
+                  child: Row(
+                    children: [
+                      _activeModelChip(context),
+                      const Spacer(),
+                      Text(
+                        '${_controller.text.trim().length} 字元',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Row(

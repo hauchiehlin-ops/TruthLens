@@ -13,6 +13,29 @@
 
 ---
 
+## 2026-07-04 — [P4 打磨上架] 效能基準 + 無障礙擴展
+
+**做了什麼**
+- **效能基準**（對照 plan 第十節）：
+  - [test/perf_benchmark_test.dart](test/perf_benchmark_test.dart)（host）：純 Dart 熱路徑——5000 字前處理+啟發式分析約 1ms、模板報告 13µs
+  - [integration_test/perf_benchmark_test.dart](integration_test/perf_benchmark_test.dart)（macOS 真實推論）：**500 字 0.35s、5000 字(66 句) 1.06s**，遠低於 5s / 30s 目標
+  - 結果記入 [docs/release_checklist.md](docs/release_checklist.md)
+- **無障礙擴展**：報告逐句熱力（每句唸出文字 + AI 機率 + 命中模式）、歷史列表項（合併語意：判定+機率+時間+內容）、輸入頁狀態列（MergeSemantics）
+- 測試：65 單元測試全過（含 4 項效能基準）；macOS build 綠燈、analyze 零問題
+
+**為什麼**
+- 使用者指定續做效能量測與無障礙擴展
+
+**決策與取捨**
+- 效能分兩層量測：純 Dart（host 可 CI）+ 真實推論（macOS 整合）
+- 無障礙用 Semantics label + ExcludeSemantics/MergeSemantics 整併裝飾與零散節點
+
+**待辦/遺留問題**
+- 冷啟動/記憶體峰值未系統量測（LLM 未整合）；無障礙可再擴及設定/模型頁
+- 對抗 D、LLM、跨平台 OCR/建置 仍待（需外部資源/工具鏈）
+
+---
+
 ## 2026-07-04 — [P4 打磨上架] 無障礙 + 分析動畫 + PNG 摘要卡
 
 **做了什麼**
