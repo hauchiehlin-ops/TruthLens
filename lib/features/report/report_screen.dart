@@ -105,7 +105,16 @@ class _ReportScreenState extends State<ReportScreen> {
         ],
       ),
       body: doc == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('正在生成報告…'),
+                ],
+              ),
+            )
           : Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 840),

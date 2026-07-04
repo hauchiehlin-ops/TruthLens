@@ -56,7 +56,7 @@ def build(n_paraphrase: int, batch_size: int) -> None:
     cfg = adversarial()
     random.seed(cfg.seed)
 
-    print("下載 HC3 (all.jsonl) ...")
+    print("下載 HC3 (all.jsonl) ...", flush=True)
     rows = _load_jsonl(cfg.hc3_english)
     human, ai = [], []
     for row in rows:
@@ -71,22 +71,35 @@ def build(n_paraphrase: int, batch_size: int) -> None:
     cap = cfg.max_per_class
     human = human[:cap]
     ai_native = ai[:cap]
-    print(f"human={len(human)} ai_native={len(ai_native)}")
+    print(f"human={len(human)} ai_native={len(ai_native)}", flush=True)
 
     # 改寫一部分 AI 文本（模擬規避）
     to_para = ai[:n_paraphrase]
-    print(f"載入改寫模型 {PARAPHRASER} ...")
+    print(f"載入改寫模型 {PARAPHRASER} ...", flush=True)
     device = _device()
     tok = AutoTokenizer.from_pretrained(PARAPHRASER)
     model = AutoModelForSeq2SeqLM.from_pretrained(PARAPHRASER).to(device).eval()
 
     paraphrased = []
+    import time
+    t_start = time.time()
     for i in range(0, len(to_para), batch_size):
         batch = to_para[i:i + batch_size]
+        t0 = time.time()
         paraphrased.extend(_paraphrase_batch(model, tok, batch, device))
-        if (i // batch_size) % 10 == 0:
-            print(f"  改寫進度 {i + len(batch)}/{len(to_para)}")
-    print(f"改寫完成：{len(paraphrased)} 筆")
+        n_batch = i // batch_size
+        if n_batch % 5 == 0:
+            elapsed = time.time() - t_start
+            done = i + len(batch)
+            rate = done / elapsed if elapsed > 0 else 0
+            eta = (len(to_para) - done) / rate if rate > 0 else float("nan")
+            print(
+                f"  改寫進度 {done}/{len(to_para)}"
+                f"（本批 {time.time()-t0:.1f}s，已耗時 {elapsed/60:.1f} 分，"
+                f"預估剩餘 {eta/60:.1f} 分）",
+                flush=True,
+            )
+    print(f"改寫完成：{len(paraphrased)} 筆", flush=True)
 
     # 組資料：human=0；native AI + 改寫 AI = 1
     samples = []
@@ -99,7 +112,7 @@ def build(n_paraphrase: int, batch_size: int) -> None:
     val, train = samples[:n_val], samples[n_val:]
     _write(os.path.join(DATA_DIR, cfg.train_file), train)
     _write(os.path.join(DATA_DIR, cfg.val_file), val)
-    print(f"完成：train={len(train)} val={len(val)}（含改寫 AI {len(paraphrased)}）")
+    print(f"完成：train={len(train)} val={len(val)}（含改寫 AI {len(paraphrased)}）", flush=True)
 
 
 def _write(path: str, rows: list[dict]) -> None:

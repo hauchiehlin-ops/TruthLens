@@ -66,6 +66,11 @@ class HistoryRepository {
     final db = await _open();
     await db.delete('history', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<void> clearAll() async {
+    final db = await _open();
+    await db.delete('history');
+  }
 }
 
 /// 歷史列表項（不含完整逐句結果，重新分析可還原）

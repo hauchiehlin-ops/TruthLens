@@ -136,7 +136,19 @@ class _VariantTile extends StatelessWidget {
                 ),
               const SizedBox(height: 8),
               if (downloadingThis)
-                LinearProgressIndicator(value: rs?.progress)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    LinearProgressIndicator(value: rs?.progress),
+                    const SizedBox(height: 4),
+                    Text(
+                      '下載中… ${((rs?.progress ?? 0) * 100).round()}%'
+                      '（${ModelOptionsList.sizeLabel(((rs?.progress ?? 0) * variant.sizeBytes).round())}'
+                      ' / ${ModelOptionsList.sizeLabel(variant.sizeBytes)}）',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                )
               else
                 _actions(context, manager,
                     installed: installed,
@@ -192,7 +204,7 @@ class _VariantTile extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete_outline),
             tooltip: '刪除',
-            onPressed: () => manager.removeVariant(plan.role, variant.id),
+            onPressed: () => _confirmDelete(context, manager),
           ),
         if (variant.pageUrl != null)
           TextButton.icon(
@@ -210,6 +222,32 @@ class _VariantTile extends StatelessWidget {
                   color: Theme.of(context).colorScheme.error, fontSize: 12)),
       ],
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, ModelManager manager) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('刪除模型？'),
+        content: Text(
+          '將刪除「${variant.name}」（${ModelOptionsList.sizeLabel(variant.sizeBytes)}）。'
+          '刪除後需重新下載才能再次使用。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('刪除'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await manager.removeVariant(plan.role, variant.id);
+    }
   }
 }
 
@@ -281,7 +319,32 @@ class _CustomModelTile extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.delete_outline),
                     tooltip: '刪除',
-                    onPressed: () => manager.removeVariant(role, model.variantId),
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('刪除模型？'),
+                          content: Text(
+                            '將刪除自訂匯入的「${model.displayName}」'
+                            '（${ModelOptionsList.sizeLabel(model.sizeBytes)}）。'
+                            '刪除後需重新匯入才能再次使用。',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('取消'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text('刪除'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true) {
+                        await manager.removeVariant(role, model.variantId);
+                      }
+                    },
                   ),
                 ],
               ),
