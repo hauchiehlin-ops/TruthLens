@@ -84,6 +84,49 @@ void main() {
     print('RoBERTa BPE 推論成功 → prob:$p1');
   });
 
+  test('對抗模組 D：改寫後的 AI 文本仍被正確判定為 AI', () async {
+    final support = await getApplicationSupportDirectory();
+    final modelPath =
+        p.join(support.path, 'models', 'verify_adversarial_model.onnx');
+    final tokPath =
+        p.join(support.path, 'models', 'verify_adversarial_tokenizer.json');
+    if (!File(modelPath).existsSync()) {
+      markTestSkipped('容器內無對抗模組 D 模型；跳過');
+      return;
+    }
+    final detector = await OnnxDetector.load(
+      modelPath: modelPath,
+      tokenizerJsonPath: tokPath,
+    );
+    const native =
+        'It is important to note that artificial intelligence is transforming '
+        'numerous industries. Furthermore, these systems provide significant '
+        'efficiency gains and must be carefully evaluated before deployment.';
+    // T5 改寫版（humarin/chatgpt_paraphraser_on_T5_base 實際輸出）
+    const paraphrased =
+        'It is worth mentioning that artificial intelligence is altering the '
+        'workings of many industries. Furthermore, these systems offer '
+        'substantial productivity benefits and necessitate careful evaluation '
+        'before deployment.';
+    const human =
+        'ugh my train was late again lol, ended up walking half way and my '
+        'coffee spilled everywhere, what a morning honestly';
+
+    final nativeProb = await detector.classify(native);
+    final paraProb = await detector.classify(paraphrased);
+    final humanProb = await detector.classify(human);
+    detector.dispose();
+
+    expect(nativeProb, greaterThan(0.9), reason: '原生 AI 應高機率判為 AI');
+    // 核心驗證：改寫後仍應維持高 AI 機率（未被規避），而非大幅掉到偏人類
+    expect(paraProb, greaterThan(0.9),
+        reason: '改寫後的 AI 文本不應被規避（掉到低機率）');
+    expect(humanProb, lessThan(0.1), reason: '人類文本應低機率');
+
+    // ignore: avoid_print
+    print('對抗模組 D → 原生:$nativeProb 改寫:$paraProb 人類:$humanProb');
+  });
+
   test('DistilGPT2 困惑度：AI 風格低於人類口語', () async {
     final support = await getApplicationSupportDirectory();
     final modelPath = p.join(support.path, 'models', 'verify_gpt2.onnx');

@@ -62,3 +62,4 @@ app.*.map.json
 /training_tools/model.onnx
 /training_tools/model.onnx.data
 /training_tools/adversarial_paraphrase_quantized.onnx
+.claude/

@@ -24,8 +24,10 @@ PARAPHRASER = "humarin/chatgpt_paraphraser_on_T5_base"
 
 
 def _device() -> str:
-    if torch.backends.mps.is_available():
-        return "mps"
+    # 注意：beam search 的 seq2seq generate() 在 MPS 上重複呼叫會有記憶體
+    # 不釋放的已知問題（迴圈跑數百批後可膨脹到 20GB+ 造成系統換頁、看似當機）。
+    # 實測 CPU 與 MPS 單批耗時相近（distilgpt2/T5-base 量級），故改寫步驟固定用 CPU，
+    # 避開這個記憶體風險；其餘訓練步驟仍可用 MPS（train_classifier.py 走 Trainer，行為不同）。
     if torch.cuda.is_available():
         return "cuda"
     return "cpu"
@@ -48,7 +50,14 @@ def _paraphrase_batch(model, tok, texts: list[str], device: str) -> list[str]:
             temperature=1.0,
             do_sample=False,
         )
-    return tok.batch_decode(out, skip_special_tokens=True)
+    result = tok.batch_decode(out, skip_special_tokens=True)
+    # 第二道防線：即使日後改回 MPS/CUDA，每批強制釋放快取避免記憶體累積。
+    del inputs, out
+    if device == "mps" and torch.backends.mps.is_available():
+        torch.mps.empty_cache()
+    elif device == "cuda":
+        torch.cuda.empty_cache()
+    return result
 
 
 def build(n_paraphrase: int, batch_size: int) -> None:
@@ -81,13 +90,35 @@ def build(n_paraphrase: int, batch_size: int) -> None:
     model = AutoModelForSeq2SeqLM.from_pretrained(PARAPHRASER).to(device).eval()
 
     paraphrased = []
+    import os as _os
     import time
+
+    def _rss_mb() -> float | None:
+        try:
+            import psutil as _ps
+            return _ps.Process(_os.getpid()).memory_info().rss / 1e6
+        except Exception:
+            return None
+
     t_start = time.time()
     for i in range(0, len(to_para), batch_size):
         batch = to_para[i:i + batch_size]
         t0 = time.time()
         paraphrased.extend(_paraphrase_batch(model, tok, batch, device))
         n_batch = i // batch_size
+
+        # 記憶體安全防護：單批耗時異常久（>2 分鐘）或 RSS 超過 8GB 時中止，
+        # 避免重演先前 MPS 記憶體膨脹到 20GB+ 拖垮系統的狀況。
+        batch_secs = time.time() - t0
+        rss = _rss_mb()
+        if batch_secs > 120 or (rss is not None and rss > 8000):
+            print(
+                f"  警告：本批耗時 {batch_secs:.0f}s、RSS≈{rss}MB，"
+                "疑似記憶體異常膨脹，提前中止改寫並保存已完成部分。",
+                flush=True,
+            )
+            break
+
         if n_batch % 5 == 0:
             elapsed = time.time() - t_start
             done = i + len(batch)

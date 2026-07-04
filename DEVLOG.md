@@ -13,6 +13,45 @@
 
 ---
 
+## 2026-07-04 — [P2 AI引擎] 對抗式防禦模組 D 訓練完成，並排除 MPS 記憶體暴衝
+
+**做了什麼**
+- **對抗式資料**：以 T5 改寫模型（humarin/chatgpt_paraphraser_on_T5_base）改寫 3000 筆 HC3 ChatGPT 答案，與原生 AI(10000)、人類(10000) 組成對抗訓練集（train 20700 / val 2300）
+- **訓練結果**：distilbert-multilingual 微調 2 epochs，**驗證準確率 98.1%、F1 98.4%、召回率 99.9%**；匯出 INT8 ONNX（541MB → 136MB）
+- **關鍵驗證（模組 D 存在的意義）**：用同一句改寫文字比較「無對抗訓練的一般偵測器」vs「對抗模組 D」——
+  - 一般偵測器：原生 AI 0.980 → 改寫後 **0.016**（幾乎被完全規避，掉了 96 個百分點）
+  - 對抗模組 D：原生 AI 0.999 → 改寫後 **0.994**（幾乎不受影響，只掉 0.5 個百分點）
+  - 證明 plan 描述的「被改寫工具輕易繞過」問題真實存在，且對抗訓練確實解決它
+  - [compare_baseline_vs_adversarial.py](training/compare_baseline_vs_adversarial.py) 留存此比較；[verify_adversarial.py](training/verify_adversarial.py) 做單模型的規避測試
+- **macOS 整合測試**：新增對抗模組 D 案例於 [onnx_detector_test.dart](integration_test/onnx_detector_test.dart)，實測 Dart 端 OnnxDetector 載入此模型：原生 0.999、改寫 0.992、人類 0.0009——與 Python 端結果一致
+
+**排除的重大問題：MPS 記憶體暴衝（非邏輯卡死）**
+- 首次跑改寫資料準備時，process 跑了 1h40m 完全無進度輸出。用 macOS `sample` 工具直接對 process 取樣，發現：
+  - 實體記憶體佔用飆到 **21.6GB**（機器總記憶體 24GB，已嚴重逼近上限造成系統換頁）
+  - GPU 執行緒卡在 `_pthread_cond_wait`，並非真的在運算
+  - 根因：PyTorch MPS 對 seq2seq beam search `generate()` 重複呼叫（迴圈跑約 188 批）不會自動釋放快取，記憶體線性累積
+- **修法**：
+  1. 改寫步驟固定用 CPU（實測 CPU 與 MPS 單批耗時相近，此模型量級下無需 MPS）
+  2. 加上第二道防線：每批強制 `torch.mps.empty_cache()`（若未來改回 MPS/CUDA）
+  3. 程式內建記憶體防護：單批超過 2 分鐘或 RSS 超過 8GB 自動中止並保留已完成部分
+  4. 外部獨立 watchdog（每 15-20 秒檢查 RSS，超過門檻強制 kill），作為腳本內防護失效時的最後防線
+  5. 所有 print 加 `flush=True` 並以 `python -u` 執行，避免「有在跑但看不到輸出」與「真的卡死」混淆不清
+- 重跑後：CPU 版本全程 RSS 穩定於 4-5GB，79 分鐘乾淨完成，watchdog 全程未觸發
+
+**為什麼**
+- 使用者指示接續完成對抗式防禦模組 D 的訓練管線
+
+**決策與取捨**
+- 診斷優先於盲目重跑：先用 `sample` 取樣證實是記憶體問題而非其他原因，才對症下藥，避免同樣的等待再發生一次
+- 選擇 CPU 而非繼續嘗試修 MPS 快取問題：診斷顯示兩者單批耗時相近，CPU 路徑更簡單可靠、風險更低
+- watchdog 用外部獨立 shell script 而非僅信任程式內防護：雙重保險，即使程式內邏輯有 bug 也不會讓系統再次被拖垮
+
+**待辦/遺留問題**
+- 對抗模組 D 的模型需 host 才能從 app 內下載（本地已訓練驗證，路徑同其他模型）
+- catalog 目前 adversarial 變體的 url 指向本地測試位址（非我本次異動範圍，留給進行中的相關工作處理）
+
+---
+
 ## 2026-07-04 — [修正] 解決體檢發現的三個風險
 
 **做了什麼**
