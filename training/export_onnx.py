@@ -12,7 +12,7 @@ import torch
 from onnxruntime.quantization import QuantType, quantize_dynamic
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from config import TrainConfig, quick_smoke
+from config import TrainConfig, adversarial, quick_smoke
 
 
 def export(cfg: TrainConfig) -> None:
@@ -60,5 +60,8 @@ def export(cfg: TrainConfig) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--adversarial", action="store_true")
     args = ap.parse_args()
-    export(quick_smoke() if args.quick else TrainConfig())
+    cfg = quick_smoke() if args.quick else (
+        adversarial() if args.adversarial else TrainConfig())
+    export(cfg)

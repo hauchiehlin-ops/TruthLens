@@ -19,7 +19,7 @@ from transformers import (
     set_seed,
 )
 
-from config import DATA_DIR, TrainConfig, quick_smoke
+from config import DATA_DIR, TrainConfig, adversarial, quick_smoke
 
 
 def _device() -> str:
@@ -60,8 +60,8 @@ def train(cfg: TrainConfig) -> None:
     data = load_dataset(
         "json",
         data_files={
-            "train": f"{DATA_DIR}/train.jsonl",
-            "val": f"{DATA_DIR}/val.jsonl",
+            "train": f"{DATA_DIR}/{cfg.train_file}",
+            "val": f"{DATA_DIR}/{cfg.val_file}",
         },
     )
 
@@ -114,5 +114,8 @@ def train(cfg: TrainConfig) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true", help="煙霧測試（小模型/1 epoch）")
+    ap.add_argument("--adversarial", action="store_true", help="訓練對抗防禦模組 D")
     args = ap.parse_args()
-    train(quick_smoke() if args.quick else TrainConfig())
+    cfg = quick_smoke() if args.quick else (
+        adversarial() if args.adversarial else TrainConfig())
+    train(cfg)

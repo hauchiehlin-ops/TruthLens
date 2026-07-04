@@ -34,7 +34,7 @@ class EnsembleOrchestrator {
         TransformerEngine(modelManager: mm),
         StatisticalEngine(modelManager: mm),
         StylometryEngine(),
-        AdversarialEngine(modelManager: mm, native: native),
+        AdversarialEngine(modelManager: mm),
       ];
 
   /// 逐引擎回報進度：engineId → 完成。

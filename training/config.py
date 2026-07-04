@@ -43,17 +43,42 @@ class TrainConfig:
 
     labels: list[str] = field(default_factory=lambda: ["human", "ai"])
 
+    # 資料檔與輸出命名（供不同任務共用同一套 train/export 流程，如對抗模組 D）
+    train_file: str = "train.jsonl"
+    val_file: str = "val.jsonl"
+    out_dir_name: str = "classifier"
+    onnx_name: str = "detector"
+
     @property
     def model_out(self) -> str:
-        return os.path.join(OUTPUT_DIR, "classifier")
+        return os.path.join(OUTPUT_DIR, self.out_dir_name)
 
     @property
     def onnx_out(self) -> str:
-        return os.path.join(OUTPUT_DIR, "detector.onnx")
+        return os.path.join(OUTPUT_DIR, f"{self.onnx_name}.onnx")
 
     @property
     def onnx_int8_out(self) -> str:
-        return os.path.join(OUTPUT_DIR, "detector_int8.onnx")
+        return os.path.join(OUTPUT_DIR, f"{self.onnx_name}_int8.onnx")
+
+
+def adversarial() -> "TrainConfig":
+    """對抗式防禦模組 D（改寫偵測）。
+
+    以「改寫後的 AI 文本」與「原生 AI 文本」皆標為 AI(1)、人類標為 human(0) 訓練，
+    使分類器對改寫規避（QuillBot / Undetectable.ai 等）具韌性。
+    資料由 prepare_adversarial.py 產生。
+    """
+    return TrainConfig(
+        base_model="distilbert-base-multilingual-cased",
+        epochs=2,  # 對抗集較小，用 2 epoch
+        max_per_class=10000,
+        use_chinese=False,
+        train_file="adv_train.jsonl",
+        val_file="adv_val.jsonl",
+        out_dir_name="adv_classifier",
+        onnx_name="adversarial",
+    )
 
 
 def quick_smoke() -> "TrainConfig":
