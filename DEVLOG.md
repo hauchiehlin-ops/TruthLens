@@ -13,6 +13,30 @@
 
 ---
 
+## 2026-07-04 — [P2 AI引擎] 對抗模組 D 正式上架 GitHub Releases，首個真實可下載模型
+
+**做了什麼**
+- 使用者授權將 `adversarial_int8.onnx`（135,729,550 bytes）與對應 `tokenizer.json` 上傳至 GitHub Releases
+- **權限排查**：`gh` CLI 當時登入帳號對 `hauchiehlin-ops/TruthLens` 只有 `push: false`（唯讀），儘管同一 session 稍早的 `git push` 確實成功過（兩者用的認證路徑不同，具體原因未完全查明）。請使用者改用 `gh auth login` 切換到有 write 權限的帳號（`hauchiehlin-ops` 本人），切換後 `gh api` 確認 `push: true`/`admin: true` 才繼續
+- 建立 release `models-v1`，上傳兩檔案；下載 URL 經 `curl -IL` 確認可公開存取（200，content-length 與檔案大小完全吻合）；本地與下載回來的檔案 sha256 皆為 `fc17982...e41b`，確認上傳無損毀
+- 更新 [assets/model_catalog.json](assets/model_catalog.json)：`adversarial` 角色的 `url`/`tokenizer_url` 填入真實 GitHub Releases 網址、`sha256` 填入實際雜湊、`size_bytes` 校正為精確位元組數、`page_url` 指向 release 頁面
+- **端到端實機驗證**：用 computer-use 啟動 App，在「AI 模型管理」對「改寫偵測模型」按下真實下載——完整走過下載進度顯示（54%→100%）、sha256 驗證、寫入 manifest、自動設為使用中變體；事後核對容器內檔案位元組數與 sha256 皆與 catalog 記錄一致
+- 擴充 [model_catalog_asset_test.dart](test/model_catalog_asset_test.dart) 的迴歸測試在此次修改後仍全數通過（含先前為此問題新增的 127.0.0.1 檢查，證明真實網址不會誤觸）
+- 驗證：78 單元測試全過、analyze 零問題、macOS build 綠燈，加上上述實機下載全流程確認
+
+**為什麼**
+- 使用者明確授權上傳，用以解決先前「對抗模組 D 尚未上架」的已知缺口
+
+**決策與取捨**
+- 權限請求走「使用者自行 gh auth login 切換帳號」而非直接在對話中傳遞 token 明文，降低憑證外洩風險
+- 上傳前後皆做 sha256 比對（本地檔案 vs 下載回來的檔案 vs 填入 catalog 的值），三方一致才視為完成，而非只信任上傳指令回傳成功
+
+**待辦/遺留問題**
+- 多語言偵測器（`truthlens-multilingual-distil-int8`）仍待比照本次流程上傳
+- LLM（Gemma/Qwen GGUF）與其餘模型的來源網址維持現狀（非本次範圍）
+
+---
+
 ## 2026-07-04 — [修正] catalog 對抗模組 D 的下載網址指向開發機本地伺服器
 
 **做了什麼**
