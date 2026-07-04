@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/detection/orchestrator.dart';
 import '../../core/services/history_repository.dart';
 import '../../core/services/preferences_service.dart';
+import '../../shared/widgets/analysis_wave.dart';
 
 /// 分析進度頁：顯示四個子模型的即時進度，完成後導向報告頁
 class AnalysisScreen extends StatefulWidget {
@@ -57,12 +58,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(),
+              Semantics(
+                label: '分析進行中，已完成 ${_done.length} / ${_engineLabels.length} 個引擎',
+                child: const AnalysisWave(),
+              ),
               const SizedBox(height: 32),
               for (final entry in _engineLabels.entries)
                 ListTile(
                   leading: _done.contains(entry.key)
-                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      ? const Icon(Icons.check_circle, color: Colors.green,
+                          semanticLabel: '已完成')
                       : const SizedBox(
                           width: 24,
                           height: 24,

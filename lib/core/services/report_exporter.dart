@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../features/report/report_composer.dart';
+import '../../features/report/summary_card.dart';
 import '../models/detection_result.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
@@ -284,6 +285,15 @@ class ReportExporter {
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.json',
       extension: 'json',
+    );
+  }
+
+  static Future<String?> exportPng(DetectionResult r) async {
+    final bytes = await SummaryCard.renderPng(r);
+    return _save(
+      bytes: bytes,
+      fileName: 'truthlens_${_timestamp(r.analyzedAt)}.png',
+      extension: 'png',
     );
   }
 

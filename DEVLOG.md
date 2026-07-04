@@ -13,6 +13,26 @@
 
 ---
 
+## 2026-07-04 — [P4 打磨上架] 無障礙 + 分析動畫 + PNG 摘要卡
+
+**做了什麼**
+- **PNG 摘要卡匯出**（plan 第九節）：[summary_card.dart](lib/features/report/summary_card.dart) 以 Canvas 直接繪製社群分享卡（環形 AI%、判定 pill、句數統計、離線標語）→ PNG；`ReportExporter.exportPng` + 報告匯出選單新增。匯出格式現達 PDF/CSV/JSON/PNG。**在 macOS app 內以真實字型產圖驗證**，中英文與數字皆正確渲染
+- **分析動畫**：[analysis_wave.dart](lib/shared/widgets/analysis_wave.dart)（AnimationController + CustomPainter）——脈動外圈 + 流動正弦波，取代分析頁靜態進度圈
+- **無障礙**：ScoreGauge 加 `Semantics` 語意標籤（唸出判定+機率）並 ExcludeSemantics 內部裝飾；分析頁波形與完成圖示加語意標籤/進度描述
+- 測試：summary_card PNG 位元組驗證；共 61 單元測試全過，analyze 零問題，macOS build 綠燈
+
+**為什麼**
+- 使用者指定把「可現在做完」的 UX 批次一次完成
+
+**決策與取捨**
+- PNG 用純 Canvas 繪製（非擷取 widget）：可單元測試、不需離屏 render，且版面可控
+- 分析動畫用 CustomPainter 自繪，無額外套件依賴
+
+**待辦/遺留問題**
+- 無障礙可再擴及更多畫面（歷史/設定的細項）；效能量測、對抗 D、LLM、跨平台 OCR/建置 仍待
+
+---
+
 ## 2026-07-04 — [P2 AI引擎] 統計 B 接真困惑度（DistilGPT2 端上）
 
 **做了什麼**

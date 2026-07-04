@@ -63,6 +63,7 @@ class _ReportScreenState extends State<ReportScreen> {
             onSelected: (v) => _export(switch (v) {
               'pdf' => ReportExporter.exportPdf,
               'json' => ReportExporter.exportJson,
+              'png' => ReportExporter.exportPng,
               _ => ReportExporter.exportCsv,
             }),
             itemBuilder: (context) => const [
@@ -85,6 +86,13 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: ListTile(
                   leading: Icon(Icons.data_object),
                   title: Text('匯出 JSON（系統整合）'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'png',
+                child: ListTile(
+                  leading: Icon(Icons.image_outlined),
+                  title: Text('匯出摘要卡（PNG）'),
                 ),
               ),
             ],
