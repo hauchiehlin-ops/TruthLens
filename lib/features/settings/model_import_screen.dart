@@ -40,6 +40,11 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   String? _testError;
   bool _importing = false;
 
+  /// 與剛選取的模型檔內容相同（sha256 一致）的既有已安裝模型；非 null 時顯示
+  /// 重複提醒。不會阻擋匯入，只是提醒使用者可能不需要再匯入一次。
+  InstalledModel? _duplicate;
+  bool _checkingDuplicate = false;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -82,7 +87,27 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
       _nameController.text = name.replaceAll('.onnx', '');
       _testResult = null;
       _testError = null;
+      _duplicate = null;
+      _checkingDuplicate = true;
     });
+    await _checkDuplicate(file);
+  }
+
+  /// 匯入前偵測：這個模型檔的內容是否與某個已安裝的模型相同（sha256 一致）。
+  Future<void> _checkDuplicate(File file) async {
+    final manager = context.read<ModelManager>();
+    try {
+      final hash = await manager.hashOf(file);
+      final match = manager.findByHash(hash);
+      if (!mounted) return;
+      setState(() {
+        _duplicate = match;
+        _checkingDuplicate = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _checkingDuplicate = false);
+    }
   }
 
   Future<void> _pickTokenizer() async {
@@ -209,10 +234,57 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         ),
                       ],
                     ),
+                    if (_checkingDuplicate) ...[
+                      const SizedBox(height: 8),
+                      const Row(
+                        children: [
+                          SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('偵測是否已匯入過相同檔案…',
+                              style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
             ),
+            if (_duplicate != null) ...[
+              const SizedBox(height: 12),
+              Card(
+                color: cs.tertiaryContainer.withValues(alpha: 0.4),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: cs.tertiary),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('偵測到相同內容的模型已匯入過',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text(
+                              '此檔案與「${_duplicate!.displayName}」'
+                              '（角色：${_duplicate!.role}）內容完全相同。'
+                              '如果只是想切換使用中模型，可以到「AI 模型管理」'
+                              '直接設為使用中，不需要重新匯入。仍可繼續完成以下步驟。',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
 
             // 2. Configuration Settings

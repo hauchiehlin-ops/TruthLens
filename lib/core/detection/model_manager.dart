@@ -26,6 +26,7 @@ class InstalledModel {
   final int sizeBytes;
   final String? name; // 友善名稱（匯入的模型用）
   final bool imported;
+  final String? sha256; // 模型檔內容雜湊，供匯入前偵測重複檔案用
 
   const InstalledModel({
     required this.role,
@@ -38,6 +39,7 @@ class InstalledModel {
     this.aiLabelIndex = 1,
     this.name,
     this.imported = false,
+    this.sha256,
   });
 
   String get displayName => name ?? variantId;
@@ -53,6 +55,7 @@ class InstalledModel {
         'size_bytes': sizeBytes,
         'name': name,
         'imported': imported,
+        'sha256': sha256,
       };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) => InstalledModel(
@@ -66,6 +69,7 @@ class InstalledModel {
         sizeBytes: (j['size_bytes'] as num?)?.toInt() ?? 0,
         name: j['name'] as String?,
         imported: j['imported'] as bool? ?? false,
+        sha256: j['sha256'] as String?,
       );
 }
 
@@ -234,8 +238,52 @@ class ModelManager extends ChangeNotifier {
         progress: installed.isNotEmpty ? 1 : 0,
       );
     }
+    await _backfillMissingHashes(dir);
     await _persist();
     notifyListeners();
+  }
+
+  /// 為舊資料（本功能上線前已匯入、尚無 sha256）的自訂匯入模型補算雜湊，
+  /// 讓「匯入前偵測重複檔案」對這些既有項目也能生效，不必要求使用者重新匯入。
+  Future<void> _backfillMissingHashes(Directory dir) async {
+    for (final role in _roles.keys.toList()) {
+      final r = _roles[role]!;
+      if (r.installed.isEmpty) continue;
+      var changed = false;
+      final updated = <String, InstalledModel>{};
+      for (final entry in r.installed.entries) {
+        final m = entry.value;
+        if (m.imported && m.sha256 == null) {
+          final file = File(p.join(dir.path, m.fileName));
+          if (file.existsSync()) {
+            try {
+              final hash = await _sha256Of(file);
+              updated[entry.key] = InstalledModel(
+                role: m.role,
+                variantId: m.variantId,
+                fileName: m.fileName,
+                tokenizerFileName: m.tokenizerFileName,
+                tokenizer: m.tokenizer,
+                aiLabelIndex: m.aiLabelIndex,
+                version: m.version,
+                sizeBytes: m.sizeBytes,
+                name: m.name,
+                imported: m.imported,
+                sha256: hash,
+              );
+              changed = true;
+              continue;
+            } catch (_) {
+              // 讀取失敗則略過，保留原項目（不含 sha256）
+            }
+          }
+        }
+        updated[entry.key] = m;
+      }
+      if (changed) {
+        _roles[role] = r.copyWith(installed: updated);
+      }
+    }
   }
 
   bool isInstalled(String role) => _roles[role]?.hasInstalled ?? false;
@@ -422,6 +470,7 @@ class ModelManager extends ChangeNotifier {
     try {
       // 複製模型檔
       await modelFile.copy(target.path);
+      final hash = await _sha256Of(target);
 
       // 複製 tokenizer 檔
       if (tokenizerFile != null && tokenizerType != 'none') {
@@ -442,6 +491,7 @@ class ModelManager extends ChangeNotifier {
         sizeBytes: modelFile.lengthSync(),
         name: name,
         imported: true,
+        sha256: hash,
       );
 
       _roles[role] = r.copyWith(
@@ -458,6 +508,20 @@ class ModelManager extends ChangeNotifier {
       debugPrint('Failed to import local model: $e');
       return false;
     }
+  }
+
+  /// 計算檔案的 sha256（公開方法，供 UI 在匯入前比對是否已存在相同內容的模型）。
+  Future<String> hashOf(File file) => _sha256Of(file);
+
+  /// 依內容雜湊尋找是否已有相同的已安裝模型（跨所有角色搜尋）。
+  /// 用於匯入前提醒使用者「這個檔案可能已經匯入過了」，避免不小心重複匯入。
+  InstalledModel? findByHash(String sha256) {
+    for (final r in _roles.values) {
+      for (final m in r.installed.values) {
+        if (m.sha256 == sha256) return m;
+      }
+    }
+    return null;
   }
 
   /// 測試單一 ONNX 模型，回傳 AI 機率（0..1）。用於匯入前預覽與驗證。
