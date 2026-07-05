@@ -13,6 +13,29 @@
 
 ---
 
+## 2026-07-05 — [P4 打磨上架] 首頁新增「操作說明」與「隱私權政策」
+
+**做了什麼**
+- 新增 [help_screen.dart](lib/features/help/help_screen.dart)（操作說明）：
+  1. 產品介紹 + 與市面五大主流工具（GPTZero、Turnitin、Originality.ai、Copyleaks、Winston AI）逐一比較，並列出 TruthLens 獨有優勢（超連結／文獻真實性驗證、ESL 偏差修正、自訂模型匯入）
+  2. 完整操作流程（5 步驟）：模型下載與更新 → 如何選用模型（各引擎權重與目的效果）→ 文檔上傳 → 開始分析 → 查看與匯出結果
+  3. 模型下載與調適教學（零基礎，5 步驟）：開啟模型管理 → 依裝置能力挑選 → 下載與套用 → 更新 → 進階自訂模型匯入；並附四個模型角色的官方下載連結（Transformer/統計/對抗式/LLM，取自 `assets/model_catalog.json` 的真實 `page_url`），點擊以 `url_launcher` 開啟系統瀏覽器
+- 新增 [privacy_policy_screen.dart](lib/features/help/privacy_policy_screen.dart)（隱私權政策）：以 `defaultTargetPlatform` 偵測目前執行的作業系統，顯示對應平台措辭的政策內容（iOS／Android／macOS／Windows 各有專屬章節呼應該平台的商店揭露慣例，如 App Store 隱私「營養標籤」、Google Play「資料安全」、macOS App Sandbox 權限），核心資料處理與連線行為說明四平台一致（因為實際行為本來就相同，只是揭露格式不同），並附非法律文件聲明
+- [router.dart](lib/app/router.dart) 新增 `/help`、`/privacy` 路由；[input_screen.dart](lib/features/input/input_screen.dart) 首頁 AppBar 新增對應的兩個圖示入口
+
+**為什麼**
+- 使用者要求首頁增設這兩個功能分頁，並給出明確內容要求（含與競品比較、完整流程、模型調適零基礎教學含官方連結、依作業系統顯示對應隱私權政策）
+
+**決策與取捨**
+- 隱私權政策明確聲明「非律師審閱之正式法律文件」：內容如實反映本 App 目前的實際行為（無帳號、無廣告追蹤、核心運算裝置端執行、僅三項必要連線行為），但正式法遵文件仍應由專業法律意見審查，避免誤導使用者以為這是通過認證的法律文件
+- 官方模型連結直接從 `assets/model_catalog.json` 讀取真實 `page_url`／`source` 欄位轉寫，而非重新查找或手動輸入，確保與實際可下載來源一致
+- 五大比較工具選用 implementation_plan.md 既有市場分析中最具代表性的獨立標準檢測工具（GPTZero、Turnitin、Originality.ai、Copyleaks、Winston AI），排除 QuillBot（主力為改寫而非偵測）與 ZeroGPT，並在頁面附註「僅供功能定位參考，非第三方認證數據」避免誇大宣稱
+
+**待辦/遺留問題**
+- 本次新增畫面因 computer-use 環境暫時性問題（點擊功能被系統誤判為「通知中心」而全數擋下，鍵盤輸入不受影響，重新授權/Escape/更換視窗位置皆未解除）而**未能實機驗證**，僅以 `flutter analyze`（乾淨）與完整測試套件（110 項全過）作為完成標準，經使用者確認後提交。待 computer-use 恢復正常後，建議實際開啟「操作說明」「隱私權政策」兩畫面確認排版與連結可正常開啟
+
+---
+
 ## 2026-07-05 — [P3 智慧報告] 報告預設顯示「超連結真實性」「文獻參考真實性」兩主題
 
 **做了什麼**

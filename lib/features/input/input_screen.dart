@@ -153,6 +153,16 @@ class _InputScreenState extends State<InputScreen> {
             onPressed: () => context.push('/history'),
           ),
           IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: '操作說明',
+            onPressed: () => context.push('/help'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.privacy_tip_outlined),
+            tooltip: '隱私權政策',
+            onPressed: () => context.push('/privacy'),
+          ),
+          IconButton(
             icon: Badge(
               isLabelVisible: context.watch<ModelManager>().hasAnyUpdate,
               child: const Icon(Icons.settings_outlined),

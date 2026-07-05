@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 
 import '../core/models/detection_result.dart';
 import '../features/analysis/analysis_screen.dart';
+import '../features/help/help_screen.dart';
+import '../features/help/privacy_policy_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/input/input_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
@@ -27,5 +29,9 @@ GoRouter createRouter({required String initialLocation}) => GoRouter(
         GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
         GoRoute(
             path: '/models', builder: (_, _) => const ModelManagerScreen()),
+        GoRoute(path: '/help', builder: (_, _) => const HelpScreen()),
+        GoRoute(
+            path: '/privacy',
+            builder: (_, _) => const PrivacyPolicyScreen()),
       ],
     );
