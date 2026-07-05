@@ -32,7 +32,7 @@
 - 五大比較工具選用 implementation_plan.md 既有市場分析中最具代表性的獨立標準檢測工具（GPTZero、Turnitin、Originality.ai、Copyleaks、Winston AI），排除 QuillBot（主力為改寫而非偵測）與 ZeroGPT，並在頁面附註「僅供功能定位參考，非第三方認證數據」避免誇大宣稱
 
 **待辦/遺留問題**
-- 本次新增畫面因 computer-use 環境暫時性問題（點擊功能被系統誤判為「通知中心」而全數擋下，鍵盤輸入不受影響，重新授權/Escape/更換視窗位置皆未解除）而**未能實機驗證**，僅以 `flutter analyze`（乾淨）與完整測試套件（110 項全過）作為完成標準，經使用者確認後提交。待 computer-use 恢復正常後，建議實際開啟「操作說明」「隱私權政策」兩畫面確認排版與連結可正常開啟
+- 無。提交當下 computer-use 點擊功能暫時卡住（誤判整個畫面為「通知中心」），先以 `flutter analyze` + 完整測試套件（110 項全過）作為完成標準提交；稍後 computer-use 自行恢復，已補做實機驗證：「操作說明」比較表、五步驟操作流程、模型調適教學與官方連結皆正確顯示，點擊模型連結確實開啟系統瀏覽器；「隱私權政策」正確依 `defaultTargetPlatform` 顯示 macOS 版內容（App Sandbox 權限說明、必要連線行為、非法律文件聲明皆正確顯示）
 
 ---
 
