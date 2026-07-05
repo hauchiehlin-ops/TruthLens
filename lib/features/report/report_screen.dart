@@ -170,14 +170,10 @@ class _ReportScreenState extends State<ReportScreen> {
                       _component(c),
                       const SizedBox(height: 16),
                     ],
-                    if (_detectedUrls.isNotEmpty) ...[
-                      _linkVerificationCard(),
-                      const SizedBox(height: 16),
-                    ],
-                    if (_bibEntries.isNotEmpty) ...[
-                      _bibliographyCard(),
-                      const SizedBox(height: 16),
-                    ],
+                    _linkVerificationCard(),
+                    const SizedBox(height: 16),
+                    _bibliographyCard(),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -381,6 +377,32 @@ class _ReportScreenState extends State<ReportScreen> {
     final scheme = Theme.of(context).colorScheme;
     final checks = _linkChecks;
 
+    if (_detectedUrls.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.link, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('超連結真實性',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    const Text('未在文件中偵測到超連結。'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (checks == null) {
       // 尚未驗證：功能關閉時僅提示、不連線；正在驗證時顯示進度
       return Card(
@@ -400,6 +422,9 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('超連結真實性',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
                     Text(
                       _checkingLinks
                           ? '正在驗證連結…'
@@ -435,7 +460,7 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('超連結驗證', style: Theme.of(context).textTheme.titleMedium),
+            Text('超連結真實性', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             for (final c in checks)
               Padding(
@@ -503,6 +528,32 @@ class _ReportScreenState extends State<ReportScreen> {
     final scheme = Theme.of(context).colorScheme;
     final checks = _bibChecks;
 
+    if (_bibEntries.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.menu_book_outlined, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('文獻參考真實性',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    const Text('未在文件中偵測到參考文獻條目。'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (checks == null) {
       return Card(
         child: Padding(
@@ -522,6 +573,9 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('文獻參考真實性',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
                     Text(
                       _checkingBib
                           ? '正在核實參考文獻目錄…'
@@ -557,7 +611,7 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('參考文獻目錄核實', style: Theme.of(context).textTheme.titleMedium),
+            Text('文獻參考真實性', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
               '依作者、年份與篇名相似度比對 Crossref 公開登記資料，非絕對保證，'
