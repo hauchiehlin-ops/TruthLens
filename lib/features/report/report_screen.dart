@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../app/theme.dart';
 import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
+import '../../core/services/bibliography_verifier.dart';
 import '../../core/services/link_verifier.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
@@ -29,15 +30,24 @@ class _ReportScreenState extends State<ReportScreen> {
   bool _checkingLinks = false;
   List<LinkCheckResult>? _linkChecks;
 
+  late final List<BibliographyEntry> _bibEntries =
+      BibliographyVerifier.extractEntries(result.inputText);
+  bool _checkingBib = false;
+  List<BibliographyCheckResult>? _bibChecks;
+
   DetectionResult get result => widget.result;
 
   @override
   void initState() {
     super.initState();
     _generate();
-    if (_detectedUrls.isNotEmpty &&
-        context.read<PreferencesService>().linkVerificationEnabled) {
+    final linkVerificationOn =
+        context.read<PreferencesService>().linkVerificationEnabled;
+    if (_detectedUrls.isNotEmpty && linkVerificationOn) {
       _verifyLinks();
+    }
+    if (_bibEntries.isNotEmpty && linkVerificationOn) {
+      _verifyBibliography();
     }
   }
 
@@ -54,6 +64,17 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() {
         _linkChecks = checks;
         _checkingLinks = false;
+      });
+    }
+  }
+
+  Future<void> _verifyBibliography() async {
+    setState(() => _checkingBib = true);
+    final checks = await BibliographyVerifier.verifyAll(_bibEntries);
+    if (mounted) {
+      setState(() {
+        _bibChecks = checks;
+        _checkingBib = false;
       });
     }
   }
@@ -151,6 +172,10 @@ class _ReportScreenState extends State<ReportScreen> {
                     ],
                     if (_detectedUrls.isNotEmpty) ...[
                       _linkVerificationCard(),
+                      const SizedBox(height: 16),
+                    ],
+                    if (_bibEntries.isNotEmpty) ...[
+                      _bibliographyCard(),
                       const SizedBox(height: 16),
                     ],
                   ],
@@ -471,6 +496,125 @@ class _ReportScreenState extends State<ReportScreen> {
           '${c.articleTitle != null ? '，篇名：${c.articleTitle}' : ''}',
       LinkStatus.notFound => '查無此 DOI 登記紀錄，可能為虛構引用',
       LinkStatus.unreachable => '無法確認（連線逾時或 Crossref 無回應）',
+    };
+  }
+
+  Widget _bibliographyCard() {
+    final scheme = Theme.of(context).colorScheme;
+    final checks = _bibChecks;
+
+    if (checks == null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _checkingBib
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : Icon(Icons.menu_book_outlined,
+                      color: scheme.onSurfaceVariant),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _checkingBib
+                          ? '正在核實參考文獻目錄…'
+                          : '偵測到參考文獻目錄（${_bibEntries.length} 筆），尚未核實是否存在',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    if (!_checkingBib) ...[
+                      const SizedBox(height: 4),
+                      const Text(
+                        'AI 生成內容常附上看似合理但實際不存在的參考文獻。'
+                        '你已在「設定」關閉超連結驗證；可重新開啟以自動核實，'
+                        '或點擊下方按鈕做單次核實。',
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: _verifyBibliography,
+                        icon: const Icon(Icons.wifi_outlined),
+                        label: const Text('立即核實（需連線）'),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('參考文獻目錄核實', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              '依作者、年份與篇名相似度比對 Crossref 公開登記資料，非絕對保證，'
+              '「無法確定」時建議自行核對。',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            for (final c in checks)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      switch (c.confidence) {
+                        CitationMatchConfidence.high => Icons.check_circle,
+                        CitationMatchConfidence.notFound => Icons.link_off,
+                        CitationMatchConfidence.uncertain => Icons.help_outline,
+                      },
+                      size: 18,
+                      color: switch (c.confidence) {
+                        CitationMatchConfidence.high => Colors.green,
+                        CitationMatchConfidence.notFound => Colors.red,
+                        CitationMatchConfidence.uncertain => Colors.orange,
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${c.entry.rawText}\n${_bibStatusLabel(c)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_bibEntries.length > BibliographyVerifier.maxEntriesPerCheck)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  '僅核實前 ${BibliographyVerifier.maxEntriesPerCheck} 筆'
+                  '（共偵測到 ${_bibEntries.length} 筆）',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _bibStatusLabel(BibliographyCheckResult c) {
+    return switch (c.confidence) {
+      CitationMatchConfidence.high => '高可信度：應存在'
+          '${c.matchedJournal != null ? '（登記於《${c.matchedJournal}》）' : ''}',
+      CitationMatchConfidence.notFound => '查無相近匹配，可能為虛構文獻',
+      CitationMatchConfidence.uncertain => '相似度中等或連線失敗，無法確定，建議自行核對',
     };
   }
 }

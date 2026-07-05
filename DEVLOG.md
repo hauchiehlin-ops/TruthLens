@@ -13,6 +13,30 @@
 
 ---
 
+## 2026-07-05 — [P2 AI引擎] 參考文獻目錄核實（無 DOI 的「作者—年份」引用）
+
+**做了什麼**
+- 使用者提供一張學術論文「References」頁截圖（15 筆 Couette 流動研究文獻，純作者—年份格式，無 DOI、無任何超連結），詢問能否為這類條目建立存在性驗證機制。先提出方案與主要取捨（模糊比對而非絕對真偽判定）供使用者確認，取得同意後實作
+- 新增 [bibliography_verifier.dart](lib/core/services/bibliography_verifier.dart)：
+  - `extractEntries()`：偵測文件中的「References/Bibliography/參考文獻/參考書目/引用文獻」標題，並依條目切分——條目起始樣式為一位以上作者「Surname, Initials.」（可用純逗號、"and"、"&" 任意組合連接，如 `A, B., C, D., and E, F.,`）後接四位數年份與句點；正則設計中途踩過一次坑：一開始用「逗號後接 and 才算連接詞」的寫法，導致像 `Ahlers, G., Cannell, D.S., and Lerma, M.A.D., 1983.`（前兩位作者純逗號分隔、最後一位才用 and）這種常見學術格式會在「Cannell」處誤判斷點——改成「連接詞可以是純逗號、純 and、或逗號+and」三選一才修正，並用使用者截圖原文的完整 15 筆逐一驗證切分結果全部正確
+  - `verifyAll()`：對每筆條目查詢 Crossref 的**書目搜尋**端點（`api.crossref.org/works?query.bibliographic=...`，直接送出整條參考文獻文字，不需自行做複雜的欄位比對查詢），取得最相近的一筆候選後，用篇名相似度（詞彙 Jaccard 相似度）＋年份是否吻合（容許 ±1，因印刷版/線上版年份可能差一年）＋第一作者姓氏是否吻合三項綜合判定，分三檔：高可信度應存在／查無相近匹配可能虛構／相似度中等或連線失敗故無法確定
+- [report_screen.dart](lib/features/report/report_screen.dart) 新增「參考文獻目錄核實」卡片，觸發邏輯與既有超連結驗證卡片一致（沿用同一個 `linkVerificationEnabled` 開關：開啟時自動核實，關閉時顯示提示與「立即核實」單次按鈕）
+- [settings_screen.dart](lib/features/settings/settings_screen.dart) 說明文字同步更新，涵蓋「沒有連結的作者—年份參考文獻」
+- 測試：[bibliography_verifier_test.dart](test/bibliography_verifier_test.dart)（條目切分含單/雙/三作者與純逗號/and 混合連接、中英文標題偵測、Crossref 高可信度/查無匹配/篇名不符/連線失敗四種情境）
+- **實機驗證**：用 computer-use 貼入使用者截圖原文的其中 4 筆真實文獻＋1 筆刻意捏造的假文獻（"Fakerman, Q.Z., 2024. A completely fabricated study..."），執行分析後「參考文獻目錄核實」卡片正確將 3 筆真實文獻標記綠色「高可信度：應存在（登記於《期刊名》）」、捏造文獻標記紅色「查無相近匹配，可能為虛構文獻」
+
+**為什麼**
+- 使用者提供的截圖顯示的參考文獻格式（純作者—年份，無 DOI）是先前 DOI-only 的期刊核實規則涵蓋不到的常見情況，因此需要另一套規則來處理
+
+**決策與取捨**
+- Crossref 書目搜尋是模糊匹配（非 DOI 查詢那種精確存在性判定），因此明確採用「高可信度／查無匹配／無法確定」三檔而非二元「存在/不存在」，並在卡片上加註「非絕對保證」的提醒，避免使用者誤將「無法確定」當作「已核實不存在」
+- 沿用既有的 `linkVerificationEnabled` 開關而非另開新設定：使用者的心智模型是「超連結／引用驗證」同一件事，拆成兩個開關只會增加設定頁複雜度
+
+**待辦/遺留問題**
+- 無
+
+---
+
 ## 2026-07-05 — [P2 AI引擎][P4 打磨上架] 取消「完全離線」原則、主動模型更新偵測、期刊文獻目錄核實
 
 **做了什麼**
