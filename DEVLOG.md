@@ -13,6 +13,35 @@
 
 ---
 
+## 2026-07-05 — [P4 打磨上架] 全面多語系化：13 種語言 + 首頁語系切換選單
+
+**做了什麼**
+- 使用者要求：所有操作介面文字標籤（含提示詞、警告訊息、引擎判定理由、報告敘事）需完全支援 13 種語言——繁體中文、簡體中文、英文、日文、韓文、泰文、馬來文、西班牙文、印尼文、俄文、德文、法文、葡萄牙文，並在首頁提供語系切換下拉選單
+- 導入 Flutter 官方 l10n 工具鏈：[l10n.yaml](l10n.yaml)（`nullable-getter: false`）+ [lib/l10n/app_en.arb](lib/l10n/app_en.arb)（模板，325 個 key，含完整 `@key` placeholder metadata）+ 12 個對應語系 ARB 檔（`app_zh_Hant` / `app_zh_Hans` / `app_zh`〔script-qualified locale 必要的 fallback〕/ `app_ja` / `app_ko` / `app_th` / `app_ms` / `app_es` / `app_id` / `app_ru` / `app_de` / `app_fr` / `app_pt`），`flutter gen-l10n` 產生 `lib/l10n/generated/`
+- 簡體中文改用 OpenCC（`tw2sp` profile）從繁體版本程式化轉換，而非重新手動翻譯一次；轉換後以 Python 腳本驗證零 placeholder 損毀
+- 每個 ARB 檔都經過驗證腳本檢查：JSON 合法性、key 集合與英文模板完全一致（無缺漏／多餘 key）、每個 key 的 `{placeholder}` 名稱集合一致
+- **靜態 UI 文字**：[input_screen.dart](lib/features/input/input_screen.dart)（含新增的語系切換 `PopupMenuButton`，`kSupportedLanguageOptions` 14 項含「跟隨系統」）、[analysis_screen.dart](lib/features/analysis/analysis_screen.dart)、[report_screen.dart](lib/features/report/report_screen.dart)、[settings_screen.dart](lib/features/settings/settings_screen.dart)（新增語言下拉選單設定項）、[history_screen.dart](lib/features/history/history_screen.dart)、[model_import_screen.dart](lib/features/settings/model_import_screen.dart)、onboarding 系列畫面、[help_screen.dart](lib/features/help/help_screen.dart)、[privacy_policy_screen.dart](lib/features/help/privacy_policy_screen.dart) 全數改為 `l10n.xxx` 呼叫
+- **動態生成內容**（使用者原話明確要求一併完成，而非只做靜態文字）：`DetectionEngine` 介面改為 `name(AppLocalizations l10n)` / `analyze(text, l10n)`，四個引擎實作（[transformer_engine.dart](lib/core/detection/engines/transformer_engine.dart)、[statistical_engine.dart](lib/core/detection/engines/statistical_engine.dart)、[stylometry_engine.dart](lib/core/detection/engines/stylometry_engine.dart)、[adversarial_engine.dart](lib/core/detection/engines/adversarial_engine.dart)）的判定理由字串全部改用 `l10n.engineReasonXxx(...)`；[orchestrator.dart](lib/core/detection/orchestrator.dart) 的 `analyze()` 新增可選的 `AppLocalizations? l10n` 參數（預設 `lookupAppLocalizations(Locale('en'))`，刻意設計成向下相容，避免既有測試呼叫點需要改動）；[report_composer.dart](lib/features/report/report_composer.dart) 的報告敘事模板、[report_llm_service.dart](lib/core/detection/report_llm_service.dart) 給本地 LLM 的 prompt（改用英文撰寫＋明確指令要求輸出指定 BCP-47 語言）全數本地化
+- [preferences_service.dart](lib/core/services/preferences_service.dart) 新增 `locale` 欄位持久化（含 script subtag 編解碼），[main.dart](lib/main.dart) 的 `MaterialApp.router` 接上 `supportedLocales`／`localizationsDelegates`／`localeResolutionCallback`（找不到對應語系時 fallback 回 zh_Hant）
+- 新增 [test/all_locales_smoke_test.dart](test/all_locales_smoke_test.dart)：對 13 個語系逐一呼叫 `lookupAppLocalizations`，驗證關鍵字串非空、placeholder 代換正確、且各語系文字彼此不同（防止未來語系檔誤植或漏翻）
+
+**為什麼**
+- 使用者明確要求「深度掃描應用程式所有文字標籤、提示詞、警告等訊息」需完全符合多語系設定；詢問是否僅需靜態 UI 文字後，使用者回覆「A 和 B 都要，這次做完」，即動態生成內容（引擎理由、報告敘事、LLM prompt）也必須一併涵蓋，不能只做表面的靜態字串抽取
+
+**決策與取捨**
+- `DetectionEngine`／`ReportComposer`／`ReportExporter`／`SummaryCard` 的方法簽章改為非可選參數（破壞性變更），而非做成可選＋預設值：這些是內部呼叫鏈的核心節點，強制要求呼叫端明確傳入語系可避免遺漏；但在 `Orchestrator.analyze()` 這個對外公開 API 邊界刻意留可選參數，兩害相權取其輕
+- 簡體中文用 OpenCC 程式化轉換而非重新手寫翻譯：325 個 key 手動翻譯兩次成本過高且容易產生繁簡版本語意漂移，OpenCC 轉換後仍逐一驗證 placeholder 完整性
+- PDF 匯出內嵌字型 `NotoSansTC-Regular/Bold.ttf` 經 fontTools 實測不含韓文諺文（Hangul）與泰文字母（僅涵蓋拉丁、西里爾、日文假名）；未臨時加入新字型檔（涉及授權來源查證與約 10–20MB 體積增加，非本次範圍能倉促決定），改為在 [report_exporter.dart](lib/core/services/report_exporter.dart) 的類別文件註解中明確記錄此已知限制（僅影響 PDF 匯出的韓文／泰文顯示，畫面呈現、CSV、JSON 匯出不受影響）
+- `assets/model_catalog.json` 的模型名稱／備註欄位（技術性專有名詞）刻意排除在翻譯範圍外
+- JSON／CSV 匯出的欄位名稱（`version`、`analyzed_at`、`verdict` 等）刻意維持英文，視為穩定的 API schema，不隨語系變動
+- 因本次執行環境的 computer-use 工具對這個 session 的滑鼠點擊一律回報「會落在通知中心」而完全無法點擊（含 Dock 圖示，判斷為環境限制而非 App 本身問題），無法用點擊操作實機走過語言切換選單；改以自動化測試（`all_locales_smoke_test.dart`）驗證全部 13 語系皆可正確載入、字串不為空、placeholder 代換正確，並用 `flutter build macos` 確認可正常打包啟動、`open` 直接開啟 .app 目視確認預設語系（zh_Hant）畫面正常顯示
+
+**待辦/遺留問題**
+- 語言切換下拉選單尚未由人工在畫面上實際點擊切換驗證（受限於本次環境的 computer-use 點擊限制），建議下次有可互動環境時手動確認選單切換即時生效
+- PDF 匯出的韓文／泰文字型缺字問題尚未解決，需要另外尋源合適字型檔案並確認授權後才能修補
+
+---
+
 ## 2026-07-05 — [P3 智慧報告] 超連結／文獻驗證新增連線狀態偵測與提示
 
 **做了什麼**

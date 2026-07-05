@@ -1,3 +1,4 @@
+import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
@@ -18,7 +19,7 @@ class StatisticalEngine implements DetectionEngine {
   @override
   String get id => 'statistical';
   @override
-  String get name => '統計特徵分析';
+  String name(AppLocalizations l10n) => l10n.analysisEngineStatistical;
   @override
   double get defaultWeight => 0.25;
 
@@ -26,7 +27,7 @@ class StatisticalEngine implements DetectionEngine {
   Future<bool> isAvailable() async => true; // 啟發式回退，恆可用
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text) async {
+  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
     final burstiness = text.burstiness;
     final ttr = text.typeTokenRatio;
     final entropy = text.entropy;
@@ -46,13 +47,12 @@ class StatisticalEngine implements DetectionEngine {
       // 經 distilgpt2 校準：AI 風格文本 ~50、人類口語 ~500+。
       if (ppl < 60) {
         score += 0.28;
-        reasons.add('語言模型困惑度偏低（${ppl.toStringAsFixed(0)}），'
-            '文本高度可預測，是 AI 生成的指標');
+        reasons.add(l10n.engineReasonPplLow(ppl.toStringAsFixed(0)));
       } else if (ppl > 150) {
         score -= 0.25;
-        reasons.add('語言模型困惑度偏高（${ppl.toStringAsFixed(0)}），符合人類寫作的不可預測性');
+        reasons.add(l10n.engineReasonPplHigh(ppl.toStringAsFixed(0)));
       } else {
-        reasons.add('語言模型困惑度中等（${ppl.toStringAsFixed(0)}）');
+        reasons.add(l10n.engineReasonPplMid(ppl.toStringAsFixed(0)));
       }
     }
 
@@ -60,12 +60,10 @@ class StatisticalEngine implements DetectionEngine {
     if (text.sentences.length >= 4) {
       if (burstiness < 0.30) {
         score += 0.20;
-        reasons.add('句子長度高度一致（burstiness ${burstiness.toStringAsFixed(2)}），'
-            '節奏均勻是 AI 生成文本的典型統計特徵');
+        reasons.add(l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)));
       } else if (burstiness > 0.55) {
         score -= 0.20;
-        reasons.add('句長起伏明顯（burstiness ${burstiness.toStringAsFixed(2)}），'
-            '符合人類自然寫作的節奏變化');
+        reasons.add(l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)));
       }
     }
 
@@ -73,20 +71,20 @@ class StatisticalEngine implements DetectionEngine {
     if (text.allTokens.length >= 50) {
       if (ttr < 0.40) {
         score += 0.10;
-        reasons.add('詞彙多樣性偏低（TTR ${ttr.toStringAsFixed(2)}），用詞重複度高');
+        reasons.add(l10n.engineReasonTtrLow(ttr.toStringAsFixed(2)));
       } else if (ttr > 0.65) {
         score -= 0.10;
-        reasons.add('詞彙多樣性高（TTR ${ttr.toStringAsFixed(2)}）');
+        reasons.add(l10n.engineReasonTtrHigh(ttr.toStringAsFixed(2)));
       }
     }
 
     if (reasons.isEmpty) {
-      reasons.add('統計指標未呈現顯著傾向，維持中性判定');
+      reasons.add(l10n.engineReasonNeutral);
     }
 
     return EngineScore(
       engineId: id,
-      engineName: name,
+      engineName: name(l10n),
       aiProbability: score.clamp(0.0, 1.0),
       weight: defaultWeight,
       features: features,

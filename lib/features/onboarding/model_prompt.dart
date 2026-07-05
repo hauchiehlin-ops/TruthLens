@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/services/preferences_service.dart';
-
-/// 說明下載偵測模型必要性的共用文案。
-const String kModelNecessityText =
-    '未下載神經網路偵測模型時，TruthLens 仍可運作，但僅使用統計與風格分析，'
-    '準確度與多語言支援有限。下載模型後，多語言 Transformer 分類器會加入集成投票，'
-    '大幅提升判定準確度與可靠度。模型在裝置端執行，下載後完全離線、不上傳任何內容。';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 使用者對再次提示的回應
 enum ModelPromptResult { download, skip, dismissed }
@@ -16,6 +11,7 @@ enum ModelPromptResult { download, skip, dismissed }
 /// 並提供「不再提醒」選項（寫入偏好設定）。
 Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
   final prefs = context.read<PreferencesService>();
+  final l10n = AppLocalizations.of(context);
   var dontRemind = false;
 
   final result = await showDialog<ModelPromptResult>(
@@ -25,10 +21,10 @@ Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
       builder: (context, setState) => AlertDialog(
         title: Row(
           children: [
-            const Expanded(child: Text('建議下載偵測模型以獲得完整分析')),
+            Expanded(child: Text(l10n.modelPromptTitle)),
             IconButton(
               icon: const Icon(Icons.close),
-              tooltip: '關閉',
+              tooltip: l10n.commonClose,
               onPressed: () =>
                   Navigator.of(context).pop(ModelPromptResult.dismissed),
             ),
@@ -38,14 +34,14 @@ Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(kModelNecessityText),
+            Text(l10n.modelNecessityText),
             const SizedBox(height: 8),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               value: dontRemind,
               onChanged: (v) => setState(() => dontRemind = v ?? false),
-              title: const Text('不再提醒我'),
+              title: Text(l10n.modelPromptDontRemind),
             ),
           ],
         ),
@@ -53,12 +49,12 @@ Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
           TextButton(
             onPressed: () =>
                 Navigator.of(context).pop(ModelPromptResult.skip),
-            child: const Text('暫時略過'),
+            child: Text(l10n.modelPromptSkip),
           ),
           FilledButton(
             onPressed: () =>
                 Navigator.of(context).pop(ModelPromptResult.download),
-            child: const Text('前往下載'),
+            child: Text(l10n.modelPromptDownload),
           ),
         ],
       ),

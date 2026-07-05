@@ -1,3 +1,6 @@
+import 'package:flutter/widgets.dart' show Locale;
+
+import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
@@ -45,8 +48,10 @@ class EnsembleOrchestrator {
     bool eslCorrectionEnabled = true,
     double threshold = 0.6,
     PreferencesService? prefs,
+    AppLocalizations? l10n,
     void Function(String engineId)? onEngineDone,
   }) async {
+    final loc = l10n ?? lookupAppLocalizations(const Locale('en'));
     final started = DateTime.now();
     final text = PreprocessedText.from(input);
 
@@ -54,15 +59,18 @@ class EnsembleOrchestrator {
       final isEnabled = prefs == null || prefs.isEngineEnabled(engine.id);
       final available = isEnabled && await engine.isAvailable();
       final score = available
-          ? await engine.analyze(text)
+          ? await engine.analyze(text, loc)
           : EngineScore(
               engineId: engine.id,
-              engineName: engine.name,
+              engineName: engine.name(loc),
               aiProbability: 0.5,
               weight: engine.defaultWeight,
               available: false,
               reasons: [
-                if (!isEnabled) '使用者在設定中關閉此引擎' else '模型尚未安裝，未參與本次投票'
+                if (!isEnabled)
+                  loc.engineReasonDisabledByUser
+                else
+                  loc.engineReasonGenericNotInstalled
               ],
             );
       onEngineDone?.call(engine.id);
@@ -73,7 +81,7 @@ class EnsembleOrchestrator {
 
     final eslAdjusted = eslCorrectionEnabled && _detectEslStyle(text);
     final overall = _weightedVote(scores, eslAdjusted: eslAdjusted);
-    final sentences = _scoreSentences(text, overall, scores);
+    final sentences = _scoreSentences(text, overall, scores, loc);
 
     return DetectionResult(
       id: started.microsecondsSinceEpoch.toString(),
@@ -119,6 +127,7 @@ class EnsembleOrchestrator {
     PreprocessedText text,
     double overall,
     List<EngineScore> scores,
+    AppLocalizations l10n,
   ) {
     // 取 Transformer 引擎的逐句機率（若可用）
     final neural = scores
@@ -135,7 +144,7 @@ class EnsembleOrchestrator {
 
       for (final t in StylometryEngine.genericTransitions) {
         if (s.toLowerCase().contains(t.toLowerCase())) {
-          patterns.add('通用過渡詞「$t」');
+          patterns.add(l10n.patternGenericTransition(t));
           p += 0.05;
         }
       }

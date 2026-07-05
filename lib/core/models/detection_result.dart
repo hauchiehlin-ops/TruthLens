@@ -1,6 +1,8 @@
 /// 檢測結果資料模型 — 對應 docs/implementation_plan.md 模組 1 的輸出結構。
 library;
 
+import '../../l10n/generated/app_localizations.dart';
+
 /// 五級分類（依整體 AI 機率劃分）
 enum Verdict {
   human, // 🟢 人類撰寫 (aiProbability < 0.20)
@@ -17,12 +19,13 @@ enum Verdict {
     return Verdict.ai;
   }
 
-  String get labelZh => switch (this) {
-        Verdict.human => '人類撰寫',
-        Verdict.likelyHuman => '可能人類',
-        Verdict.mixed => '混合內容',
-        Verdict.likelyAi => '可能 AI',
-        Verdict.ai => 'AI 生成',
+  /// 判定結果的顯示文字，依 [l10n] 語系呈現。
+  String label(AppLocalizations l10n) => switch (this) {
+        Verdict.human => l10n.verdictHuman,
+        Verdict.likelyHuman => l10n.verdictLikelyHuman,
+        Verdict.mixed => l10n.verdictMixed,
+        Verdict.likelyAi => l10n.verdictLikelyAi,
+        Verdict.ai => l10n.verdictAi,
       };
 }
 

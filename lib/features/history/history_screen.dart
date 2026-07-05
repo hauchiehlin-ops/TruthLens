@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../app/theme.dart';
 import '../../core/services/history_repository.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 歷史紀錄頁：列表 + 搜尋 + 重新分析 + 個別刪除（滑動）+ 清空全部
 class HistoryScreen extends StatefulWidget {
@@ -38,27 +39,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _deleteEntry(HistoryEntry e) async {
     final repo = context.read<HistoryRepository>();
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     await repo.delete(e.id);
     if (!mounted) return;
     setState(() => _entries.removeWhere((x) => x.id == e.id));
-    messenger.showSnackBar(const SnackBar(content: Text('已刪除該筆紀錄')));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.historyDeletedSnackbar)));
   }
 
   Future<void> _confirmClearAll() async {
     if (_entries.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('清空所有歷史紀錄？'),
-        content: Text('將刪除全部 ${_entries.length} 筆紀錄，此動作無法復原。'),
+        title: Text(l10n.historyClearAllTitle),
+        content: Text(l10n.historyClearAllBody(_entries.length)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('取消'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('清空'),
+            child: Text(l10n.historyClearButton),
           ),
         ],
       ),
@@ -70,13 +73,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('歷史紀錄'),
+        title: Text(l10n.historyAppBarTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_sweep_outlined),
-            tooltip: '清空全部',
+            tooltip: l10n.historyClearAllTooltip,
             onPressed: _entries.isEmpty ? null : _confirmClearAll,
           ),
         ],
@@ -86,9 +90,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: '搜尋歷史紀錄…',
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: l10n.historySearchHint,
               ),
               onChanged: (v) {
                 _query = v;
@@ -100,7 +104,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _entries.isEmpty
-                    ? _emptyState()
+                    ? _emptyState(l10n)
                     : ListView.builder(
                         itemCount: _entries.length,
                         itemBuilder: (context, i) {
@@ -111,6 +115,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               .toLocal()
                               .toString()
                               .substring(0, 16);
+                          final verdictLabel = e.verdict.label(l10n);
                           return Dismissible(
                             key: ValueKey(e.id),
                             direction: DismissDirection.endToStart,
@@ -128,17 +133,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               return showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: const Text('刪除這筆紀錄？'),
+                                  title: Text(l10n.historyDeleteEntryTitle),
                                   actions: [
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(false),
-                                      child: const Text('取消'),
+                                      child: Text(l10n.commonCancel),
                                     ),
                                     FilledButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(true),
-                                      child: const Text('刪除'),
+                                      child: Text(l10n.commonDelete),
                                     ),
                                   ],
                                 ),
@@ -146,9 +151,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             },
                             onDismissed: (_) => _deleteEntry(e),
                             child: Semantics(
-                              label: '${e.verdict.labelZh}，AI 機率 '
-                                  '${(e.aiProbability * 100).round()}%，$time。'
-                                  '${e.inputText}',
+                              label: l10n.historyEntrySemantics(
+                                  verdictLabel,
+                                  (e.aiProbability * 100).round(),
+                                  time,
+                                  e.inputText),
                               child: ListTile(
                                 leading: ExcludeSemantics(
                                   child: CircleAvatar(
@@ -168,10 +175,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                subtitle: Text('${e.verdict.labelZh} · $time'),
+                                subtitle: Text('$verdictLabel · $time'),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.refresh),
-                                  tooltip: '重新分析',
+                                  tooltip: l10n.historyReanalyzeTooltip,
                                   onPressed: () => context.push('/analysis',
                                       extra: e.inputText),
                                 ),
@@ -186,7 +193,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _emptyState() => Center(
+  Widget _emptyState(AppLocalizations l10n) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -194,7 +201,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 size: 48, color: Theme.of(context).colorScheme.outline),
             const SizedBox(height: 12),
             Text(
-              _query.isEmpty ? '尚無檢測紀錄' : '找不到符合「$_query」的紀錄',
+              _query.isEmpty
+                  ? l10n.historyEmptyDefault
+                  : l10n.historyEmptySearch(_query),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

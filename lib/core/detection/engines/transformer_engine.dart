@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
@@ -23,7 +24,7 @@ class TransformerEngine implements DetectionEngine {
   @override
   String get id => 'transformer';
   @override
-  String get name => 'Transformer 分類器';
+  String name(AppLocalizations l10n) => l10n.analysisEngineTransformer;
   @override
   double get defaultWeight => 0.40;
 
@@ -73,13 +74,13 @@ class TransformerEngine implements DetectionEngine {
   }
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text) async {
+  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded();
-      if (detector == null || text.sentences.isEmpty) return _unavailable();
+      if (detector == null || text.sentences.isEmpty) return _unavailable(l10n);
     } catch (_) {
-      return _unavailable();
+      return _unavailable(l10n);
     }
 
     final perSentence = await detector.classifySentences(text.sentences);
@@ -88,28 +89,28 @@ class TransformerEngine implements DetectionEngine {
     final variant = modelManager.activeVariant(id);
     return EngineScore(
       engineId: id,
-      engineName: name,
+      engineName: name(l10n),
       aiProbability: avg,
       weight: defaultWeight,
       features: {'ai_sentence_ratio': aiCount / perSentence.length},
       reasons: [
-        '${variant?.variantId ?? '模型'} 判定 ${perSentence.length} 句中有 '
-            '$aiCount 句呈現 AI 特徵',
+        l10n.engineReasonTransformerResult(
+            variant?.variantId ?? name(l10n), aiCount, perSentence.length),
       ],
       sentenceScores: perSentence,
     );
   }
 
-  EngineScore _unavailable() => EngineScore(
+  EngineScore _unavailable(AppLocalizations l10n) => EngineScore(
         engineId: id,
-        engineName: name,
+        engineName: name(l10n),
         aiProbability: 0.5,
         weight: defaultWeight,
         available: false,
         reasons: [
           _loadError != null
-              ? '模型載入失敗，未參與本次投票（${_loadError!}）'
-              : '模型尚未安裝或使用中模型未支援，未參與本次投票',
+              ? l10n.engineReasonTransformerLoadFailed(_loadError!)
+              : l10n.engineReasonTransformerNotInstalled,
         ],
       );
 }

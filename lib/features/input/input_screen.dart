@@ -8,6 +8,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
 
 /// 首頁：極簡輸入區 + 三個快捷入口（貼上 / 拍照 OCR / 匯入文件）
@@ -17,6 +18,24 @@ class InputScreen extends StatefulWidget {
   @override
   State<InputScreen> createState() => _InputScreenState();
 }
+
+/// 語言切換下拉選單的選項清單：null 代表「跟隨系統語言」。
+const List<(Locale?, String)> kSupportedLanguageOptions = [
+  (null, 'System default'),
+  (Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'), '繁體中文'),
+  (Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'), '简体中文'),
+  (Locale('en'), 'English'),
+  (Locale('ja'), '日本語'),
+  (Locale('ko'), '한국어'),
+  (Locale('th'), 'ไทย'),
+  (Locale('ms'), 'Bahasa Melayu'),
+  (Locale('es'), 'Español'),
+  (Locale('id'), 'Bahasa Indonesia'),
+  (Locale('ru'), 'Русский'),
+  (Locale('de'), 'Deutsch'),
+  (Locale('fr'), 'Français'),
+  (Locale('pt'), 'Português'),
+];
 
 class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
@@ -37,10 +56,11 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   Future<void> _startAnalysis() async {
+    final l10n = AppLocalizations.of(context);
     final text = _controller.text.trim();
     if (text.length < 40) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請輸入至少 40 個字元的文本以獲得可靠分析')),
+        SnackBar(content: Text(l10n.inputTooShortSnackbar)),
       );
       return;
     }
@@ -72,11 +92,12 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   Future<void> _scanImage() async {
+    final l10n = AppLocalizations.of(context);
     final ocr = context.read<OcrService>();
     if (!await ocr.isSupported) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('此平台尚未支援 OCR 文字辨識')),
+        SnackBar(content: Text(l10n.inputOcrUnsupported)),
       );
       return;
     }
@@ -84,20 +105,20 @@ class _InputScreenState extends State<InputScreen> {
     if (path == null || !mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('辨識中…')),
+      SnackBar(content: Text(l10n.inputOcrRecognizing)),
     );
     final text = await ocr.recognize(path);
     if (!mounted) return;
     if (text == null || text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('未從圖片中辨識到文字')),
+        SnackBar(content: Text(l10n.inputOcrNoText)),
       );
       return;
     }
     _controller.text = text.trim();
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('已辨識 ${text.trim().length} 個字元')),
+      SnackBar(content: Text(l10n.inputOcrRecognized(text.trim().length))),
     );
   }
 
@@ -107,23 +128,28 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   Future<void> _importDocument() async {
+    final l10n = AppLocalizations.of(context);
     final doc = await DocumentImporter.pick();
     if (doc == null || !mounted) return;
     if (doc.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('「${doc.fileName}」沒有可讀取的文字內容')),
+        SnackBar(content: Text(l10n.inputImportNoText(doc.fileName))),
       );
       return;
     }
     _controller.text = doc.text;
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('已匯入「${doc.fileName}」（${doc.text.length} 字元）')),
+      SnackBar(
+        content:
+            Text(l10n.inputImportSuccess(doc.fileName, doc.text.length)),
+      ),
     );
   }
 
   /// 顯示目前使用中的偵測模型，或提示未安裝（僅統計/風格分析）
   Widget _activeModelChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final active = context.watch<ModelManager>().activeVariant('transformer');
     final scheme = Theme.of(context).colorScheme;
     return Row(
@@ -133,33 +159,54 @@ class _InputScreenState extends State<InputScreen> {
             size: 14, color: scheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
-          active != null ? '模型：${active.variantId}' : '未安裝模型（僅統計/風格分析）',
+          active != null
+              ? l10n.inputActiveModel(active.variantId)
+              : l10n.inputNoModel,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );
   }
 
+  Widget _languageMenu(BuildContext context) {
+    final prefs = context.watch<PreferencesService>();
+    return PopupMenuButton<Locale?>(
+      icon: const Icon(Icons.translate),
+      tooltip: 'Language',
+      initialValue: prefs.locale,
+      onSelected: (value) => context.read<PreferencesService>().setLocale(value),
+      itemBuilder: (context) => [
+        for (final option in kSupportedLanguageOptions)
+          PopupMenuItem(
+            value: option.$1,
+            child: Text(option.$2),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('TruthLens'),
         actions: [
+          _languageMenu(context),
           IconButton(
             icon: const Icon(Icons.history),
-            tooltip: '歷史紀錄',
+            tooltip: l10n.inputHistoryTooltip,
             onPressed: () => context.push('/history'),
           ),
           IconButton(
             icon: const Icon(Icons.help_outline),
-            tooltip: '操作說明',
+            tooltip: l10n.inputHelpTooltip,
             onPressed: () => context.push('/help'),
           ),
           IconButton(
             icon: const Icon(Icons.privacy_tip_outlined),
-            tooltip: '隱私權政策',
+            tooltip: l10n.inputPrivacyTooltip,
             onPressed: () => context.push('/privacy'),
           ),
           IconButton(
@@ -167,7 +214,7 @@ class _InputScreenState extends State<InputScreen> {
               isLabelVisible: context.watch<ModelManager>().hasAnyUpdate,
               child: const Icon(Icons.settings_outlined),
             ),
-            tooltip: '設定',
+            tooltip: l10n.inputSettingsTooltip,
             onPressed: () => context.push('/settings'),
           ),
         ],
@@ -181,7 +228,7 @@ class _InputScreenState extends State<InputScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  '貼上或輸入文本，離線檢測 AI 生成內容',
+                  l10n.inputSubtitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -196,8 +243,8 @@ class _InputScreenState extends State<InputScreen> {
                         maxLines: null,
                         expands: true,
                         textAlignVertical: TextAlignVertical.top,
-                        decoration: const InputDecoration(
-                          hintText: '在此輸入或貼上要檢測的文字…',
+                        decoration: InputDecoration(
+                          hintText: l10n.inputHint,
                         ),
                         onChanged: (_) => setState(() {}),
                       ),
@@ -207,7 +254,7 @@ class _InputScreenState extends State<InputScreen> {
                           right: 4,
                           child: IconButton(
                             icon: const Icon(Icons.clear),
-                            tooltip: '清除內容',
+                            tooltip: l10n.inputClearTooltip,
                             onPressed: _clearInput,
                           ),
                         ),
@@ -221,7 +268,7 @@ class _InputScreenState extends State<InputScreen> {
                       _activeModelChip(context),
                       const Spacer(),
                       Text(
-                        '${_controller.text.trim().length} 字元',
+                        l10n.inputCharCount(_controller.text.trim().length),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -234,19 +281,19 @@ class _InputScreenState extends State<InputScreen> {
                     OutlinedButton.icon(
                       onPressed: _pasteFromClipboard,
                       icon: const Icon(Icons.content_paste),
-                      label: const Text('貼上'),
+                      label: Text(l10n.inputPasteButton),
                     ),
                     const SizedBox(width: 12),
                     OutlinedButton.icon(
                       onPressed: _scanImage,
                       icon: const Icon(Icons.photo_camera_outlined),
-                      label: const Text('圖片辨識'),
+                      label: Text(l10n.inputOcrButton),
                     ),
                     const SizedBox(width: 12),
                     OutlinedButton.icon(
                       onPressed: _importDocument,
                       icon: const Icon(Icons.folder_open_outlined),
-                      label: const Text('匯入文件'),
+                      label: Text(l10n.inputImportButton),
                     ),
                   ],
                 ),
@@ -256,9 +303,10 @@ class _InputScreenState extends State<InputScreen> {
                       ? null
                       : _startAnalysis,
                   icon: const Icon(Icons.search),
-                  label: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('開始檢測', style: TextStyle(fontSize: 16)),
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(l10n.inputStartButton,
+                        style: const TextStyle(fontSize: 16)),
                   ),
                 ),
               ],

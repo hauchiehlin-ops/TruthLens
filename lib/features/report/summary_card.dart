@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 以 Canvas 繪製社群分享用的摘要卡並輸出 PNG（plan 第九節）。
 /// 純繪製、不需 widget 樹，因此可單元測試。
@@ -19,8 +20,11 @@ class SummaryCard {
     return const Color(0xFFF44336);
   }
 
-  static Future<Uint8List> renderPng(DetectionResult r,
-      {double scale = 2}) async {
+  static Future<Uint8List> renderPng(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    double scale = 2,
+  }) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     canvas.scale(scale);
@@ -41,7 +45,7 @@ class SummaryCard {
 
     _text(canvas, 'TruthLens', const Offset(36, 30), 22, Colors.white,
         weight: FontWeight.bold);
-    _text(canvas, 'AI 內容檢測報告', const Offset(36, 62), 14,
+    _text(canvas, l10n.reportSourceTemplate, const Offset(36, 62), 14,
         Colors.white70);
 
     // 圓環（AI 機率）
@@ -61,20 +65,21 @@ class SummaryCard {
         6.2832 * r.aiProbability, false, ringFg);
     _textCentered(canvas, '$pct%', center.translate(0, -22), 40, color,
         weight: FontWeight.bold, width: radius * 2);
-    _textCentered(canvas, 'AI 機率', center.translate(0, 24), 14, Colors.white70,
-        width: radius * 2);
+    _textCentered(canvas, l10n.reportAiProbabilityLabel, center.translate(0, 24), 14,
+        Colors.white70, width: radius * 2);
 
     // 右側判定與統計
-    _pill(canvas, const Offset(280, 150), r.verdict.labelZh, color);
+    _pill(canvas, const Offset(280, 150), r.verdict.label(l10n), color);
     _text(
         canvas,
-        '共 ${r.sentences.length} 句\n疑似 AI ${r.aiSentenceCount} 句\n人類 ${r.humanSentenceCount} 句',
+        l10n.summaryCardStats(
+            r.sentences.length, r.aiSentenceCount, r.humanSentenceCount),
         const Offset(284, 210),
         16,
         Colors.white,
         height: 1.6);
 
-    _text(canvas, '100% 裝置端離線分析', const Offset(36, 320), 12,
+    _text(canvas, l10n.summaryCardFooter, const Offset(36, 320), 12,
         Colors.white54);
 
     final picture = recorder.endRecording();

@@ -5,28 +5,30 @@ import '../../core/detection/device_capabilities.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../input/input_screen.dart' show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
-import '../onboarding/model_prompt.dart';
 import 'model_import_screen.dart';
 
-/// 設定頁：信心閾值、ESL 修正、主題；模型管理（P2）與語言包（P4）後續加入
+/// 設定頁：信心閾值、ESL 修正、主題、語言；模型管理（P2）與語言包（P4）後續加入
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final prefs = context.watch<PreferencesService>();
     final modelManager = context.watch<ModelManager>();
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(title: Text(l10n.settingsAppBarTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
-            title: const Text('AI 判定信心閾值'),
+            title: Text(l10n.settingsThresholdTitle),
             subtitle: Text(
-              '目前：${(prefs.confidenceThreshold * 100).round()}% — '
-              '調高可降低偽陽性（誤判人類文章為 AI）',
+              l10n.settingsThresholdSubtitle(
+                  (prefs.confidenceThreshold * 100).round()),
             ),
           ),
           Slider(
@@ -39,59 +41,53 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           SwitchListTile(
-            title: const Text('ESL 非母語者偏差修正'),
-            subtitle: const Text('偵測到非母語寫作風格時，自動降低統計模型權重'),
+            title: Text(l10n.settingsEslTitle),
+            subtitle: Text(l10n.settingsEslSubtitle),
             value: prefs.eslCorrectionEnabled,
             onChanged: (v) => prefs.setEslCorrection(v),
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              '子偵測引擎啟用設定 (Ensemble)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              l10n.settingsEngineSectionTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
           SwitchListTile(
-            title: const Text('多語言 AI 分類器 (Transformer)'),
-            subtitle: const Text('使用 Transformer 神經網路模型進行端上 AI 機率預測'),
+            title: Text(l10n.settingsEngineTransformerTitle),
+            subtitle: Text(l10n.settingsEngineTransformerSubtitle),
             value: prefs.isEngineEnabled('transformer'),
             onChanged: (v) => prefs.setEngineEnabled('transformer', v),
           ),
           SwitchListTile(
-            title: const Text('統計分析引擎 (Statistical)'),
-            subtitle: const Text('透過句長波動度、Burstiness 及 PPL 判定語言規律'),
+            title: Text(l10n.settingsEngineStatisticalTitle),
+            subtitle: Text(l10n.settingsEngineStatisticalSubtitle),
             value: prefs.isEngineEnabled('statistical'),
             onChanged: (v) => prefs.setEngineEnabled('statistical', v),
           ),
           SwitchListTile(
-            title: const Text('風格特徵分析 (Stylometry)'),
-            subtitle: const Text('分析語意流暢度、重複句式與過渡詞等寫作特徵'),
+            title: Text(l10n.settingsEngineStylometryTitle),
+            subtitle: Text(l10n.settingsEngineStylometrySubtitle),
             value: prefs.isEngineEnabled('stylometry'),
             onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
           ),
           SwitchListTile(
-            title: const Text('對抗式改寫偵測 (Adversarial)'),
-            subtitle: const Text('辨識是否經過機器改寫或去 AI 痕跡處理'),
+            title: Text(l10n.settingsEngineAdversarialTitle),
+            subtitle: Text(l10n.settingsEngineAdversarialSubtitle),
             value: prefs.isEngineEnabled('adversarial'),
             onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
           ),
           const Divider(),
           SwitchListTile(
-            title: const Text('超連結與參考文獻目錄驗證'),
-            subtitle: const Text(
-              '分析報告會對文件中偵測到的網址與參考文獻條目發出連線請求，確認是否'
-              '真的存在（AI 生成內容常附上看似合理但實際不存在的引用連結或文獻）。'
-              'DOI 格式的學術連結、以及沒有連結的「作者—年份」參考文獻，都會查詢'
-              'Crossref 公開登記資料比對。核心 AI 偵測模型仍完全在裝置端執行，'
-              '不會傳送文件內容，連線僅用於此驗證與模型更新偵測，可在此關閉。',
-            ),
+            title: Text(l10n.settingsLinkVerificationTitle),
+            subtitle: Text(l10n.settingsLinkVerificationSubtitle),
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
           ),
           const Divider(),
           ListTile(
-            title: const Text('外觀主題'),
+            title: Text(l10n.settingsThemeTitle),
             trailing: SegmentedButton<ThemeMode>(
               segments: const [
                 ButtonSegment(
@@ -110,39 +106,53 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.translate),
+            title: Text(l10n.settingsLanguageTitle),
+            subtitle: Text(l10n.settingsLanguageSubtitle),
+            trailing: DropdownButton<Locale?>(
+              value: prefs.locale,
+              items: [
+                for (final option in kSupportedLanguageOptions)
+                  DropdownMenuItem(value: option.$1, child: Text(option.$2)),
+              ],
+              onChanged: (value) => prefs.setLocale(value),
+            ),
+          ),
+          const Divider(),
+          ListTile(
             leading: Badge(
               isLabelVisible: modelManager.hasAnyUpdate,
               child: const Icon(Icons.download_outlined),
             ),
-            title: const Text('AI 模型管理'),
+            title: Text(l10n.settingsModelManagementTitle),
             subtitle: Text(modelManager.hasAnyUpdate
-                ? '偵測到模型更新，建議前往查看'
-                : '下載檢測模型與報告 LLM，啟用完整推論能力'),
+                ? l10n.settingsModelManagementUpdateSubtitle
+                : l10n.settingsModelManagementSubtitle),
             trailing: TextButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
               ),
-              child: const Text('開啟'),
+              child: Text(l10n.settingsOpenButton),
             ),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.file_upload_outlined),
-            title: const Text('自訂 ONNX 模型匯入與測試'),
-            subtitle: const Text('匯入本機的自訂 ONNX 模型與 Tokenizer 設定並進行推論測試'),
+            title: Text(l10n.settingsCustomImportTitle),
+            subtitle: Text(l10n.settingsCustomImportSubtitle),
             trailing: TextButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ModelImportScreen()),
               ),
-              child: const Text('開啟'),
+              child: Text(l10n.settingsOpenButton),
             ),
           ),
           const Divider(),
-          const ListTile(
+          ListTile(
             enabled: false,
-            leading: Icon(Icons.language),
-            title: Text('語言包'),
-            subtitle: Text('額外語言微調模型（第四階段開放）'),
+            leading: const Icon(Icons.language),
+            title: Text(l10n.settingsLanguagePackTitle),
+            subtitle: Text(l10n.settingsLanguagePackSubtitle),
           ),
         ],
       ),
@@ -184,13 +194,14 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI 模型管理'),
+        title: Text(l10n.settingsModelManagerAppBarTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
-            tooltip: '匯入本機 ONNX 模型',
+            tooltip: l10n.settingsImportTooltip,
             onPressed: () async {
               final imported = await Navigator.of(context).push<bool>(
                 MaterialPageRoute(builder: (_) => const ModelImportScreen()),
@@ -213,10 +224,10 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(kModelNecessityText),
+                        Text(l10n.modelNecessityText),
                         if (_device != null) ...[
                           const SizedBox(height: 8),
-                          Text('裝置：${_device!.summary}',
+                          Text(l10n.settingsDeviceLabel(_device!.summary),
                               style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ],

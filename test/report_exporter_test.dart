@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/core/services/report_exporter.dart';
+import 'package:truthlens/l10n/generated/app_localizations.dart';
+
+final _l10n = lookupAppLocalizations(const Locale('en'));
 
 DetectionResult _sampleResult() => DetectionResult(
       id: 'test-1',
@@ -43,7 +47,7 @@ DetectionResult _sampleResult() => DetectionResult(
 void main() {
   group('ReportExporter.buildCsv', () {
     test('含摘要註解與逐句資料列', () {
-      final csv = ReportExporter.buildCsv(_sampleResult());
+      final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       final lines = csv.trim().split('\n');
       expect(lines.where((l) => l.startsWith('#')).length, 5);
       expect(lines, contains('index,sentence,ai_probability,patterns'));
@@ -52,7 +56,7 @@ void main() {
     });
 
     test('逗號與引號正確跳脫', () {
-      final csv = ReportExporter.buildCsv(_sampleResult());
+      final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       expect(csv, contains('"這是「含引號, 與逗號」的第二句。"'));
       // 跳脫後的欄位數不變
       final dataLine =
@@ -64,7 +68,7 @@ void main() {
 
   group('ReportExporter.buildJson', () {
     test('產生合法 JSON 且含關鍵欄位', () {
-      final json = ReportExporter.buildJson(_sampleResult());
+      final json = ReportExporter.buildJson(_sampleResult(), _l10n);
       final map = jsonDecode(json) as Map<String, dynamic>;
       expect(map['version'], 1);
       expect(map['overall']['verdict'], 'mixed');
@@ -75,7 +79,7 @@ void main() {
     });
 
     test('逐句 patterns 保留為陣列', () {
-      final map = jsonDecode(ReportExporter.buildJson(_sampleResult()))
+      final map = jsonDecode(ReportExporter.buildJson(_sampleResult(), _l10n))
           as Map<String, dynamic>;
       final second = (map['sentences'] as List)[1] as Map<String, dynamic>;
       expect(second['patterns'], ['通用過渡詞「此外」']);
@@ -89,6 +93,7 @@ void main() {
       final bold = File('assets/fonts/NotoSansTC-Bold.ttf').readAsBytesSync();
       final bytes = await ReportExporter.buildPdf(
         _sampleResult(),
+        _l10n,
         regularFont: regular.buffer.asByteData(),
         boldFont: bold.buffer.asByteData(),
       );
@@ -113,6 +118,7 @@ void main() {
       );
       final bytes = await ReportExporter.buildPdf(
         result,
+        _l10n,
         regularFont: regular.buffer.asByteData(),
         boldFont: bold.buffer.asByteData(),
       );
@@ -138,6 +144,7 @@ void main() {
       );
       final bytes = await ReportExporter.buildPdf(
         result,
+        _l10n,
         regularFont: regular.buffer.asByteData(),
         boldFont: bold.buffer.asByteData(),
       );

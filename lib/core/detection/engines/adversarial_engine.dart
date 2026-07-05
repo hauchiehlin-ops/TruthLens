@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
@@ -23,7 +24,7 @@ class AdversarialEngine implements DetectionEngine {
   @override
   String get id => 'adversarial';
   @override
-  String get name => '對抗式防禦（改寫偵測）';
+  String name(AppLocalizations l10n) => l10n.engineNameAdversarialFull;
   @override
   double get defaultWeight => 0.15;
 
@@ -66,7 +67,7 @@ class AdversarialEngine implements DetectionEngine {
   }
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text) async {
+  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded();
@@ -76,11 +77,11 @@ class AdversarialEngine implements DetectionEngine {
     if (detector == null || text.sentences.isEmpty) {
       return EngineScore(
         engineId: id,
-        engineName: name,
+        engineName: name(l10n),
         aiProbability: 0.5,
         weight: defaultWeight,
         available: false,
-        reasons: const ['改寫偵測模型尚未安裝，未參與本次投票'],
+        reasons: [l10n.engineReasonAdversarialNotInstalled],
       );
     }
 
@@ -88,14 +89,14 @@ class AdversarialEngine implements DetectionEngine {
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     return EngineScore(
       engineId: id,
-      engineName: name,
+      engineName: name(l10n),
       aiProbability: avg,
       weight: defaultWeight,
       sentenceScores: perSentence,
       reasons: [
         avg >= 0.6
-            ? '對抗模型偵測到疑似經改寫工具（如 QuillBot / Undetectable.ai）洗過的 AI 特徵'
-            : '未偵測到明顯的改寫規避特徵',
+            ? l10n.engineReasonAdversarialDetected
+            : l10n.engineReasonAdversarialClean,
       ],
     );
   }

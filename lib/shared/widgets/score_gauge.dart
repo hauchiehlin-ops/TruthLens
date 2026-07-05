@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
 import '../../core/models/detection_result.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 整體判定儀表：環形進度 + 五級分類標籤
 class ScoreGauge extends StatelessWidget {
@@ -15,10 +16,13 @@ class ScoreGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = AppTheme.verdictColor(aiProbability);
+    final label = verdict.label(l10n);
     return Semantics(
       container: true,
-      label: '整體判定：${verdict.labelZh}，AI 機率 ${(aiProbability * 100).round()} %',
+      label: l10n.reportOverallVerdictLabel(
+          '$label，${l10n.reportAiProbabilityLabel} ${(aiProbability * 100).round()}%'),
       child: ExcludeSemantics(
         child: Column(
           children: [
@@ -47,7 +51,7 @@ class ScoreGauge extends StatelessWidget {
                               ?.copyWith(
                                   color: color, fontWeight: FontWeight.bold),
                         ),
-                        Text('AI 機率',
+                        Text(l10n.reportAiProbabilityLabel,
                             style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
@@ -57,7 +61,7 @@ class ScoreGauge extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Chip(
-              label: Text(verdict.labelZh),
+              label: Text(label),
               backgroundColor: color.withValues(alpha: 0.18),
               side: BorderSide(color: color),
             ),

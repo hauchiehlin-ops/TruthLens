@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_registry.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 匯入自訂 ONNX 模型。所有檔案存取一律經 [FilePicker]（見 [_pickModel] /
 /// [_pickTokenizer]），這是 macOS App Sandbox 下唯一能取得讀取權限的方式；
@@ -122,10 +123,11 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   }
 
   Future<void> _runTest() async {
+    final l10n = AppLocalizations.of(context);
     if (_modelFile == null) return;
     if (_tokenizerType != 'none' && _tokenizerFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請先選擇 Tokenizer 檔案')),
+        SnackBar(content: Text(l10n.modelImportSelectTokenizerFirst)),
       );
       return;
     }
@@ -160,10 +162,11 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   }
 
   Future<void> _import() async {
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate() || _modelFile == null) return;
     if (_tokenizerType != 'none' && _tokenizerFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請選擇 Tokenizer 檔案')),
+        SnackBar(content: Text(l10n.modelImportSelectTokenizer)),
       );
       return;
     }
@@ -184,22 +187,23 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('模型匯入成功！已自動啟用為使用中模型。')),
+        SnackBar(content: Text(l10n.modelImportSuccessSnackbar)),
       );
       Navigator.of(context).pop(true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('模型匯入失敗，請檢查權限或日誌')),
+        SnackBar(content: Text(l10n.modelImportFailedSnackbar)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('匯入自訂 ONNX 模型')),
+      appBar: AppBar(title: Text(l10n.modelImportAppBarTitle)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -212,7 +216,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('1. 選擇 ONNX 模型檔案',
+                    Text(l10n.modelImportStep1Title,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 12),
                     Row(
@@ -220,8 +224,12 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         Expanded(
                           child: Text(
                             _modelFile != null
-                                ? '已選擇: ${_modelFileDisplayName ?? _modelFile!.path.split(Platform.pathSeparator).last}'
-                                : '未選擇模型檔案 (.onnx)',
+                                ? l10n.modelImportSelectedFile(
+                                    _modelFileDisplayName ??
+                                        _modelFile!.path
+                                            .split(Platform.pathSeparator)
+                                            .last)
+                                : l10n.modelImportNoFileSelected,
                             style: TextStyle(
                               color: _modelFile != null ? cs.primary : cs.outline,
                             ),
@@ -230,22 +238,22 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         ElevatedButton.icon(
                           onPressed: _pickModel,
                           icon: const Icon(Icons.file_open),
-                          label: const Text('瀏覽'),
+                          label: Text(l10n.modelImportBrowseButton),
                         ),
                       ],
                     ),
                     if (_checkingDuplicate) ...[
                       const SizedBox(height: 8),
-                      const Row(
+                      Row(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 14,
                             height: 14,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                          SizedBox(width: 8),
-                          Text('偵測是否已匯入過相同檔案…',
-                              style: TextStyle(fontSize: 12)),
+                          const SizedBox(width: 8),
+                          Text(l10n.modelImportCheckingDuplicate,
+                              style: const TextStyle(fontSize: 12)),
                         ],
                       ),
                     ],
@@ -268,14 +276,12 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('偵測到相同內容的模型已匯入過',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(l10n.modelImportDuplicateTitle,
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
                             Text(
-                              '此檔案與「${_duplicate!.displayName}」'
-                              '（角色：${_duplicate!.role}）內容完全相同。'
-                              '如果只是想切換使用中模型，可以到「AI 模型管理」'
-                              '直接設為使用中，不需要重新匯入。仍可繼續完成以下步驟。',
+                              l10n.modelImportDuplicateBody(
+                                  _duplicate!.displayName, _duplicate!.role),
                             ),
                           ],
                         ),
@@ -294,24 +300,25 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('2. 參數設定',
+                    Text(l10n.modelImportStep2Title,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: '模型顯示名稱',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.modelImportNameLabel,
+                        border: const OutlineInputBorder(),
                       ),
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? '名稱不能為空' : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? l10n.modelImportNameRequired
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       initialValue: _targetRole,
-                      decoration: const InputDecoration(
-                        labelText: '目標引擎角色',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.modelImportRoleLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       items: kModelRegistry
                           .where((m) => m.backend == InferenceBackend.transformer)
@@ -327,17 +334,20 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       initialValue: _tokenizerType,
-                      decoration: const InputDecoration(
-                        labelText: 'Tokenizer 類型',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.modelImportTokenizerTypeLabel,
+                        border: const OutlineInputBorder(),
                       ),
-                      items: const [
+                      items: [
                         DropdownMenuItem(
-                            value: 'bert-wordpiece', child: Text('BERT (WordPiece)')),
+                            value: 'bert-wordpiece',
+                            child: Text(l10n.modelImportTokenizerBert)),
                         DropdownMenuItem(
-                            value: 'roberta-bpe', child: Text('RoBERTa (BPE)')),
+                            value: 'roberta-bpe',
+                            child: Text(l10n.modelImportTokenizerRoberta)),
                         DropdownMenuItem(
-                            value: 'none', child: Text('None (無 Tokenizer/逐字)')),
+                            value: 'none',
+                            child: Text(l10n.modelImportTokenizerNone)),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -357,17 +367,23 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                           Expanded(
                             child: Text(
                               _tokenizerFile != null
-                                  ? '已選擇: ${_tokenizerFileDisplayName ?? _tokenizerFile!.path.split(Platform.pathSeparator).last}'
-                                  : '未選擇 Tokenizer 檔案 (.json)',
+                                  ? l10n.modelImportTokenizerSelected(
+                                      _tokenizerFileDisplayName ??
+                                          _tokenizerFile!.path
+                                              .split(Platform.pathSeparator)
+                                              .last)
+                                  : l10n.modelImportNoTokenizerSelected,
                               style: TextStyle(
-                                color: _tokenizerFile != null ? cs.primary : cs.outline,
+                                color: _tokenizerFile != null
+                                    ? cs.primary
+                                    : cs.outline,
                               ),
                             ),
                           ),
                           ElevatedButton.icon(
                             onPressed: _pickTokenizer,
                             icon: const Icon(Icons.code),
-                            label: const Text('瀏覽'),
+                            label: Text(l10n.modelImportBrowseButton),
                           ),
                         ],
                       ),
@@ -375,13 +391,15 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<int>(
                       initialValue: _aiLabelIndex,
-                      decoration: const InputDecoration(
-                        labelText: 'AI 類別輸出索引 (AI Label Index)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.modelImportAiLabelIndexLabel,
+                        border: const OutlineInputBorder(),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 0, child: Text('Index 0 (例如 RoBERTa)')),
-                        DropdownMenuItem(value: 1, child: Text('Index 1 (例如 DistilBERT)')),
+                      items: [
+                        DropdownMenuItem(
+                            value: 0, child: Text(l10n.modelImportIndex0)),
+                        DropdownMenuItem(
+                            value: 1, child: Text(l10n.modelImportIndex1)),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -406,15 +424,15 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('3. 測試與驗證',
+                    Text(l10n.modelImportStep3Title,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _testController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: '測試輸入文本',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.modelImportTestInputLabel,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -429,7 +447,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                                     height: 18,
                                     child: CircularProgressIndicator(strokeWidth: 2))
                                 : const Icon(Icons.play_arrow),
-                            label: const Text('執行測試推論'),
+                            label: Text(l10n.modelImportRunTestButton),
                           ),
                         ),
                       ],
@@ -445,8 +463,8 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('推論結果 (AI 機率):',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(l10n.modelImportResultLabel,
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
                             Text(
                               '${(_testResult! * 100).toStringAsFixed(1)}%',
                               style: TextStyle(
@@ -468,7 +486,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '測試失敗: $_testError',
+                          l10n.modelImportTestFailed(_testError!),
                           style: TextStyle(color: cs.onErrorContainer),
                         ),
                       ),
@@ -491,7 +509,8 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.download_done),
-              label: const Text('確認匯入並啟用模型', style: TextStyle(fontSize: 16)),
+              label: Text(l10n.modelImportConfirmButton,
+                  style: const TextStyle(fontSize: 16)),
             ),
           ],
         ),

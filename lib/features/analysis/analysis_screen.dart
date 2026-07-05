@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/detection/orchestrator.dart';
 import '../../core/services/history_repository.dart';
 import '../../core/services/preferences_service.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/analysis_wave.dart';
 
 /// 分析進度頁：顯示四個子模型的即時進度，完成後導向報告頁
@@ -19,12 +20,12 @@ class AnalysisScreen extends StatefulWidget {
 class _AnalysisScreenState extends State<AnalysisScreen> {
   final _done = <String>{};
 
-  static const _engineLabels = {
-    'transformer': 'Transformer 分類器',
-    'statistical': '統計特徵分析',
-    'stylometry': '風格特徵分析',
-    'adversarial': '對抗式防禦',
-  };
+  Map<String, String> _engineLabels(AppLocalizations l10n) => {
+        'transformer': l10n.analysisEngineTransformer,
+        'statistical': l10n.analysisEngineStatistical,
+        'stylometry': l10n.analysisEngineStylometry,
+        'adversarial': l10n.analysisEngineAdversarial,
+      };
 
   @override
   void initState() {
@@ -36,11 +37,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final orchestrator = context.read<EnsembleOrchestrator>();
     final history = context.read<HistoryRepository>();
     final prefs = context.read<PreferencesService>();
+    final l10n = AppLocalizations.of(context);
     final result = await orchestrator.analyze(
       widget.text,
       eslCorrectionEnabled: prefs.eslCorrectionEnabled,
       threshold: prefs.confidenceThreshold,
       prefs: prefs,
+      l10n: l10n,
       onEngineDone: (id) {
         if (mounted) setState(() => _done.add(id));
       },
@@ -51,8 +54,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final engineLabels = _engineLabels(l10n);
     return Scaffold(
-      appBar: AppBar(title: const Text('分析中')),
+      appBar: AppBar(title: Text(l10n.analysisAppBarTitle)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
@@ -60,15 +65,17 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Semantics(
-                label: '分析進行中，已完成 ${_done.length} / ${_engineLabels.length} 個引擎',
+                label: l10n.analysisProgressSemantics(
+                    _done.length, engineLabels.length),
                 child: const AnalysisWave(),
               ),
               const SizedBox(height: 32),
-              for (final entry in _engineLabels.entries)
+              for (final entry in engineLabels.entries)
                 ListTile(
                   leading: _done.contains(entry.key)
-                      ? const Icon(Icons.check_circle, color: Colors.green,
-                          semanticLabel: '已完成')
+                      ? Icon(Icons.check_circle,
+                          color: Colors.green,
+                          semanticLabel: l10n.analysisDoneSemantics)
                       : const SizedBox(
                           width: 24,
                           height: 24,

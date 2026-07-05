@@ -8,10 +8,15 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../features/report/report_composer.dart';
 import '../../features/report/summary_card.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
 /// 產生邏輯（buildCsv / buildJson / buildPdf）與存檔對話框分離，前者可單元測試。
+///
+/// 已知限制：PDF 內嵌字型為 Noto Sans TC（含完整拉丁/西里爾/日文假名/中日韓表意
+/// 文字），但**不含韓文諺文（Hangul）與泰文字母**；若報告語系為韓文或泰文，
+/// PDF 匯出中對應文字可能顯示為缺字方框，畫面顯示與 CSV/JSON 匯出不受影響。
 class ReportExporter {
   static final _composer = ReportComposer();
 
@@ -29,9 +34,10 @@ class ReportExporter {
     return '${text.substring(0, _pdfMaxCellChars)}…';
   }
 
-  /// 結構化 JSON（plan 第九節：LMS / 系統整合）。
-  static String buildJson(DetectionResult r) {
-    final doc = _composer.compose(r);
+  /// 結構化 JSON（plan 第九節：LMS / 系統整合）。欄位名稱為固定的英文 API schema，
+  /// 不隨語系翻譯，僅 headline／reasons 等自然語言內容依 [l10n] 呈現。
+  static String buildJson(DetectionResult r, AppLocalizations l10n) {
+    final doc = _composer.compose(r, l10n);
     final map = {
       'version': 1,
       'analyzed_at': r.analyzedAt.toIso8601String(),
@@ -72,9 +78,9 @@ class ReportExporter {
   }
 
   /// 逐句數據表。`#` 開頭為摘要註解列，方便試算表與程式兩用。
-  static String buildCsv(DetectionResult r) {
+  static String buildCsv(DetectionResult r, AppLocalizations l10n) {
     final buf = StringBuffer()
-      ..writeln('# TruthLens 檢測報告')
+      ..writeln('# ${l10n.exportReportTitle}')
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
       ..writeln(
           '# overall_ai_probability,${r.aiProbability.toStringAsFixed(4)}')
@@ -101,7 +107,8 @@ class ReportExporter {
 
   /// 產生 PDF 位元組。字型由呼叫端注入（App 走 rootBundle，測試直接讀檔）。
   static Future<Uint8List> buildPdf(
-    DetectionResult r, {
+    DetectionResult r,
+    AppLocalizations l10n, {
     required ByteData regularFont,
     required ByteData boldFont,
   }) async {
@@ -125,18 +132,19 @@ class ReportExporter {
         footer: (ctx) => pw.Align(
           alignment: pw.Alignment.centerRight,
           child: pw.Text(
-            'TruthLens · 第 ${ctx.pageNumber} / ${ctx.pagesCount} 頁',
+            l10n.pdfPageFooter(ctx.pageNumber, ctx.pagesCount),
             style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey),
           ),
         ),
         build: (ctx) => [
-          pw.Text('TruthLens 檢測報告',
+          pw.Text(l10n.exportReportTitle,
               style:
                   pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 4),
           pw.Text(
-            '分析時間：${r.analyzedAt.toLocal().toString().substring(0, 19)}'
-            ' · 耗時 ${(r.elapsed.inMilliseconds / 1000).toStringAsFixed(1)} 秒',
+            l10n.pdfAnalyzedAtElapsed(
+                r.analyzedAt.toLocal().toString().substring(0, 19),
+                (r.elapsed.inMilliseconds / 1000).toStringAsFixed(1)),
             style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
           pw.Divider(),
@@ -151,12 +159,13 @@ class ReportExporter {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text('整體判定：${r.verdict.labelZh}',
+                pw.Text(l10n.reportOverallVerdictLabel(r.verdict.label(l10n)),
                     style: pw.TextStyle(
                         fontSize: 14, fontWeight: pw.FontWeight.bold)),
                 pw.Text(
-                  'AI 機率 ${(r.aiProbability * 100).round()}%'
-                  '${r.eslAdjusted ? '（已套用 ESL 修正）' : ''}',
+                  '${l10n.reportAiProbabilityLabel} '
+                  '${(r.aiProbability * 100).round()}%'
+                  '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',
                   style: pw.TextStyle(
                       fontSize: 14, color: scoreColor(r.aiProbability)),
                 ),
@@ -165,20 +174,20 @@ class ReportExporter {
           ),
           pw.SizedBox(height: 6),
           pw.Text(
-            '共 ${r.sentences.length} 句 · 疑似 AI ${r.aiSentenceCount} 句 · '
-            '人類 ${r.humanSentenceCount} 句',
+            l10n.pdfSentenceCounts(
+                r.sentences.length, r.aiSentenceCount, r.humanSentenceCount),
             style: const pw.TextStyle(fontSize: 10),
           ),
           pw.SizedBox(height: 12),
 
           // 分析解讀（與 App 內報告同一套 composer 生成）
-          pw.Text('分析解讀',
+          pw.Text(l10n.composerNarrativeTitle,
               style:
                   pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 4),
-          pw.Text(_composer.compose(r).headline,
+          pw.Text(_composer.compose(r, l10n).headline,
               style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-          for (final c in _composer.compose(r).components)
+          for (final c in _composer.compose(r, l10n).components)
             if ((c.body ?? '').isNotEmpty &&
                 c.type.name != 'thresholdBanner')
               pw.Padding(
@@ -191,7 +200,7 @@ class ReportExporter {
           pw.SizedBox(height: 14),
 
           // 引擎明細
-          pw.Text('引擎明細',
+          pw.Text(l10n.reportEngineBreakdownTitle,
               style:
                   pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 6),
@@ -204,7 +213,7 @@ class ReportExporter {
                   pw.Text(
                     e.available
                         ? '${e.engineName} — ${(e.aiProbability * 100).round()}%'
-                        : '${e.engineName} — 未安裝',
+                        : '${e.engineName} — ${l10n.reportEngineNotInstalled}',
                     style: pw.TextStyle(
                         fontSize: 11, fontWeight: pw.FontWeight.bold),
                   ),
@@ -219,7 +228,7 @@ class ReportExporter {
           pw.SizedBox(height: 10),
 
           // 逐句分析（超過上限僅顯示前段，避免大量/超長句子撐爆 PDF 分頁）
-          pw.Text('逐句分析',
+          pw.Text(l10n.reportSentenceAnalysisTitle,
               style:
                   pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 6),
@@ -227,9 +236,8 @@ class ReportExporter {
             pw.Padding(
               padding: const pw.EdgeInsets.only(bottom: 6),
               child: pw.Text(
-                '為維持 PDF 可讀性，僅顯示前 $_pdfMaxTableRows 句'
-                '（共 ${r.sentences.length} 句）；如需完整逐句資料，'
-                '請改用「匯出 CSV 數據」或「匯出 JSON」。',
+                l10n.pdfTruncationNotice(_pdfMaxTableRows, r.sentences.length,
+                    l10n.reportExportCsv, l10n.reportExportJson),
                 style: const pw.TextStyle(
                     fontSize: 9, color: PdfColors.grey700),
               ),
@@ -246,7 +254,7 @@ class ReportExporter {
                 decoration: const pw.BoxDecoration(color: PdfColors.grey200),
                 children: [
                   _cell('#', bold: true),
-                  _cell('句子（附命中模式）', bold: true),
+                  _cell(l10n.pdfSentenceColumnHeader, bold: true),
                   _cell('AI%', bold: true),
                 ],
               ),
@@ -293,38 +301,42 @@ class ReportExporter {
 
   /// 回傳儲存路徑；使用者取消時回傳 null。
   /// 加 UTF-8 BOM 讓 Excel 正確辨識中文編碼。
-  static Future<String?> exportCsv(DetectionResult r) async {
-    final bytes =
-        Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(buildCsv(r))]);
+  static Future<String?> exportCsv(DetectionResult r, AppLocalizations l10n) async {
+    final bytes = Uint8List.fromList(
+        [0xEF, 0xBB, 0xBF, ...utf8.encode(buildCsv(r, l10n))]);
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.csv',
       extension: 'csv',
+      l10n: l10n,
     );
   }
 
-  static Future<String?> exportJson(DetectionResult r) async {
-    final bytes =
-        Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(buildJson(r))]);
+  static Future<String?> exportJson(DetectionResult r, AppLocalizations l10n) async {
+    final bytes = Uint8List.fromList(
+        [0xEF, 0xBB, 0xBF, ...utf8.encode(buildJson(r, l10n))]);
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.json',
       extension: 'json',
+      l10n: l10n,
     );
   }
 
-  static Future<String?> exportPng(DetectionResult r) async {
-    final bytes = await SummaryCard.renderPng(r);
+  static Future<String?> exportPng(DetectionResult r, AppLocalizations l10n) async {
+    final bytes = await SummaryCard.renderPng(r, l10n);
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.png',
       extension: 'png',
+      l10n: l10n,
     );
   }
 
-  static Future<String?> exportPdf(DetectionResult r) async {
+  static Future<String?> exportPdf(DetectionResult r, AppLocalizations l10n) async {
     final bytes = await buildPdf(
       r,
+      l10n,
       regularFont: await rootBundle.load('assets/fonts/NotoSansTC-Regular.ttf'),
       boldFont: await rootBundle.load('assets/fonts/NotoSansTC-Bold.ttf'),
     );
@@ -332,6 +344,7 @@ class ReportExporter {
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.pdf',
       extension: 'pdf',
+      l10n: l10n,
     );
   }
 
@@ -339,10 +352,11 @@ class ReportExporter {
     required Uint8List bytes,
     required String fileName,
     required String extension,
+    required AppLocalizations l10n,
   }) async {
     // file_picker 11：提供 bytes 時，行動/桌面平台皆由 picker 寫入檔案
     return FilePicker.saveFile(
-      dialogTitle: '匯出報告',
+      dialogTitle: l10n.reportExportTooltip,
       fileName: fileName,
       type: FileType.custom,
       allowedExtensions: [extension],

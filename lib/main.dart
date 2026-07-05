@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'app/router.dart';
@@ -13,6 +14,7 @@ import 'core/detection/report_llm_service.dart';
 import 'core/services/history_repository.dart';
 import 'core/services/ocr_service.dart';
 import 'core/services/preferences_service.dart';
+import 'l10n/generated/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +90,31 @@ class TruthLensApp extends StatelessWidget {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: prefs.themeMode,
+          locale: prefs.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeResolutionCallback: (deviceLocale, supportedLocales) {
+            if (deviceLocale == null) return supportedLocales.first;
+            for (final l in supportedLocales) {
+              if (l.languageCode == deviceLocale.languageCode &&
+                  l.scriptCode == deviceLocale.scriptCode) {
+                return l;
+              }
+            }
+            for (final l in supportedLocales) {
+              if (l.languageCode == deviceLocale.languageCode) return l;
+            }
+            // 裝置語系不在支援清單內時，回退至繁體中文（本 App 的原生預設語言）。
+            return supportedLocales.firstWhere(
+              (l) => l.languageCode == 'zh' && l.scriptCode == 'Hant',
+              orElse: () => supportedLocales.first,
+            );
+          },
           routerConfig: router,
         ),
       ),

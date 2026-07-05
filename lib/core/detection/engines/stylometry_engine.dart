@@ -1,3 +1,4 @@
+import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
@@ -9,7 +10,7 @@ class StylometryEngine implements DetectionEngine {
   @override
   String get id => 'stylometry';
   @override
-  String get name => '風格特徵分析';
+  String name(AppLocalizations l10n) => l10n.analysisEngineStylometry;
   @override
   double get defaultWeight => 0.20;
 
@@ -26,7 +27,7 @@ class StylometryEngine implements DetectionEngine {
   ];
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text) async {
+  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
     final reasons = <String>[];
     final features = <String, double>{};
     var score = 0.5;
@@ -48,8 +49,8 @@ class StylometryEngine implements DetectionEngine {
     features['transition_density'] = density;
     if (density > 0.25 && transitionHits >= 3) {
       score += 0.22;
-      reasons.add('高頻使用通用過渡詞（${hitWords.take(4).join('、')}），'
-          '每句平均 ${density.toStringAsFixed(2)} 次，人類寫作極少如此密集');
+      reasons.add(l10n.engineReasonTransitionWords(
+          hitWords.take(4).join('、'), density.toStringAsFixed(2)));
     }
 
     // 特徵 2：句式開頭重複（連續句子以相同詞開頭）
@@ -65,7 +66,7 @@ class StylometryEngine implements DetectionEngine {
     if (text.sentences.length >= 5 &&
         repeatedOpeners / text.sentences.length > 0.3) {
       score += 0.15;
-      reasons.add('多個相鄰句子以相同詞語開頭（$repeatedOpeners 處），句式重複');
+      reasons.add(l10n.engineReasonRepeatedOpeners(repeatedOpeners));
     }
 
     // 特徵 3：清單化/條列傾向（過度結構化）
@@ -75,13 +76,13 @@ class StylometryEngine implements DetectionEngine {
     features['bullet_lines'] = bulletLines.toDouble();
 
     if (reasons.isEmpty) {
-      reasons.add('未偵測到顯著的 AI 寫作風格模式');
+      reasons.add(l10n.engineReasonNoStyleMarkers);
       score -= 0.05;
     }
 
     return EngineScore(
       engineId: id,
-      engineName: name,
+      engineName: name(l10n),
       aiProbability: score.clamp(0.0, 1.0),
       weight: defaultWeight,
       features: features,

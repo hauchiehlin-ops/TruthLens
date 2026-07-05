@@ -10,6 +10,7 @@ import '../../core/services/link_verifier.dart';
 import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/score_gauge.dart';
 import 'report_document.dart';
 
@@ -56,7 +57,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Future<void> _generate() async {
     final service = context.read<ReportLlmService>();
-    final doc = await service.generate(result);
+    final l10n = AppLocalizations.of(context);
+    final doc = await service.generate(result, l10n);
     if (mounted) setState(() => _doc = doc);
   }
 
@@ -106,81 +108,84 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _export(
-    Future<String?> Function(DetectionResult) exporter,
+    Future<String?> Function(DetectionResult, AppLocalizations) exporter,
   ) async {
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     try {
-      final path = await exporter(result);
+      final path = await exporter(result, l10n);
       if (path != null) {
-        messenger.showSnackBar(SnackBar(content: Text('已匯出：$path')));
+        messenger.showSnackBar(SnackBar(content: Text(l10n.reportExported(path))));
       }
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('匯出失敗：$e')));
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.reportExportFailed(e.toString()))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final doc = _doc;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('檢測報告'),
+        title: Text(l10n.reportAppBarTitle),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.ios_share),
-            tooltip: '匯出報告',
+            tooltip: l10n.reportExportTooltip,
             onSelected: (v) => _export(switch (v) {
               'pdf' => ReportExporter.exportPdf,
               'json' => ReportExporter.exportJson,
               'png' => ReportExporter.exportPng,
               _ => ReportExporter.exportCsv,
             }),
-            itemBuilder: (context) => const [
+            itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'pdf',
                 child: ListTile(
-                  leading: Icon(Icons.picture_as_pdf_outlined),
-                  title: Text('匯出 PDF 報告'),
+                  leading: const Icon(Icons.picture_as_pdf_outlined),
+                  title: Text(l10n.reportExportPdf),
                 ),
               ),
               PopupMenuItem(
                 value: 'csv',
                 child: ListTile(
-                  leading: Icon(Icons.table_chart_outlined),
-                  title: Text('匯出 CSV 數據'),
+                  leading: const Icon(Icons.table_chart_outlined),
+                  title: Text(l10n.reportExportCsv),
                 ),
               ),
               PopupMenuItem(
                 value: 'json',
                 child: ListTile(
-                  leading: Icon(Icons.data_object),
-                  title: Text('匯出 JSON（系統整合）'),
+                  leading: const Icon(Icons.data_object),
+                  title: Text(l10n.reportExportJson),
                 ),
               ),
               PopupMenuItem(
                 value: 'png',
                 child: ListTile(
-                  leading: Icon(Icons.image_outlined),
-                  title: Text('匯出摘要卡（PNG）'),
+                  leading: const Icon(Icons.image_outlined),
+                  title: Text(l10n.reportExportPng),
                 ),
               ),
             ],
           ),
           IconButton(
             icon: const Icon(Icons.home_outlined),
-            tooltip: '回首頁',
+            tooltip: l10n.reportHomeTooltip,
             onPressed: () => context.go('/'),
           ),
         ],
       ),
       body: doc == null
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('正在生成報告…'),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l10n.reportGeneratingTitle),
                 ],
               ),
             )
@@ -190,21 +195,21 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(24),
                   children: [
-                    _headlineCard(doc),
+                    _headlineCard(doc, l10n),
                     const SizedBox(height: 16),
                     for (final c in doc.components) ...[
-                      _component(c),
+                      _component(c, l10n),
                       const SizedBox(height: 16),
                     ],
                     if (_networkAvailable == false &&
                         (_detectedUrls.isNotEmpty ||
                             _bibEntries.isNotEmpty)) ...[
-                      _networkWarningCard(),
+                      _networkWarningCard(l10n),
                       const SizedBox(height: 16),
                     ],
-                    _linkVerificationCard(),
+                    _linkVerificationCard(l10n),
                     const SizedBox(height: 16),
-                    _bibliographyCard(),
+                    _bibliographyCard(l10n),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -213,7 +218,7 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _headlineCard(ReportDocument doc) {
+  Widget _headlineCard(ReportDocument doc, AppLocalizations l10n) {
     final llm = doc.source == ReportSource.llm;
     return Card(
       child: Padding(
@@ -227,7 +232,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     size: 16),
                 const SizedBox(width: 6),
                 Text(
-                  llm ? 'AI 智慧生成報告' : '模板生成報告',
+                  llm ? l10n.reportSourceLlm : l10n.reportSourceTemplate,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
@@ -241,9 +246,9 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _component(ReportComponent c) {
+  Widget _component(ReportComponent c, AppLocalizations l10n) {
     return switch (c.type) {
-      ReportComponentType.overallGauge => _gaugeCard(),
+      ReportComponentType.overallGauge => _gaugeCard(l10n),
       ReportComponentType.thresholdBanner => _bannerCard(
           c.body ?? '',
           icon: result.flaggedAsAi ? Icons.flag : Icons.check_circle_outline,
@@ -261,12 +266,12 @@ class _ReportScreenState extends State<ReportScreen> {
           icon: Icons.translate,
         ),
       ReportComponentType.patternList => _narrativeCard(c),
-      ReportComponentType.engineBreakdown => _engineCard(),
-      ReportComponentType.sentenceHeatmap => _heatmapCard(),
+      ReportComponentType.engineBreakdown => _engineCard(l10n),
+      ReportComponentType.sentenceHeatmap => _heatmapCard(l10n),
     };
   }
 
-  Widget _gaugeCard() => Card(
+  Widget _gaugeCard(AppLocalizations l10n) => Card(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -277,10 +282,11 @@ class _ReportScreenState extends State<ReportScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                '共 ${result.sentences.length} 句 · '
-                '疑似 AI ${result.aiSentenceCount} 句 · '
-                '人類 ${result.humanSentenceCount} 句 · '
-                '耗時 ${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(1)} 秒',
+                l10n.reportSentenceSummary(
+                    result.sentences.length,
+                    result.aiSentenceCount,
+                    result.humanSentenceCount,
+                    (result.elapsed.inMilliseconds / 1000).toStringAsFixed(1)),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -338,10 +344,11 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       );
 
-  Widget _engineCard() => Column(
+  Widget _engineCard(AppLocalizations l10n) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('引擎明細', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.reportEngineBreakdownTitle,
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           for (final e in result.engineScores)
             Card(
@@ -359,16 +366,17 @@ class _ReportScreenState extends State<ReportScreen> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppTheme.verdictColor(e.aiProbability)))
-                    : const Text('未安裝'),
+                    : Text(l10n.reportEngineNotInstalled),
               ),
             ),
         ],
       );
 
-  Widget _heatmapCard() => Column(
+  Widget _heatmapCard(AppLocalizations l10n) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('逐句分析', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.reportSentenceAnalysisTitle,
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Card(
             child: Padding(
@@ -378,13 +386,17 @@ class _ReportScreenState extends State<ReportScreen> {
                 children: [
                   for (final s in result.sentences)
                     Semantics(
-                      label: '${s.text}。AI 機率 ${(s.aiProbability * 100).round()}%'
-                          '${s.patterns.isEmpty ? '' : '，${s.patterns.join('、')}'}',
+                      label: l10n.reportSentenceTooltip(
+                          s.text,
+                          (s.aiProbability * 100).round(),
+                          s.patterns.isEmpty
+                              ? ''
+                              : '，${s.patterns.join('、')}'),
                       excludeSemantics: true,
                       child: Tooltip(
                         message: s.patterns.isEmpty
-                            ? 'AI 機率 ${(s.aiProbability * 100).round()}%'
-                            : 'AI 機率 ${(s.aiProbability * 100).round()}%\n'
+                            ? '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%'
+                            : '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%\n'
                                 '${s.patterns.join('、')}',
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -405,7 +417,7 @@ class _ReportScreenState extends State<ReportScreen> {
         ],
       );
 
-  Widget _networkWarningCard() {
+  Widget _networkWarningCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     return Card(
       color: scheme.errorContainer.withValues(alpha: 0.5),
@@ -420,19 +432,15 @@ class _ReportScreenState extends State<ReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('網路連線不佳',
+                  Text(l10n.reportNetworkWarningTitle,
                       style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 4),
-                  const Text(
-                    '本 App 執行時預設為有網路連線的狀態；超連結真實性與文獻參考'
-                    '真實性分析都需要網路連線才能判斷結果。偵測到目前無法連線，'
-                    '請檢查網路狀態後重試。',
-                  ),
+                  Text(l10n.reportNetworkWarningBody),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: () => _runVerification(forceRecheck: true),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('重新檢查連線'),
+                    label: Text(l10n.reportRetryConnectionButton),
                   ),
                 ],
               ),
@@ -443,7 +451,7 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _linkVerificationCard() {
+  Widget _linkVerificationCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     final checks = _linkChecks;
 
@@ -460,10 +468,10 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('超連結真實性',
+                    Text(l10n.reportLinkAuthenticityTitle,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
-                    const Text('未在文件中偵測到超連結。'),
+                    Text(l10n.reportLinkNoneDetected),
                   ],
                 ),
               ),
@@ -492,27 +500,23 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('超連結真實性',
+                    Text(l10n.reportLinkAuthenticityTitle,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
                     Text(
                       _checkingLinks
-                          ? '正在驗證連結…'
-                          : '偵測到 ${_detectedUrls.length} 個超連結，尚未驗證是否存在',
+                          ? l10n.reportLinkCheckingProgress
+                          : l10n.reportLinkDetectedPending(_detectedUrls.length),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     if (!_checkingLinks) ...[
                       const SizedBox(height: 4),
-                      const Text(
-                        'AI 生成內容常附上看似合理但實際不存在的引用連結。'
-                        '你已在「設定」關閉超連結驗證；可重新開啟以自動驗證，'
-                        '或點擊下方按鈕做單次驗證。',
-                      ),
+                      Text(l10n.reportLinkDisabledHint),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () => _runVerification(forceRecheck: true),
                         icon: const Icon(Icons.wifi_outlined),
-                        label: const Text('立即驗證（需連線）'),
+                        label: Text(l10n.reportVerifyNowButton),
                       ),
                     ],
                   ],
@@ -530,7 +534,8 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('超連結真實性', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.reportLinkAuthenticityTitle,
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             for (final c in checks)
               Padding(
@@ -554,7 +559,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${c.url}\n${_linkStatusLabel(c)}',
+                        '${c.url}\n${_linkStatusLabel(c, l10n)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -565,8 +570,8 @@ class _ReportScreenState extends State<ReportScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '僅驗證前 ${LinkVerifier.maxLinksPerCheck} 個連結'
-                  '（共偵測到 ${_detectedUrls.length} 個）',
+                  l10n.reportLinkTruncated(
+                      LinkVerifier.maxLinksPerCheck, _detectedUrls.length),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -577,24 +582,24 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   /// 一般網址只做連線可達性描述；DOI 期刊文獻則說明是否經 Crossref 目錄核實。
-  String _linkStatusLabel(LinkCheckResult c) {
+  String _linkStatusLabel(LinkCheckResult c, AppLocalizations l10n) {
     if (!c.isCitationVerified) {
       return switch (c.status) {
-        LinkStatus.reachable => '可連線，網址存在',
-        LinkStatus.notFound => '網址不存在（404），可能為虛構引用',
-        LinkStatus.unreachable => '無法確認（連線逾時或伺服器無回應）',
+        LinkStatus.reachable => l10n.reportLinkReachable,
+        LinkStatus.notFound => l10n.reportLinkNotFound,
+        LinkStatus.unreachable => l10n.reportLinkUnreachable,
       };
     }
     return switch (c.status) {
-      LinkStatus.reachable => '期刊目錄核實：已登記於'
-          '${c.journalName != null ? '《${c.journalName}》' : '出版社目錄'}'
-          '${c.articleTitle != null ? '，篇名：${c.articleTitle}' : ''}',
-      LinkStatus.notFound => '查無此 DOI 登記紀錄，可能為虛構引用',
-      LinkStatus.unreachable => '無法確認（連線逾時或 Crossref 無回應）',
+      LinkStatus.reachable => l10n.reportLinkCitationVerified(
+          c.journalName ?? '',
+          c.articleTitle != null ? '，${c.articleTitle}' : ''),
+      LinkStatus.notFound => l10n.reportLinkCitationNotFound,
+      LinkStatus.unreachable => l10n.reportLinkCitationUnreachable,
     };
   }
 
-  Widget _bibliographyCard() {
+  Widget _bibliographyCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     final checks = _bibChecks;
 
@@ -611,10 +616,10 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('文獻參考真實性',
+                    Text(l10n.reportBibAuthenticityTitle,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
-                    const Text('未在文件中偵測到參考文獻條目。'),
+                    Text(l10n.reportBibNoneDetected),
                   ],
                 ),
               ),
@@ -643,27 +648,23 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('文獻參考真實性',
+                    Text(l10n.reportBibAuthenticityTitle,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
                     Text(
                       _checkingBib
-                          ? '正在核實參考文獻目錄…'
-                          : '偵測到參考文獻目錄（${_bibEntries.length} 筆），尚未核實是否存在',
+                          ? l10n.reportBibCheckingProgress
+                          : l10n.reportBibDetectedPending(_bibEntries.length),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     if (!_checkingBib) ...[
                       const SizedBox(height: 4),
-                      const Text(
-                        'AI 生成內容常附上看似合理但實際不存在的參考文獻。'
-                        '你已在「設定」關閉超連結驗證；可重新開啟以自動核實，'
-                        '或點擊下方按鈕做單次核實。',
-                      ),
+                      Text(l10n.reportBibDisabledHint),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () => _runVerification(forceRecheck: true),
                         icon: const Icon(Icons.wifi_outlined),
-                        label: const Text('立即核實（需連線）'),
+                        label: Text(l10n.reportVerifyNowBibButton),
                       ),
                     ],
                   ],
@@ -681,11 +682,11 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('文獻參考真實性', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.reportBibAuthenticityTitle,
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
-              '依作者、年份與篇名相似度比對 Crossref 公開登記資料，非絕對保證，'
-              '「無法確定」時建議自行核對。',
+              l10n.reportBibResultHint,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
@@ -711,7 +712,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${c.entry.rawText}\n${_bibStatusLabel(c)}',
+                        '${c.entry.rawText}\n${_bibStatusLabel(c, l10n)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -722,8 +723,9 @@ class _ReportScreenState extends State<ReportScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '僅核實前 ${BibliographyVerifier.maxEntriesPerCheck} 筆'
-                  '（共偵測到 ${_bibEntries.length} 筆）',
+                  l10n.reportBibTruncated(
+                      BibliographyVerifier.maxEntriesPerCheck,
+                      _bibEntries.length),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -733,12 +735,14 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  String _bibStatusLabel(BibliographyCheckResult c) {
+  String _bibStatusLabel(BibliographyCheckResult c, AppLocalizations l10n) {
     return switch (c.confidence) {
-      CitationMatchConfidence.high => '高可信度：應存在'
-          '${c.matchedJournal != null ? '（登記於《${c.matchedJournal}》）' : ''}',
-      CitationMatchConfidence.notFound => '查無相近匹配，可能為虛構文獻',
-      CitationMatchConfidence.uncertain => '相似度中等或連線失敗，無法確定，建議自行核對',
+      CitationMatchConfidence.high => l10n.reportBibHighConfidence(
+          c.matchedJournal != null
+              ? l10n.reportBibJournalSuffix(c.matchedJournal!)
+              : ''),
+      CitationMatchConfidence.notFound => l10n.reportBibNotFound,
+      CitationMatchConfidence.uncertain => l10n.reportBibUncertain,
     };
   }
 }
