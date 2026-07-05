@@ -12,6 +12,10 @@ import 'package:http/http.dart' as http;
 ///   - 其餘（部分吻合）→ 無法確定，需自行核對
 /// 僅送出參考文獻的文字本身（書名/篇名/作者/年份等已公開於文件中的資訊），
 /// 不下載全文、不涉及使用者的其他文件內容。
+///
+/// 偵測不依賴文件明確標示「這是參考文獻」：優先找 References/參考文獻等標題，
+/// 找不到時改為主動掃描全文比對作者—年份格式（見 [extractEntries]），
+/// 只要累積達 [minEntriesWithoutHeading] 筆以上即視為文獻目錄並主動分析。
 enum CitationMatchConfidence { high, uncertain, notFound }
 
 class BibliographyEntry {
@@ -63,15 +67,29 @@ class BibliographyVerifier {
     r'(?:,\s*)?(\d{4})\.\s*',
   );
 
-  /// 偵測文件中的「參考文獻」段落並依條目切分；找不到段落或條目時回傳空陣列，
+  /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數。
+  /// 文件不一定會標示「這是文獻目錄」，但真正的文獻清單通常會有好幾筆緊鄰的
+  /// 作者—年份格式條目；門檻用來過濾掉內文中偶然出現、單一一兩筆的巧合
+  /// （例如一般敘述中剛好出現類似「Surname, X., 年份.」的片段）。
+  static const minEntriesWithoutHeading = 3;
+
+  /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列，
   /// 不做任何連線動作。
+  ///
+  /// 兩種偵測路徑：
+  /// 1. 找得到「References/Bibliography/參考文獻」等標題 → 標題後的內容視為
+  ///    文獻目錄，即使只有 1 筆也算數（標題本身就是明確訊號）
+  /// 2. 找不到標題（文件未必會明確標示「他們是文獻」）→ 改為對整份文件掃描
+  ///    作者—年份格式的條目，但需累積達 [minEntriesWithoutHeading] 筆以上
+  ///    才視為真正的文獻目錄，避免內文偶然出現的單一巧合片段被誤判
   static List<BibliographyEntry> extractEntries(String text) {
     final headingMatch = _sectionHeading.firstMatch(text);
-    if (headingMatch == null) return [];
-    final section = text.substring(headingMatch.end);
+    final hasHeading = headingMatch != null;
+    final section = hasHeading ? text.substring(headingMatch.end) : text;
 
     final starts = _entryStart.allMatches(section).toList();
     if (starts.isEmpty) return [];
+    if (!hasHeading && starts.length < minEntriesWithoutHeading) return [];
 
     final entries = <BibliographyEntry>[];
     for (var i = 0; i < starts.length; i++) {

@@ -55,6 +55,23 @@ void main() {
       );
       expect(entries, isNotEmpty);
     });
+
+    test('沒有標題但條目數達門檻時仍主動偵測（文件未必會明確標示「這是文獻」）', () {
+      // 取樣本文獻但移除「References」標題這一行
+      final withoutHeading =
+          _sampleReferences.replaceFirst('References\n', '');
+      final entries = BibliographyVerifier.extractEntries(withoutHeading);
+      expect(entries.length, 6);
+      expect(entries[0].firstAuthorSurname, 'Ahlers');
+    });
+
+    test('沒有標題且條目數低於門檻時不判定為文獻目錄，避免內文巧合誤判', () {
+      final onlyTwo = '''
+Ahlers, G., Cannell, D.S., and Lerma, M.A.D., 1983. Possible mechanism for transitions in wavy Taylor-vortex flow. Physical Review A, 27, 1225–1227.
+Coles, D., 1965. Transition in circular Couette flow. Journal of Fluid Mechanics, 21, 385–425.
+''';
+      expect(BibliographyVerifier.extractEntries(onlyTwo), isEmpty);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {
