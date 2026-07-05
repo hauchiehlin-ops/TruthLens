@@ -7,6 +7,7 @@ import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/bibliography_verifier.dart';
 import '../../core/services/link_verifier.dart';
+import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
 import '../../shared/widgets/score_gauge.dart';
@@ -35,6 +36,10 @@ class _ReportScreenState extends State<ReportScreen> {
   bool _checkingBib = false;
   List<BibliographyCheckResult>? _bibChecks;
 
+  /// App 執行時預設假定網路可用；`null` 代表本次報告尚未探測過，
+  /// `false` 代表偵測到連線不佳／離線，需提示使用者。
+  bool? _networkAvailable;
+
   DetectionResult get result => widget.result;
 
   @override
@@ -43,11 +48,9 @@ class _ReportScreenState extends State<ReportScreen> {
     _generate();
     final linkVerificationOn =
         context.read<PreferencesService>().linkVerificationEnabled;
-    if (_detectedUrls.isNotEmpty && linkVerificationOn) {
-      _verifyLinks();
-    }
-    if (_bibEntries.isNotEmpty && linkVerificationOn) {
-      _verifyBibliography();
+    if (linkVerificationOn &&
+        (_detectedUrls.isNotEmpty || _bibEntries.isNotEmpty)) {
+      _runVerification();
     }
   }
 
@@ -57,25 +60,48 @@ class _ReportScreenState extends State<ReportScreen> {
     if (mounted) setState(() => _doc = doc);
   }
 
-  Future<void> _verifyLinks() async {
-    setState(() => _checkingLinks = true);
-    final checks = await LinkVerifier.verifyAll(_detectedUrls);
-    if (mounted) {
-      setState(() {
-        _linkChecks = checks;
-        _checkingLinks = false;
-      });
+  /// 超連結／文獻參考真實性驗證的單一入口：先確認網路連線狀態（可重用先前
+  /// 已探測過的結果，[forceRecheck] 為 true 時強制重新探測），連線不佳時
+  /// 直接顯示提示、不逐筆嘗試逾時的網路請求。
+  Future<void> _runVerification({bool forceRecheck = false}) async {
+    if (forceRecheck) _networkAvailable = null;
+    if (_detectedUrls.isNotEmpty && mounted) {
+      setState(() => _checkingLinks = true);
     }
-  }
+    if (_bibEntries.isNotEmpty && mounted) {
+      setState(() => _checkingBib = true);
+    }
 
-  Future<void> _verifyBibliography() async {
-    setState(() => _checkingBib = true);
-    final checks = await BibliographyVerifier.verifyAll(_bibEntries);
-    if (mounted) {
-      setState(() {
-        _bibChecks = checks;
-        _checkingBib = false;
-      });
+    final online = _networkAvailable ?? await NetworkStatus.isOnline();
+    if (mounted) setState(() => _networkAvailable = online);
+
+    if (!online) {
+      if (mounted) {
+        setState(() {
+          _checkingLinks = false;
+          _checkingBib = false;
+        });
+      }
+      return;
+    }
+
+    if (_detectedUrls.isNotEmpty) {
+      final checks = await LinkVerifier.verifyAll(_detectedUrls);
+      if (mounted) {
+        setState(() {
+          _linkChecks = checks;
+          _checkingLinks = false;
+        });
+      }
+    }
+    if (_bibEntries.isNotEmpty) {
+      final checks = await BibliographyVerifier.verifyAll(_bibEntries);
+      if (mounted) {
+        setState(() {
+          _bibChecks = checks;
+          _checkingBib = false;
+        });
+      }
     }
   }
 
@@ -168,6 +194,12 @@ class _ReportScreenState extends State<ReportScreen> {
                     const SizedBox(height: 16),
                     for (final c in doc.components) ...[
                       _component(c),
+                      const SizedBox(height: 16),
+                    ],
+                    if (_networkAvailable == false &&
+                        (_detectedUrls.isNotEmpty ||
+                            _bibEntries.isNotEmpty)) ...[
+                      _networkWarningCard(),
                       const SizedBox(height: 16),
                     ],
                     _linkVerificationCard(),
@@ -373,6 +405,44 @@ class _ReportScreenState extends State<ReportScreen> {
         ],
       );
 
+  Widget _networkWarningCard() {
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      color: scheme.errorContainer.withValues(alpha: 0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.wifi_off, color: scheme.error),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('網路連線不佳',
+                      style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  const Text(
+                    '本 App 執行時預設為有網路連線的狀態；超連結真實性與文獻參考'
+                    '真實性分析都需要網路連線才能判斷結果。偵測到目前無法連線，'
+                    '請檢查網路狀態後重試。',
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => _runVerification(forceRecheck: true),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('重新檢查連線'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _linkVerificationCard() {
     final scheme = Theme.of(context).colorScheme;
     final checks = _linkChecks;
@@ -440,7 +510,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
-                        onPressed: _verifyLinks,
+                        onPressed: () => _runVerification(forceRecheck: true),
                         icon: const Icon(Icons.wifi_outlined),
                         label: const Text('立即驗證（需連線）'),
                       ),
@@ -591,7 +661,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
-                        onPressed: _verifyBibliography,
+                        onPressed: () => _runVerification(forceRecheck: true),
                         icon: const Icon(Icons.wifi_outlined),
                         label: const Text('立即核實（需連線）'),
                       ),
