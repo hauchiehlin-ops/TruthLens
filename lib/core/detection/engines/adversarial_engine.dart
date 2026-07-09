@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
+import '../model_file_exists.dart';
 import '../model_manager.dart';
 import '../onnx_detector.dart';
 
@@ -36,7 +35,9 @@ class AdversarialEngine implements DetectionEngine {
     final modelPath = await modelManager.activeModelPath(id);
     final tokPath = await modelManager.activeTokenizerPath(id);
     if (modelPath == null || tokPath == null) return null;
-    if (!File(modelPath).existsSync() || !File(tokPath).existsSync()) return null;
+    if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
+      return null;
+    }
     return (modelPath, tokPath);
   }
 

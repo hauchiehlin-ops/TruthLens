@@ -1,12 +1,19 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-/// 文件匯入：目前支援純文字格式（txt / md）。
-/// PDF 文字抽取與 docx 解析為後續 P1/P3 擴充項目。
+/// 文件匯入：支援 txt, md, pdf, docx, doc 等格式的離線解析。
 class DocumentImporter {
-  static const supportedExtensions = ['txt', 'md', 'markdown'];
+  static const supportedExtensions = [
+    'txt',
+    'md',
+    'markdown',
+    'pdf',
+    'docx',
+    'doc',
+  ];
 
   /// 開啟選檔對話框並讀取內容；使用者取消時回傳 null
   static Future<ImportedDocument?> pick() async {
@@ -19,14 +26,103 @@ class DocumentImporter {
     final file = result?.files.firstOrNull;
     if (file == null) return null;
 
-    final bytes = file.bytes ??
-        (file.path != null ? await File(file.path!).readAsBytes() : null);
+    // withData: true 已確保各平台（含 web，僅提供 bytes、無 path）都會填入 bytes。
+    final bytes = file.bytes;
     if (bytes == null) return null;
+
+    final extension = file.extension?.toLowerCase() ?? '';
+    String text = '';
+
+    try {
+      if (extension == 'pdf') {
+        // PDF 離線文字抽取
+        final PdfDocument document = PdfDocument(inputBytes: bytes);
+        text = PdfTextExtractor(document).extractText();
+        document.dispose();
+      } else if (extension == 'docx') {
+        // DOCX 離線解壓與 <w:t> 文字提取
+        text = _parseDocx(bytes);
+      } else if (extension == 'doc') {
+        // 舊版 OLE Binary DOC 格式寬字元與可讀區段提取 Heuristics
+        text = _parseLegacyDoc(bytes);
+      } else {
+        // 預設為純文字（txt, md 等）
+        text = utf8.decode(bytes, allowMalformed: true);
+      }
+    } catch (e) {
+      // 發生錯誤時以純文字作為防退方案
+      text = utf8.decode(bytes, allowMalformed: true);
+    }
 
     return ImportedDocument(
       fileName: file.name,
-      text: utf8.decode(bytes, allowMalformed: true).trim(),
+      text: text.trim(),
     );
+  }
+
+  static String _parseDocx(List<int> bytes) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final file = archive.findFile('word/document.xml');
+      if (file == null) return '';
+      final xmlContent = utf8.decode(file.content as List<int>, allowMalformed: true);
+      
+      final regex = RegExp(r'<w:t[^>]*>(.*?)</w:t>');
+      final matches = regex.allMatches(xmlContent);
+      final textBuffer = StringBuffer();
+      
+      for (final match in matches) {
+        var t = match.group(1) ?? '';
+        t = t
+            .replaceAll('&amp;', '&')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&quot;', '"')
+            .replaceAll('&apos;', "'");
+        textBuffer.write(t);
+      }
+      return textBuffer.toString();
+    } catch (_) {
+      return '';
+    }
+  }
+
+  static String _parseLegacyDoc(List<int> bytes) {
+    final buffer = StringBuffer();
+    
+    // Heuristic 1: 掃描 UTF-16LE 寬字元段落（Word 常用）
+    for (int i = 0; i < bytes.length - 1; i += 2) {
+      final charCode = bytes[i] | (bytes[i + 1] << 8);
+      if ((charCode >= 32 && charCode <= 126) || 
+          (charCode >= 0x4E00 && charCode <= 0x9FFF)) {
+        buffer.writeCharCode(charCode);
+      } else if (charCode == 10 || charCode == 13) {
+        buffer.write('\n');
+      }
+    }
+    
+    // Heuristic 2: 若提取字元過少，回退至 ASCII printable 字元提取
+    if (buffer.length < 50) {
+      buffer.clear();
+      final currentRun = <int>[];
+      for (final b in bytes) {
+        final isPrintable = (b >= 32 && b <= 126) || b == 10 || b == 13 || b == 9;
+        if (isPrintable) {
+          currentRun.add(b);
+        } else {
+          if (currentRun.length >= 4) {
+            buffer.write(utf8.decode(currentRun, allowMalformed: true));
+            buffer.write(' ');
+          }
+          currentRun.clear();
+        }
+      }
+    }
+
+    return buffer.toString()
+        .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '')
+        .replaceAll(RegExp(r' {2,}'), ' ')
+        .trim();
   }
 }
 

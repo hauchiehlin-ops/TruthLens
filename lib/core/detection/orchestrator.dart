@@ -50,6 +50,7 @@ class EnsembleOrchestrator {
     PreferencesService? prefs,
     AppLocalizations? l10n,
     void Function(String engineId)? onEngineDone,
+    void Function(EngineScore score)? onEngineScore,
   }) async {
     final loc = l10n ?? lookupAppLocalizations(const Locale('en'));
     final started = DateTime.now();
@@ -74,6 +75,7 @@ class EnsembleOrchestrator {
               ],
             );
       onEngineDone?.call(engine.id);
+      onEngineScore?.call(score);
       return score;
     });
 

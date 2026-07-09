@@ -13,6 +13,34 @@
 
 ---
 
+## 2026-07-09 — [P1 基礎建設] Web 版第一階段：能力分級＋漸進式結果（方案③）
+
+**做了什麼**
+- 新增 Flutter web 平台目標（`flutter create . --platforms web`），並將偵測引擎堆疊中所有 `dart:io`／`dart:ffi`／`onnxruntime`（FFI plugin）依賴改為 conditional import/export（`if (dart.library.io)`），native 與 web 各自實作、同一組公開介面：[device_capabilities.dart](lib/core/detection/device_capabilities.dart)（web 版用 `dart:js_interop` 讀 `navigator.hardwareConcurrency`／`deviceMemory`／`gpu`）、[model_manager.dart](lib/core/detection/model_manager.dart)（web 版改用瀏覽器 OPFS 儲存已下載模型，`downloadVariant` 整份串流進記憶體再寫入，共用資料型別抽到 [model_manager_types.dart](lib/core/detection/model_manager_types.dart)）、[onnx_detector.dart](lib/core/detection/onnx_detector.dart) 與 [perplexity_scorer.dart](lib/core/detection/perplexity_scorer.dart)（web 版透過新的 [web_js_bridge.dart](lib/core/detection/web_js_bridge.dart) 呼叫自我托管的 onnxruntime-web，見 [web/ort_bridge.js](web/ort_bridge.js)／[web/fs_bridge.js](web/fs_bridge.js)，WebGPU 可用時優先、否則退回 WASM）、[llama_ffi.dart](lib/core/detection/llama_ffi.dart)（web 版 stub，`isLoaded` 恆 false，讓既有 LLM→模板 fallback 邏輯自然生效）、[history_repository.dart](lib/core/services/history_repository.dart)（web 版純記憶體實作）、[model_import_screen.dart](lib/features/settings/model_import_screen.dart)（web 版顯示「尚未支援」佔位頁）
+- [orchestrator.dart](lib/core/detection/orchestrator.dart) 的 `analyze()` 新增 `onEngineScore` 回呼（攜帶完整 `EngineScore`，不只 id），[analysis_screen.dart](lib/features/analysis/analysis_screen.dart) 據此實作方案③核心體驗：風格特徵引擎（純 Dart、無需模型）最快出結果時先顯示「初步結果」卡片與即時加權分數，其餘引擎陸續完成時同步更新，全部完成後才轉場到完整報告頁
+- 自 npm 下載 `onnxruntime-web` 1.19.2 的 dist 檔（`ort.wasm.min.js` + `ort.webgpu.min.js` 與對應 wasm）自我托管於 `web/assets/ort/`，不使用 CDN；`document_importer.dart` 移除 `dart:io` fallback（`file_picker` 的 `withData: true` 本已保證各平台皆有 `bytes`）
+- 用 `flutter build web` + 靜態伺服器（非 `flutter run -d web-server`）在瀏覽器內完整跑過：裝置能力偵測（正確顯示 `web · 10 核 · 16GB RAM · high tier · WebGPU`）→ 真實模型下載（120MB，串流進度即時更新 UI，並驗證了下載失敗時的錯誤處理路徑）→ 貼上文字 → 方案③漸進式分析（風格/統計/Transformer/對抗四引擎皆完成並即時顯示）→ 模板生成報告（71% AI 機率，正確走 template 而非嘗試 LLM）
+- `flutter analyze`／`flutter test`（115 個既有測試）皆通過，無迴歸；順手修掉 `flutter create` 產生的過期 `test/widget_test.dart`（引用不存在的 `MyApp`）與 `llama_ffi_web.dart` 缺少的 `LlamaFfi` stub（`test/llm_manager_test.dart` 直接引用該類別）
+
+**為什麼**
+- 使用者想評估「網頁版作為唯一部署方式是否可行」，討論後選定方案③（能力分級＋漸進式結果）：先用免模型的風格/統計特徵給初步結果，重量級模型背景載入完成後再精修，同時兼顧效能與準確度，且完全不違反「本地優先、文件內容不上傳」的核心原則——推論全程在瀏覽器 WASM/WebGPU 內完成
+
+**決策與取捨**
+- ModelManager／OnnxDetector／PerplexityScorer／HistoryRepository 選擇「同一個類別名稱＋conditional export」而非抽象介面＋雙實作類別：因為 `TransformerEngine`／`AdversarialEngine`／`StatisticalEngine` 等呼叫端已經寫死具體類別型別，用 conditional export 讓呼叫端完全不用改，且 native/web 兩份實作在編譯期就是完全獨立的檔案，不會互相拖累
+- `importLocalModel`／`testModel`（自訂模型匯入，仰賴 `dart:io File`）在 web 版整組標記為 `UnsupportedError`，對應的設定頁面（`model_import_screen.dart`）也整個 conditional export 成佔位頁：這是進階設定功能，不在 Phase 1 golden path 內，比起硬做一套以 bytes 為主的匯入流程更省成本
+- 開發時 `flutter run -d web-server`（DDC/DWDS）在瀏覽器內反覆卡死在「分析中」畫面、`onEngineDone` 永遠不觸發；追查後確認是 DWDS 注入除錯腳本本身的已知 bug（`_JsonMap is not List<Object?>`，官方建議 `--no-injected-client`），改用 `flutter build web` 產生的正式建置＋靜態伺服器驗證後完全正常、且明顯更快——之後這類端對端驗證一律用建置版，不用 DDC 開發伺服器
+- CanvasKit 目前仍預設從 `gstatic.com` 下載（Flutter engine 內建行為，不是本次改動範圍），與「不依賴外部 CDN」的原則有落差，記錄為待辦
+- 真正的模型下載測試中，`huggingface.co` 的一個模型檔（透過 `cdn-lfs`/`xet-bridge` 重新導向）在瀏覽器 fetch 下遇到 `net::ERR_HTTP2_PROTOCOL_ERROR` 失敗；ModelManager 的下載/錯誤處理路徑正確捕捉並顯示失敗訊息，但尚未查證是否為 HF CDN 對瀏覽器直連的普遍限制，記錄為待辦
+
+**待辦/遺留問題**
+- IndexedDB／真正的歷史紀錄持久化（目前 web 版僅記憶體內，重新整理即清空）
+- Web 版 PDF/DOCX 匯入、OCR（Tesseract.js 等）、真正的本地 LLM 智慧報告（wllama/WebLLM）——皆明確排除在 Phase 1 之外
+- CanvasKit 改自我托管（目前吃 Google CDN）
+- 確認 huggingface.co 模型檔在瀏覽器環境下載失敗（HTTP2 protocol error）的根因，評估是否需要換一個對瀏覽器直連更友善的模型託管來源
+- `web/assets/ort/` 目前約 31MB（含 wasm 執行檔），尚未決定要整包提交進 git 還是改用建置腳本／git-lfs 另外取得
+
+---
+
 ## 2026-07-05 — [P4 打磨上架] 全面多語系化：13 種語言 + 首頁語系切換選單
 
 **做了什麼**

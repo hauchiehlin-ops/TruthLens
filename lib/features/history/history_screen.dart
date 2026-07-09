@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -87,6 +88,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       body: Column(
         children: [
+          if (kIsWeb)
+            Container(
+              width: double.infinity,
+              color: Theme.of(context).colorScheme.tertiaryContainer,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                '網頁版歷史紀錄僅保留在本次工作階段，重新整理頁面後會清空。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                    ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
