@@ -13,6 +13,32 @@
 
 ---
 
+## 2026-07-10 — [P1 基礎建設] Web 版第一階段收尾：CanvasKit 自我托管、IndexedDB 歷史持久化
+
+**做了什麼**
+- CanvasKit 不再吃 Google CDN：新增 [web/flutter_bootstrap.js](web/flutter_bootstrap.js)（沿用 Flutter 官方 `examples/hello_world` 的自訂 bootstrap 範例寫法），設定 `canvasKitBaseUrl: "canvaskit/"` + `useLocalCanvasKit: true`，`flutter build web` 本來就會把 CanvasKit 完整複製到 `build/web/canvaskit/`，只是預設 loader 不用它、改連 `gstatic.com`；驗證瀏覽器 network log 確認 `canvaskit.wasm`／`canvaskit.js` 改從本地 `/canvaskit/chromium/` 載入
+- 歷史紀錄改真正持久化：新增 [web/db_bridge.js](web/db_bridge.js) 包裝瀏覽器 IndexedDB（單一 object store，key 為紀錄 id），[web_js_bridge.dart](lib/core/detection/web_js_bridge.dart) 新增 `WebDb` 薄封裝（沿用既有「只用字串跨 JS 邊界」的原則，整批紀錄以 JSON 字串往返，排序/過濾/上限 200 筆留在 Dart 端做），重寫 [history_repository_web.dart](lib/core/services/history_repository_web.dart) 改用 `WebDb` 取代純記憶體 list；移除 [history_screen.dart](lib/features/history/history_screen.dart) 先前「網頁版歷史紀錄僅本次工作階段」的提示橫幅（因為現在確實會持久化，跟原生版行為一致）
+- 實機驗證：貼文字 → 分析 → 產生報告（存入歷史）→ 整頁重新整理（`window.location.href` 完整導航，非 SPA 內部跳轉）→ 開歷史頁 → 確認剛才的紀錄還在，時間戳與判定分數皆正確
+- 診斷先前記錄的 huggingface.co 下載失敗（`net::ERR_HTTP2_PROTOCOL_ERROR`）：直接對同一個重新導向後的 CDN 網址（`us.aws.cdn.hf.co/xet-bridge-us/...`）用 `curl --http2` 取 range 請求，HTTP/2 206 正常回應、CORS 標頭也完全開放（`access-control-allow-origin: *`）。結論：不是 CORS 或協定層根本限制，應屬前次瀏覽器工作階段中途的暫時性網路/連線抖動；ModelManager 既有的下載失敗處理（顯示錯誤訊息、可重新點擊下載）已足夠因應，不需要額外程式碼變更
+- 確認 PDF/DOCX 匯入在 web 上原則上已可運作：`document_importer.dart` 本來就對三平台一視同仁（無 `kIsWeb` 限制），`syncfusion_flutter_pdf`／`archive` 皆為純 Dart（已於上次確認零 `dart:io` 依賴），`flutter build web` 編譯乾淨。受限於瀏覽器原生檔案選取對話框無法用腳本注入檔案（安全限制），這次沒有跑到「使用者實際選一個 PDF」的互動流程，僅能以靜態驗證（編譯成功＋依賴皆為純 Dart＋無平台限制）佐證，尚未有實機點擊選檔的端對端證據
+- 補上 `flutter analyze`／`flutter test`（115 個測試）全過的回歸確認
+
+**為什麼**
+- 使用者明確要求「繼續進行其他未完成項目，不要停下來、不要問我了，授權你全域執行」，針對上一則記錄留下的待辦清單逐項處理
+
+**決策與取捨**
+- **Web 版 OCR（Tesseract.js）未完成**：已規劃好完整方案（self-host `tesseract.js` + `tesseract.js-core`（SIMD+LSTM 變體）+ 三個語言包 `eng`/`chi_tra`/`chi_sim`，`ImagePicker`／`OcrService` 循既有 conditional export 模式拆成 io/web 兩份實作），也已從 npm 下載好所有必要檔案並確認相容版本與大小（總計約 10MB），但寫入 `web/assets/tesseract/` 這一步被 Claude Code 的 auto-mode 分類器擋下——引入新的第三方 JS/WASM 執行期依賴（會在瀏覽器內執行）不在「繼續執行未完成項目」這句籠統授權的涵蓋範圍內，需要使用者明確同意才能繼續。這是刻意的安全邊界，不嘗試繞過；已將規劃細節記錄於本則，若使用者確認可継續，下次可直接照此方案執行
+- 未動 `google_fonts`（Inter／Noto Sans TC 目前也是從 `fonts.gstatic.com` 動態抓取，跟 CanvasKit 是同一類「非本次改動範圍但一併發現」的 CDN 依賴）：這個改動會牽動 `app/theme.dart`——四個原生平台共用的檔案，且字型自我托管需要抓對確切字重/字集、驗證 13 個語系（含泰文、韓文等非拉丁字集）畫面不跑版，風險與範圍都明顯高於 CanvasKit 那種「一行設定切換讀取來源」的機械式修正；先記錄不動手，留待使用者決定是否要做
+- IndexedDB 版本／schema 保持最簡（單一 store、無 index），因為資料量級與原生 SQLite 版本一致（≤200 筆、單一使用者裝置本機資料），排序／關鍵字過濾留在 Dart 端做直接重用原生版邏輯，沒有必要在 IndexedDB 層做查詢優化
+
+**待辦/遺留問題**
+- Web 版 OCR（Tesseract.js）：方案已定，資源已備妥（見上），等待使用者同意後把檔案寫入 `web/assets/tesseract/` 並接上 `OcrService`/`ImagePicker` 的 conditional export
+- `google_fonts`（Inter／Noto Sans TC）自我托管，避免 web 版仍依賴 `fonts.gstatic.com`
+- PDF/DOCX 匯入尚無「使用者實際選檔」的瀏覽器互動驗證（工具限制，無法腳本化原生檔案選取對話框）
+- `web/assets/ort/` 約 31MB 二進位檔是否要留在 git 追蹤內，上次未決定，這次也還沒處理
+
+---
+
 ## 2026-07-09 — [P1 基礎建設] Web 版第一階段：能力分級＋漸進式結果（方案③）
 
 **做了什麼**

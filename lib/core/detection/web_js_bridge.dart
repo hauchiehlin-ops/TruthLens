@@ -105,3 +105,29 @@ class WebOrtSession {
 
 /// 目前使用中的 execution provider('webgpu' / 'wasm'),尚未載入任何模型時為 null。
 String? currentOrtExecutionProvider() => _ortEpKind()?.toDart;
+
+@JS('truthlensDb.put')
+external JSPromise<JSAny?> _dbPut(JSString entryJson);
+
+@JS('truthlensDb.getAllJson')
+external JSPromise<JSString> _dbGetAllJson();
+
+@JS('truthlensDb.deleteEntry')
+external JSPromise<JSAny?> _dbDeleteEntry(JSString id);
+
+@JS('truthlensDb.clear')
+external JSPromise<JSAny?> _dbClear();
+
+/// IndexedDB 存取，供 web 版 HistoryRepository 持久化歷史紀錄。單筆紀錄以 JSON
+/// 字串跨越 JS 邊界，過濾/排序留在 Dart 端做（見 history_repository_web.dart）。
+class WebDb {
+  static Future<void> put(String entryJson) => _dbPut(entryJson.toJS).toDart;
+
+  static Future<String> getAllJson() async =>
+      (await _dbGetAllJson().toDart).toDart;
+
+  static Future<void> deleteEntry(String id) =>
+      _dbDeleteEntry(id.toJS).toDart;
+
+  static Future<void> clear() => _dbClear().toDart;
+}

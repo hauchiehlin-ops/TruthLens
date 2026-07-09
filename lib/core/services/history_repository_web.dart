@@ -1,38 +1,35 @@
+import 'dart:convert';
+
+import '../detection/web_js_bridge.dart';
 import '../models/detection_result.dart';
 
-/// 歷史檢測紀錄（web 版）：僅存於記憶體，重新整理頁面即清空。
-/// 網頁版第一階段刻意不做 IndexedDB 持久化（見開發計畫「不在這次範圍內」），
-/// 介面與原生版（SQLite）一致，供 UI 無條件呼叫。
+/// 歷史檢測紀錄（web 版）：持久化於瀏覽器 IndexedDB（見 [WebDb]），介面與原生版
+/// （SQLite）一致。內容全部留在瀏覽器本機儲存內，不經任何伺服器。
 class HistoryRepository {
-  final List<HistoryEntry> _entries = [];
-
-  Future<void> save(DetectionResult result) async {
-    _entries.removeWhere((e) => e.id == result.id);
-    _entries.insert(
-      0,
-      HistoryEntry(
-        id: result.id,
-        analyzedAt: result.analyzedAt,
-        inputText: result.inputText,
-        aiProbability: result.aiProbability,
-        verdict: result.verdict,
-      ),
-    );
-    if (_entries.length > 200) _entries.removeLast();
-  }
+  Future<void> save(DetectionResult result) => WebDb.put(jsonEncode({
+        'id': result.id,
+        'analyzed_at': result.analyzedAt.millisecondsSinceEpoch,
+        'input_text': result.inputText,
+        'ai_probability': result.aiProbability,
+        'verdict': result.verdict.name,
+      }));
 
   Future<List<HistoryEntry>> list({String? query}) async {
-    if (query == null || query.isEmpty) return List.of(_entries);
-    return _entries.where((e) => e.inputText.contains(query)).toList();
+    final raw = jsonDecode(await WebDb.getAllJson()) as List;
+    var entries = raw
+        .cast<Map<String, dynamic>>()
+        .map(HistoryEntry.fromJson)
+        .toList()
+      ..sort((a, b) => b.analyzedAt.compareTo(a.analyzedAt));
+    if (query != null && query.isNotEmpty) {
+      entries = entries.where((e) => e.inputText.contains(query)).toList();
+    }
+    return entries.take(200).toList();
   }
 
-  Future<void> delete(String id) async {
-    _entries.removeWhere((e) => e.id == id);
-  }
+  Future<void> delete(String id) => WebDb.deleteEntry(id);
 
-  Future<void> clearAll() async {
-    _entries.clear();
-  }
+  Future<void> clearAll() => WebDb.clear();
 }
 
 /// 歷史列表項（不含完整逐句結果，重新分析可還原）
@@ -50,4 +47,13 @@ class HistoryEntry {
     required this.aiProbability,
     required this.verdict,
   });
+
+  factory HistoryEntry.fromJson(Map<String, dynamic> j) => HistoryEntry(
+        id: j['id'] as String,
+        analyzedAt:
+            DateTime.fromMillisecondsSinceEpoch(j['analyzed_at'] as int),
+        inputText: j['input_text'] as String,
+        aiProbability: (j['ai_probability'] as num).toDouble(),
+        verdict: Verdict.values.byName(j['verdict'] as String),
+      );
 }
