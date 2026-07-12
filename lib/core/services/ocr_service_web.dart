@@ -240,6 +240,9 @@ class OcrService {
     );
   }
 
+  /// Web 版設定即時存取 localStorage，無需預先載入；提供空實作以對齊原生 API。
+  static Future<void> hydrate() async {}
+
   /// 設定 Gemini API 金鑰（由 UI 層調用）
   static void setGeminiApiKey(String key) {
     if (key.isEmpty) {

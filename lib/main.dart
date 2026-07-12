@@ -20,6 +20,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = PreferencesService();
   await prefs.load();
+  await OcrService.hydrate();
 
   final modelManager = ModelManager();
   await modelManager.refreshInstallStates();
