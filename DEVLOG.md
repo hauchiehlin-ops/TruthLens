@@ -1,5 +1,77 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [Phase 4] 遠程 LLM API 基礎設施：多提供商自動 Fallback
+
+**做了什麼**
+
+### 策略調整：GGUF 下載 → 遠程 API
+
+原計劃從 HuggingFace 下載 Gemma-2B-IT GGUF (~3.5GB)，發現：
+- Google 官方與社區 GGUF repo 均不存在或已下架
+- HF 上 Gemma GGUF 模型名稱與路徑不一致
+- 下載耗時 15-30 分鐘，不利於快速迭代
+
+**決定改為遠程 API 方案**，優勢：
+- ✅ 開發測試無須預先下載大型模型
+- ✅ 自動 Fallback：本地 llama.cpp → 遠程 API → 模板
+- ✅ 多提供商支援，生產靈活選擇
+- ✅ 保持本地優先原則（隱私 & 離線）
+
+### 1️⃣ 遠程 LLM 提供商實現 ✅
+
+**新檔案**: `lib/core/detection/remote_llm_provider.dart` (~250 行)
+- **OllamaProvider**: 本地伺服器（無需認證，`http://localhost:11434`）
+- **GroqProvider**: 快速推論雲服務（<1s 回應，免費額度）
+- **TogetherAiProvider**: 多模型選擇（Mistral/Llama/GPT-J）
+- **AnthropicProvider**: Claude API（最強模型）
+
+### 2️⃣ LlmManager 改造 — 優先級 Fallback ✅
+
+**改修**: `lib/core/detection/llm_manager.dart`
+- 新增 `_remoteProvider` 屬性與 `setRemoteProvider()` 方法
+- 拆分 `_tryLoadLocal()` 和 `_tryLoadRemote()` 邏輯
+- 新增 `isRemote` 屬性（追蹤推論路徑）
+- 推論優先級：`本地 → 遠程 API → 模板回退`
+
+### 3️⃣ ReportLlmService 支援遠程推論 ✅
+
+**改修**: `lib/core/detection/report_llm_service.dart`
+- `_generateWithLlm()` 檢查 `isRemote` 標記
+- 遠程：呼叫 `remoteProvider.generate()`
+- 本地：呼叫 `llmManager.inference.generate()`
+- 生成報告文本邏輯不變
+
+### 4️⃣ 完整測試套件 ✅
+
+**新檔案**: `test/core/detection/remote_llm_provider_test.dart`
+- 7 個測試案例（全部通過 ✅）
+- 驗證提供商介面一致性
+- 驗證 API key 與模型配置
+
+### 5️⃣ 快速開始文檔 ✅
+
+**新檔案**: `docs/remote_llm_setup.md` (~350 行)
+- 4 個方案的逐步設定指南
+- 性能對比表
+- 故障排除與開發建議
+- 推薦用途（開發 vs 生產）
+
+**為什麼**
+- GGUF 下載的可靠性問題阻礙測試進展
+- 遠程 API 降低開發環境設置複雜性
+- 多提供商支援增加生產部署靈活性
+
+**決策與取捨**
+- **優先本地 llama.cpp**：保持隱私優先原則
+- **自動 Fallback**：無需使用者干預，透明降級
+- **4 個提供商**：覆蓋開發（Ollama）、測試（Groq）、生產（多選）
+- **30 秒超時**：保證任何網路條件下的報告產生
+
+### 相關 Commit
+- `8cb49a3` [Phase 4] Remote LLM API infrastructure - multi-provider support
+
+---
+
 ## 2026-07-12 — [P3 智慧報告] 模型 Hosting 基礎設施：偵測器 + 困惑度計算器發佈
 
 **做了什麼**
