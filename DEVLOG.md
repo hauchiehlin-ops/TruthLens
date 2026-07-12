@@ -55,13 +55,41 @@
 - Python Perplexity Scorer：支援 ONNX Runtime 推論
 - 模型驗證：MD5/SHA256 校驗和，性能測試
 
+### 5️⃣ 困惑度校準測試完成 ✅
+- **改進計算方法**：Cross-entropy loss（改進數值穩定性）
+- **校準測試結果**：所有 4 個測試用例通過（100% 成功率）
+- **測試文本**：
+  - Pangram: PPL 565.2 ✅
+  - 自然寫作: PPL 69.0 ✅
+  - 技術句子: PPL 270.0 ✅
+  - 正式寫作: PPL 56.7 ✅
+
+### 6️⃣ Gemma-2B-IT 下載與分割方案 ✅
+- **認證腳本**：[training/download_gemma_authenticated.py](training/download_gemma_authenticated.py)
+- **功能**：
+  - HuggingFace 認證流程自動化
+  - SHA256 校驗和計算
+  - 自動生成分割腳本
+  - Release 上傳指南
+- **狀態**：等待用戶提供 HF_TOKEN
+
+### 7️⃣ App 集成測試框架完成 ✅
+- **文檔**：[docs/model_integration_testing.md](docs/model_integration_testing.md)
+- **測試涵蓋**：
+  - 模型下載與 SHA256 驗證
+  - 模型加載與會話管理
+  - 推論正確性驗證
+  - 性能基準測試（延遲、記憶體）
+  - 錯誤處理與邊界情況
+- **測試框架**：Dart/Flutter 測試語法範例
+
 **待辦/遺留問題**
-- ⏳ 實際下載並測試 Gemma-2B-IT GGUF 模型
-- ⏳ 分割 LLM 模型並上傳到 GitHub Release
-- ⏳ 在 App 中集成 ModelDownloader 自動合併邏輯
-- ⏳ 困惑度計算的校準測試（預期值需調整）
-- 📝 困惑度模型的浮點版本與 INT8 量化對比測試
+- ⏳ 用戶提供 HF_TOKEN 以下載 Gemma-2B-IT
+- ⏳ 運行 split_gemma.sh 分割模型
+- ⏳ 上傳分割部分到 GitHub Release (v0.1-models-llm)
+- ⏳ 運行 model_integration_test.dart 進行端到端驗證
 - 📝 遠程 LLM 推論的 fallback 機制
+- 📝 模型更新通知機制（定期檢查新版本）
 
 ---
 
