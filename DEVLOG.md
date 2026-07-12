@@ -1,5 +1,48 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [Phase 4] macOS 裝置端 llama.cpp 推論真正打通（不再是 mock）
+
+**做了什麼**
+
+端到端驗證 Gemma 報告時，逐層挖出「裝置端 LLM」其實從沒真正運作，並全部修好：
+
+### 驗證挖到的問題鏈（皆為既有、非 catalog 改動所致）
+1. catalog 的 llm URL 誤指 Qwen → 下載到冒充 Gemma 的 Qwen（前一則已修 catalog；本次確認實機下載到真 Gemma 2，sha256 一致、架構 `gemma2`）
+2. `analysis_screen` / `report_screen` 在 `initState` 違規呼叫在地化 → 分析/報告永遠轉圈（已修，見 commit d7c3f84）
+3. macOS 建置從未嵌入 `libllama.dylib`，且該 dylib 還缺 5 個 `libggml*.dylib` 相依 → llama 根本載不起來，一律回退模板
+4. **`LlamaInference.generate()` 是寫死字串**，且 FFI 把 llama by-value 結構參數當 `void*` 傳（ABI 錯）→ 裝置端 LLM 推論其實從未實作
+
+### 本次實作（macOS 打通）
+- **native/llama_bridge/**：薄 C ABI 橋接層，包住現行 llama.cpp C++ API（`llama_model_load_from_file` / `llama_init_from_model` / `llama_sampler_*` + 標準 decode→sample→detokenize 迴圈），套 Gemma 對話模板。版本敏感的 by-value 結構留在 C++ 側，Dart 只綁 primitive + char*。
+  - `truthlens_llama.{h,cpp}`、`CMakeLists.txt`、`build_macos.sh`（可重現建置：shared + Metal）
+- **llama_ffi_io.dart**：重寫為綁定橋接 API + 真正的 load/generate；以「執行檔相對 Frameworks 路徑」載入 dylib。
+- **macos/Libs/**：建好的 arm64 dylib 全套（bridge + libllama + 5×libggml，~5MB），皆帶 `@loader_path` rpath。
+- **Runner.xcodeproj**：新增「Embed llama Libraries」Copy Files→Frameworks 階段（Code Sign On Copy）。
+
+### 實機驗證結果 ✅
+- App 從 bundle 載入 bridge（日誌 `TruthLens llama bridge loaded.`）
+- llama.cpp 以 **Metal GPU** 載入下載的 Gemma-2-2B GGUF（RSS ~3GB）
+- 生成真報告：標題 `## 內容檢測報告：混合`（58%，與實際 verdict 相符）——無 timeout/模板回退
+- 對照舊 mock 的寫死 `94%`，確認是真推論輸出
+
+**為什麼**
+- 「本地優先 + Gemma 報告」是專案核心；驗證發現這條路在 macOS 從未真正跑通，逐一補齊。
+- 橋接層做法（非 Dart 硬接結構）大幅降低 llama.cpp 版本升級時的 ABI 崩潰風險。
+
+**尚未完成（全平台原生化）**
+- iOS：xcframework 在，需 Xcode 連結 + 同套橋接（待 iPhone 實測）
+- Windows：需 Windows 工具鏈建 `.dll` 全套（本機無法）
+- Android：`.so` 已在，需接同款 bridge 並實測
+- 現行 ReportLlmService 僅用 LLM 產出「標題」，內文仍走模板 — 未來可讓 Gemma 生成完整內文
+
+### 相關 Commit
+- `0d01139` Implement real on-device llama.cpp inference for macOS
+- `d7c3f84` Fix analysis/report screens hanging (initState l10n)
+- `db4600f` Align registry + disk-scan to corrected Gemma id
+- `e724160` Fix macOS/native build: OcrService io methods
+
+
+
 ## 2026-07-12 — [Phase 4] 裝置端 Gemma-2-2B-IT 上架：本地優先 LLM 報告生成
 
 **做了什麼**
