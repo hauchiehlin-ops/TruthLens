@@ -36,7 +36,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void initState() {
     super.initState();
-    _run();
+    // _run() 需讀取 AppLocalizations.of(context)（依賴 InheritedWidget），
+    // 不可在 initState 同步階段呼叫，否則拋 dependOnInheritedWidgetOfExactType
+    // 例外導致分析永遠不啟動。延到首個 frame 之後、widget 已掛載時再執行。
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _run();
+    });
   }
 
   Future<void> _run() async {

@@ -46,13 +46,19 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
-    _generate();
-    final linkVerificationOn =
-        context.read<PreferencesService>().linkVerificationEnabled;
-    if (linkVerificationOn &&
-        (_detectedUrls.isNotEmpty || _bibEntries.isNotEmpty)) {
-      _runVerification();
-    }
+    // _generate() / _runVerification() 需讀取 AppLocalizations.of(context)，
+    // 不可在 initState 同步階段呼叫（否則拋 dependOnInheritedWidgetOfExactType，
+    // 報告永遠停在「正在生成報告…」）。延到首個 frame 之後、widget 已掛載時執行。
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _generate();
+      final linkVerificationOn =
+          context.read<PreferencesService>().linkVerificationEnabled;
+      if (linkVerificationOn &&
+          (_detectedUrls.isNotEmpty || _bibEntries.isNotEmpty)) {
+        _runVerification();
+      }
+    });
   }
 
   Future<void> _generate() async {
