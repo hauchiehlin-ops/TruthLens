@@ -120,25 +120,37 @@ class LlamaFfi {
   }
 
   static ffi.DynamicLibrary? _loadLibrary() {
-    if (Platform.isMacOS) {
-      // In macOS build, search in Bundle / Frameworks / or custom Libs dir
-      final frameworkPath = p.join(
-          Directory.current.path, 'macos', 'Libs', 'libllama.dylib');
-      if (File(frameworkPath).existsSync()) {
-        return ffi.DynamicLibrary.open(frameworkPath);
+    try {
+      if (Platform.isMacOS) {
+        // macOS: 通用二進制（arm64 + x86_64）
+        final frameworkPath = p.join(
+            Directory.current.path, 'macos', 'Libs', 'libllama.dylib');
+        if (File(frameworkPath).existsSync()) {
+          return ffi.DynamicLibrary.open(frameworkPath);
+        }
+        return ffi.DynamicLibrary.open('libllama.dylib');
+      } else if (Platform.isWindows) {
+        // Windows: x64
+        final dllPath = p.join(
+            Directory.current.path, 'windows', 'libs', 'llama.dll');
+        if (File(dllPath).existsSync()) {
+          return ffi.DynamicLibrary.open(dllPath);
+        }
+        return ffi.DynamicLibrary.open('llama.dll');
+      } else if (Platform.isAndroid) {
+        // Android: NDK 會自動選擇合適的 ABI（arm64-v8a 優先，再試 x86_64 等）
+        try {
+          return ffi.DynamicLibrary.open('libllama.so');
+        } catch (e) {
+          debugPrint('Failed to load libllama.so: $e');
+          return null;
+        }
+      } else if (Platform.isIOS) {
+        // iOS: xcframework（需補充）
+        return ffi.DynamicLibrary.open('llama.framework/llama');
       }
-      return ffi.DynamicLibrary.open('libllama.dylib');
-    } else if (Platform.isWindows) {
-      final dllPath = p.join(
-          Directory.current.path, 'windows', 'libs', 'llama.dll');
-      if (File(dllPath).existsSync()) {
-        return ffi.DynamicLibrary.open(dllPath);
-      }
-      return ffi.DynamicLibrary.open('llama.dll');
-    } else if (Platform.isAndroid) {
-      return ffi.DynamicLibrary.open('libllama.so');
-    } else if (Platform.isIOS) {
-      return ffi.DynamicLibrary.open('llama.framework/llama');
+    } catch (e) {
+      debugPrint('Error loading llama library: $e');
     }
     return null;
   }

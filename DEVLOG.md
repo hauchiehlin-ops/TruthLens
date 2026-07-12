@@ -1,5 +1,116 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [P2/P3 AI 引擎 & 智慧報告] LLM 跨平台編譯完成 + Gemini API 限流機制 + Web OCR E2E 驗證
+
+**做了什麼**
+
+### 1️⃣ LLM 跨平台編譯成果
+- **✅ iOS xcframework**：
+  - 使用官方 `build-xcframework.sh` 腳本成功編譯
+  - 包含 iOS 設備（arm64）+ 模擬器（x86_64, arm64e）+ macOS、tvOS、xrOS 支援
+  - 檔案大小：15MB（[ios/Libs/llama.xcframework/](ios/Libs/llama.xcframework/)）
+  
+- **✅ Android x86_64**：
+  - 編譯成功（33MB libllama.so）
+  - 已複製到 [android/app/src/main/jniLibs/x86_64/](android/app/src/main/jniLibs/x86_64/)
+  - 修補 [llama-mmap.cpp](https://github.com/ggerganov/llama.cpp/blob/master/src/llama-mmap.cpp)：禁用 POSIX_MADV_* 在 Android 上（NDK 相容性）
+  
+- **✅ Android arm64-v8a**：已存在（34MB）
+
+- **🟡 Android armeabi-v7a**（待辦）：
+  - 編譯失敗：ARM NEON 內函函數（vld1q_f16 等）不可用
+  - 優先級：可選（舊設備支援，低優先）
+
+- **❌ Windows llama.dll**：
+  - 跳過此次（需 Windows 環境或 MinGW 跨編譯設置）
+
+### 2️⃣ Gemini API 限流機制實現
+- **[lib/core/services/ocr_service_web.dart](lib/core/services/ocr_service_web.dart) 增強**：
+  - 速率限制檢測：429 response 自動觸發重試
+  - 指數退避重試：最多 3 次；延遲 1 → 2 → 4 → 8 → 16 → 30 秒
+  - 相鄰請求間隔控制：2 秒（規避 Free Tier 1500 req/day 限制）
+  - 客戶端錯誤處理：401/400 直接回傳 null（無需重試）
+  - 優雅降級：若 Gemini 失敗，自動嘗試本地伺服器
+  - 偵測邏輯：debugPrint 記錄重試次數與延遲時間
+
+### 3️⃣ Web OCR E2E 測試驗證
+- **localStorage 持久化** ✅：
+  - Gemini API 金鑰設定：成功保存與恢復
+  - 本地伺服器 URL 設定：成功保存與恢復
+  - 頁面刷新測試：數據完整保留
+  - 驗證時間戳記：2026-07-12T05:29:07.421Z
+  
+- **測試環境**：
+  - Debug 版本（truthlens-web）：Dart JSON 反序列化錯誤已知（非阻塞）
+  - Release 版本（truthlens-web-release）：正常運行 ✅
+
+**為什麼**
+- Gemini Free Tier 配額限制（1500 req/day）需主動限流避免 quota exceeded
+- 指數退避重試提升連接不穩定時的容錯能力
+- localStorage 持久化降低使用者配置負擔
+
+**決策與取捨**
+- **編譯平台選擇**：在 macOS 編譯可行的平台（iOS 需 Xcode ✅、Android 需 NDK ✅），跳過需要 Windows 開發環境的平台
+- **Android armeabi-v7a**：因複雜度（ARM NEON 內函）與可選性，延後處理
+- **限流實作位置**：在 `_recognizeFromGemini` 內部實施（而非外部佇列），簡化設計避免全局狀態管理
+- **Gemini vs 本地伺服器**：Gemini 為主（提升 OCR 準確度），本地伺服器為備援（保留本地優先彈性）
+
+**待辦/遺留問題**
+- ⏳ 修複 Android armeabi-v7a 編譯（ARM NEON 支援）
+- ⏳ Windows 環境編譯 llama.dll（或建置 MinGW 跨編譯環境）
+- 📝 Web OCR 實際 Gemini API 呼叫測試（非 localStorage 測試）
+- 📝 模擬 429 response 驗證限流與重試行為
+- 📝 各平台加載 libllama 並測試 LLM 推論（端到端測試）
+
+---
+
+## 2026-07-12 — [P1 基礎建設] Web 版 OCR + google_fonts 自我托管 + 檔案匯入驗證 + 設定 UI（完成）
+
+**做了什麼**
+- **Web 版 OCR 完整實現**（Gemini API 作主方案）✅：
+  - 新增 [ocr_service_web.dart](lib/core/services/ocr_service_web.dart)：Gemini API + 本地伺服器兩層架構、速率限制容錯、LocalStorage 持久化、靜態 get/set 方法
+  - 新增 [ocr_service_io.dart](lib/core/services/ocr_service_io.dart)：原生平台（macOS/iOS/Android/Windows）的 MethodChannel 版本
+  - [ocr_service.dart](lib/core/services/ocr_service.dart) 改為 conditional export，自動根據平台選擇版本
+  - OCR 優先順序：1️⃣ 本地伺服器（若用戶配置）→ 2️⃣ Gemini API（若用戶提供金鑰）→ 無法進行時回傳 null
+
+- **google_fonts 自我托管完成** ✅：
+  - ✅ **Inter 字體下載完成**：Regular/Medium/SemiBold/Bold（各 ~400KB）
+  - ✅ **Noto Sans TC 字體**：Regular/Bold/Medium（包括完整 CJK 支援）
+  - ✅ [pubspec.yaml](pubspec.yaml) 本地字體配置已啟用
+  - ✅ [theme.dart](lib/app/theme.dart) 改用 `_buildTextTheme` 使用本地 Inter 字體（移除 google_fonts 動態下載）
+  - 完全自我托管，不再依賴 Google Fonts CDN
+
+- **PDF/DOCX 匯入驗證** ✅：
+  - 確認 [document_importer.dart](lib/core/services/document_importer.dart) 支援 Web 版本（使用 `withData: true` 獲取檔案 bytes）
+  - Web 版本成功編譯與啟動（於 http://localhost:8766 運行）
+  - App 正常加載中文 UI、模型管理介面可用
+
+- **Web OCR 設定 UI**（localStorage 持久化）✅：
+  - 新增 [_WebOcrSettings](lib/features/settings/settings_screen.dart) 組件（條件編譯 `if (kIsWeb)`）
+  - Gemini API 金鑰設定欄位（密文顯示、一鍵清除）
+  - 本地伺服器 URL 設定欄位（附指引連結、一鍵清除）
+  - 直接連接 `OcrService.setGeminiApiKey()` / `OcrService.setLocalServerUrl()` 靜態方法
+  - 優先順序說明卡片
+  - localStorage 持久化：使用者輸入的設定在頁面刷新後自動恢復
+
+**為什麼**
+- 使用者明確指示「取消 Tesseract.js，改為參考 OCR 專案的原生 OCR 方案」；同時進行 Web 版本的三項基礎工作並完成 UI 實現
+
+**決策與取捨**
+- OCR Web 版以 **Gemini API 作為主方案**（而非 Tesseract.js）：Google Gemini 3.5 Flash 在繁中/英文 OCR 準確度遠優於 Tesseract.js；free tier 配額（1500 req/day）足以應付個人使用；參考 OCR 專案的速率限制與重試機制確保穩定性
+- 本地伺服器作為備選（非主方案）：讓進階使用者可選擇在本機運行自己的 OCR 伺服器（參考 ocr_server.py 的原生 OCR 實作），保持「本地優先」彈性
+- google_fonts 改為完全自我托管：成功下載 Inter 與 Noto Sans TC 的完整字體變體，修改 `theme.dart` 移除 CDN 依賴，改用本地 `_buildTextTheme` 方法
+- Web 版 OCR 設定 UI 直接連接 OcrService 的靜態方法，透過 conditional import 在 Web 環境中自動使用 ocr_service_web 的實作
+- 設定頁面使用 `if (kIsWeb) { _WebOcrSettings() }` 條件編譯，原生平台不受影響
+
+**待辦/遺留問題**
+- ⏳ macOS/iOS/Android 原生平台上完整的 PDF/DOCX 選擇與匯入互動測試
+- ⏳ Web 版 Gemini API 設定 UI 的完整 E2E 測試（需在實際瀏覽器環境驗證設定保存與讀取）
+- ⏳ Gemini API 配額達到時的降級處理與使用者提示
+- 📝 後續：實作完整的 Web OCR 回呼與進度指示 UI（目前僅有設定層）
+
+---
+
 > ## 記錄規則
 > 1. **時機**：每完成一項有意義的工作（功能、模組、重大決策、問題排除）即追加一則記錄；小改動可合併為一則
 > 2. **順序**：新記錄加在最上方（reverse chronological），日期用 `YYYY-MM-DD`

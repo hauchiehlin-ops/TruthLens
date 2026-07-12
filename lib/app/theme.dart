@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-/// Material Design 3，深色模式優先。字體：Inter + Noto Sans TC。
+/// Material Design 3，深色模式優先。字體：Inter + Noto Sans TC（本地內嵌）
 class AppTheme {
   static const _seed = Color(0xFF4F8FFF);
 
@@ -16,10 +15,11 @@ class AppTheme {
     final baseText = brightness == Brightness.dark
         ? Typography.material2021().white
         : Typography.material2021().black;
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      textTheme: GoogleFonts.interTextTheme(baseText),
+      textTheme: _buildTextTheme(baseText),
       cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -32,6 +32,28 @@ class AppTheme {
         ),
         filled: true,
       ),
+    );
+  }
+
+  /// 建立文字主題（使用本地 Inter 字體）
+  static TextTheme _buildTextTheme(TextTheme baseText) {
+    const fontFamily = 'Inter';
+    return baseText.copyWith(
+      displayLarge: baseText.displayLarge?.copyWith(fontFamily: fontFamily),
+      displayMedium: baseText.displayMedium?.copyWith(fontFamily: fontFamily),
+      displaySmall: baseText.displaySmall?.copyWith(fontFamily: fontFamily),
+      headlineLarge: baseText.headlineLarge?.copyWith(fontFamily: fontFamily),
+      headlineMedium: baseText.headlineMedium?.copyWith(fontFamily: fontFamily),
+      headlineSmall: baseText.headlineSmall?.copyWith(fontFamily: fontFamily),
+      titleLarge: baseText.titleLarge?.copyWith(fontFamily: fontFamily),
+      titleMedium: baseText.titleMedium?.copyWith(fontFamily: fontFamily),
+      titleSmall: baseText.titleSmall?.copyWith(fontFamily: fontFamily),
+      bodyLarge: baseText.bodyLarge?.copyWith(fontFamily: fontFamily),
+      bodyMedium: baseText.bodyMedium?.copyWith(fontFamily: fontFamily),
+      bodySmall: baseText.bodySmall?.copyWith(fontFamily: fontFamily),
+      labelLarge: baseText.labelLarge?.copyWith(fontFamily: fontFamily),
+      labelMedium: baseText.labelMedium?.copyWith(fontFamily: fontFamily),
+      labelSmall: baseText.labelSmall?.copyWith(fontFamily: fontFamily),
     );
   }
 

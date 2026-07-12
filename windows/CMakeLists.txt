@@ -2,6 +2,18 @@
 cmake_minimum_required(VERSION 3.14)
 project(truthlens LANGUAGES CXX)
 
+# ===== llama.cpp 動態庫支援 =====
+# 若 windows/libs/llama.dll 存在，複製到構建輸出目錄
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libs/llama.dll")
+  add_custom_command(
+    TARGET flutter_windows POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_CURRENT_SOURCE_DIR}/libs/llama.dll"
+      "$<TARGET_FILE_DIR:flutter_windows>/llama.dll"
+    COMMENT "Copying llama.dll to Flutter output directory"
+  )
+endif()
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "truthlens")
