@@ -62,9 +62,10 @@ def download_with_auth(hf_token: str = None):
     download_dir.mkdir(parents=True, exist_ok=True)
 
     try:
+        # 使用 Mistral-7B GGUF（已驗證的社區模型，TheBloke 量化）
         path = hf_hub_download(
-            repo_id="google/gemma-2b-it-gguf",
-            filename="gemma-2b-it-q4.gguf",
+            repo_id="TheBloke/Mistral-7B-Instruct-v0.1-GGUF",
+            filename="mistral-7b-instruct-v0.1.Q4_K_M.gguf",
             local_dir=str(download_dir),
             repo_type="model",
             resume_download=True,

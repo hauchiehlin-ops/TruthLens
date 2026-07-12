@@ -51,7 +51,15 @@ class ReportLlmService {
 
     final prompt = _buildPrompt(payload, l10n.localeName);
 
-    final raw = await llmManager.inference.generate(prompt);
+    String raw;
+    if (llmManager.isRemote && llmManager.remoteProvider != null) {
+      // 遠程 API
+      raw = await llmManager.remoteProvider!.generate(prompt);
+    } else {
+      // 本地 llama.cpp
+      raw = await llmManager.inference.generate(prompt);
+    }
+
     if (raw.isEmpty) return null;
 
     final base = _fallback.compose(r, l10n);
