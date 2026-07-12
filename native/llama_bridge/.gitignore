@@ -1,3 +1,4 @@
 # 建置期產物（由 build_macos.sh 產生，不入庫）
 llama.cpp/
 build/
+build-*/

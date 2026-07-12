@@ -11,29 +11,41 @@ import 'package:path/path.dart' as p;
 typedef _TlInitNative = ffi.Int32 Function();
 typedef _TlInit = int Function();
 
-typedef _TlLoadNative = ffi.Pointer<ffi.Void> Function(
-    ffi.Pointer<Utf8> path, ffi.Int32 nCtx, ffi.Int32 nGpuLayers);
-typedef _TlLoad = ffi.Pointer<ffi.Void> Function(
-    ffi.Pointer<Utf8> path, int nCtx, int nGpuLayers);
+typedef _TlLoadNative =
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<Utf8> path,
+      ffi.Int32 nCtx,
+      ffi.Int32 nGpuLayers,
+    );
+typedef _TlLoad =
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<Utf8> path,
+      int nCtx,
+      int nGpuLayers,
+    );
 
-typedef _TlGenerateNative = ffi.Int32 Function(
-    ffi.Pointer<ffi.Void> handle,
-    ffi.Pointer<Utf8> prompt,
-    ffi.Int32 maxTokens,
-    ffi.Float temperature,
-    ffi.Float topP,
-    ffi.Uint32 seed,
-    ffi.Pointer<Utf8> outBuf,
-    ffi.Int32 outBufSize);
-typedef _TlGenerate = int Function(
-    ffi.Pointer<ffi.Void> handle,
-    ffi.Pointer<Utf8> prompt,
-    int maxTokens,
-    double temperature,
-    double topP,
-    int seed,
-    ffi.Pointer<Utf8> outBuf,
-    int outBufSize);
+typedef _TlGenerateNative =
+    ffi.Int32 Function(
+      ffi.Pointer<ffi.Void> handle,
+      ffi.Pointer<Utf8> prompt,
+      ffi.Int32 maxTokens,
+      ffi.Float temperature,
+      ffi.Float topP,
+      ffi.Uint32 seed,
+      ffi.Pointer<Utf8> outBuf,
+      ffi.Int32 outBufSize,
+    );
+typedef _TlGenerate =
+    int Function(
+      ffi.Pointer<ffi.Void> handle,
+      ffi.Pointer<Utf8> prompt,
+      int maxTokens,
+      double temperature,
+      double topP,
+      int seed,
+      ffi.Pointer<Utf8> outBuf,
+      int outBufSize,
+    );
 
 typedef _TlFreeNative = ffi.Void Function(ffi.Pointer<ffi.Void> handle);
 typedef _TlFree = void Function(ffi.Pointer<ffi.Void> handle);
@@ -71,7 +83,7 @@ class LlamaFfi {
   /// 橋接 dylib/so 的檔名（各平台）。
   static String get _libFileName {
     if (Platform.isWindows) return 'truthlens_llama.dll';
-    if (Platform.isMacOS || Platform.isIOS) return 'libtruthlens_llama.dylib';
+    if (Platform.isMacOS) return 'libtruthlens_llama.dylib';
     return 'libtruthlens_llama.so'; // Android / Linux
   }
 
@@ -82,13 +94,18 @@ class LlamaFfi {
         // @loader_path rpath，會在同目錄找到 libllama / libggml*。
         final exeDir = File(Platform.resolvedExecutable).parent.path;
         final bundled = p.normalize(
-            p.join(exeDir, '..', 'Frameworks', _libFileName));
+          p.join(exeDir, '..', 'Frameworks', _libFileName),
+        );
         if (File(bundled).existsSync()) {
           return ffi.DynamicLibrary.open(bundled);
         }
         // 開發後備：專案內 macos/Libs/。
-        final devPath =
-            p.join(Directory.current.path, 'macos', 'Libs', _libFileName);
+        final devPath = p.join(
+          Directory.current.path,
+          'macos',
+          'Libs',
+          _libFileName,
+        );
         if (File(devPath).existsSync()) {
           return ffi.DynamicLibrary.open(devPath);
         }
@@ -103,8 +120,16 @@ class LlamaFfi {
       } else if (Platform.isAndroid) {
         return ffi.DynamicLibrary.open(_libFileName);
       } else if (Platform.isIOS) {
-        // iOS：橋接靜態連進 app 或以 framework 提供 → 主映像中查找。
-        return ffi.DynamicLibrary.process();
+        // CocoaPods 將橋接層打包成動態 framework；直接開啟它可避免
+        // process() 在部分 iOS runtime 下找不到 framework 匯出符號。
+        try {
+          return ffi.DynamicLibrary.open(
+            'TruthLensLlamaBridge.framework/TruthLensLlamaBridge',
+          );
+        } catch (_) {
+          // 靜態連進 app 的後備路徑。
+          return ffi.DynamicLibrary.process();
+        }
       }
     } catch (e) {
       debugPrint('Error loading llama bridge: $e');
@@ -112,8 +137,11 @@ class LlamaFfi {
     return null;
   }
 
-  static ffi.Pointer<ffi.Void> load(String modelPath,
-      {int nCtx = 4096, int nGpuLayers = -1}) {
+  static ffi.Pointer<ffi.Void> load(
+    String modelPath, {
+    int nCtx = 4096,
+    int nGpuLayers = -1,
+  }) {
     if (!isAvailable) return ffi.Pointer.fromAddress(0);
     final fn = _lib!.lookupFunction<_TlLoadNative, _TlLoad>('tl_llama_load');
     final pathPtr = modelPath.toNativeUtf8();
@@ -124,20 +152,32 @@ class LlamaFfi {
     }
   }
 
-  static String generate(ffi.Pointer<ffi.Void> handle, String prompt,
-      {int maxTokens = 256,
-      double temperature = 0.7,
-      double topP = 0.9,
-      int seed = 0xFFFFFFFF,
-      int outBufSize = 16384}) {
+  static String generate(
+    ffi.Pointer<ffi.Void> handle,
+    String prompt, {
+    int maxTokens = 256,
+    double temperature = 0.7,
+    double topP = 0.9,
+    int seed = 0xFFFFFFFF,
+    int outBufSize = 16384,
+  }) {
     if (!isAvailable || handle.address == 0) return '';
-    final fn =
-        _lib!.lookupFunction<_TlGenerateNative, _TlGenerate>('tl_llama_generate');
+    final fn = _lib!.lookupFunction<_TlGenerateNative, _TlGenerate>(
+      'tl_llama_generate',
+    );
     final promptPtr = prompt.toNativeUtf8();
     final outBuf = malloc<ffi.Uint8>(outBufSize).cast<Utf8>();
     try {
-      final n = fn(handle, promptPtr, maxTokens, temperature, topP, seed,
-          outBuf, outBufSize);
+      final n = fn(
+        handle,
+        promptPtr,
+        maxTokens,
+        temperature,
+        topP,
+        seed,
+        outBuf,
+        outBufSize,
+      );
       if (n <= 0) return '';
       return outBuf.toDartString(length: n);
     } finally {
@@ -154,7 +194,8 @@ class LlamaFfi {
   static void backendFree() {
     if (!isAvailable) return;
     _lib!.lookupFunction<_TlBackendFreeNative, _TlBackendFree>(
-        'tl_llama_backend_free')();
+      'tl_llama_backend_free',
+    )();
   }
 }
 

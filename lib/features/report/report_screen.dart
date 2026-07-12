@@ -27,8 +27,9 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   ReportDocument? _doc;
 
-  late final List<String> _detectedUrls =
-      LinkVerifier.extractUrls(result.inputText);
+  late final List<String> _detectedUrls = LinkVerifier.extractUrls(
+    result.inputText,
+  );
   bool _checkingLinks = false;
   List<LinkCheckResult>? _linkChecks;
 
@@ -52,8 +53,9 @@ class _ReportScreenState extends State<ReportScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _generate();
-      final linkVerificationOn =
-          context.read<PreferencesService>().linkVerificationEnabled;
+      final linkVerificationOn = context
+          .read<PreferencesService>()
+          .linkVerificationEnabled;
       if (linkVerificationOn &&
           (_detectedUrls.isNotEmpty || _bibEntries.isNotEmpty)) {
         _runVerification();
@@ -114,18 +116,26 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _export(
-    Future<String?> Function(DetectionResult, AppLocalizations) exporter,
+    Future<String?> Function(
+      DetectionResult,
+      AppLocalizations, {
+      ReportDocument? reportDocument,
+    })
+    exporter,
   ) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
     try {
-      final path = await exporter(result, l10n);
+      final path = await exporter(result, l10n, reportDocument: _doc);
       if (path != null) {
-        messenger.showSnackBar(SnackBar(content: Text(l10n.reportExported(path))));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.reportExported(path))),
+        );
       }
     } catch (e) {
       messenger.showSnackBar(
-          SnackBar(content: Text(l10n.reportExportFailed(e.toString()))));
+        SnackBar(content: Text(l10n.reportExportFailed(e.toString()))),
+      );
     }
   }
 
@@ -234,8 +244,10 @@ class _ReportScreenState extends State<ReportScreen> {
           children: [
             Row(
               children: [
-                Icon(llm ? Icons.auto_awesome : Icons.description_outlined,
-                    size: 16),
+                Icon(
+                  llm ? Icons.auto_awesome : Icons.description_outlined,
+                  size: 16,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   llm ? l10n.reportSourceLlm : l10n.reportSourceTemplate,
@@ -244,8 +256,7 @@ class _ReportScreenState extends State<ReportScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(doc.headline,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(doc.headline, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),
@@ -256,21 +267,21 @@ class _ReportScreenState extends State<ReportScreen> {
     return switch (c.type) {
       ReportComponentType.overallGauge => _gaugeCard(l10n),
       ReportComponentType.thresholdBanner => _bannerCard(
-          c.body ?? '',
-          icon: result.flaggedAsAi ? Icons.flag : Icons.check_circle_outline,
-        ),
+        c.body ?? '',
+        icon: result.flaggedAsAi ? Icons.flag : Icons.check_circle_outline,
+      ),
       ReportComponentType.narrative => _narrativeCard(c),
       ReportComponentType.paraphraseWarning => _bannerCard(
-          c.body ?? '',
-          title: c.title,
-          icon: Icons.warning_amber,
-          tone: AppTheme.verdictColor(0.9),
-        ),
+        c.body ?? '',
+        title: c.title,
+        icon: Icons.warning_amber,
+        tone: AppTheme.verdictColor(0.9),
+      ),
       ReportComponentType.eslNotice => _bannerCard(
-          c.body ?? '',
-          title: c.title,
-          icon: Icons.translate,
-        ),
+        c.body ?? '',
+        title: c.title,
+        icon: Icons.translate,
+      ),
       ReportComponentType.patternList => _narrativeCard(c),
       ReportComponentType.engineBreakdown => _engineCard(l10n),
       ReportComponentType.sentenceHeatmap => _heatmapCard(l10n),
@@ -278,30 +289,35 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _gaugeCard(AppLocalizations l10n) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              ScoreGauge(
-                aiProbability: result.aiProbability,
-                verdict: result.verdict,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.reportSentenceSummary(
-                    result.sentences.length,
-                    result.aiSentenceCount,
-                    result.humanSentenceCount,
-                    (result.elapsed.inMilliseconds / 1000).toStringAsFixed(1)),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          ScoreGauge(
+            aiProbability: result.aiProbability,
+            verdict: result.verdict,
           ),
-        ),
-      );
+          const SizedBox(height: 12),
+          Text(
+            l10n.reportSentenceSummary(
+              result.sentences.length,
+              result.aiSentenceCount,
+              result.humanSentenceCount,
+              (result.elapsed.inMilliseconds / 1000).toStringAsFixed(1),
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    ),
+  );
 
-  Widget _bannerCard(String body,
-      {String? title, IconData? icon, Color? tone}) {
+  Widget _bannerCard(
+    String body, {
+    String? title,
+    IconData? icon,
+    Color? tone,
+  }) {
     final color = tone ?? Theme.of(context).colorScheme.primary;
     return Card(
       color: color.withValues(alpha: 0.08),
@@ -317,11 +333,12 @@ class _ReportScreenState extends State<ReportScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (title != null)
-                    Text(title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(color: color)),
+                    Text(
+                      title,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleSmall?.copyWith(color: color),
+                    ),
                   Text(body),
                 ],
               ),
@@ -333,95 +350,106 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _narrativeCard(ReportComponent c) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (c.title != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                c.title!,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          Text(c.body ?? '', style: const TextStyle(height: 1.5)),
+        ],
+      ),
+    ),
+  );
+
+  Widget _engineCard(AppLocalizations l10n) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        l10n.reportEngineBreakdownTitle,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      const SizedBox(height: 8),
+      for (final e in result.engineScores)
+        Card(
+          child: ListTile(
+            leading: Icon(
+              e.available ? Icons.memory : Icons.download_outlined,
+              color: e.available
+                  ? AppTheme.verdictColor(e.aiProbability)
+                  : Theme.of(context).disabledColor,
+            ),
+            title: Text(e.engineName),
+            subtitle: Text(e.reasons.join('\n')),
+            trailing: e.available
+                ? Text(
+                    '${(e.aiProbability * 100).round()}%',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.verdictColor(e.aiProbability),
+                    ),
+                  )
+                : Text(l10n.reportEngineNotInstalled),
+          ),
+        ),
+    ],
+  );
+
+  Widget _heatmapCard(AppLocalizations l10n) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        l10n.reportSentenceAnalysisTitle,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      const SizedBox(height: 8),
+      Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Wrap(
+            runSpacing: 6,
             children: [
-              if (c.title != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(c.title!,
-                      style: Theme.of(context).textTheme.titleMedium),
+              for (final s in result.sentences)
+                Semantics(
+                  label: l10n.reportSentenceTooltip(
+                    s.text,
+                    (s.aiProbability * 100).round(),
+                    s.patterns.isEmpty ? '' : '，${s.patterns.join('、')}',
+                  ),
+                  excludeSemantics: true,
+                  child: Tooltip(
+                    message: s.patterns.isEmpty
+                        ? '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%'
+                        : '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%\n'
+                              '${s.patterns.join('、')}',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.verdictColor(
+                          s.aiProbability,
+                        ).withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text('${s.text} '),
+                    ),
+                  ),
                 ),
-              Text(c.body ?? '', style: const TextStyle(height: 1.5)),
             ],
           ),
         ),
-      );
-
-  Widget _engineCard(AppLocalizations l10n) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.reportEngineBreakdownTitle,
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          for (final e in result.engineScores)
-            Card(
-              child: ListTile(
-                leading: Icon(
-                  e.available ? Icons.memory : Icons.download_outlined,
-                  color: e.available
-                      ? AppTheme.verdictColor(e.aiProbability)
-                      : Theme.of(context).disabledColor,
-                ),
-                title: Text(e.engineName),
-                subtitle: Text(e.reasons.join('\n')),
-                trailing: e.available
-                    ? Text('${(e.aiProbability * 100).round()}%',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.verdictColor(e.aiProbability)))
-                    : Text(l10n.reportEngineNotInstalled),
-              ),
-            ),
-        ],
-      );
-
-  Widget _heatmapCard(AppLocalizations l10n) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.reportSentenceAnalysisTitle,
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Wrap(
-                runSpacing: 6,
-                children: [
-                  for (final s in result.sentences)
-                    Semantics(
-                      label: l10n.reportSentenceTooltip(
-                          s.text,
-                          (s.aiProbability * 100).round(),
-                          s.patterns.isEmpty
-                              ? ''
-                              : '，${s.patterns.join('、')}'),
-                      excludeSemantics: true,
-                      child: Tooltip(
-                        message: s.patterns.isEmpty
-                            ? '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%'
-                            : '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%\n'
-                                '${s.patterns.join('、')}',
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppTheme.verdictColor(s.aiProbability)
-                                .withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text('${s.text} '),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
+      ),
+    ],
+  );
 
   Widget _networkWarningCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
@@ -438,8 +466,10 @@ class _ReportScreenState extends State<ReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.reportNetworkWarningTitle,
-                      style: Theme.of(context).textTheme.titleSmall),
+                  Text(
+                    l10n.reportNetworkWarningTitle,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
                   const SizedBox(height: 4),
                   Text(l10n.reportNetworkWarningBody),
                   const SizedBox(height: 8),
@@ -474,8 +504,10 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.reportLinkAuthenticityTitle,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.reportLinkAuthenticityTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(l10n.reportLinkNoneDetected),
                   ],
@@ -499,20 +531,25 @@ class _ReportScreenState extends State<ReportScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Icon(Icons.link, color: scheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.reportLinkAuthenticityTitle,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.reportLinkAuthenticityTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       _checkingLinks
                           ? l10n.reportLinkCheckingProgress
-                          : l10n.reportLinkDetectedPending(_detectedUrls.length),
+                          : l10n.reportLinkDetectedPending(
+                              _detectedUrls.length,
+                            ),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     if (!_checkingLinks) ...[
@@ -540,8 +577,10 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.reportLinkAuthenticityTitle,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.reportLinkAuthenticityTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             for (final c in checks)
               Padding(
@@ -577,7 +616,9 @@ class _ReportScreenState extends State<ReportScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   l10n.reportLinkTruncated(
-                      LinkVerifier.maxLinksPerCheck, _detectedUrls.length),
+                    LinkVerifier.maxLinksPerCheck,
+                    _detectedUrls.length,
+                  ),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -598,8 +639,9 @@ class _ReportScreenState extends State<ReportScreen> {
     }
     return switch (c.status) {
       LinkStatus.reachable => l10n.reportLinkCitationVerified(
-          c.journalName ?? '',
-          c.articleTitle != null ? '，${c.articleTitle}' : ''),
+        c.journalName ?? '',
+        c.articleTitle != null ? '，${c.articleTitle}' : '',
+      ),
       LinkStatus.notFound => l10n.reportLinkCitationNotFound,
       LinkStatus.unreachable => l10n.reportLinkCitationUnreachable,
     };
@@ -622,8 +664,10 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.reportBibAuthenticityTitle,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.reportBibAuthenticityTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(l10n.reportBibNoneDetected),
                   ],
@@ -646,16 +690,21 @@ class _ReportScreenState extends State<ReportScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Icon(Icons.menu_book_outlined,
-                      color: scheme.onSurfaceVariant),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      Icons.menu_book_outlined,
+                      color: scheme.onSurfaceVariant,
+                    ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.reportBibAuthenticityTitle,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.reportBibAuthenticityTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       _checkingBib
@@ -688,8 +737,10 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.reportBibAuthenticityTitle,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.reportBibAuthenticityTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 4),
             Text(
               l10n.reportBibResultHint,
@@ -730,8 +781,9 @@ class _ReportScreenState extends State<ReportScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   l10n.reportBibTruncated(
-                      BibliographyVerifier.maxEntriesPerCheck,
-                      _bibEntries.length),
+                    BibliographyVerifier.maxEntriesPerCheck,
+                    _bibEntries.length,
+                  ),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -744,9 +796,10 @@ class _ReportScreenState extends State<ReportScreen> {
   String _bibStatusLabel(BibliographyCheckResult c, AppLocalizations l10n) {
     return switch (c.confidence) {
       CitationMatchConfidence.high => l10n.reportBibHighConfidence(
-          c.matchedJournal != null
-              ? l10n.reportBibJournalSuffix(c.matchedJournal!)
-              : ''),
+        c.matchedJournal != null
+            ? l10n.reportBibJournalSuffix(c.matchedJournal!)
+            : '',
+      ),
       CitationMatchConfidence.notFound => l10n.reportBibNotFound,
       CitationMatchConfidence.uncertain => l10n.reportBibUncertain,
     };

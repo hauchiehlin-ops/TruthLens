@@ -2,18 +2,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(truthlens LANGUAGES CXX)
 
-# ===== llama.cpp 動態庫支援 =====
-# 若 windows/libs/llama.dll 存在，複製到構建輸出目錄
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libs/llama.dll")
-  add_custom_command(
-    TARGET flutter_windows POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${CMAKE_CURRENT_SOURCE_DIR}/libs/llama.dll"
-      "$<TARGET_FILE_DIR:flutter_windows>/llama.dll"
-    COMMENT "Copying llama.dll to Flutter output directory"
-  )
-endif()
-
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "truthlens")
@@ -64,6 +52,22 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
+# ===== TruthLens llama.cpp bridge runtime libraries =====
+# `native/llama_bridge/build_windows.ps1` produces truthlens_llama.dll plus
+# llama/ggml runtime DLLs into windows/libs/. Copy every DLL next to truthlens.exe
+# so Dart FFI can open truthlens_llama.dll and the Windows loader can resolve its
+# dependencies from the same directory.
+file(GLOB TRUTHLENS_NATIVE_DLLS "${CMAKE_CURRENT_SOURCE_DIR}/libs/*.dll")
+if(TRUTHLENS_NATIVE_DLLS)
+  add_custom_command(
+    TARGET ${BINARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${TRUTHLENS_NATIVE_DLLS}
+      "$<TARGET_FILE_DIR:${BINARY_NAME}>"
+    COMMENT "Copying TruthLens native DLLs to Flutter output directory"
+  )
+endif()
+
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
@@ -95,6 +99,12 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
 
 if(PLUGIN_BUNDLED_LIBRARIES)
   install(FILES "${PLUGIN_BUNDLED_LIBRARIES}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
+
+if(TRUTHLENS_NATIVE_DLLS)
+  install(FILES ${TRUTHLENS_NATIVE_DLLS}
     DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()

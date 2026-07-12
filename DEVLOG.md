@@ -1,5 +1,29 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [Phase 4] Android/iOS/Windows llama bridge 打包補齊與跨平台驗證
+
+**做了什麼**
+
+- 修復 Android debug build：將 AGP 固定到 Flutter 支援且避開 AGP 9 built-in Kotlin 衝突的 `8.11.1`，保留 `android.builtInKotlin=false`，解決 `file_picker` Kotlin plugin 類別未編譯導致 `FilePickerPlugin` 找不到的問題
+- Android LLM：新增 `native/llama_bridge/build_android.sh`，用同一份 `truthlens_llama.cpp` 建出 `libtruthlens_llama.so`，並打包 `libllama.so` / `libggml*.so` 到 `arm64-v8a` 與 `x86_64`；移除不完整的 `armeabi-v7a/libllama.so`
+- iOS LLM：新增 `ios/TruthLensLlamaBridge.podspec` 與 wrapper source，透過 CocoaPods 編譯 `TruthLensLlamaBridge.framework`，並 vendored link `ios/Libs/llama.xcframework`；iOS build 產物已確認含 `TruthLensLlamaBridge.framework`、`llama.framework` 與 `tl_llama_*` 匯出符號
+- Dart FFI：iOS 載入路徑改為優先開啟 `TruthLensLlamaBridge.framework/TruthLensLlamaBridge`，再回退 `DynamicLibrary.process()`，避免 framework 已打包但 runtime 查不到 `tl_llama_*` 符號
+- Windows LLM：新增 `native/llama_bridge/build_windows.ps1`，並更新 `windows/CMakeLists.txt`，讓 Windows host 產出的 `truthlens_llama.dll` / `llama.dll` / `ggml*.dll` 會複製並安裝到 `truthlens.exe` 同目錄
+- 更新 catalog / LLM platform / release checklist 文件，避免舊文字誤稱 Android 只有 `libllama` 或 iOS/Windows 未提供 bridge
+- 報告匯出：`ReportExporter` 現可接收畫面上的 `ReportDocument`，JSON/PDF 會匯出 Gemma/LLM 生成的 headline 與 narrative，不再在匯出時重新套模板造成畫面與檔案不一致
+
+**驗證**
+
+- `flutter build apk --debug` 通過，APK 內含 `libtruthlens_llama.so`、`libllama.so`、`libggml*.so`（arm64-v8a / x86_64）
+- `flutter build ios --no-codesign` 通過，並以 `nm` 確認 `TruthLensLlamaBridge.framework` 匯出 `tl_llama_init/load/generate/free/backend_free`
+- `flutter build macos --debug` 通過，app bundle 內含 `libtruthlens_llama.dylib`、`libllama.0.dylib`、`libggml*.dylib`
+- 本機 macOS 真 GGUF smoke 通過：從 App sandbox 載入 `llm__gemma-2-2b-it-q4km.gguf`，llama.cpp 顯示 `general.architecture = gemma2`，Metal 載入並生成非空文字
+- `flutter test integration_test/full_analysis_test.dart -d macos` 通過，Transformer 真模型參與投票並產出逐句分數
+- `flutter analyze` 與 `flutter test` 通過；新增測試覆蓋 LLM `ReportDocument` 匯出 JSON/PDF
+- Windows build 因 Flutter 只能在 Windows host 執行，尚未在本機 macOS 驗證；已補 build script 與 CMake 打包路徑
+
+---
+
 ## 2026-07-12 — [Phase 4] Gemma 報告生成擴展為完整內文
 
 **做了什麼**

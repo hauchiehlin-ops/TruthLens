@@ -9,10 +9,10 @@
 
 | 平台 | 庫檔 | 狀態 |
 | :--- | :--- | :--- |
-| macOS | `macos/Libs/libllama.dylib` | ✅ 已放置（需確認已嵌入 .app bundle 的 Frameworks，見下） |
-| Android | `android/app/src/main/jniLibs/arm64-v8a/libllama.so` | ✅ 僅 arm64-v8a（無 x86_64 模擬器 / armeabi-v7a） |
-| iOS | `llama.framework/llama` | ❌ 未提供 |
-| Windows | `windows/libs/llama.dll` | ❌ 未提供 |
+| macOS | `macos/Libs/libtruthlens_llama.dylib` + `libllama.0.dylib`/`libggml*.dylib` | ✅ 已嵌入 .app bundle 的 Frameworks |
+| Android | `android/app/src/main/jniLibs/{arm64-v8a,x86_64}/libtruthlens_llama.so` + `libllama.so`/`libggml*.so` | ✅ 已打包 arm64-v8a 與 x86_64；不宣稱支援 armeabi-v7a LLM |
+| iOS | `TruthLensLlamaBridge.framework` + `llama.framework` | ✅ CocoaPods 本地 pod 打包，`tl_llama_*` 符號已在 iOS build 產物確認 |
+| Windows | `windows/libs/truthlens_llama.dll` + `llama.dll`/`ggml*.dll` | 🟡 已提供 `native/llama_bridge/build_windows.ps1` 與 CMake 複製邏輯；需 Windows host 編譯驗證 |
 | Linux | `libllama.so`（系統路徑） | ❌ 未提供 |
 
 ## 補上其他平台
@@ -26,9 +26,9 @@ cmake -B build -DBUILD_SHARED_LIBS=ON <平台/加速 flag>
 cmake --build build --config Release
 ```
 
-- **iOS**：編為 `llama.xcframework`，嵌入 Runner，`_loadLibrary` 用 `DynamicLibrary.process()` 或 framework 路徑
-- **Windows**：`llama.dll` 放 `windows/libs/`，並在 CMake 複製到輸出目錄
-- **Android x86_64 / armeabi-v7a**：加對應 ABI 的 `.so` 到 `jniLibs/<abi>/`
+- **Android**：執行 `native/llama_bridge/build_android.sh`，產物放 `android/app/src/main/jniLibs/<abi>/`
+- **iOS**：`ios/TruthLensLlamaBridge.podspec` 會編譯共用 bridge wrapper，並 vendored link `ios/Libs/llama.xcframework`
+- **Windows**：在 Windows host 執行 `native/llama_bridge/build_windows.ps1`，產物放 `windows/libs/`，CMake 會複製到輸出目錄
 - **Linux**：`libllama.so` 放系統庫路徑或隨附
 
 ## macOS bundle 嵌入注意

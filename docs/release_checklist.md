@@ -15,7 +15,7 @@
 - ✅ 報告匯出 PDF / CSV / JSON
 - ✅ 檢測引擎集成投票 + 信心閾值 + ESL 修正
 - 🟡 檢測模型（第一版訓練中；需上傳並填入 registry）
-- ⬜ 本地 LLM 智慧報告（llama.cpp 原生端未實作，目前用模板回退）
+- 🟡 本地 LLM 智慧報告（Gemma / llama.cpp 已接 `truthlens_llama` bridge；macOS、iOS、Android arm64-v8a/x86_64 已打包，Windows 需 Windows host 編譯驗證；缺模型或缺庫時透明模板回退）
 - ⬜ OCR：iOS / Android / Windows 原生端
 - ⬜ 檢測原生推論：iOS(CoreML) / Android(TFLite) / Windows(ONNX) 的 ONNX Runtime plugin
 
@@ -23,10 +23,10 @@
 
 | 平台 | 建置 | 原生 OCR | 原生推論 | 備註 |
 | :--- | :--- | :--- | :--- | :--- |
-| macOS | ✅ 綠燈 | ✅ Vision | ⬜ | 主要開發驗證平台 |
-| iOS | ⬜ 未驗證 | ⬜ | ⬜ | 需 Files/Share Extension |
-| Android | ⬜ 未驗證 | ⬜ | ⬜ | doctor 有 SDK licenses 警告待處理 |
-| Windows | ⬜ 未驗證 | ⬜ | ⬜ | 需大螢幕自適應佈局 |
+| macOS | ✅ 綠燈 | ✅ Vision | 🟡 ONNX + LLM bridge | 主要開發驗證平台 |
+| iOS | 🟡 `--no-codesign` build 通過 | ⬜ | 🟡 LLM bridge 已打包；CoreML 檢測 bridge 待補 | 需 Files/Share Extension / 實機簽章驗證 |
+| Android | 🟡 debug APK build 通過 | ⬜ | 🟡 LLM bridge 已打包；TFLite 檢測 bridge 待補 | arm64-v8a/x86_64 LLM ABI；不宣稱 armeabi-v7a LLM |
+| Windows | ⬜ macOS 主機不可建置 | ⬜ | 🟡 LLM bridge 建置/打包腳本已補 | 需 Windows host 執行 build + smoke test |
 
 ## 3. 商店資產與中繼資料
 
@@ -42,7 +42,7 @@
 - ⬜ iOS Info.plist：相機權限說明（相機 OCR 用）
 - ⬜ Apple 隱私清單（PrivacyInfo.xcprivacy）+ App Store 隱私問卷
   - 本 App 不收集資料、無網路傳輸（模型下載除外）——填報應極簡
-- ⬜ Android：宣告無網路權限或僅模型下載用途
+- ⬜ Android：宣告僅必要網路用途（模型更新偵測、模型下載、URL/DOI 驗證可關閉）
 
 ## 5. 效能驗證（對照 plan 第十節目標）
 
@@ -51,7 +51,7 @@
 - ✅ 5000 字分析（66 句）**1.06 秒**（目標 < 30 秒）
 - ✅ 純 Dart 熱路徑（前處理+啟發式+報告）5000 字約 1ms
 - ⬜ 冷啟動 < 3 秒（未系統量測）
-- ⬜ 記憶體峰值 < 2GB（含 LLM；LLM 未整合，未量測）
+- ⬜ 記憶體峰值 < 2GB（含 LLM；需跨平台實機量測）
 - 基準測試：test/perf_benchmark_test.dart（host）、integration_test/perf_benchmark_test.dart（macOS 真實推論）
 
 ## 6. 品質

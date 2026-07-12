@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../features/report/report_composer.dart';
+import '../../features/report/report_document.dart';
 import '../../features/report/summary_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
@@ -36,12 +37,26 @@ class ReportExporter {
 
   /// 結構化 JSON（plan 第九節：LMS / 系統整合）。欄位名稱為固定的英文 API schema，
   /// 不隨語系翻譯，僅 headline／reasons 等自然語言內容依 [l10n] 呈現。
-  static String buildJson(DetectionResult r, AppLocalizations l10n) {
-    final doc = _composer.compose(r, l10n);
+  static String buildJson(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    ReportDocument? reportDocument,
+  }) {
+    final doc = reportDocument ?? _composer.compose(r, l10n);
     final map = {
       'version': 1,
       'analyzed_at': r.analyzedAt.toIso8601String(),
       'headline': doc.headline,
+      'report_source': doc.source.name,
+      'template_id': doc.templateId,
+      'report_components': [
+        for (final c in doc.components)
+          {
+            'type': c.type.name,
+            if (c.title != null) 'title': c.title,
+            if (c.body != null) 'body': c.body,
+          },
+      ],
       'overall': {
         'ai_probability': r.aiProbability,
         'verdict': r.verdict.name,
@@ -62,7 +77,7 @@ class ReportExporter {
             'weight': e.weight,
             'reasons': e.reasons,
             'features': e.features,
-          }
+          },
       ],
       'sentences': [
         for (final s in r.sentences)
@@ -71,7 +86,7 @@ class ReportExporter {
             'text': s.text,
             'ai_probability': s.aiProbability,
             'patterns': s.patterns,
-          }
+          },
       ],
     };
     return const JsonEncoder.withIndent('  ').convert(map);
@@ -83,17 +98,20 @@ class ReportExporter {
       ..writeln('# ${l10n.exportReportTitle}')
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
       ..writeln(
-          '# overall_ai_probability,${r.aiProbability.toStringAsFixed(4)}')
+        '# overall_ai_probability,${r.aiProbability.toStringAsFixed(4)}',
+      )
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
       ..writeln('index,sentence,ai_probability,patterns');
     for (final s in r.sentences) {
-      buf.writeln([
-        s.index.toString(),
-        _csvEscape(s.text),
-        s.aiProbability.toStringAsFixed(4),
-        _csvEscape(s.patterns.join('; ')),
-      ].join(','));
+      buf.writeln(
+        [
+          s.index.toString(),
+          _csvEscape(s.text),
+          s.aiProbability.toStringAsFixed(4),
+          _csvEscape(s.patterns.join('; ')),
+        ].join(','),
+      );
     }
     return buf.toString();
   }
@@ -111,7 +129,9 @@ class ReportExporter {
     AppLocalizations l10n, {
     required ByteData regularFont,
     required ByteData boldFont,
+    ReportDocument? reportDocument,
   }) async {
+    final reportDoc = reportDocument ?? _composer.compose(r, l10n);
     final regular = pw.Font.ttf(regularFont);
     final bold = pw.Font.ttf(boldFont);
     final theme = pw.ThemeData.withFont(base: regular, bold: bold);
@@ -137,14 +157,16 @@ class ReportExporter {
           ),
         ),
         build: (ctx) => [
-          pw.Text(l10n.exportReportTitle,
-              style:
-                  pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            l10n.exportReportTitle,
+            style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 4),
           pw.Text(
             l10n.pdfAnalyzedAtElapsed(
-                r.analyzedAt.toLocal().toString().substring(0, 19),
-                (r.elapsed.inMilliseconds / 1000).toStringAsFixed(1)),
+              r.analyzedAt.toLocal().toString().substring(0, 19),
+              (r.elapsed.inMilliseconds / 1000).toStringAsFixed(1),
+            ),
             style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
           pw.Divider(),
@@ -159,15 +181,21 @@ class ReportExporter {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text(l10n.reportOverallVerdictLabel(r.verdict.label(l10n)),
-                    style: pw.TextStyle(
-                        fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  l10n.reportOverallVerdictLabel(r.verdict.label(l10n)),
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
                 pw.Text(
                   '${l10n.reportAiProbabilityLabel} '
                   '${(r.aiProbability * 100).round()}%'
                   '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',
                   style: pw.TextStyle(
-                      fontSize: 14, color: scoreColor(r.aiProbability)),
+                    fontSize: 14,
+                    color: scoreColor(r.aiProbability),
+                  ),
                 ),
               ],
             ),
@@ -175,21 +203,26 @@ class ReportExporter {
           pw.SizedBox(height: 6),
           pw.Text(
             l10n.pdfSentenceCounts(
-                r.sentences.length, r.aiSentenceCount, r.humanSentenceCount),
+              r.sentences.length,
+              r.aiSentenceCount,
+              r.humanSentenceCount,
+            ),
             style: const pw.TextStyle(fontSize: 10),
           ),
           pw.SizedBox(height: 12),
 
-          // 分析解讀（與 App 內報告同一套 composer 生成）
-          pw.Text(l10n.composerNarrativeTitle,
-              style:
-                  pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          // 分析解讀（與 App 內報告同一份 ReportDocument，可能來自 LLM）
+          pw.Text(
+            l10n.composerNarrativeTitle,
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 4),
-          pw.Text(_composer.compose(r, l10n).headline,
-              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-          for (final c in _composer.compose(r, l10n).components)
-            if ((c.body ?? '').isNotEmpty &&
-                c.type.name != 'thresholdBanner')
+          pw.Text(
+            reportDoc.headline,
+            style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold),
+          ),
+          for (final c in reportDoc.components)
+            if ((c.body ?? '').isNotEmpty && c.type.name != 'thresholdBanner')
               pw.Padding(
                 padding: const pw.EdgeInsets.only(top: 4),
                 child: pw.Text(
@@ -200,9 +233,10 @@ class ReportExporter {
           pw.SizedBox(height: 14),
 
           // 引擎明細
-          pw.Text(l10n.reportEngineBreakdownTitle,
-              style:
-                  pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            l10n.reportEngineBreakdownTitle,
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 6),
           for (final e in r.engineScores)
             pw.Padding(
@@ -215,31 +249,41 @@ class ReportExporter {
                         ? '${e.engineName} — ${(e.aiProbability * 100).round()}%'
                         : '${e.engineName} — ${l10n.reportEngineNotInstalled}',
                     style: pw.TextStyle(
-                        fontSize: 11, fontWeight: pw.FontWeight.bold),
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                   for (final reason in e.reasons)
                     pw.Bullet(
-                        text: reason,
-                        style: const pw.TextStyle(fontSize: 9),
-                        bulletSize: 1.5),
+                      text: reason,
+                      style: const pw.TextStyle(fontSize: 9),
+                      bulletSize: 1.5,
+                    ),
                 ],
               ),
             ),
           pw.SizedBox(height: 10),
 
           // 逐句分析（超過上限僅顯示前段，避免大量/超長句子撐爆 PDF 分頁）
-          pw.Text(l10n.reportSentenceAnalysisTitle,
-              style:
-                  pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            l10n.reportSentenceAnalysisTitle,
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 6),
           if (r.sentences.length > _pdfMaxTableRows)
             pw.Padding(
               padding: const pw.EdgeInsets.only(bottom: 6),
               child: pw.Text(
-                l10n.pdfTruncationNotice(_pdfMaxTableRows, r.sentences.length,
-                    l10n.reportExportCsv, l10n.reportExportJson),
+                l10n.pdfTruncationNotice(
+                  _pdfMaxTableRows,
+                  r.sentences.length,
+                  l10n.reportExportCsv,
+                  l10n.reportExportJson,
+                ),
                 style: const pw.TextStyle(
-                    fontSize: 9, color: PdfColors.grey700),
+                  fontSize: 9,
+                  color: PdfColors.grey700,
+                ),
               ),
             ),
           pw.Table(
@@ -259,21 +303,29 @@ class ReportExporter {
                 ],
               ),
               for (final s in r.sentences.take(_pdfMaxTableRows))
-                pw.TableRow(children: [
-                  _cell('${s.index + 1}'),
-                  _cell(_truncateForPdf(s.patterns.isEmpty
-                      ? s.text
-                      : '${s.text}\n→ ${s.patterns.join('、')}')),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(4),
-                    child: pw.Text(
-                      '${(s.aiProbability * 100).round()}',
-                      style: pw.TextStyle(
-                          fontSize: 9, color: scoreColor(s.aiProbability)),
-                      textAlign: pw.TextAlign.right,
+                pw.TableRow(
+                  children: [
+                    _cell('${s.index + 1}'),
+                    _cell(
+                      _truncateForPdf(
+                        s.patterns.isEmpty
+                            ? s.text
+                            : '${s.text}\n→ ${s.patterns.join('、')}',
+                      ),
                     ),
-                  ),
-                ]),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(4),
+                      child: pw.Text(
+                        '${(s.aiProbability * 100).round()}',
+                        style: pw.TextStyle(
+                          fontSize: 9,
+                          color: scoreColor(s.aiProbability),
+                        ),
+                        textAlign: pw.TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ],
@@ -283,15 +335,15 @@ class ReportExporter {
   }
 
   static pw.Widget _cell(String text, {bool bold = false}) => pw.Padding(
-        padding: const pw.EdgeInsets.all(4),
-        child: pw.Text(
-          text,
-          style: pw.TextStyle(
-            fontSize: 9,
-            fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-          ),
-        ),
-      );
+    padding: const pw.EdgeInsets.all(4),
+    child: pw.Text(
+      text,
+      style: pw.TextStyle(
+        fontSize: 9,
+        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+      ),
+    ),
+  );
 
   // ---- 存檔（UI 層呼叫）----
 
@@ -301,9 +353,17 @@ class ReportExporter {
 
   /// 回傳儲存路徑；使用者取消時回傳 null。
   /// 加 UTF-8 BOM 讓 Excel 正確辨識中文編碼。
-  static Future<String?> exportCsv(DetectionResult r, AppLocalizations l10n) async {
-    final bytes = Uint8List.fromList(
-        [0xEF, 0xBB, 0xBF, ...utf8.encode(buildCsv(r, l10n))]);
+  static Future<String?> exportCsv(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    ReportDocument? reportDocument,
+  }) async {
+    final bytes = Uint8List.fromList([
+      0xEF,
+      0xBB,
+      0xBF,
+      ...utf8.encode(buildCsv(r, l10n)),
+    ]);
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.csv',
@@ -312,9 +372,17 @@ class ReportExporter {
     );
   }
 
-  static Future<String?> exportJson(DetectionResult r, AppLocalizations l10n) async {
-    final bytes = Uint8List.fromList(
-        [0xEF, 0xBB, 0xBF, ...utf8.encode(buildJson(r, l10n))]);
+  static Future<String?> exportJson(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    ReportDocument? reportDocument,
+  }) async {
+    final bytes = Uint8List.fromList([
+      0xEF,
+      0xBB,
+      0xBF,
+      ...utf8.encode(buildJson(r, l10n, reportDocument: reportDocument)),
+    ]);
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.json',
@@ -323,7 +391,11 @@ class ReportExporter {
     );
   }
 
-  static Future<String?> exportPng(DetectionResult r, AppLocalizations l10n) async {
+  static Future<String?> exportPng(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    ReportDocument? reportDocument,
+  }) async {
     final bytes = await SummaryCard.renderPng(r, l10n);
     return _save(
       bytes: bytes,
@@ -333,12 +405,17 @@ class ReportExporter {
     );
   }
 
-  static Future<String?> exportPdf(DetectionResult r, AppLocalizations l10n) async {
+  static Future<String?> exportPdf(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    ReportDocument? reportDocument,
+  }) async {
     final bytes = await buildPdf(
       r,
       l10n,
       regularFont: await rootBundle.load('assets/fonts/NotoSansTC-Regular.ttf'),
       boldFont: await rootBundle.load('assets/fonts/NotoSansTC-Bold.ttf'),
+      reportDocument: reportDocument,
     );
     return _save(
       bytes: bytes,

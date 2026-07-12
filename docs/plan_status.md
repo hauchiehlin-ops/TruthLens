@@ -18,7 +18,7 @@
 | :--- | :--- | :--- |
 | 確定性回退（模板+規則生成） | ✅ | ReportComposer 選版面 + 中文解讀 |
 | 動態版面決策 | ✅ | 依判定/混合/改寫選模板 |
-| 本地 LLM（Gemma, llama.cpp） | 🟡 | FFI 載入與推論已整合、<4GB RAM 保護、缺庫平台優雅退回模板。**libllama 目前僅 macOS + Android(arm64)**；iOS/Windows/Linux 需另編譯庫（見 [llm_platform.md](llm_platform.md)） |
+| 本地 LLM（Gemma, llama.cpp） | 🟡 | FFI 載入與推論已整合、<4GB RAM 保護、缺庫平台優雅退回模板。macOS/iOS/Android arm64-v8a/x86_64 已打包 TruthLens bridge；Windows 已提供建置/打包腳本但仍需 Windows host 實機驗證（見 [llm_platform.md](llm_platform.md)） |
 
 ## 模組 3：OCR
 | 平台 | 狀態 |
