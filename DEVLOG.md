@@ -1,5 +1,18 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-13 — [Phase 4] Windows VS 18 build warning-as-error 修復
+
+**做了什麼**
+
+- 修復 Windows runner 在繁中/CP950 環境下建置失敗：`flutter_window.cpp` 含 UTF-8 字串（例如 OCR 錯誤訊息），MSVC 以目前 code page 讀檔時觸發 C4819，且專案使用 `/WX` 將 warning 視為 error；現在 runner 標準編譯選項加入 `/utf-8`
+- 修復 Visual Studio 18 / MSVC 14.51 對 `<experimental/coroutine>` 的 STL1001 deprecation 警告被 `/WX` 提升為 C2338 error；加入 `_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNING`，讓現有 Flutter/WinRT 相依仍能編譯
+
+**驗證**
+
+- 本機 macOS 無法執行 `flutter build windows`；此修正針對使用者 Windows build log 中的 C4819/C2220 與 STL1001/C2338 兩個阻塞點
+
+---
+
 ## 2026-07-12 — [Phase 4] Android/iOS/Windows llama bridge 打包補齊與跨平台驗證
 
 **做了什麼**
