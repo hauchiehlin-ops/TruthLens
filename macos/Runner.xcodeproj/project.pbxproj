@@ -28,9 +28,16 @@
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		411C68F478115CABE5E68476 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D985E3A9B07CB18D07996F3 /* Pods_RunnerTests.framework */; };
+		44944D6E73BFE86F5F768F1A /* libggml-base.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = E7A8E335889BAF01302D0061 /* libggml-base.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		685DCF08D287339294EA3F86 /* libtruthlens_llama.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		7A0C0CA10000000000000001 /* OcrPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0C0CA10000000000000002 /* OcrPlugin.swift */; };
 		7A0C0CA10000000000000003 /* DevicePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0C0CA10000000000000004 /* DevicePlugin.swift */; };
+		7B147347AFF3168B065BD92D /* libggml-metal.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = 22B7227AA92784E9A8CB569C /* libggml-metal.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8A7805C0933856211FF50D48 /* libggml.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = FF5A71AF0D0A6368D801F11D /* libggml.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8B90F4D0F1C45E6C8B48273C /* libggml-cpu.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = 0ECE94A4526E44CB7CEA4790 /* libggml-cpu.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		A9D37AFC0F9993BA049274DF /* libggml-blas.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = 16E4C40118299EA057194302 /* libggml-blas.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E2867EEA3DAECE926389050D /* libllama.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = C1448608DB8D425105187665 /* libllama.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		FD4C39D851ED6753022F7D06 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10CD0F64B0D22AAF1EF8FE11 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -62,10 +69,30 @@
 			name = "Bundle Framework";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		38267720DA6C2BE27ADB7086 /* Embed llama Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				44944D6E73BFE86F5F768F1A /* libggml-base.0.dylib in Embed llama Libraries */,
+				A9D37AFC0F9993BA049274DF /* libggml-blas.0.dylib in Embed llama Libraries */,
+				8B90F4D0F1C45E6C8B48273C /* libggml-cpu.0.dylib in Embed llama Libraries */,
+				7B147347AFF3168B065BD92D /* libggml-metal.0.dylib in Embed llama Libraries */,
+				8A7805C0933856211FF50D48 /* libggml.0.dylib in Embed llama Libraries */,
+				E2867EEA3DAECE926389050D /* libllama.0.dylib in Embed llama Libraries */,
+				685DCF08D287339294EA3F86 /* libtruthlens_llama.dylib in Embed llama Libraries */,
+			);
+			name = "Embed llama Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0ECE94A4526E44CB7CEA4790 /* libggml-cpu.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = "libggml-cpu.0.dylib"; sourceTree = "<group>"; };
 		10CD0F64B0D22AAF1EF8FE11 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		16E4C40118299EA057194302 /* libggml-blas.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = "libggml-blas.0.dylib"; sourceTree = "<group>"; };
+		22B7227AA92784E9A8CB569C /* libggml-metal.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = "libggml-metal.0.dylib"; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
@@ -92,8 +119,12 @@
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		98B4D05F0F98806D6502D204 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		A8621EA9CE0A6A5FA93C2F34 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libtruthlens_llama.dylib; sourceTree = "<group>"; };
+		C1448608DB8D425105187665 /* libllama.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libllama.0.dylib; sourceTree = "<group>"; };
 		DF819F15458E4CE50C7AE0DE /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		E0E0D07893669F7CA2D668A2 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		E7A8E335889BAF01302D0061 /* libggml-base.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = "libggml-base.0.dylib"; sourceTree = "<group>"; };
+		FF5A71AF0D0A6368D801F11D /* libggml.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libggml.0.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +176,7 @@
 				33CC10EE2044A3C60003C045 /* Products */,
 				D73912EC22F37F3D000D13A0 /* Frameworks */,
 				57C2EA6642C09B0764043720 /* Pods */,
+				5FCA315DDD0C26AA7E22C55A /* Libs */,
 			);
 			sourceTree = "<group>";
 		};
@@ -209,6 +241,21 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		5FCA315DDD0C26AA7E22C55A /* Libs */ = {
+			isa = PBXGroup;
+			children = (
+				E7A8E335889BAF01302D0061 /* libggml-base.0.dylib */,
+				16E4C40118299EA057194302 /* libggml-blas.0.dylib */,
+				0ECE94A4526E44CB7CEA4790 /* libggml-cpu.0.dylib */,
+				22B7227AA92784E9A8CB569C /* libggml-metal.0.dylib */,
+				FF5A71AF0D0A6368D801F11D /* libggml.0.dylib */,
+				C1448608DB8D425105187665 /* libllama.0.dylib */,
+				B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */,
+			);
+			name = Libs;
+			path = Libs;
+			sourceTree = SOURCE_ROOT;
+		};
 		D73912EC22F37F3D000D13A0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,6 +298,7 @@
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* ShellScript */,
 				81285A4259D99057EACA1AEB /* [CP] Embed Pods Frameworks */,
+				38267720DA6C2BE27ADB7086 /* Embed llama Libraries */,
 			);
 			buildRules = (
 			);

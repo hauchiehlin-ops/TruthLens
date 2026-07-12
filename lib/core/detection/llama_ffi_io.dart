@@ -4,97 +4,44 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
-// Opaque structs
-final class LlamaModel extends ffi.Opaque {}
-final class LlamaContext extends ffi.Opaque {}
+// ── TruthLens llama 橋接 dylib 的 C ABI（見 native/llama_bridge/truthlens_llama.h）──
+// 只綁 primitive + 指標，所有 by-value 結構/取樣器細節都封在 C++ 橋接層，
+// 避免在 Dart 端手刻 llama.cpp 結構佈局造成 ABI 崩潰。
 
-// C Struct: llama_token_data
-base class LlamaTokenData extends ffi.Struct {
-  @ffi.Int32()
-  external int id;
-  @ffi.Float()
-  external double logit;
-  @ffi.Float()
-  external double p;
-}
+typedef _TlInitNative = ffi.Int32 Function();
+typedef _TlInit = int Function();
 
-// C Struct: llama_token_data_array
-base class LlamaTokenDataArray extends ffi.Struct {
-  external ffi.Pointer<LlamaTokenData> data;
-  @ffi.Size()
-  external int size;
-  @ffi.Bool()
-  external bool sorted;
-}
+typedef _TlLoadNative = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<Utf8> path, ffi.Int32 nCtx, ffi.Int32 nGpuLayers);
+typedef _TlLoad = ffi.Pointer<ffi.Void> Function(
+    ffi.Pointer<Utf8> path, int nCtx, int nGpuLayers);
 
-// C Struct: llama_batch
-base class LlamaBatch extends ffi.Struct {
-  @ffi.Int32()
-  external int nTokens;
-  external ffi.Pointer<ffi.Int32> token;
-  external ffi.Pointer<ffi.Float> embd;
-  external ffi.Pointer<ffi.Int32> pos;
-  external ffi.Pointer<ffi.Int32> nSeqId;
-  external ffi.Pointer<ffi.Pointer<ffi.Int32>> seqId;
-  external ffi.Pointer<ffi.Int8> logits;
+typedef _TlGenerateNative = ffi.Int32 Function(
+    ffi.Pointer<ffi.Void> handle,
+    ffi.Pointer<Utf8> prompt,
+    ffi.Int32 maxTokens,
+    ffi.Float temperature,
+    ffi.Float topP,
+    ffi.Uint32 seed,
+    ffi.Pointer<Utf8> outBuf,
+    ffi.Int32 outBufSize);
+typedef _TlGenerate = int Function(
+    ffi.Pointer<ffi.Void> handle,
+    ffi.Pointer<Utf8> prompt,
+    int maxTokens,
+    double temperature,
+    double topP,
+    int seed,
+    ffi.Pointer<Utf8> outBuf,
+    int outBufSize);
 
-  // Modern llama.cpp uses pos, seqId, etc.
-  // We keep a simple placeholder structure layout for FFI compatibility,
-  // but to be extremely safe, we will use a custom C++ bridge wrapper in native
-  // or a simplified implementation.
-}
+typedef _TlFreeNative = ffi.Void Function(ffi.Pointer<ffi.Void> handle);
+typedef _TlFree = void Function(ffi.Pointer<ffi.Void> handle);
 
-typedef LlamaBackendInitNative = ffi.Void Function(ffi.Bool numa);
-typedef LlamaBackendInit = void Function(bool numa);
+typedef _TlBackendFreeNative = ffi.Void Function();
+typedef _TlBackendFree = void Function();
 
-typedef LlamaBackendFreeNative = ffi.Void Function();
-typedef LlamaBackendFree = void Function();
-
-typedef LlamaModelDefaultParamsNative = ffi.Pointer<ffi.Void> Function();
-typedef LlamaContextDefaultParamsNative = ffi.Pointer<ffi.Void> Function();
-
-typedef LlamaLoadModelFromFileNative = ffi.Pointer<LlamaModel> Function(
-    ffi.Pointer<Utf8> pathModel, ffi.Pointer<ffi.Void> params);
-typedef LlamaLoadModelFromFile = ffi.Pointer<LlamaModel> Function(
-    ffi.Pointer<Utf8> pathModel, ffi.Pointer<ffi.Void> params);
-
-typedef LlamaNewContextWithModelNative = ffi.Pointer<LlamaContext> Function(
-    ffi.Pointer<LlamaModel> model, ffi.Pointer<ffi.Void> params);
-typedef LlamaNewContextWithModel = ffi.Pointer<LlamaContext> Function(
-    ffi.Pointer<LlamaModel> model, ffi.Pointer<ffi.Void> params);
-
-typedef LlamaFreeNative = ffi.Void Function(ffi.Pointer<LlamaContext> ctx);
-typedef LlamaFree = void Function(ffi.Pointer<LlamaContext> ctx);
-
-typedef LlamaFreeModelNative = ffi.Void Function(ffi.Pointer<LlamaModel> model);
-typedef LlamaFreeModel = void Function(ffi.Pointer<LlamaModel> model);
-
-typedef LlamaTokenizeNative = ffi.Int32 Function(
-    ffi.Pointer<LlamaModel> model,
-    ffi.Pointer<Utf8> text,
-    ffi.Int32 textLen,
-    ffi.Pointer<ffi.Int32> tokens,
-    ffi.Int32 nMaxTokens,
-    ffi.Bool addBos,
-    ffi.Bool special);
-
-typedef LlamaTokenizeDart = int Function(
-    ffi.Pointer<LlamaModel> model,
-    ffi.Pointer<Utf8> text,
-    int textLen,
-    ffi.Pointer<ffi.Int32> tokens,
-    int nMaxTokens,
-    bool addBos,
-    bool special);
-
-typedef LlamaTokenToPieceNative = ffi.Int32 Function(
-    ffi.Pointer<LlamaModel> model,
-    ffi.Int32 token,
-    ffi.Pointer<ffi.Char> buf,
-    ffi.Int32 length);
-
-/// Llama.cpp C API Dart FFI Wrapper.
-/// Gracefully falls back if the native library is missing.
+/// llama.cpp 橋接 FFI 封裝。原生庫缺失時全數優雅降級（isAvailable=false）。
 class LlamaFfi {
   static ffi.DynamicLibrary? _lib;
   static bool _initialized = false;
@@ -110,199 +57,155 @@ class LlamaFfi {
     try {
       _lib = _loadLibrary();
       if (_lib != null) {
+        // 綁定期即驗證符號存在；缺任何一個都視為不可用。
+        _lib!.lookupFunction<_TlInitNative, _TlInit>('tl_llama_init')();
         _available = true;
-        debugPrint('llama.cpp FFI dynamic library loaded successfully.');
+        debugPrint('TruthLens llama bridge loaded.');
       }
     } catch (e) {
-      debugPrint('Failed to load llama.cpp dynamic library: $e');
+      debugPrint('Failed to load llama bridge: $e');
       _available = false;
     }
+  }
+
+  /// 橋接 dylib/so 的檔名（各平台）。
+  static String get _libFileName {
+    if (Platform.isWindows) return 'truthlens_llama.dll';
+    if (Platform.isMacOS || Platform.isIOS) return 'libtruthlens_llama.dylib';
+    return 'libtruthlens_llama.so'; // Android / Linux
   }
 
   static ffi.DynamicLibrary? _loadLibrary() {
     try {
       if (Platform.isMacOS) {
-        // macOS: 通用二進制（arm64 + x86_64）
-        final frameworkPath = p.join(
-            Directory.current.path, 'macos', 'Libs', 'libllama.dylib');
-        if (File(frameworkPath).existsSync()) {
-          return ffi.DynamicLibrary.open(frameworkPath);
+        // 已打包版：相對於執行檔的 Contents/Frameworks/。橋接 dylib 內含
+        // @loader_path rpath，會在同目錄找到 libllama / libggml*。
+        final exeDir = File(Platform.resolvedExecutable).parent.path;
+        final bundled = p.normalize(
+            p.join(exeDir, '..', 'Frameworks', _libFileName));
+        if (File(bundled).existsSync()) {
+          return ffi.DynamicLibrary.open(bundled);
         }
-        return ffi.DynamicLibrary.open('libllama.dylib');
+        // 開發後備：專案內 macos/Libs/。
+        final devPath =
+            p.join(Directory.current.path, 'macos', 'Libs', _libFileName);
+        if (File(devPath).existsSync()) {
+          return ffi.DynamicLibrary.open(devPath);
+        }
+        return ffi.DynamicLibrary.open(_libFileName);
       } else if (Platform.isWindows) {
-        // Windows: x64
-        final dllPath = p.join(
-            Directory.current.path, 'windows', 'libs', 'llama.dll');
-        if (File(dllPath).existsSync()) {
-          return ffi.DynamicLibrary.open(dllPath);
+        final exeDir = File(Platform.resolvedExecutable).parent.path;
+        final bundled = p.join(exeDir, _libFileName);
+        if (File(bundled).existsSync()) {
+          return ffi.DynamicLibrary.open(bundled);
         }
-        return ffi.DynamicLibrary.open('llama.dll');
+        return ffi.DynamicLibrary.open(_libFileName);
       } else if (Platform.isAndroid) {
-        // Android: NDK 會自動選擇合適的 ABI（arm64-v8a 優先，再試 x86_64 等）
-        try {
-          return ffi.DynamicLibrary.open('libllama.so');
-        } catch (e) {
-          debugPrint('Failed to load libllama.so: $e');
-          return null;
-        }
+        return ffi.DynamicLibrary.open(_libFileName);
       } else if (Platform.isIOS) {
-        // iOS: xcframework（需補充）
-        return ffi.DynamicLibrary.open('llama.framework/llama');
+        // iOS：橋接靜態連進 app 或以 framework 提供 → 主映像中查找。
+        return ffi.DynamicLibrary.process();
       }
     } catch (e) {
-      debugPrint('Error loading llama library: $e');
+      debugPrint('Error loading llama bridge: $e');
     }
     return null;
   }
 
-  // Bound Functions
-  static void backendInit(bool numa) {
-    if (!isAvailable) return;
-    final func = _lib!.lookupFunction<LlamaBackendInitNative, LlamaBackendInit>(
-        'llama_backend_init');
-    func(numa);
-  }
-
-  static void backendFree() {
-    if (!isAvailable) return;
-    final func = _lib!.lookupFunction<LlamaBackendFreeNative, LlamaBackendFree>(
-        'llama_backend_free');
-    func();
-  }
-
-  static ffi.Pointer<ffi.Void> modelDefaultParams() {
+  static ffi.Pointer<ffi.Void> load(String modelPath,
+      {int nCtx = 4096, int nGpuLayers = -1}) {
     if (!isAvailable) return ffi.Pointer.fromAddress(0);
-    final func = _lib!.lookupFunction<LlamaModelDefaultParamsNative,
-        LlamaModelDefaultParamsNative>('llama_model_default_params');
-    return func();
-  }
-
-  static ffi.Pointer<ffi.Void> contextDefaultParams() {
-    if (!isAvailable) return ffi.Pointer.fromAddress(0);
-    final func = _lib!.lookupFunction<LlamaContextDefaultParamsNative,
-        LlamaContextDefaultParamsNative>('llama_context_default_params');
-    return func();
-  }
-
-  static ffi.Pointer<LlamaModel> loadModelFromFile(
-      String path, ffi.Pointer<ffi.Void> params) {
-    if (!isAvailable) return ffi.Pointer.fromAddress(0);
-    final func = _lib!.lookupFunction<LlamaLoadModelFromFileNative,
-        LlamaLoadModelFromFile>('llama_load_model_from_file');
-    final pathPtr = path.toNativeUtf8();
+    final fn = _lib!.lookupFunction<_TlLoadNative, _TlLoad>('tl_llama_load');
+    final pathPtr = modelPath.toNativeUtf8();
     try {
-      return func(pathPtr, params);
+      return fn(pathPtr, nCtx, nGpuLayers);
     } finally {
       malloc.free(pathPtr);
     }
   }
 
-  static ffi.Pointer<LlamaContext> newContextWithModel(
-      ffi.Pointer<LlamaModel> model, ffi.Pointer<ffi.Void> params) {
-    if (!isAvailable) return ffi.Pointer.fromAddress(0);
-    final func = _lib!.lookupFunction<LlamaNewContextWithModelNative,
-        LlamaNewContextWithModel>('llama_new_context_with_model');
-    return func(model, params);
-  }
-
-  static void freeContext(ffi.Pointer<LlamaContext> ctx) {
-    if (!isAvailable) return;
-    final func =
-        _lib!.lookupFunction<LlamaFreeNative, LlamaFree>('llama_free');
-    func(ctx);
-  }
-
-  static void freeModel(ffi.Pointer<LlamaModel> model) {
-    if (!isAvailable) return;
-    final func = _lib!.lookupFunction<LlamaFreeModelNative, LlamaFreeModel>(
-        'llama_free_model');
-    func(model);
-  }
-
-  static List<int> tokenize(ffi.Pointer<LlamaModel> model, String text,
-      {bool addBos = true}) {
-    if (!isAvailable) return [];
-    final func = _lib!.lookupFunction<LlamaTokenizeNative, LlamaTokenizeDart>(
-        'llama_tokenize');
-    final textPtr = text.toNativeUtf8();
-    final tokensPtr = malloc<ffi.Int32>(2048);
+  static String generate(ffi.Pointer<ffi.Void> handle, String prompt,
+      {int maxTokens = 256,
+      double temperature = 0.7,
+      double topP = 0.9,
+      int seed = 0xFFFFFFFF,
+      int outBufSize = 16384}) {
+    if (!isAvailable || handle.address == 0) return '';
+    final fn =
+        _lib!.lookupFunction<_TlGenerateNative, _TlGenerate>('tl_llama_generate');
+    final promptPtr = prompt.toNativeUtf8();
+    final outBuf = malloc<ffi.Uint8>(outBufSize).cast<Utf8>();
     try {
-      final count = func(
-          model, textPtr, text.codeUnits.length, tokensPtr, 2048, addBos, true);
-      if (count < 0) return [];
-      return List<int>.generate(count, (i) => tokensPtr[i]);
+      final n = fn(handle, promptPtr, maxTokens, temperature, topP, seed,
+          outBuf, outBufSize);
+      if (n <= 0) return '';
+      return outBuf.toDartString(length: n);
     } finally {
-      malloc.free(textPtr);
-      malloc.free(tokensPtr);
+      malloc.free(promptPtr);
+      malloc.free(outBuf);
     }
+  }
+
+  static void free(ffi.Pointer<ffi.Void> handle) {
+    if (!isAvailable || handle.address == 0) return;
+    _lib!.lookupFunction<_TlFreeNative, _TlFree>('tl_llama_free')(handle);
+  }
+
+  static void backendFree() {
+    if (!isAvailable) return;
+    _lib!.lookupFunction<_TlBackendFreeNative, _TlBackendFree>(
+        'tl_llama_backend_free')();
   }
 }
 
-/// High-level text generator wrapper using LlamaFfi.
+/// 使用 [LlamaFfi] 的高階文字生成封裝。介面（isLoaded/loadModel/generate/
+/// unload/dispose）維持不變，供 [LlmManager] 沿用。
 class LlamaInference {
-  ffi.Pointer<LlamaModel> _model = ffi.Pointer.fromAddress(0);
-  ffi.Pointer<LlamaContext> _ctx = ffi.Pointer.fromAddress(0);
+  ffi.Pointer<ffi.Void> _handle = ffi.Pointer.fromAddress(0);
   bool _loaded = false;
 
   bool get isLoaded => _loaded;
 
   LlamaInference() {
     if (LlamaFfi.isAvailable) {
-      LlamaFfi.backendInit(false);
+      // tl_llama_init 已在 _init() 呼叫；此處保留掛勾點。
     }
   }
 
   Future<bool> loadModel(String modelPath) async {
     if (!LlamaFfi.isAvailable) return false;
     unload();
-
     try {
-      final mParams = LlamaFfi.modelDefaultParams();
-      _model = LlamaFfi.loadModelFromFile(modelPath, mParams);
-      if (_model.address == 0) return false;
-
-      final cParams = LlamaFfi.contextDefaultParams();
-      _ctx = LlamaFfi.newContextWithModel(_model, cParams);
-      if (_ctx.address == 0) {
-        LlamaFfi.freeModel(_model);
-        _model = ffi.Pointer.fromAddress(0);
+      _handle = LlamaFfi.load(modelPath);
+      if (_handle.address == 0) {
+        debugPrint('llama bridge: model load returned null for $modelPath');
         return false;
       }
-
       _loaded = true;
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('llama bridge loadModel error: $e');
       unload();
       return false;
     }
   }
 
-  /// Extremely simple text generation mock / helper.
-  /// Standard llama.cpp generation needs batch management. If the dynamic library
-  /// is present but batch generation fails, we fall back gracefully.
+  /// 以已載入的模型實際生成文字（裝置端 llama.cpp 推論）。
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     if (!_loaded) return '';
-    // For safety and compatibility with standard llama.cpp backends,
-    // we can return a formatted mock report summary if the model output
-    // execution fails, or invoke a basic text generation loop if possible.
-    // In our project, since the LLM generates a text report based on JSON input,
-    // we return a beautiful natural language analysis report.
-    return '''⛔ 高度疑似 AI 生成（整體信心 94%）
-這是一份由離線模型進行分析的報告。
-- 文本呈現非常高的重複句式與極低的突發性特徵。
-- 句子長度標準差極低，符合典型大語言模型（如 GPT/Claude）的寫作特徵。
-- 多數段落偏向 AI 風格，建議仔細審查其來源真實性。''';
+    try {
+      return LlamaFfi.generate(_handle, prompt, maxTokens: maxTokens);
+    } catch (e) {
+      debugPrint('llama bridge generate error: $e');
+      return '';
+    }
   }
 
   void unload() {
     _loaded = false;
-    if (_ctx.address != 0) {
-      LlamaFfi.freeContext(_ctx);
-      _ctx = ffi.Pointer.fromAddress(0);
-    }
-    if (_model.address != 0) {
-      LlamaFfi.freeModel(_model);
-      _model = ffi.Pointer.fromAddress(0);
+    if (_handle.address != 0) {
+      LlamaFfi.free(_handle);
+      _handle = ffi.Pointer.fromAddress(0);
     }
   }
 
