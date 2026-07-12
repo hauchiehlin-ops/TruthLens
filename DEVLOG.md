@@ -17,9 +17,10 @@
   
 - **✅ Android arm64-v8a**：已存在（34MB）
 
-- **🟡 Android armeabi-v7a**（待辦）：
-  - 編譯失敗：ARM NEON 內函函數（vld1q_f16 等）不可用
-  - 優先級：可選（舊設備支援，低優先）
+- **✅ Android armeabi-v7a**：
+  - 編譯成功（29MB libllama.so）
+  - 已複製到 [android/app/src/main/jniLibs/armeabi-v7a/](android/app/src/main/jniLibs/armeabi-v7a/)
+  - 修補 [sgemm.cpp](https://github.com/ggerganov/llama.cpp/blob/master/ggml/src/ggml-cpu/llamafile/sgemm.cpp)：添加 FP16 特性檢查與通用后備實現（無原生 FP16 NEON 支援）
 
 - **❌ Windows llama.dll**：
   - 跳過此次（需 Windows 環境或 MinGW 跨編譯設置）
@@ -56,7 +57,6 @@
 - **Gemini vs 本地伺服器**：Gemini 為主（提升 OCR 準確度），本地伺服器為備援（保留本地優先彈性）
 
 **待辦/遺留問題**
-- ⏳ 修複 Android armeabi-v7a 編譯（ARM NEON 支援）
 - ⏳ Windows 環境編譯 llama.dll（或建置 MinGW 跨編譯環境）
 - 📝 Web OCR 實際 Gemini API 呼叫測試（非 localStorage 測試）
 - 📝 模擬 429 response 驗證限流與重試行為
