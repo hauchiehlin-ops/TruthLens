@@ -1,5 +1,59 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [Phase 4] 裝置端 Gemma-2-2B-IT 上架：本地優先 LLM 報告生成
+
+**做了什麼**
+
+### 修正模型來源並成功上架 GGUF ✅
+
+**根本問題**：先前 catalog 的 `llm` variant URL 指向不存在的 repo，且註解宣稱 Gemma 卻連向 Qwen。實際驗證後找到**真實存在、免認證**的來源。
+
+- **模型**: Gemma-2-2B-IT（Google Gemma 2，比舊指南的 Gemma 1 更新）
+- **量化**: Q4_K_M GGUF
+- **來源**: [bartowski/gemma-2-2b-it-GGUF](https://huggingface.co/bartowski/gemma-2-2b-it-GGUF)（免認證）
+- **大小**: 1.59 GiB (1708582752 bytes) — 遠小於舊指南寫的 3.5GB
+- **SHA256**: `e0aee85060f168f0f2d8473d7ea41ce2f3230c1bc1374847505ea599288a7787`
+
+### GitHub Release 上架 ✅
+
+- **Release**: [v0.1-models-llm](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-llm)
+- 1.59 GiB < GitHub 2GB 單檔限制 → **無需分割**，單檔直傳
+- 已驗證下載 URL 回 `206`（可存取）
+
+### model_catalog.json 修正 ✅
+
+`assets/model_catalog.json` 的 `llm` variant：
+- ✅ `url` → GitHub Release（原本錯誤指向 Qwen）
+- ✅ `sha256` → 填入實際校驗和（原為 null）
+- ✅ `size_bytes` → 1708582752（實測值）
+- ✅ `id`/`name`/`source`/`page_url` → 更正為 Gemma-2-2B-IT
+- （遠端 catalog `truthlens/models` 為 404 佔位符，App 回退本地 asset，故此更新即生效）
+
+### 架構定位：本地優先、遠程備援 ✅
+
+依 TruthLens 核心設計原則（本地優先），確認推論優先順序：
+1. **裝置端 llama.cpp**（主路徑）— Gemma-2-2B-IT GGUF
+2. **遠程 API**（備援）— 本地失敗才啟用（上次 session 建立的 4 提供商）
+3. **模板報告**（最終回退）— 確定性生成
+
+`LlmManager.loadIfAvailable()` 已實作此順序（`_tryLoadLocal` → `_tryLoadRemote`），無需改動邏輯。
+
+**為什麼**
+- 本地優先是專案核心原則（隱私、離線、無 API 成本）
+- 先前 GGUF 下載失敗純因 repo 路徑錯誤，非方案問題
+- 遠程 API 保留為備援，兼顧低階裝置與 llama 不支援的平台
+
+**決策與取捨**
+- **選 Gemma-2-2B-IT（非 Gemma 1）**：更新、更強、體積更小
+- **bartowski 量化**：llama.cpp 社群最活躍、免認證、品質可靠
+- **Q4_K_M**：品質/大小最佳平衡（1.59GB, min RAM 6GB）
+- **手動下載 + 我方上架**：避開 gated repo 與大檔自動化的不確定性
+
+### 相關 Commit
+- （本次）assets/model_catalog.json + DEVLOG + llm_manager 註解
+
+---
+
 ## 2026-07-12 — [Phase 4] 遠程 LLM API 基礎設施：多提供商自動 Fallback
 
 **做了什麼**
