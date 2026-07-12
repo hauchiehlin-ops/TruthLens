@@ -5,7 +5,7 @@
 **做了什麼**
 
 - 修復 Windows runner 在繁中/CP950 環境下建置失敗：`flutter_window.cpp` 含 UTF-8 字串（例如 OCR 錯誤訊息），MSVC 以目前 code page 讀檔時觸發 C4819，且專案使用 `/WX` 將 warning 視為 error；現在 runner 標準編譯選項加入 `/utf-8`
-- 修復 Visual Studio 18 / MSVC 14.51 對 `<experimental/coroutine>` 的 STL1001 deprecation 警告被 `/WX` 提升為 C2338 error；加入 `_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNING`，讓現有 Flutter/WinRT 相依仍能編譯
+- 修復 Visual Studio 18 / MSVC 14.51 對 `<experimental/coroutine>` 的 STL1001 deprecation 警告被 `/WX` 提升為 C2338 error；加入 `_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS`，讓現有 Flutter/WinRT 相依仍能編譯
 
 **驗證**
 
