@@ -1,5 +1,12 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-13 — [Phase 4] 增強分析穩定性與匯入純化
+
+**做了什麼**
+
+- 修復 ONNX 推論例外導致分析卡死：在 `TransformerEngine` 與 `AdversarialEngine` 中，將 `detector.classifySentences()` 包裹在 `try-catch` 中。若因匯入的量化模型輸入層不符或發生 ONNX Runtime 例外（如 `OrtException`），該引擎將優雅降級標記為不可用，避免整個分析協調器（`EnsembleOrchestrator`）崩潰而造成 UI 動畫無限旋轉。
+- 文件匯入純化：在 `DocumentImporter.pick()` 取出文字後，新增 `_stripFormatting` 自動過濾常見的 HTML 標籤與 Markdown 語法（包含標題、粗斜體、引用、清單符號以及圖片/超連結語法），確保送入 AI 引擎的內容皆為純文字，避免格式干擾推論。
+
 ## 2026-07-13 — [Phase 4] Windows VS 18 build warning-as-error 修復
 
 **做了什麼**

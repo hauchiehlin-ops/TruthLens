@@ -86,7 +86,19 @@ class AdversarialEngine implements DetectionEngine {
       );
     }
 
-    final perSentence = await detector.classifySentences(text.sentences);
+    List<double> perSentence;
+    try {
+      perSentence = await detector.classifySentences(text.sentences);
+    } catch (e) {
+      return EngineScore(
+        engineId: id,
+        engineName: name(l10n),
+        aiProbability: 0.5,
+        weight: defaultWeight,
+        available: false,
+        reasons: [l10n.engineReasonAdversarialNotInstalled],
+      );
+    }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     return EngineScore(
       engineId: id,

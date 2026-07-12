@@ -84,7 +84,12 @@ class TransformerEngine implements DetectionEngine {
       return _unavailable(l10n);
     }
 
-    final perSentence = await detector.classifySentences(text.sentences);
+    List<double> perSentence;
+    try {
+      perSentence = await detector.classifySentences(text.sentences);
+    } catch (e) {
+      return _unavailable(l10n);
+    }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     final aiCount = perSentence.where((s) => s >= 0.6).length;
     final variant = modelManager.activeVariant(id);

@@ -56,8 +56,31 @@ class DocumentImporter {
 
     return ImportedDocument(
       fileName: file.name,
-      text: text.trim(),
+      text: _stripFormatting(text.trim()),
     );
+  }
+
+  /// 移除常見的 Markdown 格式符號與 HTML 標籤，純化文字供 AI 分析
+  static String _stripFormatting(String text) {
+    var result = text;
+    // 1. 移除程式碼區塊與行內程式碼
+    result = result.replaceAll(RegExp(r'```[\s\S]*?```'), '');
+    result = result.replaceAll(RegExp(r'`[^`]+`'), '');
+    // 2. 移除 HTML 標籤
+    result = result.replaceAll(RegExp(r'<[^>]*>', multiLine: true), '');
+    // 3. 提取 Markdown 連結與圖片文字 (![text](url) 或 [text](url))
+    result = result.replaceAllMapped(RegExp(r'!?\[([^\]]*)\]\([^)]+\)'), (match) => match.group(1) ?? '');
+    // 4. 移除 Markdown 標題
+    result = result.replaceAll(RegExp(r'^#+\s+', multiLine: true), '');
+    // 5. 移除 Markdown 引用
+    result = result.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
+    // 6. 移除無序與有序列表前綴
+    result = result.replaceAll(RegExp(r'^(\s*[-*+]|\s*\d+\.)\s+', multiLine: true), '');
+    // 7. 移除粗體與斜體符號 (** / __)
+    result = result.replaceAll(RegExp(r'\*\*|__'), '');
+    // 8. 縮減過多的換行
+    result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+    return result.trim();
   }
 
   static String _parseDocx(List<int> bytes) {
