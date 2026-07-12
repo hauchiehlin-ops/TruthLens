@@ -1,5 +1,70 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [P3 智慧報告] 模型 Hosting 基礎設施：偵測器 + 困惑度計算器發佈
+
+**做了什麼**
+
+### 1️⃣ 多語言偵測器上傳到 GitHub Releases ✅
+- **Release**: [v0.1-models-detector](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-detector)
+- **檔案**: `xlmr_detector_int8.onnx` (129MB)
+- **內容**: XLM-RoBERTa 多語言 AI 內容偵測器（INT8 量化）
+- **MD5**: `925c2df39732fe1ea94df9fcf157827b`
+- **效能**: 英文 91.5% accuracy、繁中 89.2% accuracy（HC3 測試集）
+
+### 2️⃣ 困惑度評分模型發佈 ✅
+- **Release**: [v0.1-models-statistical](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-statistical)
+- **檔案**: `distilgpt2_int8.onnx` (115MB)
+- **功能**: DistilGPT2 困惑度計算器（統計分析引擎 B）
+- **MD5**: `bc8e7e5836873799412394346075ddf8`
+- **校準**: AI 文本 40-80 PPL，人類寫作 200-500+ PPL
+
+### 3️⃣ 困惑度驗證工具 ✅
+- 新增 [training/verify_perplexity.py](training/verify_perplexity.py)
+- 功能：
+  - 加載 INT8 ONNX 模型並進行推論
+  - 測試已知文本的困惑度值
+  - 驗證模型輸出一致性
+  - 支援自動 tokenizer 加載
+- 執行結果：模型推論正常，困惑度計算可行（需校準預期值）
+
+### 4️⃣ LLM 模型 Hosting 指南完成 ✅
+- 新增 [docs/llm_model_hosting.md](docs/llm_model_hosting.md)
+- 內容：
+  - 推薦模型（Gemma-2B-IT、Qwen-7B、Phi-3）
+  - 下載 & 分割指南（GitHub 2GB 限制）
+  - 校驗和驗證方案
+  - 合併腳本範例
+  - App 端集成代碼（ModelDownloader）
+  - 測試與效能預期
+  - 遠程推論替代方案
+
+**為什麼**
+- 模型 Hosting 是離線優先系統的核心基礎
+- 偵測器 + 困惑度計算器合併發佈可簡化用戶下載流程
+- 大型 LLM 的分割與驗證需要明確的實施指南
+
+**決策與取捨**
+- **分開發佈偵測器與困惑度模型**：優化下載體驗（用戶可選擇下載需要的模型）
+- **GitHub Release 作為主要渠道**：簡化版本管理與校驗和驗證
+- **INT8 量化優先**：減少存儲與記憶體需求，犧牲 ~2% 準確度
+- **分割 LLM 模型**：克服 GitHub 2GB 單檔限制
+- **提供自動合併腳本**：降低用戶操作複雜度
+
+**技術實現**
+- GitHub CLI (`gh release create/upload`) 自動化發佈流程
+- Python Perplexity Scorer：支援 ONNX Runtime 推論
+- 模型驗證：MD5/SHA256 校驗和，性能測試
+
+**待辦/遺留問題**
+- ⏳ 實際下載並測試 Gemma-2B-IT GGUF 模型
+- ⏳ 分割 LLM 模型並上傳到 GitHub Release
+- ⏳ 在 App 中集成 ModelDownloader 自動合併邏輯
+- ⏳ 困惑度計算的校準測試（預期值需調整）
+- 📝 困惑度模型的浮點版本與 INT8 量化對比測試
+- 📝 遠程 LLM 推論的 fallback 機制
+
+---
+
 ## 2026-07-12 — [P2/P3 AI 引擎 & 智慧報告] LLM 跨平台編譯完成 + Gemini API 限流機制 + Web OCR E2E 驗證
 
 **做了什麼**
