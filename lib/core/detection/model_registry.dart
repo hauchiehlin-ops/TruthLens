@@ -78,11 +78,11 @@ const kModelRegistry = <ModelSpec>[
   ),
   ModelSpec(
     id: 'llm',
-    name: '報告生成 LLM（Gemma 2B, Q4）',
+    name: '報告生成 LLM（Gemma 2 · 2B, Q4_K_M）',
     tier: ModelTier.optional,
     backend: InferenceBackend.languageModel,
-    fileName: 'gemma-2b-it-q4.gguf',
-    sizeBytes: 1288 * 1024 * 1024,
+    fileName: 'llm__gemma-2-2b-it-q4km.gguf',
+    sizeBytes: 1708582752,
     version: '0.0.0',
   ),
 ];

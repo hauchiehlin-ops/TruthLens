@@ -127,11 +127,11 @@ class ModelManager extends ChangeNotifier {
           for (final entity in dir.listSync()) {
             if (entity is File) {
               final name = p.basename(entity.path);
-              if (name == 'gemma-2b-it-q4.gguf' || name == 'llm__gemma-2b-it-q4.gguf') {
-                if (role == 'llm' && !installed.containsKey('gemma-2b-it-q4')) {
-                  installed['gemma-2b-it-q4'] = InstalledModel(
+              if (name == 'llm__gemma-2-2b-it-q4km.gguf') {
+                if (role == 'llm' && !installed.containsKey('gemma-2-2b-it-q4km')) {
+                  installed['gemma-2-2b-it-q4km'] = InstalledModel(
                     role: 'llm',
-                    variantId: 'gemma-2b-it-q4',
+                    variantId: 'gemma-2-2b-it-q4km',
                     fileName: name,
                     version: '1.0',
                     sizeBytes: entity.lengthSync(),
