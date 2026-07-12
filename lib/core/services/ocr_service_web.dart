@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart';
@@ -34,15 +33,19 @@ class OcrService {
     List<String>? languages,
   }) async {
     try {
-      final serverUrl = window.localStorage.getItem(_storageKeyServerUrl) ?? _defaultLocalServerUrl;
-      final response = await http.post(
-        Uri.parse(serverUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'image': imageDataUrl,
-          'languages': languages ?? ['zh-Hant', 'zh-Hans', 'en-US'],
-        }),
-      ).timeout(const Duration(seconds: 30));
+      final serverUrl =
+          window.localStorage.getItem(_storageKeyServerUrl) ??
+          _defaultLocalServerUrl;
+      final response = await http
+          .post(
+            Uri.parse(serverUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'image': imageDataUrl,
+              'languages': languages ?? ['zh-Hant', 'zh-Hans', 'en-US'],
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -71,7 +74,6 @@ class OcrService {
     }
 
     // 實施指數退避重試
-    String? result;
     int retryCount = 0;
     int backoffMs = _initialBackoffMs;
 
@@ -79,8 +81,9 @@ class OcrService {
       try {
         // 尊重相鄰請求間隔（避免速率限制）
         if (_lastGeminiRequestTime != null) {
-          final timeSinceLastRequest =
-              DateTime.now().difference(_lastGeminiRequestTime!).inMilliseconds;
+          final timeSinceLastRequest = DateTime.now()
+              .difference(_lastGeminiRequestTime!)
+              .inMilliseconds;
           if (timeSinceLastRequest < _requestDelayMs) {
             await Future.delayed(
               Duration(milliseconds: _requestDelayMs - timeSinceLastRequest),
@@ -94,7 +97,9 @@ class OcrService {
 
         final response = await http
             .post(
-              Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey'),
+              Uri.parse(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey',
+              ),
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode({
                 'contents': [
@@ -211,10 +216,7 @@ class OcrService {
   /// 1. 本地伺服器（如果已設定）
   /// 2. Gemini API（如果用戶提供了 API 金鑰；自動避免速率限制）
   /// 3. 都失敗 → 回傳 null
-  Future<String?> recognize(
-    String imagePath, {
-    List<String>? languages,
-  }) async {
+  Future<String?> recognize(String imagePath, {List<String>? languages}) async {
     // Web 版本需要轉換為 data URL
     String imageDataUrl;
     try {
@@ -234,10 +236,7 @@ class OcrService {
     }
 
     // 備援：Gemini API（自動處理速率限制與重試）
-    return await _recognizeFromGemini(
-      imageDataUrl,
-      languages: languages,
-    );
+    return await _recognizeFromGemini(imageDataUrl, languages: languages);
   }
 
   /// Web 版設定即時存取 localStorage，無需預先載入；提供空實作以對齊原生 API。
@@ -273,8 +272,12 @@ class OcrService {
 
   /// 檢查是否配置了任何 OCR 方案
   static bool hasAnyOcrConfigured() {
-    final hasApiKey = (window.localStorage.getItem(_storageKeyApiKey)?.trim() ?? '').isNotEmpty;
-    final hasServerUrl = (window.localStorage.getItem(_storageKeyServerUrl)?.trim() ?? '').isNotEmpty;
+    final hasApiKey =
+        (window.localStorage.getItem(_storageKeyApiKey)?.trim() ?? '')
+            .isNotEmpty;
+    final hasServerUrl =
+        (window.localStorage.getItem(_storageKeyServerUrl)?.trim() ?? '')
+            .isNotEmpty;
     return hasApiKey || hasServerUrl;
   }
 

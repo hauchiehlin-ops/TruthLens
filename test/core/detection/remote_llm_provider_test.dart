@@ -10,7 +10,7 @@ void main() {
         // 如果本地未運行 Ollama，應回傳 false
         final ok = await provider.healthCheck();
         // 此測試目的為驗證方法可調用，不要求 Ollama 運行
-        expect(ok is bool, true);
+        expect(ok, isA<bool>());
       });
 
       test('generate prompt structure is correct', () async {
@@ -28,10 +28,7 @@ void main() {
       });
 
       test('model selection', () async {
-        final provider = GroqProvider(
-          apiKey: 'gsk_test',
-          model: 'gemma-7b-it',
-        );
+        final provider = GroqProvider(apiKey: 'gsk_test', model: 'gemma-7b-it');
         expect(provider.model, equals('gemma-7b-it'));
       });
     });
@@ -45,10 +42,7 @@ void main() {
         ];
 
         for (final model in models) {
-          final provider = TogetherAiProvider(
-            apiKey: 'test_key',
-            model: model,
-          );
+          final provider = TogetherAiProvider(apiKey: 'test_key', model: model);
           expect(provider.model, equals(model));
         }
       });

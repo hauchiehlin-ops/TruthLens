@@ -14,9 +14,12 @@ class LlmManager extends ChangeNotifier {
   String? _error;
   bool _useRemote = false;
 
-  // ignore: prefer_initializing_formals — 具名參數不可用底線命名，故無法用 this._remoteProvider
-  LlmManager({required this.modelManager, RemoteLlmProvider? remoteProvider})
-      : _remoteProvider = remoteProvider;
+  LlmManager({
+    required ModelManager modelManager,
+    RemoteLlmProvider? remoteProvider,
+  }) : this._(modelManager: modelManager, remoteProvider: remoteProvider);
+
+  LlmManager._({required this.modelManager, this._remoteProvider});
 
   bool get isLoaded => _inference.isLoaded || _useRemote;
   bool get isLoading => _loading;

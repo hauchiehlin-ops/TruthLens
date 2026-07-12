@@ -1,5 +1,24 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-07-12 — [Phase 4] Gemma 報告生成擴展為完整內文
+
+**做了什麼**
+
+- 修正已知限制：`ReportLlmService` 不再只把 LLM 第一行當 headline，現在會要求 Gemma / 遠程 LLM 回傳 `HEADLINE`、`NARRATIVE`、`PARAPHRASE_WARNING`、`PATTERNS`、`ESL_NOTICE` 標籤區段，並將生成內容映射回 `ReportDocument.components`
+- LLM 生成路徑保留既有模板版面與固定元件（儀表、閾值、引擎明細、逐句熱力圖），但 narrative / warning / pattern / ESL 說明可由 LLM 產出；解析失敗或缺少 narrative 時仍透明回退模板，避免模型格式飄移造成空報告
+- 將報告 prompt 的檢測 payload 改為格式化 JSON，並加入可用引擎理由，讓 Gemma 能基於實際引擎輸出撰寫完整解讀
+- 生成 token 上限由 256 提高到 700，給完整報告內文足夠空間
+
+**測試**
+
+- 新增 `test/report_llm_service_test.dart`：覆蓋 LLM 內文進入 narrative、不只 headline；改寫警告由 LLM 內容覆寫；以及未完全照標籤格式時的多行寬鬆解析
+
+**為什麼**
+
+- macOS llama.cpp 推論已打通後，使用者看到的「AI 智慧生成報告」應真正包含 LLM 撰寫的分析內文，而不只是 LLM 產生標題、正文仍由模板負責。
+
+---
+
 ## 2026-07-12 — [Phase 4] macOS 裝置端 llama.cpp 推論真正打通（不再是 mock）
 
 **做了什麼**

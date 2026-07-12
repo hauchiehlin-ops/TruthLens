@@ -54,6 +54,7 @@ dependencies:
   ffi: ^2.1.2
   syncfusion_flutter_pdf: ^33.2.15
   archive: ^4.0.9
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

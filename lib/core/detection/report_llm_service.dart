@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
@@ -18,11 +19,13 @@ class ReportLlmService {
   final ReportComposer _fallback;
 
   ReportLlmService({required this.llmManager, ReportComposer? fallback})
-      : _fallback = fallback ?? ReportComposer();
+    : _fallback = fallback ?? ReportComposer();
 
   /// 產生報告。永遠回傳有效文件（LLM 失敗或未載入時透明回退至模板）。
   Future<ReportDocument> generate(
-      DetectionResult result, AppLocalizations l10n) async {
+    DetectionResult result,
+    AppLocalizations l10n,
+  ) async {
     final ready = await llmManager.loadIfAvailable();
     if (ready && llmManager.isLoaded) {
       try {
@@ -37,7 +40,9 @@ class ReportLlmService {
   }
 
   Future<ReportDocument?> _generateWithLlm(
-      DetectionResult r, AppLocalizations l10n) async {
+    DetectionResult r,
+    AppLocalizations l10n,
+  ) async {
     final payload = {
       'overall_score': r.aiProbability,
       'classification': r.verdict.name,
@@ -47,6 +52,18 @@ class ReportLlmService {
       'dominant_patterns': r.dominantPatterns,
       'esl_adjusted': r.eslAdjusted,
       'threshold': r.threshold,
+      'engine_findings': r.engineScores
+          .where((e) => e.available)
+          .map(
+            (e) => {
+              'id': e.engineId,
+              'name': e.engineName,
+              'ai_probability': e.aiProbability,
+              'weight': e.weight,
+              'reasons': e.reasons,
+            },
+          )
+          .toList(),
     };
 
     final prompt = _buildPrompt(payload, l10n.localeName);
@@ -54,21 +71,204 @@ class ReportLlmService {
     String raw;
     if (llmManager.isRemote && llmManager.remoteProvider != null) {
       // 遠程 API
-      raw = await llmManager.remoteProvider!.generate(prompt);
+      raw = await llmManager.remoteProvider!.generate(prompt, maxTokens: 700);
     } else {
       // 本地 llama.cpp
-      raw = await llmManager.inference.generate(prompt);
+      raw = await llmManager.inference.generate(prompt, maxTokens: 700);
     }
 
     if (raw.isEmpty) return null;
 
     final base = _fallback.compose(r, l10n);
+    final llmSections = _parseLlmSections(raw);
+    final headline = _cleanHeadline(llmSections['HEADLINE'] ?? raw);
+    if (headline.isEmpty) return null;
+
+    final components = _componentsFromLlm(
+      base: base,
+      sections: llmSections,
+      result: r,
+      l10n: l10n,
+    );
+    if (components == null) return null;
+
     return ReportDocument(
       templateId: base.templateId,
-      headline: raw.split('\n').first.trim(),
-      components: base.components,
+      headline: headline,
+      components: components,
       source: ReportSource.llm,
     );
+  }
+
+  List<ReportComponent>? _componentsFromLlm({
+    required ReportDocument base,
+    required Map<String, String> sections,
+    required DetectionResult result,
+    required AppLocalizations l10n,
+  }) {
+    final narrative = sections['NARRATIVE']?.trim();
+    if (narrative == null || narrative.isEmpty) {
+      return null;
+    }
+
+    final components = <ReportComponent>[];
+    var narrativeInserted = false;
+    var paraphraseInserted = false;
+    var patternInserted = false;
+    var eslInserted = false;
+
+    for (final component in base.components) {
+      switch (component.type) {
+        case ReportComponentType.narrative:
+          components.add(
+            ReportComponent(
+              type: ReportComponentType.narrative,
+              title: component.title,
+              body: narrative,
+            ),
+          );
+          narrativeInserted = true;
+        case ReportComponentType.paraphraseWarning:
+          final warning = sections['PARAPHRASE_WARNING']?.trim();
+          components.add(
+            ReportComponent(
+              type: ReportComponentType.paraphraseWarning,
+              title: component.title,
+              body: warning != null && warning.isNotEmpty
+                  ? warning
+                  : component.body,
+            ),
+          );
+          paraphraseInserted = true;
+        case ReportComponentType.patternList:
+          final patterns = sections['PATTERNS']?.trim();
+          components.add(
+            ReportComponent(
+              type: ReportComponentType.patternList,
+              title: component.title,
+              body: patterns != null && patterns.isNotEmpty
+                  ? patterns
+                  : component.body,
+            ),
+          );
+          patternInserted = true;
+        case ReportComponentType.eslNotice:
+          final esl = sections['ESL_NOTICE']?.trim();
+          components.add(
+            ReportComponent(
+              type: ReportComponentType.eslNotice,
+              title: component.title,
+              body: esl != null && esl.isNotEmpty ? esl : component.body,
+            ),
+          );
+          eslInserted = true;
+        default:
+          components.add(component);
+      }
+    }
+
+    final warning = sections['PARAPHRASE_WARNING']?.trim();
+    if (!paraphraseInserted && warning != null && warning.isNotEmpty) {
+      components.add(
+        ReportComponent(
+          type: ReportComponentType.paraphraseWarning,
+          title: l10n.composerParaphraseTitle,
+          body: warning,
+        ),
+      );
+    }
+
+    final patterns = sections['PATTERNS']?.trim();
+    if (!patternInserted && patterns != null && patterns.isNotEmpty) {
+      components.add(
+        ReportComponent(
+          type: ReportComponentType.patternList,
+          title: l10n.composerPatternListTitle,
+          body: patterns,
+        ),
+      );
+    }
+
+    final esl = sections['ESL_NOTICE']?.trim();
+    if (!eslInserted && result.eslAdjusted && esl != null && esl.isNotEmpty) {
+      components.add(
+        ReportComponent(
+          type: ReportComponentType.eslNotice,
+          title: l10n.composerEslTitle,
+          body: esl,
+        ),
+      );
+    }
+
+    if (!narrativeInserted) {
+      final index = components.indexWhere(
+        (c) => c.type == ReportComponentType.thresholdBanner,
+      );
+      components.insert(
+        index == -1 ? 0 : index + 1,
+        ReportComponent(
+          type: ReportComponentType.narrative,
+          title: l10n.composerNarrativeTitle,
+          body: narrative,
+        ),
+      );
+    }
+
+    return components;
+  }
+
+  Map<String, String> _parseLlmSections(String raw) {
+    final sections = <String, String>{};
+    String? current;
+    final buffer = StringBuffer();
+
+    void flush() {
+      final key = current;
+      if (key != null) {
+        final value = buffer.toString().trim();
+        if (value.isNotEmpty) sections[key] = value;
+      }
+      buffer.clear();
+    }
+
+    for (final line in const LineSplitter().convert(raw)) {
+      final match = RegExp(
+        r'^\s*(HEADLINE|NARRATIVE|PARAPHRASE_WARNING|PATTERNS|ESL_NOTICE)\s*:\s*(.*)$',
+        caseSensitive: false,
+      ).firstMatch(line);
+      if (match != null) {
+        flush();
+        current = match.group(1)!.toUpperCase();
+        final rest = match.group(2)!.trim();
+        if (rest.isNotEmpty) buffer.writeln(rest);
+      } else if (current != null) {
+        buffer.writeln(line);
+      }
+    }
+    flush();
+
+    if (sections.isEmpty) {
+      final lines = raw
+          .split('\n')
+          .map((line) => line.trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+      if (lines.length >= 2) {
+        sections['HEADLINE'] = lines.first;
+        sections['NARRATIVE'] = lines.skip(1).join('\n\n');
+      }
+    }
+
+    return sections;
+  }
+
+  String _cleanHeadline(String raw) {
+    return raw
+        .split('\n')
+        .first
+        .replaceFirst(RegExp(r'^\s*#{1,6}\s*'), '')
+        .replaceFirst(RegExp(r'^\s*HEADLINE\s*:\s*', caseSensitive: false), '')
+        .trim();
   }
 
   /// 提示詞本身以英文撰寫（LLM 對英文指令的服從度最穩定），但明確要求輸出
@@ -78,14 +278,24 @@ class ReportLlmService {
     return '''You are the TruthLens AI content detection report writer.
 Below is the structured result (JSON) from the detection engines. Write a concise analysis report.
 
-$payload
+${const JsonEncoder.withIndent('  ').convert(payload)}
 
 Requirements:
-1. The first line is a headline (one sentence summarizing the verdict and confidence).
-2. Explain each engine's key findings in separate paragraphs (no more than three paragraphs).
-3. If paraphrase evasion is suspected, warn about it clearly.
-4. Keep an objective, professional tone.
-5. Write the entire report in the language identified by BCP-47 tag "$targetLocale", not any other language.
+1. Return only the labeled sections below. Do not use Markdown bullets unless they are inside PATTERNS.
+2. HEADLINE is one sentence summarizing the verdict and confidence.
+3. NARRATIVE is two to four short paragraphs explaining the overall result, engine findings, and sentence distribution.
+4. PARAPHRASE_WARNING is required only when paraphrase evasion is suspected; otherwise omit it.
+5. PATTERNS is required only when dominant patterns exist; otherwise omit it.
+6. ESL_NOTICE is required only when esl_adjusted is true; otherwise omit it.
+7. Keep an objective, professional tone.
+8. Write the entire report in the language identified by BCP-47 tag "$targetLocale", not any other language.
+
+Format:
+HEADLINE: ...
+NARRATIVE: ...
+PARAPHRASE_WARNING: ...
+PATTERNS: ...
+ESL_NOTICE: ...
 ''';
   }
 }
