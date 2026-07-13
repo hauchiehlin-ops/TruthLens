@@ -53,25 +53,23 @@ class BibliographyVerifier {
   static const maxEntriesPerCheck = 15;
 
   static final RegExp _sectionHeading = RegExp(
-    r'^\s*(references|bibliography|works cited|參考文獻|參考書目|引用文獻)\s*$',
+    r'^\s*(references|bibliography|works cited|參考文獻|參考書目|引用文獻)[\s:：]*$',
     caseSensitive: false,
     multiLine: true,
   );
 
-  /// 條目起始樣式：一位以上作者「Surname, Initials.」（以純逗號、"and"、"&" 任意
-  /// 組合連接，如 "A, B., C, D., and E, F."）後接四位數年份與句點。
+  /// 偵測參考文獻條目的開頭特徵。
+  /// 此處放寬了空格與括號的限制，以適應不同 PDF 擷取出來可能產生的多餘空格與格式差異。
   static final RegExp _entryStart = RegExp(
-    r"(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*)+)"
-    r"(?:(?:,\s*(?:and\s+)?|and\s+|&\s*)"
-    r"[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*)+)*"
-    r'(?:,\s*)?(\d{4})\.\s*',
+    r"(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)"
+    r"(?:(?:\s*,\s*(?:and\s+)?|and\s+|&\s*)"
+    r"[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)*"
+    r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
   /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數。
-  /// 文件不一定會標示「這是文獻目錄」，但真正的文獻清單通常會有好幾筆緊鄰的
-  /// 作者—年份格式條目；門檻用來過濾掉內文中偶然出現、單一一兩筆的巧合
-  /// （例如一般敘述中剛好出現類似「Surname, X., 年份.」的片段）。
-  static const minEntriesWithoutHeading = 3;
+  /// 將此值降為 1，以確保使用者若只貼上一兩筆參考文獻進行測試時也能正常運作。
+  static const int minEntriesWithoutHeading = 1;
 
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列，
   /// 不做任何連線動作。
