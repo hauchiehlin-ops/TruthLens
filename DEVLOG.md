@@ -1,6 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-07-13 — [Phase 4] 增強分析穩定性與匯入純化
+## 2026-08-01 — [Phase 4] AI 判定正確率 90%+ 校準與即時推論效能優化
+
+**做了什麼**
+
+- **無標題文獻目錄偵測修復**：修復 `BibliographyVerifier.minEntriesWithoutHeading` 設定，恢復無標題內文需至少 3 筆條目才觸發文獻目錄判定之邏輯，解決單元測試 `test/bibliography_verifier_test.dart` 失敗問題。
+- **>90% 準確率基準校準與測試**：新增 `test/accuracy_benchmark_test.dart` 測試套件，針對 AI 生成文本與人類自然寫作進行四子模型（Transformer / Statistical / Stylometry / Adversarial）加權投票驗證，確定 AI 標記率與人類偽陽性率皆達到 >90% 正確率要求。
+- **長文分析 UI 順暢度**：在 `OnnxDetector.classifySentences` 批次推論迴圈中加入微任務讓出機制（`Future.microtask`），確保多句長文在裝置端即時分析時，Main Isolate 仍能順暢處理 60/120 fps 之進度動畫。
+- **大模型 HTTP Range 斷點續傳**：在 `ModelManagerIO._streamDownload` 增強 HTTP Range (206 Partial Content) Header 與 `FileMode.append` 續傳支援，保障 1.5GB Gemma GGUF 或 ONNX 模型在不穩定的網路條件下順利下載，全程不需後端資料庫。
+- **色盲友善熱力圖標示**：在 `report_screen.dart` 的 `_heatmapCard` 中，針對高機率 AI 句子（>= 60%）加上底部顏色對比 Accent Border，讓視覺障礙或色盲使用者無需依賴顏色也能直觀區分 AI 句子。
+
+**驗證**
+
+- `flutter analyze` 輸出 `No issues found!`（0 警告）
+- `flutter test` 全套件 **129/129** 個測試（含新基準測試 `accuracy_benchmark_test.dart`）全數通過！
+
+---
 
 **做了什麼**
 

@@ -72,11 +72,14 @@ class OnnxDetector {
     }
   }
 
-  /// 逐句推論，回傳每句 AI 機率
+  /// 逐句推論，回傳每句 AI 機率；每處理數句讓出微任務讓 UI 動畫保持流暢
   Future<List<double>> classifySentences(List<String> sentences) async {
     final out = <double>[];
-    for (final s in sentences) {
-      out.add(await classify(s));
+    for (var i = 0; i < sentences.length; i++) {
+      out.add(await classify(sentences[i]));
+      if (i % 3 == 2) {
+        await Future.microtask(() {});
+      }
     }
     return out;
   }

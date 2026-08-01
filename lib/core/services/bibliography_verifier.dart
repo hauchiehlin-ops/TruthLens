@@ -68,8 +68,8 @@ class BibliographyVerifier {
   );
 
   /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數。
-  /// 將此值降為 1，以確保使用者若只貼上一兩筆參考文獻進行測試時也能正常運作。
-  static const int minEntriesWithoutHeading = 1;
+  /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數（至少 3 筆，避免內文巧合誤判）。
+  static const int minEntriesWithoutHeading = 3;
 
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列，
   /// 不做任何連線動作。

@@ -371,13 +371,32 @@ class ModelManager extends ChangeNotifier {
 
   Future<void> _streamDownload(String url, File dest,
       {int? expected, void Function(double)? onProgress}) async {
+    final existingLen = dest.existsSync() ? dest.lengthSync() : 0;
     final request = http.Request('GET', Uri.parse(url));
+    if (existingLen > 0) {
+      request.headers['Range'] = 'bytes=$existingLen-';
+    }
     final response = await _client.send(request);
+    if (response.statusCode == 206) {
+      // 伺服器支援斷點續傳 (HTTP 206 Partial Content)
+      final total = (response.contentLength ?? 0) + existingLen;
+      final sink = dest.openWrite(mode: FileMode.append);
+      var received = existingLen;
+      await for (final chunk in response.stream) {
+        sink.add(chunk);
+        received += chunk.length;
+        if (onProgress != null && total > 0) {
+          onProgress((received / total).clamp(0, 1));
+        }
+      }
+      await sink.close();
+      return;
+    }
     if (response.statusCode != 200) {
       throw HttpException('HTTP ${response.statusCode}');
     }
     final total = response.contentLength ?? expected ?? 0;
-    final sink = dest.openWrite();
+    final sink = dest.openWrite(mode: FileMode.write);
     var received = 0;
     await for (final chunk in response.stream) {
       sink.add(chunk);

@@ -439,6 +439,14 @@ class _ReportScreenState extends State<ReportScreen> {
                           s.aiProbability,
                         ).withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(4),
+                        border: s.aiProbability >= 0.6
+                            ? Border(
+                                bottom: BorderSide(
+                                  color: AppTheme.verdictColor(s.aiProbability),
+                                  width: 2,
+                                ),
+                              )
+                            : null,
                       ),
                       child: Text('${s.text} '),
                     ),
