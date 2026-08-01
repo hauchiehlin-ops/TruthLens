@@ -58,6 +58,25 @@ class BibliographyVerifier {
     multiLine: true,
   );
 
+  /// 常用學術期刊、研討會與數位識別碼特徵
+  static final RegExp _journalKeyword = RegExp(
+    r'(?:Journal of|Transactions|Proceedings|Proc\.|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|學報|期刊|論文集|研討會|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+)',
+    caseSensitive: false,
+  );
+
+  /// 條列式與數字編號前綴（如 [1], 1., •, -）
+  static final RegExp _bulletOrNumberPrefix = RegExp(
+    r'^\s*(?:\[\d+\]|\d+[\.、)]|[-*•])\s*',
+  );
+
+  /// 四位數西元紀年 (1900-2099)
+  static final RegExp _yearRegex = RegExp(r'\b(19\d\d|20\d\d)\b');
+
+  /// 中文作者與多作者標記（如：張三、李四等）
+  static final RegExp _chineseAuthor = RegExp(
+    r'[\u4e00-\u9fa5]{2,4}(?:[、,，\s]+(?:[\u4e00-\u9fa5]{2,4}|等|著|編|譯))+',
+  );
+
   /// 偵測參考文獻條目的開頭特徵。
   /// 此處放寬了空格與括號的限制，以適應不同 PDF 擷取出來可能產生的多餘空格與格式差異。
   static final RegExp _entryStart = RegExp(
@@ -67,39 +86,70 @@ class BibliographyVerifier {
     r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
-  /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數。
   /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數（至少 3 筆，避免內文巧合誤判）。
   static const int minEntriesWithoutHeading = 3;
 
-  /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列，
-  /// 不做任何連線動作。
+  /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
   ///
   /// 兩種偵測路徑：
   /// 1. 找得到「References/Bibliography/參考文獻」等標題 → 標題後的內容視為
   ///    文獻目錄，即使只有 1 筆也算數（標題本身就是明確訊號）
-  /// 2. 找不到標題（文件未必會明確標示「他們是文獻」）→ 改為對整份文件掃描
-  ///    作者—年份格式的條目，但需累積達 [minEntriesWithoutHeading] 筆以上
-  ///    才視為真正的文獻目錄，避免內文偶然出現的單一巧合片段被誤判
+  /// 2. 找不到標題（文件未必會明確標示「他們是文獻」）→ 對全文進行多重特徵掃描
+  ///    （包含條列編號、期刊關鍵字、卷期頁碼、作者—年份格式），需累積達
+  ///    [minEntriesWithoutHeading] 筆以上才視為真正的文獻目錄。
   static List<BibliographyEntry> extractEntries(String text) {
     final headingMatch = _sectionHeading.firstMatch(text);
     final hasHeading = headingMatch != null;
     final section = hasHeading ? text.substring(headingMatch.end) : text;
 
+    // 路徑 1：標準英文 Surname, F.M. (Year) 傳統格式
     final starts = _entryStart.allMatches(section).toList();
-    if (starts.isEmpty) return [];
-    if (!hasHeading && starts.length < minEntriesWithoutHeading) return [];
-
-    final entries = <BibliographyEntry>[];
-    for (var i = 0; i < starts.length; i++) {
-      final start = starts[i];
-      final endIndex =
-          i + 1 < starts.length ? starts[i + 1].start : section.length;
-      final raw = section.substring(start.start, endIndex).trim();
-      if (raw.length < 15) continue; // 過短，可能是誤判的斷點
-      entries.add(_parseEntry(raw, start.end - start.start,
-          int.tryParse(start.group(1) ?? '')));
+    if (starts.isNotEmpty && (hasHeading || starts.length >= minEntriesWithoutHeading)) {
+      final entries = <BibliographyEntry>[];
+      for (var i = 0; i < starts.length; i++) {
+        final start = starts[i];
+        final endIndex =
+            i + 1 < starts.length ? starts[i + 1].start : section.length;
+        final raw = section.substring(start.start, endIndex).trim();
+        if (raw.length < 15) continue;
+        entries.add(_parseEntry(raw, start.end - start.start,
+            int.tryParse(start.group(1) ?? '')));
+      }
+      if (entries.isNotEmpty) return entries;
     }
-    return entries;
+
+    // 路徑 2：強化版條列式／中英文／含期刊與卷期頁碼關鍵字之文獻掃描
+    final lines = section.split(RegExp(r'\r?\n'));
+    final candidates = <BibliographyEntry>[];
+
+    for (final rawLine in lines) {
+      final line = rawLine.trim();
+      if (line.length < 15) continue;
+
+      final isBulleted = _bulletOrNumberPrefix.hasMatch(line);
+      final hasJournalKw = _journalKeyword.hasMatch(line);
+      final hasChineseAuth = _chineseAuthor.hasMatch(line);
+      final yearMatch = _yearRegex.firstMatch(line);
+      final hasYear = yearMatch != null;
+
+      // 判定條件：
+      // (有條列前綴 且 有年份) OR (有期刊/卷期/DOI關鍵字 且 有年份) OR (有中文作者 且 有年份)
+      final isCitationItem = (isBulleted && hasYear) ||
+          (hasJournalKw && hasYear) ||
+          (hasChineseAuth && hasYear);
+
+      if (isCitationItem) {
+        final cleaned = line.replaceAll(_bulletOrNumberPrefix, '');
+        final year = hasYear ? int.tryParse(yearMatch.group(1) ?? '') : null;
+        candidates.add(_parseLineEntry(cleaned, line, year));
+      }
+    }
+
+    if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
+      return [];
+    }
+
+    return candidates;
   }
 
   static BibliographyEntry _parseEntry(
@@ -114,6 +164,43 @@ class BibliographyVerifier {
             .trim();
     return BibliographyEntry(
       rawText: raw,
+      firstAuthorSurname: surname,
+      year: year,
+      title: title.isEmpty ? null : title,
+    );
+  }
+
+  static BibliographyEntry _parseLineEntry(
+      String cleaned, String rawText, int? year) {
+    // 優先抽取篇名引號或括號（如 〈...〉 或 "..." 或 「...」 或 “...”；次選 《...》）
+    final quoteMatch = RegExp(r'[〈"“「](.+?)[〉"”」]').firstMatch(cleaned) ??
+        RegExp(r'[《](.+?)[》]').firstMatch(cleaned);
+    String? title = quoteMatch?.group(1)?.trim();
+
+    if (title == null || title.isEmpty) {
+      // 否則取第一個句點／句號過後的文字作為篇名
+      final parts = cleaned.split(RegExp(r'[\.度。]\s*'));
+      if (parts.length > 1) {
+        title = parts[1].trim();
+      } else {
+        title = cleaned;
+      }
+    }
+
+    // 嘗試抽取第一作者姓氏或中文姓名
+    String? surname;
+    final commaIdx = cleaned.indexOf(',');
+    if (commaIdx > 0 && commaIdx < 30) {
+      surname = cleaned.substring(0, commaIdx).trim();
+    } else {
+      final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleaned);
+      if (chineseMatch != null) {
+        surname = chineseMatch.group(0);
+      }
+    }
+
+    return BibliographyEntry(
+      rawText: rawText,
       firstAuthorSurname: surname,
       year: year,
       title: title.isEmpty ? null : title,

@@ -72,6 +72,35 @@ Coles, D., 1965. Transition in circular Couette flow. Journal of Fluid Mechanics
 ''';
       expect(BibliographyVerifier.extractEntries(onlyTwo), isEmpty);
     });
+
+    test('無 References 標題但包含條目編號/期刊/卷期關鍵字之條列文獻可精準擷取', () {
+      const bulletedInput = '''
+[1] Smith, J. and Doe, A. (2021). "Deep Learning Analysis." Journal of AI Research, vol. 15, pp. 100-110.
+[2] Johnson, M. (2019). "Neural Network Models." IEEE Transactions on Pattern Analysis, 41(2): 300-312.
+[3] Brown, K. et al. (2023). "Transformer Networks." Proceedings of ACM Computing, pp. 50-65.
+''';
+      final entries = BibliographyVerifier.extractEntries(bulletedInput);
+      expect(entries.length, 3);
+      expect(entries[0].year, 2021);
+      expect(entries[0].title, 'Deep Learning Analysis.');
+      expect(entries[1].year, 2019);
+      expect(entries[2].year, 2023);
+    });
+
+    test('中文條列式期刊文獻包含學報與卷期格式可自動識別與抽取', () {
+      const chineseInput = '''
+1. 王小明、李大華（2020）。〈機器學習在內容檢測之應用〉。《資訊學報》，第 12 卷第 3 期，頁 45-60。
+2. 張三、陳某某等（2022）。〈深度生成模型辨識技術〉。《電子工程學刊》，第 8 卷第 1 期，頁 12-25。
+3. 林志明（2018）。〈對抗式防禦演算法解析〉。《計算機論文集》，頁 80-95。
+''';
+      final entries = BibliographyVerifier.extractEntries(chineseInput);
+      expect(entries.length, 3);
+      expect(entries[0].firstAuthorSurname, '王小明');
+      expect(entries[0].year, 2020);
+      expect(entries[0].title, '機器學習在內容檢測之應用');
+      expect(entries[1].year, 2022);
+      expect(entries[2].year, 2018);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {

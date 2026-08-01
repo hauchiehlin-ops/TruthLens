@@ -8,12 +8,12 @@
 - **>90% 準確率基準校準與測試**：新增 `test/accuracy_benchmark_test.dart` 測試套件，針對 AI 生成文本與人類自然寫作進行四子模型（Transformer / Statistical / Stylometry / Adversarial）加權投票驗證，確定 AI 標記率與人類偽陽性率皆達到 >90% 正確率要求。
 - **長文分析 UI 順暢度**：在 `OnnxDetector.classifySentences` 批次推論迴圈中加入微任務讓出機制（`Future.microtask`），確保多句長文在裝置端即時分析時，Main Isolate 仍能順暢處理 60/120 fps 之進度動畫。
 - **大模型 HTTP Range 斷點續傳**：在 `ModelManagerIO._streamDownload` 增強 HTTP Range (206 Partial Content) Header 與 `FileMode.append` 續傳支援，保障 1.5GB Gemma GGUF 或 ONNX 模型在不穩定的網路條件下順利下載，全程不需後端資料庫。
-- **色盲友善熱力圖標示**：在 `report_screen.dart` 的 `_heatmapCard` 中，針對高機率 AI 句子（>= 60%）加上底部顏色對比 Accent Border，讓視覺障礙或色盲使用者無需依賴顏色也能直觀區分 AI 句子。
+- **條列式／中英文參考文獻自動辨識增強**：在 `BibliographyVerifier` 中擴充正則與關鍵字比對矩陣（含期刊名 `Journal of` / `學報` / `IEEE` / `ACM` / `Springer` / `Elsevier` / `arXiv` / `DOI` / `PMID` / `vol.` / `pp.` / `第...卷期頁`、條列編號 `[1]` / `1.` / `•`、以及中文作者姓名與引號 `〈...〉` / `《...》` / `"..."` 篇名提取）。即時在無「References」標題的情境下，亦能自動精準擷取內文中的參考文獻條目並發送至 Crossref 進行真實性核實。
 
 **驗證**
 
 - `flutter analyze` 輸出 `No issues found!`（0 警告）
-- `flutter test` 全套件 **129/129** 個測試（含新基準測試 `accuracy_benchmark_test.dart`）全數通過！
+- `flutter test` 全套件 **131/131** 個測試（包含新條列與中文文獻測試）全數通過！
 
 ---
 
