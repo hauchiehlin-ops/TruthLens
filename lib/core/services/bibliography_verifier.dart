@@ -36,7 +36,7 @@ class BibliographyCheckResult {
 
 class BibliographyVerifier {
   /// 單次報告最多驗證的條目數，避免長篇文獻目錄拖慢報告載入。
-  static const maxEntriesPerCheck = 15;
+  static const maxEntriesPerCheck = 30;
 
   static final RegExp _sectionHeading = RegExp(
     r'(?:\b(?:references|bibliography|works cited|literature cited|sources)\b|參考文獻|參考書目|引用文獻|主要參考文獻|文獻目錄)',
@@ -76,26 +76,36 @@ class BibliographyVerifier {
   static const int minEntriesWithoutHeading = 3;
 
   /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
-  /// 1. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
-  /// 2. 清除連字號斷行：如 `modu- lated` -> `modulated`
-  /// 3. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
-  /// 4. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
+  /// 1. 清除 PDF 頁首/頁尾雜訊（如 November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW）
+  /// 2. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
+  /// 3. 清除連字號斷行：如 `modu- lated` -> `modulated`
+  /// 4. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
+  /// 5. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
   static String _preprocessOcrText(String input) {
     var text = input;
 
-    // 1) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號後緊接英文字母或數字時自動補齊空格
+    // 1) 清除 PDF 頁首/頁尾雜訊（如 November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW）
+    text = text.replaceAll(
+      RegExp(
+        r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s*/?\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)?\s*\d{4}\s+[A-Z0-9\s—–-]{5,60}',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
+
+    // 2) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號後緊接英文字母或數字時自動補齊空格
     text = text.replaceAllMapped(
       RegExp(r'([a-zA-Z0-9])([,\.:;])([a-zA-Z0-9])'),
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
-    // 2) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
+    // 3) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
     text = text.replaceAllMapped(
       RegExp(r'([a-zA-Z]{2,})-\s*[\r\n]+\s*([a-zA-Z]{2,})'),
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 3) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12)
+    // 4) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12)
     text = text.replaceAllMapped(
       RegExp(r'\[\s*(\d+|[A-Za-z]|Ref\s*\d+)\s*\]'),
       (m) => '[${m.group(1)}]',
@@ -105,7 +115,7 @@ class BibliographyVerifier {
       (m) => '(${m.group(1)})',
     );
 
-    // 4) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
+    // 5) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
     text = text.replaceAllMapped(
       RegExp(r'\b([A-Z])\s+([A-Z]{2,})\b'),
       (m) => '${m.group(1)}${m.group(2)}',
@@ -115,10 +125,10 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 5) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
+    // 6) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
     text = text.replaceAllMapped(
       RegExp(
-          r'(?<=\S)\s*(\[\s*(?!(?:19|20)\d\d\b)\d{1,3}\s*\]|\(\s*\d{1,3}\s*\)|\b\d{1,3}\.\s+[A-Z])'),
+          r'(?<=\S)\s*(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|\b\d{1,3}\.\s+[A-Z])'),
       (m) => '\n${m.group(1)}',
     );
 
@@ -363,7 +373,7 @@ class BibliographyVerifier {
     BibliographyEntry entry,
     Duration timeout,
   ) async {
-    // 兼具結構化 (title, author) 與全文字串 (query.bibliographic) 的 Crossref 查核
+    // 1) 兼具結構化 (title, author) 與全文字串 (query.bibliographic) 的 Crossref 查核
     final queryParams = <String, String>{
       'query.bibliographic': entry.rawText,
       'rows': '1',
@@ -380,81 +390,134 @@ class BibliographyVerifier {
       queryParameters: queryParams,
     );
 
+    BibliographyCheckResult? crossrefResult;
+
     try {
       final response = await client.get(
         uri,
         headers: {
           'User-Agent':
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
+              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
         },
       ).timeout(timeout);
 
-      if (response.statusCode != 200) {
-        return BibliographyCheckResult(
+      if (response.statusCode == 200) {
+        final message = (jsonDecode(response.body)
+            as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
+        final items = (message?['items'] as List?)?.cast<dynamic>();
+        if (items != null && items.isNotEmpty) {
+          final top = items.first as Map<String, dynamic>;
+          final titles = (top['title'] as List?)?.cast<dynamic>();
+          final matchedTitle = (titles != null && titles.isNotEmpty)
+              ? titles.first.toString()
+              : null;
+          final containers = (top['container-title'] as List?)?.cast<dynamic>();
+          final matchedJournal = (containers != null && containers.isNotEmpty)
+              ? containers.first.toString()
+              : null;
+          final dateParts = ((top['published'] as Map<String, dynamic>?)
+                  ?['date-parts'] as List?)
+              ?.cast<dynamic>();
+          final matchedYear = (dateParts != null &&
+                  dateParts.isNotEmpty &&
+                  (dateParts.first as List).isNotEmpty)
+              ? (dateParts.first as List).first as int
+              : null;
+          final authors = (top['author'] as List?)?.cast<dynamic>() ?? const [];
+          final authorSurnames = authors
+              .map((a) => (a as Map<String, dynamic>)['family']
+                  ?.toString()
+                  .toLowerCase())
+              .whereType<String>()
+              .toSet();
+
+          final titleSim =
+              _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
+          final yearMatches = entry.year != null &&
+              matchedYear != null &&
+              (entry.year! - matchedYear).abs() <= 1;
+          final authorMatches = entry.firstAuthorSurname != null &&
+              authorSurnames.contains(entry.firstAuthorSurname!.toLowerCase());
+
+          final confidence =
+              (titleSim >= 0.45 && (yearMatches || authorMatches))
+                  ? CitationMatchConfidence.high
+                  : (titleSim < 0.20 && !yearMatches && !authorMatches)
+                      ? CitationMatchConfidence.notFound
+                      : CitationMatchConfidence.uncertain;
+
+          crossrefResult = BibliographyCheckResult(
+            entry: entry,
+            confidence: confidence,
+            matchedTitle: matchedTitle,
+            matchedJournal: matchedJournal,
+            matchedYear: matchedYear,
+          );
+        } else {
+          crossrefResult = BibliographyCheckResult(
+            entry: entry,
+            confidence: CitationMatchConfidence.notFound,
+          );
+        }
+      }
+    } catch (_) {}
+
+    if (crossrefResult != null &&
+        (crossrefResult.confidence == CitationMatchConfidence.high ||
+         crossrefResult.confidence == CitationMatchConfidence.notFound)) {
+      return crossrefResult;
+    }
+
+    // 2) 若 Crossref 未命中（如 1800-1900 19 世紀法文/歷史期刊古籍），發動 OpenAlex API 二重補核 (涵蓋 2.5 億筆文獻)
+    try {
+      final searchKw = entry.title ?? entry.rawText;
+      final openAlexUri = Uri.parse(
+        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=1',
+      );
+      final oaResp = await client.get(
+        openAlexUri,
+        headers: {
+          'User-Agent':
+              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+        },
+      ).timeout(timeout);
+
+      if (oaResp.statusCode == 200) {
+        final oaData = jsonDecode(oaResp.body) as Map<String, dynamic>;
+        final oaResults = (oaData['results'] as List?)?.cast<dynamic>();
+        if (oaResults != null && oaResults.isNotEmpty) {
+          final top = oaResults.first as Map<String, dynamic>;
+          final matchedTitle = top['display_name'] as String?;
+          final matchedYear = top['publication_year'] as int?;
+          final location =
+              top['primary_location'] as Map<String, dynamic>?;
+          final source = location?['source'] as Map<String, dynamic>?;
+          final matchedJournal = source?['display_name'] as String?;
+
+          final titleSim =
+              _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
+          final yearMatches = entry.year != null &&
+              matchedYear != null &&
+              (entry.year! - matchedYear).abs() <= 1;
+
+          if (titleSim >= 0.40 || (titleSim >= 0.30 && yearMatches)) {
+            return BibliographyCheckResult(
+              entry: entry,
+              confidence: CitationMatchConfidence.high,
+              matchedTitle: matchedTitle,
+              matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
+              matchedYear: matchedYear,
+            );
+          }
+        }
+      }
+    } catch (_) {}
+
+    return crossrefResult ??
+        BibliographyCheckResult(
           entry: entry,
           confidence: CitationMatchConfidence.uncertain,
         );
-      }
-
-      final message = (jsonDecode(response.body)
-          as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
-      final items = (message?['items'] as List?)?.cast<dynamic>();
-      if (items == null || items.isEmpty) {
-        return BibliographyCheckResult(
-          entry: entry,
-          confidence: CitationMatchConfidence.notFound,
-        );
-      }
-
-      final top = items.first as Map<String, dynamic>;
-      final titles = (top['title'] as List?)?.cast<dynamic>();
-      final matchedTitle =
-          (titles != null && titles.isNotEmpty) ? titles.first.toString() : null;
-      final containers = (top['container-title'] as List?)?.cast<dynamic>();
-      final matchedJournal = (containers != null && containers.isNotEmpty)
-          ? containers.first.toString()
-          : null;
-      final dateParts = ((top['published'] as Map<String, dynamic>?)
-              ?['date-parts'] as List?)
-          ?.cast<dynamic>();
-      final matchedYear = (dateParts != null &&
-              dateParts.isNotEmpty &&
-              (dateParts.first as List).isNotEmpty)
-          ? (dateParts.first as List).first as int
-          : null;
-      final authors = (top['author'] as List?)?.cast<dynamic>() ?? const [];
-      final authorSurnames = authors
-          .map((a) =>
-              (a as Map<String, dynamic>)['family']?.toString().toLowerCase())
-          .whereType<String>()
-          .toSet();
-
-      final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
-      final yearMatches = entry.year != null &&
-          matchedYear != null &&
-          (entry.year! - matchedYear).abs() <= 1;
-      final authorMatches = entry.firstAuthorSurname != null &&
-          authorSurnames.contains(entry.firstAuthorSurname!.toLowerCase());
-
-      final confidence = (titleSim >= 0.45 && (yearMatches || authorMatches))
-          ? CitationMatchConfidence.high
-          : (titleSim < 0.20 && !yearMatches && !authorMatches)
-              ? CitationMatchConfidence.notFound
-              : CitationMatchConfidence.uncertain;
-
-      return BibliographyCheckResult(
-        entry: entry,
-        confidence: confidence,
-        matchedTitle: matchedTitle,
-        matchedJournal: matchedJournal,
-        matchedYear: matchedYear,
-      );
-    } catch (_) {
-      return BibliographyCheckResult(
-        entry: entry,
-        confidence: CitationMatchConfidence.uncertain,
-      );
-    }
   }
 
   /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」與「詞彙 Jaccard」雙重比對。
