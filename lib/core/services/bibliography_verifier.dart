@@ -39,9 +39,8 @@ class BibliographyVerifier {
   static const maxEntriesPerCheck = 15;
 
   static final RegExp _sectionHeading = RegExp(
-    r'^\s*(?:\d+[\.\s]+)?(?:references|bibliography|works cited|literature cited|sources|參考文獻|參考書目|引用文獻|主要參考文獻|文獻目錄)[\s:：.]*$',
+    r'(?:\b(?:references|bibliography|works cited|literature cited|sources)\b|參考文獻|參考書目|引用文獻|主要參考文獻|文獻目錄)',
     caseSensitive: false,
-    multiLine: true,
   );
 
   /// 常用學術期刊、研討會、出版社、文獻標記與數位識別碼特徵
@@ -53,12 +52,12 @@ class BibliographyVerifier {
   /// 條列式、全形/半形括號與數字編號前綴（如 [1], (1), 1., ①, 【1】, 〔1〕, ［1］, [Ref 1], •, -）
   /// 排除 4 位數年份（如 [1965]），避免內文年份引用被誤算為編號前綴。
   static final RegExp _bulletOrNumberPrefix = RegExp(
-    r'^\s*(?:\[\s*(?!(?:19|20)\d\d\b)(?:\d{1,3}|[A-Za-z]|Ref\s*\d+)\s*\]|\(\s*\d{1,3}\s*\)|\d{1,3}[\.、\)]|[\u2460-\u2473]|[\u2474-\u2487]|【\d{1,3}】|〔\d{1,3}〕|［\d{1,3}］|[-*•])\s*',
+    r'^\s*(?:\[\s*(?!(?:18|19|20)\d\d\b)(?:\d{1,3}|[A-Za-z]|Ref\s*\d+)\s*\]|\(\s*\d{1,3}\s*\)|\d{1,3}[\.、\)]|[\u2460-\u2473]|[\u2474-\u2487]|【\d{1,3}】|〔\d{1,3}〕|［\d{1,3}］|[-*•])\s*',
     caseSensitive: false,
   );
 
-  /// 四位數西元紀年 (1900-2099)
-  static final RegExp _yearRegex = RegExp(r'\b(19\d\d|20\d\d)\b');
+  /// 四位數西元紀年 (1800-2099)
+  static final RegExp _yearRegex = RegExp(r'\b(18\d\d|19\d\d|20\d\d)\b');
 
   /// 中文作者與多作者標記（如：張三、李四等）
   static final RegExp _chineseAuthor = RegExp(
@@ -207,7 +206,7 @@ class BibliographyVerifier {
     final candidates = <BibliographyEntry>[];
 
     for (final block in groupedBlocks) {
-      if (block.length < 15) continue;
+      if (block.length < 15 || block.length > 500) continue;
 
       final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
