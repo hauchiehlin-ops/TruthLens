@@ -568,20 +568,20 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reportEngineWeightLabel => 'Weight';
+  String get reportEngineWeightLabel => 'Вес';
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.';
+      'Знак 100% локальной конфиденциальности TruthLens: Обработка на устройстве без сохранения в облаке.';
 
   @override
-  String get reportModelCalibrationTitle => 'Model Benchmark Auto-Calibration';
+  String get reportModelCalibrationTitle => 'Автокалибровка бенчмарка моделей';
 
   @override
-  String get reportCommunityDiscoveredTag => 'Community (HuggingFace)';
+  String get reportCommunityDiscoveredTag => 'Сообщество (HuggingFace)';
 
   @override
-  String get reportEngineBreakdownTitle => 'Разбивка по модулям';
+  String get reportEngineBreakdownTitle => 'Детализация движков';
 
   @override
   String get reportEngineNotInstalled => 'Не установлено';

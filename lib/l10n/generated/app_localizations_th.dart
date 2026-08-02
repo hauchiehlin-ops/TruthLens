@@ -565,20 +565,20 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get reportEngineWeightLabel => 'Weight';
+  String get reportEngineWeightLabel => 'น้ำหนัก';
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.';
+      'ตราประทับความเป็นส่วนตัว 100% บนเครื่อง TruthLens: ประมวลผลบนอุปกรณ์โดยไม่มีการบันทึกบนคลาวด์';
 
   @override
-  String get reportModelCalibrationTitle => 'Model Benchmark Auto-Calibration';
+  String get reportModelCalibrationTitle => 'การปรับเกณฑ์มาตรฐานโมเดลอัตโนมัติ';
 
   @override
-  String get reportCommunityDiscoveredTag => 'Community (HuggingFace)';
+  String get reportCommunityDiscoveredTag => 'โมเดลชุมชน (HuggingFace)';
 
   @override
-  String get reportEngineBreakdownTitle => 'รายละเอียดเอนจิน';
+  String get reportEngineBreakdownTitle => 'รายละเอียดเครื่องมือ';
 
   @override
   String get reportEngineNotInstalled => 'ยังไม่ได้ติดตั้ง';

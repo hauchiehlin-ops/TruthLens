@@ -128,7 +128,7 @@ _PolicySection _networkSection(AppLocalizations l10n) =>
 
 _PolicySection _rightsSection(AppLocalizations l10n, String removeAction) =>
     _PolicySection(l10n.privacySectionRights, [
-      '${l10n.privacyRightsIntro} $removeAction。',
+      '${l10n.privacyRightsIntro} $removeAction',
     ]);
 
 _PlatformPolicy _iosPolicy(AppLocalizations l10n) => _PlatformPolicy(

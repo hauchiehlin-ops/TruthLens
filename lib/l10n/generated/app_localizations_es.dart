@@ -574,20 +574,21 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get reportEngineWeightLabel => 'Weight';
+  String get reportEngineWeightLabel => 'Ponderación';
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.';
+      'Sello de privacidad 100% offline TruthLens: Procesado en el dispositivo sin almacenamiento en la nube.';
 
   @override
-  String get reportModelCalibrationTitle => 'Model Benchmark Auto-Calibration';
+  String get reportModelCalibrationTitle =>
+      'Autocalibración de referencia de modelos';
 
   @override
-  String get reportCommunityDiscoveredTag => 'Community (HuggingFace)';
+  String get reportCommunityDiscoveredTag => 'Comunidad (HuggingFace)';
 
   @override
-  String get reportEngineBreakdownTitle => 'Desglose por motor';
+  String get reportEngineBreakdownTitle => 'Desglose por motores';
 
   @override
   String get reportEngineNotInstalled => 'No instalado';

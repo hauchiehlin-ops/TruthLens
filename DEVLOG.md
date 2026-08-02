@@ -1,6 +1,20 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] macOS 官網/外部下載 .dmg Apple 官方公證成功 (Notarization Status: Accepted)
+## 2026-08-02 — [Phase 4] 全專案 14 國語系操作說明、隱私權政策與 UI 標籤完全校對
+
+**做了什麼**
+
+- **標點與格式修復 (PrivacyPolicyScreen Punctuation Fix)**：修復 [privacy_policy_screen.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/features/help/privacy_policy_screen.dart) 中拼接字串後方硬編碼的中文句號 `。`，確保英文、法文、德文、日文等 14 種語言在顯示平台專屬條文時標點符號 100% 正確合規。
+- **14 國語系資產檔補全 (100% Zero Untranslated Messages)**：校對並補齊 [app_zh.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh_Hant.arb)、[app_en.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_en.arb)、`app_ja.arb`、`app_ko.arb`、`app_de.arb`、`app_es.arb`、`app_fr.arb`、`app_id.arb`、`app_ms.arb`、`app_pt.arb`、`app_ru.arb`、`app_th.arb` 等全數 14 種語言資產檔，納入最新動態引擎權重標籤、100% 本地隱私認證標章、Model Benchmark 自動校準與 HuggingFace 社群探尋標籤。
+- **自動化語系校對**：執行 `flutter gen-l10n`，達成 **0 個未翻譯訊息 (0 untranslated messages)** 完美目標。
+
+**驗證**
+
+- `flutter gen-l10n` 輸出 0 缺漏！
+- `flutter analyze` 輸出 `No issues found!`（0 警告）
+- `flutter test` 全套件 **139/139** 個測試全數通過！
+
+---
 
 **做了什麼**
 

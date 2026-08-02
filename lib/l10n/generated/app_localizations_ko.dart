@@ -544,20 +544,20 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get reportEngineWeightLabel => 'Weight';
+  String get reportEngineWeightLabel => '가중치';
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.';
+      'TruthLens 제로 클라우드 개인정보 보호 인증: 100% 기기 내에서 연산되며 클라우드 데이터베이스에 저장되지 않습니다.';
 
   @override
-  String get reportModelCalibrationTitle => 'Model Benchmark Auto-Calibration';
+  String get reportModelCalibrationTitle => '모델 벤치마크 자동 보정';
 
   @override
-  String get reportCommunityDiscoveredTag => 'Community (HuggingFace)';
+  String get reportCommunityDiscoveredTag => '커뮤니티 모델 (HuggingFace)';
 
   @override
-  String get reportEngineBreakdownTitle => '엔진별 상세';
+  String get reportEngineBreakdownTitle => '엔진 세부 정보';
 
   @override
   String get reportEngineNotInstalled => '설치되지 않음';
