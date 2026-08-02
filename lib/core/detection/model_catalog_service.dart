@@ -11,7 +11,7 @@ class ModelCatalogService {
   /// 遠端 catalog URL。指向專案發佈頁的 raw 檔；改版時只更新此檔即可推新模型，
   /// 不必更新 App（對應 plan 第八節的無伺服器更新機制）。
   static const remoteUrl =
-      'https://raw.githubusercontent.com/truthlens/models/main/model_catalog.json';
+      'https://raw.githubusercontent.com/hauchiehlin-ops/TruthLens/main/assets/model_catalog.json';
 
   static const _asset = 'assets/model_catalog.json';
 
