@@ -199,6 +199,40 @@ REFERENCES
       expect(entries[6].firstAuthorSurname, 'HUANG');
       expect(entries[6].year, 2007);
     });
+
+    test('World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取正確文獻', () {
+      const worldScientificPaper = '''
+International Journal of Bifurcation and Chaos, Vol. 20, No. 5 (2010) 1527-1532
+LOWEST STABILITY BOUNDARY ON FLOW OF CONCENTRIC ROTATING CYLINDERS
+1. Introduction
+The curve differs from that obtained by Coles [1965], who assumed that the TVF was axisymmetric.
+(2) where V = (Vr, Vθ, Vz) and j is the solution at time t...
+(3) The flow velocity and pressure profile of the super-critical TVF are obtained...
+(7) Here, M and N are the number of terms in the Fourier series expansion...
+(8) The matrix equation represents a system of equations with (4 x M x N) unknown parameters.
+References
+Ahlers, G., Cannell, D. S. & Lerma, M. A. D. [1983] "Possible mechanism for transitions in wavy Taylor-vortex flow," Phys. Rev. A. At. Mol. Opt. Phys. 27, 1225-1227.
+Andereck, C., Liu, S. S. & Swinney, H. L. [1986] "Flow regimes in a circular Couette system with independently rotating cylinders," J. Fluid Mech. 164, 155-183.
+Antonijoan, J. & Sanchez, J. [2002] "On stable Taylor vortices above the transition to wavy vortices," Phys. Fluids 14, 1661-1665.
+Burkhalter, J. E. & Koschmieder, E. L. [1973] "Steady supercritical Taylor vortex flow," J. Fluid Mech. 58, 547-560.
+Burkhalter, J. E. & Koschmieder, E. L. [1974] "Steady supercritical Taylor vortices after sudden starts," Phys. Fluids 17, 1929-1935.
+Coles, D. [1965] "Transition in circular Couette flow," J. Fluid Mech. 21, 385-425.
+Hall, P. & Blennerhasset, P. J. [1979] "Centrifugal instability of circumferential flow in finite cylinders," Proc. R. Soc. London A 365, 191-207.
+''';
+      final entries = BibliographyVerifier.extractEntries(worldScientificPaper);
+      expect(entries.length, 7);
+      expect(entries.map((e) => e.firstAuthorSurname).toList(), [
+        'Ahlers',
+        'Andereck',
+        'Antonijoan',
+        'Burkhalter',
+        'Burkhalter',
+        'Coles',
+        'Hall',
+      ]);
+      expect(entries[5].year, 1965);
+      expect(entries[5].title, 'Transition in circular Couette flow');
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {

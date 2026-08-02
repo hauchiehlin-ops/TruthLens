@@ -65,8 +65,9 @@ class BibliographyVerifier {
   );
 
   /// 條列式、全形/半形括號與數字編號前綴（如 [1], (1), 1., ①, 【1】, 〔1〕, ［1］, [Ref 1], •, -）
+  /// 排除 4 位數年份（如 [1965]），避免內文年份引用被誤算為編號前綴。
   static final RegExp _bulletOrNumberPrefix = RegExp(
-    r'^\s*(?:\[\s*(?:\d+|[A-Za-z]|Ref\s*\d+)\s*\]|\(\s*\d+\s*\)|\d+[\.、\)]|[\u2460-\u2473]|[\u2474-\u2487]|【\d+】|〔\d+〕|［\d+］|[-*•])\s*',
+    r'^\s*(?:\[\s*(?!(?:19|20)\d\d\b)(?:\d{1,3}|[A-Za-z]|Ref\s*\d+)\s*\]|\(\s*\d{1,3}\s*\)|\d{1,3}[\.、\)]|[\u2460-\u2473]|[\u2474-\u2487]|【\d{1,3}】|〔\d{1,3}〕|［\d{1,3}］|[-*•])\s*',
     caseSensitive: false,
   );
 
@@ -78,12 +79,12 @@ class BibliographyVerifier {
     r'[\u4e00-\u9fa5]{2,4}(?:[、,，\s]+(?:[\u4e00-\u9fa5]{2,4}|等|著|編|譯))+',
   );
 
-  /// 偵測參考文獻條目的開頭特徵。
+  /// 偵測參考文獻條目的開頭特徵（支援 Surname, F. M. (1983) 及 Surname, F. M. [1983] 括號格式）。
   static final RegExp _entryStart = RegExp(
     r"(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)"
     r"(?:(?:\s*,\s*(?:and\s+)?|and\s+|&\s*)"
     r"[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)*"
-    r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})\s*(?:\)|\])?(?:[.,:])?\s*",
+    r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})[a-z]?\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
   /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數（至少 3 筆，避免內文巧合誤判）。
@@ -97,6 +98,7 @@ class BibliographyVerifier {
     var text = input;
 
     // 1) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12), [4 ] -> [4]
+    // 排除 4 位數西元年份（如 [ 1965 ] -> [1965]），避免年份被當成條目編號
     text = text.replaceAllMapped(
       RegExp(r'\[\s*(\d+|[A-Za-z]|Ref\s*\d+)\s*\]'),
       (m) => '[${m.group(1)}]',
@@ -116,9 +118,9 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 3) 在未斷行的連寫嵌合條目編號前主動插入換行符：
+    // 3) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
     text = text.replaceAllMapped(
-      RegExp(r'(?<=\S)\s*(\[\d+\]|\(\d+\)|\b\d{1,3}\.\s+[A-Z])'),
+      RegExp(r'(?<=\S)\s*(\[\s*(?!(?:19|20)\d\d\b)\d{1,3}\s*\]|\(\s*\d{1,3}\s*\)|\b\d{1,3}\.\s+[A-Z])'),
       (m) => '\n${m.group(1)}',
     );
 
@@ -128,7 +130,10 @@ class BibliographyVerifier {
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
   static List<BibliographyEntry> extractEntries(String rawText) {
     final text = _preprocessOcrText(rawText);
-    final headingMatch = _sectionHeading.firstMatch(text);
+    
+    // 取文獻尾端的最後一個 References/參考文獻 標題（防止內文提及 references 字眼早判）
+    final headingMatches = _sectionHeading.allMatches(text).toList();
+    final headingMatch = headingMatches.isNotEmpty ? headingMatches.last : null;
     final hasHeading = headingMatch != null;
     final section = hasHeading ? text.substring(headingMatch.end) : text;
 
@@ -251,8 +256,9 @@ class BibliographyVerifier {
     final surname = commaIdx > 0 ? raw.substring(0, commaIdx).trim() : null;
     final afterPrefix =
         prefixLength <= raw.length ? raw.substring(prefixLength) : '';
+    final quoteMatch = RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(afterPrefix);
     final titleEnd = afterPrefix.indexOf('. ');
-    final title =
+    final title = quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim() ??
         (titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix)
             .trim();
     return BibliographyEntry(
@@ -267,10 +273,9 @@ class BibliographyVerifier {
       String cleaned, String rawText, int? year) {
     final cleanedNoPrefix = cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
 
-    // 優先抽取篇名引號或括號（如 〈...〉 或 "..." 或 「...」 或 “...”；次選 《...》）
-    final quoteMatch = RegExp(r'[〈"“「](.+?)[〉"”」]').firstMatch(cleanedNoPrefix) ??
-        RegExp(r'[《](.+?)[》]').firstMatch(cleanedNoPrefix);
-    String? title = quoteMatch?.group(1)?.trim();
+    // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
+    final quoteMatch = RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(cleanedNoPrefix);
+    String? title = quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim();
 
     if (title == null || title.isEmpty) {
       // 嘗試先剔除開頭的作者群（如 "COHEN B.S., HERING S.V., "）

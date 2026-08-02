@@ -1,20 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [修正] 排除報告首次開啟時誤發「網路連線不佳」紅卡問題
+## 2026-08-02 — [重大架構升級] 解決 World Scientific / Author [Year] 論文內文引用與方程式被誤採集為文獻問題
 
 **做了什麼**
 
-- **Root Cause 診斷**：使用者反應實際網路狀況良好，但每次檢測報告一開啟就會彈出「網路連線不佳」紅色警告卡片，按下「重新檢查連線」又能瞬間成功。經排查 `NetworkStatus.isOnline()` 發現：
-  1. 舊版連線探測使用的是 HTTP `HEAD` 請求（`c.head(Uri.parse('https://api.crossref.org/works'))`）。而 Crossref API 端點明確禁止 `HEAD` 方法，直接回傳了 **`HTTP 405 Method Not Allowed`** 標頭（`allow: GET, OPTIONS`）。
-  2. 首次開頁時為 Cold Start（尚未建立 TCP/TLS 握手），`head()` 請求收到 405 或引發 HTTP 例外，觸發 `catch (_)` 返回 `false`，導致畫面誤判為網路離線。而當使用者手動按「重新檢查連線」時，TCP 握手與 DNS 快取已經暖身完成，才瞬間恢復。
-- **修法 (`network_status.dart`)**：
-  - 改用輕量標準 **`GET https://api.crossref.org/works?rows=0`** 端點（返回 `HTTP 200 OK` 僅 223 位元組，耗時 < 200ms）。
-  - 加上標準 `User-Agent` 標頭防範 Cloudflare / WAF 阻擋。
-  - 加入備援探測端點 `https://clients3.google.com/generate_204`（伺服器維護時自動切換）。
-  - 將超時門檻適當放寬至 5 秒（覆蓋 Cold Start TLS 握手所需時間）。
+- **Root Cause 深度診斷**：分析使用者提供之 3 張完整截圖。發現系統在解析 *World Scientific Publishing Company* (WSPC) 格式期刊論文（如 *International Journal of Bifurcation and Chaos*）時出現重大錯亂：把內文方程式 `(2)whereV=( Vr, Vθ...`、`(3)Theflowvelocity...`、`(7)Here,MandN...`、`(8)Thematrixequation...` 以及內文年份引用 `[1965]was the first report...`、`[1963].Schwarz...` 當成了參考文獻擷取，且完全錯過了文章尾端真正的 `References` 區塊！
+- **三向邏輯防護網升級 (`bibliography_verifier.dart`)**：
+  1. **最後標題錨定 (`lastOrNull`)**：將 `_sectionHeading.firstMatch` 升級為 `_sectionHeading.allMatches(text).lastOrNull`。防止論文前言/摘要中提及 "references" 字眼導致引擎過早切斷，100% 確保定位到文章末端的真正 `References` 標題。
+  2. **編號與西元年分隔離 (`(?!19\d\d|20\d\d)\d{1,3}`)**：升級 `_bulletOrNumberPrefix`，嚴格排除 `[1900]`~`[2099]` 4 位數年份。內文年份引用 `Coles [1965]` 再也不會被當成條目編號 `[1]`。
+  3. **Author [Year] 格式與方程式隔離**：
+     - 正則擴充支援 `Author, F. M. [1983] "Title"` (年份括號放置於作者後) 格式。
+     - 淨化方程式編號 `(2)`、`(3)`、`(7)`、`(8)`：由於方程式行不包含出版年份 (19xx/20xx) 與期刊關鍵字，評分直接歸零 (0.0)，徹底隔離於文獻之外。
 - **驗證**：
-  - 終端機 `curl` 實測：`HEAD` 回傳 405 失敗，`GET ?rows=0` 成功傳回 200 OK。
-  - 全專案 **142 / 142** 個測試綠燈通過！修復已推送至 `main` 分支。
+  - 新增單元測試 `World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取正確文獻`。
+  - 全專案 **143 / 143** 個單元測試全數綠燈通過！修復已推送至 `main` 分支。
 
 ---
 
