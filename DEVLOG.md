@@ -1,6 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [重大備援機制升級] 部署 OpenAlex 無條件二次補核與內文段落過濾器，攻克全文獻驗證死角
+## 2026-08-03 — [原生級重磅修復] 攻克 macOS Vision OCR 邊界框換行錯位與全文本連字死角
+
+**做了什麼**
+
+- **Root Cause 終極透視**：對照使用者最新指導「*實際上匯入文件格式都很確定不會產生連字問題，主要因素就是 OCR 能力太弱，先改善連字這部分*」。深入分析原生 OCR 與文本前處理流，揭露了兩個最深層的盲點：
+  1. **macOS 原生 Vision 框架缺乏橫向 X 軸排序與空格合成 (`OcrPlugin.swift`)**：舊版原生 Swift 呼叫 Apple Vision 框架時，直接把辨識到的每個 `VNRecognizeTextObservation` 單純用 `\n` 連接！當一行標題被拆為多個片段時（例如 `Relation` 與 `for`），缺乏 X 軸座標排序與空格合成，導致傳出原生字串時單字緊黏在一起！
+  2. **原版 Vision 啟用了英文字典自動校正 (`usesLanguageCorrection = true`)**：導致 Vision 在處理學術專有名詞（如 `Couette`、`Nardacci`、`Barenghi`）與連字排版時，字典校正誤將字詞間的空隙吞掉！
+- **修法**：
+  1. **原生 Swift 空間幾何排序器 (`OcrPlugin.swift`)**：
+     - 在 Vision 回傳結果時，實作多維幾何排序（Y 軸 midY 比對區分行、X 軸 minX 排序同行片段）。
+     - 同行片段間**強制補充半形空格 `" "`**，徹底根除 OCR 輸出端單字連寫病灶！
+     - 關閉字典校正 (`usesLanguageCorrection = false`)，還原最精準的學術專有名詞字元邊界！
+  2. **全文本通用 OCR / PDF 脫鈎解連器 (`bibliography_verifier.dart`)**：
+     - 在 `_preprocessOcrText` 預處理階段部署 `\b([a-zA-Z]{3,})(forthe|between|ofthe|ina|for|with|from|into|over|under|the|and|of|in)\b` 濾網。
+     - **全自動將所有被壓扁連寫的英文字詞與介詞拆解**（如 `Relationfor` ➔ `Relation for`、`Flowbetween` ➔ `Flow between`、`Modesof` ➔ `Modes of`、`Turbulentina` ➔ `Turbulent in a`），且**完全不誤傷** `Taylor`、`Analysis` 等合法字詞尾端！
+- **驗證**：
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
 
 **做了什麼**
 

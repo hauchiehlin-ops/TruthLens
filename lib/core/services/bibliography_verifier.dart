@@ -121,11 +121,21 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
-    // 3) 恢復 OCR 擠壓單字間空白（如 Possiblemechanism -> Possible mechanism, PhysicalReviewA -> Physical Review A）
+    // 3) 恢復 OCR 擠壓單字間空白與拆解尾隨介詞/冠詞 (如 Relationfor -> Relation for, Flowbetween -> Flow between, Modesof -> Modes of, Instabilityin -> Instability in)
     text = text.replaceAllMapped(
       RegExp(r'([a-z])([A-Z])'),
       (m) => '${m.group(1)} ${m.group(2)}',
     );
+    final ocrPreps = [
+      'forthe', 'between', 'ofthe', 'ina', 'for', 'with', 'from',
+      'into', 'over', 'under', 'the', 'and', 'of', 'in'
+    ];
+    for (final prep in ocrPreps) {
+      text = text.replaceAllMapped(
+        RegExp('\\b([a-zA-Z]{3,})($prep)\\b', caseSensitive: false),
+        (m) => '${m.group(1)} ${m.group(2)}',
+      );
+    }
 
     // 4) 修正跨行頁碼割裂 (如 19–\n42. -> 19–42.) 與跨行斷詞割裂
     text = text.replaceAllMapped(
