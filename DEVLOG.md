@@ -1,6 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] 四大平台（iOS / macOS / Windows / Android）合規與完整配置審查
+## 2026-08-02 — [Phase 4] macOS 官網/外部下載 .dmg Apple 官方公證成功 (Notarization Status: Accepted)
+
+**做了什麼**
+
+- **Root Cause 診斷與解決**：定位並排除 Keychain 中存在重複 Developer ID 憑證導致 `codesign` 標籤混淆 (ambiguous) 的問題，改以憑證指紋 `3C0BB4182588CCDCEF3D567A2BD0C1DBB90ACCCB` 精確簽署。
+- **全動態庫遞迴簽署 (Hardened Runtime + Timestamp)**：對 `TruthLens.app` 內部的所有原生動態庫 (`libggml*.dylib`, `libllama*.dylib`, `libonnxruntime*.dylib`, `libtruthlens_llama.dylib`, `FlutterMacOS.framework`, `objective_c.framework`, `sqlite3.framework`) 進行全數硬化簽署與安全時間戳記附隨。
+- **DMG 容器簽署與 Apple 公證 (Stapled Ticket)**：對打包產出之 `dist/TruthLens-v1.0.0.dmg` 進行容器簽署並成功送交 Apple notarytool 通過公證 (`status: Accepted`，Submission ID: `647fe89c-fcde-4969-88e2-682bfc377c9a`)，完成票據釘印 (`xcrun stapler staple`)。
+
+**驗證**
+
+- `xcrun notarytool submit` 輸出 `status: Accepted`！
+- `xcrun stapler validate` 輸出 `The validate action worked!` 綠燈！
+
+---
 
 **做了什麼**
 
