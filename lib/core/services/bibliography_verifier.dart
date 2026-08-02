@@ -84,7 +84,14 @@ class BibliographyVerifier {
   static String _preprocessOcrText(String input) {
     var text = input;
 
-    // 1) 清除 PDF 頁首/頁尾雜訊（如 November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW）
+    // 1) 清除 PDF 出版社浮水印、欄位邊界與頁尾雜訊 (如 Downloaded By: [Lin, Hau-Chieh] At: 14:43 11 November 2010)
+    text = text.replaceAll(
+      RegExp(
+        r'Downloaded\s+By:\s*\[[^\]]+\][^\n\r]*',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
     text = text.replaceAll(
       RegExp(
         r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s*/?\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)?\s*\d{4}\s+[A-Z0-9\s—–-]{5,60}',
@@ -99,13 +106,19 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
-    // 3) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
+    // 3) 恢復 OCR 擠壓單字間空白（如 Possiblemechanism -> Possible mechanism, PhysicalReviewA -> Physical Review A）
+    text = text.replaceAllMapped(
+      RegExp(r'([a-z])([A-Z])'),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+
+    // 4) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
     text = text.replaceAllMapped(
       RegExp(r'([a-zA-Z]{2,})-\s*[\r\n]+\s*([a-zA-Z]{2,})'),
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 4) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12)
+    // 5) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12)
     text = text.replaceAllMapped(
       RegExp(r'\[\s*(\d+|[A-Za-z]|Ref\s*\d+)\s*\]'),
       (m) => '[${m.group(1)}]',
@@ -115,7 +128,7 @@ class BibliographyVerifier {
       (m) => '(${m.group(1)})',
     );
 
-    // 5) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
+    // 6) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
     text = text.replaceAllMapped(
       RegExp(r'\b([A-Z])\s+([A-Z]{2,})\b'),
       (m) => '${m.group(1)}${m.group(2)}',
@@ -125,7 +138,7 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 6) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
+    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
     text = text.replaceAllMapped(
       RegExp(
           r'(?<=\S)\s*(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|\b\d{1,3}\.\s+[A-Z])'),

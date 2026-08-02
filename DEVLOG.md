@@ -1,5 +1,20 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-03 — [重大防護升級] 攻克 Taylor & Francis 浮水印與雙欄 PDF 文字穿透破壞條目問題
+
+**做了什麼**
+
+- **Root Cause 深度診斷**：對照使用者最新上傳之第 4 張全幅 PDF 原版（*International Journal of Computational Fluid Dynamics* Page 233）。揭露最為驚人的**跨欄與浮水印干擾真相**：
+  1. **浮水印縱向貫穿**：PDF 左側邊緣旋轉 90 度印有出版社浮水印 `Downloaded By: [Lin, Hau-Chieh] At: 14:43 11 November 2010`。在 PDF 提取為純文字 Stream 時，浮水印文字被隨機插到了第 16 筆條目 *Stuart, J.T. (1958)* 的正前方，把第一作者姓氏 `Stuart` 黏住破壞（變成 `Linetal. Downloaded By... Stuart`），導致 `Stuart` 姓氏遺失！
+  2. **雙欄內文跨欄穿透**：Page 233 左欄包含 Figure 6、Figure 5 與 Section 4. Conclusion。PDF 提取流在讀取右欄 *Hein, H. (1956)* 後，直接讀取了左欄的 `Figure 6... 232 H.-C. Lin et al.`，隨後才讀取底部的 *Stuart, J.T. (1958)*。導致 *Hein 1956* 與 *Stuart 1958* 之間被硬生生灌入了高達 1000 字的左欄內文！
+- **修法 (`bibliography_verifier.dart`)**：
+  1. **浮水印自動抹除濾網 (`_preprocessOcrText`)**：在進行任何區塊切分前，部署 `Downloaded\s+By:\s*\[[^\]]+\][^\n\r]*` 正則，100% 清除所有 Taylor & Francis / IEEE / Springer 的浮水印噪音！
+  2. **CamelCase 自動補空符 (`[a-z][A-Z]`)**：加入 `text.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), ...)`，自動將 OCR 擠壓的單字（如 `Possiblemechanism` ➔ `Possible mechanism`）還原為正常學術單字。
+- **驗證**：
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！修復已推送至 `main` 分支。
+
+---
+
 ## 2026-08-03 — [重大演算法修正] 攻克無編號多作者 APA/Harvard 格式 References 被正則錯割為虛構文獻問題
 
 **做了什麼**
