@@ -253,24 +253,38 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Uint8List> _streamDownload(String url,
+  Future<Uint8List> _streamDownload(String originalUrl,
       {int? expected, void Function(double)? onProgress}) async {
-    final request = http.Request('GET', Uri.parse(url));
-    final response = await _client.send(request);
-    if (response.statusCode != 200) {
-      throw http.ClientException('HTTP ${response.statusCode}');
-    }
-    final total = response.contentLength ?? expected ?? 0;
-    final builder = BytesBuilder(copy: false);
-    var received = 0;
-    await for (final chunk in response.stream) {
-      builder.add(chunk);
-      received += chunk.length;
-      if (onProgress != null && total > 0) {
-        onProgress((received / total).clamp(0, 1));
+    final urlsToTry = [
+      originalUrl,
+      'https://corsproxy.io/?${Uri.encodeComponent(originalUrl)}',
+      'https://ghproxy.net/$originalUrl',
+    ];
+
+    Object? lastError;
+    for (final url in urlsToTry) {
+      try {
+        final request = http.Request('GET', Uri.parse(url));
+        final response = await _client.send(request);
+        if (response.statusCode != 200) {
+          throw http.ClientException('HTTP ${response.statusCode}');
+        }
+        final total = response.contentLength ?? expected ?? 0;
+        final builder = BytesBuilder(copy: false);
+        var received = 0;
+        await for (final chunk in response.stream) {
+          builder.add(chunk);
+          received += chunk.length;
+          if (onProgress != null && total > 0) {
+            onProgress((received / total).clamp(0, 1));
+          }
+        }
+        return builder.takeBytes();
+      } catch (e) {
+        lastError = e;
       }
     }
-    return builder.takeBytes();
+    throw lastError ?? http.ClientException('Failed to fetch');
   }
 
   /// 尚未支援於網頁版（見 model_import_screen_web.dart）。
