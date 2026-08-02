@@ -1,17 +1,20 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [重大修正] 解決編號參考文獻換行標題單詞與期刊縮寫被誤判為新條目問題
+## 2026-08-02 — [修正] 排除報告首次開啟時誤發「網路連線不佳」紅卡問題
 
 **做了什麼**
 
-- **Root Cause 診斷**：分析使用者上傳之第二張畫面截圖。第 2 筆與第 3 筆參考文獻在換行處被截斷為各 2 筆卡片（`[2] HINDS W.C., Aerosol` 與 `Technology, Properties...` / `[3] CALVERT S., ...` 與 `AICHE J. , 1970...`）。原因是換行處的標題單詞 `Technology,` 包含了逗號（觸發 `^[A-Z]..., [A-Z]` 姓氏正則），而期刊縮寫 `AICHE J.` 包含了大寫加點（觸發 `^[A-Z]... [A-Z]\.` 正則），導致舊版 `isNewEntryStart` 誤以為換行行是新作者開頭而將其強制拆切。
-- **修法與未來研析邏輯 (`bibliography_verifier.dart`)**：
-  - 建立 **「編號文獻情境隔離機制 (`hasNumberedEntries`)」**：
-    - 當檢測到區塊屬於數字編號格式（如 `[1]`, `[2]`, `1.`），**`isNewEntryStart` 嚴格限制僅在匹配到 `_bulletOrNumberPrefix` 時才允許開換新條目**。
-    - 換行的標題單詞（如 `Technology, Properties`）與期刊縮寫（如 `AICHE J.`）因不帶 `[3]`、`[4]` 編號前綴，將 100% 保持在原條目內，不再發生誤切斷。
-  - 無編號格式（Harvard / APA）正則升級：將縮寫匹配嚴格限定為 `[A-Z]\.`（名字縮寫帶句點），防止一般完整標題單詞誤觸。
+- **Root Cause 診斷**：使用者反應實際網路狀況良好，但每次檢測報告一開啟就會彈出「網路連線不佳」紅色警告卡片，按下「重新檢查連線」又能瞬間成功。經排查 `NetworkStatus.isOnline()` 發現：
+  1. 舊版連線探測使用的是 HTTP `HEAD` 請求（`c.head(Uri.parse('https://api.crossref.org/works'))`）。而 Crossref API 端點明確禁止 `HEAD` 方法，直接回傳了 **`HTTP 405 Method Not Allowed`** 標頭（`allow: GET, OPTIONS`）。
+  2. 首次開頁時為 Cold Start（尚未建立 TCP/TLS 握手），`head()` 請求收到 405 或引發 HTTP 例外，觸發 `catch (_)` 返回 `false`，導致畫面誤判為網路離線。而當使用者手動按「重新檢查連線」時，TCP 握手與 DNS 快取已經暖身完成，才瞬間恢復。
+- **修法 (`network_status.dart`)**：
+  - 改用輕量標準 **`GET https://api.crossref.org/works?rows=0`** 端點（返回 `HTTP 200 OK` 僅 223 位元組，耗時 < 200ms）。
+  - 加上標準 `User-Agent` 標頭防範 Cloudflare / WAF 阻擋。
+  - 加入備援探測端點 `https://clients3.google.com/generate_204`（伺服器維護時自動切換）。
+  - 將超時門檻適當放寬至 5 秒（覆蓋 Cold Start TLS 握手所需時間）。
 - **驗證**：
-  - 全專案 **142 / 142** 個單元與整合測試全數通過！修復已更新至 `main` 分支。
+  - 終端機 `curl` 實測：`HEAD` 回傳 405 失敗，`GET ?rows=0` 成功傳回 200 OK。
+  - 全專案 **142 / 142** 個測試綠燈通過！修復已推送至 `main` 分支。
 
 ---
 

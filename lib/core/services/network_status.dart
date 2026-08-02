@@ -7,22 +7,38 @@ import 'package:http/http.dart' as http;
 class NetworkStatus {
   static Future<bool> isOnline({
     http.Client? client,
-    Duration timeout = const Duration(seconds: 4),
+    Duration timeout = const Duration(seconds: 5),
   }) async {
     final c = client ?? http.Client();
     final owns = client == null;
     try {
-      // Crossref 是超連結（DOI）與文獻參考驗證共同依賴的服務，直接以此探測連線，
-      // 不另外引入新的第三方連線探測端點。收到任何 HTTP 回應（含 4xx）即代表
-      // 網路本身是通的；只有連線逾時／DNS 失敗等例外才視為離線。
-      final response = await c
-          .head(Uri.parse('https://api.crossref.org/works'))
-          .timeout(timeout);
-      return response.statusCode < 500;
+      // 1) 首選探測端點：直接 GET 請求 Crossref API (rows=0 傳回輕量 200 OK)。
+      // 避免使用 HEAD 請求，因為 Crossref API 會回傳 HTTP 405 (Method Not Allowed)
+      // 導致被誤判為連線失敗。帶上標準 User-Agent 防範 Cloudflare / WAF 阻擋。
+      final uri = Uri.parse('https://api.crossref.org/works?rows=0');
+      final response = await c.get(
+        uri,
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
+        },
+      ).timeout(timeout);
+
+      if (response.statusCode < 500) {
+        return true;
+      }
     } catch (_) {
-      return false;
+      // 2) 備援探測端點：若 Crossref API 服務維護中，備援探測輕量標準 204 端點
+      try {
+        final fallbackUri =
+            Uri.parse('https://clients3.google.com/generate_204');
+        final response =
+            await c.get(fallbackUri).timeout(const Duration(seconds: 3));
+        return response.statusCode == 204 || response.statusCode == 200;
+      } catch (_) {}
     } finally {
       if (owns) c.close();
     }
+    return false;
   }
 }
