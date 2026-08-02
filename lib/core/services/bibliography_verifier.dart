@@ -152,6 +152,10 @@ class BibliographyVerifier {
     final groupedBlocks = <String>[];
     String? currentBlock;
 
+    // 判斷該文獻區塊是否為數字編號格式（例如 [1], [2], 1.）
+    final hasNumberedEntries =
+        rawLines.where((l) => _bulletOrNumberPrefix.hasMatch(l.trim())).length >= 2;
+
     for (final rawLine in rawLines) {
       final line = rawLine.trim();
       if (line.isEmpty) continue;
@@ -161,12 +165,16 @@ class BibliographyVerifier {
         continue;
       }
 
-      // 判斷該行是否為全新條目的開頭（包含數字編號、英文/中文作者、GB/T 7714 標誌）
-      final isNewEntryStart = _bulletOrNumberPrefix.hasMatch(line) ||
-          RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(line) ||
-          RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(line) ||
-          RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
-          RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line);
+      // 判斷該行是否為全新條目的開頭：
+      // 1. 若為數字編號格式，僅在匹配到 [1], [2], 1. 等標號前綴時才開換新條目，防止換行標題單詞（如 "Technology, Properties"）或期刊縮寫（如 "AICHE J."）誤誘發二次切斷；
+      // 2. 若為無編號格式，則精準匹配作者姓氏 + 名字縮寫（縮寫必須帶句點 [A-Z]\.，不可為完整單字）。
+      final isNewEntryStart = hasNumberedEntries
+          ? _bulletOrNumberPrefix.hasMatch(line)
+          : (_bulletOrNumberPrefix.hasMatch(line) ||
+              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]\.").hasMatch(line) ||
+              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(line) ||
+              RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
+              RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line));
 
       if (isNewEntryStart) {
         if (currentBlock != null && currentBlock.trim().isNotEmpty) {
