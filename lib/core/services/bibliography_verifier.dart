@@ -549,10 +549,19 @@ class BibliographyVerifier {
           final matchedTitle = top['title']?.toString();
           final matchedYear = top['publication_year'] as int?;
           final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
-          final matchedJournal = hostVenue?['display_name']?.toString();
+          final locations = (top['locations'] as List?)?.cast<dynamic>();
+          final firstLocationSource = (locations != null && locations.isNotEmpty)
+              ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
+              : null;
+          final matchedJournal = hostVenue?['display_name']?.toString() ??
+              firstLocationSource?['display_name']?.toString();
           final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
 
-          if (titleSim >= 0.35 || (matchedYear != null && entry.year != null && (entry.year! - matchedYear).abs() <= 1)) {
+          if (titleSim >= 0.35 ||
+              (titleSim >= 0.20 &&
+                  matchedYear != null &&
+                  entry.year != null &&
+                  (entry.year! - matchedYear).abs() <= 1)) {
             return BibliographyCheckResult(
               entry: entry,
               confidence: CitationMatchConfidence.high,
@@ -615,21 +624,29 @@ class BibliographyVerifier {
       .toSet();
 
   static String _cleanSearchKeywords(String raw) {
-    var text = raw;
-    text = text.replaceAllMapped(
-      RegExp(r'([a-zA-Z]{2,})(for|between|in|of|the|and|a|an|to|with|on|at|by|from|into|over|under|off)\b', caseSensitive: false),
-      (m) => '${m.group(1)} ${m.group(2)}',
-    );
-    text = text.replaceAllMapped(
+    var current = raw;
+    current = current.replaceAllMapped(
       RegExp(r'([a-z])([A-Z])'),
       (m) => '${m.group(1)} ${m.group(2)}',
     );
-    final words = text
+    final preps = [
+      'forthe', 'between', 'ofthe', 'ina', 'for', 'with', 'from',
+      'into', 'over', 'under', 'that', 'this', 'have', 'been',
+      'the', 'and', 'in', 'of', 'to', 'on', 'at', 'by', 'is', 'or', 'an', 'a'
+    ];
+    for (final prep in preps) {
+      current = current.replaceAllMapped(
+        RegExp('\\b([a-zA-Z]{3,})($prep)\\b', caseSensitive: false),
+        (m) => '${m.group(1)} ${m.group(2)}',
+      );
+    }
+    final stopWords = preps.toSet();
+    final words = current
         .replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), ' ')
         .split(RegExp(r'\s+'))
-        .where((w) => w.length > 2)
-        .where((w) => !RegExp(r'^(for|between|in|of|the|and|a|an|to|with|on|at|by|from|into|over|under|off)$', caseSensitive: false).hasMatch(w))
+        .where((w) => w.length > 2 && !stopWords.contains(w.toLowerCase()))
         .toList();
+
     if (words.isEmpty) return raw;
     return words.take(6).join(' ');
   }
