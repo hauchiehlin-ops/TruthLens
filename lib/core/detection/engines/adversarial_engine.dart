@@ -12,28 +12,50 @@ import '../onnx_detector.dart';
 /// 使用中模型與 tokenizer 檔皆需存在才可用；否則回報 unavailable（優雅降級）。
 class AdversarialEngine implements DetectionEngine {
   final ModelManager modelManager;
+  final String? variantId;
 
   static const _supportedTokenizers = {'bert-wordpiece', 'roberta-bpe'};
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
 
-  AdversarialEngine({required this.modelManager});
+  AdversarialEngine({required this.modelManager, this.variantId});
 
   @override
-  String get id => 'adversarial';
+  String get id => variantId != null ? 'adversarial_$variantId' : 'adversarial';
+
   @override
-  String name(AppLocalizations l10n) => l10n.engineNameAdversarialFull;
+  String name(AppLocalizations l10n) {
+    if (variantId != null) {
+      final installed = modelManager.installedVariants('adversarial');
+      for (final m in installed) {
+        if (m.variantId == variantId) return m.displayName;
+      }
+    }
+    return l10n.engineNameAdversarialFull;
+  }
+
   @override
   double get defaultWeight => 0.15;
 
+  InstalledModel? _resolveVariant() {
+    if (variantId != null) {
+      final installed = modelManager.installedVariants('adversarial');
+      for (final m in installed) {
+        if (m.variantId == variantId) return m;
+      }
+      return null;
+    }
+    return modelManager.activeVariant('adversarial');
+  }
+
   Future<(String, String)?> _resolvePaths() async {
-    final active = modelManager.activeVariant(id);
+    final active = _resolveVariant();
     if (active == null || !_supportedTokenizers.contains(active.tokenizer)) {
       return null;
     }
-    final modelPath = await modelManager.activeModelPath(id);
-    final tokPath = await modelManager.activeTokenizerPath(id);
+    final modelPath = await modelManager.variantModelPath('adversarial', active.variantId);
+    final tokPath = await modelManager.variantTokenizerPath('adversarial', active.variantId);
     if (modelPath == null || tokPath == null) return null;
     if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
       return null;
@@ -48,7 +70,7 @@ class AdversarialEngine implements DetectionEngine {
     final paths = await _resolvePaths();
     if (paths == null) return null;
     final (modelPath, tokPath) = paths;
-    final active = modelManager.activeVariant(id)!;
+    final active = _resolveVariant()!;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
     try {
       _detector?.dispose();

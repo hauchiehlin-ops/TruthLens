@@ -251,6 +251,19 @@ class ModelManager extends ChangeNotifier {
     return p.join((await _modelsDir()).path, active!.tokenizerFileName!);
   }
 
+  /// 指定變體的模型檔絕對路徑
+  Future<String?> variantModelPath(String role, String variantId) async {
+    final installed = _roles[role]?.installed[variantId];
+    if (installed == null) return null;
+    return p.join((await _modelsDir()).path, installed.fileName);
+  }
+
+  Future<String?> variantTokenizerPath(String role, String variantId) async {
+    final installed = _roles[role]?.installed[variantId];
+    if (installed?.tokenizerFileName == null) return null;
+    return p.join((await _modelsDir()).path, installed!.tokenizerFileName!);
+  }
+
   /// 切換使用中變體（應用程式運行前可自由更換模型）
   Future<void> setActive(String role, String variantId) async {
     final r = _roles[role];

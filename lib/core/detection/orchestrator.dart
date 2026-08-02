@@ -32,13 +32,43 @@ class EnsembleOrchestrator {
   static List<DetectionEngine> _defaultEngines(
     ModelManager mm,
     NativeInferenceService native,
-  ) =>
-      [
-        TransformerEngine(modelManager: mm),
-        StatisticalEngine(modelManager: mm),
-        StylometryEngine(),
-        AdversarialEngine(modelManager: mm),
-      ];
+  ) {
+    final discovered = <DetectionEngine>[];
+
+    // 1. 動態探索並註冊所有已安裝的 Transformer AI 分類器變體
+    final installedTransformers = mm.installedVariants('transformer');
+    if (installedTransformers.isNotEmpty) {
+      for (final variant in installedTransformers) {
+        discovered.add(TransformerEngine(
+          modelManager: mm,
+          variantId: variant.variantId,
+        ));
+      }
+    } else {
+      discovered.add(TransformerEngine(modelManager: mm));
+    }
+
+    // 2. 統計特徵模型 (Perplexity)
+    discovered.add(StatisticalEngine(modelManager: mm));
+
+    // 3. 風格特徵模型 (Stylometry)
+    discovered.add(StylometryEngine());
+
+    // 4. 動態探索並註冊所有已安裝的對抗防禦變體
+    final installedAdversarials = mm.installedVariants('adversarial');
+    if (installedAdversarials.isNotEmpty) {
+      for (final variant in installedAdversarials) {
+        discovered.add(AdversarialEngine(
+          modelManager: mm,
+          variantId: variant.variantId,
+        ));
+      }
+    } else {
+      discovered.add(AdversarialEngine(modelManager: mm));
+    }
+
+    return discovered;
+  }
 
   /// 逐引擎回報進度：engineId → 完成。
   /// [eslCorrectionEnabled] 對應設定頁開關，關閉時不套用偏差修正。
@@ -123,26 +153,37 @@ class EnsembleOrchestrator {
     return text.typeTokenRatio < 0.38 && text.burstiness > 0.45;
   }
 
-  /// 句子級評分：優先採用神經模型的逐句機率（若有），否則以整體分數為基準；
-  /// 再依單句命中的風格模式微調，兼顧準確度與可解釋性。
+  /// 句子級評分：多神經模型即時平均，再依單句命中的風格模式微調。
   List<SentenceScore> _scoreSentences(
     PreprocessedText text,
     double overall,
     List<EngineScore> scores,
     AppLocalizations l10n,
   ) {
-    // 取 Transformer 引擎的逐句機率（若可用）
-    final neural = scores
-        .where((s) => s.available && s.sentenceScores != null)
+    // 收集所有可用的神經模型 (sentenceScores)
+    final neuralList = scores
+        .where((s) => s.available && s.sentenceScores != null && s.sentenceScores!.isNotEmpty)
         .map((s) => s.sentenceScores!)
-        .firstOrNull;
+        .toList();
 
     final result = <SentenceScore>[];
     for (var i = 0; i < text.sentences.length; i++) {
       final s = text.sentences[i];
       final patterns = <String>[];
-      // 基準：神經模型逐句機率優先；否則用整體分數
-      var p = (neural != null && i < neural.length) ? neural[i] : overall;
+      
+      // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準
+      var p = overall;
+      if (neuralList.isNotEmpty) {
+        var sum = 0.0;
+        var count = 0;
+        for (final ns in neuralList) {
+          if (i < ns.length) {
+            sum += ns[i];
+            count++;
+          }
+        }
+        if (count > 0) p = sum / count;
+      }
 
       for (final t in StylometryEngine.genericTransitions) {
         if (s.toLowerCase().contains(t.toLowerCase())) {

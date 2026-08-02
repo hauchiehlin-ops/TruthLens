@@ -1,18 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] MVP 功能發布：代碼公式護盾、文件噪音純化與零上傳隱私認證標章
+## 2026-08-02 — [Phase 4] 動態 AI 模型探索與熱插拔 Ensemble 加權路由 (Option B)
 
 **做了什麼**
 
+- **動態 Ensemble 模型探索路由 (Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，使其能夠自動掃描並載入 `ModelManager` 中所有已安裝之 Transformer AI 分類器變體（如預設 RoBERTa、XLM-RoBERTa 或使用者匯入之自訂 ONNX 模型）與對抗防禦變體，實現全動態的模型熱插拔與即時加權投票機制。
+- **動態變體綁定介面**：在 `TransformerEngine` 與 `AdversarialEngine` 中支援指定 `variantId` 構造，並於 `ModelManager` (native + web) 擴充 `variantModelPath` 與 `variantTokenizerPath` 方法，精準定位不同變體檔路徑。
+- **多神經模型逐句平均機制**：升級 `EnsembleOrchestrator._scoreSentences`，在有多個神經模型同時啟用時，自動整合所有模型之逐句評分進行交叉平均，再結合 Stylometry 啟發式特徵微調，極大化提升句子級檢測精確度。
 - **代碼與公式白名單護盾 (MVP 1 Code & Formula Shield)**：在 `DocumentImporter._stripFormatting` 中新增對 Markdown 程式碼區塊（```` ... ````）、行內程式碼（`` `...` ``）、LaTeX 區塊公式（`$$...$$`、`\[...\]`）、`\begin{equation}...\end{equation}` 與行內公式（`\(...\)`、`$...$`）之自動識別與隔離過濾，防止程式碼與數學符號拉低困惑度或干擾句長起伏統計。
 - **文件結構純化 (MVP 2 Structural Noise Stripping)**：於 `DocumentImporter._stripFormatting` 中增強對 PDF/DOCX 匯入時產生之頁首頁尾與頁碼噪音（如 `Page 1 of 10`、`第 1 頁，共 10 頁`、`Line 12`）之精準剔除，還原最純淨的文章本文供 AI 檢測。
 - **100% 本地離線隱私認證標章 (MVP 3 Zero-Cloud Privacy Seal in PDF)**：於 `ReportExporter.buildPdf` 產出之 PDF 報告中新增專屬「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」標章，標明內容 100% 於裝置本地運算完成、絕不上傳雲端伺服器或資料庫，極大化提升商業與學術報告之信任度。
-- **單元測試套件擴充**：新增 `test/document_importer_test.dart` 覆蓋 MVP 1 與 MVP 2 之隔離純化邏輯。
+- **單元測試套件擴充**：新增 `test/document_importer_test.dart` 與 `test/dynamic_ensemble_test.dart`。
 
 **驗證**
 
 - `flutter analyze` 輸出 `No issues found!`（0 警告）
-- `flutter test` 全套件 **134/134** 個測試全數通過！
+- `flutter test` 全套件 **136/136** 個測試全數通過！
 
 ---
 

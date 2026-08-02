@@ -12,29 +12,51 @@ import '../onnx_detector.dart';
 /// 分類器一定需要 tokenizer；若使用中模型缺 tokenizer 或檔案不存在，回報 unavailable。
 class TransformerEngine implements DetectionEngine {
   final ModelManager modelManager;
+  final String? variantId;
 
   static const _supportedTokenizers = {'bert-wordpiece', 'roberta-bpe'};
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
 
-  TransformerEngine({required this.modelManager});
+  TransformerEngine({required this.modelManager, this.variantId});
 
   @override
-  String get id => 'transformer';
+  String get id => variantId != null ? 'transformer_$variantId' : 'transformer';
+
   @override
-  String name(AppLocalizations l10n) => l10n.analysisEngineTransformer;
+  String name(AppLocalizations l10n) {
+    if (variantId != null) {
+      final installed = modelManager.installedVariants('transformer');
+      for (final m in installed) {
+        if (m.variantId == variantId) return m.displayName;
+      }
+    }
+    return l10n.analysisEngineTransformer;
+  }
+
   @override
   double get defaultWeight => 0.40;
 
   bool _supported(String tokenizer) => _supportedTokenizers.contains(tokenizer);
 
-  /// 使用中模型與其 tokenizer 的檔案是否都真的存在於磁碟（避免自動掃描登記到缺檔的模型）。
+  InstalledModel? _resolveVariant() {
+    if (variantId != null) {
+      final installed = modelManager.installedVariants('transformer');
+      for (final m in installed) {
+        if (m.variantId == variantId) return m;
+      }
+      return null;
+    }
+    return modelManager.activeVariant('transformer');
+  }
+
+  /// 依變體檔解析模型與 tokenizer 檔案路徑
   Future<(String, String)?> _resolvePaths() async {
-    final active = modelManager.activeVariant(id);
+    final active = _resolveVariant();
     if (active == null || !_supported(active.tokenizer)) return null;
-    final modelPath = await modelManager.activeModelPath(id);
-    final tokPath = await modelManager.activeTokenizerPath(id);
+    final modelPath = await modelManager.variantModelPath('transformer', active.variantId);
+    final tokPath = await modelManager.variantTokenizerPath('transformer', active.variantId);
     if (modelPath == null || tokPath == null) return null;
     if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
       return null;
@@ -47,13 +69,11 @@ class TransformerEngine implements DetectionEngine {
 
   String? _loadError;
 
-  /// 依「使用中」模型延遲載入 / 快取 detector；模型切換時重新載入。
-  /// 載入失敗（如模型 opset 不相容、檔案損毀）回傳 null 並記錄原因，不拋出。
   Future<OnnxDetector?> _ensureLoaded() async {
     final paths = await _resolvePaths();
     if (paths == null) return null;
     final (modelPath, tokPath) = paths;
-    final active = modelManager.activeVariant(id)!;
+    final active = _resolveVariant()!;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
     try {
       _detector?.dispose();
@@ -92,7 +112,7 @@ class TransformerEngine implements DetectionEngine {
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     final aiCount = perSentence.where((s) => s >= 0.6).length;
-    final variant = modelManager.activeVariant(id);
+    final variant = _resolveVariant();
     return EngineScore(
       engineId: id,
       engineName: name(l10n),

@@ -296,6 +296,17 @@ class ModelManager extends ChangeNotifier {
     return null;
   }
 
+  Future<String?> variantModelPath(String role, String variantId) async {
+    final installed = _roles[role]?.installed[variantId];
+    if (installed == null) return null;
+    return installed.fileName;
+  }
+
+  Future<String?> variantTokenizerPath(String role, String variantId) async {
+    final installed = _roles[role]?.installed[variantId];
+    return installed?.tokenizerFileName;
+  }
+
   Future<double> testModel({
     required Object modelFile,
     Object? tokenizerFile,
