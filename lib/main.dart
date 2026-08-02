@@ -14,10 +14,12 @@ import 'core/detection/report_llm_service.dart';
 import 'core/services/history_repository.dart';
 import 'core/services/ocr_service.dart';
 import 'core/services/preferences_service.dart';
+import 'core/utils/app_version.dart';
 import 'l10n/generated/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppVersion.init();
   final prefs = PreferencesService();
   await prefs.load();
   await OcrService.hydrate();
