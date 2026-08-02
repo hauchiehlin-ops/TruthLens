@@ -257,14 +257,17 @@ class ModelManager extends ChangeNotifier {
       {int? expected, void Function(double)? onProgress}) async {
     final urlsToTry = <String>[];
 
-    // GitHub Releases 網頁端 CORS 修正方案：
+    // GitHub Releases 網頁端 CORS 修正方案 (優先使用全球 CORS 開放的 jsDelivr CDN)：
     if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
       final parts = originalUrl.split('/releases/download/');
       if (parts.length == 2) {
-        final subPath = parts[1];
-        urlsToTry.add('https://corsproxy.org/?${Uri.encodeComponent(originalUrl)}');
-        urlsToTry.add('https://api.codetabs.com/v1/proxy?quest=${Uri.encodeComponent(originalUrl)}');
-        urlsToTry.add('https://huggingface.co/hauchiehlin/TruthLens/resolve/main/$subPath');
+        final subPath = parts[1]; // e.g. "v0.1-models-detector/xlmr_detector_int8.onnx"
+        final subParts = subPath.split('/');
+        if (subParts.length == 2) {
+          final tag = subParts[0];
+          final filename = subParts[1];
+          urlsToTry.add('https://cdn.jsdelivr.net/gh/hauchiehlin-ops/TruthLens@$tag/$filename');
+        }
       }
     }
     urlsToTry.add(originalUrl);

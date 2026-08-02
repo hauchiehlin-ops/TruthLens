@@ -113,7 +113,7 @@
           "size_bytes": 1708582752,
           "min_ram_mb": 6144,
           "tier": "high",
-          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.1-models-llm/gemma-2-2b-it-Q4_K_M.gguf",
+          "url": "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf",
           "sha256": "e0aee85060f168f0f2d8473d7ea41ce2f3230c1bc1374847505ea599288a7787",
           "version": "1.0",
           "source": "bartowski/gemma-2-2b-it-GGUF（google/gemma-2-2b-it 的 GGUF Q4_K_M 量化）",
