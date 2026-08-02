@@ -70,5 +70,7 @@
 	<string>TruthLens 需要相簿存取權限以載入包含文字的圖片進行離線 OCR 辨識。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>TruthLens 需要相機存取權限拍攝包含文字的文件照片進行離線 OCR 辨識。</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
