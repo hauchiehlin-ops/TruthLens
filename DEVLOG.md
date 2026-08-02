@@ -1,5 +1,26 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-02 — [修正] 參考文獻抽取邏輯支援跨行組裝 (Vancouver/IEEE 格式) 與頁首頁尾雜訊過濾
+
+**做了什麼**
+
+- **Root Cause 診斷**：使用者回報匯入論文照片/文字（包含 7 條 Vancouver/IEEE 編號格式 `[1]`~`[7]` 之參考文獻）後，檢測報告卻顯示「未在文件中偵測到參考文獻條目」。分析原因：
+  1. **跨行分切問題**：學術論文之參考文獻在 OCR 或文字匯入時經常跨越 2~3 行（例如第 1 行為 `[1] Author...`，第 2 行為 `Publisher, 1995.`）。原本 `BibliographyVerifier.extractEntries` 對 `section` 直接按單行分切 (`split('\n')`) 並獨自判斷每行，導致第 1 行因無年份 (`hasYear=false`) 失敗，第 2 行因無編號 (`isBulleted=false`) 失敗，7 條文獻無一被識別。
+  2. **頁首/頁尾雜訊干擾**：跨頁文字中包含 `70 B. LIAO et al.` 與 `---` 分隔線等雜訊行。
+  3. **Vancouver / IEEE 格式年份位置**：原本 Path 1 僅支援 Harvard 格式（年份緊接於作者姓名後 `Author (2005)`），Vancouver/IEEE 格式年份位於條目末端。
+- **修法 (`bibliography_verifier.dart`)**：
+  - **跨行動態組裝 (`groupedBlocks`)**：依據 `_bulletOrNumberPrefix` (`[1]`, `1.`, `(1)` 等) 或作者開頭樣式自動識別新條目開頭，將屬於同一條文獻的跨行文字合併為單一完整區塊後再統一進行年份、作者與期刊關鍵字匹配。
+  - **雜訊過濾**：自動剔除頁碼、頁首作者資訊與分隔線等干擾行。
+  - **姓氏與年份抽取優化**：相容 `COHEN B.S., HERING S.V., ... 1995` 格式，精準提取 `COHEN` 姓氏與西元年份。
+- **測試**：在 [bibliography_verifier_test.dart](test/bibliography_verifier_test.dart) 新增真實 Vancouver/IEEE 跨行參考文獻單元測試，7 筆條目 100% 成功抽取。
+
+**驗證**
+
+- `flutter analyze` 輸出 `No issues found!`（0 警告）
+- `flutter test` **140/140** 項測試全數通過！
+
+---
+
 ## 2026-08-02 — [修正] AI 模型下載時 GitHub Releases 轉址與 User-Agent 缺失導致 ClientException: HTTP 403
 
 **做了什麼**

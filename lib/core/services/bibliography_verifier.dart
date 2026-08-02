@@ -118,30 +118,64 @@ class BibliographyVerifier {
       if (entries.isNotEmpty) return entries;
     }
 
-    // 路徑 2：強化版條列式／中英文／含期刊與卷期頁碼關鍵字之文獻掃描
-    final lines = section.split(RegExp(r'\r?\n'));
+    // 路徑 2：跨行組裝與條列式／中英文／含期刊與卷期頁碼關鍵字之文獻掃描
+    final rawLines = section.split(RegExp(r'\r?\n'));
+    final groupedBlocks = <String>[];
+    String? currentBlock;
+
+    for (final rawLine in rawLines) {
+      final line = rawLine.trim();
+      if (line.isEmpty) continue;
+
+      // 檢查是否為頁首/頁尾噪音（例如 "70 B. LIAO et al." 或 "---"）
+      if (RegExp(r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|[-—=_]{3,})$').hasMatch(line)) {
+        continue;
+      }
+
+      // 判斷該行是否為全新條目的開頭
+      final isNewEntryStart = _bulletOrNumberPrefix.hasMatch(line) ||
+          RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(line) ||
+          RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line);
+
+      if (isNewEntryStart) {
+        if (currentBlock != null && currentBlock.trim().isNotEmpty) {
+          groupedBlocks.add(currentBlock.trim());
+        }
+        currentBlock = line;
+      } else {
+        if (currentBlock != null) {
+          currentBlock = '$currentBlock $line';
+        } else if (line.length >= 15) {
+          currentBlock = line;
+        }
+      }
+    }
+    if (currentBlock != null && currentBlock.trim().isNotEmpty) {
+      groupedBlocks.add(currentBlock.trim());
+    }
+
     final candidates = <BibliographyEntry>[];
 
-    for (final rawLine in lines) {
-      final line = rawLine.trim();
-      if (line.length < 15) continue;
+    for (final block in groupedBlocks) {
+      if (block.length < 15) continue;
 
-      final isBulleted = _bulletOrNumberPrefix.hasMatch(line);
-      final hasJournalKw = _journalKeyword.hasMatch(line);
-      final hasChineseAuth = _chineseAuthor.hasMatch(line);
-      final yearMatch = _yearRegex.firstMatch(line);
+      final isBulleted = _bulletOrNumberPrefix.hasMatch(block);
+      final hasJournalKw = _journalKeyword.hasMatch(block);
+      final hasChineseAuth = _chineseAuthor.hasMatch(block);
+      final yearMatch = _yearRegex.firstMatch(block);
       final hasYear = yearMatch != null;
 
       // 判定條件：
-      // (有條列前綴 且 有年份) OR (有期刊/卷期/DOI關鍵字 且 有年份) OR (有中文作者 且 有年份)
+      // (有條列前綴 且 有年份) OR (有期刊/卷期/DOI關鍵字 且 有年份) OR (有中文作者 且 有年份) OR (有標題 且 有條列前綴)
       final isCitationItem = (isBulleted && hasYear) ||
           (hasJournalKw && hasYear) ||
-          (hasChineseAuth && hasYear);
+          (hasChineseAuth && hasYear) ||
+          (hasHeading && isBulleted);
 
       if (isCitationItem) {
-        final cleaned = line.replaceAll(_bulletOrNumberPrefix, '');
+        final cleaned = block.replaceAll(_bulletOrNumberPrefix, '');
         final year = hasYear ? int.tryParse(yearMatch.group(1) ?? '') : null;
-        candidates.add(_parseLineEntry(cleaned, line, year));
+        candidates.add(_parseLineEntry(cleaned, block, year));
       }
     }
 
@@ -189,11 +223,13 @@ class BibliographyVerifier {
 
     // 嘗試抽取第一作者姓氏或中文姓名
     String? surname;
-    final commaIdx = cleaned.indexOf(',');
-    if (commaIdx > 0 && commaIdx < 30) {
-      surname = cleaned.substring(0, commaIdx).trim();
+    final cleanedNoPrefix = cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
+    final commaIdx = cleanedNoPrefix.indexOf(',');
+    if (commaIdx > 0 && commaIdx < 40) {
+      final partBeforeComma = cleanedNoPrefix.substring(0, commaIdx).trim();
+      surname = partBeforeComma.split(RegExp(r'\s+')).first;
     } else {
-      final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleaned);
+      final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
       if (chineseMatch != null) {
         surname = chineseMatch.group(0);
       }

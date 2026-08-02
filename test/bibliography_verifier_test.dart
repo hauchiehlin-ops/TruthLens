@@ -101,6 +101,38 @@ Coles, D., 1965. Transition in circular Couette flow. Journal of Fluid Mechanics
       expect(entries[1].year, 2022);
       expect(entries[2].year, 2018);
     });
+
+    test('跨行與含有頁首/頁尾雜訊之 Vancouver/IEEE 格式參考文獻可精準擷取', () {
+      const vancouverInput = '''
+REFERENCES
+
+[1] COHEN B.S., HERING S.V., Air sampling instrumentsfor evaluation of atmospheric contaminants, 8th Ed.
+American Conference of Governmental Industrial Hygienists, Inc., Cincinnati 1995.
+[2] HINDS W.C., Aerosol Technology, Properties, Behavior, and Measurement of Airborne Particles,
+2nd Ed., Wiley, 1999.
+[3] CALVERT S., Venturi and other atomizing scrubbers efficiency and pressure drop, AICHE J., 1970,
+16, 392.
+[4] MAYINGER F., NEUMANN M., Dust collection in Venturi scrubbers, Ger. Chem. Eng., 1978, 1, 289.
+[5] TIGGES K.D., MAYINGER F., Experiments with highly efficient Venturi scrubbers for aerosol separation
+from gases under multi-plane water injection, Chem. Eng. Process, 1984, 18, 171.
+
+70                                B. LIAO et al.
+--------------------------------------------------
+
+[6] TSAI C.J., LIN C.H., WANG Y.M., An efficient Venturi scrubber system to remove submicron particles in
+exhaust gas, J. Air Waste Manage. Assoc., 2005, 55, 319.
+[7] HUANG C.H., TSAI C.J., WANG Y.M., Control of submicron particle collection efficiency in a Venturi
+scrubber. Comparison of experiments with theory, Env. Sci. Tech., 2007, 20, 237.
+''';
+      final entries = BibliographyVerifier.extractEntries(vancouverInput);
+      expect(entries.length, 7);
+      expect(entries[0].firstAuthorSurname, 'COHEN');
+      expect(entries[0].year, 1995);
+      expect(entries[5].firstAuthorSurname, 'TSAI');
+      expect(entries[5].year, 2005);
+      expect(entries[6].firstAuthorSurname, 'HUANG');
+      expect(entries[6].year, 2007);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {
