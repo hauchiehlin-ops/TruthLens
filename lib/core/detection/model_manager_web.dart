@@ -255,11 +255,20 @@ class ModelManager extends ChangeNotifier {
 
   Future<Uint8List> _streamDownload(String originalUrl,
       {int? expected, void Function(double)? onProgress}) async {
-    final urlsToTry = [
-      originalUrl,
-      'https://corsproxy.io/?${Uri.encodeComponent(originalUrl)}',
-      'https://ghproxy.net/$originalUrl',
-    ];
+    final urlsToTry = <String>[];
+
+    // GitHub Releases 網頁端 CORS 修正方案：
+    if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
+      final parts = originalUrl.split('/releases/download/');
+      if (parts.length == 2) {
+        final subPath = parts[1];
+        urlsToTry.add('https://corsproxy.org/?${Uri.encodeComponent(originalUrl)}');
+        urlsToTry.add('https://api.codetabs.com/v1/proxy?quest=${Uri.encodeComponent(originalUrl)}');
+        urlsToTry.add('https://huggingface.co/hauchiehlin/TruthLens/resolve/main/$subPath');
+      }
+    }
+    urlsToTry.add(originalUrl);
+    urlsToTry.add('https://corsproxy.io/?${Uri.encodeComponent(originalUrl)}');
 
     Object? lastError;
     for (final url in urlsToTry) {
