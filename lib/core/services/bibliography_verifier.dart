@@ -119,7 +119,11 @@ class BibliographyVerifier {
       (m) => '${m.group(1)} ${m.group(2)}',
     );
 
-    // 4) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
+    // 4) 修正跨行頁碼割裂 (如 19–\n42. -> 19–42.) 與跨行斷詞割裂
+    text = text.replaceAllMapped(
+      RegExp(r'(\d+)\s*[\-–—]\s*[\r\n]+\s*(\d+[\.\,]?)'),
+      (m) => '${m.group(1)}–${m.group(2)}',
+    );
     text = text.replaceAllMapped(
       RegExp(r'([a-zA-Z]{2,})-\s*[\r\n]+\s*([a-zA-Z]{2,})'),
       (m) => '${m.group(1)}${m.group(2)}',
@@ -310,8 +314,11 @@ class BibliographyVerifier {
 
   static BibliographyEntry _parseLineEntry(
       String cleaned, String rawText, int? year) {
-    final cleanedNoPrefix =
-        cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
+    // 清除因前一條目頁碼跨行斷行殘留於行首的孤立頁碼數字 (如 "42 Cole, J.A." -> "Cole, J.A.", "425. Donnelly" -> "Donnelly")
+    final cleanedNoPrefix = cleaned
+        .replaceAll(_bulletOrNumberPrefix, '')
+        .replaceAll(RegExp(r'^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])'), '')
+        .trim();
 
     // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
     final quoteMatch =
