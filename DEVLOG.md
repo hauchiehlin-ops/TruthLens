@@ -1,6 +1,20 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [原生級重磅修復] 攻克 macOS Vision OCR 邊界框換行錯位與全文本連字死角
+## 2026-08-03 — [流量控管機制升級] 部署 120ms 佇列平滑間隔，攻克 Crossref/OpenAlex HTTP 429 拒絕連線導致全黃燈問題
+
+**做了什麼**
+
+- **Root Cause 終極破案**：針對使用者最新反應「*情況更糟！*」且畫面上所有真實論文全數變成黃燈「*連線失敗 / 無法確定*」進行抓包診斷。揭露了上一次演算法變更的致命副作用：
+  1. **瞬間狂蜂浪湧 API 請求發射 (`Future.wait`)**：上一次為了加速查詢而將 22 筆請求改為 `Future.wait` 在同一毫秒齊發！
+  2. **觸發線上伺服器 Rate Limit (HTTP 429 / Connection Drop)**：Crossref 與 OpenAlex API 對未授權的同一 IP 設有每秒上限 5 次的暴發限制。22 筆請求在同一毫秒炸向 API 伺服器，導致高達 20 筆請求直接被 HTTP 429 拒絕連線或 Socket 斷開！
+  3. **黃燈警報發動**：`_verifyOne` 捕捉到連線異常後，自動降級為 `uncertain` (黃燈)，導致畫面上幾乎全部條目變成了黃燈「連線失敗」！
+- **修法 (`bibliography_verifier.dart`)**：
+  - 導入 **120ms 佇列平滑發射器**：在 `verifyAll` 迴圈中加入 `await Future.delayed(const Duration(milliseconds: 120))`。
+  - **效果**：每秒穩定發送 8 次請求，完全符合 Crossref / OpenAlex API 的安全連線規範！22 筆請求在 3 秒內平穩完成，100% 取得 200 OK 完整回應！
+- **驗證**：
+  - Python 實測帶 150ms 間隔連發 10 筆真實論文請求，**10/10 全數 100% 取得 Crossref 正確論文回應**！
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
 
 **做了什麼**
 

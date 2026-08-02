@@ -421,10 +421,15 @@ class BibliographyVerifier {
     final c = client ?? http.Client();
     final owns = client == null;
     try {
-      final futures = entries
-          .take(maxEntriesPerCheck)
-          .map((entry) => _verifyOne(c, entry, timeout));
-      return await Future.wait(futures);
+      final results = <BibliographyCheckResult>[];
+      final targetEntries = entries.take(maxEntriesPerCheck).toList();
+      for (var i = 0; i < targetEntries.length; i++) {
+        if (i > 0) {
+          await Future.delayed(const Duration(milliseconds: 120));
+        }
+        results.add(await _verifyOne(c, targetEntries[i], timeout));
+      }
+      return results;
     } finally {
       if (owns) c.close();
     }
