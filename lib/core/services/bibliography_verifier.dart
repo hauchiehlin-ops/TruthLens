@@ -313,24 +313,42 @@ class BibliographyVerifier {
         quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim();
 
     if (title == null || title.isEmpty) {
-      // 嘗試先剔除開頭的作者群（如 "COHEN B.S., HERING S.V., "）
-      final noAuthors = cleanedNoPrefix
-          .replaceAll(
-            RegExp(
-                r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+",
-                caseSensitive: false),
-            '',
-          )
-          .trim();
+      // 若有西元年 (例如 1983. 或 1986. 或 (1983))，年份後第一個以句號分割的段落即為真正的論文篇名
+      if (year != null) {
+        final yearPattern = RegExp('\\b${year}[a-z]?\\b[\\.\\,:]?\\s*');
+        final yearMatch = yearPattern.firstMatch(cleanedNoPrefix);
+        if (yearMatch != null) {
+          final afterYear = cleanedNoPrefix.substring(yearMatch.end).trim();
+          final titleEnd = afterYear.indexOf('. ');
+          if (titleEnd > 5) {
+            title = afterYear.substring(0, titleEnd).trim();
+          } else if (afterYear.isNotEmpty) {
+            final periodIdx = afterYear.indexOf('.');
+            title = (periodIdx > 5 ? afterYear.substring(0, periodIdx) : afterYear).trim();
+          }
+        }
+      }
 
-      final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix)
-          .split(RegExp(r'[\.度。]\s*'));
-      if (parts.isNotEmpty && parts.first.trim().length > 5) {
-        title = parts.first.trim();
-      } else if (parts.length > 1 && parts[1].trim().length > 5) {
-        title = parts[1].trim();
-      } else {
-        title = cleanedNoPrefix;
+      if (title == null || title.isEmpty || title.length < 5) {
+        // 嘗試先剔除開頭的作者群（如 "COHEN B.S., HERING S.V., "）
+        final noAuthors = cleanedNoPrefix
+            .replaceAll(
+              RegExp(
+                  r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+",
+                  caseSensitive: false),
+              '',
+            )
+            .trim();
+
+        final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix)
+            .split(RegExp(r'[\.度。]\s*'));
+        if (parts.isNotEmpty && parts.first.trim().length > 5) {
+          title = parts.first.trim();
+        } else if (parts.length > 1 && parts[1].trim().length > 5) {
+          title = parts[1].trim();
+        } else {
+          title = cleanedNoPrefix;
+        }
       }
     }
 

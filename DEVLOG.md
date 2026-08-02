@@ -1,15 +1,16 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [重大防護升級] 攻克 Taylor & Francis 浮水印與雙欄 PDF 文字穿透破壞條目問題
+## 2026-08-03 — [關鍵篇名解析修復] 攻克西文作者多縮寫點 (M.A. D.) 導致篇名截斷為日期字串問題
 
 **做了什麼**
 
-- **Root Cause 深度診斷**：對照使用者最新上傳之第 4 張全幅 PDF 原版（*International Journal of Computational Fluid Dynamics* Page 233）。揭露最為驚人的**跨欄與浮水印干擾真相**：
-  1. **浮水印縱向貫穿**：PDF 左側邊緣旋轉 90 度印有出版社浮水印 `Downloaded By: [Lin, Hau-Chieh] At: 14:43 11 November 2010`。在 PDF 提取為純文字 Stream 時，浮水印文字被隨機插到了第 16 筆條目 *Stuart, J.T. (1958)* 的正前方，把第一作者姓氏 `Stuart` 黏住破壞（變成 `Linetal. Downloaded By... Stuart`），導致 `Stuart` 姓氏遺失！
-  2. **雙欄內文跨欄穿透**：Page 233 左欄包含 Figure 6、Figure 5 與 Section 4. Conclusion。PDF 提取流在讀取右欄 *Hein, H. (1956)* 後，直接讀取了左欄的 `Figure 6... 232 H.-C. Lin et al.`，隨後才讀取底部的 *Stuart, J.T. (1958)*。導致 *Hein 1956* 與 *Stuart 1958* 之間被硬生生灌入了高達 1000 字的左欄內文！
+- **Root Cause 深度診斷**：對照使用者最新上傳之 3 張實測對比截圖。**發現了唯一一筆亮綠燈 (Jones 1981) 與其餘 17 筆亮紅燈 (Ahlers 1983 等) 的關鍵差異**：
+  1. `Jones 1981` 寫法為 `Jones, C.A., 1981. Nonlinear...`，年份 `1981` 緊接句點，舊版正則成功切割出篇名 `Nonlinear Taylorvortices...`。
+  2. `Ahlers 1983` 寫法為 `Ahlers, G., Cannell, D.S., and Lerma, M.A. D., 1983. Possible...`。由於作者 `Lerma` 名字縮寫含有多個縮寫點與空格（`M.A. D.`），舊版依據句點 `.` 切割篇名時，在 `M.A. D., 1983` 處被提早切斷！
+  3. 導致系統抽出的論文篇名變成了 `M.A. D., 1983`！傳給 Crossref / OpenAlex 的搜尋字串是 `query.title = M.A. D., 1983`！線上資料庫搜尋 `M.A. D., 1983` 當然回傳 0 筆命中，導致除了 `Jones 1981` 以外的所有論文全數被標記為紅燈「虛構文獻」！
 - **修法 (`bibliography_verifier.dart`)**：
-  1. **浮水印自動抹除濾網 (`_preprocessOcrText`)**：在進行任何區塊切分前，部署 `Downloaded\s+By:\s*\[[^\]]+\][^\n\r]*` 正則，100% 清除所有 Taylor & Francis / IEEE / Springer 的浮水印噪音！
-  2. **CamelCase 自動補空符 (`[a-z][A-Z]`)**：加入 `text.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), ...)`，自動將 OCR 擠壓的單字（如 `Possiblemechanism` ➔ `Possible mechanism`）還原為正常學術單字。
+  1. **西元年邊界錨定篇名抽取 (`_parseLineEntry`)**：論文條目格式中，**出版年份 (19xx/20xx) 必為作者群與篇名的法定分界線**。新版演算法優先定位 `yearMatch` (如 `1983.`)，並提取 `yearMatch.end` 之後第一個以 `. ` 分割的完整句串作為精準篇名。
+  2. **效果**：`Ahlers 1983` 的篇名精準還原為 `Possible mechanism for transitions in wavy Taylor-vortex flow`！`Andereck 1986` 精準還原為 `Flow regimes in a circular Couette system...`！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！修復已推送至 `main` 分支。
 
