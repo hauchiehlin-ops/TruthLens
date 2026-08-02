@@ -126,46 +126,7 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(l10n.helpWorkflowTitle, style: textTheme.titleLarge),
           const SizedBox(height: 12),
-          _stepCard(
-            context,
-            step: 1,
-            title: l10n.helpWorkflowStep1Title,
-            body: l10n.helpWorkflowStep1Body,
-          ),
-          _stepCard(
-            context,
-            step: 2,
-            title: l10n.helpWorkflowStep2Title,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Bullet(l10n.helpWorkflowStep2Bullet1),
-                _Bullet(l10n.helpWorkflowStep2Bullet2),
-                _Bullet(l10n.helpWorkflowStep2Bullet3),
-                _Bullet(l10n.helpWorkflowStep2Bullet4),
-                _Bullet(l10n.helpWorkflowStep2Bullet5),
-                _Bullet(l10n.helpWorkflowStep2Bullet6),
-              ],
-            ),
-          ),
-          _stepCard(
-            context,
-            step: 3,
-            title: l10n.helpWorkflowStep3Title,
-            body: l10n.helpWorkflowStep3Body,
-          ),
-          _stepCard(
-            context,
-            step: 4,
-            title: l10n.helpWorkflowStep4Title,
-            body: l10n.helpWorkflowStep4Body,
-          ),
-          _stepCard(
-            context,
-            step: 5,
-            title: l10n.helpWorkflowStep5Title,
-            body: l10n.helpWorkflowStep5Body,
-          ),
+          _WorkflowInfographicWidget(l10n: l10n),
           const SizedBox(height: 24),
           Text(l10n.helpTuningTitle, style: textTheme.titleLarge),
           const SizedBox(height: 12),
@@ -298,6 +259,370 @@ class _Bullet extends StatelessWidget {
         children: [
           const Text('•  '),
           Expanded(child: Text(text, style: const TextStyle(height: 1.4))),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkflowStepData {
+  final int step;
+  final String title;
+  final IconData icon;
+  final Color accentColor;
+  final List<String> chips;
+  final String? body;
+  final List<String>? bullets;
+
+  const _WorkflowStepData({
+    required this.step,
+    required this.title,
+    required this.icon,
+    required this.accentColor,
+    required this.chips,
+    this.body,
+    this.bullets,
+  });
+}
+
+class _WorkflowInfographicWidget extends StatefulWidget {
+  final AppLocalizations l10n;
+  const _WorkflowInfographicWidget({required this.l10n});
+
+  @override
+  State<_WorkflowInfographicWidget> createState() =>
+      _WorkflowInfographicWidgetState();
+}
+
+class _WorkflowInfographicWidgetState
+    extends State<_WorkflowInfographicWidget> {
+  int _selectedStep = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    final steps = [
+      _WorkflowStepData(
+        step: 1,
+        title: widget.l10n.helpWorkflowStep1Title,
+        icon: Icons.cloud_download_rounded,
+        accentColor: Colors.blue,
+        chips: const ['首次啟動引導', '模型管理中心', '自動版本偵測'],
+        body: widget.l10n.helpWorkflowStep1Body,
+      ),
+      _WorkflowStepData(
+        step: 2,
+        title: widget.l10n.helpWorkflowStep2Title,
+        icon: Icons.tune_rounded,
+        accentColor: Colors.purple,
+        chips: const [
+          'Transformer (40%)',
+          '統計分析 (25%)',
+          '風格特徵 (20%)',
+          '對抗防禦 (15%)',
+          '報告 LLM (選用)'
+        ],
+        bullets: [
+          widget.l10n.helpWorkflowStep2Bullet1,
+          widget.l10n.helpWorkflowStep2Bullet2,
+          widget.l10n.helpWorkflowStep2Bullet3,
+          widget.l10n.helpWorkflowStep2Bullet4,
+          widget.l10n.helpWorkflowStep2Bullet5,
+          widget.l10n.helpWorkflowStep2Bullet6,
+        ],
+      ),
+      _WorkflowStepData(
+        step: 3,
+        title: widget.l10n.helpWorkflowStep3Title,
+        icon: Icons.upload_file_rounded,
+        accentColor: Colors.teal,
+        chips: const ['直接貼上', '相機/相簿 OCR', 'PDF / DOCX / TXT / MD', '碼段/公式隔離'],
+        body: widget.l10n.helpWorkflowStep3Body,
+      ),
+      _WorkflowStepData(
+        step: 4,
+        title: widget.l10n.helpWorkflowStep4Title,
+        icon: Icons.analytics_rounded,
+        accentColor: Colors.amber,
+        chips: const ['四引擎並列推論', '即時動態進度', 'ESL 非母語寫作校正'],
+        body: widget.l10n.helpWorkflowStep4Body,
+      ),
+      _WorkflowStepData(
+        step: 5,
+        title: widget.l10n.helpWorkflowStep5Title,
+        icon: Icons.assessment_rounded,
+        accentColor: Colors.green,
+        chips: const ['AI 總覽儀表', '句級熱力圖', 'Crossref 文獻驗證', 'PDF / CSV / JSON / PNG 匯出'],
+        body: widget.l10n.helpWorkflowStep5Body,
+      ),
+    ];
+
+    return Card(
+      elevation: 3,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 頂部圖解橫向步驟條 (Header Flow Banner)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (int i = 0; i < steps.length; i++) ...[
+                    _buildStepHeaderChip(context, steps[i]),
+                    if (i < steps.length - 1)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 16,
+                          color: scheme.outline.withAlpha(140),
+                        ),
+                      ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 12),
+            // 縱向流程圖解卡片 Timeline
+            Column(
+              children: [
+                for (int i = 0; i < steps.length; i++)
+                  _buildTimelineNode(context, steps[i],
+                      isLast: i == steps.length - 1),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepHeaderChip(BuildContext context, _WorkflowStepData step) {
+    final isSelected = _selectedStep == step.step;
+    final scheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _selectedStep = step.step;
+          });
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? step.accentColor.withAlpha(40)
+                : scheme.surfaceContainerHighest.withAlpha(100),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected
+                  ? step.accentColor
+                  : scheme.outline.withAlpha(60),
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: step.accentColor,
+                child: Text(
+                  '${step.step}',
+                  style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(step.icon, size: 16, color: isSelected ? step.accentColor : scheme.onSurfaceVariant),
+              const SizedBox(width: 4),
+              Text(
+                step.title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? scheme.onSurface : scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimelineNode(BuildContext context, _WorkflowStepData step,
+      {required bool isLast}) {
+    final scheme = Theme.of(context).colorScheme;
+    final isSelected = _selectedStep == step.step;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 左側資訊圖表 Timeline 軸
+          Column(
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => _selectedStep = step.step),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: step.accentColor.withAlpha(isSelected ? 255 : 40),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: step.accentColor,
+                      width: isSelected ? 2.5 : 1.5,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: step.accentColor.withAlpha(100),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            )
+                          ]
+                        : null,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      step.icon,
+                      size: 18,
+                      color: isSelected ? Colors.white : step.accentColor,
+                    ),
+                  ),
+                ),
+              ),
+              if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    color: isSelected
+                        ? step.accentColor.withAlpha(180)
+                        : scheme.outline.withAlpha(60),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 14),
+          // 右側內容卡片
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedStep = step.step),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? step.accentColor.withAlpha(20)
+                        : scheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? step.accentColor.withAlpha(180)
+                          : scheme.outline.withAlpha(40),
+                      width: isSelected ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: step.accentColor,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Step ${step.step}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              step.title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      // 資訊圖表關鍵字 Chip 標籤
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final chip in step.chips)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: step.accentColor.withAlpha(30),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: step.accentColor.withAlpha(100),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Text(
+                                chip,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: scheme.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      if (step.body != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          step.body!,
+                          style: const TextStyle(height: 1.45, fontSize: 13),
+                        ),
+                      ],
+                      if (step.bullets != null) ...[
+                        const SizedBox(height: 8),
+                        for (final b in step.bullets!) _Bullet(b),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
