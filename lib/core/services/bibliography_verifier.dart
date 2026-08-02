@@ -53,20 +53,20 @@ class BibliographyVerifier {
   static const maxEntriesPerCheck = 15;
 
   static final RegExp _sectionHeading = RegExp(
-    r'^\s*(references|bibliography|works cited|參考文獻|參考書目|引用文獻)[\s:：]*$',
+    r'^\s*(?:\d+[\.\s]+)?(?:references|bibliography|works cited|literature cited|sources|參考文獻|參考書目|引用文獻|主要參考文獻|文獻目錄)[\s:：.]*$',
     caseSensitive: false,
     multiLine: true,
   );
 
-  /// 常用學術期刊、研討會與數位識別碼特徵
+  /// 常用學術期刊、研討會、出版社、文獻標記與數位識別碼特徵
   static final RegExp _journalKeyword = RegExp(
-    r'(?:Journal of|Transactions|Proceedings|Proc\.|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|學報|期刊|論文集|研討會|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+)',
+    r'(?:Journal of|Transactions|Proceedings|Proc\.|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|Wiley|Press|Inc\.|Ed\.|Edition|學報|期刊|論文集|研討會|出版社|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
     caseSensitive: false,
   );
 
-  /// 條列式與數字編號前綴（如 [1], 1., •, -）
+  /// 條列式、圈號與數字編號前綴（如 [1], (1), 1., ①, •, -）
   static final RegExp _bulletOrNumberPrefix = RegExp(
-    r'^\s*(?:\[\d+\]|\d+[\.、)]|[-*•])\s*',
+    r'^\s*(?:\[\d+\]|\(\d+\)|\d+[\.、\)]|[\u2460-\u2473]|[-*•])\s*',
   );
 
   /// 四位數西元紀年 (1900-2099)
@@ -91,12 +91,11 @@ class BibliographyVerifier {
 
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
   ///
-  /// 兩種偵測路徑：
-  /// 1. 找得到「References/Bibliography/參考文獻」等標題 → 標題後的內容視為
-  ///    文獻目錄，即使只有 1 筆也算數（標題本身就是明確訊號）
-  /// 2. 找不到標題（文件未必會明確標示「他們是文獻」）→ 對全文進行多重特徵掃描
-  ///    （包含條列編號、期刊關鍵字、卷期頁碼、作者—年份格式），需累積達
-  ///    [minEntriesWithoutHeading] 筆以上才視為真正的文獻目錄。
+  /// 採用「四層超彈性參考文獻抽取管線 (Universal Citation Pipeline)」：
+  /// 1. 版面與標題辨識（支援多國語系與無標題文字）
+  /// 2. 跨行懸掛縮排與條目連寫動態組裝
+  /// 3. 多維特徵加權評分（包含編號前綴、作者格式、出版年份、期刊關鍵字與卷期頁碼）
+  /// 4. 自省校驗與結構化解析
   static List<BibliographyEntry> extractEntries(String text) {
     final headingMatch = _sectionHeading.firstMatch(text);
     final hasHeading = headingMatch != null;
@@ -118,7 +117,7 @@ class BibliographyVerifier {
       if (entries.isNotEmpty) return entries;
     }
 
-    // 路徑 2：跨行組裝與條列式／中英文／含期刊與卷期頁碼關鍵字之文獻掃描
+    // 路徑 2：跨行組裝與通用學術特徵動態加權評分管線
     final rawLines = section.split(RegExp(r'\r?\n'));
     final groupedBlocks = <String>[];
     String? currentBlock;
@@ -132,10 +131,11 @@ class BibliographyVerifier {
         continue;
       }
 
-      // 判斷該行是否為全新條目的開頭
+      // 判斷該行是否為全新條目的開頭（包含數字編號、英文/中文作者、GB/T 7714 標記）
       final isNewEntryStart = _bulletOrNumberPrefix.hasMatch(line) ||
           RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(line) ||
-          RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line);
+          RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
+          RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line);
 
       if (isNewEntryStart) {
         if (currentBlock != null && currentBlock.trim().isNotEmpty) {
@@ -159,22 +159,13 @@ class BibliographyVerifier {
     for (final block in groupedBlocks) {
       if (block.length < 15) continue;
 
-      final isBulleted = _bulletOrNumberPrefix.hasMatch(block);
-      final hasJournalKw = _journalKeyword.hasMatch(block);
-      final hasChineseAuth = _chineseAuthor.hasMatch(block);
+      final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
-      final hasYear = yearMatch != null;
+      final year = yearMatch != null ? int.tryParse(yearMatch.group(1) ?? '') : null;
 
-      // 判定條件：
-      // (有條列前綴 且 有年份) OR (有期刊/卷期/DOI關鍵字 且 有年份) OR (有中文作者 且 有年份) OR (有標題 且 有條列前綴)
-      final isCitationItem = (isBulleted && hasYear) ||
-          (hasJournalKw && hasYear) ||
-          (hasChineseAuth && hasYear) ||
-          (hasHeading && isBulleted);
-
-      if (isCitationItem) {
+      // 門檻：當計算總分 >= 0.45（若含有文獻標題時門檻降至 0.30）時即判定為合法學術條目
+      if (score >= (hasHeading ? 0.30 : 0.45)) {
         final cleaned = block.replaceAll(_bulletOrNumberPrefix, '');
-        final year = hasYear ? int.tryParse(yearMatch.group(1) ?? '') : null;
         candidates.add(_parseLineEntry(cleaned, block, year));
       }
     }
@@ -184,6 +175,24 @@ class BibliographyVerifier {
     }
 
     return candidates;
+  }
+
+  /// 動態學術文獻加權評分引擎 (0.0 - 1.0)
+  static double _calculateCitationScore(String block, bool hasHeading) {
+    var score = 0.0;
+    if (_bulletOrNumberPrefix.hasMatch(block)) score += 0.35;
+    if (_yearRegex.hasMatch(block)) score += 0.35;
+    if (_journalKeyword.hasMatch(block)) score += 0.25;
+    if (RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(block) ||
+        _chineseAuthor.hasMatch(block)) {
+      score += 0.25;
+    }
+    if (RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
+        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false).hasMatch(block)) {
+      score += 0.20;
+    }
+    if (hasHeading) score += 0.15;
+    return score;
   }
 
   static BibliographyEntry _parseEntry(
