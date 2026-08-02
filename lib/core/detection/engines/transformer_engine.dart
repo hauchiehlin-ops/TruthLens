@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
@@ -90,6 +92,13 @@ class TransformerEngine implements DetectionEngine {
       _detector = null;
       _loadedModelPath = null;
       _loadError = e.toString();
+      if (e is FormatException) {
+        try {
+          final tokFile = File(tokPath);
+          if (tokFile.existsSync()) await tokFile.delete();
+          await modelManager.refreshInstallStates();
+        } catch (_) {}
+      }
       return null;
     }
   }

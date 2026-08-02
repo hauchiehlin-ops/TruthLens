@@ -138,11 +138,28 @@ class ModelManager extends ChangeNotifier {
                   );
                 }
               } else if (name == 'detector_int8.onnx' || name == 'transformer__truthlens-multilingual-distil-int8.onnx') {
-                // 分類器需要 tokenizer；只有在同目錄真的有 tokenizer.json 時才登記，
-                // 否則登記了也無法推論（避免掃到缺 tokenizer 的孤兒模型）。
-                final tokName = File(p.join(dir.path, 'tokenizer.json')).existsSync()
-                    ? 'tokenizer.json'
-                    : null;
+                // 分類器需要合法合規的 tokenizer；尋找同目錄下的 tokenizer.json 或對應的 tokenizer 檔案
+                String? tokName;
+                final tokFile1 = File(p.join(dir.path, 'transformer__truthlens-multilingual-distil-int8.tokenizer.json'));
+                final tokFile2 = File(p.join(dir.path, 'tokenizer.json'));
+                if (tokFile1.existsSync()) {
+                  tokName = p.basename(tokFile1.path);
+                } else if (tokFile2.existsSync()) {
+                  tokName = 'tokenizer.json';
+                }
+
+                // 驗證 Tokenizer 檔案是否為完整合法的 JSON 格式（排除下到一半或網路錯誤的損毀檔）
+                if (tokName != null) {
+                  try {
+                    final content = File(p.join(dir.path, tokName)).readAsStringSync();
+                    jsonDecode(content);
+                  } catch (_) {
+                    // 若 Tokenizer 檔格式不合規，自動移除該損毀檔，避免誤判為有效安裝
+                    try { File(p.join(dir.path, tokName)).deleteSync(); } catch (_) {}
+                    tokName = null;
+                  }
+                }
+
                 if (role == 'transformer' &&
                     tokName != null &&
                     !installed.containsKey('truthlens-multilingual-distil-int8')) {
@@ -151,7 +168,7 @@ class ModelManager extends ChangeNotifier {
                     variantId: 'truthlens-multilingual-distil-int8',
                     fileName: name,
                     tokenizerFileName: tokName,
-                    tokenizer: 'bert-wordpiece',
+                    tokenizer: 'roberta-bpe',
                     aiLabelIndex: 1,
                     version: '1.0.0',
                     sizeBytes: entity.lengthSync(),
@@ -314,8 +331,19 @@ class ModelManager extends ChangeNotifier {
 
       if (variant.tokenizerUrl != null) {
         tokenizerFileName = '${role}__${variant.id}.tokenizer.json';
-        await _streamDownload(
-            variant.tokenizerUrl!, File(p.join(dir.path, tokenizerFileName)));
+        final tokFile = File(p.join(dir.path, tokenizerFileName));
+        if (tokFile.existsSync()) await tokFile.delete();
+        await _streamDownload(variant.tokenizerUrl!, tokFile);
+
+        // 驗證 Tokenizer JSON 檔格式完整性
+        try {
+          final content = await tokFile.readAsString();
+          jsonDecode(content);
+        } catch (e) {
+          if (tokFile.existsSync()) await tokFile.delete();
+          if (tmp.existsSync()) await tmp.delete();
+          throw FormatException('下載之 Tokenizer JSON 格式不完整或網路斷傳: $e');
+        }
       }
 
       if (target.existsSync()) await target.delete();

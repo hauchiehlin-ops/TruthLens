@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
@@ -82,9 +84,16 @@ class AdversarialEngine implements DetectionEngine {
       );
       _loadedModelPath = modelPath;
       return _detector;
-    } catch (_) {
+    } catch (e) {
       _detector = null;
       _loadedModelPath = null;
+      if (e is FormatException) {
+        try {
+          final tokFile = File(tokPath);
+          if (tokFile.existsSync()) await tokFile.delete();
+          await modelManager.refreshInstallStates();
+        } catch (_) {}
+      }
       return null;
     }
   }
