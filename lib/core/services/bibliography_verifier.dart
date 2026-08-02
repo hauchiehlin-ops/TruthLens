@@ -410,7 +410,12 @@ class BibliographyVerifier {
       'rows': '1',
     };
     if (entry.title != null && entry.title!.trim().length >= 5) {
-      queryParams['query.title'] = entry.title!;
+      final cleanTitle = entry.title!.trim();
+      final hasUnspacedLongWord =
+          cleanTitle.split(RegExp(r'\s+')).any((w) => w.length >= 15 && !w.contains('-'));
+      if (!hasUnspacedLongWord) {
+        queryParams['query.title'] = cleanTitle;
+      }
       if (entry.firstAuthorSurname != null &&
           entry.firstAuthorSurname!.length >= 2) {
         queryParams['query.author'] = entry.firstAuthorSurname!;
