@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-02 — [修正] AI 模型下載時 GitHub Releases 轉址與 User-Agent 缺失導致 ClientException: HTTP 403
+
+**做了什麼**
+
+- **Root Cause 診斷**：使用者回報在「AI 模型管理」畫面下載「多語言輕量偵測器（INT8）」與「改寫偵測模型（INT8）」時出現 `ClientException: HTTP 403`。分析發現 Hugging Face 託管的模型均可正常下載，而 GitHub Releases 託管的模型檔下載失敗。原因為：
+  1. **User-Agent 標頭缺失**：GitHub 下載端點 (`github.com/releases/download/...`) 會嚴格檢查 User-Agent，預設 HTTP client 缺失 User-Agent 時返回 `HTTP 403 Forbidden` (`User-Agent Required`)。
+  2. **302 Redirect 標頭洩漏**：GitHub Releases 轉址至 AWS S3 (`objects.githubusercontent.com`) 時，若預設跟隨轉址並攜帶原始 domain 的標頭或重複的 Range 標頭，會導致 S3 簽名校驗失效並返回 HTTP 403。
+  3. **Fallback Mirror 機制**：原本 IO 端 `_streamDownload` 未在失敗時進行備用鏡像 retry。
+- **修法 (`model_manager_io.dart` & `model_manager_web.dart`)**：
+  - 手動處理 HTTP 301/302/307/308 重定向 (`followRedirects = false`)，並攜帶標準 `User-Agent` 標頭 (`Mozilla/5.0 ... TruthLens/1.0`)。
+  - 重定向至 AWS S3 時避免重新攜帶 Range 與異質 Host 標頭，確保 AWS S3 pre-signed URL 通過認證。
+  - 在 `_streamDownload` 引入 Candidate Mirrors 列表 (`urlsToTry`)，GitHub Releases 下載失敗時自動 fallback 嘗試熱門鏡像代理（如 `ghproxy.net`）。
+
+**驗證**
+
+- `flutter analyze` 輸出 `No issues found!`
+- `flutter test` **139/139** 項測試全數通過！
+
+---
+
 ## 2026-08-02 — [Phase 4] 全專案 14 國語系操作說明、隱私權政策與 UI 標籤完全校對
 
 **做了什麼**

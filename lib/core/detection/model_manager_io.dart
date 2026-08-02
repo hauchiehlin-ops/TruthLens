@@ -410,14 +410,69 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _streamDownload(String url, File dest,
+  Future<void> _streamDownload(String originalUrl, File dest,
+      {int? expected, void Function(double)? onProgress}) async {
+    final urlsToTry = <String>[originalUrl];
+
+    // 如果是 GitHub Releases 連結，加入備用鏡像代理（如 ghproxy）作為 fallback
+    if (originalUrl.contains('github.com') &&
+        originalUrl.contains('/releases/download/')) {
+      urlsToTry.add('https://ghproxy.net/$originalUrl');
+    }
+
+    Object? lastError;
+    for (final tryUrl in urlsToTry) {
+      try {
+        await _streamDownloadSingle(tryUrl, dest,
+            expected: expected, onProgress: onProgress);
+        return;
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError ?? HttpException('下載失敗');
+  }
+
+  Future<void> _streamDownloadSingle(String url, File dest,
       {int? expected, void Function(double)? onProgress}) async {
     final existingLen = dest.existsSync() ? dest.lengthSync() : 0;
-    final request = http.Request('GET', Uri.parse(url));
-    if (existingLen > 0) {
-      request.headers['Range'] = 'bytes=$existingLen-';
+    var currentUrl = url;
+    http.StreamedResponse? response;
+    int redirectCount = 0;
+
+    while (redirectCount < 5) {
+      final request = http.Request('GET', Uri.parse(currentUrl));
+      request.followRedirects = false; // 手動處理重定向，避免標頭洩漏至 AWS S3 引發 403
+      request.headers['User-Agent'] =
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
+
+      if (existingLen > 0 && redirectCount == 0) {
+        request.headers['Range'] = 'bytes=$existingLen-';
+      }
+
+      final res = await _client.send(request);
+
+      if (res.statusCode == 301 ||
+          res.statusCode == 302 ||
+          res.statusCode == 303 ||
+          res.statusCode == 307 ||
+          res.statusCode == 308) {
+        final location = res.headers['location'];
+        if (location != null && location.isNotEmpty) {
+          currentUrl = Uri.parse(currentUrl).resolve(location).toString();
+          redirectCount++;
+          continue;
+        }
+      }
+
+      response = res;
+      break;
     }
-    final response = await _client.send(request);
+
+    if (response == null) {
+      throw HttpException('重定向次數過多');
+    }
+
     if (response.statusCode == 206) {
       // 伺服器支援斷點續傳 (HTTP 206 Partial Content)
       final total = (response.contentLength ?? 0) + existingLen;

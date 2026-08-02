@@ -257,8 +257,9 @@ class ModelManager extends ChangeNotifier {
       {int? expected, void Function(double)? onProgress}) async {
     final urlsToTry = <String>[];
 
-    // GitHub Releases 網頁端 CORS 修正方案 (優先使用全球 CORS 開放的 jsDelivr CDN)：
+    // GitHub Releases 網頁端 CORS 修正方案 (優先使用全球 CORS 開放的代理與 CDN)：
     if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
+      urlsToTry.add('https://ghproxy.net/$originalUrl');
       final parts = originalUrl.split('/releases/download/');
       if (parts.length == 2) {
         final subPath = parts[1]; // e.g. "v0.1-models-detector/xlmr_detector_int8.onnx"
@@ -277,6 +278,8 @@ class ModelManager extends ChangeNotifier {
     for (final url in urlsToTry) {
       try {
         final request = http.Request('GET', Uri.parse(url));
+        request.headers['User-Agent'] =
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
         final response = await _client.send(request);
         if (response.statusCode != 200) {
           throw http.ClientException('HTTP ${response.statusCode}');
