@@ -176,6 +176,29 @@ scrubber. Comparison of experiments with theory, Env. Sci. Tech., 2007, 20, 237.
         'HUANG',
       ]);
     });
+
+    test('含有真實 OCR / PDF 瑕疵（連寫嵌合條目 [ 2 ]、[ 3 ] 與單一字母空白 H INDS, T SAI）仍可精準修復並抽取全部 7 筆條目', () {
+      const ocrArtifactContent = '''
+REFERENCES
+[1] COHEN B.S., HERING S.V., Air sampling instruments for evaluation of atmospheric contaminants , 8t h Ed. American Conference of Governmental Industrial Hygienists , Inc., Cincinnati 1995. [ 2 ] H INDS W.C., Aerosol Technology, Properties, Behavior, and Measurement of Airborne Particle s , 2nd E d. , Wiley, 1999. [ 3 ] C ALVERT S., Venturi and other atomizing scrubbers efficiency and pressure drop , AICHE J. , 1970, 16, 392. [4 ] M AYINGER F., N EUMANN M., Dust collection in Venturi scrubbers , Ger. Chem. Eng. , 1978, 1, 289 . [5 ] T IGGES K.D., M AYINGER F., Experiments with highly efficient Venturi scrubbers for aerosol separation from gases under multi plane water injection , Chem. Eng. Process , 1984, 18, 171. 70 B. L IAO et al. [6 ] T SAI C.J., L IN C.H., W ANG Y.M., An efficient Venturi scrubber system to remove submicron particles in exhaust gas , J. Air Waste Manage. Assoc., 2005 , 55, [7 ] H UANG C.H., T SAI C.J., W ANG Y.M., Control of submicron particle collection efficiency in a Venturi scrubber . C omparison of experiments with theory , Env. Sci. Tech. , 2007 , 20 , 237.
+''';
+      final entries = BibliographyVerifier.extractEntries(ocrArtifactContent);
+      expect(entries.length, 7);
+      expect(entries[0].firstAuthorSurname, 'COHEN');
+      expect(entries[0].year, 1995);
+      expect(entries[1].firstAuthorSurname, 'HINDS');
+      expect(entries[1].year, 1999);
+      expect(entries[2].firstAuthorSurname, 'CALVERT');
+      expect(entries[2].year, 1970);
+      expect(entries[3].firstAuthorSurname, 'MAYINGER');
+      expect(entries[3].year, 1978);
+      expect(entries[4].firstAuthorSurname, 'TIGGES');
+      expect(entries[4].year, 1984);
+      expect(entries[5].firstAuthorSurname, 'TSAI');
+      expect(entries[5].year, 2005);
+      expect(entries[6].firstAuthorSurname, 'HUANG');
+      expect(entries[6].year, 2007);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {

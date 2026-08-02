@@ -79,7 +79,6 @@ class BibliographyVerifier {
   );
 
   /// 偵測參考文獻條目的開頭特徵。
-  /// 此處放寬了空格與括號的限制，以適應不同 PDF 擷取出來可能產生的多餘空格與格式差異。
   static final RegExp _entryStart = RegExp(
     r"(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)"
     r"(?:(?:\s*,\s*(?:and\s+)?|and\s+|&\s*)"
@@ -90,14 +89,45 @@ class BibliographyVerifier {
   /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數（至少 3 筆，避免內文巧合誤判）。
   static const int minEntriesWithoutHeading = 3;
 
+  /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
+  /// 1. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
+  /// 2. 修正字型渲染切割英文單字與字首瑕疵：如 `H INDS` -> `HINDS`, `T SAI` -> `TSAI`, `2nd E d.` -> `2nd Ed.`
+  /// 3. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
+  static String _preprocessOcrText(String input) {
+    var text = input;
+
+    // 1) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12), [4 ] -> [4]
+    text = text.replaceAllMapped(
+      RegExp(r'\[\s*(\d+|[A-Za-z]|Ref\s*\d+)\s*\]'),
+      (m) => '[${m.group(1)}]',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'\(\s*(\d+)\s*\)'),
+      (m) => '(${m.group(1)})',
+    );
+
+    // 2) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
+    text = text.replaceAllMapped(
+      RegExp(r'\b([A-Z])\s+([A-Z]{2,})\b'),
+      (m) => '${m.group(1)}${m.group(2)}',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'\b([A-Za-z]+)\s+([a-z])\b'),
+      (m) => '${m.group(1)}${m.group(2)}',
+    );
+
+    // 3) 在未斷行的連寫嵌合條目編號前主動插入換行符：
+    text = text.replaceAllMapped(
+      RegExp(r'(?<=\S)\s*(\[\d+\]|\(\d+\)|\b\d{1,3}\.\s+[A-Z])'),
+      (m) => '\n${m.group(1)}',
+    );
+
+    return text;
+  }
+
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
-  ///
-  /// 採用「四層超彈性參考文獻抽取管線 (Universal Citation Pipeline)」：
-  /// 1. 版面與標題辨識（支援多國語系與無標題文字）
-  /// 2. 跨行懸掛縮排與條目連寫動態組裝
-  /// 3. 多維特徵加權評分（包含編號前綴、作者格式、出版年份、期刊關鍵字與卷期頁碼）
-  /// 4. 自省校驗與結構化解析
-  static List<BibliographyEntry> extractEntries(String text) {
+  static List<BibliographyEntry> extractEntries(String rawText) {
+    final text = _preprocessOcrText(rawText);
     final headingMatch = _sectionHeading.firstMatch(text);
     final hasHeading = headingMatch != null;
     final section = hasHeading ? text.substring(headingMatch.end) : text;
@@ -131,7 +161,7 @@ class BibliographyVerifier {
         continue;
       }
 
-      // 判斷該行是否為全新條目的開頭（包含數字編號、英文/中文作者、GB/T 7714 標記）
+      // 判斷該行是否為全新條目的開頭（包含數字編號、英文/中文作者、GB/T 7714 標誌）
       final isNewEntryStart = _bulletOrNumberPrefix.hasMatch(line) ||
           RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(line) ||
           RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(line) ||
@@ -227,24 +257,32 @@ class BibliographyVerifier {
 
   static BibliographyEntry _parseLineEntry(
       String cleaned, String rawText, int? year) {
+    final cleanedNoPrefix = cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
+
     // 優先抽取篇名引號或括號（如 〈...〉 或 "..." 或 「...」 或 “...”；次選 《...》）
-    final quoteMatch = RegExp(r'[〈"“「](.+?)[〉"”」]').firstMatch(cleaned) ??
-        RegExp(r'[《](.+?)[》]').firstMatch(cleaned);
+    final quoteMatch = RegExp(r'[〈"“「](.+?)[〉"”」]').firstMatch(cleanedNoPrefix) ??
+        RegExp(r'[《](.+?)[》]').firstMatch(cleanedNoPrefix);
     String? title = quoteMatch?.group(1)?.trim();
 
     if (title == null || title.isEmpty) {
-      // 否則取第一個句點／句號過後的文字作為篇名
-      final parts = cleaned.split(RegExp(r'[\.度。]\s*'));
-      if (parts.length > 1 && parts[1].trim().length > 5) {
+      // 嘗試先剔除開頭的作者群（如 "COHEN B.S., HERING S.V., "）
+      final noAuthors = cleanedNoPrefix.replaceAll(
+        RegExp(r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+", caseSensitive: false),
+        '',
+      ).trim();
+
+      final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix).split(RegExp(r'[\.度。]\s*'));
+      if (parts.isNotEmpty && parts.first.trim().length > 5) {
+        title = parts.first.trim();
+      } else if (parts.length > 1 && parts[1].trim().length > 5) {
         title = parts[1].trim();
       } else {
-        title = cleaned;
+        title = cleanedNoPrefix;
       }
     }
 
     // 嘗試抽取第一作者姓氏或中文姓名
     String? surname;
-    final cleanedNoPrefix = cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
     final commaIdx = cleanedNoPrefix.indexOf(',');
     if (commaIdx > 0 && commaIdx < 40) {
       final partBeforeComma = cleanedNoPrefix.substring(0, commaIdx).trim();
@@ -265,7 +303,7 @@ class BibliographyVerifier {
       rawText: rawText,
       firstAuthorSurname: surname,
       year: year,
-      title: title.isEmpty ? null : title,
+      title: (title == null || title.isEmpty) ? null : title,
     );
   }
 
