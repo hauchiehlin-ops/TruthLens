@@ -411,8 +411,10 @@ class BibliographyVerifier {
     };
     if (entry.title != null && entry.title!.trim().length >= 5) {
       final cleanTitle = entry.title!.trim();
-      final hasUnspacedLongWord =
-          cleanTitle.split(RegExp(r'\s+')).any((w) => w.length >= 15 && !w.contains('-'));
+      final hasUnspacedLongWord = cleanTitle
+          .replaceAll('-', ' ')
+          .split(RegExp(r'\s+'))
+          .any((w) => w.length >= 12);
       if (!hasUnspacedLongWord) {
         queryParams['query.title'] = cleanTitle;
       }
