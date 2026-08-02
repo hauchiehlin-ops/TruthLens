@@ -1,21 +1,7 @@
 import 'dart:convert';
-
+import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 
-/// 「參考文獻目錄」核實：許多學術文件的參考文獻條目沒有 DOI 或任何超連結
-/// （純作者—年份格式，如 `Ahlers, G., Cannell, D.S., 1983. 篇名. 期刊, 卷, 頁碼.`），
-/// [LinkVerifier] 的 DOI 核實規則無法涵蓋。這裡改用 Crossref 的「書目查詢」
-/// （bibliographic query）端點——直接把整條參考文獻字串送去搜尋最相近的登記文獻，
-/// 再比對篇名相似度、年份與第一作者姓氏，分三檔回報：
-///   - 高可信度：篇名高度相似，且年份或作者其中至少一項吻合 → 應存在
-///   - 查無相近匹配 → 可能為虛構文獻
-///   - 其餘（部分吻合）→ 無法確定，需自行核對
-/// 僅送出參考文獻的文字本身（書名/篇名/作者/年份等已公開於文件中的資訊），
-/// 不下載全文、不涉及使用者的其他文件內容。
-///
-/// 偵測不依賴文件明確標示「這是參考文獻」：優先找 References/參考文獻等標題，
-/// 找不到時改為主動掃描全文比對作者—年份格式（見 [extractEntries]），
-/// 只要累積達 [minEntriesWithoutHeading] 筆以上即視為文獻目錄並主動分析。
 enum CitationMatchConfidence { high, uncertain, notFound }
 
 class BibliographyEntry {
@@ -91,14 +77,26 @@ class BibliographyVerifier {
   static const int minEntriesWithoutHeading = 3;
 
   /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
-  /// 1. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
-  /// 2. 修正字型渲染切割英文單字與字首瑕疵：如 `H INDS` -> `HINDS`, `T SAI` -> `TSAI`, `2nd E d.` -> `2nd Ed.`
-  /// 3. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
+  /// 1. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
+  /// 2. 清除連字號斷行：如 `modu- lated` -> `modulated`
+  /// 3. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
+  /// 4. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
   static String _preprocessOcrText(String input) {
     var text = input;
 
-    // 1) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12), [4 ] -> [4]
-    // 排除 4 位數西元年份（如 [ 1965 ] -> [1965]），避免年份被當成條目編號
+    // 1) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號後緊接英文字母或數字時自動補齊空格
+    text = text.replaceAllMapped(
+      RegExp(r'([a-zA-Z0-9])([,\.:;])([a-zA-Z0-9])'),
+      (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
+    );
+
+    // 2) 修正跨行斷詞產生的連字號割裂問題（僅在連字號後接換行時剔除連字號，保留 Schultz-Grunow 等雙姓氏連字號）
+    text = text.replaceAllMapped(
+      RegExp(r'([a-zA-Z]{2,})-\s*[\r\n]+\s*([a-zA-Z]{2,})'),
+      (m) => '${m.group(1)}${m.group(2)}',
+    );
+
+    // 3) 修正方括號與圓括號內的空白雜訊：[ 2 ] -> [2], ( 12 ) -> (12)
     text = text.replaceAllMapped(
       RegExp(r'\[\s*(\d+|[A-Za-z]|Ref\s*\d+)\s*\]'),
       (m) => '[${m.group(1)}]',
@@ -108,7 +106,7 @@ class BibliographyVerifier {
       (m) => '(${m.group(1)})',
     );
 
-    // 2) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
+    // 4) 修正 OCR 渲染將字首單大寫字母斷開的瑕疵：\b([A-Z])\s+([A-Z]{2,})\b -> $1$2
     text = text.replaceAllMapped(
       RegExp(r'\b([A-Z])\s+([A-Z]{2,})\b'),
       (m) => '${m.group(1)}${m.group(2)}',
@@ -118,9 +116,10 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 3) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
+    // 5) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
     text = text.replaceAllMapped(
-      RegExp(r'(?<=\S)\s*(\[\s*(?!(?:19|20)\d\d\b)\d{1,3}\s*\]|\(\s*\d{1,3}\s*\)|\b\d{1,3}\.\s+[A-Z])'),
+      RegExp(
+          r'(?<=\S)\s*(\[\s*(?!(?:19|20)\d\d\b)\d{1,3}\s*\]|\(\s*\d{1,3}\s*\)|\b\d{1,3}\.\s+[A-Z])'),
       (m) => '\n${m.group(1)}',
     );
 
@@ -130,17 +129,19 @@ class BibliographyVerifier {
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
   static List<BibliographyEntry> extractEntries(String rawText) {
     final text = _preprocessOcrText(rawText);
-    
+
     // 取文獻尾端的最後一個 References/參考文獻 標題（防止內文提及 references 字眼早判）
     final headingMatches = _sectionHeading.allMatches(text).toList();
-    final headingMatch = headingMatches.isNotEmpty ? headingMatches.last : null;
+    final headingMatch =
+        headingMatches.isNotEmpty ? headingMatches.last : null;
     final hasHeading = headingMatch != null;
     final section = hasHeading ? text.substring(headingMatch.end) : text;
 
     // 路徑 1：標準英文 Surname, F.M. (Year) 傳統格式
     final starts = _entryStart.allMatches(section).toList();
     final path1Entries = <BibliographyEntry>[];
-    if (starts.isNotEmpty && (hasHeading || starts.length >= minEntriesWithoutHeading)) {
+    if (starts.isNotEmpty &&
+        (hasHeading || starts.length >= minEntriesWithoutHeading)) {
       for (var i = 0; i < starts.length; i++) {
         final start = starts[i];
         final endIndex =
@@ -158,26 +159,31 @@ class BibliographyVerifier {
     String? currentBlock;
 
     // 判斷該文獻區塊是否為數字編號格式（例如 [1], [2], 1.）
-    final hasNumberedEntries =
-        rawLines.where((l) => _bulletOrNumberPrefix.hasMatch(l.trim())).length >= 2;
+    final hasNumberedEntries = rawLines
+            .where((l) => _bulletOrNumberPrefix.hasMatch(l.trim()))
+            .length >=
+        2;
 
     for (final rawLine in rawLines) {
       final line = rawLine.trim();
       if (line.isEmpty) continue;
 
       // 檢查是否為頁首/頁尾噪音（例如 "70 B. LIAO et al."、"Page 12 of 15" 或 "---"）
-      if (RegExp(r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|Page\s+\d+.*|Copyright\s+.*|[-—=_]{3,})$', caseSensitive: false).hasMatch(line)) {
+      if (RegExp(
+              r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|Page\s+\d+.*|Copyright\s+.*|[-—=_]{3,})$',
+              caseSensitive: false)
+          .hasMatch(line)) {
         continue;
       }
 
-      // 判斷該行是否為全新條目的開頭：
-      // 1. 若為數字編號格式，僅在匹配到 [1], [2], 1. 等標號前綴時才開換新條目，防止換行標題單詞（如 "Technology, Properties"）或期刊縮寫（如 "AICHE J."）誤誘發二次切斷；
-      // 2. 若為無編號格式，則精準匹配作者姓氏 + 名字縮寫（縮寫必須帶句點 [A-Z]\.，不可為完整單字）。
+      // 判斷該行是否為全新條目的開頭
       final isNewEntryStart = hasNumberedEntries
           ? _bulletOrNumberPrefix.hasMatch(line)
           : (_bulletOrNumberPrefix.hasMatch(line) ||
-              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]\.").hasMatch(line) ||
-              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(line) ||
+              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]\.")
+                  .hasMatch(line) ||
+              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.")
+                  .hasMatch(line) ||
               RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
               RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line));
 
@@ -205,7 +211,8 @@ class BibliographyVerifier {
 
       final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
-      final year = yearMatch != null ? int.tryParse(yearMatch.group(1) ?? '') : null;
+      final year =
+          yearMatch != null ? int.tryParse(yearMatch.group(1) ?? '') : null;
 
       // 門檻：當計算總分 >= 0.45（若含有文獻標題時門檻降至 0.30）時即判定為合法學術條目
       if (score >= (hasHeading ? 0.30 : 0.45)) {
@@ -214,7 +221,7 @@ class BibliographyVerifier {
       }
     }
 
-    // 擇優機制：當路徑 2 擷取到更多條目時優先採用（例如多行組裝之 Vancouver/IEEE 格式）；若條目數相同則保留路徑 1 精準之 Harvard 標題切分
+    // 擇優機制：當路徑 2 擷取到更多條目時優先採用
     if (candidates.length > path1Entries.length) {
       if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
         return [];
@@ -240,10 +247,12 @@ class BibliographyVerifier {
       score += 0.25;
     }
     if (RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
-        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false).hasMatch(block)) {
+        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false)
+            .hasMatch(block)) {
       score += 0.20;
     }
-    if (RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false).hasMatch(block)) {
+    if (RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false)
+        .hasMatch(block)) {
       score += 0.30;
     }
     if (hasHeading) score += 0.15;
@@ -256,7 +265,8 @@ class BibliographyVerifier {
     final surname = commaIdx > 0 ? raw.substring(0, commaIdx).trim() : null;
     final afterPrefix =
         prefixLength <= raw.length ? raw.substring(prefixLength) : '';
-    final quoteMatch = RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(afterPrefix);
+    final quoteMatch =
+        RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(afterPrefix);
     final titleEnd = afterPrefix.indexOf('. ');
     final title = quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim() ??
         (titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix)
@@ -271,20 +281,28 @@ class BibliographyVerifier {
 
   static BibliographyEntry _parseLineEntry(
       String cleaned, String rawText, int? year) {
-    final cleanedNoPrefix = cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
+    final cleanedNoPrefix =
+        cleaned.replaceAll(_bulletOrNumberPrefix, '').trim();
 
     // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
-    final quoteMatch = RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(cleanedNoPrefix);
-    String? title = quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim();
+    final quoteMatch =
+        RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(cleanedNoPrefix);
+    String? title =
+        quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim();
 
     if (title == null || title.isEmpty) {
       // 嘗試先剔除開頭的作者群（如 "COHEN B.S., HERING S.V., "）
-      final noAuthors = cleanedNoPrefix.replaceAll(
-        RegExp(r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+", caseSensitive: false),
-        '',
-      ).trim();
+      final noAuthors = cleanedNoPrefix
+          .replaceAll(
+            RegExp(
+                r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+",
+                caseSensitive: false),
+            '',
+          )
+          .trim();
 
-      final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix).split(RegExp(r'[\.度。]\s*'));
+      final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix)
+          .split(RegExp(r'[\.度。]\s*'));
       if (parts.isNotEmpty && parts.first.trim().length > 5) {
         title = parts.first.trim();
       } else if (parts.length > 1 && parts[1].trim().length > 5) {
@@ -302,10 +320,12 @@ class BibliographyVerifier {
       surname = partBeforeComma.split(RegExp(r'\s+')).first;
     } else {
       final spaceParts = cleanedNoPrefix.split(RegExp(r'\s+'));
-      if (spaceParts.isNotEmpty && RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+$").hasMatch(spaceParts.first)) {
+      if (spaceParts.isNotEmpty &&
+          RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+$").hasMatch(spaceParts.first)) {
         surname = spaceParts.first;
       } else {
-        final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
+        final chineseMatch =
+            RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
         if (chineseMatch != null) {
           surname = chineseMatch.group(0);
         }
@@ -344,24 +364,47 @@ class BibliographyVerifier {
     BibliographyEntry entry,
     Duration timeout,
   ) async {
+    // 兼具結構化 (title, author) 與全文字串 (query.bibliographic) 的 Crossref 查核
+    final queryParams = <String, String>{
+      'query.bibliographic': entry.rawText,
+      'rows': '1',
+    };
+    if (entry.title != null && entry.title!.trim().length >= 5) {
+      queryParams['query.title'] = entry.title!;
+      if (entry.firstAuthorSurname != null &&
+          entry.firstAuthorSurname!.length >= 2) {
+        queryParams['query.author'] = entry.firstAuthorSurname!;
+      }
+    }
+
     final uri = Uri.parse('https://api.crossref.org/works').replace(
-      queryParameters: {
-        'query.bibliographic': entry.rawText,
-        'rows': '1',
-      },
+      queryParameters: queryParams,
     );
+
     try {
-      final response = await client.get(uri).timeout(timeout);
+      final response = await client.get(
+        uri,
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
+        },
+      ).timeout(timeout);
+
       if (response.statusCode != 200) {
         return BibliographyCheckResult(
-            entry: entry, confidence: CitationMatchConfidence.uncertain);
+          entry: entry,
+          confidence: CitationMatchConfidence.uncertain,
+        );
       }
+
       final message = (jsonDecode(response.body)
           as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
       final items = (message?['items'] as List?)?.cast<dynamic>();
       if (items == null || items.isEmpty) {
         return BibliographyCheckResult(
-            entry: entry, confidence: CitationMatchConfidence.notFound);
+          entry: entry,
+          confidence: CitationMatchConfidence.notFound,
+        );
       }
 
       final top = items.first as Map<String, dynamic>;
@@ -387,16 +430,16 @@ class BibliographyVerifier {
           .whereType<String>()
           .toSet();
 
-      final titleSim = _titleSimilarity(entry.title, matchedTitle);
+      final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
       final yearMatches = entry.year != null &&
           matchedYear != null &&
           (entry.year! - matchedYear).abs() <= 1;
       final authorMatches = entry.firstAuthorSurname != null &&
           authorSurnames.contains(entry.firstAuthorSurname!.toLowerCase());
 
-      final confidence = (titleSim >= 0.5 && (yearMatches || authorMatches))
+      final confidence = (titleSim >= 0.45 && (yearMatches || authorMatches))
           ? CitationMatchConfidence.high
-          : (titleSim < 0.2 && !yearMatches && !authorMatches)
+          : (titleSim < 0.20 && !yearMatches && !authorMatches)
               ? CitationMatchConfidence.notFound
               : CitationMatchConfidence.uncertain;
 
@@ -409,26 +452,51 @@ class BibliographyVerifier {
       );
     } catch (_) {
       return BibliographyCheckResult(
-          entry: entry, confidence: CitationMatchConfidence.uncertain);
+        entry: entry,
+        confidence: CitationMatchConfidence.uncertain,
+      );
     }
   }
 
-  /// 篇名相似度：正規化後的詞彙集合做 Jaccard 相似度（交集/聯集），
-  /// 不需額外依賴套件即可粗略判斷「是否為同一篇文獻」。
+  /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」與「詞彙 Jaccard」雙重比對。
+  /// 能對抗無空格 `TransitionincircularCouetteflow` 與 `Transition in circular Couette flow` 的比對瑕疵。
   static double _titleSimilarity(String? a, String? b) {
     if (a == null || b == null) return 0;
+    
+    final cleanA = a.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
+    final cleanB = b.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
+    if (cleanA.isEmpty || cleanB.isEmpty) return 0;
+
+    // 1) 完全吻合或長子字串包含（防範無空格連續文字）
+    if (cleanA == cleanB) return 1.0;
+    if (cleanA.length >= 10 && cleanB.length >= 10) {
+      if (cleanA.contains(cleanB) || cleanB.contains(cleanA)) return 0.95;
+    }
+
+    // 2) 詞彙級 Jaccard 相似度
     final wordsA = _normalizeWords(a);
     final wordsB = _normalizeWords(b);
-    if (wordsA.isEmpty || wordsB.isEmpty) return 0;
-    final intersection = wordsA.intersection(wordsB).length;
-    final union = wordsA.union(wordsB).length;
-    return union == 0 ? 0 : intersection / union;
+    final tokenSim = (wordsA.isEmpty || wordsB.isEmpty)
+        ? 0.0
+        : (wordsA.intersection(wordsB).length / wordsA.union(wordsB).length);
+
+    // 3) 僅在其中一方欠缺空格（如 OCR 擠壓成單一長單字）時才發動字元級備援
+    if (wordsA.length <= 1 || wordsB.length <= 1) {
+      final setA = cleanA.split('').toSet();
+      final setB = cleanB.split('').toSet();
+      final charSim = (setA.isEmpty || setB.isEmpty)
+          ? 0.0
+          : (setA.intersection(setB).length / setA.union(setB).length);
+      return math.max(tokenSim, charSim * 0.85);
+    }
+
+    return tokenSim;
   }
 
   static Set<String> _normalizeWords(String s) => s
       .toLowerCase()
       .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
       .split(RegExp(r'\s+'))
-      .where((w) => w.length > 2)
+      .where((w) => w.length > 1)
       .toSet();
 }
