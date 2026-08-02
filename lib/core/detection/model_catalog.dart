@@ -121,6 +121,24 @@ class ModelCatalog {
     return null;
   }
 
+  ModelCatalog withCommunityVariants(List<ModelVariant> extraVariants) {
+    if (extraVariants.isEmpty) return this;
+    final updatedModels = models.map((m) {
+      if (m.role == 'transformer') {
+        final existingIds = m.variants.map((v) => v.id).toSet();
+        final newVariants = extraVariants.where((v) => !existingIds.contains(v.id)).toList();
+        if (newVariants.isEmpty) return m;
+        return CatalogModel(
+          role: m.role,
+          name: m.name,
+          variants: [...m.variants, ...newVariants],
+        );
+      }
+      return m;
+    }).toList();
+    return ModelCatalog(catalogVersion: catalogVersion, models: updatedModels);
+  }
+
   factory ModelCatalog.fromJson(Map<String, dynamic> j) => ModelCatalog(
         catalogVersion: j['catalog_version'] as String? ?? 'unknown',
         models: (j['models'] as List)

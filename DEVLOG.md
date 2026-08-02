@@ -1,21 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] 動態 AI 模型探索與熱插拔 Ensemble 加權路由 (Option B)
+## 2026-08-02 — [Phase 4] 模型自動校準 (Option C) 與 HuggingFace 社群模型自動探尋 (Option A)
 
 **做了什麼**
 
-- **動態 Ensemble 模型探索路由 (Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，使其能夠自動掃描並載入 `ModelManager` 中所有已安裝之 Transformer AI 分類器變體（如預設 RoBERTa、XLM-RoBERTa 或使用者匯入之自訂 ONNX 模型）與對抗防禦變體，實現全動態的模型熱插拔與即時加權投票機制。
-- **動態變體綁定介面**：在 `TransformerEngine` 與 `AdversarialEngine` 中支援指定 `variantId` 構造，並於 `ModelManager` (native + web) 擴充 `variantModelPath` 與 `variantTokenizerPath` 方法，精準定位不同變體檔路徑。
-- **多神經模型逐句平均機制**：升級 `EnsembleOrchestrator._scoreSentences`，在有多個神經模型同時啟用時，自動整合所有模型之逐句評分進行交叉平均，再結合 Stylometry 啟發式特徵微調，極大化提升句子級檢測精確度。
-- **代碼與公式白名單護盾 (MVP 1 Code & Formula Shield)**：在 `DocumentImporter._stripFormatting` 中新增對 Markdown 程式碼區塊（```` ... ````）、行內程式碼（`` `...` ``）、LaTeX 區塊公式（`$$...$$`、`\[...\]`）、`\begin{equation}...\end{equation}` 與行內公式（`\(...\)`、`$...$`）之自動識別與隔離過濾，防止程式碼與數學符號拉低困惑度或干擾句長起伏統計。
-- **文件結構純化 (MVP 2 Structural Noise Stripping)**：於 `DocumentImporter._stripFormatting` 中增強對 PDF/DOCX 匯入時產生之頁首頁尾與頁碼噪音（如 `Page 1 of 10`、`第 1 頁，共 10 頁`、`Line 12`）之精準剔除，還原最純淨的文章本文供 AI 檢測。
-- **100% 本地離線隱私認證標章 (MVP 3 Zero-Cloud Privacy Seal in PDF)**：於 `ReportExporter.buildPdf` 產出之 PDF 報告中新增專屬「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」標章，標明內容 100% 於裝置本地運算完成、絕不上傳雲端伺服器或資料庫，極大化提升商業與學術報告之信任度。
-- **單元測試套件擴充**：新增 `test/document_importer_test.dart` 與 `test/dynamic_ensemble_test.dart`。
+- **自動 Benchmark 效能評測與權重推薦 (Option C Auto-Calibration)**：新增 `ModelBenchmarkService`（[model_benchmark_service.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/model_benchmark_service.dart)），內建 10 句標準檢測語料對照集，自動量測端上推論正確率 (Accuracy) 與平均延遲 (LatencyMs)，並依據模型實際效能動態推薦與校準 Ensemble 權重。
+- **HuggingFace Hub 自動探尋與訂閱 (Option A HuggingFace Auto-Explorer)**：新增 `HuggingFaceHubExplorer`（[huggingface_hub_explorer.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/huggingface_hub_explorer.dart)），自動查詢 HuggingFace Hub REST API 獲取標籤為 `truthlens-detector` 或 `ai-content-detection` 的全新開源 ONNX / GGUF 模型，並將動態發現之模型自動併入 [ModelCatalog](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/model_catalog.dart)。
+- **動態 Ensemble 模型探索路由 (Option B Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，使其能夠自動掃描並載入 `ModelManager` 中所有已安裝之 Transformer AI 分類器變體與對抗防禦變體，實現全動態的模型熱插拔與即時加權投票機制。
+- **代碼與公式白名單護盾 (MVP 1 Code & Formula Shield)**：在 `DocumentImporter._stripFormatting` 中新增對 Markdown 程式碼區塊與 LaTeX 數學公式之自動識別與隔離過濾。
+- **文件結構純化 (MVP 2 Structural Noise Stripping)**：於 `DocumentImporter._stripFormatting` 中增強對 PDF/DOCX 頁首頁尾與頁碼噪音之精準剔除。
+- **100% 本地離線隱私認證標章 (MVP 3 Zero-Cloud Privacy Seal in PDF)**：於 `ReportExporter.buildPdf` 產出之 PDF 報告中新增專屬「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」標章。
+- **單元測試套件擴充**：新增 `test/auto_discovery_and_calibration_test.dart`。
 
 **驗證**
 
 - `flutter analyze` 輸出 `No issues found!`（0 警告）
-- `flutter test` 全套件 **136/136** 個測試全數通過！
+- `flutter test` 全套件 **139/139** 個測試全數通過！
 
 ---
 
