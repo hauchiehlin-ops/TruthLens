@@ -529,7 +529,7 @@ class BibliographyVerifier {
 
     // 2) 若 Crossref 未高可信度命中，發動 OpenAlex API 二重補核 (涵蓋 2.5 億筆文獻與全內文圖書館索引)
     try {
-      final searchKw = entry.title ?? entry.rawText;
+      final searchKw = _cleanSearchKeywords(entry.title ?? entry.rawText);
       final openAlexUri = Uri.parse(
         'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=1',
       );
@@ -613,4 +613,24 @@ class BibliographyVerifier {
       .split(RegExp(r'\s+'))
       .where((w) => w.length > 1)
       .toSet();
+
+  static String _cleanSearchKeywords(String raw) {
+    var text = raw;
+    text = text.replaceAllMapped(
+      RegExp(r'([a-zA-Z]{2,})(for|between|in|of|the|and|a|an|to|with|on|at|by|from|into|over|under|off)\b', caseSensitive: false),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'([a-z])([A-Z])'),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+    final words = text
+        .replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), ' ')
+        .split(RegExp(r'\s+'))
+        .where((w) => w.length > 2)
+        .where((w) => !RegExp(r'^(for|between|in|of|the|and|a|an|to|with|on|at|by|from|into|over|under|off)$', caseSensitive: false).hasMatch(w))
+        .toList();
+    if (words.isEmpty) return raw;
+    return words.take(6).join(' ');
+  }
 }
