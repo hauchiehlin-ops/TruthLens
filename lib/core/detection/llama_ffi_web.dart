@@ -4,6 +4,7 @@
 /// report_llm_service.dart：isLoaded 恆為 false，loadModel 恆回傳 false。
 class LlamaFfi {
   static bool get isAvailable => false;
+  static void backendFree() {}
 }
 
 class LlamaInference {

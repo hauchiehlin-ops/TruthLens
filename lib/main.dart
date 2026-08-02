@@ -17,8 +17,19 @@ import 'core/services/preferences_service.dart';
 import 'core/utils/app_version.dart';
 import 'l10n/generated/app_localizations.dart';
 
+import 'dart:ui';
+import 'core/detection/llama_ffi.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppLifecycleListener(
+    onExitRequested: () async {
+      try {
+        LlamaFfi.backendFree();
+      } catch (_) {}
+      return AppExitResponse.exit;
+    },
+  );
   await AppVersion.init();
   final prefs = PreferencesService();
   await prefs.load();
