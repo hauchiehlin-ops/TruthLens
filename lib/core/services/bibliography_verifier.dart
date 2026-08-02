@@ -421,11 +421,10 @@ class BibliographyVerifier {
     final c = client ?? http.Client();
     final owns = client == null;
     try {
-      final results = <BibliographyCheckResult>[];
-      for (final entry in entries.take(maxEntriesPerCheck)) {
-        results.add(await _verifyOne(c, entry, timeout));
-      }
-      return results;
+      final futures = entries
+          .take(maxEntriesPerCheck)
+          .map((entry) => _verifyOne(c, entry, timeout));
+      return await Future.wait(futures);
     } finally {
       if (owns) c.close();
     }
@@ -446,14 +445,14 @@ class BibliographyVerifier {
       final hasUnspacedLongWord = cleanTitle
           .replaceAll('-', ' ')
           .split(RegExp(r'\s+'))
-          .any((w) => w.length >= 12);
+          .any((w) => w.length >= 25);
       if (!hasUnspacedLongWord) {
         queryParams['query.title'] = cleanTitle;
       }
-      if (entry.firstAuthorSurname != null &&
-          entry.firstAuthorSurname!.length >= 2) {
-        queryParams['query.author'] = entry.firstAuthorSurname!;
-      }
+    }
+    if (entry.firstAuthorSurname != null &&
+        entry.firstAuthorSurname!.length >= 2) {
+      queryParams['query.author'] = entry.firstAuthorSurname!;
     }
 
     final uri = Uri.parse('https://api.crossref.org/works').replace(
