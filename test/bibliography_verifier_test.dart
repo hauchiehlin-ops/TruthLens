@@ -301,6 +301,41 @@ References
       expect(entries[21].firstAuthorSurname, 'Youd');
       expect(entries[21].year, 2005);
     });
+
+    test('無編號 APA/Harvard 格式 References（如 IJCFD 論文 18 筆多作者條目）能精準切分並保留第一作者姓氏與年份', () {
+      const ijcfdPaper = '''
+4. Conclusion
+The effect of a variation in the axial wavenumber of a TVF on the stability of the flow...
+
+References
+Ahlers, G., Cannell, D.S., and Lerma, M.A.D., 1983. Possible mechanism for transitions in wavy Taylor-vortex flow. Physical Review A, 27, 1225–1227.
+Andereck, C., Liu, S.S., and Swinney, H.L., 1986. Flow regimes in a circular Couette system with independently rotating cylinders. Journal of Fluid Mechanics, 164, 155–183.
+Antonijoan, J. and Sanchez, J., 2002. On stable Taylor vortices above the transition to wavy vortices. Physical Fluids, 14, 1661–1665.
+Burkhalter, J.E. and Koschmieder, E.L., 1973. Steady supercritical Taylor vortex flow. Journal of Fluid Mechanics, 58, 547–560.
+Burkhalter, J.E. and Koschmieder, E.L., 1974. Steady supercritical Taylor vortices after sudden starts. Physical Fluids, 17, 1929–1935.
+Coles, D., 1965. Transition in circular Couette flow. Journal of Fluid Mechanics, 21, 385–425.
+Hall, P. and Blennerhasset, P.J., 1979. Centrifugal instability of circumferential flow in finite cylinders. Proceedings of the Royal Society London A, 365, 191–207.
+Jones, C.A., 1981. Nonlinear Taylor vortices and their stability. Journal of Fluid Mechanics, 102, 249–261.
+Jones, C.A., 1985. The transition to wavy Taylor vortices. Journal of Fluid Mechanics, 157, 135–162.
+King, G.P. and Swinney, H.L., 1983. Limits of stability and irregular flow patterns in wavy vortex flow. Physical Review A, 27, 1240–1243.
+Lewis, J.W., 1928. An experimental study of the motion of a viscous liquid contained between two coaxial cylinders. Proceedings of the Royal Society London A, 117, 388–407.
+Nissan, A.H., Nardacci, J.L., and Ho, C.Y., 1963. The onset of different modes of instability for flow between rotating cylinders. AIChE J, 9, 620–624.
+Park, K., 1984. Unusual transition sequence in Taylor wavy vortex flow. Physical Review A, 29, 3458–3460.
+Park, K., Gerald, L., and Donnelly, R.J., 1981. Determination of transition in Couette flow in finite geometries. Physical Review Letters, 47, 1448–1450.
+Schultz-Grunow, F. and Hein, H., 1956. Beitrag zur Couettestromung. Z. Flugwiss, 4, 28–30.
+Stuart, J.T., 1958. On the nonlinear mechanics of hydrodynamic stability. Journal of Fluid Mechanics, 4, 1–21.
+Taylor, G.I., 1923. Stability of a viscous liquid contained between two rotating cylinders. Philosophical Transactions of the Royal Society London A, 223, 289–343.
+Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortices. International Journal of Computational Fluid Dynamics, 23, 643–648.
+''';
+      final entries = BibliographyVerifier.extractEntries(ijcfdPaper);
+      expect(entries.length, 18);
+      expect(entries[0].firstAuthorSurname, 'Ahlers');
+      expect(entries[0].year, 1983);
+      expect(entries[1].firstAuthorSurname, 'Andereck');
+      expect(entries[1].year, 1986);
+      expect(entries[17].firstAuthorSurname, 'Yang');
+      expect(entries[17].year, 2009);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {

@@ -230,8 +230,8 @@ class BibliographyVerifier {
       }
     }
 
-    // 擇優機制：當路徑 2 擷取到更多條目時優先採用
-    if (candidates.length > path1Entries.length) {
+    // 擇優機制：當路徑 2 擷取到相同或更多條目時優先採用 (路徑 2 具備完整跨行組裝能力)
+    if (candidates.length >= path1Entries.length && candidates.isNotEmpty) {
       if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
         return [];
       }

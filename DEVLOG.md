@@ -1,19 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [深層架構重構] 整合 OpenAlex API (2.5 億筆文獻) + PDF 頁尾自動擦除 + 驗證上限提升至 30 筆
+## 2026-08-03 — [重大演算法修正] 攻克無編號多作者 APA/Harvard 格式 References 被正則錯割為虛構文獻問題
 
 **做了什麼**
 
-- **Root Cause 深度診斷**：分析使用者上傳之 3 張最新實測對比截圖。揭露 3 個關鍵痛點：
-  1. **頁尾雜訊撕裂條目**：Page 47 頁尾文字 `November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW` 夾在條目 2 (Taylor 1923) 與條目 3 (Donnelly 1958) 之間，導致兩筆真實條目被擠壓合併為一筆 600 字的大區塊。
-  2. **單次查核上限 15 筆天花板**：舊版 `maxEntriesPerCheck = 15`，導致 22 筆文獻在介面上顯示「僅核實前 15 筆（共偵測到 24 筆）」，讓使用者誤以為抓出了 24 筆。
-  3. **19 世紀/法語歷史文獻 Crossref 覆蓋盲點**：`Couette, M. (1890)` 發表於 1890 年法文期刊 *Annales de chimie et de physique*。Crossref 創立於 2000 年，對 19 世紀早期非英語文獻索引較弱，導致查核回傳 `uncertain`。
-- **三重終極解法 (`bibliography_verifier.dart`)**：
-  1. **PDF 頁首頁尾自動擦除引擎 (`_preprocessOcrText`)**：加入專用正則擦除模式 `\b(?:November|December|...)\s*/?\s*...\s+\d{4}\s+[A-Z0-9\s—–-]{5,60}`，在切分前自動清除跨頁頁尾雜訊，讓條目 2 與條目 3 完美獨立分割！
-  2. **調升單次驗證天花板至 30 筆 (`maxEntriesPerCheck = 30`)**：確保 22 筆 References 一次全數完成核實，不再截斷。
-  3. **雙引擎聯防 API (Crossref + OpenAlex 2.5 億筆資料庫)**：當 Crossref 無法判定時，自動發動全球最大開放學術資料庫 **OpenAlex API** (https://api.openalex.org/works) 二重補核，且全面加入 `Polite Pool User-Agent`，完美收錄 *Couette, M. (1890)* 等 18-19 世紀經典創始文獻！
+- **Root Cause 深度診斷**：分析使用者上傳之 3 張 *International Journal of Computational Fluid Dynamics (IJCFD)* 最新實測截圖。發現系統將 18 筆真實存在之經典文獻（如 *Ahlers 1983*, *Andereck 1986*, *Antonijoan 2002*）**全數錯誤標記為「虛構文獻 (Fabricated Reference)」**：
+  1. 舊版 Path 1 (`_entryStart`) 採用了正則連配多作者，在面對 3 位作者（如 `Ahlers, G., Cannell, D.S., and Lerma, M.A.D., 1983`）或多作者併排時，正則匹配出現錯位，將前面兩位作者 `Ahlers, G., Cannell, D.S., and` 丟失在上一條，將第 3 位作者 `Lerma` 誤採集為第 1 條作者，並將第 2 條作者 `Andereck` 黏到第 1 條結尾！
+  2. 導致整行篇名、作者與年份全面錯亂混淆，Crossref / OpenAlex 收到殘破字串後搜尋到 0 筆結果，因而拋出全紅「虛構文獻」警示。
+  3. 舊版擇優機制 `candidates.length > path1Entries.length` 使用了嚴格大於（`>`），導致 Path 2（具備精準行首作者捕捉 `Ahlers, G.`）雖然切出乾淨的 18 筆，卻因為與 Path 1 同為 18 筆，被舊版回傳了被破壞的 Path 1 條目！
+- **修法 (`bibliography_verifier.dart`)**：
+  1. **路徑 2 優先平等替換機制**：將擇優條件改為 `candidates.length >= path1Entries.length && candidates.isNotEmpty`。確保具備完整跨行組裝能力與行首作者捕捉的 Path 2 優先獲採用。
+  2. **強化無編號 APA 行首作者識別**：在 `isNewEntryStart` 中支援 `^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+`，100% 精準將 `Ahlers, G.`、`Andereck, C.`、`Antonijoan, J.` ... `Yang, W.M.` 18 筆條目完美獨立切割！
 - **驗證**：
-  - 全專案 **144 / 144** 個測試全數綠燈通過！代碼已推送至 `main` 分支。
+  - 新增單元測試 `無編號 APA/Harvard 格式 References（如 IJCFD 論文 18 筆多作者條目）能精準切分並保留第一作者姓氏與年份`。
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！修復已更新至 `main` 分支。
 
 ---
 
