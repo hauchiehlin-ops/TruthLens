@@ -200,7 +200,7 @@ REFERENCES
       expect(entries[6].year, 2007);
     });
 
-    test('World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取正確文獻', () {
+    test('World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取 Page 1532 全部 18 筆文獻', () {
       const worldScientificPaper = '''
 International Journal of Bifurcation and Chaos, Vol. 20, No. 5 (2010) 1527-1532
 LOWEST STABILITY BOUNDARY ON FLOW OF CONCENTRIC ROTATING CYLINDERS
@@ -218,9 +218,20 @@ Burkhalter, J. E. & Koschmieder, E. L. [1973] "Steady supercritical Taylor vorte
 Burkhalter, J. E. & Koschmieder, E. L. [1974] "Steady supercritical Taylor vortices after sudden starts," Phys. Fluids 17, 1929-1935.
 Coles, D. [1965] "Transition in circular Couette flow," J. Fluid Mech. 21, 385-425.
 Hall, P. & Blennerhasset, P. J. [1979] "Centrifugal instability of circumferential flow in finite cylinders," Proc. R. Soc. London A 365, 191-207.
+Jones, C. A. [1981] "Nonlinear Taylor vortices and their stability," J. Fluid Mech. 102, 249-261.
+Jones, C. A. [1985a] "The transition to wavy Taylor vortices," J. Fluid Mech. 157, 135-162.
+Jones, C. A. [1985b] "Numerical method for the transition to wavy Taylor vortices," J. Comput. Phys. 61, 321-344.
+King, G. P. & Swinney, H. L. [1983] "Limits of stability and irregular flow patterns in wavy vortex flow," Phys. Rev. A. At. Mol. Opt. Phys. 27, 1240-1243.
+Lewis, J. W. [1928] "An experimental study of the motion of a viscous liquid contained between two coaxial cylinders," Proc. R. Soc. London A 117, 388-407.
+Nissan, A. H., Nardacci, J. L. & Ho, C. Y. [1963] "The onset of different modes of instability for flow between rotating cylinders," AIChE J. 9, 620-624.
+Park, K., Gerald, L. & Donnelly, R. J. [1981] "Determination of transition in Couette flow in finite geometries," Phys. Rev. Lett. 47, 1448-1450.
+Park, K. [1984] "Unusual transition sequence in Taylor wavy vortex flow," Phys. Rev. A. At. Mol. Opt. Phys. 29, 3458-3460.
+Schultz-Grunow, F. & Hein, H. [1956] "Beitrag zur Couettestromung," Z Flugwiss 4, 28-30.
+Stuart, J. T. [1958] "On the nonlinear mechanics of hydrodynamic stability," J. Fluid Mech. 4, 1-21.
+Taylor, G. I. [1923] "Stability of a viscous liquid contained between two rotating cylinders," Phil. Trans. R. Soc. London A 223, 289-343.
 ''';
       final entries = BibliographyVerifier.extractEntries(worldScientificPaper);
-      expect(entries.length, 7);
+      expect(entries.length, 18);
       expect(entries.map((e) => e.firstAuthorSurname).toList(), [
         'Ahlers',
         'Andereck',
@@ -229,9 +240,22 @@ Hall, P. & Blennerhasset, P. J. [1979] "Centrifugal instability of circumferenti
         'Burkhalter',
         'Coles',
         'Hall',
+        'Jones',
+        'Jones',
+        'Jones',
+        'King',
+        'Lewis',
+        'Nissan',
+        'Park',
+        'Park',
+        'Schultz-Grunow',
+        'Stuart',
+        'Taylor',
       ]);
       expect(entries[5].year, 1965);
       expect(entries[5].title, 'Transition in circular Couette flow');
+      expect(entries[17].firstAuthorSurname, 'Taylor');
+      expect(entries[17].year, 1923);
     });
   });
 
