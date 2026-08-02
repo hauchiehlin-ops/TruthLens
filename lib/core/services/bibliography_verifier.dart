@@ -94,6 +94,13 @@ class BibliographyVerifier {
     );
     text = text.replaceAll(
       RegExp(
+        r'\b(?:Figure|Fig\.|Table|Tab\.)\s*\d+[\s\S]*?(?=\r?\n|\Z)',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
+    text = text.replaceAll(
+      RegExp(
         r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s*/?\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)?\s*\d{4}\s+[A-Z0-9\s—–-]{5,60}',
         caseSensitive: false,
       ),

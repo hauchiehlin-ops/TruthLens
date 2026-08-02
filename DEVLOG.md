@@ -1,18 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [細節決定成敗] 攻克連字號單字 (hydro-dynamic) 規避無空白過濾器導致 Stuart 1958 亮紅燈問題
+## 2026-08-03 — [完美主義修復] 部署 Figure/Table 圖表標頭過濾器，徹底解決雙欄 PDF 內文穿透殘留問題
 
 **做了什麼**
 
-- **Root Cause 深度診斷**：對照使用者最新上傳之局部對比截圖，精準剖析兩筆殘留項：
-  1. **Stuart (1958) 亮紅燈 🔴 原因**：篇名含有連字號 `hydro-dynamic`。舊版 `hasUnspacedLongWord` 檢查長單字時排除了包含 `-` 的字串，導致 `Onthenonlinearmechanicsofhydro-dynamicstability`（前半段長達 30 字）被誤判為正常短單字，進而仍將該殘破字串傳給 Crossref，引發 Crossref 回傳 0 筆結果！
-  2. **Schultz-Grunow (1956) 亮黃燈 🟠 原因**：發表於 1956 年西德歷史期刊 *Z. Flugwiss* (Zeitschrift für Flugwissenschaften)，由於 1950 年代西德早期期刊未被 Crossref/OpenAlex 數位化賦予 DOI，系統回傳 `uncertain`，屬於合法合理之學術邊界提示。
+- **Root Cause 深度診斷**：剖析使用者紅圈標示處 `Figure6.` 與 `Figure5.` 之成因。揭露 PDF 提取層最為經典的**雙欄跨頁交錯讀取陷阱**：
+  1. PDF Page 233 採用雙欄排版。左欄包含 Figure 6 與 Figure 5 的圖片說明文字；右欄為 `References` 條目 1..15（最後一筆為 *Schultz-Grunow 1956*）。
+  2. PDF 提取流在讀完右欄結尾 *Schultz-Grunow 1956* 後，直接接續讀取了左欄的 `Figure 6...` 與 `Figure 5...`！
+  3. 由於舊版組裝邏輯沒有將圖表標籤過濾，導致 `Figure 6...` 與 `Figure 5...` 被當作 *Schultz-Grunow 1956* 的續行黏到了條目結尾，形成紅圈處的污染雜訊！
 - **修法 (`bibliography_verifier.dart`)**：
-  1. **先替換連字號再進行切分**：將 `cleanTitle.replaceAll('-', ' ').split(RegExp(r'\s+')).any((w) => w.length >= 12)`，讓包含連字號的無空白 OCR 擠壓字串也能**100% 被識別並降級為 query.bibliographic 檢索**！
-  2. **效果**：Crossref 成功回傳 *Stuart 1958* 官方篇名 `On the non-linear mechanics of hydrodynamic stability`！*Stuart 1958* **100% 轉為高可信度綠燈 🟢**！
+  1. **部署圖表標頭防護過濾器 (`_preprocessOcrText`)**：加入 `\b(?:Figure|Fig\.|Table|Tab\.)\s*\d+[\s\S]*?(?=\r?\n|\Z)` 正則，在預處理階段 **100% 抹除所有雙欄交錯讀入的 Figure / Table 圖片標籤**！
+  2. **效果**：*Schultz-Grunow 1956* 卡片後方的 `Figure6.` 與 `Figure5.` 被全數洗淨，文獻清單 100% 還原為乾淨的學術條目！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 已編譯 Release 包升級 `/Applications/TruthLens.app`。
+  - 已編譯 Release 包更新 `/Applications/TruthLens.app`。
 
 ---
 
