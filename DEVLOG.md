@@ -1,6 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] 專業化報告排版（動態多模型與隱私標章）與多國語系操作手冊／隱私權政策更新
+## 2026-08-02 — [Phase 4] 四大平台（iOS / macOS / Windows / Android）合規與完整配置審查
+
+**做了什麼**
+
+- **iOS 平台權限合規**：在 `ios/Runner/Info.plist` 擴充 `NSPhotoLibraryUsageDescription` 與 `NSCameraUsageDescription` 隱私聲明，確保 iOS 裝置端照片與相機離線 OCR 辨識順暢，防止 App Store 上架退件。
+- **macOS 沙盒與權限配置**：驗證 `DebugProfile.entitlements` 與 `Release.entitlements` 的 `com.apple.security.app-sandbox`、`com.apple.security.files.user-selected.read-write`、`com.apple.security.network.client` 與 `com.apple.security.cs.allow-unsigned-executable-memory`，確保在 App Sandbox 下兼顧零上傳安全與原生 JIT / ONNX Runtime 加速。
+- **Android 網路與檔案權限**：在 `android/app/src/main/AndroidManifest.xml` 新增 `android.permission.INTERNET`，確保在 Release Build 模式下能正常發起遠端模型目錄探索、斷點續傳下載與 Crossref 參考文獻比對。
+- **Windows C++ 原生動態鏈結**：驗證 `windows/CMakeLists.txt` 後處理，確保 `truthlens_llama.dll` 與 ONNX Runtime 動態庫能自動複製並附隨發布於執行檔目錄。
+- **全平台單元與整合測試**：全專案 **139/139** 個測試綠燈通過，`flutter analyze` 0 警告。
+
+**驗證**
+
+- `flutter analyze` 輸出 `No issues found!`（0 警告）
+- `flutter test` 全套件 **139/139** 個測試全數通過！
+
+---
 
 **做了什麼**
 
