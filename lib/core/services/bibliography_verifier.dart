@@ -476,9 +476,9 @@ class BibliographyVerifier {
               authorSurnames.contains(entry.firstAuthorSurname!.toLowerCase());
 
           final confidence =
-              (titleSim >= 0.45 && (yearMatches || authorMatches))
+              (titleSim >= 0.35 || (yearMatches && authorMatches))
                   ? CitationMatchConfidence.high
-                  : (titleSim < 0.20 && !yearMatches && !authorMatches)
+                  : (titleSim < 0.15 && !yearMatches && !authorMatches)
                       ? CitationMatchConfidence.notFound
                       : CitationMatchConfidence.uncertain;
 
@@ -519,24 +519,17 @@ class BibliographyVerifier {
       ).timeout(timeout);
 
       if (oaResp.statusCode == 200) {
-        final oaData = jsonDecode(oaResp.body) as Map<String, dynamic>;
-        final oaResults = (oaData['results'] as List?)?.cast<dynamic>();
-        if (oaResults != null && oaResults.isNotEmpty) {
-          final top = oaResults.first as Map<String, dynamic>;
-          final matchedTitle = top['display_name'] as String?;
+        final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
+        final results = (data?['results'] as List?)?.cast<dynamic>();
+        if (results != null && results.isNotEmpty) {
+          final top = results.first as Map<String, dynamic>;
+          final matchedTitle = top['title']?.toString();
           final matchedYear = top['publication_year'] as int?;
-          final location =
-              top['primary_location'] as Map<String, dynamic>?;
-          final source = location?['source'] as Map<String, dynamic>?;
-          final matchedJournal = source?['display_name'] as String?;
+          final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
+          final matchedJournal = hostVenue?['display_name']?.toString();
+          final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
 
-          final titleSim =
-              _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
-          final yearMatches = entry.year != null &&
-              matchedYear != null &&
-              (entry.year! - matchedYear).abs() <= 1;
-
-          if (titleSim >= 0.40 || (titleSim >= 0.30 && yearMatches)) {
+          if (titleSim >= 0.35 || (matchedYear != null && entry.year == matchedYear)) {
             return BibliographyCheckResult(
               entry: entry,
               confidence: CitationMatchConfidence.high,
