@@ -307,6 +307,33 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
             style: Theme.of(context).textTheme.bodySmall,
           ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.verified_user_outlined,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.privacySealNoticeText,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     ),
@@ -386,13 +413,31 @@ class _ReportScreenState extends State<ReportScreen> {
                   ? AppTheme.verdictColor(e.aiProbability)
                   : Theme.of(context).disabledColor,
             ),
-            title: Text(e.engineName),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    e.engineName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    '${l10n.reportEngineWeightLabel} ${(e.weight * 100).round()}%',
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
             subtitle: Text(e.reasons.join('\n')),
             trailing: e.available
                 ? Text(
                     '${(e.aiProbability * 100).round()}%',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                       color: AppTheme.verdictColor(e.aiProbability),
                     ),
                   )

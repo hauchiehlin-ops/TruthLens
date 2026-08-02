@@ -1052,6 +1052,30 @@ abstract class AppLocalizations {
   /// **'Export failed: {error}'**
   String reportExportFailed(String error);
 
+  /// No description provided for @reportEngineWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get reportEngineWeightLabel;
+
+  /// No description provided for @privacySealNoticeText.
+  ///
+  /// In en, this message translates to:
+  /// **'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.'**
+  String get privacySealNoticeText;
+
+  /// No description provided for @reportModelCalibrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Model Benchmark Auto-Calibration'**
+  String get reportModelCalibrationTitle;
+
+  /// No description provided for @reportCommunityDiscoveredTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Community (HuggingFace)'**
+  String get reportCommunityDiscoveredTag;
+
   /// No description provided for @reportEngineBreakdownTitle.
   ///
   /// In en, this message translates to:

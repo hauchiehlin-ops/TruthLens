@@ -537,6 +537,19 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get reportEngineWeightLabel => '權重';
+
+  @override
+  String get privacySealNoticeText =>
+      'TruthLens 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
+
+  @override
+  String get reportModelCalibrationTitle => '模型基準自動校準';
+
+  @override
+  String get reportCommunityDiscoveredTag => '社群探尋 (HuggingFace)';
+
+  @override
   String get reportEngineBreakdownTitle => '引擎明細';
 
   @override
@@ -2891,6 +2904,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String reportExportFailed(String error) {
     return '匯出失敗：$error';
   }
+
+  @override
+  String get reportEngineWeightLabel => '權重';
+
+  @override
+  String get privacySealNoticeText =>
+      'TruthLens 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
+
+  @override
+  String get reportModelCalibrationTitle => '模型基準自動校準';
+
+  @override
+  String get reportCommunityDiscoveredTag => '社群探尋 (HuggingFace)';
 
   @override
   String get reportEngineBreakdownTitle => '引擎明細';

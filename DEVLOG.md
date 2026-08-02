@@ -1,15 +1,14 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-02 — [Phase 4] 模型自動校準 (Option C) 與 HuggingFace 社群模型自動探尋 (Option A)
+## 2026-08-02 — [Phase 4] 專業化報告排版（動態多模型與隱私標章）與多國語系操作手冊／隱私權政策更新
 
 **做了什麼**
 
-- **自動 Benchmark 效能評測與權重推薦 (Option C Auto-Calibration)**：新增 `ModelBenchmarkService`（[model_benchmark_service.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/model_benchmark_service.dart)），內建 10 句標準檢測語料對照集，自動量測端上推論正確率 (Accuracy) 與平均延遲 (LatencyMs)，並依據模型實際效能動態推薦與校準 Ensemble 權重。
-- **HuggingFace Hub 自動探尋與訂閱 (Option A HuggingFace Auto-Explorer)**：新增 `HuggingFaceHubExplorer`（[huggingface_hub_explorer.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/huggingface_hub_explorer.dart)），自動查詢 HuggingFace Hub REST API 獲取標籤為 `truthlens-detector` 或 `ai-content-detection` 的全新開源 ONNX / GGUF 模型，並將動態發現之模型自動併入 [ModelCatalog](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/model_catalog.dart)。
-- **動態 Ensemble 模型探索路由 (Option B Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，使其能夠自動掃描並載入 `ModelManager` 中所有已安裝之 Transformer AI 分類器變體與對抗防禦變體，實現全動態的模型熱插拔與即時加權投票機制。
-- **代碼與公式白名單護盾 (MVP 1 Code & Formula Shield)**：在 `DocumentImporter._stripFormatting` 中新增對 Markdown 程式碼區塊與 LaTeX 數學公式之自動識別與隔離過濾。
-- **文件結構純化 (MVP 2 Structural Noise Stripping)**：於 `DocumentImporter._stripFormatting` 中增強對 PDF/DOCX 頁首頁尾與頁碼噪音之精準剔除。
-- **100% 本地離線隱私認證標章 (MVP 3 Zero-Cloud Privacy Seal in PDF)**：於 `ReportExporter.buildPdf` 產出之 PDF 報告中新增專屬「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」標章。
+- **專業化報告排版與動態多模型明細 (Professional Report & Dynamic Engine Breakdown)**：升級 [report_screen.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/features/report/report_screen.dart) 與 [report_exporter.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/services/report_exporter.dart)，在 UI 報告與產出之 PDF 報告中展示「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」卡片，並為每個動態探尋與載入之 AI 檢測模型標示權重 Chip（如 `權重 40%`）與個別判定理由。
+- **多國語系操作說明與 100% 離線隱私權政策全方位更新 (Localized Manual & Privacy Policy)**：更新 `lib/l10n/` 字典檔（[app_en.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_en.arb)、[app_zh.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh_Hant.arb) 等 14 語言），納入最新的文字/PDF/DOCX 匯入說明、代碼/公式護盾、HuggingFace 社群模型自動探尋、Model Benchmark 端上校準、Crossref 參考文獻比對與 100% On-Device 本地零上傳隱私權條文說明，並以 `flutter gen-l10n` 重新產生本地化類別。
+- **自動 Benchmark 效能評測與權重推薦 (Option C Auto-Calibration)**：新增 `ModelBenchmarkService`（[model_benchmark_service.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/model_benchmark_service.dart)），內建 10 句標準檢測語料對照集，自動量測端上推論正確率與延遲。
+- **HuggingFace Hub 自動探尋與訂閱 (Option A HuggingFace Auto-Explorer)**：新增 `HuggingFaceHubExplorer`（[huggingface_hub_explorer.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/huggingface_hub_explorer.dart)），自動查詢 HuggingFace Hub REST API，併入 [ModelCatalog](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/model_catalog.dart)。
+- **動態 Ensemble 模型探索路由 (Option B Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，動態掃描載入所有已安裝變體。
 - **單元測試套件擴充**：新增 `test/auto_discovery_and_calibration_test.dart`。
 
 **驗證**

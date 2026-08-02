@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
 import 'package:truthlens/core/detection/model_catalog_service.dart';
 import 'package:truthlens/core/detection/services/huggingface_hub_explorer.dart';
 import 'package:truthlens/core/detection/services/model_benchmark_service.dart';
