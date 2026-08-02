@@ -154,10 +154,3 @@ void tl_llama_backend_free(void) {
 
 }  // extern "C"
 
-#if defined(__GNUC__) || defined(__clang__)
-__attribute__((destructor))
-static void tl_llama_auto_cleanup() {
-    llama_backend_free();
-}
-#endif
-

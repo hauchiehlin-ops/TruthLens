@@ -1,5 +1,17 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-02 — [修正] 排除 macOS 關閉 App 時 `ggml_metal` 靜態解構競態引發 SIGABRT (Abort Trap 6) 崩潰
+
+**做了什麼**
+
+- **Root Cause 診斷**：分析使用者提供之 macOS Crash Report（Signal: SIGABRT, Termination: Abort trap 6）。當使用者退出 App (`AppKit -[NSApplication terminate:]`) 時，主執行緒走 `exit()` 並調用 `__cxa_finalize_ranges` 執行 C++ 靜態解構函式。原本 `truthlens_llama.cpp` 中帶有 `__attribute__((destructor))` 的 `tl_llama_auto_cleanup()` 觸發了 `llama_backend_free()` → `ggml_metal_device_free()` → `ggml_metal_rsets_free()`，而當下背景 GCD 佇列 (`com.apple.root.default-qos`) 仍有非同步 `__ggml_metal_rsets_init_block_invoke` 在執行，導致 `ggml_metal` 檢測到不一致並觸發 `ggml_abort()` 拋出 SIGABRT 崩潰。
+- **修法 (`truthlens_llama.cpp` & `build_macos.sh`)**：
+  - 移除 `truthlens_llama.cpp` 中不安全的 `__attribute__((destructor))` 全域解構掛勾，防止進程退出階段發起危險的非同步 Metal 資源釋放。
+  - 重新執行 `build_macos.sh` 完成 llama 橋接層編譯 (100% 成功)，新版原生 `libtruthlens_llama.dylib` 已更新至 `macos/Libs/`。
+- **驗證**：`flutter analyze` 零警告，全專案 **140/140** 個測試綠燈通過。
+
+---
+
 ## 2026-08-02 — [架構升級] 升級通用學術文獻加權評分引擎 (Universal Citation Pipeline)，預防全期刊格式變異
 
 **做了什麼**
