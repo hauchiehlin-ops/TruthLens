@@ -162,10 +162,46 @@ class SettingsScreen extends StatelessWidget {
             const Divider(),
           ],
           ListTile(
-            enabled: false,
             leading: const Icon(Icons.language),
             title: Text(l10n.settingsLanguagePackTitle),
             subtitle: Text(l10n.settingsLanguagePackSubtitle),
+            trailing: TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Row(
+                      children: [
+                        const Icon(Icons.language),
+                        const SizedBox(width: 8),
+                        Text(l10n.settingsLanguagePackTitle),
+                      ],
+                    ),
+                    content: const Text(
+                      'TruthLens 內建之 XLM-RoBERTa 核心檢測模型已原生支援 104+ 種語言（包含中文、英文、日文、韓文、法文、德文、西班牙文等）。\n\n若您需要探索或下載特定語言之強化微調模型（例如 HuggingFace 社群微調變體），請至「AI 模型管理」中進行管理與下載。',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('關閉'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ModelManagerScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(l10n.settingsOpenButton),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: Text(l10n.settingsOpenButton),
+            ),
           ),
         ],
       ),
