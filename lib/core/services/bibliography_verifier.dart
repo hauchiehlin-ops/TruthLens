@@ -64,9 +64,10 @@ class BibliographyVerifier {
     caseSensitive: false,
   );
 
-  /// 條列式、圈號與數字編號前綴（如 [1], (1), 1., ①, •, -）
+  /// 條列式、全形/半形括號與數字編號前綴（如 [1], (1), 1., ①, 【1】, 〔1〕, ［1］, [Ref 1], •, -）
   static final RegExp _bulletOrNumberPrefix = RegExp(
-    r'^\s*(?:\[\d+\]|\(\d+\)|\d+[\.、\)]|[\u2460-\u2473]|[-*•])\s*',
+    r'^\s*(?:\[\s*(?:\d+|[A-Za-z]|Ref\s*\d+)\s*\]|\(\s*\d+\s*\)|\d+[\.、\)]|[\u2460-\u2473]|[\u2474-\u2487]|【\d+】|〔\d+〕|［\d+］|[-*•])\s*',
+    caseSensitive: false,
   );
 
   /// 四位數西元紀年 (1900-2099)
@@ -125,14 +126,15 @@ class BibliographyVerifier {
       final line = rawLine.trim();
       if (line.isEmpty) continue;
 
-      // 檢查是否為頁首/頁尾噪音（例如 "70 B. LIAO et al." 或 "---"）
-      if (RegExp(r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|[-—=_]{3,})$').hasMatch(line)) {
+      // 檢查是否為頁首/頁尾噪音（例如 "70 B. LIAO et al."、"Page 12 of 15" 或 "---"）
+      if (RegExp(r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|Page\s+\d+.*|Copyright\s+.*|[-—=_]{3,})$', caseSensitive: false).hasMatch(line)) {
         continue;
       }
 
       // 判斷該行是否為全新條目的開頭（包含數字編號、英文/中文作者、GB/T 7714 標記）
       final isNewEntryStart = _bulletOrNumberPrefix.hasMatch(line) ||
           RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(line) ||
+          RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(line) ||
           RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
           RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line);
 
@@ -190,12 +192,16 @@ class BibliographyVerifier {
     if (_yearRegex.hasMatch(block)) score += 0.35;
     if (_journalKeyword.hasMatch(block)) score += 0.25;
     if (RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(block) ||
+        RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(block) ||
         _chineseAuthor.hasMatch(block)) {
       score += 0.25;
     }
     if (RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
         RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false).hasMatch(block)) {
       score += 0.20;
+    }
+    if (RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false).hasMatch(block)) {
+      score += 0.30;
     }
     if (hasHeading) score += 0.15;
     return score;
@@ -229,7 +235,7 @@ class BibliographyVerifier {
     if (title == null || title.isEmpty) {
       // 否則取第一個句點／句號過後的文字作為篇名
       final parts = cleaned.split(RegExp(r'[\.度。]\s*'));
-      if (parts.length > 1) {
+      if (parts.length > 1 && parts[1].trim().length > 5) {
         title = parts[1].trim();
       } else {
         title = cleaned;
@@ -244,9 +250,14 @@ class BibliographyVerifier {
       final partBeforeComma = cleanedNoPrefix.substring(0, commaIdx).trim();
       surname = partBeforeComma.split(RegExp(r'\s+')).first;
     } else {
-      final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
-      if (chineseMatch != null) {
-        surname = chineseMatch.group(0);
+      final spaceParts = cleanedNoPrefix.split(RegExp(r'\s+'));
+      if (spaceParts.isNotEmpty && RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+$").hasMatch(spaceParts.first)) {
+        surname = spaceParts.first;
+      } else {
+        final chineseMatch = RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
+        if (chineseMatch != null) {
+          surname = chineseMatch.group(0);
+        }
       }
     }
 
