@@ -60,25 +60,37 @@ class DocumentImporter {
     );
   }
 
-  /// 移除常見的 Markdown 格式符號與 HTML 標籤，純化文字供 AI 分析
+  /// 移除常見的 Markdown 格式符號、HTML 標籤、LaTeX 數學公式、頁首頁尾與頁碼噪音，純化文字供 AI 分析
   static String _stripFormatting(String text) {
     var result = text;
-    // 1. 移除程式碼區塊與行內程式碼
+    // 1. 移除程式碼區塊與行內程式碼（MVP 1 Code Shield）
     result = result.replaceAll(RegExp(r'```[\s\S]*?```'), '');
     result = result.replaceAll(RegExp(r'`[^`]+`'), '');
-    // 2. 移除 HTML 標籤
+
+    // 2. 移除 LaTeX 數學公式與方程式環境（MVP 1 Formula Shield）
+    result = result.replaceAll(RegExp(r'\$\$[\s\S]*?\$\$'), ''); // $$...$$
+    result = result.replaceAll(RegExp(r'\\\[[\s\S]*?\\\]'), ''); // \[...\]
+    result = result.replaceAll(RegExp(r'\\begin\{equation\}[\s\S]*?\\end\{equation\}'), '');
+    result = result.replaceAll(RegExp(r'\\\([\s\S]*?\\\)'), ''); // \(...\)
+    result = result.replaceAll(RegExp(r'\$[^$\n]+\$'), ''); // $...$
+
+    // 3. 移除頁首頁尾與頁碼噪音 (MVP 2 Structural Noise Stripping)
+    result = result.replaceAll(RegExp(r'^\s*(?:Page\s*\|?\s*\d+(?:\s*of\s*\d+)?|第\s*\d+\s*頁(?:\s*，?\s*共\s*\d+\s*頁)?)\s*$', caseSensitive: false, multiLine: true), '');
+    result = result.replaceAll(RegExp(r'^\s*(?:Line|L)\s*\d+[\s:]*$', caseSensitive: false, multiLine: true), '');
+
+    // 4. 移除 HTML 標籤
     result = result.replaceAll(RegExp(r'<[^>]*>', multiLine: true), '');
-    // 3. 提取 Markdown 連結與圖片文字 (![text](url) 或 [text](url))
+    // 5. 提取 Markdown 連結與圖片文字 (![text](url) 或 [text](url))
     result = result.replaceAllMapped(RegExp(r'!?\[([^\]]*)\]\([^)]+\)'), (match) => match.group(1) ?? '');
-    // 4. 移除 Markdown 標題
+    // 6. 移除 Markdown 標題
     result = result.replaceAll(RegExp(r'^#+\s+', multiLine: true), '');
-    // 5. 移除 Markdown 引用
+    // 7. 移除 Markdown 引用
     result = result.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
-    // 6. 移除無序與有序列表前綴
+    // 8. 移除無序與有序列表前綴
     result = result.replaceAll(RegExp(r'^(\s*[-*+]|\s*\d+\.)\s+', multiLine: true), '');
-    // 7. 移除粗體與斜體符號 (** / __)
+    // 9. 移除粗體與斜體符號 (** / __)
     result = result.replaceAll(RegExp(r'\*\*|__'), '');
-    // 8. 縮減過多的換行
+    // 10. 縮減過多的換行
     result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
     return result.trim();
   }

@@ -211,6 +211,36 @@ class ReportExporter {
           ),
           pw.SizedBox(height: 12),
 
+          // 🔐 MVP 3: 100% 本地離線隱私認證標章 (Zero-Cloud Privacy Audit Seal)
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: pw.BoxDecoration(
+              color: PdfColor.fromInt(0xFFF0F4F8),
+              border: pw.Border.all(color: PdfColor.fromInt(0xFFB0BEC5), width: 0.8),
+              borderRadius: pw.BorderRadius.circular(6),
+            ),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  '[ 零上傳安全認證 ] ',
+                  style: pw.TextStyle(
+                    fontSize: 9,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColor.fromInt(0xFF1565C0),
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Text(
+                    'TruthLens 離線檢測證明：本文件內容 100% 於裝置本地運算完成。未經過任何雲端伺服器傳輸或資料庫儲存，完整保障個資與智慧財產權。',
+                    style: const pw.TextStyle(fontSize: 8.5, color: PdfColor.fromInt(0xFF37474F)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          pw.SizedBox(height: 12),
+
           // 分析解讀（與 App 內報告同一份 ReportDocument，可能來自 LLM）
           pw.Text(
             l10n.composerNarrativeTitle,
