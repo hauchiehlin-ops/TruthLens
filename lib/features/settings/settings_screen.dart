@@ -6,6 +6,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/ocr_service.dart';
+import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../input/input_screen.dart' show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
@@ -202,6 +203,12 @@ class SettingsScreen extends StatelessWidget {
               },
               child: Text(l10n.settingsOpenButton),
             ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('TruthLens'),
+            subtitle: Text('版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎'),
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
+import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
 
@@ -191,7 +192,31 @@ class _InputScreenState extends State<InputScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TruthLens'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('TruthLens'),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: scheme.primaryContainer.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: scheme.primary.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Text(
+                AppVersion.displayVersion,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: scheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+          ],
+        ),
         actions: [
           _languageMenu(context),
           IconButton(

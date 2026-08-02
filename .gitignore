@@ -46,6 +46,8 @@ app.*.map.json
 
 # Large Model Files & Temp directories
 *.gguf
+/dist/
+*.dmg
 /~/
 ~
 
