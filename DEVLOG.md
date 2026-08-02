@@ -1,5 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-02 — [修正] 解決 Universal Citation Pipeline 被舊版 Path 1 搶先 Return 導致全篇論文僅抓到 2 筆條目問題
+
+**做了什麼**
+
+- **Root Cause 診斷**：當全篇 12 頁完整論文匯入時，舊版 Path 1 (`_entryStart`) 正則為 Harvard 格式專用 (`Author (Year)`)。因該正則在論文 References 區塊偶然比對到 2 筆符合模式的片斷，且舊邏輯包含 `if (entries.isNotEmpty) return entries;` 早退機制，導致新升級之 **Path 2 通用學術文獻加權評分管線** 完全沒機會執行，最終只回傳了 Path 1 誤判的 2 筆條目（忽略了其餘 5 筆多行 Vancouver 條目）。
+- **修法 (`bibliography_verifier.dart`)**：
+  - 廢除 Path 1 的強制早退機制，讓 Path 1 與 Path 2 皆同步執行解析。
+  - 建立「**動態涵蓋率擇優機制** (`candidates.length > path1Entries.length`)」：當 Path 2 抽取到的條目數量嚴格大於 Path 1 時（例如 7 筆 vs 2 筆），優先採用 Path 2 完整涵蓋結果；當數量相同時（如標準 Harvard 單/多作者條目），則保留 Path 1 精準的標題/年份切分。
+- **驗證**：
+  - 新增完整 12 頁論文（包含 `[1] [2] [3-5] [6] [7]` 內文引用與跨頁 `[1]`~`[7]` References）之整合測試 `12 頁完整論文內文（包含內文引用與完整 References）可精準抽取全部 7 筆條目`。
+  - 全專案 **141/141** 個測試全數綠燈通過。
+
+---
+
 ## 2026-08-02 — [修正] 排除 macOS 關閉 App 時 `ggml_metal` 靜態解構競態引發 SIGABRT (Abort Trap 6) 崩潰
 
 **做了什麼**

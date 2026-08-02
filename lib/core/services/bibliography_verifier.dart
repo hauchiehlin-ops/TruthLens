@@ -103,18 +103,17 @@ class BibliographyVerifier {
 
     // 路徑 1：標準英文 Surname, F.M. (Year) 傳統格式
     final starts = _entryStart.allMatches(section).toList();
+    final path1Entries = <BibliographyEntry>[];
     if (starts.isNotEmpty && (hasHeading || starts.length >= minEntriesWithoutHeading)) {
-      final entries = <BibliographyEntry>[];
       for (var i = 0; i < starts.length; i++) {
         final start = starts[i];
         final endIndex =
             i + 1 < starts.length ? starts[i + 1].start : section.length;
         final raw = section.substring(start.start, endIndex).trim();
         if (raw.length < 15) continue;
-        entries.add(_parseEntry(raw, start.end - start.start,
+        path1Entries.add(_parseEntry(raw, start.end - start.start,
             int.tryParse(start.group(1) ?? '')));
       }
-      if (entries.isNotEmpty) return entries;
     }
 
     // 路徑 2：跨行組裝與通用學術特徵動態加權評分管線
@@ -170,11 +169,18 @@ class BibliographyVerifier {
       }
     }
 
-    if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
-      return [];
+    // 擇優機制：當路徑 2 擷取到更多條目時優先採用（例如多行組裝之 Vancouver/IEEE 格式）；若條目數相同則保留路徑 1 精準之 Harvard 標題切分
+    if (candidates.length > path1Entries.length) {
+      if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
+        return [];
+      }
+      return candidates;
+    } else {
+      if (!hasHeading && path1Entries.length < minEntriesWithoutHeading) {
+        return [];
+      }
+      return path1Entries;
     }
-
-    return candidates;
   }
 
   /// 動態學術文獻加權評分引擎 (0.0 - 1.0)

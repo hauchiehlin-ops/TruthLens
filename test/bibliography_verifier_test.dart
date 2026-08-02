@@ -133,6 +133,49 @@ scrubber. Comparison of experiments with theory, Env. Sci. Tech., 2007, 20, 237.
       expect(entries[6].firstAuthorSurname, 'HUANG');
       expect(entries[6].year, 2007);
     });
+
+    test('12 頁完整論文內文（包含內文引用與完整 References）可精準抽取全部 7 筆條目', () {
+      const fullPaperContent = '''
+Environment Protection Engineering
+Vol. 42 2016 No. 1
+DOI: 10.5277/epe160105
+BENWEI LIAO1, SHUEIWAN H. JUANG1, HAUCHIEH LIN2
+A NEW DESIGN OF WET SCRUBBER FOR REMOVAL OF FINE PARTICLES FROM EXHAUST GAS
+1. INTRODUCTION
+Common methods of cleaning bag filters include mechanical oscillation...
+60 B. LIAO et al.
+Filtration equipment do not generally produce particle bounce by cyclone [1] in use, and the dust collection efficiency curve of such equipment is similar to that of the traditional respirable sampling apparatus [2].
+The literatures include extensive research on the separated efficiency and pressure drop characteristics of the Venturi scrubbers [3–5].
+Therefore, Tsai et al. [6] and Huang et al. [7] proposed improving the dust collection efficiency...
+4. CONCLUSIONS
+The proposed wet scrubber described here combines the concepts...
+REFERENCES
+[1] COHEN B.S., HERING S.V., Air sampling instrumentsfor evaluation of atmospheric contaminants, 8th Ed.
+American Conference of Governmental Industrial Hygienists, Inc., Cincinnati 1995.
+[2] HINDS W.C., Aerosol Technology, Properties, Behavior, and Measurement of Airborne Particles,
+2nd Ed., Wiley, 1999.
+[3] CALVERT S., Venturi and other atomizing scrubbers efficiency and pressure drop, AICHE J., 1970, 16, 392.
+[4] MAYINGER F., NEUMANN M., Dust collection in Venturi scrubbers, Ger. Chem. Eng., 1978, 1, 289.
+[5] TIGGES K.D., MAYINGER F., Experiments with highly efficient Venturi scrubbers for aerosol separation
+from gases under multi-plane water injection, Chem. Eng. Process, 1984, 18, 171.
+70 B. LIAO et al.
+[6] TSAI C.J., LIN C.H., WANG Y.M., An efficient Venturi scrubber system to remove submicron particles in
+exhaust gas, J. Air Waste Manage. Assoc., 2005, 55, 319.
+[7] HUANG C.H., TSAI C.J., WANG Y.M., Control of submicron particle collection efficiency in a Venturi
+scrubber. Comparison of experiments with theory, Env. Sci. Tech., 2007, 20, 237.
+''';
+      final entries = BibliographyVerifier.extractEntries(fullPaperContent);
+      expect(entries.length, 7);
+      expect(entries.map((e) => e.firstAuthorSurname).toList(), [
+        'COHEN',
+        'HINDS',
+        'CALVERT',
+        'MAYINGER',
+        'TIGGES',
+        'TSAI',
+        'HUANG',
+      ]);
+    });
   });
 
   group('BibliographyVerifier.verifyAll', () {
