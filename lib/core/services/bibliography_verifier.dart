@@ -106,6 +106,14 @@ class BibliographyVerifier {
       ),
       '\n',
     );
+    text = text.replaceAll(
+      RegExp(
+        r'^\s*\d{1,3}\.\s+(?:Therefore|Under|In\s+this|However|Furthermore|Moreover|Consequently|As\s+a\s+result|Note\s+that)\b.*$',
+        caseSensitive: false,
+        multiLine: true,
+      ),
+      '\n',
+    );
 
     // 2) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號後緊接英文字母或數字時自動補齊空格
     text = text.replaceAllMapped(
@@ -515,12 +523,11 @@ class BibliographyVerifier {
     } catch (_) {}
 
     if (crossrefResult != null &&
-        (crossrefResult.confidence == CitationMatchConfidence.high ||
-         crossrefResult.confidence == CitationMatchConfidence.notFound)) {
+        crossrefResult.confidence == CitationMatchConfidence.high) {
       return crossrefResult;
     }
 
-    // 2) 若 Crossref 未命中（如 1800-1900 19 世紀法文/歷史期刊古籍），發動 OpenAlex API 二重補核 (涵蓋 2.5 億筆文獻)
+    // 2) 若 Crossref 未高可信度命中，發動 OpenAlex API 二重補核 (涵蓋 2.5 億筆文獻與全內文圖書館索引)
     try {
       final searchKw = entry.title ?? entry.rawText;
       final openAlexUri = Uri.parse(
@@ -545,7 +552,7 @@ class BibliographyVerifier {
           final matchedJournal = hostVenue?['display_name']?.toString();
           final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
 
-          if (titleSim >= 0.35 || (matchedYear != null && entry.year == matchedYear)) {
+          if (titleSim >= 0.35 || (matchedYear != null && entry.year != null && (entry.year! - matchedYear).abs() <= 1)) {
             return BibliographyCheckResult(
               entry: entry,
               confidence: CitationMatchConfidence.high,

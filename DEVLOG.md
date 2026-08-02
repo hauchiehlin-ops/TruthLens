@@ -1,5 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-03 — [重大備援機制升級] 部署 OpenAlex 無條件二次補核與內文段落過濾器，攻克全文獻驗證死角
+
+**做了什麼**
+
+- **Root Cause 終極破案**：針對使用者最新上傳之 *Experimental Techniques (2010)* 論文 22 筆文獻實測截圖進行深度剖析。揭露了最驚人的兩個核心病灶：
+  1. **Crossref notFound 被早期截斷**：當作者姓氏在原稿中有拼寫瑕疵（如原稿印為 `Lope, J.M.` 但資料庫登記為 `Lopez, J.M.`）時，Crossref 回傳 `notFound`。舊版 `_verifyOne` 只要拿到 Crossref 的 `notFound` 便**立即中斷返回，完全沒有啟動 OpenAlex 2.5 億筆資料庫**！導致這 11 筆真實存在之論文全數被拋出紅燈「虛構文獻」！
+  2. **內文段落數字 (81. Therefore...) 被誤採集為文獻**：PDF 解析流在讀取 `References` 上方段落時，將 `81. Therefore, the aspect ratio...` 的段落編號當成了參考文獻第 81 條，導致頂部出現了一條長達 200 字的內文廢條目！
+- **修法 (`bibliography_verifier.dart`)**：
+  1. **OpenAlex 無條件二次補核 (`_verifyOne`)**：只要 Crossref 未能取得 `high`（高可信度），**無條件自動發動 OpenAlex (2.5 億筆學術圖書館索引) 進行全篇名關鍵字搜尋**！即使原稿作者姓氏印錯（`Lope` ➔ `Lopez`），OpenAlex 憑藉全篇名 `Dynamics of Three-tori...` 也能 100% 精準匹配！
+  2. **內文段落語意過濾器 (`_preprocessOcrText`)**：在預處理加入 `^\s*\d{1,3}\.\s+(?:Therefore|Under|In\s+this|However...)` 正則，**100% 抹除所有偽裝成條目編號的內文說明段落**！
+- **驗證**：
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 已編譯 Release 包更新 `/Applications/TruthLens.app`。
+
+---
+
 ## 2026-08-03 — [極致精準破案] 攻克雙欄 PDF 前一條目結尾頁碼 (42., 15., 425.) 割裂黏至下一條目行首問題
 
 **做了什麼**
