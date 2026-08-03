@@ -434,6 +434,20 @@ References
       expect(entries[3].year, 1960);
     });
 
+    test('OCR 介詞連寫 (如 Onsetof, Orderof, Journalof, Flowwith) 能精準修復空格', () {
+      const ocrNoiseText = '''
+References
+11. Gollub J. P.,and Swinney, H.L.“Onsetof Turbulent ina Rotating Fluid,”Physical Review Letters 35: 927–930 (1975).
+12. Walden, R.W.,and Donnelly, R.J.,“Reemergent Orderof Chaotic Circular Couette Flow,”Physical Review Letters 42: 301–304 (1979).
+16. Youd, A.J.,Willis, A.P.,and Barenghi, C.F.“Reversingand Non-reversing Modulated Taylor-Couette Flow,”Journalof Fluid Mechanics 487: 367–376 (2003).
+''';
+      final entries = BibliographyVerifier.extractEntries(ocrNoiseText);
+      expect(entries.length, 3);
+      expect(entries[0].title, contains('Onset of'));
+      expect(entries[1].title, contains('Order of'));
+      expect(entries[2].title, contains('Reversing and'));
+    });
+
     test('HTTP 429 頻率限制回應時退回 uncertain (黃燈)，不誤報為 notFound (紅燈)', () async {
       final client = MockClient((_) async => http.Response('Rate Limit Exceeded', 429));
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);

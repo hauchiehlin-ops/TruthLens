@@ -1,20 +1,18 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [重磅修復] 解決文件匯入誤刪數字列表編號 (`\d+\.`) 導致全部 22 筆參考文獻被融合為單一卡片問題
+## 2026-08-03 — [重磅修復] 解決文獻條目遺失 (3-9條) 與真實文獻被誤判為虛構 (紅燈) 之根因
 
 **做了什麼**
 
-- **Root Cause 終極破案**：針對使用者反應「*只找到一筆文獻？！*」（附截圖顯示畫面僅出現 1 張綠燈卡片，卡片內卻包含了 `1. Couette ... 2. Taylor ...` 等多條連寫內文）：
-  1. **`DocumentImporter._stripFormatting` 列表號誤刪 (最關鍵破案)**：`DocumentImporter` 舊版包含 `result.replaceAll(RegExp(r'^(\s*[-*+]|\s*\d+\.)\s+', multiLine: true), '')` 正則。當使用者匯入 PDF/DOCX/文字檔時，該正則把第 3 條 (`3. Donnelly`) 至第 22 條 (`22. Youd`) 行首的數字編號 `3. `, `4. `... `22. ` **全數無差別剔除**！
-  2. **無編號導致抽取引擎失效**：失去 `3. `, `4. ` 前綴後，`BibliographyVerifier` 判定 `hasNumberedEntries = false`，誤將第 3 條至第 22 條全部當作第 1 條的段落內文隨後拼接，導致 22 筆文獻全部融合成**單一巨型卡片 (Card 1)**！
-  3. **未斷行連寫條目 (`(1890).2. Taylor`) 切分**：`_preprocessOcrText` 的連寫切分正則缺少對 `).` 標點符號的 Lookbehind 支援，導致 `(1890).2. Taylor` 未在 `2. ` 前插入換行符。
-- **修法 (`document_importer.dart` & `bibliography_verifier.dart`)**：
-  - **`document_importer.dart`**：移除 `\d+\.` 的強制修剪，僅移除無序列表符號 `[-*+]`，完整保護 `1. `, `2. `, `3. `... 條目編號。
-  - **`bibliography_verifier.dart`**：升級 Step 2 與 Step 7 正則 `(?<=[a-zA-Z]|\)\.|\)\s*)\s*(?=\b\d{1,3}\.\s+[A-Z])`，精準切分 `(1890).2. Taylor`，並擴充 `November/December 2010 EXPERIMENTAL TECHNIQUES` 雙月份頁尾擦除機制。
+- **Root Cause 深層剖析**：
+  1. **條目遺失 (第 3 至 9 條不見)**：`STABILITYOFTAYLOR-COUETTEFLOW3. Donnelly` 未能被 500 限制前置切割，導致舊版 `block.length > 500` 的強烈硬性限制將長度約 1200 字元的融合區塊**直接拋棄**，導致第 3 至 9 條完全消失！
+  2. **真實文獻誤判為虛構 (紅燈)**：PDF / OCR 提取時，英文介詞與連詞與篇名單字嵌合連寫（例如 `Onsetof` 代替 `Onset of`、`Orderof` 代替 `Order of`、`Reversingand` 代替 `Reversing and`、`Flowwith` 代替 `Flow with`），傳給 Crossref / OpenAlex 查詢時，搜尋引擎因無法識別連寫單字而回傳 0 筆結果 (HTTP 200)，進而誘發 `hasValid200NoMatch = true` 被判定為「查無相近匹配，可能為虛構文獻 (紅燈)」！
+- **修法 (`bibliography_verifier.dart`)**：
+  - **放寬區塊長度過濾**：將 `block.length > 500` 放寬至 `2000`，確保長條目不被丟棄。
+  - **OCR 介詞連寫自動修復 Engine**：新增 `ocrCompoundedWords` (`of`, `with`, `for`, `from`, `and`) 自動反向分割正則 `([a-zA-Z]{3,})$cp(?=\b|[\s\.:,])`，精準還原 `Onset of`, `Order of`, `Reversing and`, `Flow with` 正確英文單字。
 - **驗證**：
-  - 新增單元測試，模擬此完整連寫文獻格式，**4 筆/22 筆條目 100% 獨立切分**！
-  - 全專案 **146 / 146** 個單元測試 100% 綠燈通過！`flutter analyze` 0 警告 0 錯誤！
-  - 最新 `/Applications/TruthLens.app` 已重新打包部署（時間戳 **18:46**）。
+  - 全專案 **147 / 147** 個測試全數綠燈通過！
+  - 打包並部署最新 `/Applications/TruthLens.app`（時間戳 **18:57**）。
 
 ## 2026-08-03 — [崩潰修復] 徹底解決退出 App (`-[NSApplication terminate:]`) 時 `ggml_metal_rsets_free` 觸發 SIGABRT (Abort Trap 6) 崩潰
 

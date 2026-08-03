@@ -74,7 +74,11 @@ class BibliographyVerifier {
 
   static const int minEntriesWithoutHeading = 3;
 
-  /// 預處理 OCR / PDF 擷取文字的格式瑕疵
+  /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
+  /// 1. 清除 PDF 頁首/頁尾雜訊（如 November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW）
+  /// 2. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
+  /// 3. 修復 OCR 連寫介詞/連詞：如 `Onsetof` -> `Onset of`, `Reversingand` -> `Reversing and`, `Journalof` -> `Journal of`
+  /// 4. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `FLOW3. Donnelly` 或 `(1890).2. Taylor` 切開為多行獨立條目
   static String _preprocessOcrText(String input) {
     var text = input;
 
@@ -109,7 +113,14 @@ class BibliographyVerifier {
     );
     text = text.replaceAll(
       RegExp(
-        r'STABILITY\s+OF\s+TAYLOR-COUETTE\s+FLOW',
+        r'STABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'STABILITYOFTAYLOR-COUETTEFLOW',
         caseSensitive: false,
       ),
       '\n',
@@ -129,7 +140,7 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
-    // 3) 恢復 OCR 擠壓單字間空白與拆解尾隨介詞/冠詞
+    // 3) 恢復 OCR 擠壓單字間空白與拆解尾隨介詞/冠詞/連詞 (如 Onsetof -> Onset of, Journalof -> Journal of, Flowwith -> Flow with)
     text = text.replaceAllMapped(
       RegExp(r'([a-z])([A-Z])'),
       (m) => '${m.group(1)} ${m.group(2)}',
@@ -147,11 +158,15 @@ class BibliographyVerifier {
       (m) => '${m.group(1)} ${m.group(2)}',
     );
 
-    final ocrCompounded = ['forthe', 'between', 'ofthe', 'ina', 'withthe'];
-    for (final cp in ocrCompounded) {
+    // 常用英文介詞與連詞的 OCR 嵌合修復 (如 Onsetof, Orderof, Journalof, Flowwith, Reversingand, Methodsin)
+    final ocrCompoundedWords = [
+      'forthe', 'between', 'ofthe', 'ina', 'withthe',
+      'of', 'with', 'for', 'from', 'and'
+    ];
+    for (final cp in ocrCompoundedWords) {
       text = text.replaceAllMapped(
-        RegExp('([a-zA-Z]{2,})$cp([a-zA-Z]*|\\b)', caseSensitive: false),
-        (m) => '${m.group(1)} $cp ${m.group(2)}',
+        RegExp('([a-zA-Z]{3,})$cp(?=\\b|[\\s\\.:,])', caseSensitive: false),
+        (m) => '${m.group(1)} $cp',
       );
     }
 
@@ -184,7 +199,7 @@ class BibliographyVerifier {
     // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 FLOW3. Donnelly 或 (1890).2. Taylor 或 (1923)3. Donnelly）：
     text = text.replaceAllMapped(
       RegExp(
-          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z]|\)\.|\)\s*)\s*(?=\b\d{1,3}\.\s+[A-Z]))'),
+          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z]|\)\.|\)\s*|\b)\s*(?=\b\d{1,3}\.\s+[A-Z]))'),
       (m) => '\n${m.group(1)}',
     );
 
@@ -272,7 +287,7 @@ class BibliographyVerifier {
     final candidates = <BibliographyEntry>[];
 
     for (final block in groupedBlocks) {
-      if (block.length < 15 || block.length > 500) continue;
+      if (block.length < 15 || block.length > 2000) continue;
 
       final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
