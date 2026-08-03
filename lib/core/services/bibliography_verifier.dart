@@ -196,10 +196,9 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 FLOW3. Donnelly 或 (1890).2. Taylor 或 (1923)3. Donnelly）：
+    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 (1890).2. Taylor 或 (1958). 4.Simon 或 [ 2 ] H INDS 或 FLOW3. Donnelly）：
     text = text.replaceAllMapped(
-      RegExp(
-          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z]|\)\.|\)\s*|\b)\s*(?=\b\d{1,3}\.\s+[A-Z]))'),
+      RegExp(r'(?<=[a-zA-Z\)\.\,\]])\s*(\d{1,3}\.[\s\u00A0]*[A-Z]|\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\])'),
       (m) => '\n${m.group(1)}',
     );
 

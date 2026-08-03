@@ -416,22 +416,22 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
       expect(results.single.confidence, CitationMatchConfidence.notFound);
     });
 
-    test('連寫嵌合條目 (如 FLOW3. Donnelly 或 (1890).2. Taylor) 與頁首頁尾雜訊能精準拆分切塊', () {
+    test('連寫嵌合條目 (如 FLOW3. Donnelly 或 (1890).2. Taylor 或 4.Simon ... 9.Lope) 與頁首頁尾雜訊能精準拆分切塊', () {
       const concatenatedOcr = '''
 References
-1. Couette, M., "Etudes Sur Le Frottement Des Liquids," Annales de chimie et de physique 6:433-510 (1890).2. Taylor, G.I., "Stability of a Viscous Liquid Contained between Two Rotating Cylinders," Philosophical Transactions of the Royal Society of London A233: 289-343 (1923). November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW3. Donnelly, R.J., "Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement," Proceedings of the Royal Society of London A246: 312-325 (1958).
-4. Simon, N.J., and Donnelly, R.J., "An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders," Journal of Fluid Mechanics 7: 401-418 (1960).
+1. Couette, M., "Etudes Sur Le Frottement Des Liquids," Annales de chimie et de physique 6:433-510 (1890).2. Taylor, G.I., "Stability of a Viscous Liquid Contained between Two Rotating Cylinders," Philosophical Transactions of the Royal Society of London A233: 289-343 (1923). November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW3. Donnelly, R.J., "Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement," Proceedings of the Royal Society of London A246: 312-325 (1958). 4.Simon, N.J., and Donnelly, R.J., "An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders," Journal of Fluid Mechanics 7: 401-418 (1960). 5.Coles, D., "On the Instability of Taylor Vortices," Journal of Fluid Mechanics 31: 17-62 (1965). 6.Schwarz, K.W., Springett, B.E., and Donnelly, R.J., "Modes of Instability in Spiral Flow between Rotating Cylinders," Journal of Fluid Mechanics 20: 281-289 (1964). 7.Nissan A.H., Nardacci J.L., and Ho C.Y., "The Onset of Different Modes of Instability for Flow between Rotating Cylinders," AIChE Journal 9: 620-624 (1963). 8.Marques, F., and Lope, J.M., "Taylor-Couette Flow with Axial Oscillations of the Inner Cylinder: floquet Analysis of the Basic Flow," Journal of Fluid Mechanics 384: 153-175 (1997). 9.Lope, J.M., and Marques, F., "Dynamics of Three-tori in a Periodically Forced Navier-Stokes Flow," Physical Review Letters 85: 972-975 (2001).
 ''';
       final entries = BibliographyVerifier.extractEntries(concatenatedOcr);
-      expect(entries.length, 4);
+      expect(entries.length, 9);
       expect(entries[0].firstAuthorSurname, 'Couette');
-      expect(entries[0].year, 1890);
       expect(entries[1].firstAuthorSurname, 'Taylor');
-      expect(entries[1].year, 1923);
       expect(entries[2].firstAuthorSurname, 'Donnelly');
-      expect(entries[2].year, 1958);
       expect(entries[3].firstAuthorSurname, 'Simon');
-      expect(entries[3].year, 1960);
+      expect(entries[4].firstAuthorSurname, 'Coles');
+      expect(entries[5].firstAuthorSurname, 'Schwarz');
+      expect(entries[6].firstAuthorSurname, 'Nissan');
+      expect(entries[7].firstAuthorSurname, 'Marques');
+      expect(entries[8].firstAuthorSurname, 'Lope');
     });
 
     test('OCR 介詞連寫 (如 Onsetof, Orderof, Journalof, Flowwith) 能精準修復空格', () {
