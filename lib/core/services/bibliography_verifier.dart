@@ -162,10 +162,6 @@ class BibliographyVerifier {
       RegExp(r'\b([A-Z])\s+([A-Z]{2,})\b'),
       (m) => '${m.group(1)}${m.group(2)}',
     );
-    text = text.replaceAllMapped(
-      RegExp(r'\b([A-Za-z]+)\s+([a-z])\b'),
-      (m) => '${m.group(1)}${m.group(2)}',
-    );
 
     // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
     text = text.replaceAllMapped(

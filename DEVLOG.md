@@ -1,6 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [流量控管機制升級] 部署 120ms 佇列平滑間隔，攻克 Crossref/OpenAlex HTTP 429 拒絕連線導致全黃燈問題
+## 2026-08-03 — [極致精準破案] 移除破壞性正則 `([A-Za-z]+)\s+([a-z])`，徹底攻克 `ina` / `Methodsina` 人為破壞篇名問題
+
+**做了什麼**
+
+- **Root Cause 終極破案**：針對使用者反應「*結果還是一樣沒改善*」進行極度嚴密的逐字程式碼清查。終於發現了一個**隱藏在 `_preprocessOcrText` 預處理常式中最具破壞力的定時炸彈正則**：
+  1. **舊正則的毀滅性副作用 (`line 166`)**：`text.replaceAllMapped(RegExp(r'\b([A-Za-z]+)\s+([a-z])\b'), (m) => '${m.group(1)}${m.group(2)}')`
+  2. **破壞行為**：這行正則原本意圖修復單大寫字母連寫，但卻使用了小寫 `[a-z]`！當輸入文字中出現任何**單一小寫字母 `a`** 時（例如 `Three-tori in a`、`Turbulent in a`、`Methods in a`），**這個正則竟強制把前面單詞與小寫字母 `a` 黏死在一起，合成了 `ina`**（形成 `Three-tori ina`、`Turbulent ina`、`Methodsina`）！
+  3. **災難連鎖效應**：當傳給 Crossref / OpenAlex 搜尋的篇名變成了包含非正常單字 `ina` 的 `Three-tori ina` 時，資料庫比對宣告無效，進而導致所有含有 `in a` 的論文全數驗證失敗！
+- **修法 (`bibliography_verifier.dart`)**：
+  - **徹底刪除該破壞性正則**！
+  - **效果**：`Three-tori in a`、`Turbulent in a` 100% 恢復正常英文文法與半形空格！傳給 Crossref 與 OpenAlex 秒速精準匹配！
+- **驗證**：
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
 
 **做了什麼**
 
