@@ -72,15 +72,9 @@ class BibliographyVerifier {
     r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})[a-z]?\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
-  /// 沒有明確「References」等標題時，判定為參考文獻目錄所需的最少條目數（至少 3 筆，避免內文巧合誤判）。
   static const int minEntriesWithoutHeading = 3;
 
-  /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
-  /// 1. 清除 PDF 頁首/頁尾雜訊（如 November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW）
-  /// 2. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
-  /// 3. 清除連字號斷行：如 `modu- lated` -> `modulated`
-  /// 4. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
-  /// 5. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 或 `FLOW3. Donnelly` 切開為多行獨立條目
+  /// 預處理 OCR / PDF 擷取文字的格式瑕疵
   static String _preprocessOcrText(String input) {
     var text = input;
 
@@ -101,21 +95,21 @@ class BibliographyVerifier {
     );
     text = text.replaceAll(
       RegExp(
-        r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*\d{4}\s*EXPERIMENTAL\s*TECHNIQUES\s*\d*',
+        r'(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*)+\d{4}\s*EXPERIMENTAL\s*TECHNIQUES\s*\d*',
         caseSensitive: false,
       ),
       '\n',
     );
     text = text.replaceAll(
       RegExp(
-        r'\d*\s*EXPERIMENTAL\s*TECHNIQUES\s*\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*\d{4}',
+        r'\d*\s*EXPERIMENTAL\s*TECHNIQUES\s*(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*)+\d{4}',
         caseSensitive: false,
       ),
       '\n',
     );
     text = text.replaceAll(
       RegExp(
-        r'STABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW',
+        r'STABILITY\s+OF\s+TAYLOR-COUETTE\s+FLOW',
         caseSensitive: false,
       ),
       '\n',
@@ -129,9 +123,9 @@ class BibliographyVerifier {
       '\n',
     );
 
-    // 2) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號後緊接英文字母或數字時自動補齊空格
+    // 2) 修正 PDF / OCR 擠壓文字遺失空格問題：在標點符號與右括號後緊接英文字母或數字時自動補齊空格
     text = text.replaceAllMapped(
-      RegExp(r'([a-zA-Z0-9])([,\.:;])([a-zA-Z0-9])'),
+      RegExp(r'([a-zA-Z0-9\)])([,\.:;])([a-zA-Z0-9])'),
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
@@ -161,7 +155,6 @@ class BibliographyVerifier {
       );
     }
 
-
     // 4) 修正跨行頁碼割裂 (如 19–\n42. -> 19–42.) 與跨行斷詞割裂
     text = text.replaceAllMapped(
       RegExp(r'(\d+)\s*[\-–—]\s*[\r\n]+\s*(\d+[\.\,]?)'),
@@ -188,10 +181,10 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 FLOW3. Donnelly 或 (1923)3. Donnelly）：
+    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 FLOW3. Donnelly 或 (1890).2. Taylor 或 (1923)3. Donnelly）：
     text = text.replaceAllMapped(
       RegExp(
-          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z\)])\s*\d{1,3}\.\s+[A-Z])'),
+          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z]|\)\.|\)\s*)\s*(?=\b\d{1,3}\.\s+[A-Z]))'),
       (m) => '\n${m.group(1)}',
     );
 

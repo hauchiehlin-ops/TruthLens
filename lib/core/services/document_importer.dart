@@ -86,8 +86,8 @@ class DocumentImporter {
     result = result.replaceAll(RegExp(r'^#+\s+', multiLine: true), '');
     // 7. 移除 Markdown 引用
     result = result.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
-    // 8. 移除無序與有序列表前綴
-    result = result.replaceAll(RegExp(r'^(\s*[-*+]|\s*\d+\.)\s+', multiLine: true), '');
+    // 8. 移除無序列表前綴（保留數字列表與參考文獻編號 1., 2., 3. 等供結構化解析）
+    result = result.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
     // 9. 移除粗體與斜體符號 (** / __)
     result = result.replaceAll(RegExp(r'\*\*|__'), '');
     // 10. 縮減過多的換行
