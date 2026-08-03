@@ -1,6 +1,20 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [極致精準破案] 移除破壞性正則 `([A-Za-z]+)\s+([a-z])`，徹底攻克 `ina` / `Methodsina` 人為破壞篇名問題
+## 2026-08-03 — [重大快取清理與編譯同步] 執行 `flutter clean` 與全重新編譯，突破系統舊快取阻擋問題
+
+**做了什麼**
+
+- **Root Cause 終極透視**：針對使用者提問「*看檔案修改時間還是停留在更早之前？我一直在執行的並非是你重新編譯過的？*」進一步檢視系統層級時間戳。發現了最關鍵的建置系統快取阻擋問題：
+  1. **Flutter/Xcode 增量快取阻擋**：先前執行 `flutter build macos` 時，因為原生部分檔案並未全部被 Xcode 認定變更，導致 Xcode 重用了 06:04 的舊 App 快取包，修改時間完全沒有更新！
+  2. **`rsync` 複製未更新頂層時間戳**：舊的複製指令未能更新 `/Applications/TruthLens.app` 頂層包的時間戳記，導致使用者電腦一直在執行 06:04 舊的 App 執行檔！
+- **修法**：
+  1. **執行 `flutter clean` & `rm -rf build /Applications/TruthLens.app`**：完全刪除全域舊 build 目錄與 /Applications 中的舊 App 包！
+  2. **100% 全全新 Release 重新編譯 (`flutter build macos`)**：重新完整拉取依賴並產出全新的 Release App（時間戳精準更新至 **08:13**）！
+  3. **完整全新覆蓋**：以 `cp -R` 乾淨複製至 `/Applications/TruthLens.app`！
+- **驗證**：
+  - `ls -ld /Applications/TruthLens.app` 實測時間戳為 **Aug 3 08:13**！
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 最新版 App 已完成開啟！
 
 **做了什麼**
 
