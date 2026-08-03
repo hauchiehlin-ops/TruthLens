@@ -436,112 +436,96 @@ class BibliographyVerifier {
     BibliographyEntry entry,
     Duration timeout,
   ) async {
-    // 1) 兼具結構化 (title, author) 與全文字串 (query.bibliographic) 的 Crossref 查核
-    final queryParams = <String, String>{
-      'query.bibliographic': entry.rawText,
-      'rows': '1',
-    };
-    if (entry.title != null && entry.title!.trim().length >= 5) {
-      final cleanTitle = entry.title!.trim();
-      final hasUnspacedLongWord = cleanTitle
-          .replaceAll('-', ' ')
-          .split(RegExp(r'\s+'))
-          .any((w) => w.length >= 25);
-      if (!hasUnspacedLongWord) {
-        queryParams['query.title'] = cleanTitle;
-      }
-    }
-    if (entry.firstAuthorSurname != null &&
-        entry.firstAuthorSurname!.length >= 2) {
-      queryParams['query.author'] = entry.firstAuthorSurname!;
-    }
+    bool gotApiResponse = false;
+    final searchTitle = entry.title != null && entry.title!.trim().length >= 5
+        ? entry.title!.trim()
+        : null;
 
-    final uri = Uri.parse('https://api.crossref.org/works').replace(
-      queryParameters: queryParams,
-    );
-
-    BibliographyCheckResult? crossrefResult;
-
-    try {
-      final response = await client.get(
-        uri,
-        headers: {
-          'User-Agent':
-              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-        },
-      ).timeout(timeout);
-
-      if (response.statusCode == 200) {
-        final message = (jsonDecode(response.body)
-            as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
-        final items = (message?['items'] as List?)?.cast<dynamic>();
-        if (items != null && items.isNotEmpty) {
-          final top = items.first as Map<String, dynamic>;
-          final titles = (top['title'] as List?)?.cast<dynamic>();
-          final matchedTitle = (titles != null && titles.isNotEmpty)
-              ? titles.first.toString()
-              : null;
-          final containers = (top['container-title'] as List?)?.cast<dynamic>();
-          final matchedJournal = (containers != null && containers.isNotEmpty)
-              ? containers.first.toString()
-              : null;
-          final dateParts = ((top['published'] as Map<String, dynamic>?)
-                  ?['date-parts'] as List?)
-              ?.cast<dynamic>();
-          final matchedYear = (dateParts != null &&
-                  dateParts.isNotEmpty &&
-                  (dateParts.first as List).isNotEmpty)
-              ? (dateParts.first as List).first as int
-              : null;
-          final authors = (top['author'] as List?)?.cast<dynamic>() ?? const [];
-          final authorSurnames = authors
-              .map((a) => (a as Map<String, dynamic>)['family']
-                  ?.toString()
-                  .toLowerCase())
-              .whereType<String>()
-              .toSet();
-
-          final titleSim =
-              _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
-          final yearMatches = entry.year != null &&
-              matchedYear != null &&
-              (entry.year! - matchedYear).abs() <= 1;
-          final authorMatches = entry.firstAuthorSurname != null &&
-              authorSurnames.contains(entry.firstAuthorSurname!.toLowerCase());
-
-          final confidence =
-              (titleSim >= 0.35 || (yearMatches && authorMatches))
-                  ? CitationMatchConfidence.high
-                  : (titleSim < 0.15 && !yearMatches && !authorMatches)
-                      ? CitationMatchConfidence.notFound
-                      : CitationMatchConfidence.uncertain;
-
-          crossrefResult = BibliographyCheckResult(
-            entry: entry,
-            confidence: confidence,
-            matchedTitle: matchedTitle,
-            matchedJournal: matchedJournal,
-            matchedYear: matchedYear,
-          );
-        } else {
-          crossrefResult = BibliographyCheckResult(
-            entry: entry,
-            confidence: CitationMatchConfidence.notFound,
-          );
+    // 1) 策略一：專注篇名與作者的 Crossref 多候選人比對 (rows=5)
+    if (searchTitle != null) {
+      try {
+        final queryParams = <String, String>{
+          'query.title': searchTitle,
+          'rows': '5',
+        };
+        if (entry.firstAuthorSurname != null &&
+            entry.firstAuthorSurname!.length >= 2) {
+          queryParams['query.author'] = entry.firstAuthorSurname!;
         }
-      }
-    } catch (_) {}
 
-    if (crossrefResult != null &&
-        crossrefResult.confidence == CitationMatchConfidence.high) {
-      return crossrefResult;
+        final uri = Uri.parse('https://api.crossref.org/works').replace(
+          queryParameters: queryParams,
+        );
+
+        final response = await client.get(
+          uri,
+          headers: {
+            'User-Agent':
+                'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+          },
+        ).timeout(timeout);
+
+        if (response.statusCode == 200) {
+          gotApiResponse = true;
+          final message = (jsonDecode(response.body)
+              as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
+          final items = (message?['items'] as List?)?.cast<dynamic>();
+          if (items != null && items.isNotEmpty) {
+            BibliographyCheckResult? bestResult;
+            double bestScore = 0.0;
+
+            for (final item in items) {
+              final top = item as Map<String, dynamic>;
+              final titles = (top['title'] as List?)?.cast<dynamic>();
+              final matchedTitle = (titles != null && titles.isNotEmpty)
+                  ? titles.first.toString()
+                  : null;
+              final containers = (top['container-title'] as List?)?.cast<dynamic>();
+              final matchedJournal = (containers != null && containers.isNotEmpty)
+                  ? containers.first.toString()
+                  : null;
+              final dateParts = ((top['published'] as Map<String, dynamic>?)
+                      ?['date-parts'] as List?)
+                  ?.cast<dynamic>();
+              final matchedYear = (dateParts != null &&
+                      dateParts.isNotEmpty &&
+                      (dateParts.first as List).isNotEmpty)
+                  ? (dateParts.first as List).first as int
+                  : null;
+
+              final titleSim = _titleSimilarity(searchTitle, matchedTitle);
+              final yearMatches = entry.year != null &&
+                  matchedYear != null &&
+                  (entry.year! - matchedYear).abs() <= 1;
+
+              final score = titleSim + (yearMatches ? 0.30 : 0.0);
+              if (score > bestScore) {
+                bestScore = score;
+                bestResult = BibliographyCheckResult(
+                  entry: entry,
+                  confidence: (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches))
+                      ? CitationMatchConfidence.high
+                      : CitationMatchConfidence.uncertain,
+                  matchedTitle: matchedTitle,
+                  matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
+                  matchedYear: matchedYear,
+                );
+              }
+            }
+
+            if (bestResult != null && bestResult.confidence == CitationMatchConfidence.high) {
+              return bestResult;
+            }
+          }
+        }
+      } catch (_) {}
     }
 
-    // 2) 若 Crossref 未高可信度命中，發動 OpenAlex API 二重補核 (涵蓋 2.5 億筆文獻與全內文圖書館索引)
+    // 2) 策略二：OpenAlex 全文圖書館索引多候選人比對 (per_page=5)
     try {
-      final searchKw = _cleanSearchKeywords(entry.title ?? entry.rawText);
+      final searchKw = _cleanSearchKeywords(searchTitle ?? entry.rawText);
       final openAlexUri = Uri.parse(
-        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=1',
+        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5',
       );
       final oaResp = await client.get(
         openAlexUri,
@@ -552,43 +536,120 @@ class BibliographyVerifier {
       ).timeout(timeout);
 
       if (oaResp.statusCode == 200) {
+        gotApiResponse = true;
         final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
         final results = (data?['results'] as List?)?.cast<dynamic>();
         if (results != null && results.isNotEmpty) {
-          final top = results.first as Map<String, dynamic>;
-          final matchedTitle = top['title']?.toString();
-          final matchedYear = top['publication_year'] as int?;
-          final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
-          final locations = (top['locations'] as List?)?.cast<dynamic>();
-          final firstLocationSource = (locations != null && locations.isNotEmpty)
-              ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
-              : null;
-          final matchedJournal = hostVenue?['display_name']?.toString() ??
-              firstLocationSource?['display_name']?.toString();
-          final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
+          BibliographyCheckResult? bestOaResult;
+          double bestOaScore = 0.0;
 
-          if (titleSim >= 0.35 ||
-              (titleSim >= 0.20 &&
-                  matchedYear != null &&
-                  entry.year != null &&
-                  (entry.year! - matchedYear).abs() <= 1)) {
-            return BibliographyCheckResult(
-              entry: entry,
-              confidence: CitationMatchConfidence.high,
-              matchedTitle: matchedTitle,
-              matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
-              matchedYear: matchedYear,
-            );
+          for (final res in results) {
+            final top = res as Map<String, dynamic>;
+            final matchedTitle = top['title']?.toString();
+            final matchedYear = top['publication_year'] as int?;
+            final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
+            final locations = (top['locations'] as List?)?.cast<dynamic>();
+            final firstLocationSource = (locations != null && locations.isNotEmpty)
+                ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
+                : null;
+            final matchedJournal = hostVenue?['display_name']?.toString() ??
+                firstLocationSource?['display_name']?.toString();
+
+            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
+            final yearMatches = entry.year != null &&
+                matchedYear != null &&
+                (entry.year! - matchedYear).abs() <= 1;
+
+            final score = titleSim + (yearMatches ? 0.30 : 0.0);
+            if (score > bestOaScore) {
+              bestOaScore = score;
+              bestOaResult = BibliographyCheckResult(
+                entry: entry,
+                confidence: (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches))
+                    ? CitationMatchConfidence.high
+                    : CitationMatchConfidence.uncertain,
+                matchedTitle: matchedTitle,
+                matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
+                matchedYear: matchedYear,
+              );
+            }
+          }
+
+          if (bestOaResult != null && bestOaResult.confidence == CitationMatchConfidence.high) {
+            return bestOaResult;
           }
         }
       }
     } catch (_) {}
 
-    return crossrefResult ??
-        BibliographyCheckResult(
-          entry: entry,
-          confidence: CitationMatchConfidence.uncertain,
-        );
+    // 3) 策略三：Crossref 全文字串 (query.bibliographic) 通用備援 (rows=5)
+    try {
+      final queryParams = <String, String>{
+        'query.bibliographic': entry.rawText,
+        'rows': '5',
+      };
+      final uri = Uri.parse('https://api.crossref.org/works').replace(
+        queryParameters: queryParams,
+      );
+
+      final response = await client.get(
+        uri,
+        headers: {
+          'User-Agent':
+              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+        },
+      ).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        gotApiResponse = true;
+        final message = (jsonDecode(response.body)
+            as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
+        final items = (message?['items'] as List?)?.cast<dynamic>();
+        if (items != null && items.isNotEmpty) {
+          for (final item in items) {
+            final top = item as Map<String, dynamic>;
+            final titles = (top['title'] as List?)?.cast<dynamic>();
+            final matchedTitle = (titles != null && titles.isNotEmpty)
+                ? titles.first.toString()
+                : null;
+            final containers = (top['container-title'] as List?)?.cast<dynamic>();
+            final matchedJournal = (containers != null && containers.isNotEmpty)
+                ? containers.first.toString()
+                : null;
+            final dateParts = ((top['published'] as Map<String, dynamic>?)
+                    ?['date-parts'] as List?)
+                ?.cast<dynamic>();
+            final matchedYear = (dateParts != null &&
+                    dateParts.isNotEmpty &&
+                    (dateParts.first as List).isNotEmpty)
+                ? (dateParts.first as List).first as int
+                : null;
+
+            final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
+            final yearMatches = entry.year != null &&
+                matchedYear != null &&
+                (entry.year! - matchedYear).abs() <= 1;
+
+            if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
+              return BibliographyCheckResult(
+                entry: entry,
+                confidence: CitationMatchConfidence.high,
+                matchedTitle: matchedTitle,
+                matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
+                matchedYear: matchedYear,
+              );
+            }
+          }
+        }
+      }
+    } catch (_) {}
+
+    return BibliographyCheckResult(
+      entry: entry,
+      confidence: gotApiResponse
+          ? CitationMatchConfidence.notFound
+          : CitationMatchConfidence.uncertain,
+    );
   }
 
   /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」與「詞彙 Jaccard」雙重比對。
