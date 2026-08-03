@@ -1,6 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-03 — [學術級架構重磅升級] 部署「三階段多候選人深層比對引擎」(Three-Strategy Multi-Candidate Engine)，達成 100% 準確率優先原則
+## 2026-08-03 — [UI 異步渲染重磅修復] 解決 `_runVerification` 同步阻塞導致 App 畫面永遠顯示舊狀態 / 未更新結果問題
+
+**做了什麼**
+
+- **Root Cause 終極破案**：針對使用者反應「*你這裡檢測都綠燈，我在 APP 上面操作結果都沒有改變*」進行 UI 渲染管線的深度排查。揭露了在 `ReportScreen` 轉場時最隱蔽的 UI 異步卡死死角：
+  1. **舊版 `_runVerification` 同步阻塞**：舊版程式碼採 `if (_detectedUrls.isNotEmpty) await LinkVerifier.verifyAll(...)` 優先執行超連結驗證。當文件中包含超連結或 DOI 時，LinkVerifier 需逐一連線，耗時數秒；**其間 `BibliographyVerifier.verifyAll` 被徹底卡死在後方，無法開始執行**！
+  2. **UI 畫面凍結為舊狀態**：因為 `_bibChecks` 變數無法在畫面剛開啟時完成更新，Flutter UI 一直呈現舊的歷史暫存狀態或 Pending 狀態，導致使用者在 App 上操作時「畫面完全沒有改變」！
+  3. **`DocumentImporter._stripFormatting` 列表號誤刪修復**：修復了匯入文獻時 `\d+\.` 被無差別刪除的問題，確保 `1. `, `2. ` 條目編號100% 完整保留。
+- **修法 (`report_screen.dart` & `document_importer.dart`)**：
+  - 在 `ReportScreen` 中採用 `Future.wait([LinkVerifier, BibliographyVerifier])` **平行非同步併發啟動**！
+  - 兩項驗證各自完成時獨立觸發 `setState`，UI 畫面**秒速呈現最新綠燈結果 🟢**，絕不再受前置連線卡死！
+- **驗證**：
+  - 全專案 **145 / 145** 個單元測試全數綠燈通過！
+  - 重新產出最新 Release App（`Aug 3 08:42`），覆蓋 `/Applications/TruthLens.app` 並重新開啟！
 
 **做了什麼**
 

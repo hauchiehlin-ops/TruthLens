@@ -95,24 +95,28 @@ class _ReportScreenState extends State<ReportScreen> {
       return;
     }
 
+    final tasks = <Future<void>>[];
     if (_detectedUrls.isNotEmpty) {
-      final checks = await LinkVerifier.verifyAll(_detectedUrls);
-      if (mounted) {
-        setState(() {
-          _linkChecks = checks;
-          _checkingLinks = false;
-        });
-      }
+      tasks.add(LinkVerifier.verifyAll(_detectedUrls).then((checks) {
+        if (mounted) {
+          setState(() {
+            _linkChecks = checks;
+            _checkingLinks = false;
+          });
+        }
+      }));
     }
     if (_bibEntries.isNotEmpty) {
-      final checks = await BibliographyVerifier.verifyAll(_bibEntries);
-      if (mounted) {
-        setState(() {
-          _bibChecks = checks;
-          _checkingBib = false;
-        });
-      }
+      tasks.add(BibliographyVerifier.verifyAll(_bibEntries).then((checks) {
+        if (mounted) {
+          setState(() {
+            _bibChecks = checks;
+            _checkingBib = false;
+          });
+        }
+      }));
     }
+    await Future.wait(tasks);
   }
 
   Future<void> _export(
