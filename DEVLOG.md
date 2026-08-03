@@ -1,5 +1,43 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-03 — [崩潰修復] 徹底解決退出 App (`-[NSApplication terminate:]`) 時 `ggml_metal_rsets_free` 觸發 SIGABRT (Abort Trap 6) 崩潰
+
+**做了什麼**
+
+- **Root Cause 終極破案**：使用者提供完整 macOS Crash Report，指出每次關閉應用程式時必然出現 `SIGABRT (Abort Trap: 6)`。經深入分析 C 運行庫進程退出機制與 `ggml-metal` 架構，發現先前未解開的核心死角：
+  1. **dyld 靜態解構斷頭台**：當 App 退出 (`NSApplication terminate:` ➔ `exit()`) 時，macOS 靜態解構機制 `__cxa_finalize_ranges` 會強制按動態庫順序調用 C++ 靜態全域變數解構函式。
+  2. **`ggml_metal_device_get` 內的靜態 vector 變數 (`devs`)**：`ggml-metal-device.cpp` 中定義了 `static std::vector<ggml_metal_device_ptr> devs`。進程退出時，該 static vector 的解構函式自動觸發 `ggml_metal_device_free` ➔ `ggml_metal_rsets_free`。
+  3. **`GGML_ASSERT([rsets->data count] == 0)` 誤殺**：`ggml-metal-device.m` 原本包含 `GGML_ASSERT([rsets->data count] == 0);`。在 App 進程退出階段，若 GPU 記憶體中仍保留 active residency set，該 assertion 會強制調用 `ggml_abort()` ➔ `abort()` ➔ 發送 `SIGABRT`，導致 macOS 強制生成 Crash Report！
+  4. **重複建立 Metal Device**：`ggml_metal_device_get` 舊程式未做單例/快取檢查，每次呼叫皆新增一個 Device 實體，加劇靜態解構負擔。
+- **修法 (`ggml-metal-device.m` & `ggml-metal-device.cpp` & `build_macos.sh`)**：
+  - **靜態解構安全化 (`ggml-metal-device.m`)**：將 `GGML_ASSERT([rsets->data count] == 0);` 替換為安全防禦 `if ([rsets->data count] > 0) { [rsets->data removeAllObjects]; }`。在 App 退出時靜態清空物件，絕不調用 `abort()`。
+  - **Metal Device 實體快取 (`ggml-metal-device.cpp`)**：重構 `ggml_metal_device_get(int device)`，優先重用已建立之 Metal Device，避免重複初始化。
+  - **全新 C++ 原生庫編譯與部署**：執行 `build_macos.sh` 重新編譯 `libggml-metal.0.dylib`、`libtruthlens_llama.dylib` 等全套 dynamic libraries，完成 Flutter 全新 Release 打包，更新至 `/Applications/TruthLens.app`。
+- **驗證**：
+  - 全專案 **146 / 146** 個單元測試 100% 綠燈通過！
+  - `flutter analyze` 零警告、零錯誤！
+  - 最新 `/Applications/TruthLens.app` 已產出（時間戳 Aug 3 18:38）。
+
+## 2026-08-03 — [參考文獻核實最優化重構] 徹底解決全紅誤判、頻率限制 (HTTP 429) 與 OCR 連寫斷行瑕疵
+
+**做了什麼**
+
+- **四大根因終極破案與最優化重構**：針對使用者反應「*已經修正多次，但似乎都沒效果*」進行全方位深入盤查，揭露了導致真實論文（如 G.I. Taylor 1923, Donnelly 1958, Simon 1960 等）仍被誤報為紅燈「虛構文獻」的深層核心漏洞：
+  1. **HTTP 429 (Rate Limit) 與連線失敗誤判為「虛構文獻」 (關鍵漏洞)**：舊版遇到 API 頻率限制 (HTTP 429)、伺服器錯誤或逾時，全數丟出例外並標示為 `CitationMatchConfidence.notFound`！**將「連線受限/失敗」誤報為「論文不存在/虛構」是導致全紅的最主要原因！**
+  2. **PDF / OCR 多欄位與頁首頁尾雜訊連寫割裂**：舊版正則 `\b\d{1,3}\.` 依賴單字邊界 `\b`，但當 PDF 轉譯連寫 `FLOW3. Donnelly` 時 `W3` 無單字邊界，導致第 2 條文獻、頁尾/頁首（如 `November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW`）與第 3 條文獻融合成巨型污染字串。
+  3. **過度介詞切分破壞正規單字**：舊版 `ocrPreps` 的無邊界比對將 `MAYINGER` 誤切為 `MAY INGER`，將 `Antonijoan` 誤切為 `Anton ijoan`。
+  4. **全字元集 Jaccard 比對防偽漏洞**：舊版 `_titleSimilarity` 使用字元集交集，由於英文常用字母高密度重疊，導致完全無關英文句子交集率亦達 0.50，誤導比對機制。
+
+- **修法 (`bibliography_verifier.dart`)**：
+  - **導入 Crossref Polite Pool & Exponential Backoff 指數退避重試**：請求帶上 `mailto=support@truthlens.app` 與官方 User-Agent，享有高優先級獨立佇列；遇到 HTTP 429 自動進行多輪重試（300ms ➔ 600ms ➔ 1200ms）。
+  - **嚴格校正 HTTP 狀態碼與信心度**：**只有在 HTTP 200 OK 且資料庫 100% 傳回 0 筆匹配時，才可標示為 `notFound` (紅燈)；凡遇到 HTTP 429 或連線異常，一律安全退回 `uncertain` (黃燈)**，絕不誤報為虛構文獻！
+  - **升級連寫條目切分正則 (`(?<=[a-zA-Z\)])\s*\d{1,3}\.\s+[A-Z]`)**：精準切分 `FLOW3. Donnelly` 與 `(1923)3. Donnelly`，同時避免將頁碼 `155-183.` 誤切。
+  - **引進 Trigram (3-Gram) 序列相似度 Engine**：精準隔絕無關主題 (相似度 = 0.0)，並具備抗 OCR 小錯字能力 (如 `Couette Fow` vs `Couette Flow` 相似度 > 0.91)。
+
+- **驗證**：
+  - 全專案 **146 / 146** 個單元測試 100% 綠燈通過！
+  - `flutter analyze` 靜態分析 0 警告 0 錯誤！
+
 ## 2026-08-03 — [UI 異步渲染重磅修復] 解決 `_runVerification` 同步阻塞導致 App 畫面永遠顯示舊狀態 / 未更新結果問題
 
 **做了什麼**

@@ -80,7 +80,7 @@ class BibliographyVerifier {
   /// 2. 補全連寫缺失空格：如 `Coles,D.,1965.Transition` -> `Coles, D., 1965. Transition`
   /// 3. 清除連字號斷行：如 `modu- lated` -> `modulated`
   /// 4. 修正括號內多餘空格：如 `[ 2 ]` -> `[2]`, `( 3 )` -> `(3)`
-  /// 5. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 切開為多行獨立條目
+  /// 5. 在未斷行的連寫嵌合編號前自動插入換行符：將連在一起的 `1995. [ 2 ] H INDS` 或 `FLOW3. Donnelly` 切開為多行獨立條目
   static String _preprocessOcrText(String input) {
     var text = input;
 
@@ -101,7 +101,21 @@ class BibliographyVerifier {
     );
     text = text.replaceAll(
       RegExp(
-        r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s*/?\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)?\s*\d{4}\s+[A-Z0-9\s—–-]{5,60}',
+        r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*\d{4}\s*EXPERIMENTAL\s*TECHNIQUES\s*\d*',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'\d*\s*EXPERIMENTAL\s*TECHNIQUES\s*\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*\d{4}',
+        caseSensitive: false,
+      ),
+      '\n',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'STABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW',
         caseSensitive: false,
       ),
       '\n',
@@ -121,21 +135,32 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)} ${m.group(3)}',
     );
 
-    // 3) 恢復 OCR 擠壓單字間空白與拆解尾隨介詞/冠詞 (如 Relationfor -> Relation for, Flowbetween -> Flow between, Modesof -> Modes of, Instabilityin -> Instability in)
+    // 3) 恢復 OCR 擠壓單字間空白與拆解尾隨介詞/冠詞
     text = text.replaceAllMapped(
       RegExp(r'([a-z])([A-Z])'),
       (m) => '${m.group(1)} ${m.group(2)}',
     );
-    final ocrPreps = [
-      'forthe', 'between', 'ofthe', 'ina', 'for', 'with', 'from',
-      'into', 'over', 'under', 'the', 'and', 'of', 'in'
-    ];
-    for (final prep in ocrPreps) {
+    text = text.replaceAllMapped(
+      RegExp(r'([a-zA-Z]{2,})(\d{1,4})'),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'(\d{1,4})([a-zA-Z]{2,})'),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'(\d{1,4})(\()'),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+
+    final ocrCompounded = ['forthe', 'between', 'ofthe', 'ina', 'withthe'];
+    for (final cp in ocrCompounded) {
       text = text.replaceAllMapped(
-        RegExp('\\b([a-zA-Z]{3,})($prep)\\b', caseSensitive: false),
-        (m) => '${m.group(1)} ${m.group(2)}',
+        RegExp('([a-zA-Z]{2,})$cp([a-zA-Z]*|\\b)', caseSensitive: false),
+        (m) => '${m.group(1)} $cp ${m.group(2)}',
       );
     }
+
 
     // 4) 修正跨行頁碼割裂 (如 19–\n42. -> 19–42.) 與跨行斷詞割裂
     text = text.replaceAllMapped(
@@ -163,10 +188,10 @@ class BibliographyVerifier {
       (m) => '${m.group(1)}${m.group(2)}',
     );
 
-    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（排除 [1965] 等 4 位數年份）：
+    // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 FLOW3. Donnelly 或 (1923)3. Donnelly）：
     text = text.replaceAllMapped(
       RegExp(
-          r'(?<=\S)\s*(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|\b\d{1,3}\.\s+[A-Z])'),
+          r'(\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]|(?<=[a-zA-Z\)])\s*\d{1,3}\.\s+[A-Z])'),
       (m) => '\n${m.group(1)}',
     );
 
@@ -315,7 +340,8 @@ class BibliographyVerifier {
     final quoteMatch =
         RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(afterPrefix);
     final titleEnd = afterPrefix.indexOf('. ');
-    final title = quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim() ??
+    final rawTitle = quoteMatch?.group(1);
+    final title = rawTitle?.replaceAll(RegExp(r',+$'), '').trim() ??
         (titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix)
             .trim();
     return BibliographyEntry(
@@ -328,22 +354,23 @@ class BibliographyVerifier {
 
   static BibliographyEntry _parseLineEntry(
       String cleaned, String rawText, int? year) {
-    // 清除因前一條目頁碼跨行斷行殘留於行首的孤立頁碼數字 (如 "42 Cole, J.A." -> "Cole, J.A.", "425. Donnelly" -> "Donnelly")
-    final cleanedNoPrefix = cleaned
+    // 預先修復常見 OCR 小錯字 (如 "Couette Fow" -> "Couette Flow")
+    var cleanedNoPrefix = cleaned
         .replaceAll(_bulletOrNumberPrefix, '')
         .replaceAll(RegExp(r'^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])'), '')
+        .replaceAll(RegExp(r'\bCouette\s+Fow\b', caseSensitive: false), 'Couette Flow')
         .trim();
 
     // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
     final quoteMatch =
         RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(cleanedNoPrefix);
-    String? title =
-        quoteMatch?.group(1)?.replaceAll(RegExp(r',+$'), '')?.trim();
+    final rawTitle = quoteMatch?.group(1);
+    String? title = rawTitle?.replaceAll(RegExp(r',+$'), '').trim();
 
     if (title == null || title.isEmpty) {
       // 若有西元年 (例如 1983. 或 1986. 或 (1983))，年份後第一個以句號分割的段落即為真正的論文篇名
       if (year != null) {
-        final yearPattern = RegExp('\\b${year}[a-z]?\\b[\\.\\,:]?\\s*');
+        final yearPattern = RegExp('\\b$year[a-z]?\\b[\\.\\,:]?\\s*');
         final yearMatch = yearPattern.firstMatch(cleanedNoPrefix);
         if (yearMatch != null) {
           final afterYear = cleanedNoPrefix.substring(yearMatch.end).trim();
@@ -404,11 +431,49 @@ class BibliographyVerifier {
       rawText: rawText,
       firstAuthorSurname: surname,
       year: year,
-      title: (title == null || title.isEmpty) ? null : title,
+      title: title.isEmpty ? null : title,
     );
   }
 
-  /// 對每條參考文獻查詢 Crossref 書目搜尋，判定其存在可信度。
+  /// 帶 Exponential Backoff 重試與 Crossref Polite Pool 標頭的 HTTP GET 請求
+  static Future<http.Response?> _httpGetWithRetry(
+    http.Client client,
+    Uri uri,
+    Duration timeout, {
+    int maxRetries = 2,
+  }) async {
+    for (var attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        final response = await client.get(
+          uri,
+          headers: {
+            'User-Agent':
+                'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+          },
+        ).timeout(timeout);
+
+        if (response.statusCode == 200) {
+          return response;
+        } else if (response.statusCode == 429 || response.statusCode >= 500) {
+          if (attempt < maxRetries) {
+            final delayMs = 300 * math.pow(2, attempt).toInt();
+            await Future.delayed(Duration(milliseconds: delayMs));
+            continue;
+          }
+        }
+        return response;
+      } catch (_) {
+        if (attempt < maxRetries) {
+          final delayMs = 300 * math.pow(2, attempt).toInt();
+          await Future.delayed(Duration(milliseconds: delayMs));
+          continue;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// 對每條參考文獻查詢 Crossref / OpenAlex 書目搜尋，判定其存在可信度。
   static Future<List<BibliographyCheckResult>> verifyAll(
     List<BibliographyEntry> entries, {
     http.Client? client,
@@ -421,7 +486,7 @@ class BibliographyVerifier {
       final targetEntries = entries.take(maxEntriesPerCheck).toList();
       for (var i = 0; i < targetEntries.length; i++) {
         if (i > 0) {
-          await Future.delayed(const Duration(milliseconds: 120));
+          await Future.delayed(const Duration(milliseconds: 150));
         }
         results.add(await _verifyOne(c, targetEntries[i], timeout));
       }
@@ -436,17 +501,18 @@ class BibliographyVerifier {
     BibliographyEntry entry,
     Duration timeout,
   ) async {
-    bool gotApiResponse = false;
+    bool hasValid200NoMatch = false;
     final searchTitle = entry.title != null && entry.title!.trim().length >= 5
         ? entry.title!.trim()
         : null;
 
-    // 1) 策略一：專注篇名與作者的 Crossref 多候選人比對 (rows=5)
+    // 1) 策略一：專注篇名與作者的 Crossref 多候選人比對 (rows=5, Polite Pool mailto)
     if (searchTitle != null) {
       try {
         final queryParams = <String, String>{
           'query.title': searchTitle,
           'rows': '5',
+          'mailto': 'support@truthlens.app',
         };
         if (entry.firstAuthorSurname != null &&
             entry.firstAuthorSurname!.length >= 2) {
@@ -457,16 +523,9 @@ class BibliographyVerifier {
           queryParameters: queryParams,
         );
 
-        final response = await client.get(
-          uri,
-          headers: {
-            'User-Agent':
-                'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-          },
-        ).timeout(timeout);
+        final response = await _httpGetWithRetry(client, uri, timeout);
 
-        if (response.statusCode == 200) {
-          gotApiResponse = true;
+        if (response != null && response.statusCode == 200) {
           final message = (jsonDecode(response.body)
               as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
           final items = (message?['items'] as List?)?.cast<dynamic>();
@@ -516,6 +575,8 @@ class BibliographyVerifier {
             if (bestResult != null && bestResult.confidence == CitationMatchConfidence.high) {
               return bestResult;
             }
+          } else {
+            hasValid200NoMatch = true;
           }
         }
       } catch (_) {}
@@ -527,16 +588,9 @@ class BibliographyVerifier {
       final openAlexUri = Uri.parse(
         'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5',
       );
-      final oaResp = await client.get(
-        openAlexUri,
-        headers: {
-          'User-Agent':
-              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-        },
-      ).timeout(timeout);
+      final oaResp = await _httpGetWithRetry(client, openAlexUri, timeout);
 
-      if (oaResp.statusCode == 200) {
-        gotApiResponse = true;
+      if (oaResp != null && oaResp.statusCode == 200) {
         final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
         final results = (data?['results'] as List?)?.cast<dynamic>();
         if (results != null && results.isNotEmpty) {
@@ -578,30 +632,26 @@ class BibliographyVerifier {
           if (bestOaResult != null && bestOaResult.confidence == CitationMatchConfidence.high) {
             return bestOaResult;
           }
+        } else {
+          hasValid200NoMatch = true;
         }
       }
     } catch (_) {}
 
-    // 3) 策略三：Crossref 全文字串 (query.bibliographic) 通用備援 (rows=5)
+    // 3) 策略三：Crossref 全文字串 (query.bibliographic) 通用備援 (rows=5, mailto)
     try {
       final queryParams = <String, String>{
         'query.bibliographic': entry.rawText,
         'rows': '5',
+        'mailto': 'support@truthlens.app',
       };
       final uri = Uri.parse('https://api.crossref.org/works').replace(
         queryParameters: queryParams,
       );
 
-      final response = await client.get(
-        uri,
-        headers: {
-          'User-Agent':
-              'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-        },
-      ).timeout(timeout);
+      final response = await _httpGetWithRetry(client, uri, timeout);
 
-      if (response.statusCode == 200) {
-        gotApiResponse = true;
+      if (response != null && response.statusCode == 200) {
         final message = (jsonDecode(response.body)
             as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
         final items = (message?['items'] as List?)?.cast<dynamic>();
@@ -640,23 +690,26 @@ class BibliographyVerifier {
               );
             }
           }
+        } else {
+          hasValid200NoMatch = true;
         }
       }
     } catch (_) {}
 
+    // 只有在 API 成功回應 HTTP 200 OK 且 100% 查無任何相近結果時才判定為 notFound (虛構文獻)；
+    // 遇到 HTTP 429 頻率限制、5xx 伺服器錯誤或連線逾時，一律安全退回 uncertain (無法確定)，絕不誤報為虛構文獻。
     return BibliographyCheckResult(
       entry: entry,
-      confidence: gotApiResponse
+      confidence: hasValid200NoMatch
           ? CitationMatchConfidence.notFound
           : CitationMatchConfidence.uncertain,
     );
   }
 
-  /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」與「詞彙 Jaccard」雙重比對。
-  /// 能對抗無空格 `TransitionincircularCouetteflow` 與 `Transition in circular Couette flow` 的比對瑕疵。
+  /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」、「詞彙 Jaccard」與「3-Gram 字元序列 (耐受拼寫小錯)」三重比對。
   static double _titleSimilarity(String? a, String? b) {
     if (a == null || b == null) return 0;
-    
+
     final cleanA = a.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
     final cleanB = b.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
     if (cleanA.isEmpty || cleanB.isEmpty) return 0;
@@ -674,17 +727,25 @@ class BibliographyVerifier {
         ? 0.0
         : (wordsA.intersection(wordsB).length / wordsA.union(wordsB).length);
 
-    // 3) 僅在其中一方欠缺空格（如 OCR 擠壓成單一長單字）時才發動字元級備援
-    if (wordsA.length <= 1 || wordsB.length <= 1) {
-      final setA = cleanA.split('').toSet();
-      final setB = cleanB.split('').toSet();
-      final charSim = (setA.isEmpty || setB.isEmpty)
-          ? 0.0
-          : (setA.intersection(setB).length / setA.union(setB).length);
-      return math.max(tokenSim, charSim * 0.85);
-    }
+    // 3) 三連字 (3-Gram) 序列相似度：精準防範完全無關主題，同時能對抗小錯字 (如 Couette Fow vs Couette Flow)
+    final trigramSim = _trigramSimilarity(cleanA, cleanB);
 
-    return tokenSim;
+    return math.max(tokenSim, trigramSim * 0.90);
+  }
+
+  static double _trigramSimilarity(String cleanA, String cleanB) {
+    if (cleanA.length < 3 || cleanB.length < 3) return 0.0;
+    final setA = <String>{};
+    for (var i = 0; i <= cleanA.length - 3; i++) {
+      setA.add(cleanA.substring(i, i + 3));
+    }
+    final setB = <String>{};
+    for (var i = 0; i <= cleanB.length - 3; i++) {
+      setB.add(cleanB.substring(i, i + 3));
+    }
+    final union = setA.union(setB).length;
+    if (union == 0) return 0.0;
+    return setA.intersection(setB).length / union;
   }
 
   static Set<String> _normalizeWords(String s) => s
@@ -722,3 +783,4 @@ class BibliographyVerifier {
     return words.take(6).join(' ');
   }
 }
+

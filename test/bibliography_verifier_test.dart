@@ -416,8 +416,24 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
       expect(results.single.confidence, CitationMatchConfidence.notFound);
     });
 
-    test('連線例外時判定為 uncertain，不拋出例外', () async {
-      final client = MockClient((_) async => throw Exception('offline'));
+    test('連寫嵌合條目 (如 FLOW3. Donnelly) 與頁首頁尾雜訊能精準拆分切塊', () {
+      const concatenatedOcr = '''
+References
+2. Taylor, G.I., "Stability of a Viscous Liquid Contained between Two Rotating Cylinders," Philosophical Transactions of the Royal Society of London A233: 289-343 (1923). November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW3. Donnelly, R.J., "Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement," Proceedings of the Royal Society of London A246: 312-325 (1958).
+4. Simon, N.J., and Donnelly, R.J., "An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders," Journal of Fluid Mechanics 7: 401-418 (1960).
+''';
+      final entries = BibliographyVerifier.extractEntries(concatenatedOcr);
+      expect(entries.length, 3);
+      expect(entries[0].firstAuthorSurname, 'Taylor');
+      expect(entries[0].year, 1923);
+      expect(entries[1].firstAuthorSurname, 'Donnelly');
+      expect(entries[1].year, 1958);
+      expect(entries[2].firstAuthorSurname, 'Simon');
+      expect(entries[2].year, 1960);
+    });
+
+    test('HTTP 429 頻率限制回應時退回 uncertain (黃燈)，不誤報為 notFound (紅燈)', () async {
+      final client = MockClient((_) async => http.Response('Rate Limit Exceeded', 429));
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       final results = await BibliographyVerifier.verifyAll(
           [entries.first],
@@ -426,3 +442,4 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
     });
   });
 }
+
