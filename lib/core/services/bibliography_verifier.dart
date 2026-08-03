@@ -510,11 +510,13 @@ class BibliographyVerifier {
     Duration timeout,
   ) async {
     bool hasValid200NoMatch = false;
+    BibliographyCheckResult? bestUncertainCandidate;
+
     final searchTitle = entry.title != null && entry.title!.trim().length >= 5
         ? entry.title!.trim()
         : null;
 
-    // 1) 策略一：專注篇名與作者的 Crossref 多候選人比對 (rows=5, Polite Pool mailto)
+    // 1) 策略一：專注篇名與作者的 Crossref 精準比對 (query.title + query.author)
     if (searchTitle != null) {
       try {
         final queryParams = <String, String>{
@@ -538,9 +540,6 @@ class BibliographyVerifier {
               as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
           final items = (message?['items'] as List?)?.cast<dynamic>();
           if (items != null && items.isNotEmpty) {
-            BibliographyCheckResult? bestResult;
-            double bestScore = 0.0;
-
             for (final item in items) {
               final top = item as Map<String, dynamic>;
               final titles = (top['title'] as List?)?.cast<dynamic>();
@@ -565,23 +564,23 @@ class BibliographyVerifier {
                   matchedYear != null &&
                   (entry.year! - matchedYear).abs() <= 1;
 
-              final score = titleSim + (yearMatches ? 0.30 : 0.0);
-              if (score > bestScore) {
-                bestScore = score;
-                bestResult = BibliographyCheckResult(
+              if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
+                return BibliographyCheckResult(
                   entry: entry,
-                  confidence: (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches))
-                      ? CitationMatchConfidence.high
-                      : CitationMatchConfidence.uncertain,
+                  confidence: CitationMatchConfidence.high,
+                  matchedTitle: matchedTitle,
+                  matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
+                  matchedYear: matchedYear,
+                );
+              } else if (titleSim >= 0.12 || yearMatches) {
+                bestUncertainCandidate ??= BibliographyCheckResult(
+                  entry: entry,
+                  confidence: CitationMatchConfidence.uncertain,
                   matchedTitle: matchedTitle,
                   matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
                   matchedYear: matchedYear,
                 );
               }
-            }
-
-            if (bestResult != null && bestResult.confidence == CitationMatchConfidence.high) {
-              return bestResult;
             }
           } else {
             hasValid200NoMatch = true;
@@ -590,66 +589,11 @@ class BibliographyVerifier {
       } catch (_) {}
     }
 
-    // 2) 策略二：OpenAlex 全文圖書館索引多候選人比對 (per_page=5)
+    // 1B) 策略一 B：Crossref 全文字串 (query.bibliographic) 備援查詢 (適合 APS / Royal Society 經典文獻)
     try {
-      final searchKw = _cleanSearchKeywords(searchTitle ?? entry.rawText);
-      final openAlexUri = Uri.parse(
-        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5',
-      );
-      final oaResp = await _httpGetWithRetry(client, openAlexUri, timeout);
-
-      if (oaResp != null && oaResp.statusCode == 200) {
-        final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
-        final results = (data?['results'] as List?)?.cast<dynamic>();
-        if (results != null && results.isNotEmpty) {
-          BibliographyCheckResult? bestOaResult;
-          double bestOaScore = 0.0;
-
-          for (final res in results) {
-            final top = res as Map<String, dynamic>;
-            final matchedTitle = top['title']?.toString();
-            final matchedYear = top['publication_year'] as int?;
-            final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
-            final locations = (top['locations'] as List?)?.cast<dynamic>();
-            final firstLocationSource = (locations != null && locations.isNotEmpty)
-                ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
-                : null;
-            final matchedJournal = hostVenue?['display_name']?.toString() ??
-                firstLocationSource?['display_name']?.toString();
-
-            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
-            final yearMatches = entry.year != null &&
-                matchedYear != null &&
-                (entry.year! - matchedYear).abs() <= 1;
-
-            final score = titleSim + (yearMatches ? 0.30 : 0.0);
-            if (score > bestOaScore) {
-              bestOaScore = score;
-              bestOaResult = BibliographyCheckResult(
-                entry: entry,
-                confidence: (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches))
-                    ? CitationMatchConfidence.high
-                    : CitationMatchConfidence.uncertain,
-                matchedTitle: matchedTitle,
-                matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
-                matchedYear: matchedYear,
-              );
-            }
-          }
-
-          if (bestOaResult != null && bestOaResult.confidence == CitationMatchConfidence.high) {
-            return bestOaResult;
-          }
-        } else {
-          hasValid200NoMatch = true;
-        }
-      }
-    } catch (_) {}
-
-    // 3) 策略三：Crossref 全文字串 (query.bibliographic) 通用備援 (rows=5, mailto)
-    try {
+      final bibQuery = '${entry.firstAuthorSurname ?? ''} ${searchTitle ?? entry.rawText} ${entry.year ?? ''}'.trim();
       final queryParams = <String, String>{
-        'query.bibliographic': entry.rawText,
+        'query.bibliographic': bibQuery,
         'rows': '5',
         'mailto': 'support@truthlens.app',
       };
@@ -683,7 +627,7 @@ class BibliographyVerifier {
                 ? (dateParts.first as List).first as int
                 : null;
 
-            final titleSim = _titleSimilarity(entry.title ?? entry.rawText, matchedTitle);
+            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
             final yearMatches = entry.year != null &&
                 matchedYear != null &&
                 (entry.year! - matchedYear).abs() <= 1;
@@ -696,6 +640,14 @@ class BibliographyVerifier {
                 matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
                 matchedYear: matchedYear,
               );
+            } else if (titleSim >= 0.12 || yearMatches) {
+              bestUncertainCandidate ??= BibliographyCheckResult(
+                entry: entry,
+                confidence: CitationMatchConfidence.uncertain,
+                matchedTitle: matchedTitle,
+                matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
+                matchedYear: matchedYear,
+              );
             }
           }
         } else {
@@ -704,8 +656,65 @@ class BibliographyVerifier {
       }
     } catch (_) {}
 
-    // 只有在 API 成功回應 HTTP 200 OK 且 100% 查無任何相近結果時才判定為 notFound (虛構文獻)；
-    // 遇到 HTTP 429 頻率限制、5xx 伺服器錯誤或連線逾時，一律安全退回 uncertain (無法確定)，絕不誤報為虛構文獻。
+    // 2) 策略二：OpenAlex 全文圖書館索引多候選人比對 (per_page=5)
+    try {
+      final searchKw = _cleanSearchKeywords(searchTitle ?? entry.rawText);
+      final openAlexUri = Uri.parse(
+        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5',
+      );
+      final oaResp = await _httpGetWithRetry(client, openAlexUri, timeout);
+
+      if (oaResp != null && oaResp.statusCode == 200) {
+        final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
+        final results = (data?['results'] as List?)?.cast<dynamic>();
+        if (results != null && results.isNotEmpty) {
+          for (final res in results) {
+            final top = res as Map<String, dynamic>;
+            final matchedTitle = top['title']?.toString();
+            final matchedYear = top['publication_year'] as int?;
+            final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
+            final locations = (top['locations'] as List?)?.cast<dynamic>();
+            final firstLocationSource = (locations != null && locations.isNotEmpty)
+                ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
+                : null;
+            final matchedJournal = hostVenue?['display_name']?.toString() ??
+                firstLocationSource?['display_name']?.toString();
+
+            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
+            final yearMatches = entry.year != null &&
+                matchedYear != null &&
+                (entry.year! - matchedYear).abs() <= 1;
+
+            if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
+              return BibliographyCheckResult(
+                entry: entry,
+                confidence: CitationMatchConfidence.high,
+                matchedTitle: matchedTitle,
+                matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
+                matchedYear: matchedYear,
+              );
+            } else if (titleSim >= 0.12 || yearMatches) {
+              bestUncertainCandidate ??= BibliographyCheckResult(
+                entry: entry,
+                confidence: CitationMatchConfidence.uncertain,
+                matchedTitle: matchedTitle,
+                matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
+                matchedYear: matchedYear,
+              );
+            }
+          }
+        } else {
+          hasValid200NoMatch = true;
+        }
+      }
+    } catch (_) {}
+
+    // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名
+    if (bestUncertainCandidate != null) {
+      return bestUncertainCandidate;
+    }
+
+    // 只有在 API 成功回應 HTTP 200 OK 且 100% 查無任何相關結果時才判定為 notFound (紅燈)
     return BibliographyCheckResult(
       entry: entry,
       confidence: hasValid200NoMatch
