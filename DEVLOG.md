@@ -1,5 +1,39 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-04 — [文獻核實升級] 自動納入限定期刊／論文集目錄查詢 (Venue-scoped Search)
+
+**做了什麼**
+
+- **使用者指出新的正確方向**：
+  文獻是否實際存在，不應只做全域書目搜尋；若條目本身標示了期刊或論文集，理想上應能在該出版品的目錄脈絡中查得到。
+- **修法 (`bibliography_verifier.dart`)**：
+  - `BibliographyEntry` 新增 `venueTitle`，解析參考文獻時會嘗試抽取期刊／論文集名稱（如 `Journal of Fluid Mechanics`、`Proceedings...`、`Physical Review...`）。
+  - venue-scoped search 不提供設定頁開關；只要條目能解析出期刊／論文集名稱，即自動納入文獻核實流程。
+  - 當條目同時有篇名與 venue 時，先向 Crossref 發出 `query.title + query.container-title` 的限定查詢；命中時以該期刊／論文集目錄脈絡回報高可信度。
+  - 保留先前的保守紅燈邏輯：venue 限定查不到不會單獨導致紅燈，仍需 Crossref / OpenAlex 全域查詢皆成功且無相近候選，才可判定 `notFound`。
+- **設定與 UI**：
+  - 依使用者要求，設定頁不提供額外開關；只保留既有「超連結與參考文獻目錄驗證」總開關。
+  - 報告頁偵測到參考文獻後，會在一般驗證流程中自動啟動限定期刊／論文集目錄查詢。
+- **測試**：
+  - 新增期刊名稱解析測試與 `query.container-title` 自動查詢送出測試。
+  - `flutter analyze` 通過；全專案 `flutter test` **149 / 149** 通過。
+
+## 2026-08-04 — [架構修正] 文獻真實性紅燈改為「強證據裁決」，避免解析瑕疵被誤報為不存在
+
+**做了什麼**
+
+- **重新檢視過往修復路徑後的根因判斷**：
+  過去多次修復集中在 OCR 連寫、條目斷行、Crossref / OpenAlex fallback 與 rate limit，但核心裁決邏輯仍有結構性弱點：只要某次 HTTP 200 查詢沒有回傳候選，就可能把「解析錯、查詢字串污染、單一資料源暫時查不到、資料庫未收錄」壓扁成紅燈 `notFound`。這會讓每次補一個格式案例後，下一個格式又被誤殺。
+- **修法 (`bibliography_verifier.dart`)**：
+  - `BibliographyEntry` 新增 DOI 欄位並在條目解析時自動抽取 DOI。
+  - DOI 條目優先走 Crossref `/works/{doi}` 精確查詢：200 直接高可信度，404 才能安全判定紅燈。
+  - 非 DOI 條目新增 `_hasStrongBibliographicEvidence` 可驗證度閘門：必須同時具備年份、第一作者、合理長度且內容詞足夠的篇名，才允許進入紅燈裁決。
+  - 紅燈 `notFound` 條件改為：Crossref 與 OpenAlex 兩個資料源都成功完成查詢，且沒有高可信度或中度相似候選；單一資料源失敗、429、OpenAlex 未完成、或條目解析品質不足，一律保守回 `uncertain` 黃燈。
+- **測試**：
+  - 更新舊測試語意：不再接受「Crossref 單邊查無即紅燈」。
+  - 新增 DOI 404 精確紅燈、Crossref + OpenAlex 雙資料源查無紅燈、單一資料源失敗保守黃燈等單元測試。
+  - `flutter analyze` 通過；全專案 `flutter test` **149 / 149** 通過。
+
 ## 2026-08-04 — [重磅修復] 解決 (1958). 4.Simon 句號後連寫條目未插入換行導致 4 至 9 條全部擠壓在第 3 條卡片之死角
 
 **做了什麼**

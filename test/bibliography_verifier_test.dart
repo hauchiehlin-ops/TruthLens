@@ -23,8 +23,10 @@ void main() {
       expect(entries.length, 6);
       expect(entries[0].firstAuthorSurname, 'Ahlers');
       expect(entries[0].year, 1983);
-      expect(entries[0].title,
-          'Possible mechanism for transitions in wavy Taylor-vortex flow');
+      expect(
+        entries[0].title,
+        'Possible mechanism for transitions in wavy Taylor-vortex flow',
+      );
     });
 
     test('單一作者條目也能正確解析（姓氏、年份、篇名）', () {
@@ -32,12 +34,14 @@ void main() {
       final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
       expect(coles.year, 1965);
       expect(coles.title, 'Transition in circular Couette flow');
+      expect(coles.venueTitle, 'Journal of Fluid Mechanics');
     });
 
     test('三位作者（and 連接）也能正確解析', () {
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
-      final nissan =
-          entries.firstWhere((e) => e.firstAuthorSurname == 'Nissan');
+      final nissan = entries.firstWhere(
+        (e) => e.firstAuthorSurname == 'Nissan',
+      );
       expect(nissan.year, 1963);
     });
 
@@ -58,8 +62,7 @@ void main() {
 
     test('沒有標題但條目數達門檻時仍主動偵測（文件未必會明確標示「這是文獻」）', () {
       // 取樣本文獻但移除「References」標題這一行
-      final withoutHeading =
-          _sampleReferences.replaceFirst('References\n', '');
+      final withoutHeading = _sampleReferences.replaceFirst('References\n', '');
       final entries = BibliographyVerifier.extractEntries(withoutHeading);
       expect(entries.length, 6);
       expect(entries[0].firstAuthorSurname, 'Ahlers');
@@ -177,31 +180,36 @@ scrubber. Comparison of experiments with theory, Env. Sci. Tech., 2007, 20, 237.
       ]);
     });
 
-    test('含有真實 OCR / PDF 瑕疵（連寫嵌合條目 [ 2 ]、[ 3 ] 與單一字母空白 H INDS, T SAI）仍可精準修復並抽取全部 7 筆條目', () {
-      const ocrArtifactContent = '''
+    test(
+      '含有真實 OCR / PDF 瑕疵（連寫嵌合條目 [ 2 ]、[ 3 ] 與單一字母空白 H INDS, T SAI）仍可精準修復並抽取全部 7 筆條目',
+      () {
+        const ocrArtifactContent = '''
 REFERENCES
 [1] COHEN B.S., HERING S.V., Air sampling instruments for evaluation of atmospheric contaminants , 8t h Ed. American Conference of Governmental Industrial Hygienists , Inc., Cincinnati 1995. [ 2 ] H INDS W.C., Aerosol Technology, Properties, Behavior, and Measurement of Airborne Particle s , 2nd E d. , Wiley, 1999. [ 3 ] C ALVERT S., Venturi and other atomizing scrubbers efficiency and pressure drop , AICHE J. , 1970, 16, 392. [4 ] M AYINGER F., N EUMANN M., Dust collection in Venturi scrubbers , Ger. Chem. Eng. , 1978, 1, 289 . [5 ] T IGGES K.D., M AYINGER F., Experiments with highly efficient Venturi scrubbers for aerosol separation from gases under multi plane water injection , Chem. Eng. Process , 1984, 18, 171. 70 B. L IAO et al. [6 ] T SAI C.J., L IN C.H., W ANG Y.M., An efficient Venturi scrubber system to remove submicron particles in exhaust gas , J. Air Waste Manage. Assoc., 2005 , 55, [7 ] H UANG C.H., T SAI C.J., W ANG Y.M., Control of submicron particle collection efficiency in a Venturi scrubber . C omparison of experiments with theory , Env. Sci. Tech. , 2007 , 20 , 237.
 ''';
-      final entries = BibliographyVerifier.extractEntries(ocrArtifactContent);
-      expect(entries.length, 7);
-      expect(entries[0].firstAuthorSurname, 'COHEN');
-      expect(entries[0].year, 1995);
-      expect(entries[1].firstAuthorSurname, 'HINDS');
-      expect(entries[1].year, 1999);
-      expect(entries[2].firstAuthorSurname, 'CALVERT');
-      expect(entries[2].year, 1970);
-      expect(entries[3].firstAuthorSurname, 'MAYINGER');
-      expect(entries[3].year, 1978);
-      expect(entries[4].firstAuthorSurname, 'TIGGES');
-      expect(entries[4].year, 1984);
-      expect(entries[5].firstAuthorSurname, 'TSAI');
-      expect(entries[5].year, 2005);
-      expect(entries[6].firstAuthorSurname, 'HUANG');
-      expect(entries[6].year, 2007);
-    });
+        final entries = BibliographyVerifier.extractEntries(ocrArtifactContent);
+        expect(entries.length, 7);
+        expect(entries[0].firstAuthorSurname, 'COHEN');
+        expect(entries[0].year, 1995);
+        expect(entries[1].firstAuthorSurname, 'HINDS');
+        expect(entries[1].year, 1999);
+        expect(entries[2].firstAuthorSurname, 'CALVERT');
+        expect(entries[2].year, 1970);
+        expect(entries[3].firstAuthorSurname, 'MAYINGER');
+        expect(entries[3].year, 1978);
+        expect(entries[4].firstAuthorSurname, 'TIGGES');
+        expect(entries[4].year, 1984);
+        expect(entries[5].firstAuthorSurname, 'TSAI');
+        expect(entries[5].year, 2005);
+        expect(entries[6].firstAuthorSurname, 'HUANG');
+        expect(entries[6].year, 2007);
+      },
+    );
 
-    test('World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取 Page 1532 全部 18 筆文獻', () {
-      const worldScientificPaper = '''
+    test(
+      'World Scientific / Author [Year] 格式論文內文與 References 可精準過濾內文引用與公式並抽取 Page 1532 全部 18 筆文獻',
+      () {
+        const worldScientificPaper = '''
 International Journal of Bifurcation and Chaos, Vol. 20, No. 5 (2010) 1527-1532
 LOWEST STABILITY BOUNDARY ON FLOW OF CONCENTRIC ROTATING CYLINDERS
 1. Introduction
@@ -230,36 +238,41 @@ Schultz-Grunow, F. & Hein, H. [1956] "Beitrag zur Couettestromung," Z Flugwiss 4
 Stuart, J. T. [1958] "On the nonlinear mechanics of hydrodynamic stability," J. Fluid Mech. 4, 1-21.
 Taylor, G. I. [1923] "Stability of a viscous liquid contained between two rotating cylinders," Phil. Trans. R. Soc. London A 223, 289-343.
 ''';
-      final entries = BibliographyVerifier.extractEntries(worldScientificPaper);
-      expect(entries.length, 18);
-      expect(entries.map((e) => e.firstAuthorSurname).toList(), [
-        'Ahlers',
-        'Andereck',
-        'Antonijoan',
-        'Burkhalter',
-        'Burkhalter',
-        'Coles',
-        'Hall',
-        'Jones',
-        'Jones',
-        'Jones',
-        'King',
-        'Lewis',
-        'Nissan',
-        'Park',
-        'Park',
-        'Schultz-Grunow',
-        'Stuart',
-        'Taylor',
-      ]);
-      expect(entries[5].year, 1965);
-      expect(entries[5].title, 'Transition in circular Couette flow');
-      expect(entries[17].firstAuthorSurname, 'Taylor');
-      expect(entries[17].year, 1923);
-    });
+        final entries = BibliographyVerifier.extractEntries(
+          worldScientificPaper,
+        );
+        expect(entries.length, 18);
+        expect(entries.map((e) => e.firstAuthorSurname).toList(), [
+          'Ahlers',
+          'Andereck',
+          'Antonijoan',
+          'Burkhalter',
+          'Burkhalter',
+          'Coles',
+          'Hall',
+          'Jones',
+          'Jones',
+          'Jones',
+          'King',
+          'Lewis',
+          'Nissan',
+          'Park',
+          'Park',
+          'Schultz-Grunow',
+          'Stuart',
+          'Taylor',
+        ]);
+        expect(entries[5].year, 1965);
+        expect(entries[5].title, 'Transition in circular Couette flow');
+        expect(entries[17].firstAuthorSurname, 'Taylor');
+        expect(entries[17].year, 1923);
+      },
+    );
 
-    test('Experimental Techniques 論文內文（含公式、24.段落標號）與 22 筆 References 可精準過濾內文並抽取全部 22 筆文獻', () {
-      const experimentalTechniquesPaper = '''
+    test(
+      'Experimental Techniques 論文內文（含公式、24.段落標號）與 22 筆 References 可精準過濾內文並抽取全部 22 筆文獻',
+      () {
+        const experimentalTechniquesPaper = '''
 Fig. 6: Spectrum analysis of the subharmonic flow with Ω = 0, η = 0.4833, ε = 2, and ω = 18.75
 (2) the optical area, which has a helium-neon laser tube, photoelectric receiver, LDA device, and oscillograph. A personal computer (PC) and PC-LabCard were used to control and retrieve data. The control interface panel can output the predicted voltage value...
 24. Optical Measurement Method As the Re increases, the flow is transformed from a one-dimensional Couette flow to a two-dimensional Taylor vortex flow...
@@ -292,18 +305,23 @@ References
 21. Sparrow, E.M., Munro, W.D., and Jonsson, V.K., "Instability of the Flow Between Rotating Cylinders:the Wide Gap Problem," Journal of Fluid Mechanics 20:35-46 (1974).
 22. Youd, A.J., Willis, A.P., and Barenghi, C.F., "Non-Reversing Modulated Taylor-Couette Flows," Fluid Dynamics Research 36:61-73 (2005).
 ''';
-      final entries = BibliographyVerifier.extractEntries(experimentalTechniquesPaper);
-      expect(entries.length, 22);
-      expect(entries[0].firstAuthorSurname, 'Couette');
-      expect(entries[0].year, 1890);
-      expect(entries[1].firstAuthorSurname, 'Taylor');
-      expect(entries[1].year, 1923);
-      expect(entries[21].firstAuthorSurname, 'Youd');
-      expect(entries[21].year, 2005);
-    });
+        final entries = BibliographyVerifier.extractEntries(
+          experimentalTechniquesPaper,
+        );
+        expect(entries.length, 22);
+        expect(entries[0].firstAuthorSurname, 'Couette');
+        expect(entries[0].year, 1890);
+        expect(entries[1].firstAuthorSurname, 'Taylor');
+        expect(entries[1].year, 1923);
+        expect(entries[21].firstAuthorSurname, 'Youd');
+        expect(entries[21].year, 2005);
+      },
+    );
 
-    test('無編號 APA/Harvard 格式 References（如 IJCFD 論文 18 筆多作者條目）能精準切分並保留第一作者姓氏與年份', () {
-      const ijcfdPaper = '''
+    test(
+      '無編號 APA/Harvard 格式 References（如 IJCFD 論文 18 筆多作者條目）能精準切分並保留第一作者姓氏與年份',
+      () {
+        const ijcfdPaper = '''
 4. Conclusion
 The effect of a variation in the axial wavenumber of a TVF on the stability of the flow...
 
@@ -327,22 +345,32 @@ Stuart, J.T., 1958. On the nonlinear mechanics of hydrodynamic stability. Journa
 Taylor, G.I., 1923. Stability of a viscous liquid contained between two rotating cylinders. Philosophical Transactions of the Royal Society London A, 223, 289–343.
 Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortices. International Journal of Computational Fluid Dynamics, 23, 643–648.
 ''';
-      final entries = BibliographyVerifier.extractEntries(ijcfdPaper);
-      expect(entries.length, 18);
-      expect(entries[0].firstAuthorSurname, 'Ahlers');
-      expect(entries[0].year, 1983);
-      expect(entries[1].firstAuthorSurname, 'Andereck');
-      expect(entries[1].year, 1986);
-      expect(entries[17].firstAuthorSurname, 'Yang');
-      expect(entries[17].year, 2009);
-    });
+        final entries = BibliographyVerifier.extractEntries(ijcfdPaper);
+        expect(entries.length, 18);
+        expect(entries[0].firstAuthorSurname, 'Ahlers');
+        expect(entries[0].year, 1983);
+        expect(entries[1].firstAuthorSurname, 'Andereck');
+        expect(entries[1].year, 1986);
+        expect(entries[17].firstAuthorSurname, 'Yang');
+        expect(entries[17].year, 2009);
+      },
+    );
   });
 
   group('BibliographyVerifier.verifyAll', () {
     test('Crossref 回傳高度相似篇名＋年份吻合 → 高可信度', () async {
+      var sawVenueScopedQuery = false;
       final client = MockClient((req) async {
         expect(req.url.host, 'api.crossref.org');
-        expect(req.url.queryParameters['query.bibliographic'], isNotNull);
+        expect(
+          req.url.queryParameters.containsKey('query.title') ||
+              req.url.queryParameters.containsKey('query.bibliographic'),
+          isTrue,
+        );
+        if (req.url.queryParameters['query.container-title'] ==
+            'Journal of Fluid Mechanics') {
+          sawVenueScopedQuery = true;
+        }
         return http.Response(
           jsonEncode({
             'message': {
@@ -352,87 +380,154 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
                   'container-title': ['Journal of Fluid Mechanics'],
                   'published': {
                     'date-parts': [
-                      [1965]
-                    ]
+                      [1965],
+                    ],
                   },
                   'author': [
-                    {'family': 'Coles', 'given': 'D'}
+                    {'family': 'Coles', 'given': 'D'},
                   ],
-                }
+                },
               ],
-            }
+            },
           }),
           200,
         );
       });
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
-      final results =
-          await BibliographyVerifier.verifyAll([coles], client: client);
+      final results = await BibliographyVerifier.verifyAll([
+        coles,
+      ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Journal of Fluid Mechanics');
+      expect(sawVenueScopedQuery, isTrue);
     });
 
-    test('Crossref 查無相近結果 → notFound（可能為虛構文獻）', () async {
-      final client = MockClient((_) async => http.Response(
-            jsonEncode({
-              'message': {'items': []}
-            }),
-            200,
-          ));
+    test('Crossref 與 OpenAlex 皆成功查無相近結果 → notFound（可能為虛構文獻）', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {'items': []},
+          }),
+          200,
+        );
+      });
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
-      final results = await BibliographyVerifier.verifyAll(
-          [entries.first],
-          client: client);
+      final results = await BibliographyVerifier.verifyAll([
+        entries.first,
+      ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.notFound);
     });
 
-    test('篇名完全不同、年份與作者皆不吻合 → notFound', () async {
-      final client = MockClient((_) async => http.Response(
+    test('兩個資料源候選篇名完全不同、年份與作者皆不吻合 → notFound', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(
             jsonEncode({
-              'message': {
-                'items': [
-                  {
-                    'title': ['A completely unrelated topic in biology'],
-                    'container-title': ['Some Other Journal'],
-                    'published': {
-                      'date-parts': [
-                        [2020]
-                      ]
-                    },
-                    'author': [
-                      {'family': 'Smith', 'given': 'J'}
-                    ],
-                  }
-                ],
-              }
+              'results': [
+                {
+                  'title': 'A completely unrelated topic in biology',
+                  'publication_year': 2020,
+                  'primary_location': {
+                    'source': {'display_name': 'Some Other Journal'},
+                  },
+                },
+              ],
             }),
             200,
-          ));
+          );
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {
+              'items': [
+                {
+                  'title': ['A completely unrelated topic in biology'],
+                  'container-title': ['Some Other Journal'],
+                  'published': {
+                    'date-parts': [
+                      [2020],
+                    ],
+                  },
+                  'author': [
+                    {'family': 'Smith', 'given': 'J'},
+                  ],
+                },
+              ],
+            },
+          }),
+          200,
+        );
+      });
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
-      final results =
-          await BibliographyVerifier.verifyAll([coles], client: client);
+      final results = await BibliographyVerifier.verifyAll([
+        coles,
+      ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.notFound);
     });
 
-    test('連寫嵌合條目 (如 FLOW3. Donnelly 或 (1890).2. Taylor 或 4.Simon ... 9.Lope) 與頁首頁尾雜訊能精準拆分切塊', () {
-      const concatenatedOcr = '''
+    test('只有 Crossref 單邊查無結果時保守退回 uncertain，不直接紅燈', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response('Service unavailable', 503);
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {'items': []},
+          }),
+          200,
+        );
+      });
+      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
+      final results = await BibliographyVerifier.verifyAll([
+        entries.first,
+      ], client: client);
+      expect(results.single.confidence, CitationMatchConfidence.uncertain);
+    });
+
+    test('DOI 精確查詢 404 時可安全判定 notFound', () async {
+      final client = MockClient((req) async {
+        expect(req.url.path, contains('/works/10.9999%2Fmissing-paper'));
+        return http.Response('Not found', 404);
+      });
+      final entry = BibliographyEntry(
+        rawText:
+            'Smith, J. (2024). A fabricated DOI example. Journal X. DOI: 10.9999/missing-paper',
+        firstAuthorSurname: 'Smith',
+        year: 2024,
+        title: 'A fabricated DOI example',
+        doi: '10.9999/missing-paper',
+      );
+      final results = await BibliographyVerifier.verifyAll([
+        entry,
+      ], client: client);
+      expect(results.single.confidence, CitationMatchConfidence.notFound);
+    });
+
+    test(
+      '連寫嵌合條目 (如 FLOW3. Donnelly 或 (1890).2. Taylor 或 4.Simon ... 9.Lope) 與頁首頁尾雜訊能精準拆分切塊',
+      () {
+        const concatenatedOcr = '''
 References
 1. Couette, M., "Etudes Sur Le Frottement Des Liquids," Annales de chimie et de physique 6:433-510 (1890).2. Taylor, G.I., "Stability of a Viscous Liquid Contained between Two Rotating Cylinders," Philosophical Transactions of the Royal Society of London A233: 289-343 (1923). November/December 2010 EXPERIMENTAL TECHNIQUES 47 STABILITY OF TAYLOR-COUETTE FLOW3. Donnelly, R.J., "Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement," Proceedings of the Royal Society of London A246: 312-325 (1958). 4.Simon, N.J., and Donnelly, R.J., "An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders," Journal of Fluid Mechanics 7: 401-418 (1960). 5.Coles, D., "On the Instability of Taylor Vortices," Journal of Fluid Mechanics 31: 17-62 (1965). 6.Schwarz, K.W., Springett, B.E., and Donnelly, R.J., "Modes of Instability in Spiral Flow between Rotating Cylinders," Journal of Fluid Mechanics 20: 281-289 (1964). 7.Nissan A.H., Nardacci J.L., and Ho C.Y., "The Onset of Different Modes of Instability for Flow between Rotating Cylinders," AIChE Journal 9: 620-624 (1963). 8.Marques, F., and Lope, J.M., "Taylor-Couette Flow with Axial Oscillations of the Inner Cylinder: floquet Analysis of the Basic Flow," Journal of Fluid Mechanics 384: 153-175 (1997). 9.Lope, J.M., and Marques, F., "Dynamics of Three-tori in a Periodically Forced Navier-Stokes Flow," Physical Review Letters 85: 972-975 (2001).
 ''';
-      final entries = BibliographyVerifier.extractEntries(concatenatedOcr);
-      expect(entries.length, 9);
-      expect(entries[0].firstAuthorSurname, 'Couette');
-      expect(entries[1].firstAuthorSurname, 'Taylor');
-      expect(entries[2].firstAuthorSurname, 'Donnelly');
-      expect(entries[3].firstAuthorSurname, 'Simon');
-      expect(entries[4].firstAuthorSurname, 'Coles');
-      expect(entries[5].firstAuthorSurname, 'Schwarz');
-      expect(entries[6].firstAuthorSurname, 'Nissan');
-      expect(entries[7].firstAuthorSurname, 'Marques');
-      expect(entries[8].firstAuthorSurname, 'Lope');
-    });
+        final entries = BibliographyVerifier.extractEntries(concatenatedOcr);
+        expect(entries.length, 9);
+        expect(entries[0].firstAuthorSurname, 'Couette');
+        expect(entries[1].firstAuthorSurname, 'Taylor');
+        expect(entries[2].firstAuthorSurname, 'Donnelly');
+        expect(entries[3].firstAuthorSurname, 'Simon');
+        expect(entries[4].firstAuthorSurname, 'Coles');
+        expect(entries[5].firstAuthorSurname, 'Schwarz');
+        expect(entries[6].firstAuthorSurname, 'Nissan');
+        expect(entries[7].firstAuthorSurname, 'Marques');
+        expect(entries[8].firstAuthorSurname, 'Lope');
+      },
+    );
 
     test('OCR 介詞連寫 (如 Onsetof, Orderof, Journalof, Flowwith) 能精準修復空格', () {
       const ocrNoiseText = '''
@@ -449,13 +544,14 @@ References
     });
 
     test('HTTP 429 頻率限制回應時退回 uncertain (黃燈)，不誤報為 notFound (紅燈)', () async {
-      final client = MockClient((_) async => http.Response('Rate Limit Exceeded', 429));
+      final client = MockClient(
+        (_) async => http.Response('Rate Limit Exceeded', 429),
+      );
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
-      final results = await BibliographyVerifier.verifyAll(
-          [entries.first],
-          client: client);
+      final results = await BibliographyVerifier.verifyAll([
+        entries.first,
+      ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
   });
 }
-

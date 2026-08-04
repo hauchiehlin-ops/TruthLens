@@ -29,8 +29,9 @@ class PreferencesService extends ChangeNotifier {
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
     confidenceThreshold = _prefs!.getDouble(_kThreshold) ?? 0.6;
-    themeMode = ThemeMode.values
-        .byName(_prefs!.getString(_kThemeMode) ?? ThemeMode.dark.name);
+    themeMode = ThemeMode.values.byName(
+      _prefs!.getString(_kThemeMode) ?? ThemeMode.dark.name,
+    );
     eslCorrectionEnabled = _prefs!.getBool(_kEslCorrection) ?? true;
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;

@@ -9,12 +9,16 @@ class BibliographyEntry {
   final String? firstAuthorSurname;
   final int? year;
   final String? title;
+  final String? venueTitle;
+  final String? doi;
 
   const BibliographyEntry({
     required this.rawText,
     this.firstAuthorSurname,
     this.year,
     this.title,
+    this.venueTitle,
+    this.doi,
   });
 }
 
@@ -84,10 +88,7 @@ class BibliographyVerifier {
 
     // 1) 清除 PDF 出版社浮水印、欄位邊界與頁尾雜訊 (如 Downloaded By: [Lin, Hau-Chieh] At: 14:43 11 November 2010)
     text = text.replaceAll(
-      RegExp(
-        r'Downloaded\s+By:\s*\[[^\]]+\][^\n\r]*',
-        caseSensitive: false,
-      ),
+      RegExp(r'Downloaded\s+By:\s*\[[^\]]+\][^\n\r]*', caseSensitive: false),
       '\n',
     );
     text = text.replaceAll(
@@ -112,17 +113,11 @@ class BibliographyVerifier {
       '\n',
     );
     text = text.replaceAll(
-      RegExp(
-        r'STABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW',
-        caseSensitive: false,
-      ),
+      RegExp(r'STABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW', caseSensitive: false),
       '\n',
     );
     text = text.replaceAll(
-      RegExp(
-        r'STABILITYOFTAYLOR-COUETTEFLOW',
-        caseSensitive: false,
-      ),
+      RegExp(r'STABILITYOFTAYLOR-COUETTEFLOW', caseSensitive: false),
       '\n',
     );
     text = text.replaceAll(
@@ -160,8 +155,16 @@ class BibliographyVerifier {
 
     // 常用英文介詞與連詞的 OCR 嵌合修復 (如 Onsetof, Orderof, Journalof, Flowwith, Reversingand, Methodsin)
     final ocrCompoundedWords = [
-      'forthe', 'between', 'ofthe', 'ina', 'withthe',
-      'of', 'with', 'for', 'from', 'and'
+      'forthe',
+      'between',
+      'ofthe',
+      'ina',
+      'withthe',
+      'of',
+      'with',
+      'for',
+      'from',
+      'and',
     ];
     for (final cp in ocrCompoundedWords) {
       text = text.replaceAllMapped(
@@ -198,7 +201,9 @@ class BibliographyVerifier {
 
     // 7) 在未斷行的連寫嵌合條目編號前主動插入換行符（如 (1890).2. Taylor 或 (1958). 4.Simon 或 [ 2 ] H INDS 或 FLOW3. Donnelly）：
     text = text.replaceAllMapped(
-      RegExp(r'(?<=[a-zA-Z\)\.\,\]])\s*(\d{1,3}\.[\s\u00A0]*[A-Z]|\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\])'),
+      RegExp(
+        r'(?<=[a-zA-Z\)\.\,\]])\s*(\d{1,3}\.[\s\u00A0]*[A-Z]|\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\])',
+      ),
       (m) => '\n${m.group(1)}',
     );
 
@@ -211,8 +216,7 @@ class BibliographyVerifier {
 
     // 取文獻尾端的最後一個 References/參考文獻 標題（防止內文提及 references 字眼早判）
     final headingMatches = _sectionHeading.allMatches(text).toList();
-    final headingMatch =
-        headingMatches.isNotEmpty ? headingMatches.last : null;
+    final headingMatch = headingMatches.isNotEmpty ? headingMatches.last : null;
     final hasHeading = headingMatch != null;
     final section = hasHeading ? text.substring(headingMatch.end) : text;
 
@@ -223,12 +227,18 @@ class BibliographyVerifier {
         (hasHeading || starts.length >= minEntriesWithoutHeading)) {
       for (var i = 0; i < starts.length; i++) {
         final start = starts[i];
-        final endIndex =
-            i + 1 < starts.length ? starts[i + 1].start : section.length;
+        final endIndex = i + 1 < starts.length
+            ? starts[i + 1].start
+            : section.length;
         final raw = section.substring(start.start, endIndex).trim();
         if (raw.length < 15) continue;
-        path1Entries.add(_parseEntry(raw, start.end - start.start,
-            int.tryParse(start.group(1) ?? '')));
+        path1Entries.add(
+          _parseEntry(
+            raw,
+            start.end - start.start,
+            int.tryParse(start.group(1) ?? ''),
+          ),
+        );
       }
     }
 
@@ -238,7 +248,8 @@ class BibliographyVerifier {
     String? currentBlock;
 
     // 判斷該文獻區塊是否為數字編號格式（例如 [1], [2], 1.）
-    final hasNumberedEntries = rawLines
+    final hasNumberedEntries =
+        rawLines
             .where((l) => _bulletOrNumberPrefix.hasMatch(l.trim()))
             .length >=
         2;
@@ -249,9 +260,9 @@ class BibliographyVerifier {
 
       // 檢查是否為頁首/頁尾噪音（例如 "70 B. LIAO et al."、"Page 12 of 15" 或 "---"）
       if (RegExp(
-              r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|Page\s+\d+.*|Copyright\s+.*|[-—=_]{3,})$',
-              caseSensitive: false)
-          .hasMatch(line)) {
+        r'^(?:\d+\s+[A-Z]\.\s*[A-Z]+.*|Page\s+\d+.*|Copyright\s+.*|[-—=_]{3,})$',
+        caseSensitive: false,
+      ).hasMatch(line)) {
         continue;
       }
 
@@ -259,12 +270,17 @@ class BibliographyVerifier {
       final isNewEntryStart = hasNumberedEntries
           ? _bulletOrNumberPrefix.hasMatch(line)
           : (_bulletOrNumberPrefix.hasMatch(line) ||
-              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]\.")
-                  .hasMatch(line) ||
-              RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.")
-                  .hasMatch(line) ||
-              RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
-              RegExp(r'^\[[JCMDROPOL]\]', caseSensitive: false).hasMatch(line));
+                RegExp(
+                  r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]\.",
+                ).hasMatch(line) ||
+                RegExp(
+                  r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.",
+                ).hasMatch(line) ||
+                RegExp(r'^[\u4e00-\u9fa5]{2,4}[、,，]').hasMatch(line) ||
+                RegExp(
+                  r'^\[[JCMDROPOL]\]',
+                  caseSensitive: false,
+                ).hasMatch(line));
 
       if (isNewEntryStart) {
         if (currentBlock != null && currentBlock.trim().isNotEmpty) {
@@ -290,8 +306,9 @@ class BibliographyVerifier {
 
       final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
-      final year =
-          yearMatch != null ? int.tryParse(yearMatch.group(1) ?? '') : null;
+      final year = yearMatch != null
+          ? int.tryParse(yearMatch.group(1) ?? '')
+          : null;
 
       // 門檻：當計算總分 >= 0.45（若含有文獻標題時門檻降至 0.30）時即判定為合法學術條目
       if (score >= (hasHeading ? 0.30 : 0.45)) {
@@ -326,12 +343,16 @@ class BibliographyVerifier {
       score += 0.25;
     }
     if (RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
-        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false)
-            .hasMatch(block)) {
+        RegExp(
+          r'\b(?:pp?|pages|vol|no)\.\s*\d+',
+          caseSensitive: false,
+        ).hasMatch(block)) {
       score += 0.20;
     }
-    if (RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false)
-        .hasMatch(block)) {
+    if (RegExp(
+      r'(?:https?:\/\/|doi:\s*|arXiv:\s*)',
+      caseSensitive: false,
+    ).hasMatch(block)) {
       score += 0.30;
     }
     if (hasHeading) score += 0.15;
@@ -339,16 +360,22 @@ class BibliographyVerifier {
   }
 
   static BibliographyEntry _parseEntry(
-      String raw, int prefixLength, int? year) {
+    String raw,
+    int prefixLength,
+    int? year,
+  ) {
     final commaIdx = raw.indexOf(',');
     final surname = commaIdx > 0 ? raw.substring(0, commaIdx).trim() : null;
-    final afterPrefix =
-        prefixLength <= raw.length ? raw.substring(prefixLength) : '';
-    final quoteMatch =
-        RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(afterPrefix);
+    final afterPrefix = prefixLength <= raw.length
+        ? raw.substring(prefixLength)
+        : '';
+    final quoteMatch = RegExp(
+      r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
+    ).firstMatch(afterPrefix);
     final titleEnd = afterPrefix.indexOf('. ');
     final rawTitle = quoteMatch?.group(1);
-    final title = rawTitle?.replaceAll(RegExp(r',+$'), '').trim() ??
+    final title =
+        rawTitle?.replaceAll(RegExp(r',+$'), '').trim() ??
         (titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix)
             .trim();
     return BibliographyEntry(
@@ -356,21 +383,30 @@ class BibliographyVerifier {
       firstAuthorSurname: surname,
       year: year,
       title: title.isEmpty ? null : title,
+      venueTitle: _extractVenueTitle(raw, title),
+      doi: _extractDoi(raw),
     );
   }
 
   static BibliographyEntry _parseLineEntry(
-      String cleaned, String rawText, int? year) {
+    String cleaned,
+    String rawText,
+    int? year,
+  ) {
     // 預先修復常見 OCR 小錯字 (如 "Couette Fow" -> "Couette Flow")
     var cleanedNoPrefix = cleaned
         .replaceAll(_bulletOrNumberPrefix, '')
         .replaceAll(RegExp(r'^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])'), '')
-        .replaceAll(RegExp(r'\bCouette\s+Fow\b', caseSensitive: false), 'Couette Flow')
+        .replaceAll(
+          RegExp(r'\bCouette\s+Fow\b', caseSensitive: false),
+          'Couette Flow',
+        )
         .trim();
 
     // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
-    final quoteMatch =
-        RegExp(r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]').firstMatch(cleanedNoPrefix);
+    final quoteMatch = RegExp(
+      r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
+    ).firstMatch(cleanedNoPrefix);
     final rawTitle = quoteMatch?.group(1);
     String? title = rawTitle?.replaceAll(RegExp(r',+$'), '').trim();
 
@@ -386,7 +422,9 @@ class BibliographyVerifier {
             title = afterYear.substring(0, titleEnd).trim();
           } else if (afterYear.isNotEmpty) {
             final periodIdx = afterYear.indexOf('.');
-            title = (periodIdx > 5 ? afterYear.substring(0, periodIdx) : afterYear).trim();
+            title =
+                (periodIdx > 5 ? afterYear.substring(0, periodIdx) : afterYear)
+                    .trim();
           }
         }
       }
@@ -396,8 +434,9 @@ class BibliographyVerifier {
         final noAuthors = cleanedNoPrefix
             .replaceAll(
               RegExp(
-                  r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+",
-                  caseSensitive: false),
+                r"^(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*(?:,\s*)?[A-Z]\s*\.\s*(?:[A-Z]\s*\.\s*)?(?:\s*,\s*|\s+and\s+|\s*&\s*)*)+",
+                caseSensitive: false,
+              ),
               '',
             )
             .trim();
@@ -426,8 +465,9 @@ class BibliographyVerifier {
           RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+$").hasMatch(spaceParts.first)) {
         surname = spaceParts.first;
       } else {
-        final chineseMatch =
-            RegExp(r'^[\u4e00-\u9fa5]{2,4}').firstMatch(cleanedNoPrefix);
+        final chineseMatch = RegExp(
+          r'^[\u4e00-\u9fa5]{2,4}',
+        ).firstMatch(cleanedNoPrefix);
         if (chineseMatch != null) {
           surname = chineseMatch.group(0);
         }
@@ -439,7 +479,79 @@ class BibliographyVerifier {
       firstAuthorSurname: surname,
       year: year,
       title: title.isEmpty ? null : title,
+      venueTitle: _extractVenueTitle(cleanedNoPrefix, title),
+      doi: _extractDoi(cleanedNoPrefix),
     );
+  }
+
+  static String? _extractVenueTitle(String raw, String? title) {
+    var source = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+    String? afterTitle;
+
+    final quoteMatch = RegExp(
+      r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
+    ).firstMatch(source);
+    if (quoteMatch != null) {
+      afterTitle = source.substring(quoteMatch.end);
+    } else if (title != null && title.trim().length >= 5) {
+      final lowerSource = source.toLowerCase();
+      final lowerTitle = title.trim().toLowerCase();
+      final titleIndex = lowerSource.indexOf(lowerTitle);
+      if (titleIndex >= 0) {
+        afterTitle = source.substring(titleIndex + title.length);
+      }
+    }
+
+    if (afterTitle != null) {
+      final venue = _cleanVenueCandidate(afterTitle);
+      if (venue != null) return venue;
+    }
+
+    final fallback = RegExp(
+      r'\b((?:Journal|Proceedings|Transactions|Physical Review|Phys\. Rev\.|J\. Fluid Mech\.|Proc\.|ACM|IEEE|AIChE|AICHE|Nature|Science|Springer|Wiley|Elsevier|Press|學報|期刊|論文集|研討會)[^,.;\(\)]{0,80})',
+      caseSensitive: false,
+    ).firstMatch(source);
+    return _cleanVenueCandidate(fallback?.group(1));
+  }
+
+  static String? _cleanVenueCandidate(String? raw) {
+    if (raw == null) return null;
+    var venue = raw
+        .replaceFirst(RegExp(r'^[\s,.;:]+'), '')
+        .replaceFirst(
+          RegExp(
+            r'\b(?:vol\.?|volume|no\.?|pp?\.?|pages?)\b.*$',
+            caseSensitive: false,
+          ),
+          '',
+        )
+        .replaceFirst(RegExp(r'\b(?:18|19|20)\d\d\b.*$'), '')
+        .replaceFirst(RegExp(r'\s+\d{1,4}\s*[:;,].*$'), '')
+        .replaceFirst(RegExp(r'\s+\d{1,4}\s*$'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    venue = venue.replaceAll(RegExp(r'[,.;:\s]+$'), '').trim();
+    if (venue.length < 3 || venue.length > 120) return null;
+    if (!_looksLikeVenue(venue)) return null;
+    return venue;
+  }
+
+  static bool _looksLikeVenue(String value) {
+    return RegExp(
+      r'(?:journal|proceedings|transactions|physical review|phys\. rev\.|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
+      caseSensitive: false,
+    ).hasMatch(value);
+  }
+
+  static String? _extractDoi(String raw) {
+    final match = RegExp(
+      r'\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b',
+      caseSensitive: false,
+    ).firstMatch(raw);
+    return match
+        ?.group(0)
+        ?.replaceAll(RegExp(r'[.;,\)\]]+$'), '')
+        .toLowerCase();
   }
 
   /// 帶 Exponential Backoff 重試與 Crossref Polite Pool 標頭的 HTTP GET 請求
@@ -451,13 +563,15 @@ class BibliographyVerifier {
   }) async {
     for (var attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        final response = await client.get(
-          uri,
-          headers: {
-            'User-Agent':
-                'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-          },
-        ).timeout(timeout);
+        final response = await client
+            .get(
+              uri,
+              headers: {
+                'User-Agent':
+                    'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+              },
+            )
+            .timeout(timeout);
 
         if (response.statusCode == 200) {
           return response;
@@ -508,12 +622,93 @@ class BibliographyVerifier {
     BibliographyEntry entry,
     Duration timeout,
   ) async {
-    bool hasValid200NoMatch = false;
+    var crossrefSearchSucceeded = false;
+    var openAlexSearchSucceeded = false;
     BibliographyCheckResult? bestUncertainCandidate;
 
     final searchTitle = entry.title != null && entry.title!.trim().length >= 5
         ? entry.title!.trim()
         : null;
+
+    if (entry.doi != null) {
+      try {
+        final uri = Uri.parse(
+          'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}',
+        ).replace(queryParameters: {'mailto': 'support@truthlens.app'});
+        final response = await _httpGetWithRetry(client, uri, timeout);
+        if (response != null && response.statusCode == 200) {
+          final message =
+              (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                  as Map<String, dynamic>?;
+          final titles = (message?['title'] as List?)?.cast<dynamic>();
+          final containers = (message?['container-title'] as List?)
+              ?.cast<dynamic>();
+          final dateParts =
+              ((message?['published'] as Map<String, dynamic>?)?['date-parts']
+                      as List?)
+                  ?.cast<dynamic>();
+          final matchedYear =
+              (dateParts != null &&
+                  dateParts.isNotEmpty &&
+                  (dateParts.first as List).isNotEmpty)
+              ? (dateParts.first as List).first as int
+              : null;
+          return BibliographyCheckResult(
+            entry: entry,
+            confidence: CitationMatchConfidence.high,
+            matchedTitle: titles != null && titles.isNotEmpty
+                ? titles.first.toString()
+                : null,
+            matchedJournal: containers != null && containers.isNotEmpty
+                ? containers.first.toString()
+                : 'Crossref DOI 登記',
+            matchedYear: matchedYear,
+          );
+        }
+        if (response != null && response.statusCode == 404) {
+          return BibliographyCheckResult(
+            entry: entry,
+            confidence: CitationMatchConfidence.notFound,
+          );
+        }
+      } catch (_) {}
+    }
+
+    if (searchTitle != null &&
+        entry.venueTitle != null &&
+        entry.venueTitle!.length >= 3) {
+      try {
+        final queryParams = <String, String>{
+          'query.title': searchTitle,
+          'query.container-title': entry.venueTitle!,
+          'rows': '5',
+          'mailto': 'support@truthlens.app',
+        };
+        final uri = Uri.parse(
+          'https://api.crossref.org/works',
+        ).replace(queryParameters: queryParams);
+        final response = await _httpGetWithRetry(client, uri, timeout);
+        if (response != null && response.statusCode == 200) {
+          crossrefSearchSucceeded = true;
+          final message =
+              (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                  as Map<String, dynamic>?;
+          final items = (message?['items'] as List?)?.cast<dynamic>();
+          final result = _bestCandidateFromCrossrefItems(
+            entry,
+            searchTitle,
+            items,
+            defaultJournal: entry.venueTitle!,
+          );
+          if (result != null) {
+            if (result.confidence == CitationMatchConfidence.high) {
+              return result;
+            }
+            bestUncertainCandidate ??= result;
+          }
+        }
+      } catch (_) {}
+    }
 
     // 1) 策略一：專注篇名與作者的 Crossref 精準比對 (query.title + query.author)
     if (searchTitle != null) {
@@ -528,61 +723,29 @@ class BibliographyVerifier {
           queryParams['query.author'] = entry.firstAuthorSurname!;
         }
 
-        final uri = Uri.parse('https://api.crossref.org/works').replace(
-          queryParameters: queryParams,
-        );
+        final uri = Uri.parse(
+          'https://api.crossref.org/works',
+        ).replace(queryParameters: queryParams);
 
         final response = await _httpGetWithRetry(client, uri, timeout);
 
         if (response != null && response.statusCode == 200) {
-          final message = (jsonDecode(response.body)
-              as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
+          crossrefSearchSucceeded = true;
+          final message =
+              (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                  as Map<String, dynamic>?;
           final items = (message?['items'] as List?)?.cast<dynamic>();
-          if (items != null && items.isNotEmpty) {
-            for (final item in items) {
-              final top = item as Map<String, dynamic>;
-              final titles = (top['title'] as List?)?.cast<dynamic>();
-              final matchedTitle = (titles != null && titles.isNotEmpty)
-                  ? titles.first.toString()
-                  : null;
-              final containers = (top['container-title'] as List?)?.cast<dynamic>();
-              final matchedJournal = (containers != null && containers.isNotEmpty)
-                  ? containers.first.toString()
-                  : null;
-              final dateParts = ((top['published'] as Map<String, dynamic>?)
-                      ?['date-parts'] as List?)
-                  ?.cast<dynamic>();
-              final matchedYear = (dateParts != null &&
-                      dateParts.isNotEmpty &&
-                      (dateParts.first as List).isNotEmpty)
-                  ? (dateParts.first as List).first as int
-                  : null;
-
-              final titleSim = _titleSimilarity(searchTitle, matchedTitle);
-              final yearMatches = entry.year != null &&
-                  matchedYear != null &&
-                  (entry.year! - matchedYear).abs() <= 1;
-
-              if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
-                return BibliographyCheckResult(
-                  entry: entry,
-                  confidence: CitationMatchConfidence.high,
-                  matchedTitle: matchedTitle,
-                  matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
-                  matchedYear: matchedYear,
-                );
-              } else if (titleSim >= 0.12 || yearMatches) {
-                bestUncertainCandidate ??= BibliographyCheckResult(
-                  entry: entry,
-                  confidence: CitationMatchConfidence.uncertain,
-                  matchedTitle: matchedTitle,
-                  matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
-                  matchedYear: matchedYear,
-                );
-              }
+          final result = _bestCandidateFromCrossrefItems(
+            entry,
+            searchTitle,
+            items,
+            defaultJournal: 'Crossref 收錄期刊',
+          );
+          if (result != null) {
+            if (result.confidence == CitationMatchConfidence.high) {
+              return result;
             }
-          } else {
-            hasValid200NoMatch = true;
+            bestUncertainCandidate ??= result;
           }
         }
       } catch (_) {}
@@ -590,67 +753,37 @@ class BibliographyVerifier {
 
     // 1B) 策略一 B：Crossref 全文字串 (query.bibliographic) 備援查詢 (適合 APS / Royal Society 經典文獻)
     try {
-      final bibQuery = '${entry.firstAuthorSurname ?? ''} ${searchTitle ?? entry.rawText} ${entry.year ?? ''}'.trim();
+      final bibQuery =
+          '${entry.firstAuthorSurname ?? ''} ${searchTitle ?? entry.rawText} ${entry.year ?? ''}'
+              .trim();
       final queryParams = <String, String>{
         'query.bibliographic': bibQuery,
         'rows': '5',
         'mailto': 'support@truthlens.app',
       };
-      final uri = Uri.parse('https://api.crossref.org/works').replace(
-        queryParameters: queryParams,
-      );
+      final uri = Uri.parse(
+        'https://api.crossref.org/works',
+      ).replace(queryParameters: queryParams);
 
       final response = await _httpGetWithRetry(client, uri, timeout);
 
       if (response != null && response.statusCode == 200) {
-        final message = (jsonDecode(response.body)
-            as Map<String, dynamic>)['message'] as Map<String, dynamic>?;
+        crossrefSearchSucceeded = true;
+        final message =
+            (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                as Map<String, dynamic>?;
         final items = (message?['items'] as List?)?.cast<dynamic>();
-        if (items != null && items.isNotEmpty) {
-          for (final item in items) {
-            final top = item as Map<String, dynamic>;
-            final titles = (top['title'] as List?)?.cast<dynamic>();
-            final matchedTitle = (titles != null && titles.isNotEmpty)
-                ? titles.first.toString()
-                : null;
-            final containers = (top['container-title'] as List?)?.cast<dynamic>();
-            final matchedJournal = (containers != null && containers.isNotEmpty)
-                ? containers.first.toString()
-                : null;
-            final dateParts = ((top['published'] as Map<String, dynamic>?)
-                    ?['date-parts'] as List?)
-                ?.cast<dynamic>();
-            final matchedYear = (dateParts != null &&
-                    dateParts.isNotEmpty &&
-                    (dateParts.first as List).isNotEmpty)
-                ? (dateParts.first as List).first as int
-                : null;
-
-            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
-            final yearMatches = entry.year != null &&
-                matchedYear != null &&
-                (entry.year! - matchedYear).abs() <= 1;
-
-            if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
-              return BibliographyCheckResult(
-                entry: entry,
-                confidence: CitationMatchConfidence.high,
-                matchedTitle: matchedTitle,
-                matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
-                matchedYear: matchedYear,
-              );
-            } else if (titleSim >= 0.12 || yearMatches) {
-              bestUncertainCandidate ??= BibliographyCheckResult(
-                entry: entry,
-                confidence: CitationMatchConfidence.uncertain,
-                matchedTitle: matchedTitle,
-                matchedJournal: matchedJournal ?? 'Crossref 收錄期刊',
-                matchedYear: matchedYear,
-              );
-            }
+        final result = _bestCandidateFromCrossrefItems(
+          entry,
+          searchTitle ?? entry.rawText,
+          items,
+          defaultJournal: 'Crossref 收錄期刊',
+        );
+        if (result != null) {
+          if (result.confidence == CitationMatchConfidence.high) {
+            return result;
           }
-        } else {
-          hasValid200NoMatch = true;
+          bestUncertainCandidate ??= result;
         }
       }
     } catch (_) {}
@@ -666,21 +799,32 @@ class BibliographyVerifier {
       if (oaResp != null && oaResp.statusCode == 200) {
         final data = jsonDecode(oaResp.body) as Map<String, dynamic>?;
         final results = (data?['results'] as List?)?.cast<dynamic>();
+        if (results != null) {
+          openAlexSearchSucceeded = true;
+        }
         if (results != null && results.isNotEmpty) {
           for (final res in results) {
             final top = res as Map<String, dynamic>;
             final matchedTitle = top['title']?.toString();
             final matchedYear = top['publication_year'] as int?;
-            final hostVenue = top['primary_location']?['source'] as Map<String, dynamic>?;
+            final hostVenue =
+                top['primary_location']?['source'] as Map<String, dynamic>?;
             final locations = (top['locations'] as List?)?.cast<dynamic>();
-            final firstLocationSource = (locations != null && locations.isNotEmpty)
-                ? ((locations.first as Map<String, dynamic>?)?['source'] as Map<String, dynamic>?)
+            final firstLocationSource =
+                (locations != null && locations.isNotEmpty)
+                ? ((locations.first as Map<String, dynamic>?)?['source']
+                      as Map<String, dynamic>?)
                 : null;
-            final matchedJournal = hostVenue?['display_name']?.toString() ??
+            final matchedJournal =
+                hostVenue?['display_name']?.toString() ??
                 firstLocationSource?['display_name']?.toString();
 
-            final titleSim = _titleSimilarity(searchTitle ?? entry.rawText, matchedTitle);
-            final yearMatches = entry.year != null &&
+            final titleSim = _titleSimilarity(
+              searchTitle ?? entry.rawText,
+              matchedTitle,
+            );
+            final yearMatches =
+                entry.year != null &&
                 matchedYear != null &&
                 (entry.year! - matchedYear).abs() <= 1;
 
@@ -702,8 +846,6 @@ class BibliographyVerifier {
               );
             }
           }
-        } else {
-          hasValid200NoMatch = true;
         }
       }
     } catch (_) {}
@@ -713,21 +855,115 @@ class BibliographyVerifier {
       return bestUncertainCandidate;
     }
 
-    // 只有在 API 成功回應 HTTP 200 OK 且 100% 查無任何相關結果時才判定為 notFound (紅燈)
+    // 只有在條目本身欄位完整，且 Crossref / OpenAlex 都成功回應仍沒有
+    // 任何相近候選時，才把非 DOI 文獻標成 notFound。解析品質不足時保守回黃燈。
+    final canSafelyReject =
+        _hasStrongBibliographicEvidence(entry) &&
+        crossrefSearchSucceeded &&
+        openAlexSearchSucceeded;
     return BibliographyCheckResult(
       entry: entry,
-      confidence: hasValid200NoMatch
+      confidence: canSafelyReject
           ? CitationMatchConfidence.notFound
           : CitationMatchConfidence.uncertain,
     );
+  }
+
+  static bool _hasStrongBibliographicEvidence(BibliographyEntry entry) {
+    if (entry.doi != null) return true;
+    final title = entry.title?.trim();
+    final surname = entry.firstAuthorSurname?.trim();
+    if (entry.year == null ||
+        surname == null ||
+        surname.length < 2 ||
+        title == null ||
+        title.length < 12 ||
+        title.length > 180) {
+      return false;
+    }
+    if (RegExp(
+      r'\b(?:references|bibliography)\b',
+      caseSensitive: false,
+    ).hasMatch(title)) {
+      return false;
+    }
+    final contentWords = _normalizeWords(
+      title,
+    ).where((w) => !_bibliographyStopWords.contains(w)).toList();
+    return contentWords.length >= 4 && contentWords.length <= 24;
+  }
+
+  static BibliographyCheckResult? _bestCandidateFromCrossrefItems(
+    BibliographyEntry entry,
+    String searchTitle,
+    List<dynamic>? items, {
+    required String defaultJournal,
+  }) {
+    if (items == null || items.isEmpty) return null;
+    BibliographyCheckResult? bestUncertainCandidate;
+    for (final item in items) {
+      final top = item as Map<String, dynamic>;
+      final titles = (top['title'] as List?)?.cast<dynamic>();
+      final matchedTitle = (titles != null && titles.isNotEmpty)
+          ? titles.first.toString()
+          : null;
+      final containers = (top['container-title'] as List?)?.cast<dynamic>();
+      final matchedJournal = (containers != null && containers.isNotEmpty)
+          ? containers.first.toString()
+          : null;
+      final dateParts =
+          ((top['published'] as Map<String, dynamic>?)?['date-parts'] as List?)
+              ?.cast<dynamic>();
+      final matchedYear =
+          (dateParts != null &&
+              dateParts.isNotEmpty &&
+              (dateParts.first as List).isNotEmpty)
+          ? (dateParts.first as List).first as int
+          : null;
+
+      final titleSim = _titleSimilarity(searchTitle, matchedTitle);
+      final yearMatches =
+          entry.year != null &&
+          matchedYear != null &&
+          (entry.year! - matchedYear).abs() <= 1;
+      final venueMatches =
+          entry.venueTitle != null &&
+          _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
+      final strongVenueMatch = venueMatches && titleSim >= 0.25;
+
+      if (titleSim >= 0.35 ||
+          strongVenueMatch ||
+          (titleSim >= 0.20 && yearMatches)) {
+        return BibliographyCheckResult(
+          entry: entry,
+          confidence: CitationMatchConfidence.high,
+          matchedTitle: matchedTitle,
+          matchedJournal: matchedJournal ?? defaultJournal,
+          matchedYear: matchedYear,
+        );
+      } else if (titleSim >= 0.12 || yearMatches || venueMatches) {
+        bestUncertainCandidate ??= BibliographyCheckResult(
+          entry: entry,
+          confidence: CitationMatchConfidence.uncertain,
+          matchedTitle: matchedTitle,
+          matchedJournal: matchedJournal ?? defaultJournal,
+          matchedYear: matchedYear,
+        );
+      }
+    }
+    return bestUncertainCandidate;
   }
 
   /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」、「詞彙 Jaccard」與「3-Gram 字元序列 (耐受拼寫小錯)」三重比對。
   static double _titleSimilarity(String? a, String? b) {
     if (a == null || b == null) return 0;
 
-    final cleanA = a.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
-    final cleanB = b.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '').toLowerCase();
+    final cleanA = a
+        .replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '')
+        .toLowerCase();
+    final cleanB = b
+        .replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '')
+        .toLowerCase();
     if (cleanA.isEmpty || cleanB.isEmpty) return 0;
 
     // 1) 完全吻合或長子字串包含（防範無空格連續文字）
@@ -764,6 +1000,32 @@ class BibliographyVerifier {
     return setA.intersection(setB).length / union;
   }
 
+  static final Set<String> _bibliographyStopWords = {
+    'the',
+    'and',
+    'for',
+    'with',
+    'from',
+    'into',
+    'over',
+    'under',
+    'that',
+    'this',
+    'have',
+    'been',
+    'between',
+    'of',
+    'in',
+    'to',
+    'on',
+    'at',
+    'by',
+    'is',
+    'or',
+    'an',
+    'a',
+  };
+
   static Set<String> _normalizeWords(String s) => s
       .toLowerCase()
       .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
@@ -778,9 +1040,32 @@ class BibliographyVerifier {
       (m) => '${m.group(1)} ${m.group(2)}',
     );
     final preps = [
-      'forthe', 'between', 'ofthe', 'ina', 'for', 'with', 'from',
-      'into', 'over', 'under', 'that', 'this', 'have', 'been',
-      'the', 'and', 'in', 'of', 'to', 'on', 'at', 'by', 'is', 'or', 'an', 'a'
+      'forthe',
+      'between',
+      'ofthe',
+      'ina',
+      'for',
+      'with',
+      'from',
+      'into',
+      'over',
+      'under',
+      'that',
+      'this',
+      'have',
+      'been',
+      'the',
+      'and',
+      'in',
+      'of',
+      'to',
+      'on',
+      'at',
+      'by',
+      'is',
+      'or',
+      'an',
+      'a',
     ];
     for (final prep in preps) {
       current = current.replaceAllMapped(
@@ -799,4 +1084,3 @@ class BibliographyVerifier {
     return words.take(6).join(' ');
   }
 }
-

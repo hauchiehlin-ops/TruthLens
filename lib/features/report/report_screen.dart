@@ -97,24 +97,28 @@ class _ReportScreenState extends State<ReportScreen> {
 
     final tasks = <Future<void>>[];
     if (_detectedUrls.isNotEmpty) {
-      tasks.add(LinkVerifier.verifyAll(_detectedUrls).then((checks) {
-        if (mounted) {
-          setState(() {
-            _linkChecks = checks;
-            _checkingLinks = false;
-          });
-        }
-      }));
+      tasks.add(
+        LinkVerifier.verifyAll(_detectedUrls).then((checks) {
+          if (mounted) {
+            setState(() {
+              _linkChecks = checks;
+              _checkingLinks = false;
+            });
+          }
+        }),
+      );
     }
     if (_bibEntries.isNotEmpty) {
-      tasks.add(BibliographyVerifier.verifyAll(_bibEntries).then((checks) {
-        if (mounted) {
-          setState(() {
-            _bibChecks = checks;
-            _checkingBib = false;
-          });
-        }
-      }));
+      tasks.add(
+        BibliographyVerifier.verifyAll(_bibEntries).then((checks) {
+          if (mounted) {
+            setState(() {
+              _bibChecks = checks;
+              _checkingBib = false;
+            });
+          }
+        }),
+      );
     }
     await Future.wait(tasks);
   }
@@ -315,10 +319,14 @@ class _ReportScreenState extends State<ReportScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
+              color: Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.3),
               ),
             ),
             child: Row(

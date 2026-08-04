@@ -31,7 +31,8 @@ class SettingsScreen extends StatelessWidget {
             title: Text(l10n.settingsThresholdTitle),
             subtitle: Text(
               l10n.settingsThresholdSubtitle(
-                  (prefs.confidenceThreshold * 100).round()),
+                (prefs.confidenceThreshold * 100).round(),
+              ),
             ),
           ),
           Slider(
@@ -94,14 +95,17 @@ class SettingsScreen extends StatelessWidget {
             trailing: SegmentedButton<ThemeMode>(
               segments: const [
                 ButtonSegment(
-                    value: ThemeMode.dark,
-                    icon: Icon(Icons.dark_mode_outlined)),
+                  value: ThemeMode.dark,
+                  icon: Icon(Icons.dark_mode_outlined),
+                ),
                 ButtonSegment(
-                    value: ThemeMode.light,
-                    icon: Icon(Icons.light_mode_outlined)),
+                  value: ThemeMode.light,
+                  icon: Icon(Icons.light_mode_outlined),
+                ),
                 ButtonSegment(
-                    value: ThemeMode.system,
-                    icon: Icon(Icons.brightness_auto_outlined)),
+                  value: ThemeMode.system,
+                  icon: Icon(Icons.brightness_auto_outlined),
+                ),
               ],
               selected: {prefs.themeMode},
               onSelectionChanged: (s) => prefs.setThemeMode(s.first),
@@ -128,9 +132,11 @@ class SettingsScreen extends StatelessWidget {
               child: const Icon(Icons.download_outlined),
             ),
             title: Text(l10n.settingsModelManagementTitle),
-            subtitle: Text(modelManager.hasAnyUpdate
-                ? l10n.settingsModelManagementUpdateSubtitle
-                : l10n.settingsModelManagementSubtitle),
+            subtitle: Text(
+              modelManager.hasAnyUpdate
+                  ? l10n.settingsModelManagementUpdateSubtitle
+                  : l10n.settingsModelManagementSubtitle,
+            ),
             trailing: TextButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
@@ -156,7 +162,10 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 'Web OCR 設定',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
             ),
             _WebOcrSettings(),
@@ -208,7 +217,9 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('TruthLens'),
-            subtitle: Text('版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎'),
+            subtitle: Text(
+              '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎',
+            ),
           ),
         ],
       ),
@@ -341,8 +352,8 @@ class _WebOcrSettingsState extends State<_WebOcrSettings> {
                     Text(
                       '⚡ 優先順序',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -449,8 +460,10 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
                         Text(l10n.modelNecessityText),
                         if (_device != null) ...[
                           const SizedBox(height: 8),
-                          Text(l10n.settingsDeviceLabel(_device!.summary),
-                              style: Theme.of(context).textTheme.bodySmall),
+                          Text(
+                            l10n.settingsDeviceLabel(_device!.summary),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
                         ],
                       ],
                     ),
