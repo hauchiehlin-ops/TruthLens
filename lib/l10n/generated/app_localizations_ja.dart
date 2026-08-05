@@ -562,6 +562,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportEngineNotInstalled => '未インストール';
 
   @override
+  String get reportEngineLoadFailedBadge => '読み込み失敗';
+
+  @override
   String get reportSentenceAnalysisTitle => '文単位の分析';
 
   @override

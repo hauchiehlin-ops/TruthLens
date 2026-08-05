@@ -195,6 +195,7 @@
   "reportCommunityDiscoveredTag": "Community (HuggingFace)",
   "reportEngineBreakdownTitle": "Engine breakdown",
   "reportEngineNotInstalled": "Not installed",
+  "reportEngineLoadFailedBadge": "Load failed",
   "reportSentenceAnalysisTitle": "Sentence-level analysis",
   "reportSentenceTooltip": "{text}. AI probability {percent}%{patterns}",
   "@reportSentenceTooltip": {"placeholders": {"text": {"type": "String"}, "percent": {"type": "int"}, "patterns": {"type": "String"}}},

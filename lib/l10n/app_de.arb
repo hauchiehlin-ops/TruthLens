@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "Community (HuggingFace)",
   "reportEngineBreakdownTitle": "Aufschlüsselung nach Engines",
   "reportEngineNotInstalled": "Nicht installiert",
+  "reportEngineLoadFailedBadge": "Laden fehlgeschlagen",
   "reportSentenceAnalysisTitle": "Analyse auf Satzebene",
   "reportSentenceTooltip": "{text}. KI-Wahrscheinlichkeit {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "Authentizität der Hyperlinks",

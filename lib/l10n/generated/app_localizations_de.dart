@@ -593,6 +593,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportEngineNotInstalled => 'Nicht installiert';
 
   @override
+  String get reportEngineLoadFailedBadge => 'Laden fehlgeschlagen';
+
+  @override
   String get reportSentenceAnalysisTitle => 'Analyse auf Satzebene';
 
   @override

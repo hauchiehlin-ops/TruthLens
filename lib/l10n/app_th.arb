@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "โมเดลชุมชน (HuggingFace)",
   "reportEngineBreakdownTitle": "รายละเอียดเครื่องมือ",
   "reportEngineNotInstalled": "ยังไม่ได้ติดตั้ง",
+  "reportEngineLoadFailedBadge": "โหลดล้มเหลว",
   "reportSentenceAnalysisTitle": "การวิเคราะห์ระดับประโยค",
   "reportSentenceTooltip": "{text}. ความน่าจะเป็น AI {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "ความถูกต้องของลิงก์",

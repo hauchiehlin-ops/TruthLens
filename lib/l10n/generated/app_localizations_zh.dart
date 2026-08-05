@@ -556,6 +556,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportEngineNotInstalled => '未安裝';
 
   @override
+  String get reportEngineLoadFailedBadge => '載入失敗';
+
+  @override
   String get reportSentenceAnalysisTitle => '逐句分析';
 
   @override
@@ -1747,6 +1750,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportEngineNotInstalled => '未安装';
 
   @override
+  String get reportEngineLoadFailedBadge => '加载失败';
+
+  @override
   String get reportSentenceAnalysisTitle => '逐句分析';
 
   @override
@@ -2936,6 +2942,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportEngineNotInstalled => '未安裝';
+
+  @override
+  String get reportEngineLoadFailedBadge => '載入失敗';
 
   @override
   String get reportSentenceAnalysisTitle => '逐句分析';

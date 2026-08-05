@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "Komunitas (HuggingFace)",
   "reportEngineBreakdownTitle": "Rincian mesin",
   "reportEngineNotInstalled": "Belum terpasang",
+  "reportEngineLoadFailedBadge": "Gagal memuat",
   "reportSentenceAnalysisTitle": "Analisis tingkat kalimat",
   "reportSentenceTooltip": "{text}. Probabilitas AI {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "Keaslian hyperlink",

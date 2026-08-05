@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "Сообщество (HuggingFace)",
   "reportEngineBreakdownTitle": "Детализация движков",
   "reportEngineNotInstalled": "Не установлено",
+  "reportEngineLoadFailedBadge": "Ошибка загрузки",
   "reportSentenceAnalysisTitle": "Анализ на уровне предложений",
   "reportSentenceTooltip": "{text}. Вероятность ИИ {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "Подлинность гиперссылок",

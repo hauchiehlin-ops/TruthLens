@@ -563,6 +563,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportEngineNotInstalled => '설치되지 않음';
 
   @override
+  String get reportEngineLoadFailedBadge => '로드 실패';
+
+  @override
   String get reportSentenceAnalysisTitle => '문장 단위 분석';
 
   @override

@@ -579,6 +579,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportEngineNotInstalled => 'Not installed';
 
   @override
+  String get reportEngineLoadFailedBadge => 'Load failed';
+
+  @override
   String get reportSentenceAnalysisTitle => 'Sentence-level analysis';
 
   @override

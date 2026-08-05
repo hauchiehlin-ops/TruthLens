@@ -584,6 +584,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportEngineNotInstalled => 'Tidak dipasang';
 
   @override
+  String get reportEngineLoadFailedBadge => 'Gagal memuatkan';
+
+  @override
   String get reportSentenceAnalysisTitle => 'Analisis peringkat ayat';
 
   @override

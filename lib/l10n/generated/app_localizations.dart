@@ -1088,6 +1088,12 @@ abstract class AppLocalizations {
   /// **'Not installed'**
   String get reportEngineNotInstalled;
 
+  /// No description provided for @reportEngineLoadFailedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Load failed'**
+  String get reportEngineLoadFailedBadge;
+
   /// No description provided for @reportSentenceAnalysisTitle.
   ///
   /// In en, this message translates to:

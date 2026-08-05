@@ -257,22 +257,22 @@ class ModelManager extends ChangeNotifier {
       {int? expected, void Function(double)? onProgress}) async {
     final urlsToTry = <String>[];
 
-    // GitHub Releases 網頁端 CORS 修正方案 (優先使用全球 CORS 開放的代理與 CDN)：
-    if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
-      urlsToTry.add('https://ghproxy.net/$originalUrl');
-      final parts = originalUrl.split('/releases/download/');
-      if (parts.length == 2) {
-        final subPath = parts[1]; // e.g. "v0.1-models-detector/xlmr_detector_int8.onnx"
-        final subParts = subPath.split('/');
-        if (subParts.length == 2) {
-          final tag = subParts[0];
-          final filename = subParts[1];
-          urlsToTry.add('https://cdn.jsdelivr.net/gh/hauchiehlin-ops/TruthLens@$tag/$filename');
-        }
-      }
+    if (originalUrl.contains('huggingface.co')) {
+      // Hugging Face 原生支援 CORS (Access-Control-Allow-Origin: *)，優先直連
+      urlsToTry.add(originalUrl);
+      final mirrorUrl = originalUrl.replaceAll('huggingface.co', 'hf-mirror.com');
+      urlsToTry.add(mirrorUrl);
+      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
+    } else if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
+      // GitHub Releases 透過全球開放式 CORS 代理
+      urlsToTry.add('https://ghp.ci/$originalUrl');
+      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
+      urlsToTry.add('https://corsproxy.org/?url=${Uri.encodeComponent(originalUrl)}');
+      urlsToTry.add(originalUrl);
+    } else {
+      urlsToTry.add(originalUrl);
+      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
     }
-    urlsToTry.add(originalUrl);
-    urlsToTry.add('https://corsproxy.io/?${Uri.encodeComponent(originalUrl)}');
 
     Object? lastError;
     for (final url in urlsToTry) {

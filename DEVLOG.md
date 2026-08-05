@@ -1,5 +1,31 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-05 — [問題修復] 句數統計邏輯、UI 遮擋、風格分數一致性、Web 下載 HTTP 403 與模型載入狀態修復
+
+**做了什麼**
+
+- **句子統計邏輯修復 (`detection_result.dart`, `orchestrator.dart`)**：
+  - 修正 `DetectionResult` 中 `aiSentenceCount` 與 `humanSentenceCount` 判定，改採以 `0.5` 為界限的二分計數，並提供嚴格 `strictAiSentenceCount` (>=0.6) 與 `strictHumanSentenceCount` (<0.4) 屬性。
+  - 保證 `aiSentenceCount + humanSentenceCount == sentences.length` 恆成立，消除未裝神經模型時 1344 句均為中性導致 UI 顯示 `0 句 AI / 0 句人類` 的計算矛盾。
+  - 優化 `orchestrator.dart` 的 `_scoreSentences`：未安裝神經模型時，結合單句長度與整體平均句長之偏差，計算出自然起伏的句級分數。
+- **UI 遮擋問題修復 (`input_screen.dart`)**：
+  - 將文件匯入與 OCR 等操作的提示 Toast/SnackBar 改為 `SnackBarBehavior.floating` 浮動樣式。
+  - 設定底部邊距 `margin: EdgeInsets.only(bottom: 84, left: 16, right: 16)` 並縮短停留時間至 1.8 秒，讓訊息浮於「開始檢測」按鈕上方且迅速消退，不再遮擋主要操作按鈕。
+- **風格特徵分析分數一致性修復 (`stylometry_engine.dart`)**：
+  - 將風格引擎 Baseline 由 `0.5` 修正為 `0.20` (20% AI 機率)。
+  - 未偵測到過渡詞、句式重複或條列結構時，得分保持在 20% 且理由為「未偵測到顯著的 AI 寫作風格模式」，解決無 AI 標記卻得分 45% 的敘事矛盾。
+- **網頁版下載 HTTP 403 修復 (`model_manager_web.dart`)**：
+  - 重構 `_streamDownload`：對 HuggingFace 連結優先直連（HF 開放 native CORS），備用官方鏡像 `hf-mirror.com`。
+  - 對 GitHub Releases 下載採用全球開放 CORS 代理（`ghp.ci`、`allorigins.win`），移除引發 403 的 `ghproxy.net` 及無效 CDN 格式。
+- **模型載入狀態精準標示與原生庫修復 (`onnx_detector_io.dart`, `perplexity_scorer_io.dart`, `report_screen.dart`, `.arb`)**：
+  - 補強 `OrtEnv` 動態庫初始化，自動嘗試 macOS/iOS/Android/Windows 系統與 Framework 候選路徑。
+  - 在 `report_screen.dart` 的引擎明細卡片中區分 `未安裝` 與 `載入失敗` 狀態，當模型已安裝於本地但載入失敗時標示紅字「載入失敗」，並提供對應多國語系字串（`reportEngineLoadFailedBadge`）。
+- **測試**：
+  - 執行 `flutter gen-l10n` 更新語系綁定。
+  - `flutter analyze` **零問題（No issues found!）**；全專案 `flutter test` **149 / 149** 全數通過。
+
+
+
 ## 2026-08-04 — [文獻核實升級] 自動納入限定期刊／論文集目錄查詢 (Venue-scoped Search)
 
 **做了什麼**

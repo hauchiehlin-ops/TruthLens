@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -19,6 +20,38 @@ class OnnxDetector {
 
   static bool _envReady = false;
 
+  static void _initOrtEnv() {
+    if (_envReady) return;
+    try {
+      OrtEnv.instance.init();
+      _envReady = true;
+    } catch (_) {
+      final candidates = Platform.isMacOS || Platform.isIOS
+          ? [
+              'onnxruntime.framework/onnxruntime',
+              'onnxruntime_c.framework/onnxruntime_c',
+              'onnxruntime_objc.framework/onnxruntime_objc',
+              'libonnxruntime.dylib',
+              '@rpath/onnxruntime.framework/onnxruntime',
+            ]
+          : Platform.isAndroid || Platform.isLinux
+              ? ['libonnxruntime.so']
+              : Platform.isWindows
+                  ? ['onnxruntime.dll']
+                  : <String>[];
+      for (final candidate in candidates) {
+        try {
+          DynamicLibrary.open(candidate);
+          break;
+        } catch (_) {}
+      }
+      try {
+        OrtEnv.instance.init();
+      } catch (_) {}
+      _envReady = true;
+    }
+  }
+
   /// 載入模型與對應 tokenizer。
   /// [tokenizerType]：bert-wordpiece / roberta-bpe。tokenizerJson 為 HuggingFace tokenizer.json。
   /// [aiLabelIndex]：輸出兩類中哪一個代表 AI（distilbert=1、roberta-openai-detector=0）。
@@ -29,10 +62,7 @@ class OnnxDetector {
     int aiLabelIndex = 1,
     int maxLen = 192,
   }) async {
-    if (!_envReady) {
-      OrtEnv.instance.init();
-      _envReady = true;
-    }
+    _initOrtEnv();
     final options = OrtSessionOptions();
     final session = OrtSession.fromFile(File(modelPath), options);
     final String tokenizerJson = (tokenizerType == 'none' || tokenizerJsonPath.isEmpty)

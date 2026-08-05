@@ -453,7 +453,29 @@ class _ReportScreenState extends State<ReportScreen> {
                       color: AppTheme.verdictColor(e.aiProbability),
                     ),
                   )
-                : Text(l10n.reportEngineNotInstalled),
+                : Builder(
+                    builder: (context) {
+                      final isLoadFailed = e.reasons.any(
+                        (r) =>
+                            r.contains('模型載入失敗') ||
+                            r.contains('failed to load') ||
+                            r.contains('載入失敗') ||
+                            r.contains('加载失败'),
+                      );
+                      return Text(
+                        isLoadFailed
+                            ? l10n.reportEngineLoadFailedBadge
+                            : l10n.reportEngineNotInstalled,
+                        style: TextStyle(
+                          color: isLoadFailed
+                              ? Theme.of(context).colorScheme.error
+                              : null,
+                          fontWeight:
+                              isLoadFailed ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      );
+                    },
+                  ),
           ),
         ),
     ],

@@ -171,7 +171,8 @@ class EnsembleOrchestrator {
       final s = text.sentences[i];
       final patterns = <String>[];
       
-      // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準
+      // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準，
+      // 並結合單句長度變化度（如與平均句長之偏差）產生自然的句級差異。
       var p = overall;
       if (neuralList.isNotEmpty) {
         var sum = 0.0;
@@ -183,6 +184,16 @@ class EnsembleOrchestrator {
           }
         }
         if (count > 0) p = sum / count;
+      } else if (text.sentenceTokens.isNotEmpty) {
+        final avgLen = text.allTokens.length / text.sentenceTokens.length;
+        final curLen = text.sentenceTokens[i].length;
+        // 句長起伏與平均值的差距：人類寫作起伏較大（偏差顯著時扣分/偏人類），AI 節奏平穩（貼近平均時加分/偏 AI）
+        final dev = (curLen - avgLen).abs();
+        if (dev > avgLen * 0.5) {
+          p -= 0.04;
+        } else if (dev < avgLen * 0.15) {
+          p += 0.03;
+        }
       }
 
       for (final t in StylometryEngine.genericTransitions) {

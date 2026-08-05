@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "Communauté (HuggingFace)",
   "reportEngineBreakdownTitle": "Détail par moteur",
   "reportEngineNotInstalled": "Non installé",
+  "reportEngineLoadFailedBadge": "Échec chargement",
   "reportSentenceAnalysisTitle": "Analyse au niveau de la phrase",
   "reportSentenceTooltip": "{text}. Probabilité IA {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "Authenticité des hyperliens",

@@ -587,6 +587,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportEngineNotInstalled => 'Belum terpasang';
 
   @override
+  String get reportEngineLoadFailedBadge => 'Gagal memuat';
+
+  @override
   String get reportSentenceAnalysisTitle => 'Analisis tingkat kalimat';
 
   @override

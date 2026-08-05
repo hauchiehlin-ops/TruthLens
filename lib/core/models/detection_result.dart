@@ -100,7 +100,11 @@ class DetectionResult {
   bool get flaggedAsAi => aiProbability >= threshold;
 
   int get aiSentenceCount =>
-      sentences.where((s) => s.aiProbability >= 0.6).length;
+      sentences.where((s) => s.aiProbability >= 0.5).length;
   int get humanSentenceCount =>
+      sentences.where((s) => s.aiProbability < 0.5).length;
+  int get strictAiSentenceCount =>
+      sentences.where((s) => s.aiProbability >= 0.6).length;
+  int get strictHumanSentenceCount =>
       sentences.where((s) => s.aiProbability < 0.4).length;
 }

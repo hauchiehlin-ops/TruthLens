@@ -159,6 +159,7 @@
   "reportCommunityDiscoveredTag": "社区模型 (HuggingFace)",
   "reportEngineBreakdownTitle": "引擎明细",
   "reportEngineNotInstalled": "未安装",
+  "reportEngineLoadFailedBadge": "加载失败",
   "reportSentenceAnalysisTitle": "逐句分析",
   "reportSentenceTooltip": "{text}。AI 几率 {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "超链接真实性",

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -16,15 +17,44 @@ class PerplexityScorer {
 
   static bool _envReady = false;
 
+  static void _initOrtEnv() {
+    if (_envReady) return;
+    try {
+      OrtEnv.instance.init();
+      _envReady = true;
+    } catch (_) {
+      final candidates = Platform.isMacOS || Platform.isIOS
+          ? [
+              'onnxruntime.framework/onnxruntime',
+              'onnxruntime_c.framework/onnxruntime_c',
+              'onnxruntime_objc.framework/onnxruntime_objc',
+              'libonnxruntime.dylib',
+              '@rpath/onnxruntime.framework/onnxruntime',
+            ]
+          : Platform.isAndroid || Platform.isLinux
+              ? ['libonnxruntime.so']
+              : Platform.isWindows
+                  ? ['onnxruntime.dll']
+                  : <String>[];
+      for (final candidate in candidates) {
+        try {
+          DynamicLibrary.open(candidate);
+          break;
+        } catch (_) {}
+      }
+      try {
+        OrtEnv.instance.init();
+      } catch (_) {}
+      _envReady = true;
+    }
+  }
+
   static Future<PerplexityScorer> load({
     required String modelPath,
     required String tokenizerJsonPath,
     int maxLen = 192,
   }) async {
-    if (!_envReady) {
-      OrtEnv.instance.init();
-      _envReady = true;
-    }
+    _initOrtEnv();
     final session = OrtSession.fromFile(File(modelPath), OrtSessionOptions());
     final tokenizer = BpeTokenizer.fromTokenizerJson(
         await File(tokenizerJsonPath).readAsString());

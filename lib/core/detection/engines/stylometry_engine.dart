@@ -30,7 +30,7 @@ class StylometryEngine implements DetectionEngine {
   Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
     final reasons = <String>[];
     final features = <String, double>{};
-    var score = 0.5;
+    var score = 0.20;
 
     // 特徵 1：通用過渡詞密度
     final lower = text.raw.toLowerCase();
@@ -48,7 +48,7 @@ class StylometryEngine implements DetectionEngine {
         : transitionHits / text.sentences.length;
     features['transition_density'] = density;
     if (density > 0.25 && transitionHits >= 3) {
-      score += 0.22;
+      score += 0.35;
       reasons.add(l10n.engineReasonTransitionWords(
           hitWords.take(4).join('、'), density.toStringAsFixed(2)));
     }
@@ -65,7 +65,7 @@ class StylometryEngine implements DetectionEngine {
     features['repeated_openers'] = repeatedOpeners.toDouble();
     if (text.sentences.length >= 5 &&
         repeatedOpeners / text.sentences.length > 0.3) {
-      score += 0.15;
+      score += 0.25;
       reasons.add(l10n.engineReasonRepeatedOpeners(repeatedOpeners));
     }
 
@@ -74,10 +74,13 @@ class StylometryEngine implements DetectionEngine {
         .allMatches(text.raw)
         .length;
     features['bullet_lines'] = bulletLines.toDouble();
+    if (text.sentences.length >= 5 &&
+        bulletLines / text.sentences.length > 0.4) {
+      score += 0.15;
+    }
 
     if (reasons.isEmpty) {
       reasons.add(l10n.engineReasonNoStyleMarkers);
-      score -= 0.05;
     }
 
     return EngineScore(

@@ -587,6 +587,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportEngineNotInstalled => 'Не установлено';
 
   @override
+  String get reportEngineLoadFailedBadge => 'Ошибка загрузки';
+
+  @override
   String get reportSentenceAnalysisTitle => 'Анализ на уровне предложений';
 
   @override

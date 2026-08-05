@@ -56,13 +56,23 @@ class _InputScreenState extends State<InputScreen> {
     super.dispose();
   }
 
+  void _showFloatingSnackBar(String text) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(milliseconds: 1800),
+        margin: const EdgeInsets.only(bottom: 84, left: 16, right: 16),
+      ),
+    );
+  }
+
   Future<void> _startAnalysis() async {
     final l10n = AppLocalizations.of(context);
     final text = _controller.text.trim();
     if (text.length < 40) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inputTooShortSnackbar)),
-      );
+      _showFloatingSnackBar(l10n.inputTooShortSnackbar);
       return;
     }
 
@@ -97,30 +107,22 @@ class _InputScreenState extends State<InputScreen> {
     final ocr = context.read<OcrService>();
     if (!await ocr.isSupported) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inputOcrUnsupported)),
-      );
+      _showFloatingSnackBar(l10n.inputOcrUnsupported);
       return;
     }
     final path = await ImagePicker.pick();
     if (path == null || !mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.inputOcrRecognizing)),
-    );
+    _showFloatingSnackBar(l10n.inputOcrRecognizing);
     final text = await ocr.recognize(path);
     if (!mounted) return;
     if (text == null || text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inputOcrNoText)),
-      );
+      _showFloatingSnackBar(l10n.inputOcrNoText);
       return;
     }
     _controller.text = text.trim();
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.inputOcrRecognized(text.trim().length))),
-    );
+    _showFloatingSnackBar(l10n.inputOcrRecognized(text.trim().length));
   }
 
   void _clearInput() {
@@ -133,19 +135,12 @@ class _InputScreenState extends State<InputScreen> {
     final doc = await DocumentImporter.pick();
     if (doc == null || !mounted) return;
     if (doc.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.inputImportNoText(doc.fileName))),
-      );
+      _showFloatingSnackBar(l10n.inputImportNoText(doc.fileName));
       return;
     }
     _controller.text = doc.text;
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:
-            Text(l10n.inputImportSuccess(doc.fileName, doc.text.length)),
-      ),
-    );
+    _showFloatingSnackBar(l10n.inputImportSuccess(doc.fileName, doc.text.length));
   }
 
   /// 顯示目前使用中的偵測模型，或提示未安裝（僅統計/風格分析）

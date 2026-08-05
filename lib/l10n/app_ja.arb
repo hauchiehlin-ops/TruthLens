@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "コミュニティモデル (HuggingFace)",
   "reportEngineBreakdownTitle": "エンジン内訳",
   "reportEngineNotInstalled": "未インストール",
+  "reportEngineLoadFailedBadge": "読み込み失敗",
   "reportSentenceAnalysisTitle": "文単位の分析",
   "reportSentenceTooltip": "{text}。AI確率 {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "ハイパーリンクの実在性",

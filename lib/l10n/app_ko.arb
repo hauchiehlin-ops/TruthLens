@@ -170,6 +170,7 @@
   "reportCommunityDiscoveredTag": "커뮤니티 모델 (HuggingFace)",
   "reportEngineBreakdownTitle": "엔진 세부 정보",
   "reportEngineNotInstalled": "설치되지 않음",
+  "reportEngineLoadFailedBadge": "로드 실패",
   "reportSentenceAnalysisTitle": "문장 단위 분석",
   "reportSentenceTooltip": "{text}. AI 확률 {percent}%{patterns}",
   "reportLinkAuthenticityTitle": "하이퍼링크 실재성",

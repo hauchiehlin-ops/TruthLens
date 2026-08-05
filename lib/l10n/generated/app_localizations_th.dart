@@ -584,6 +584,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportEngineNotInstalled => 'ยังไม่ได้ติดตั้ง';
 
   @override
+  String get reportEngineLoadFailedBadge => 'โหลดล้มเหลว';
+
+  @override
   String get reportSentenceAnalysisTitle => 'การวิเคราะห์ระดับประโยค';
 
   @override
