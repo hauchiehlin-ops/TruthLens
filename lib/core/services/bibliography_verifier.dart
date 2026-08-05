@@ -604,7 +604,7 @@ class BibliographyVerifier {
     final owns = client == null;
     try {
       final results = <BibliographyCheckResult>[];
-      final targetEntries = entries.take(maxEntriesPerCheck).toList();
+      final targetEntries = entries.toList();
       for (var i = 0; i < targetEntries.length; i++) {
         if (i > 0) {
           await Future.delayed(const Duration(milliseconds: 150));

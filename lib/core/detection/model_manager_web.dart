@@ -260,13 +260,17 @@ class ModelManager extends ChangeNotifier {
     if (originalUrl.contains('huggingface.co')) {
       urlsToTry.add(originalUrl);
       urlsToTry.add(originalUrl.replaceAll('huggingface.co', 'hf-mirror.com'));
+      urlsToTry.add('https://ghfast.top/$originalUrl');
       urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     } else if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
       urlsToTry.add(originalUrl); // GitHub S3 objects.githubusercontent.com 直連
+      urlsToTry.add('https://ghfast.top/$originalUrl');
+      urlsToTry.add('https://gh-proxy.com/$originalUrl');
       urlsToTry.add('https://ghp.ci/$originalUrl');
       urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     } else {
       urlsToTry.add(originalUrl);
+      urlsToTry.add('https://ghfast.top/$originalUrl');
       urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     }
 

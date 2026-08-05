@@ -553,5 +553,43 @@ References
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
+
+    test('verifyAll 解除 30 筆上限，超過 30 筆條目全數執行驗證不截斷', () async {
+      final client = MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'status': 'ok',
+            'message-type': 'work-list',
+            'message': {
+              'items': [
+                {
+                  'title': ['Test Title'],
+                  'container-title': ['Test Journal'],
+                  'issued': {'date-parts': [[2020]]},
+                }
+              ]
+            }
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      });
+
+      final dummyEntries = List.generate(
+        35,
+        (i) => BibliographyEntry(
+          rawText: 'Author, A. ($i). "Test Title $i." Test Journal, 1, 1-10.',
+          firstAuthorSurname: 'Author',
+          year: 2020,
+          title: 'Test Title $i',
+        ),
+      );
+
+      final results = await BibliographyVerifier.verifyAll(
+        dummyEntries,
+        client: client,
+      );
+      expect(results.length, 35);
+    });
   });
 }

@@ -414,10 +414,12 @@ class ModelManager extends ChangeNotifier {
       {int? expected, void Function(double)? onProgress}) async {
     final urlsToTry = <String>[originalUrl];
 
-    // 如果是 GitHub Releases 連結，加入備用鏡像代理（如 ghproxy）作為 fallback
+    // 如果是 GitHub Releases 連結，加入備用鏡像代理（如 ghproxy, ghfast）作為 fallback
     if (originalUrl.contains('github.com') &&
         originalUrl.contains('/releases/download/')) {
+      urlsToTry.add('https://ghfast.top/$originalUrl');
       urlsToTry.add('https://ghproxy.net/$originalUrl');
+      urlsToTry.add('https://gh-proxy.com/$originalUrl');
     }
 
     Object? lastError;

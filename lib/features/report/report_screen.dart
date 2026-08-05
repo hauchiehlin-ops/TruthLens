@@ -863,17 +863,6 @@ class _ReportScreenState extends State<ReportScreen> {
                   ],
                 ),
               ),
-            if (_bibEntries.length > BibliographyVerifier.maxEntriesPerCheck)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  l10n.reportBibTruncated(
-                    BibliographyVerifier.maxEntriesPerCheck,
-                    _bibEntries.length,
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
           ],
         ),
       ),

@@ -1,5 +1,22 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-06 — [合規與體驗優化] App Store Connect 最低 OS 版本升級、解除文獻判讀筆數上限與模型下載備援強化
+
+**做了什麼**
+
+- **App Store Connect 90068 (MinimumOSVersion) 合規修復 (`project.pbxproj`, `Podfile`, `TruthLensLlamaBridge.podspec`, `AppFrameworkInfo.plist`)**：
+  - 將 Xcode 專案中 Debug、Release、Profile 各配置之 `IPHONEOS_DEPLOYMENT_TARGET` 全數由 `13.0` 調升至 `15.0`。
+  - 在 `Podfile` 明確指定 `platform :ios, '15.0'`，並於 `post_install` 鉤子中強制覆寫所有第三方 Pod Target 之 Deployment Target 為 15.0，防止打包時因相依套件殘留舊版本導致 App Store Connect 警告/拒絕上架。
+  - 同步更新 `TruthLensLlamaBridge.podspec`（`s.ios.deployment_target = '15.0'`）與 `AppFrameworkInfo.plist`（加入 `MinimumOSVersion = 15.0`）。
+- **解除文獻分析判讀筆數限制 (`bibliography_verifier.dart`, `report_screen.dart`)**：
+  - 移除 `BibliographyVerifier.verifyAll` 內部原本的 `entries.take(maxEntriesPerCheck)`（30 筆）截斷限制，長篇學術論文中無論有 50、100 筆或更多參考文獻，均會全量送往 Crossref / OpenAlex 核實。
+  - 移除報告頁面中「僅核實前 30 筆」的提示標籤，完整顯示所有條目及其驗證徽章。
+  - 在 `test/bibliography_verifier_test.dart` 中補充超過 30 筆文獻的全量驗證單元測試。
+- **Web 端與 IO 端模型下載鏡像備援強化 (`model_manager_web.dart`, `model_manager_io.dart`)**：
+  - 針對 GitHub Releases 模型下載，擴充 `ghfast.top`、`gh-proxy.com`、`ghp.ci` 等多站點備援鏡像代理，當 `mirror.ghproxy.com` 出現連線異常時能順暢 fallback，保障 INT8 輕量偵測器與改寫偵測模型之穩定下載。
+- **測試**：
+  - `flutter analyze` 零警告／零錯誤；`flutter test` **155 / 155** 全數通過。
+
 ## 2026-08-05 — [重磅升級] Web 斷點續傳分塊下載器與全平台 OCR 辨識能力優化
 
 **做了什麼**

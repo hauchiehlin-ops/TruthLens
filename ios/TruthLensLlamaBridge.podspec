@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.license = { :type => 'Proprietary' }
   s.author = { 'TruthLens' => 'truthlens@example.invalid' }
   s.source = { :path => '.' }
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '15.0'
   s.source_files = 'TruthLensLlamaBridge/**/*.{h,cpp}'
   s.vendored_frameworks = 'Libs/llama.xcframework'
   s.library = 'c++'
