@@ -258,48 +258,130 @@ class ModelManager extends ChangeNotifier {
     final urlsToTry = <String>[];
 
     if (originalUrl.contains('huggingface.co')) {
-      // Hugging Face 原生支援 CORS (Access-Control-Allow-Origin: *)，優先直連
       urlsToTry.add(originalUrl);
-      final mirrorUrl = originalUrl.replaceAll('huggingface.co', 'hf-mirror.com');
-      urlsToTry.add(mirrorUrl);
-      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
+      urlsToTry.add(originalUrl.replaceAll('huggingface.co', 'hf-mirror.com'));
+      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     } else if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
-      // GitHub Releases 透過全球開放式 CORS 代理
+      urlsToTry.add(originalUrl); // GitHub S3 objects.githubusercontent.com 直連
       urlsToTry.add('https://ghp.ci/$originalUrl');
-      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
-      urlsToTry.add('https://corsproxy.org/?url=${Uri.encodeComponent(originalUrl)}');
-      urlsToTry.add(originalUrl);
+      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     } else {
       urlsToTry.add(originalUrl);
-      urlsToTry.add('https://api.allorigins.win/raw?url=${Uri.encodeComponent(originalUrl)}');
+      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
     }
 
     Object? lastError;
     for (final url in urlsToTry) {
       try {
-        final request = http.Request('GET', Uri.parse(url));
-        request.headers['User-Agent'] =
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
-        final response = await _client.send(request);
-        if (response.statusCode != 200) {
-          throw http.ClientException('HTTP ${response.statusCode}');
+        final result = await _tryChunkedDownload(url, expected: expected, onProgress: onProgress);
+        if (result != null && result.isNotEmpty) {
+          return result;
         }
-        final total = response.contentLength ?? expected ?? 0;
-        final builder = BytesBuilder(copy: false);
-        var received = 0;
-        await for (final chunk in response.stream) {
-          builder.add(chunk);
-          received += chunk.length;
-          if (onProgress != null && total > 0) {
-            onProgress((received / total).clamp(0, 1));
-          }
-        }
-        return builder.takeBytes();
       } catch (e) {
         lastError = e;
       }
     }
-    throw lastError ?? http.ClientException('Failed to fetch');
+    throw lastError ?? http.ClientException('無可用的下載連線，請檢查網路狀態');
+  }
+
+  /// 以 2MB 分塊 (Range: bytes=start-end) 執行斷點續傳下載
+  Future<Uint8List?> _tryChunkedDownload(String url,
+      {int? expected, void Function(double)? onProgress}) async {
+    int totalSize = expected ?? 0;
+    bool supportsRange = false;
+
+    // 先測試 HEAD / 部分 Range 探測 Total Content-Length 與 Range 支援度
+    try {
+      final headReq = http.Request('GET', Uri.parse(url));
+      headReq.headers['Range'] = 'bytes=0-1023';
+      headReq.headers['User-Agent'] =
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
+      final headRes = await _client.send(headReq).timeout(const Duration(seconds: 15));
+
+      if (headRes.statusCode == 206) {
+        supportsRange = true;
+        final contentRange = headRes.headers['content-range'];
+        if (contentRange != null && contentRange.contains('/')) {
+          final totalStr = contentRange.split('/').last;
+          totalSize = int.tryParse(totalStr) ?? totalSize;
+        }
+      } else if (headRes.statusCode == 200) {
+        totalSize = headRes.contentLength ?? totalSize;
+      }
+      headRes.stream.drain().ignore();
+    } catch (_) {
+      // 探測失敗 → 後續嘗試完整流下載
+    }
+
+    // 若伺服器不支援 Range 或未取到總大小 → 退回傳統連貫流式下載
+    if (!supportsRange || totalSize <= 0) {
+      final req = http.Request('GET', Uri.parse(url));
+      req.headers['User-Agent'] =
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
+      final res = await _client.send(req).timeout(const Duration(seconds: 45));
+      if (res.statusCode != 200) {
+        throw http.ClientException('HTTP ${res.statusCode}');
+      }
+      final size = res.contentLength ?? expected ?? 0;
+      final builder = BytesBuilder(copy: false);
+      var received = 0;
+      await for (final chunk in res.stream) {
+        builder.add(chunk);
+        received += chunk.length;
+        if (onProgress != null && size > 0) {
+          onProgress((received / size).clamp(0.0, 1.0));
+        }
+      }
+      return builder.takeBytes();
+    }
+
+    // 支援 Range：以 2MB 分塊分段流式下載並帶重試機制
+    const chunkSize = 2 * 1024 * 1024; // 2MB 塊
+    final builder = BytesBuilder(copy: false);
+    var downloaded = 0;
+
+    while (downloaded < totalSize) {
+      final end = (downloaded + chunkSize - 1).clamp(0, totalSize - 1);
+      Uint8List? chunkData;
+      int retry = 0;
+
+      while (retry < 5 && chunkData == null) {
+        try {
+          final chunkReq = http.Request('GET', Uri.parse(url));
+          chunkReq.headers['Range'] = 'bytes=$downloaded-$end';
+          chunkReq.headers['User-Agent'] =
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
+
+          final chunkRes = await _client.send(chunkReq).timeout(const Duration(seconds: 30));
+          if (chunkRes.statusCode == 206 || chunkRes.statusCode == 200) {
+            final chunkBytes = await chunkRes.stream.toBytes();
+            if (chunkBytes.isNotEmpty) {
+              chunkData = chunkBytes;
+            }
+          }
+        } catch (_) {
+          // 單一 Chunk 失敗時僅重試該 Chunk，不從 0 MB 重來
+        }
+
+        if (chunkData == null) {
+          retry++;
+          await Future.delayed(Duration(milliseconds: 500 * (1 << retry))); // 指數退避 1s, 2s, 4s...
+        }
+      }
+
+      if (chunkData == null) {
+        throw http.ClientException('下載在中途分塊 ($downloaded-$end) 斷線，重試多次失敗');
+      }
+
+      builder.add(chunkData);
+      downloaded += chunkData.length;
+
+      if (onProgress != null && totalSize > 0) {
+        onProgress((downloaded / totalSize).clamp(0.0, 1.0));
+      }
+    }
+
+    return builder.takeBytes();
   }
 
   /// 尚未支援於網頁版（見 model_import_screen_web.dart）。

@@ -9,6 +9,7 @@ import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
+import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
 
@@ -114,15 +115,16 @@ class _InputScreenState extends State<InputScreen> {
     if (path == null || !mounted) return;
 
     _showFloatingSnackBar(l10n.inputOcrRecognizing);
-    final text = await ocr.recognize(path);
+    final rawText = await ocr.recognize(path);
     if (!mounted) return;
-    if (text == null || text.trim().isEmpty) {
+    if (rawText == null || rawText.trim().isEmpty) {
       _showFloatingSnackBar(l10n.inputOcrNoText);
       return;
     }
-    _controller.text = text.trim();
+    final text = OcrPostProcessor.clean(rawText);
+    _controller.text = text;
     setState(() {});
-    _showFloatingSnackBar(l10n.inputOcrRecognized(text.trim().length));
+    _showFloatingSnackBar(l10n.inputOcrRecognized(text.length));
   }
 
   void _clearInput() {

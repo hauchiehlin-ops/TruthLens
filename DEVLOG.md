@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-05 — [重磅升級] Web 斷點續傳分塊下載器與全平台 OCR 辨識能力優化
+
+**做了什麼**
+
+- **Web 斷點續傳分塊下載器 (`model_manager_web.dart`)**：
+  - 實作 `_tryChunkedDownload`：將大檔案模型以 2MB 微型 Chunk 配合 HTTP `Range: bytes=start-end` 標頭流式下載。
+  - 支援單 Chunk 獨立指數退避重試（最多 5 次），連線中斷時僅重試失敗的單一 Chunk，絕不全檔重頭下載。
+  - CDN 鏡像直連：HuggingFace 直連 Cloudflare CDN 搭配 `hf-mirror.com` 亞洲高速鏡像；GitHub Releases 跟隨 302 重定向直連 AWS S3 (`objects.githubusercontent.com`），擺脫慢速第三方代理限制。
+- **全平台 OCR 辨識能力優化 (`ocr_post_processor.dart`, `input_screen.dart`, `ocr_service_web.dart`, `AppDelegate.swift`)**：
+  - 新增 `OcrPostProcessor` 後處理器：
+    - 自動清除 CJK 中/日/韓文字元間被 OCR 誤植的多餘空格（如 `這 是 一 個` → `這是格式`），同時保留中英文混排單字間的合法空格。
+    - 還原英文連字號與跨行切分（如 `environ-\nment` → `environment`）。
+    - 消除 CJK 與全形標點間的空隙，並規範連續換行。
+  - iOS 補齊 Vision 空間座標幾何排序（Y 軸由上至下、X 軸由左至右），確保多欄與圖文混排順序正確。
+  - Web 端升級 Gemini 2.0 Flash 辨識 Prompt 與後處理。
+- **測試**：
+  - 新增 `OcrPostProcessor` 單元測試，`flutter analyze` 零錯誤；`flutter test` **154 / 154** 全數通過。
+
+
+
 ## 2026-08-05 — [問題修復] 句數統計邏輯、UI 遮擋、風格分數一致性、Web 下載 HTTP 403 與模型載入狀態修復
 
 **做了什麼**

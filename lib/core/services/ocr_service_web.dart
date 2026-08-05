@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart';
 import 'package:http/http.dart' as http;
+import '../utils/ocr_post_processor.dart';
 
 /// Web 版 OCR 服務 — Gemini API + 本地伺服器備援
 ///
@@ -92,8 +93,8 @@ class OcrService {
         }
 
         final prompt = languages?.contains('zh-Hant') == true
-            ? '請認辨此圖片中的所有文字，並按順序列出。只回傳文字內容，不需要解釋或格式化。'
-            : 'Extract all text from this image. Return only the text content in order, without explanations or formatting.';
+            ? '請精準辨識並轉錄此圖片中的所有文字。保持文字閱讀順序與段落結構。中文請不要在字與字之間加入額外空格。只回傳轉錄出的文字內容，切勿包含任何Markdown引號、解說或附加說明。'
+            : 'Extract and transcribe all text from this image with high precision. Maintain reading order and paragraph structure. Return ONLY the transcribed text without any conversational remarks, markdown code blocks, or extra commentary.';
 
         final response = await http
             .post(
@@ -133,8 +134,9 @@ class OcrService {
             final content = candidates[0] as Map<String, dynamic>;
             final parts = content['content']['parts'] as List<dynamic>? ?? [];
             if (parts.isNotEmpty) {
-              final text =
+              final rawText =
                   (parts[0] as Map<String, dynamic>)['text'] as String? ?? '';
+              final text = OcrPostProcessor.clean(rawText);
               return text.isEmpty ? null : text;
             }
           }
