@@ -76,6 +76,12 @@ class BibliographyVerifier {
     r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})[a-z]?\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
+  /// 非學術、新聞、財經、股票、日常記事負向過濾關鍵字
+  static final RegExp _nonAcademicKeywords = RegExp(
+    r'(?:股價|指數|點位|漲跌|收盤|開盤|晨間快訊|盤勢|免責聲明|本週|今日|昨日|目標價|買進|賣出|投資建議|自選股|營收|毛利|外資|投信|CMoney|Yahoo財經|鉅亨網|ETtoday|新聞網|即時報價|代號|權值股|籌碼面|大盤|個股|重點摘要|注意事項|待辦事項|行事曆|會議記錄)',
+    caseSensitive: false,
+  );
+
   static const int minEntriesWithoutHeading = 3;
 
   /// 預處理 OCR / PDF 擷取文字的格式瑕疵：
@@ -333,29 +339,69 @@ class BibliographyVerifier {
 
   /// 動態學術文獻加權評分引擎 (0.0 - 1.0)
   static double _calculateCitationScore(String block, bool hasHeading) {
-    var score = 0.0;
-    if (_bulletOrNumberPrefix.hasMatch(block)) score += 0.35;
-    if (_yearRegex.hasMatch(block)) score += 0.35;
-    if (_journalKeyword.hasMatch(block)) score += 0.25;
-    if (RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(block) ||
-        RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(block) ||
-        _chineseAuthor.hasMatch(block)) {
-      score += 0.25;
+    if (_nonAcademicKeywords.hasMatch(block)) {
+      return 0.0;
     }
+
+    var score = 0.0;
+    final hasBracketRef = RegExp(
+      r'^\s*\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]',
+    ).hasMatch(block);
+    final hasNumberPrefix = _bulletOrNumberPrefix.hasMatch(block);
+    final hasAcademicYear = RegExp(
+      r'[\(\[\（\s](18\d\d|19\d\d|20\d\d)[a-z]?[\)\]\）\.\,\:]',
+    ).hasMatch(block);
+    final hasGeneralYear = _yearRegex.hasMatch(block);
+
+    if (hasBracketRef) {
+      score += 0.30;
+    } else if (hasNumberPrefix) {
+      score += 0.15;
+    }
+
+    if (hasAcademicYear) {
+      score += 0.30;
+    } else if (hasGeneralYear) {
+      score += 0.15;
+    }
+
+    if (_journalKeyword.hasMatch(block)) score += 0.30;
+
+    final hasAuthorPattern =
+        RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*[A-Z]").hasMatch(block) ||
+        RegExp(r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+[A-Z]\.").hasMatch(block) ||
+        _chineseAuthor.hasMatch(block);
+    if (hasAuthorPattern) {
+      score += 0.35;
+    }
+
     if (RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
         RegExp(
           r'\b(?:pp?|pages|vol|no)\.\s*\d+',
           caseSensitive: false,
         ).hasMatch(block)) {
-      score += 0.20;
+      score += 0.25;
     }
+
     if (RegExp(
       r'(?:https?:\/\/|doi:\s*|arXiv:\s*)',
       caseSensitive: false,
     ).hasMatch(block)) {
-      score += 0.30;
+      score += 0.35;
     }
-    if (hasHeading) score += 0.15;
+
+    if (hasHeading) score += 0.20;
+
+    // 若沒有 References 標題，且完全沒有學術作者、期刊關鍵字、DOI/arXiv 或 [1] 標記，直接歸零排除
+    if (!hasHeading &&
+        !hasAuthorPattern &&
+        !_journalKeyword.hasMatch(block) &&
+        !hasBracketRef &&
+        !block.contains('doi:') &&
+        !block.contains('arXiv:')) {
+      return 0.0;
+    }
+
     return score;
   }
 
@@ -828,7 +874,7 @@ class BibliographyVerifier {
                 matchedYear != null &&
                 (entry.year! - matchedYear).abs() <= 1;
 
-            if (titleSim >= 0.35 || (titleSim >= 0.20 && yearMatches)) {
+            if (titleSim >= 0.60 || (titleSim >= 0.45 && yearMatches)) {
               return BibliographyCheckResult(
                 entry: entry,
                 confidence: CitationMatchConfidence.high,
@@ -836,7 +882,7 @@ class BibliographyVerifier {
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
               );
-            } else if (titleSim >= 0.12 || yearMatches) {
+            } else if (titleSim >= 0.28 || (titleSim >= 0.18 && yearMatches)) {
               bestUncertainCandidate ??= BibliographyCheckResult(
                 entry: entry,
                 confidence: CitationMatchConfidence.uncertain,
@@ -929,11 +975,13 @@ class BibliographyVerifier {
       final venueMatches =
           entry.venueTitle != null &&
           _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
-      final strongVenueMatch = venueMatches && titleSim >= 0.25;
+      final strongVenueMatch = venueMatches && titleSim >= 0.35;
 
-      if (titleSim >= 0.35 ||
-          strongVenueMatch ||
-          (titleSim >= 0.20 && yearMatches)) {
+      if (titleSim >= 0.60 ||
+          (strongVenueMatch && titleSim >= 0.40) ||
+          (titleSim >= 0.45 &&
+              yearMatches &&
+              (venueMatches || entry.firstAuthorSurname != null))) {
         return BibliographyCheckResult(
           entry: entry,
           confidence: CitationMatchConfidence.high,
@@ -941,7 +989,8 @@ class BibliographyVerifier {
           matchedJournal: matchedJournal ?? defaultJournal,
           matchedYear: matchedYear,
         );
-      } else if (titleSim >= 0.12 || yearMatches || venueMatches) {
+      } else if (titleSim >= 0.28 ||
+          (titleSim >= 0.18 && (yearMatches || venueMatches))) {
         bestUncertainCandidate ??= BibliographyCheckResult(
           entry: entry,
           confidence: CitationMatchConfidence.uncertain,

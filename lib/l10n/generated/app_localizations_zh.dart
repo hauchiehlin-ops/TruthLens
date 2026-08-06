@@ -792,38 +792,77 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String engineReasonPplLow(String ppl) {
-    return '語言模型困惑度偏低（$ppl），文本高度可預測，是 AI 生成的指標';
+    return '語言模型困惑度偏低（$ppl）[偏 AI 特徵]，文本規律性與可預測度高';
   }
 
   @override
   String engineReasonPplHigh(String ppl) {
-    return '語言模型困惑度偏高（$ppl），符合人類寫作的不可預測性';
+    return '語言模型困惑度偏高（$ppl）[偏人類特徵]，符合人類寫作不可預測性';
   }
 
   @override
   String engineReasonPplMid(String ppl) {
-    return '語言模型困惑度中等（$ppl）';
+    return '語言模型困惑度中等（$ppl）[中性特徵]';
   }
 
   @override
   String engineReasonBurstinessLow(String value) {
-    return '句子長度高度一致（burstiness $value），節奏均勻是 AI 生成文本的典型統計特徵';
+    return '句子長度高度一致（burstiness $value）[偏 AI 特徵]，節奏平穩均勻';
   }
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句長起伏明顯（burstiness $value），符合人類自然寫作的節奏變化';
+    return '句長起伏顯著（burstiness $value）[偏人類特徵]，節奏變化豐富';
   }
 
   @override
   String engineReasonTtrLow(String value) {
-    return '詞彙多樣性偏低（TTR $value），用詞重複度高';
+    return '詞彙重複度較高（TTR $value）[偏 AI 模板/固定格式特徵]';
   }
 
   @override
   String engineReasonTtrHigh(String value) {
-    return '詞彙多樣性高（TTR $value）';
+    return '詞彙多樣性豐富（TTR $value）[偏人類特徵]';
   }
+
+  @override
+  String engineReasonStatisticalSummaryAi(String percent) {
+    return '綜合統計分析：各項指標加總整體偏向 AI 生成特徵（AI 機率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryHuman(String percent) {
+    return '綜合統計分析：各項指標加總整體偏向人類自然寫作（AI 機率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryNeutral(String percent) {
+    return '綜合統計分析：各項統計特徵互有消長，整體呈現中性區間（AI 機率 $percent%）';
+  }
+
+  @override
+  String get reportFormulaTitle => '加權計算透明度與參數解析';
+
+  @override
+  String get reportFormulaExplanation => '整體 AI 機率係由各可用引擎之判定機率依其指定權重加權平均計算得出：';
+
+  @override
+  String get reportFormulaActiveEngines => '參與投票引擎與權重';
+
+  @override
+  String get reportFormulaCalculation => '加權計算公式';
+
+  @override
+  String get reportFormulaFinalResult => '最終加權 AI 機率';
+
+  @override
+  String get reportFormulaEslApplied => '已套用 ESL 非母語寫作偏差修正（統計模型權重已減半）';
+
+  @override
+  String get reportVerdictAiLikelihood => 'AI 傾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人類自然寫作';
 
   @override
   String get engineReasonNeutral => '統計指標未呈現顯著傾向，維持中性判定';
@@ -1986,38 +2025,77 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String engineReasonPplLow(String ppl) {
-    return '语言模型困惑度偏低（$ppl），文本高度可预测，是 AI 生成的指针';
+    return '语言模型困惑度偏低（$ppl）[偏 AI 特征]，文本规律性与可预测度高';
   }
 
   @override
   String engineReasonPplHigh(String ppl) {
-    return '语言模型困惑度偏高（$ppl），符合人类写作的不可预测性';
+    return '语言模型困惑度偏高（$ppl）[偏人类特征]，符合人类写作不可预测性';
   }
 
   @override
   String engineReasonPplMid(String ppl) {
-    return '语言模型困惑度中等（$ppl）';
+    return '语言模型困惑度中等（$ppl）[中性特征]';
   }
 
   @override
   String engineReasonBurstinessLow(String value) {
-    return '句子长度高度一致（burstiness $value），节奏均匀是 AI 生成文本的典型统计特征';
+    return '句子长度高度一致（burstiness $value）[偏 AI 特征]，节奏平稳均匀';
   }
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句长起伏明显（burstiness $value），符合人类自然写作的节奏变化';
+    return '句长起伏显著（burstiness $value）[偏人类特征]，节奏变化丰富';
   }
 
   @override
   String engineReasonTtrLow(String value) {
-    return '词汇多样性偏低（TTR $value），用词重复度高';
+    return '词汇重复度较高（TTR $value）[偏 AI 模板/固定格式特征]';
   }
 
   @override
   String engineReasonTtrHigh(String value) {
-    return '词汇多样性高（TTR $value）';
+    return '词汇多样性丰富（TTR $value）[偏人类特征]';
   }
+
+  @override
+  String engineReasonStatisticalSummaryAi(String percent) {
+    return '综合统计分析：各项指标加总整体偏向 AI 生成特征（AI 概率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryHuman(String percent) {
+    return '综合统计分析：各项指标加总整体偏向人类自然写作（AI 概率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryNeutral(String percent) {
+    return '综合统计分析：各项统计特征互有消长，整体呈现中性区间（AI 概率 $percent%）';
+  }
+
+  @override
+  String get reportFormulaTitle => '加权计算透明度与参数解析';
+
+  @override
+  String get reportFormulaExplanation => '整体 AI 概率系由各可用引擎之判定概率依其指定权重加权平均计算得出：';
+
+  @override
+  String get reportFormulaActiveEngines => '参与投票引擎与权重';
+
+  @override
+  String get reportFormulaCalculation => '加权计算公式';
+
+  @override
+  String get reportFormulaFinalResult => '最终加权 AI 概率';
+
+  @override
+  String get reportFormulaEslApplied => '已套用 ESL 非母语写作偏差修正（统计模型权重已减半）';
+
+  @override
+  String get reportVerdictAiLikelihood => 'AI 倾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人类自然写作';
 
   @override
   String get engineReasonNeutral => '统计指针未呈现显著倾向，维持中性判定';
@@ -3180,38 +3258,77 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String engineReasonPplLow(String ppl) {
-    return '語言模型困惑度偏低（$ppl），文本高度可預測，是 AI 生成的指標';
+    return '語言模型困惑度偏低（$ppl）[偏 AI 特徵]，文本規律性與可預測度高';
   }
 
   @override
   String engineReasonPplHigh(String ppl) {
-    return '語言模型困惑度偏高（$ppl），符合人類寫作的不可預測性';
+    return '語言模型困惑度偏高（$ppl）[偏人類特徵]，符合人類寫作不可預測性';
   }
 
   @override
   String engineReasonPplMid(String ppl) {
-    return '語言模型困惑度中等（$ppl）';
+    return '語言模型困惑度中等（$ppl）[中性特徵]';
   }
 
   @override
   String engineReasonBurstinessLow(String value) {
-    return '句子長度高度一致（burstiness $value），節奏均勻是 AI 生成文本的典型統計特徵';
+    return '句子長度高度一致（burstiness $value）[偏 AI 特徵]，節奏平穩均勻';
   }
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句長起伏明顯（burstiness $value），符合人類自然寫作的節奏變化';
+    return '句長起伏顯著（burstiness $value）[偏人類特徵]，節奏變化豐富';
   }
 
   @override
   String engineReasonTtrLow(String value) {
-    return '詞彙多樣性偏低（TTR $value），用詞重複度高';
+    return '詞彙重複度較高（TTR $value）[偏 AI 模板/固定格式特徵]';
   }
 
   @override
   String engineReasonTtrHigh(String value) {
-    return '詞彙多樣性高（TTR $value）';
+    return '詞彙多樣性豐富（TTR $value）[偏人類特徵]';
   }
+
+  @override
+  String engineReasonStatisticalSummaryAi(String percent) {
+    return '綜合統計分析：各項指標加總整體偏向 AI 生成特徵（AI 機率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryHuman(String percent) {
+    return '綜合統計分析：各項指標加總整體偏向人類自然寫作（AI 機率 $percent%）';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryNeutral(String percent) {
+    return '綜合統計分析：各項統計特徵互有消長，整體呈現中性區間（AI 機率 $percent%）';
+  }
+
+  @override
+  String get reportFormulaTitle => '加權計算透明度與參數解析';
+
+  @override
+  String get reportFormulaExplanation => '整體 AI 機率係由各可用引擎之判定機率依其指定權重加權平均計算得出：';
+
+  @override
+  String get reportFormulaActiveEngines => '參與投票引擎與權重';
+
+  @override
+  String get reportFormulaCalculation => '加權計算公式';
+
+  @override
+  String get reportFormulaFinalResult => '最終加權 AI 機率';
+
+  @override
+  String get reportFormulaEslApplied => '已套用 ESL 非母語寫作偏差修正（統計模型權重已減半）';
+
+  @override
+  String get reportVerdictAiLikelihood => 'AI 傾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人類自然寫作';
 
   @override
   String get engineReasonNeutral => '統計指標未呈現顯著傾向，維持中性判定';

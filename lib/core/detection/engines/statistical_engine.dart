@@ -78,14 +78,32 @@ class StatisticalEngine implements DetectionEngine {
       }
     }
 
-    if (reasons.isEmpty) {
+    final clampedScore = score.clamp(0.0, 1.0);
+    final summaryPercent = (clampedScore * 100).round();
+
+    if (clampedScore >= 0.60) {
+      reasons.insert(
+        0,
+        l10n.engineReasonStatisticalSummaryAi(summaryPercent.toString()),
+      );
+    } else if (clampedScore <= 0.40) {
+      reasons.insert(
+        0,
+        l10n.engineReasonStatisticalSummaryHuman(summaryPercent.toString()),
+      );
+    } else if (reasons.isNotEmpty) {
+      reasons.insert(
+        0,
+        l10n.engineReasonStatisticalSummaryNeutral(summaryPercent.toString()),
+      );
+    } else {
       reasons.add(l10n.engineReasonNeutral);
     }
 
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
-      aiProbability: score.clamp(0.0, 1.0),
+      aiProbability: clampedScore,
       weight: defaultWeight,
       features: features,
       reasons: reasons,

@@ -823,38 +823,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String engineReasonPplLow(String ppl) {
-    return 'Low language-model perplexity ($ppl) — the text is highly predictable, an indicator of AI generation';
+    return 'Low language-model perplexity ($ppl) [AI-leaning], text is highly predictable';
   }
 
   @override
   String engineReasonPplHigh(String ppl) {
-    return 'High language-model perplexity ($ppl), consistent with the unpredictability of human writing';
+    return 'High language-model perplexity ($ppl) [Human-leaning], consistent with human writing variety';
   }
 
   @override
   String engineReasonPplMid(String ppl) {
-    return 'Moderate language-model perplexity ($ppl)';
+    return 'Moderate language-model perplexity ($ppl) [Neutral]';
   }
 
   @override
   String engineReasonBurstinessLow(String value) {
-    return 'Highly uniform sentence length (burstiness $value) — even rhythm is a typical statistical signature of AI-generated text';
+    return 'Highly uniform sentence length (burstiness $value) [AI-leaning], repetitive rhythm';
   }
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Noticeable variation in sentence length (burstiness $value), consistent with the natural rhythm of human writing';
+    return 'Noticeable variation in sentence length (burstiness $value) [Human-leaning], dynamic rhythm';
   }
 
   @override
   String engineReasonTtrLow(String value) {
-    return 'Low vocabulary diversity (TTR $value) — high word repetition';
+    return 'Low vocabulary diversity (TTR $value) [AI-leaning template pattern]';
   }
 
   @override
   String engineReasonTtrHigh(String value) {
-    return 'High vocabulary diversity (TTR $value)';
+    return 'High vocabulary diversity (TTR $value) [Human-leaning]';
   }
+
+  @override
+  String engineReasonStatisticalSummaryAi(String percent) {
+    return 'Overall statistical summary: Leans towards AI-generated characteristics ($percent% AI probability)';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryHuman(String percent) {
+    return 'Overall statistical summary: Leans towards human natural writing ($percent% AI probability)';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryNeutral(String percent) {
+    return 'Overall statistical summary: Indicators balance out, showing neutral characteristics ($percent% AI probability)';
+  }
+
+  @override
+  String get reportFormulaTitle =>
+      'Weighted Calculation Transparency & Parameter Breakdown';
+
+  @override
+  String get reportFormulaExplanation =>
+      'The overall AI probability is computed as a weighted average of probabilities from all active engines:';
+
+  @override
+  String get reportFormulaActiveEngines => 'Active Engines & Assigned Weights';
+
+  @override
+  String get reportFormulaCalculation => 'Weighted Formula Calculation';
+
+  @override
+  String get reportFormulaFinalResult => 'Final Weighted AI Probability';
+
+  @override
+  String get reportFormulaEslApplied =>
+      'ESL non-native writing adjustment applied (statistical model weight halved)';
+
+  @override
+  String get reportVerdictAiLikelihood => 'AI Leaning';
+
+  @override
+  String get reportVerdictHumanLikelihood => 'Human Writing';
 
   @override
   String get engineReasonNeutral =>

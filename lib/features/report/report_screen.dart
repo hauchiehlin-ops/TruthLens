@@ -443,15 +443,39 @@ class _ReportScreenState extends State<ReportScreen> {
                 ),
               ],
             ),
-            subtitle: Text(e.reasons.join('\n')),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                e.reasons.join('\n'),
+                style: const TextStyle(height: 1.4),
+              ),
+            ),
             trailing: e.available
-                ? Text(
-                    '${(e.aiProbability * 100).round()}%',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppTheme.verdictColor(e.aiProbability),
-                    ),
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${(e.aiProbability * 100).round()}%',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppTheme.verdictColor(e.aiProbability),
+                        ),
+                      ),
+                      Text(
+                        e.aiProbability >= 0.60
+                            ? l10n.reportVerdictAiLikelihood
+                            : (e.aiProbability <= 0.40
+                                ? l10n.reportVerdictHumanLikelihood
+                                : '—'),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.verdictColor(e.aiProbability),
+                        ),
+                      ),
+                    ],
                   )
                 : Builder(
                     builder: (context) {
@@ -478,8 +502,188 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
           ),
         ),
+      const SizedBox(height: 12),
+      _ensembleFormulaCard(l10n),
     ],
   );
+
+  Widget _ensembleFormulaCard(AppLocalizations l10n) {
+    final activeScores = result.engineScores.where((e) => e.available).toList();
+    if (activeScores.isEmpty) return const SizedBox.shrink();
+
+    double effectiveWeight(EngineScore s) {
+      if (result.eslAdjusted && s.engineId == 'statistical') return s.weight * 0.5;
+      return s.weight;
+    }
+
+    final totalWeight = activeScores.fold<double>(0.0, (sum, s) => sum + effectiveWeight(s));
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.calculate_outlined,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.reportFormulaTitle,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.reportFormulaExplanation,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  for (var i = 0; i < activeScores.length; i++) ...[
+                    Builder(builder: (context) {
+                      final e = activeScores[i];
+                      final effW = effectiveWeight(e);
+                      final contribution = totalWeight > 0
+                          ? (e.aiProbability * effW / totalWeight) * 100
+                          : 0.0;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Text(
+                                e.engineName,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                '${(e.aiProbability * 100).round()}%',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.verdictColor(e.aiProbability),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                '× ${(effW * 100).round()}%',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '+${contribution.toStringAsFixed(1)}%',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    if (i < activeScores.length - 1)
+                      Divider(
+                        height: 8,
+                        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                  ],
+                ],
+              ),
+            ),
+            if (result.eslAdjusted) ...[
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 14,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10n.reportFormulaEslApplied,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTheme.verdictColor(result.aiProbability).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.verdictColor(result.aiProbability).withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.reportFormulaFinalResult,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '${(result.aiProbability * 100).round()}% (${result.verdict.label(l10n)})',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.verdictColor(result.aiProbability),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _heatmapCard(AppLocalizations l10n) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,

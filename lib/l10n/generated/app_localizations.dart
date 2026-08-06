@@ -1450,44 +1450,110 @@ abstract class AppLocalizations {
   /// No description provided for @engineReasonPplLow.
   ///
   /// In en, this message translates to:
-  /// **'Low language-model perplexity ({ppl}) — the text is highly predictable, an indicator of AI generation'**
+  /// **'Low language-model perplexity ({ppl}) [AI-leaning], text is highly predictable'**
   String engineReasonPplLow(String ppl);
 
   /// No description provided for @engineReasonPplHigh.
   ///
   /// In en, this message translates to:
-  /// **'High language-model perplexity ({ppl}), consistent with the unpredictability of human writing'**
+  /// **'High language-model perplexity ({ppl}) [Human-leaning], consistent with human writing variety'**
   String engineReasonPplHigh(String ppl);
 
   /// No description provided for @engineReasonPplMid.
   ///
   /// In en, this message translates to:
-  /// **'Moderate language-model perplexity ({ppl})'**
+  /// **'Moderate language-model perplexity ({ppl}) [Neutral]'**
   String engineReasonPplMid(String ppl);
 
   /// No description provided for @engineReasonBurstinessLow.
   ///
   /// In en, this message translates to:
-  /// **'Highly uniform sentence length (burstiness {value}) — even rhythm is a typical statistical signature of AI-generated text'**
+  /// **'Highly uniform sentence length (burstiness {value}) [AI-leaning], repetitive rhythm'**
   String engineReasonBurstinessLow(String value);
 
   /// No description provided for @engineReasonBurstinessHigh.
   ///
   /// In en, this message translates to:
-  /// **'Noticeable variation in sentence length (burstiness {value}), consistent with the natural rhythm of human writing'**
+  /// **'Noticeable variation in sentence length (burstiness {value}) [Human-leaning], dynamic rhythm'**
   String engineReasonBurstinessHigh(String value);
 
   /// No description provided for @engineReasonTtrLow.
   ///
   /// In en, this message translates to:
-  /// **'Low vocabulary diversity (TTR {value}) — high word repetition'**
+  /// **'Low vocabulary diversity (TTR {value}) [AI-leaning template pattern]'**
   String engineReasonTtrLow(String value);
 
   /// No description provided for @engineReasonTtrHigh.
   ///
   /// In en, this message translates to:
-  /// **'High vocabulary diversity (TTR {value})'**
+  /// **'High vocabulary diversity (TTR {value}) [Human-leaning]'**
   String engineReasonTtrHigh(String value);
+
+  /// No description provided for @engineReasonStatisticalSummaryAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall statistical summary: Leans towards AI-generated characteristics ({percent}% AI probability)'**
+  String engineReasonStatisticalSummaryAi(String percent);
+
+  /// No description provided for @engineReasonStatisticalSummaryHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall statistical summary: Leans towards human natural writing ({percent}% AI probability)'**
+  String engineReasonStatisticalSummaryHuman(String percent);
+
+  /// No description provided for @engineReasonStatisticalSummaryNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall statistical summary: Indicators balance out, showing neutral characteristics ({percent}% AI probability)'**
+  String engineReasonStatisticalSummaryNeutral(String percent);
+
+  /// No description provided for @reportFormulaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted Calculation Transparency & Parameter Breakdown'**
+  String get reportFormulaTitle;
+
+  /// No description provided for @reportFormulaExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'The overall AI probability is computed as a weighted average of probabilities from all active engines:'**
+  String get reportFormulaExplanation;
+
+  /// No description provided for @reportFormulaActiveEngines.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Engines & Assigned Weights'**
+  String get reportFormulaActiveEngines;
+
+  /// No description provided for @reportFormulaCalculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted Formula Calculation'**
+  String get reportFormulaCalculation;
+
+  /// No description provided for @reportFormulaFinalResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Weighted AI Probability'**
+  String get reportFormulaFinalResult;
+
+  /// No description provided for @reportFormulaEslApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'ESL non-native writing adjustment applied (statistical model weight halved)'**
+  String get reportFormulaEslApplied;
+
+  /// No description provided for @reportVerdictAiLikelihood.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Leaning'**
+  String get reportVerdictAiLikelihood;
+
+  /// No description provided for @reportVerdictHumanLikelihood.
+  ///
+  /// In en, this message translates to:
+  /// **'Human Writing'**
+  String get reportVerdictHumanLikelihood;
 
   /// No description provided for @engineReasonNeutral.
   ///

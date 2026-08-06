@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
@@ -121,13 +122,32 @@ class TransformerEngine implements DetectionEngine {
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     final aiCount = perSentence.where((s) => s >= 0.6).length;
+    final aiRatio = aiCount / perSentence.length;
+    final maxSentence = perSentence.reduce(math.max);
+
+    // 置信度校準：避免隨機 Softmax 浮動（~0.50）在 0 句 AI 時輸出 52% 的矛盾
+    double calibratedProbability;
+    if (aiCount == 0) {
+      final margin = (maxSentence - 0.5).clamp(0.0, 0.1) / 0.1;
+      calibratedProbability = (avg * 0.10) + (margin * 0.10);
+    } else {
+      final aiAvg =
+          perSentence.where((s) => s >= 0.6).reduce((a, b) => a + b) / aiCount;
+      calibratedProbability = (aiRatio * 0.7) + (aiAvg * 0.3);
+    }
+    calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
+
     final variant = _resolveVariant();
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
-      aiProbability: avg,
+      aiProbability: calibratedProbability,
       weight: defaultWeight,
-      features: {'ai_sentence_ratio': aiCount / perSentence.length},
+      features: {
+        'ai_sentence_ratio': aiRatio,
+        'raw_avg_prob': avg,
+        'calibrated_prob': calibratedProbability,
+      },
       reasons: [
         l10n.engineReasonTransformerResult(
             variant?.variantId ?? name(l10n), aiCount, perSentence.length),

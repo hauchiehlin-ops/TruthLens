@@ -875,6 +875,48 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String engineReasonStatisticalSummaryAi(String percent) {
+    return 'Overall statistical summary: Leans towards AI-generated characteristics ($percent% AI probability)';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryHuman(String percent) {
+    return 'Overall statistical summary: Leans towards human natural writing ($percent% AI probability)';
+  }
+
+  @override
+  String engineReasonStatisticalSummaryNeutral(String percent) {
+    return 'Overall statistical summary: Indicators balance out, showing neutral characteristics ($percent% AI probability)';
+  }
+
+  @override
+  String get reportFormulaTitle =>
+      'Weighted Calculation Transparency & Parameter Breakdown';
+
+  @override
+  String get reportFormulaExplanation =>
+      'The overall AI probability is computed as a weighted average of probabilities from all active engines:';
+
+  @override
+  String get reportFormulaActiveEngines => 'Active Engines & Assigned Weights';
+
+  @override
+  String get reportFormulaCalculation => 'Weighted Formula Calculation';
+
+  @override
+  String get reportFormulaFinalResult => 'Final Weighted AI Probability';
+
+  @override
+  String get reportFormulaEslApplied =>
+      'ESL non-native writing adjustment applied (statistical model weight halved)';
+
+  @override
+  String get reportVerdictAiLikelihood => 'AI Leaning';
+
+  @override
+  String get reportVerdictHumanLikelihood => 'Human Writing';
+
+  @override
   String get engineReasonNeutral =>
       'Les indicateurs statistiques ne montrent aucune tendance claire — verdict neutre maintenu';
 
