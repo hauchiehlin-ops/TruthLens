@@ -12,10 +12,13 @@
   - 移除 `BibliographyVerifier.verifyAll` 內部原本的 `entries.take(maxEntriesPerCheck)`（30 筆）截斷限制，長篇學術論文中無論有 50、100 筆或更多參考文獻，均會全量送往 Crossref / OpenAlex 核實。
   - 移除報告頁面中「僅核實前 30 筆」的提示標籤，完整顯示所有條目及其驗證徽章。
   - 在 `test/bibliography_verifier_test.dart` 中補充超過 30 筆文獻的全量驗證單元測試。
-- **Web 端與 IO 端模型下載鏡像備援強化 (`model_manager_web.dart`, `model_manager_io.dart`)**：
-  - 針對 GitHub Releases 模型下載，擴充 `ghfast.top`、`gh-proxy.com`、`ghp.ci` 等多站點備援鏡像代理，當 `mirror.ghproxy.com` 出現連線異常時能順暢 fallback，保障 INT8 輕量偵測器與改寫偵測模型之穩定下載。
+- **Web 端同源 Edge Proxy 與 CORS / COEP 合規修復 (`api/proxy.js`, `vercel.json`, `model_manager_web.dart`, `deploy_vercel.yml`)**：
+  - 診斷網頁版（Vercel 部署）下載多語言輕量偵測器與改寫偵測模型失敗的根本原因：GitHub Releases 導向之 `release-assets.githubusercontent.com` 及第三方鏡像不帶瀏覽器 CORS 標頭（`Access-Control-Allow-Origin: *`），且 Vercel 預設 `Cross-Origin-Embedder-Policy: require-corp` 會直接封鎖無 CORP 標頭的跨來源請求。
+  - 新增同源 Vercel Edge Proxy (`api/proxy.js` 與 `web/api/proxy.js`)：在伺服端流式串接 GitHub Release 資源，完整轉發 `Range`、`Content-Range`、`Accept-Ranges` 等 HTTP 標頭並附加 `Access-Control-Allow-Origin: *`、`Cross-Origin-Resource-Policy: cross-origin`。
+  - 在 `model_manager_web.dart` 中優先採用目前網頁同源之 `/api/proxy?url=...` 下載路徑，並以生產環境 Vercel Proxy 作為 fallback。
+  - 修正 `vercel.json`：將 COEP 策略設定為現代標準 `credentialless`，並在 CI 流程（`deploy_vercel.yml`）確保 API 路由與設定檔正確封裝至 `build/web`。
 - **測試**：
-  - `flutter analyze` 零警告／零錯誤；`flutter test` **155 / 155** 全數通過。
+  - `flutter analyze` 零警告／零錯誤；`flutter test` **155 / 155** 全數通過；`flutter build web --release` 編譯成功。
 
 ## 2026-08-05 — [重磅升級] Web 斷點續傳分塊下載器與全平台 OCR 辨識能力優化
 

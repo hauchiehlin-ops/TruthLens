@@ -257,21 +257,25 @@ class ModelManager extends ChangeNotifier {
       {int? expected, void Function(double)? onProgress}) async {
     final urlsToTry = <String>[];
 
+    final proxyPath = '/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
+    final sameOriginProxy = Uri.base.resolve(proxyPath).toString();
+    final prodVercelProxy =
+        'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
+
     if (originalUrl.contains('huggingface.co')) {
       urlsToTry.add(originalUrl);
       urlsToTry.add(originalUrl.replaceAll('huggingface.co', 'hf-mirror.com'));
-      urlsToTry.add('https://ghfast.top/$originalUrl');
-      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
-    } else if (originalUrl.contains('github.com') && originalUrl.contains('/releases/download/')) {
-      urlsToTry.add(originalUrl); // GitHub S3 objects.githubusercontent.com 直連
-      urlsToTry.add('https://ghfast.top/$originalUrl');
-      urlsToTry.add('https://gh-proxy.com/$originalUrl');
-      urlsToTry.add('https://ghp.ci/$originalUrl');
-      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
-    } else {
+      urlsToTry.add(sameOriginProxy);
+      urlsToTry.add(prodVercelProxy);
+    } else if (originalUrl.contains('github.com')) {
+      // GitHub Releases downloads lack browser CORS headers, prioritize same-origin Edge proxy
+      urlsToTry.add(sameOriginProxy);
+      urlsToTry.add(prodVercelProxy);
       urlsToTry.add(originalUrl);
-      urlsToTry.add('https://ghfast.top/$originalUrl');
-      urlsToTry.add('https://mirror.ghproxy.com/$originalUrl');
+    } else {
+      urlsToTry.add(sameOriginProxy);
+      urlsToTry.add(prodVercelProxy);
+      urlsToTry.add(originalUrl);
     }
 
     Object? lastError;
@@ -298,8 +302,6 @@ class ModelManager extends ChangeNotifier {
     try {
       final headReq = http.Request('GET', Uri.parse(url));
       headReq.headers['Range'] = 'bytes=0-1023';
-      headReq.headers['User-Agent'] =
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
       final headRes = await _client.send(headReq).timeout(const Duration(seconds: 15));
 
       if (headRes.statusCode == 206) {
@@ -320,10 +322,8 @@ class ModelManager extends ChangeNotifier {
     // 若伺服器不支援 Range 或未取到總大小 → 退回傳統連貫流式下載
     if (!supportsRange || totalSize <= 0) {
       final req = http.Request('GET', Uri.parse(url));
-      req.headers['User-Agent'] =
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
       final res = await _client.send(req).timeout(const Duration(seconds: 45));
-      if (res.statusCode != 200) {
+      if (res.statusCode != 200 && res.statusCode != 206) {
         throw http.ClientException('HTTP ${res.statusCode}');
       }
       final size = res.contentLength ?? expected ?? 0;
@@ -353,8 +353,6 @@ class ModelManager extends ChangeNotifier {
         try {
           final chunkReq = http.Request('GET', Uri.parse(url));
           chunkReq.headers['Range'] = 'bytes=$downloaded-$end';
-          chunkReq.headers['User-Agent'] =
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
 
           final chunkRes = await _client.send(chunkReq).timeout(const Duration(seconds: 30));
           if (chunkRes.statusCode == 206 || chunkRes.statusCode == 200) {
