@@ -17,6 +17,9 @@
   - 新增同源 Vercel Edge Proxy (`api/proxy.js` 與 `web/api/proxy.js`)：在伺服端流式串接 GitHub Release 資源，完整轉發 `Range`、`Content-Range`、`Accept-Ranges` 等 HTTP 標頭並附加 `Access-Control-Allow-Origin: *`、`Cross-Origin-Resource-Policy: cross-origin`。
   - 在 `model_manager_web.dart` 中優先採用目前網頁同源之 `/api/proxy?url=...` 下載路徑，並以生產環境 Vercel Proxy 作為 fallback。
   - 修正 `vercel.json`：將 COEP 策略設定為現代標準 `credentialless`，並在 CI 流程（`deploy_vercel.yml`）確保 API 路由與設定檔正確封裝至 `build/web`。
+- **版本升級與 CocoaPods 鎖定檔同步 (`pubspec.yaml`, `ios/Podfile.lock`)**：
+  - 版本版號升級至 `2.2.1+22`。
+  - 同步更新 iOS CocoaPods `Podfile.lock` 之 checksums。
 - **測試**：
   - `flutter analyze` 零警告／零錯誤；`flutter test` **155 / 155** 全數通過；`flutter build web --release` 編譯成功。
 
