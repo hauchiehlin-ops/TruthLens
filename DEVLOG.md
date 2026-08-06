@@ -17,6 +17,10 @@
   - 新增同源 Vercel Edge Proxy (`api/proxy.js` 與 `web/api/proxy.js`)：在伺服端流式串接 GitHub Release 資源，完整轉發 `Range`、`Content-Range`、`Accept-Ranges` 等 HTTP 標頭並附加 `Access-Control-Allow-Origin: *`、`Cross-Origin-Resource-Policy: cross-origin`。
   - 在 `model_manager_web.dart` 中優先採用目前網頁同源之 `/api/proxy?url=...` 下載路徑，並以生產環境 Vercel Proxy 作為 fallback。
   - 修正 `vercel.json`：將 COEP 策略設定為現代標準 `credentialless`，並在 CI 流程（`deploy_vercel.yml`）確保 API 路由與設定檔正確封裝至 `build/web`。
+- **Web 端 ONNX Runtime Web (WASM / WebGPU) 初始化容錯與完整 Binary 補全 (`ort_bridge.js`, `web/assets/ort/`)**：
+  - 診斷網頁端推論時報錯 `Error: no available backend found. ERR: [wasm] Error: previous call to 'initWasm()' failed.` 之原因：在未開啟跨來源隔離（或無 `SharedArrayBuffer`）之瀏覽器環境中，多執行緒 WASM 模組初始化會直接中斷，且原目錄缺少單執行緒 `ort-wasm-simd.wasm`、`ort-wasm.wasm` 等備援二進位檔。
+  - 補齊 `web/assets/ort/` 中的 `ort-wasm-simd.wasm`、`ort-wasm.wasm` 與 `ort-wasm-simd.jsep.wasm`。
+  - 更新 `ort_bridge.js`：動態偵測 `crossOriginIsolated` 與 `SharedArrayBuffer`，自動於多執行緒與單執行緒之間無縫切換，並在自我託管尋徑異常時提供 CDN wasmPaths 終極 fallback，徹底消除 `initWasm()` 載入失敗問題。
 - **版本升級與 CocoaPods 鎖定檔同步 (`pubspec.yaml`, `ios/Podfile.lock`)**：
   - 版本版號升級至 `2.2.1+22`。
   - 同步更新 iOS CocoaPods `Podfile.lock` 之 checksums。
