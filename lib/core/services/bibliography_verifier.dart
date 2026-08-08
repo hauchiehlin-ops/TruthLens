@@ -295,7 +295,14 @@ class BibliographyVerifier {
         currentBlock = line;
       } else {
         if (currentBlock != null) {
-          currentBlock = '$currentBlock $line';
+          // 防止 block 超長：若累加後超過 400 字，強制切割為新條目
+          final candidate = '$currentBlock $line';
+          if (candidate.length > 400) {
+            groupedBlocks.add(currentBlock.trim());
+            currentBlock = line;
+          } else {
+            currentBlock = candidate;
+          }
         } else if (line.length >= 15) {
           currentBlock = line;
         }
@@ -308,7 +315,8 @@ class BibliographyVerifier {
     final candidates = <BibliographyEntry>[];
 
     for (final block in groupedBlocks) {
-      if (block.length < 15 || block.length > 2000) continue;
+      // 參考文獻條目通常 50-400 字符；>400 字表示整段內文被誤判為條目
+      if (block.length < 15 || block.length > 400) continue;
 
       final score = _calculateCitationScore(block, hasHeading);
       final yearMatch = _yearRegex.firstMatch(block);
@@ -316,8 +324,8 @@ class BibliographyVerifier {
           ? int.tryParse(yearMatch.group(1) ?? '')
           : null;
 
-      // 門檻：當計算總分 >= 0.45（若含有文獻標題時門檻降至 0.30）時即判定為合法學術條目
-      if (score >= (hasHeading ? 0.30 : 0.45)) {
+      // 強化門檻：有 References 標題時 0.50，無標題時 0.65（防止內文段落誤判）
+      if (score >= (hasHeading ? 0.50 : 0.65)) {
         final cleaned = block.replaceAll(_bulletOrNumberPrefix, '');
         candidates.add(_parseLineEntry(cleaned, block, year));
       }
