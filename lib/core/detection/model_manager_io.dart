@@ -526,7 +526,7 @@ class ModelManager extends ChangeNotifier {
     await sink.close();
   }
 
-  /// 匯入本機 ONNX 模型檔。
+  /// 匯入本機 ONNX 模型檔。強化驗證與錯誤恢復。
   Future<bool> importLocalModel({
     required String role,
     required String name,
@@ -543,16 +543,50 @@ class ModelManager extends ChangeNotifier {
     String? tokenizerFileName;
 
     try {
+      // 驗證角色
+      if (!_roles.containsKey(role)) {
+        throw ArgumentError('無效的 role: $role');
+      }
+
+      // 驗證模型檔
+      if (!modelFile.existsSync()) {
+        throw FileSystemException('模型檔不存在', modelFile.path);
+      }
+      final modelSize = modelFile.lengthSync();
+      if (modelSize < 1024 * 100) {
+        throw Exception('模型檔過小 (<100KB)，可能是空檔或格式錯誤: $modelSize bytes');
+      }
+      debugPrint('[ImportModel] 驗證模型檔: $name (${(modelSize / (1024 * 1024)).toStringAsFixed(1)} MB)');
+
       // 複製模型檔
       await modelFile.copy(target.path);
       final hash = await _sha256Of(target);
+      debugPrint('[ImportModel] ✓ 模型檔複製完成，SHA256: ${hash.substring(0, 8)}...');
 
-      // 複製 tokenizer 檔
+      // 複製並驗證 tokenizer 檔（若需要）
       if (tokenizerFile != null && tokenizerType != 'none') {
+        if (!tokenizerFile.existsSync()) {
+          throw FileSystemException('Tokenizer 檔不存在', tokenizerFile.path);
+        }
+
         tokenizerFileName = '${role}__$variantId.tokenizer.json';
-        await tokenizerFile.copy(p.join(dir.path, tokenizerFileName));
+        final tokTarget = File(p.join(dir.path, tokenizerFileName));
+
+        // 先複製，再驗證格式
+        await tokenizerFile.copy(tokTarget.path);
+
+        try {
+          final content = tokTarget.readAsStringSync();
+          jsonDecode(content);
+          debugPrint('[ImportModel] ✓ Tokenizer JSON 驗證通過');
+        } catch (e) {
+          // Tokenizer 格式無效，刪除並拋出錯誤
+          await tokTarget.delete();
+          throw FormatException('Tokenizer JSON 格式無效: $e');
+        }
       }
 
+      // 構建並註冊模型
       final r = _roles[role]!;
       final installed = Map<String, InstalledModel>.from(r.installed);
       installed[variantId] = InstalledModel(
@@ -563,7 +597,7 @@ class ModelManager extends ChangeNotifier {
         tokenizer: tokenizerType,
         aiLabelIndex: aiLabelIndex,
         version: '1.0.0 (自訂匯入)',
-        sizeBytes: modelFile.lengthSync(),
+        sizeBytes: modelSize,
         name: name,
         imported: true,
         sha256: hash,
@@ -577,10 +611,15 @@ class ModelManager extends ChangeNotifier {
       );
 
       await _persist();
+      debugPrint('[ImportModel] ✓ 模型匯入成功: $name ($variantId)');
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('Failed to import local model: $e');
+      debugPrint('[ImportModel] ❌ 匯入失敗: $e');
+      // 清理已複製的檔案
+      try {
+        if (target.existsSync()) await target.delete();
+      } catch (_) {}
       return false;
     }
   }

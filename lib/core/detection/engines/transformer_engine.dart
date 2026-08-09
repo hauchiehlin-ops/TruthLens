@@ -92,13 +92,22 @@ class TransformerEngine implements DetectionEngine {
     } catch (e) {
       _detector = null;
       _loadedModelPath = null;
-      _loadError = e.toString();
-      if (e is FormatException) {
+      final errorMsg = e.toString();
+
+      // 區分 opset 版本不支援 vs 其他錯誤，設定對應的錯誤消息
+      if (errorMsg.contains('opset') || errorMsg.contains('Opset') ||
+          errorMsg.contains('ValidateOpsetForDomain')) {
+        _loadError = 'ONNX opset 版本不支援（該模型版本太新，需更新應用）: ${active.variantId}';
+      } else if (e is FormatException) {
+        _loadError = 'Tokenizer 格式損毀: ${e.message}';
+        // 嘗試刪除損毀的 tokenizer，下次會提示用戶重新下載
         try {
           final tokFile = File(tokPath);
           if (tokFile.existsSync()) await tokFile.delete();
           await modelManager.refreshInstallStates();
         } catch (_) {}
+      } else {
+        _loadError = '模型載入失敗: ${e.runtimeType}: $errorMsg';
       }
       return null;
     }
