@@ -138,24 +138,31 @@ class ModelManager extends ChangeNotifier {
                   final variantId = withoutPrefix.substring(0, withoutPrefix.length - extension.length);
 
                   if (!installed.containsKey(variantId)) {
-                    // Transformer / Statistical / Adversarial 分類器需驗證 tokenizer（若存在）
+                    // Transformer / Adversarial 分類器強制需要 tokenizer；
+                    // Statistical 有啟發式回退（無模型可用），LLM 不需 tokenizer
+                    bool shouldRegister = true;
                     String? tokName;
-                    if (role == 'transformer' && ['.onnx', '.tflite'].contains(extension)) {
-                      // 尋找對應的 tokenizer 檔
+
+                    if ((role == 'transformer' || role == 'adversarial') &&
+                        ['.onnx', '.tflite'].contains(extension)) {
+                      // 強制檢查 tokenizer 是否存在且格式完整
                       final tokFile = File(p.join(dir.path, '${role}__$variantId.tokenizer.json'));
-                      if (tokFile.existsSync()) {
+                      if (!tokFile.existsSync()) {
+                        shouldRegister = false; // 缺 tokenizer，不註冊
+                      } else {
                         try {
                           final content = tokFile.readAsStringSync();
                           jsonDecode(content);
                           tokName = '${role}__$variantId.tokenizer.json';
                         } catch (_) {
-                          // 格式不合規，刪除
+                          // 格式損毀，刪除並不註冊該模型
                           try { tokFile.deleteSync(); } catch (_) {}
+                          shouldRegister = false;
                         }
                       }
                     }
 
-                    if (role != 'transformer' || tokName != null) {
+                    if (shouldRegister) {
                       installed[variantId] = InstalledModel(
                         role: role,
                         variantId: variantId,

@@ -1,14 +1,17 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-09 — [模型狀態檢查與參考文獻邏輯修正] 模型動態檔案掃描、參考文獻條目長度嚴格化、評分門檻提升
+## 2026-08-09 — [模型狀態檢查與參考文獻邏輯修正] 模型動態掃描、Tokenizer 完整性驗證、參考文獻嚴格化
 
-**問題 1：所有平台模型顯示「未安裝」** (`model_manager_io.dart`)
-- **原因**：`refreshInstallStates()` 硬編碼掃描特定檔名（如 `detector_int8.onnx`）。當新的 variant（如 `transformer__chatgpt-detector-roberta-onnx-int8.onnx`）被下載後，應用無法識別，即使檔案已存在也標記為「未安裝」。
-- **修正**：將檔案掃描改為動態模式——自動偵測所有 `${role}__*.onnx / *.tflite / *.gguf` 格式的檔案，從檔名動態提取 variantId，無需硬編碼。
-- **副效果**：Tokenizer 檔案識別也改為動態（尋找 `${role}__${variantId}.tokenizer.json`），自動驗證 JSON 完整性。
+**問題 1：所有平台模型顯示「未安裝」且無法參與分析** (`model_manager_io.dart`)
+- **原因**：`refreshInstallStates()` 硬編碼掃描特定檔名；當新 variant 被下載後無法識別，或模型檔案缺少 tokenizer 時也無法判定為「可用」。
+- **修正**：
+  - 將檔案掃描改為動態模式：自動偵測所有 `${role}__*.onnx / *.tflite / *.gguf` 並從檔名提取 variantId
+  - **強化 Tokenizer 驗證**：Transformer / Adversarial 模型強制檢查 tokenizer 存在性與 JSON 格式完整性；只有通過驗證的模型才被標記為「已安裝」
+  - 缺 tokenizer 或格式損毀的模型自動刪除損毀檔並不註冊，防止被 orchestrator 加入 ensemble
+- **效果**：確保 `EnsembleOrchestrator.analyze()` 時，只有真正可用的模型參與投票；無法推論的模型不會拖累總分
 
 **問題 2：參考文獻邏輯過於寬泛** (`bibliography_verifier.dart`)
-- **原因**：條目最大長度 2000 字，評分門檻過低（with heading 0.30, without 0.45），導致整篇論文摘要被誤判為單一條目。
+- **原因**：條目最大長度 2000 字，評分門檻過低，導致整篇論文摘要被誤判為單一條目。
 - **修正**：
   - 條目最大長度 2000 → 400 字
   - 評分門檻 with heading 0.30 → 0.50；without 0.45 → 0.65
