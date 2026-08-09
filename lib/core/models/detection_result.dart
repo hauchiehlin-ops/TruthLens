@@ -134,6 +134,35 @@ class DetectionResult {
   /// 閾值調高 → 需更高信心才標記 → 降低偽陽性（誤判人類文章）。
   bool get flaggedAsAi => aiProbability >= threshold;
 
+  /// 生成低信心分析的警告消息（用戶友好）
+  String lowConfidenceWarning() {
+    final reasons = <String>[];
+
+    final availableCount = _computeAvailableCount;
+    final usedWeight = _computeUsedWeight;
+    final totalWeight = _computeTotalWeight;
+    final confidenceRatio =
+        totalWeight > 0 ? (usedWeight / totalWeight) : 0.0;
+
+    if (availableCount < 2) {
+      reasons.add('只有 $availableCount 個模型參與分析（建議至少 2 個）');
+    }
+
+    if (totalWeight > 0 && confidenceRatio < 0.60) {
+      reasons.add(
+        '引擎權重覆蓋不足：${(confidenceRatio * 100).toStringAsFixed(0)}% '
+        '（建議 ≥60%）',
+      );
+    }
+
+    if (reasons.isEmpty) {
+      return '';
+    }
+
+    return '⚠️ 此分析信心度較低，原因：${reasons.join('；')}。'
+        '建議查看「設定」中的模型狀態，下載或修復缺失的模型。';
+  }
+
   int get aiSentenceCount =>
       sentences.where((s) => s.aiProbability >= 0.5).length;
   int get humanSentenceCount =>
