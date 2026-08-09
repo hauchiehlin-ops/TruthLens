@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show Locale;
 
 import '../../l10n/generated/app_localizations.dart';
@@ -115,6 +116,24 @@ class EnsembleOrchestrator {
     final overall = _weightedVote(scores, eslAdjusted: eslAdjusted);
     final sentences = _scoreSentences(text, overall, scores, loc);
 
+    // 統計引擎參與情況
+    final availableCount = scores.where((s) => s.available).length;
+    final totalCount = scores.length;
+    final availableWeight =
+        scores.where((s) => s.available).fold<double>(0, (sum, s) => sum + s.weight);
+    final totalWeight = scores.fold<double>(0, (sum, s) => sum + s.weight);
+    final confidenceRatio = totalWeight > 0 ? (availableWeight / totalWeight) : 0.0;
+
+    debugPrint('[Ensemble] 分析完成: $availableCount/$totalCount 引擎可用，'
+        '權重覆蓋 ${(confidenceRatio * 100).toStringAsFixed(0)}% '
+        '(${availableWeight.toStringAsFixed(2)}/${totalWeight.toStringAsFixed(2)})');
+    if (confidenceRatio < 0.60) {
+      debugPrint('[Ensemble] ⚠️ 低信心分析：權重覆蓋不足 60%');
+    }
+    if (availableCount < 2) {
+      debugPrint('[Ensemble] ⚠️ 低信心分析：可用引擎少於 2 個');
+    }
+
     return DetectionResult(
       id: started.microsecondsSinceEpoch.toString(),
       analyzedAt: started,
@@ -127,6 +146,8 @@ class EnsembleOrchestrator {
       eslAdjusted: eslAdjusted,
       threshold: threshold,
       elapsed: DateTime.now().difference(started),
+      availableEngineCount: availableCount,
+      totalEngineCount: totalCount,
     );
   }
 

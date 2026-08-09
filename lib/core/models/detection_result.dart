@@ -80,6 +80,8 @@ class DetectionResult {
   final bool eslAdjusted; // 是否套用了 ESL 偏差修正
   final double threshold; // 本次採用的 AI 判定信心閾值
   final Duration elapsed;
+  final int availableEngineCount; // 本次參與投票的引擎數
+  final int totalEngineCount; // 註冊的引擎總數
 
   const DetectionResult({
     required this.id,
@@ -93,7 +95,40 @@ class DetectionResult {
     this.eslAdjusted = false,
     this.threshold = 0.6,
     this.elapsed = Duration.zero,
+    this.availableEngineCount = 0,
+    this.totalEngineCount = 0,
   });
+
+  /// 計算可用引擎數（available=true 的引擎）
+  int get _computeAvailableCount =>
+      engineScores.where((e) => e.available).length;
+
+  /// 計算使用中的總權重（只計算 available 引擎的權重）
+  double get _computeUsedWeight =>
+      engineScores
+          .where((e) => e.available)
+          .fold<double>(0, (sum, e) => sum + e.weight);
+
+  /// 計算理想的總權重（所有引擎）
+  double get _computeTotalWeight =>
+      engineScores.fold<double>(0, (sum, e) => sum + e.weight);
+
+  /// 檢查是否為低信心分析：
+  /// - 可用權重 < 60% 原始總權重
+  /// - 可用引擎 < 2 個
+  bool get isLowConfidence {
+    final availableCount = _computeAvailableCount;
+    final usedWeight = _computeUsedWeight;
+    final totalWeight = _computeTotalWeight;
+
+    // 條件 1：缺少太多權重
+    if (totalWeight > 0 && (usedWeight / totalWeight) < 0.60) return true;
+
+    // 條件 2：可用引擎少於 2 個
+    if (availableCount < 2) return true;
+
+    return false;
+  }
 
   /// 是否越過使用者設定的信心閾值而被明確標記為 AI。
   /// 閾值調高 → 需更高信心才標記 → 降低偽陽性（誤判人類文章）。
