@@ -121,58 +121,53 @@ class ModelManager extends ChangeNotifier {
           }
         });
       }
-      // Auto-scan: list all files in directory and register them if they match known variant filenames
+      // 動態掃描：偵測所有 ${role}__*.onnx / *.tflite / *.gguf 檔案並動態註冊
       try {
         if (dir.existsSync()) {
           for (final entity in dir.listSync()) {
             if (entity is File) {
               final name = p.basename(entity.path);
-              if (name == 'llm__gemma-2-2b-it-q4km.gguf') {
-                if (role == 'llm' && !installed.containsKey('gemma-2-2b-it-q4km')) {
-                  installed['gemma-2-2b-it-q4km'] = InstalledModel(
-                    role: 'llm',
-                    variantId: 'gemma-2-2b-it-q4km',
-                    fileName: name,
-                    version: '1.0',
-                    sizeBytes: entity.lengthSync(),
-                  );
-                }
-              } else if (name == 'detector_int8.onnx' || name == 'transformer__truthlens-multilingual-distil-int8.onnx') {
-                // 分類器需要合法合規的 tokenizer；尋找同目錄下的 tokenizer.json 或對應的 tokenizer 檔案
-                String? tokName;
-                final tokFile1 = File(p.join(dir.path, 'transformer__truthlens-multilingual-distil-int8.tokenizer.json'));
-                final tokFile2 = File(p.join(dir.path, 'tokenizer.json'));
-                if (tokFile1.existsSync()) {
-                  tokName = p.basename(tokFile1.path);
-                } else if (tokFile2.existsSync()) {
-                  tokName = 'tokenizer.json';
-                }
 
-                // 驗證 Tokenizer 檔案是否為完整合法的 JSON 格式（排除下到一半或網路錯誤的損毀檔）
-                if (tokName != null) {
-                  try {
-                    final content = File(p.join(dir.path, tokName)).readAsStringSync();
-                    jsonDecode(content);
-                  } catch (_) {
-                    // 若 Tokenizer 檔格式不合規，自動移除該損毀檔，避免誤判為有效安裝
-                    try { File(p.join(dir.path, tokName)).deleteSync(); } catch (_) {}
-                    tokName = null;
+              // 配對 ${role}__${variantId}.onnx / .tflite / .gguf 的通用格式
+              final rolePrefix = '${role}__';
+              if (name.startsWith(rolePrefix)) {
+                final withoutPrefix = name.substring(rolePrefix.length);
+                final extension = p.extension(name);
+                if (['.onnx', '.tflite', '.gguf'].contains(extension)) {
+                  // 從檔名提取 variantId（去掉副檔名）
+                  final variantId = withoutPrefix.substring(0, withoutPrefix.length - extension.length);
+
+                  if (!installed.containsKey(variantId)) {
+                    // Transformer / Statistical / Adversarial 分類器需驗證 tokenizer（若存在）
+                    String? tokName;
+                    if (role == 'transformer' && ['.onnx', '.tflite'].contains(extension)) {
+                      // 尋找對應的 tokenizer 檔
+                      final tokFile = File(p.join(dir.path, '${role}__$variantId.tokenizer.json'));
+                      if (tokFile.existsSync()) {
+                        try {
+                          final content = tokFile.readAsStringSync();
+                          jsonDecode(content);
+                          tokName = '${role}__$variantId.tokenizer.json';
+                        } catch (_) {
+                          // 格式不合規，刪除
+                          try { tokFile.deleteSync(); } catch (_) {}
+                        }
+                      }
+                    }
+
+                    if (role != 'transformer' || tokName != null) {
+                      installed[variantId] = InstalledModel(
+                        role: role,
+                        variantId: variantId,
+                        fileName: name,
+                        tokenizerFileName: tokName,
+                        tokenizer: tokName != null ? 'roberta-bpe' : 'none',
+                        aiLabelIndex: 1,
+                        version: '1.0.0',
+                        sizeBytes: entity.lengthSync().toInt(),
+                      );
+                    }
                   }
-                }
-
-                if (role == 'transformer' &&
-                    tokName != null &&
-                    !installed.containsKey('truthlens-multilingual-distil-int8')) {
-                  installed['truthlens-multilingual-distil-int8'] = InstalledModel(
-                    role: 'transformer',
-                    variantId: 'truthlens-multilingual-distil-int8',
-                    fileName: name,
-                    tokenizerFileName: tokName,
-                    tokenizer: 'roberta-bpe',
-                    aiLabelIndex: 1,
-                    version: '1.0.0',
-                    sizeBytes: entity.lengthSync(),
-                  );
                 }
               }
             }
