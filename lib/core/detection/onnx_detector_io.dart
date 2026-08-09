@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:onnxruntime/onnxruntime.dart';
 
 import 'text_tokenizer.dart';
@@ -63,8 +64,28 @@ class OnnxDetector {
     int maxLen = 192,
   }) async {
     _initOrtEnv();
+    final modelFile = File(modelPath);
+    final modelName = modelFile.path.split('/').last;
+    debugPrint('[OnnxDetector] 載入模型: $modelName');
+
     final options = OrtSessionOptions();
-    final session = OrtSession.fromFile(File(modelPath), options);
+    OrtSession session;
+    try {
+      session = OrtSession.fromFile(modelFile, options);
+      debugPrint('[OnnxDetector] ✓ 模型載入成功: $modelName');
+    } catch (e) {
+      final errorMsg = e.toString();
+      if (errorMsg.contains('opset') || errorMsg.contains('Opset') || errorMsg.contains('ValidateOpsetForDomain')) {
+        debugPrint('[OnnxDetector] ❌ ONNX opset 版本不支援: $modelName');
+        debugPrint('[OnnxDetector]    錯誤: $errorMsg');
+        debugPrint('[OnnxDetector]    提示: ONNX Runtime 只支援官方發布的 opset 版本（通常 ≤3），opset 5+ 尚在開發中');
+      } else {
+        debugPrint('[OnnxDetector] ❌ 模型載入失敗: $modelName');
+        debugPrint('[OnnxDetector]    錯誤: $errorMsg');
+      }
+      rethrow;
+    }
+
     final String tokenizerJson = (tokenizerType == 'none' || tokenizerJsonPath.isEmpty)
         ? '{}'
         : await File(tokenizerJsonPath).readAsString();

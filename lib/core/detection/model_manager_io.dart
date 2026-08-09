@@ -99,14 +99,22 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 開機掃描 installed.json 與檔案，重建每個 role 的安裝狀態（含清理遺失檔案）。
+  /// 詳細日誌記錄於 debugPrint，用於診斷模型安裝失敗原因。
   Future<void> refreshInstallStates() async {
     final f = await _manifestFile();
     final dir = await _modelsDir();
     Map<String, dynamic> raw = {};
+    debugPrint('[ModelManager] === refreshInstallStates() 開始 ===');
+    debugPrint('[ModelManager] 模型目錄: ${dir.path}');
     if (f.existsSync()) {
       try {
         raw = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
-      } catch (_) {}
+        debugPrint('[ModelManager] 讀入 installed.json，包含 ${raw.keys.length} 個 role');
+      } catch (e) {
+        debugPrint('[ModelManager] ❌ installed.json 解析失敗: $e');
+      }
+    } else {
+      debugPrint('[ModelManager] 無 installed.json，首次掃描');
     }
 
     for (final role in _roles.keys.toList()) {
@@ -147,15 +155,21 @@ class ModelManager extends ChangeNotifier {
                         ['.onnx', '.tflite'].contains(extension)) {
                       // 強制檢查 tokenizer 是否存在且格式完整
                       final tokFile = File(p.join(dir.path, '${role}__$variantId.tokenizer.json'));
+                      debugPrint('[ModelManager] 檢查 $role/$variantId 的 tokenizer...');
                       if (!tokFile.existsSync()) {
+                        debugPrint('[ModelManager]   ❌ Tokenizer 不存在: ${tokFile.path}');
                         shouldRegister = false; // 缺 tokenizer，不註冊
                       } else {
                         try {
                           final content = tokFile.readAsStringSync();
+                          final sizeKb = content.length / 1024;
+                          debugPrint('[ModelManager]   ✓ Tokenizer 檔案存在 (${sizeKb.toStringAsFixed(1)} KB)');
                           jsonDecode(content);
+                          debugPrint('[ModelManager]   ✓ JSON 格式有效');
                           tokName = '${role}__$variantId.tokenizer.json';
-                        } catch (_) {
+                        } catch (e) {
                           // 格式損毀，刪除並不註冊該模型
+                          debugPrint('[ModelManager]   ❌ Tokenizer JSON 解析失敗: $e');
                           try { tokFile.deleteSync(); } catch (_) {}
                           shouldRegister = false;
                         }
@@ -163,6 +177,8 @@ class ModelManager extends ChangeNotifier {
                     }
 
                     if (shouldRegister) {
+                      final modelSizeMb = entity.lengthSync() / (1024 * 1024);
+                      debugPrint('[ModelManager]   ✓ 註冊模型: $role/$variantId (${modelSizeMb.toStringAsFixed(1)} MB)${tokName != null ? ' + tokenizer' : ''}');
                       installed[variantId] = InstalledModel(
                         role: role,
                         variantId: variantId,
@@ -173,6 +189,8 @@ class ModelManager extends ChangeNotifier {
                         version: '1.0.0',
                         sizeBytes: entity.lengthSync().toInt(),
                       );
+                    } else {
+                      debugPrint('[ModelManager]   ❌ 未註冊: $role/$variantId (缺少必要檔案或格式無效)');
                     }
                   }
                 }

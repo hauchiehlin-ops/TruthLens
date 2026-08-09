@@ -2,6 +2,8 @@
 /// 避免在兩個平台實作間重複定義）。純資料，不含任何平台相關程式碼。
 library;
 
+import 'package:flutter/foundation.dart';
+
 enum InstallState { notInstalled, downloading, installed, failed }
 
 /// 已安裝變體紀錄（多個變體可同時安裝於同一 role）
@@ -48,19 +50,53 @@ class InstalledModel {
         'sha256': sha256,
       };
 
-  factory InstalledModel.fromJson(Map<String, dynamic> j) => InstalledModel(
-        role: j['role'] as String,
-        variantId: j['variant_id'] as String,
-        fileName: j['file_name'] as String,
-        tokenizerFileName: j['tokenizer_file_name'] as String?,
-        tokenizer: j['tokenizer'] as String? ?? 'none',
-        aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
-        version: j['version'] as String? ?? '0',
-        sizeBytes: (j['size_bytes'] as num?)?.toInt() ?? 0,
-        name: j['name'] as String?,
-        imported: j['imported'] as bool? ?? false,
-        sha256: j['sha256'] as String?,
+  factory InstalledModel.fromJson(Map<String, dynamic> j) {
+    try {
+      // 詳細類型檢查，防止 null 轉換錯誤
+      final role = j['role'] as String?;
+      if (role == null || role.isEmpty) {
+        throw FormatException('role 欄位缺失或為空');
+      }
+
+      final variantId = j['variant_id'] as String?;
+      if (variantId == null || variantId.isEmpty) {
+        throw FormatException('variant_id 欄位缺失或為空');
+      }
+
+      final fileName = j['file_name'] as String?;
+      if (fileName == null || fileName.isEmpty) {
+        throw FormatException('file_name 欄位缺失或為空');
+      }
+
+      // 可選欄位
+      final tokenizerFileName = j['tokenizer_file_name'] as String?;
+      final tokenizer = j['tokenizer'] as String? ?? 'none';
+      final aiLabelIndex = (j['ai_label_index'] as num?)?.toInt() ?? 1;
+      final version = j['version'] as String? ?? '0';
+      final sizeBytes = (j['size_bytes'] as num?)?.toInt() ?? 0;
+      final name = j['name'] as String?;
+      final imported = j['imported'] as bool? ?? false;
+      final sha256 = j['sha256'] as String?;
+
+      return InstalledModel(
+        role: role,
+        variantId: variantId,
+        fileName: fileName,
+        tokenizerFileName: tokenizerFileName,
+        tokenizer: tokenizer,
+        aiLabelIndex: aiLabelIndex,
+        version: version,
+        sizeBytes: sizeBytes,
+        name: name,
+        imported: imported,
+        sha256: sha256,
       );
+    } catch (e) {
+      debugPrint('[InstalledModel] ❌ 解析失敗: $e');
+      debugPrint('[InstalledModel]    原始數據: $j');
+      rethrow;
+    }
+  }
 }
 
 /// 單一 role 的安裝狀態（可含多個已安裝變體 + 使用中變體 + 下載進度）
