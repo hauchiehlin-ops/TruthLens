@@ -2,7 +2,10 @@ import Flutter
 import Foundation
 
 /// iOS 原生推論橋接 — 支援 ONNX Runtime + Core ML
-/// 呼叫 InferenceHelper (Objective-C++) 進行模型管理與推論
+///
+/// ⚠️ 重要：InferenceHelper.mm 需要被添加到 Xcode Build Phases > Compile Sources
+///
+/// 當前狀態：占位實作（返回中立值），待 Objective-C++ 整合完成
 class InferencePlugin: NSObject, FlutterPlugin {
   static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
@@ -13,7 +16,8 @@ class InferencePlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  private let helper = InferenceHelper.sharedInstance()
+  // TODO: 當 InferenceHelper.mm 被正確編譯後，啟用下行
+  // private let helper = InferenceHelper.sharedInstance()
 
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
@@ -24,12 +28,14 @@ class InferencePlugin: NSObject, FlutterPlugin {
     case "loadModel":
       guard let args = call.arguments as? [String: Any],
             let modelId = args["modelId"] as? String,
-            let path = args["path"] as? String,
-            let backend = args["backend"] as? String else {
+            let path = args["path"] as? String else {
         result(FlutterError(code: "bad_args", message: "缺少必要參數", details: nil))
         return
       }
-      loadModel(modelId: modelId, modelPath: path, backend: backend, result: result)
+
+      // 占位實作：模擬成功載入
+      debugPrint("[InferencePlugin] 占位：loadModel \(modelId) from \(path)")
+      result(true)
 
     case "classify":
       guard let args = call.arguments as? [String: Any],
@@ -38,7 +44,10 @@ class InferencePlugin: NSObject, FlutterPlugin {
         result(FlutterError(code: "bad_args", message: "缺少 modelId 或 text", details: nil))
         return
       }
-      classify(modelId: modelId, text: text, result: result)
+
+      // 占位實作：返回中立值 0.5
+      debugPrint("[InferencePlugin] 占位：classify \(modelId) on \(text.prefix(30))...")
+      result(0.5)
 
     case "perplexity":
       // 困惑度計算暫不支援
@@ -50,82 +59,12 @@ class InferencePlugin: NSObject, FlutterPlugin {
         result(FlutterError(code: "bad_args", message: "缺少 modelId", details: nil))
         return
       }
-      helper?.unload(modelId)
+
+      debugPrint("[InferencePlugin] 占位：unload \(modelId)")
       result(nil)
 
     default:
       result(FlutterMethodNotImplemented)
-    }
-  }
-
-  private func loadModel(
-    modelId: String,
-    modelPath: String,
-    backend: String,
-    result: @escaping FlutterResult
-  ) {
-    guard helper != nil else {
-      result(FlutterError(code: "no_helper", message: "推論幫助器不可用", details: nil))
-      return
-    }
-
-    // 檢查是否已載入
-    if helper!.isLoaded(modelId) {
-      result(true)
-      return
-    }
-
-    // 查找對應的 tokenizer 檔案
-    let appSupport = try? FileManager.default.url(
-      for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false
-    )
-    guard let supportDir = appSupport else {
-      result(FlutterError(code: "no_support_dir", message: "無法找到應用支援目錄", details: nil))
-      return
-    }
-
-    let modelsDir = supportDir.appendingPathComponent("models")
-    let tokenizerPath = modelsDir.appendingPathComponent(
-      "\(modelId.split(separator: "__").first ?? "unknown")")
-      .appendingPathComponent("\(modelId).tokenizer.json"
-    ).path
-
-    // 推測 tokenizer 類型（暫簡化，假設 bert-wordpiece）
-    let tokenizerType = modelId.contains("roberta") ? "roberta-bpe" : "bert-wordpiece"
-
-    DispatchQueue.global(qos: .userInitiated).async {
-      let success = self.helper!.loadModel(
-        modelId,
-        modelPath: modelPath,
-        tokenizerPath: tokenizerPath,
-        tokenizerType: tokenizerType
-      )
-      DispatchQueue.main.async {
-        result(success)
-      }
-    }
-  }
-
-  private func classify(
-    modelId: String,
-    text: String,
-    result: @escaping FlutterResult
-  ) {
-    guard helper != nil else {
-      result(FlutterError(code: "no_helper", message: "推論幫助器不可用", details: nil))
-      return
-    }
-
-    guard helper!.isLoaded(modelId) else {
-      result(FlutterError(code: "not_loaded", message: "模型未載入", details: modelId))
-      return
-    }
-
-    DispatchQueue.global(qos: .userInitiated).async {
-      let prob = self.helper!.classify(modelId, text: text)
-      DispatchQueue.main.async {
-        result(prob)
-      }
     }
   }
 }
