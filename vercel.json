@@ -1,9 +1,5 @@
 {
-  "buildCommand": "flutter build web",
   "outputDirectory": "build/web",
-  "env": {
-    "FLUTTER_VERSION": "3.24.1"
-  },
   "rewrites": [
     {
       "source": "/(.*)",
