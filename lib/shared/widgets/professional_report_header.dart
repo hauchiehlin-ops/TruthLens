@@ -411,7 +411,7 @@ class _EngineContributionCard extends StatelessWidget {
             )
           else
             for (final score in result.engineScores)
-            Padding(
+              Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
