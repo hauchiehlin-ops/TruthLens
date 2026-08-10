@@ -1,0 +1,127 @@
+{
+  "catalog_version": "2026-07-04",
+  "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
+  "models": [
+    {
+      "role": "transformer",
+      "name": "AI 文字偵測器",
+      "variants": [
+        {
+          "id": "chatgpt-detector-roberta-onnx-int8",
+          "name": "RoBERTa 偵測器（英文・ChatGPT 專用）",
+          "backend": "transformer",
+          "tokenizer": "roberta-bpe",
+          "ai_label_index": 1,
+          "languages": ["en"],
+          "quant": "int8",
+          "size_bytes": 125855419,
+          "min_ram_mb": 2048,
+          "tier": "mid",
+          "url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/onnx/model_quantized.onnx",
+          "tokenizer_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX",
+          "sha256": null,
+          "version": "1.0",
+          "source": "onnx-community/chatgpt-detector-roberta-ONNX (Hello-SimpleAI/chatgpt-detector-roberta 的 ONNX 轉換)",
+          "license": "MIT",
+          "note": "英文 Human/ChatGPT 二元分類器，opset 乾淨可直接下載使用（已實測 P(ChatGPT) 人類文本≈0、AI 風格文本明顯偏高）"
+        },
+        {
+          "id": "truthlens-multilingual-distil-int8",
+          "name": "多語言輕量偵測器（英+中・INT8）",
+          "backend": "transformer",
+          "tokenizer": "roberta-bpe",
+          "ai_label_index": 1,
+          "languages": ["en", "zh", "multi"],
+          "quant": "int8",
+          "size_bytes": 135266304,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.1-models-detector/xlmr_detector_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/tokenizer.json",
+          "sha256": null,
+          "version": "1.0",
+          "source": "training/ HC3 fine-tune (xlm-roberta-base)",
+          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-detector",
+          "license": "資料源 HC3（研究用途）",
+          "note": "本專案以 HC3 英+中微調 XLM-RoBERTa（INT8 量化），體積小、支援多語言/中文。已發布至 GitHub Releases，可直接下載使用"
+        }
+      ]
+    },
+    {
+      "role": "statistical",
+      "name": "困惑度語言模型（統計分析）",
+      "variants": [
+        {
+          "id": "distilgpt2-ppl-int8",
+          "name": "DistilGPT2 困惑度模型（INT8）",
+          "backend": "transformer",
+          "tokenizer": "gpt2-bpe",
+          "languages": ["en", "multi"],
+          "quant": "int8",
+          "size_bytes": 82000000,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://huggingface.co/Xenova/distilgpt2/resolve/main/onnx/decoder_model_quantized.onnx",
+          "tokenizer_url": "https://huggingface.co/Xenova/distilgpt2/resolve/main/tokenizer.json",
+          "page_url": "https://huggingface.co/Xenova/distilgpt2",
+          "sha256": null,
+          "version": "1.0",
+          "source": "distilbert/distilgpt2",
+          "license": "Apache-2.0",
+          "note": "為統計引擎提供真實困惑度指標；未安裝時以 burstiness/TTR 等啟發式運作"
+        }
+      ]
+    },
+    {
+      "role": "adversarial",
+      "name": "對抗式防禦（改寫偵測）",
+      "variants": [
+        {
+          "id": "truthlens-adversarial-distil-int8",
+          "name": "改寫偵測模型（INT8）",
+          "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
+          "languages": ["en"],
+          "quant": "int8",
+          "size_bytes": 135729550,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/models-v1/adversarial_int8.onnx",
+          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/models-v1/tokenizer.json",
+          "sha256": "fc179829645c4a2d7521d1ee09f929205003d51f77b0ebb245a7412fe701e41b",
+          "version": "1.0",
+          "source": "training/ HC3 + T5 改寫對抗訓練",
+          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/models-v1",
+          "license": "資料源 HC3（研究用途）",
+          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練（本地已驗證 98.1% 驗證準確率，改寫規避測試通過）。已上架 GitHub Releases，可直接下載"
+        }
+      ]
+    },
+    {
+      "role": "llm",
+      "name": "報告生成 LLM",
+      "variants": [
+        {
+          "id": "gemma-2-2b-it-q4km",
+          "name": "Gemma 2 · 2B Instruct（Q4_K_M）",
+          "backend": "languageModel",
+          "tokenizer": "none",
+          "languages": ["multi"],
+          "quant": "q4_k_m",
+          "size_bytes": 1708582752,
+          "min_ram_mb": 6144,
+          "tier": "high",
+          "url": "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf",
+          "sha256": "e0aee85060f168f0f2d8473d7ea41ce2f3230c1bc1374847505ea599288a7787",
+          "version": "1.0",
+          "source": "bartowski/gemma-2-2b-it-GGUF（google/gemma-2-2b-it 的 GGUF Q4_K_M 量化）",
+          "page_url": "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF",
+          "license": "Gemma Terms of Use",
+          "note": "智慧報告生成主路徑（裝置端 llama.cpp）；未安裝或平台無 llama bridge 時自動回退至遠程 API 或模板報告。目前 LLM bridge 已打包於 macOS、iOS、Android arm64-v8a/x86_64；Windows 提供 build_windows.ps1 產生 windows/libs/*.dll 後由 CMake 打包。已上架 GitHub Releases，可直接下載"
+        }
+      ]
+    }
+  ]
+}
