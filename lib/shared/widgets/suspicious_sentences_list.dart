@@ -36,7 +36,7 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
         .where((e) => e.value.aiProbability > 0.5) // 只保留可疑句子
         .map((e) => _SuspiciousSentenceItem(
               index: e.key,
-              sentence: e.value.text,
+              sentence: _truncateSentence(e.value.text),
               aiProbability: e.value.aiProbability,
               patterns: e.value.patterns,
             ))
@@ -44,6 +44,13 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
 
     // 按 AI 概率排序（高到低）
     _items.sort((a, b) => b.aiProbability.compareTo(a.aiProbability));
+  }
+
+  /// 截斷長句子：限制為 300 字元，超過則加 ...
+  static String _truncateSentence(String text) {
+    const maxLength = 300;
+    if (text.length <= maxLength) return text;
+    return '${text.substring(0, maxLength)}...';
   }
 
   List<_SuspiciousSentenceItem> _getFilteredItems() {

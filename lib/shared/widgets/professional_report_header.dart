@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -355,7 +356,6 @@ class _EngineContributionCard extends StatelessWidget {
     required this.l10n,
   });
 
-  /// 根據引擎 ID 返回顯示名稱
   static String _getEngineDisplayName(String engineId) {
     switch (engineId) {
       case 'transformer':
@@ -398,6 +398,28 @@ class _EngineContributionCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
+          // 雷達圖：顯示各引擎 AI 概率
+          if (result.engineScores.isNotEmpty)
+            Container(
+              height: 300,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: _EngineRadarChart(engineScores: result.engineScores),
+            ),
+
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+
+          // 引擎詳細列表
+          Text(
+            '詳細分析',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                ),
+          ),
+          const SizedBox(height: 8),
+
           // 引擎列表
           if (result.engineScores.isEmpty)
             Padding(
@@ -412,73 +434,146 @@ class _EngineContributionCard extends StatelessWidget {
           else
             for (final score in result.engineScores)
               Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  // 可用狀態指示
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: score.available ? const Color(0xFF6B5B95) : Colors.grey[300],
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    // 可用狀態指示
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: score.available ? const Color(0xFF6B5B95) : Colors.grey[300],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
+                    const SizedBox(width: 8),
 
-                  // 引擎名 + 評分
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              score.engineName.isNotEmpty
-                                  ? score.engineName
-                                  : _getEngineDisplayName(score.engineId),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
+                    // 引擎名 + 評分
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                score.engineName.isNotEmpty
+                                    ? score.engineName
+                                    : _getEngineDisplayName(score.engineId),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            Text(
-                              score.available
-                                  ? '${(score.aiProbability * 100).round()}%'
-                                  : '未安裝',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: score.available
-                                        ? const Color(0xFF1E3A5F)
-                                        : Colors.grey[400],
-                                    fontWeight: FontWeight.bold,
+                              Text(
+                                score.available
+                                    ? '${(score.aiProbability * 100).round()}%'
+                                    : '未安裝',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: score.available
+                                          ? const Color(0xFF1E3A5F)
+                                          : Colors.grey[400],
+                                      fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (score.available) ...[
+                            const SizedBox(height: 4),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: score.aiProbability,
+                                minHeight: 4,
+                                backgroundColor: Colors.grey[200],
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  score.aiProbability > 0.7
+                                      ? const Color(0xFF6B5B95)
+                                      : const Color(0xFF1E3A5F),
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                        if (score.available) ...[
-                          const SizedBox(height: 4),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: score.aiProbability,
-                              minHeight: 4,
-                              backgroundColor: Colors.grey[200],
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                score.aiProbability > 0.7
-                                    ? const Color(0xFF6B5B95)
-                                    : const Color(0xFF1E3A5F),
-                              ),
-                            ),
-                          ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
         ],
       ),
+    );
+  }
+}
+
+/// 引擎 AI 概率雷達圖
+class _EngineRadarChart extends StatelessWidget {
+  final List<EngineScore> engineScores;
+
+  const _EngineRadarChart({required this.engineScores});
+
+  static String _getEngineDisplayName(String engineId) {
+    switch (engineId) {
+      case 'transformer':
+        return '🧠 Transformer';
+      case 'statistical':
+        return '📊 統計';
+      case 'stylometry':
+        return '✒️ 風格';
+      case 'adversarial':
+        return '🛡️ 防禦';
+      default:
+        return engineId.toUpperCase();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final availableScores = engineScores.where((e) => e.available).toList();
+
+    if (availableScores.isEmpty) {
+      return Center(
+        child: Text(
+          '無可用引擎數據',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[500],
+              ),
+        ),
+      );
+    }
+
+    return RadarChart(
+      RadarChartData(
+        dataSets: [
+          RadarDataSet(
+            fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
+            borderColor: const Color(0xFF6B5B95),
+            borderWidth: 2,
+            dataEntries: availableScores
+                .map((score) => RadarEntry(value: score.aiProbability * 100))
+                .toList(),
+          ),
+        ],
+        radarBackgroundColor: Colors.transparent,
+        gridBorderData: BorderSide(
+          color: Colors.grey[300]!,
+          width: 1,
+        ),
+        tickBorderData: const BorderSide(
+          color: Colors.grey,
+          width: 0.5,
+        ),
+        getTitle: (index, angle) {
+          final score = availableScores[index];
+          final displayName = _getEngineDisplayName(score.engineId);
+          return RadarChartTitle(
+            text: displayName,
+            angle: angle,
+            positionPercentageOffset: 0.15,
+          );
+        },
+        radarTouchData: RadarTouchData(enabled: true),
+      ),
+      swapAnimationDuration: const Duration(milliseconds: 400),
     );
   }
 }
