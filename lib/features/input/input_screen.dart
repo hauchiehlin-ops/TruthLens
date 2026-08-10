@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
@@ -43,6 +44,7 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
 
 class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
+  double _rightPanelWidth = 400; // 右側面板預設寬度
 
   @override
   void initState() {
@@ -238,12 +240,162 @@ class _InputScreenState extends State<InputScreen> {
           ),
         ],
       ),
-      body: Row(
-        children: [
-          // 左側：輸入區域
-          Expanded(
-            flex: isWideScreen ? 7 : 1,
-            child: Center(
+      body: isWideScreen
+          ? Row(
+              children: [
+                // 左側：輸入區域
+                Expanded(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 720),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.inputSubtitle,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  TextField(
+                                    controller: _controller,
+                                    maxLines: null,
+                                    expands: true,
+                                    textAlignVertical: TextAlignVertical.top,
+                                    decoration: InputDecoration(
+                                      hintText: l10n.inputHint,
+                                    ),
+                                    onChanged: (_) => setState(() {}),
+                                  ),
+                                  if (_controller.text.isNotEmpty)
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        tooltip: l10n.inputClearTooltip,
+                                        onPressed: _clearInput,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            MergeSemantics(
+                              child: Row(
+                                children: [
+                                  _activeModelChip(context),
+                                  const Spacer(),
+                                  Text(
+                                    l10n.inputCharCount(
+                                        _controller.text.trim().length),
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: _pasteFromClipboard,
+                                  icon: const Icon(Icons.content_paste),
+                                  label: Text(l10n.inputPasteButton),
+                                ),
+                                const SizedBox(width: 12),
+                                OutlinedButton.icon(
+                                  onPressed: _scanImage,
+                                  icon: const Icon(
+                                      Icons.photo_camera_outlined),
+                                  label: Text(l10n.inputOcrButton),
+                                ),
+                                const SizedBox(width: 12),
+                                OutlinedButton.icon(
+                                  onPressed: _importDocument,
+                                  icon:
+                                      const Icon(Icons.folder_open_outlined),
+                                  label: Text(l10n.inputImportButton),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            FilledButton.icon(
+                              onPressed: _controller.text.trim().isEmpty
+                                  ? null
+                                  : _startAnalysis,
+                              icon: const Icon(Icons.search),
+                              label: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: Text(l10n.inputStartButton,
+                                    style: const TextStyle(fontSize: 16)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // 可拖動分割條
+                MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      setState(() {
+                        _rightPanelWidth =
+                            (_rightPanelWidth - details.delta.dx)
+                                .clamp(300, 600);
+                      });
+                    },
+                    child: Container(
+                      width: 8,
+                      color: scheme.outlineVariant.withValues(alpha: 0.3),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.resizeColumn,
+                        child: Center(
+                          child: Container(
+                            width: 3,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: scheme.outlineVariant.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // 右側：設定面板
+                SizedBox(
+                  width: _rightPanelWidth,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                          color: scheme.outlineVariant,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: _SettingsPanelInline(),
+                  ),
+                ),
+              ],
+            )
+          : Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 720),
                 child: Padding(
@@ -338,25 +490,6 @@ class _InputScreenState extends State<InputScreen> {
                 ),
               ),
             ),
-          ),
-          // 右側：設定面板（僅在寬屏顯示）
-          if (isWideScreen)
-            Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: scheme.outlineVariant,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: _SettingsPanelInline(),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }
@@ -647,13 +780,42 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               ),
             ),
             Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Text(
+                '📷 用於識別上傳文件中的手寫或印刷文字。點擊相機圖標後使用。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '🔑 Gemini API 金鑰',
-                    style: Theme.of(context).textTheme.labelSmall,
+                  Row(
+                    children: [
+                      Text(
+                        '🔑 Gemini API 金鑰',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          final url = Uri.parse('https://aistudio.google.com/app/apikey');
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        child: Text(
+                          '免費申請',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: scheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   TextField(
@@ -681,7 +843,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '🖥️ 本地 OCR 伺服器',
+                    '🖥️ 本地 OCR 伺服器（可選）',
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
                   const SizedBox(height: 6),
