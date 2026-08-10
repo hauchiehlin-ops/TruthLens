@@ -11,7 +11,7 @@ import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
-import '../../shared/widgets/score_gauge.dart';
+import '../../shared/widgets/engines_radar_chart.dart';
 import 'report_document.dart';
 
 /// 報告頁：版面由 [ReportDocument] 動態決定（LLM 或確定性模板生成）。
@@ -301,8 +301,9 @@ class _ReportScreenState extends State<ReportScreen> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          ScoreGauge(
-            aiProbability: result.aiProbability,
+          EnginesRadarChart(
+            engineScores: result.engineScores,
+            overallProbability: result.aiProbability,
             verdict: result.verdict,
           ),
           const SizedBox(height: 12),
