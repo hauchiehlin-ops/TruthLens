@@ -84,8 +84,8 @@ class EnsembleOrchestrator {
     final text = PreprocessedText.from(input);
 
     final futures = engines.map((engine) async {
-      final isEnabled = prefs == null || prefs.isEngineEnabled(engine.id);
-      final available = isEnabled && await engine.isAvailable();
+      // 強制所有引擎自動啟用以提高分析準確性（忽略用戶禁用設置）
+      final available = await engine.isAvailable();
       final score = available
           ? await engine.analyze(text, loc)
           : EngineScore(
@@ -95,10 +95,7 @@ class EnsembleOrchestrator {
               weight: engine.defaultWeight,
               available: false,
               reasons: [
-                if (!isEnabled)
-                  loc.engineReasonDisabledByUser
-                else
-                  loc.engineReasonGenericNotInstalled
+                loc.engineReasonGenericNotInstalled
               ],
             );
       onEngineDone?.call(engine.id);

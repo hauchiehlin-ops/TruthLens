@@ -615,7 +615,30 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
-          // 檢測引擎
+          // 模型管理入口
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              '模型管理',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.primary,
+                  ),
+            ),
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.cloud_download_outlined, size: 20),
+            title: Text('模型下載 & 管理',
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text('檢視已安裝模型、下載進度、儲存空間',
+                style: Theme.of(context).textTheme.bodySmall),
+            trailing: Icon(Icons.chevron_right, size: 18),
+            onTap: () => context.push('/models'),
+          ),
+          const Divider(),
+
+          // 檢測引擎（說明：自動啟用所有引擎以提高準確性）
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
@@ -623,6 +646,16 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: scheme.primary,
+                  ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              '所有檢測引擎自動啟用以提高準確性。',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
                   ),
             ),
           ),

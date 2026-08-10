@@ -8,6 +8,7 @@ import '../features/history/history_screen.dart';
 import '../features/input/input_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/report/report_screen.dart';
+import '../features/settings/model_management_screen.dart';
 import '../features/settings/settings_screen.dart';
 
 GoRouter createRouter({required String initialLocation}) => GoRouter(
