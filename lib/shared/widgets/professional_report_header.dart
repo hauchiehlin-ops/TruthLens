@@ -17,7 +17,6 @@ class ProfessionalReportHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       child: Column(
@@ -127,7 +126,6 @@ class _VerdictSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final isAI = result.aiProbability > 0.5;
 
     return Container(
@@ -208,11 +206,9 @@ class _VerdictSummaryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    result.confidence < 0.6
+                    result.isLowConfidence
                         ? '⚠️ 信心度低'
-                        : result.confidence < 0.8
-                            ? '✓ 信心度中等'
-                            : '✓✓ 信心度高',
+                        : '✓ 信心度高',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Colors.white,
                         ),
@@ -271,8 +267,8 @@ class _MetricsRow extends StatelessWidget {
             icon: Icons.verified_user_outlined,
             iconColor: const Color(0xFFD4AF37),
             title: '可信度',
-            value: '${(result.confidence * 100).round()}%',
-            subtitle: result.confidence > 0.8 ? '高度可信' : '需人工驗證',
+            value: result.isLowConfidence ? '低' : '高',
+            subtitle: result.isLowConfidence ? '需人工驗證' : '高度可信',
           ),
         ),
       ],
@@ -382,9 +378,8 @@ class _EngineContributionCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 引擎列表
-          ...result.engineScores.map((score) {
-            final isAvailable = score.available;
-            return Padding(
+          for (final score in result.engineScores)
+            Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
@@ -394,7 +389,7 @@ class _EngineContributionCard extends StatelessWidget {
                     height: 8,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isAvailable ? const Color(0xFF6B5B95) : Colors.grey[300],
+                      color: score.available ? const Color(0xFF6B5B95) : Colors.grey[300],
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -414,11 +409,11 @@ class _EngineContributionCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              isAvailable
+                              score.available
                                   ? '${(score.aiProbability * 100).round()}%'
                                   : '未安裝',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: isAvailable
+                                    color: score.available
                                         ? const Color(0xFF1E3A5F)
                                         : Colors.grey[400],
                                     fontWeight: FontWeight.bold,
@@ -426,7 +421,7 @@ class _EngineContributionCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        if (isAvailable) ...[
+                        if (score.available) ...[
                           const SizedBox(height: 4),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
@@ -447,8 +442,7 @@ class _EngineContributionCard extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }).toList(),
+            ),
         ],
       ),
     );

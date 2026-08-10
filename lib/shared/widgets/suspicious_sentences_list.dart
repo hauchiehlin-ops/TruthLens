@@ -49,7 +49,7 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
   List<_SuspiciousSentenceItem> _getFilteredItems() {
     return _items.where((item) {
       if (_filterLevel == 'high') return item.aiProbability >= 0.8;
-      if (_filterLevel == 'medium') return 0.5 <= item.aiProbability < 0.8;
+      if (_filterLevel == 'medium') return item.aiProbability >= 0.5 && item.aiProbability < 0.8;
       return true;
     }).toList();
   }
@@ -87,7 +87,7 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: filteredItems.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final item = filteredItems[index];
             return _SuspiciousSentenceCard(
@@ -383,7 +383,7 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                       ),
                 ),
                 Text(
-                  '${index}/$totalCount',
+                  '$index/$totalCount',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[400],
                       ),

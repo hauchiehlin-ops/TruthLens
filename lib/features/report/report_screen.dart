@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../app/theme.dart';
 import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/bibliography_verifier.dart';
@@ -11,7 +10,8 @@ import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
-import '../../shared/widgets/engines_radar_chart.dart';
+import '../../shared/widgets/professional_report_header.dart';
+import '../../shared/widgets/suspicious_sentences_list.dart';
 import 'report_document.dart';
 
 /// 報告頁：版面由 [ReportDocument] 動態決定（LLM 或確定性模板生成）。
@@ -215,26 +215,58 @@ class _ReportScreenState extends State<ReportScreen> {
             )
           : Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 840),
+                constraints: const BoxConstraints(maxWidth: 900),
                 child: ListView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.symmetric(vertical: 24),
                   children: [
-                    _headlineCard(doc, l10n),
-                    const SizedBox(height: 16),
-                    for (final c in doc.components) ...[
-                      _component(c, l10n),
-                      const SizedBox(height: 16),
+                    // 專業報告頂部：判定摘要 + 三列指標 + 引擎貢獻度
+                    ProfessionalReportHeader(
+                      result: result,
+                      onDownloadPdf: () => _export(ReportExporter.exportPdf),
+                    ),
+
+                    // 可疑句子清單
+                    if (result.sentences.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SuspiciousSentencesList(
+                          sentences: result.sentences,
+                          l10n: l10n,
+                        ),
+                      ),
                     ],
+
+                    // 超連結驗證卡（可選）
+                    if (_detectedUrls.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _linkVerificationCard(l10n),
+                      ),
+                    ],
+
+                    // 文獻參考驗證卡（可選）
+                    if (_bibEntries.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _bibliographyCard(l10n),
+                      ),
+                    ],
+
+                    // 網路狀態警告（若適用）
                     if (_networkAvailable == false &&
                         (_detectedUrls.isNotEmpty ||
                             _bibEntries.isNotEmpty)) ...[
-                      _networkWarningCard(l10n),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _networkWarningCard(l10n),
+                      ),
                     ],
-                    _linkVerificationCard(l10n),
-                    const SizedBox(height: 16),
-                    _bibliographyCard(l10n),
-                    const SizedBox(height: 16),
+
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -242,506 +274,8 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _headlineCard(ReportDocument doc, AppLocalizations l10n) {
-    final llm = doc.source == ReportSource.llm;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  llm ? Icons.auto_awesome : Icons.description_outlined,
-                  size: 16,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  llm ? l10n.reportSourceLlm : l10n.reportSourceTemplate,
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(doc.headline, style: Theme.of(context).textTheme.titleMedium),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _component(ReportComponent c, AppLocalizations l10n) {
-    return switch (c.type) {
-      ReportComponentType.overallGauge => _gaugeCard(l10n),
-      ReportComponentType.thresholdBanner => _bannerCard(
-        c.body ?? '',
-        icon: result.flaggedAsAi ? Icons.flag : Icons.check_circle_outline,
-      ),
-      ReportComponentType.narrative => _narrativeCard(c),
-      ReportComponentType.paraphraseWarning => _bannerCard(
-        c.body ?? '',
-        title: c.title,
-        icon: Icons.warning_amber,
-        tone: AppTheme.verdictColor(0.9),
-      ),
-      ReportComponentType.eslNotice => _bannerCard(
-        c.body ?? '',
-        title: c.title,
-        icon: Icons.translate,
-      ),
-      ReportComponentType.patternList => _narrativeCard(c),
-      ReportComponentType.engineBreakdown => _engineCard(l10n),
-      ReportComponentType.sentenceHeatmap => _heatmapCard(l10n),
-    };
-  }
 
-  Widget _gaugeCard(AppLocalizations l10n) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          EnginesRadarChart(
-            engineScores: result.engineScores,
-            overallProbability: result.aiProbability,
-            verdict: result.verdict,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            l10n.reportSentenceSummary(
-              result.sentences.length,
-              result.aiSentenceCount,
-              result.humanSentenceCount,
-              (result.elapsed.inMilliseconds / 1000).toStringAsFixed(1),
-            ),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.primaryContainer.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.verified_user_outlined,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.privacySealNoticeText,
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-
-  Widget _bannerCard(
-    String body, {
-    String? title,
-    IconData? icon,
-    Color? tone,
-  }) {
-    final color = tone ?? Theme.of(context).colorScheme.primary;
-    return Card(
-      color: color.withValues(alpha: 0.08),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon ?? Icons.info_outline, color: color, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (title != null)
-                    Text(
-                      title,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(color: color),
-                    ),
-                  Text(body),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _narrativeCard(ReportComponent c) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (c.title != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                c.title!,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-          Text(c.body ?? '', style: const TextStyle(height: 1.5)),
-        ],
-      ),
-    ),
-  );
-
-  Widget _engineCard(AppLocalizations l10n) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        l10n.reportEngineBreakdownTitle,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      const SizedBox(height: 8),
-      for (final e in result.engineScores)
-        Card(
-          child: ListTile(
-            leading: Icon(
-              e.available ? Icons.memory : Icons.download_outlined,
-              color: e.available
-                  ? AppTheme.verdictColor(e.aiProbability)
-                  : Theme.of(context).disabledColor,
-            ),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    e.engineName,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Chip(
-                  label: Text(
-                    '${l10n.reportEngineWeightLabel} ${(e.weight * 100).round()}%',
-                    style: const TextStyle(fontSize: 10),
-                  ),
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                ),
-              ],
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                e.reasons.join('\n'),
-                style: const TextStyle(height: 1.4),
-              ),
-            ),
-            trailing: e.available
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '${(e.aiProbability * 100).round()}%',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: AppTheme.verdictColor(e.aiProbability),
-                        ),
-                      ),
-                      Text(
-                        e.aiProbability >= 0.60
-                            ? l10n.reportVerdictAiLikelihood
-                            : (e.aiProbability <= 0.40
-                                ? l10n.reportVerdictHumanLikelihood
-                                : '—'),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.verdictColor(e.aiProbability),
-                        ),
-                      ),
-                    ],
-                  )
-                : Builder(
-                    builder: (context) {
-                      final isLoadFailed = e.reasons.any(
-                        (r) =>
-                            r.contains('模型載入失敗') ||
-                            r.contains('failed to load') ||
-                            r.contains('載入失敗') ||
-                            r.contains('加载失败'),
-                      );
-                      return Text(
-                        isLoadFailed
-                            ? l10n.reportEngineLoadFailedBadge
-                            : l10n.reportEngineNotInstalled,
-                        style: TextStyle(
-                          color: isLoadFailed
-                              ? Theme.of(context).colorScheme.error
-                              : null,
-                          fontWeight:
-                              isLoadFailed ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ),
-      const SizedBox(height: 12),
-      _ensembleFormulaCard(l10n),
-    ],
-  );
-
-  Widget _ensembleFormulaCard(AppLocalizations l10n) {
-    final activeScores = result.engineScores.where((e) => e.available).toList();
-    if (activeScores.isEmpty) return const SizedBox.shrink();
-
-    double effectiveWeight(EngineScore s) {
-      if (result.eslAdjusted && s.engineId == 'statistical') return s.weight * 0.5;
-      return s.weight;
-    }
-
-    final totalWeight = activeScores.fold<double>(0.0, (sum, s) => sum + effectiveWeight(s));
-
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.calculate_outlined,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.reportFormulaTitle,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.reportFormulaExplanation,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  for (var i = 0; i < activeScores.length; i++) ...[
-                    Builder(builder: (context) {
-                      final e = activeScores[i];
-                      final effW = effectiveWeight(e);
-                      final contribution = totalWeight > 0
-                          ? (e.aiProbability * effW / totalWeight) * 100
-                          : 0.0;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                e.engineName,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                '${(e.aiProbability * 100).round()}%',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.verdictColor(e.aiProbability),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                '× ${(effW * 100).round()}%',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '+${contribution.toStringAsFixed(1)}%',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                    if (i < activeScores.length - 1)
-                      Divider(
-                        height: 8,
-                        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
-                      ),
-                  ],
-                ],
-              ),
-            ),
-            if (result.eslAdjusted) ...[
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 14,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      l10n.reportFormulaEslApplied,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.verdictColor(result.aiProbability).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppTheme.verdictColor(result.aiProbability).withValues(alpha: 0.35),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.reportFormulaFinalResult,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '${(result.aiProbability * 100).round()}% (${result.verdict.label(l10n)})',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.verdictColor(result.aiProbability),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _heatmapCard(AppLocalizations l10n) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        l10n.reportSentenceAnalysisTitle,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      const SizedBox(height: 8),
-      Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Wrap(
-            runSpacing: 6,
-            children: [
-              for (final s in result.sentences)
-                Semantics(
-                  label: l10n.reportSentenceTooltip(
-                    s.text,
-                    (s.aiProbability * 100).round(),
-                    s.patterns.isEmpty ? '' : '，${s.patterns.join('、')}',
-                  ),
-                  excludeSemantics: true,
-                  child: Tooltip(
-                    message: s.patterns.isEmpty
-                        ? '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%'
-                        : '${l10n.reportAiProbabilityLabel} ${(s.aiProbability * 100).round()}%\n'
-                              '${s.patterns.join('、')}',
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.verdictColor(
-                          s.aiProbability,
-                        ).withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(4),
-                        border: s.aiProbability >= 0.6
-                            ? Border(
-                                bottom: BorderSide(
-                                  color: AppTheme.verdictColor(s.aiProbability),
-                                  width: 2,
-                                ),
-                              )
-                            : null,
-                      ),
-                      child: Text('${s.text} '),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
 
   Widget _networkWarningCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
