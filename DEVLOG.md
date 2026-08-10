@@ -1,5 +1,76 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-11（第八次更新）— 模型管理架構改進：硬體偵測 + 自動下載 + 名稱修復
+
+**概述**
+完成深度的模型管理架構改進，涵蓋硬體性能自動偵測、模型智能下載策略、引擎名稱正確顯示、以及續傳機制驗證。
+
+**實裝內容**：✅ **完成**
+
+| 項目 | 狀態 | 說明 |
+|------|------|------|
+| 引擎名稱顯示修復 | ✅ 完成 | 修正 transformer/adversarial engines 優先返回語言化名稱 |
+| 硬體性能偵測服務 | ✅ 完成 | `DevicePerformanceService` 自動偵測 RAM/CPU/GPU/網速 |
+| 模型自動下載管理 | ✅ 完成 | `ModelAutoDownloadService` 智能下載策略（小型自動、大型提示） |
+| 本地儲存驗證 | ✅ 完成 | OPFS + installed.json 方案確認正常工作 |
+| 續傳功能驗證 | ✅ 完成 | HTTP 206 Range + 2MB 分塊重試機制已實裝 |
+
+**核心架構改進**：
+
+### 1. 引擎名稱顯示（修復）
+```dart
+// 修正前：優先顯示 variantId（如 "xlm-roberta-base"）
+// 修正後：始終返回語言化引擎名稱（如 "🧠 Transformer 模型"）
+String name(AppLocalizations l10n) => l10n.analysisEngineTransformer;
+```
+
+### 2. 硬體性能偵測
+```
+偵測項目：
+- RAM 大小（navigator.memory）
+- CPU 邏輯核心數（navigator.hardwareConcurrency）
+- GPU 支援度（WebGL）
+- 網路頻寬（網路類型 4G/WiFi）
+
+效能分級：
+- 低階：≤4GB RAM、≤2 核 CPU
+- 中階：4-8GB RAM、3-6 核 CPU
+- 高階：8-16GB RAM、≥6 核 CPU
+- 超高：>16GB RAM、GPU 支援
+```
+
+### 3. 智能模型下載策略
+```
+策略決定：
+- 核心引擎（Transformer/Statistical）
+  ├─ 小型模型（<100MB） → 自動背景下載
+  └─ 大型模型（≥500MB） → 提示用戶決定
+
+- 可選引擎（Stylometry/Adversarial）
+  └─ 用戶手動下載
+
+用戶決策：
+- 需確認的下載：大型模型自動提示
+- 自動下載小型模型：無需用戶互動
+```
+
+### 4. 本地儲存確認
+- ✅ OPFS（Origin Private File System）檔案存取
+- ✅ installed.json 清單管理
+- ✅ 模型校驗和驗證（SHA-256）
+- ✅ 檔案存在性檢查
+
+### 5. 續傳機制確認
+- ✅ HTTP 206 Partial Content 探測
+- ✅ 2MB 分塊流式下載
+- ✅ 單塊 5 次重試（指數退避）
+- ✅ 完整流下載備選方案
+
+**Git 提交**：
+- `07b5d16` — 功能：硬體性能偵測 + 模型自動下載管理 + 修復引擎名稱
+- `a4afd7a` — 版本號更新：3.0.1309+1309
+- `a8584c6` — 構建：版本 3.0.1309 Web 應用
+
 ## 2026-08-11（第七次更新）— 引擎分析雷達圖 + 文本截斷修復
 
 **概述**
