@@ -28,15 +28,7 @@ class TransformerEngine implements DetectionEngine {
   String get id => variantId != null ? 'transformer_$variantId' : 'transformer';
 
   @override
-  String name(AppLocalizations l10n) {
-    if (variantId != null) {
-      final installed = modelManager.installedVariants('transformer');
-      for (final m in installed) {
-        if (m.variantId == variantId) return m.displayName;
-      }
-    }
-    return l10n.analysisEngineTransformer;
-  }
+  String name(AppLocalizations l10n) => l10n.analysisEngineTransformer;
 
   @override
   double get defaultWeight => 0.40;
