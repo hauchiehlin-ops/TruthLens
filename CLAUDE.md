@@ -84,4 +84,11 @@ flutter test                       # 跑測試
 flutter analyze                    # 靜態分析
 ```
 
+**便捷開發流程**：自動版本號遞增 (patch+build) + 提交 + 推送
+```bash
+./scripts/commit_and_bump.sh "功能描述"
+```
+- 例：`./scripts/commit_and_bump.sh "新增：雷達圖報告"`
+- 結果：commit → 版本遞增 → push 至遠端
+
 **部署**：`build/web/` 目錄中的 HTML/JS/WASM 靜態資源可部署至任何 HTTP 伺服器（Vercel、Netlify、GitHub Pages）。
