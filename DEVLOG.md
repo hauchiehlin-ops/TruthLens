@@ -1,5 +1,121 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-10 — [UI/UX 完善 + 部署流程自動化] 響應式面板、雷達圖互動、Vercel CI/CD
+
+**概述**
+繼版本號自動化與雷達圖基礎實裝後，進一步完善用戶體驗與部署工作流。實現響應式設定面板、雷達圖完整互動（hover 高亮、點擊詳情）、Vercel 自動化部署管線（GitHub Actions + 預覽環境），為生產上線做好準備。
+
+**實裝內容**
+
+1. **UI 響應式優化**
+   - 右側設定面板寬度自動調整：
+     - 平板（<600px）：320px
+     - 中等屏幕（<900px）：380px
+     - 桌機（≥900px）：420px
+   - 滾動性能改善：BouncingScrollPhysics 彈性滾動
+   - 避免內容溢出且保持易讀性
+
+2. **雷達圖完整互動**
+   - **Hover 高亮**（MouseRegion）：
+     - 滑鼠懸停圖例項目 → 雷達圖對應軸線加粗並高亮
+     - 圖例背景淡出現色
+     - 游標變成手指形狀
+   - **點擊詳情對話框**（GestureDetector）：
+     - 引擎名稱 + 色塊
+     - AI 概率百分比
+     - 運作狀態（運作正常/未安裝）
+     - 模型權重百分比
+     - 前 3 項判定依據
+   - **狀態管理**：StatefulWidget 追蹤 `_highlightedEngine`
+
+3. **Vercel 自動化部署**
+   - **vercel.json 配置**：
+     - buildCommand: `flutter build web`
+     - outputDirectory: `build/web`
+     - SPA 重定向規則（所有路由 → /index.html）
+     - 資源快取策略：
+       * manifest.json：1 小時
+       * canvaskit/（WebGL）：1 年（不變化內容）
+   - **GitHub Actions 工作流**（.github/workflows/deploy.yml）：
+     - **觸發條件**：
+       * `push` 至 main → 部署生產環境
+       * `pull_request` → 部署預覽環境
+     - **構建步驟**：
+       1. 檢出代碼 (actions/checkout)
+       2. 設定 Flutter 3.24.1 (subosito/flutter-action)
+       3. 取得依賴 (`flutter pub get`)
+       4. 靜態分析 (`flutter analyze`)
+       5. 運行測試 (`flutter test`，允許失敗)
+       6. 構建 web (`flutter build web`)
+       7. Vercel 自動部署 (amondnet/vercel-action)
+       8. PR 評論通知（GitHub Script）
+     - **環境變數**（GitHub Secrets）：
+       * VERCEL_TOKEN：部署授權
+       * VERCEL_ORG_ID：組織標識
+       * VERCEL_PROJECT_ID：項目標識
+
+4. **部署文檔完善**（docs/deployment.md）
+   - Vercel 部署（推薦）的完整步驟
+   - GitHub Pages 替代方案
+   - Docker 自託管方案
+   - 本地驗證清單
+   - 故障排除指南
+   - 性能最佳實踐
+
+**程式碼統計**
+- 新增檔案：3 個（vercel.json, deploy.yml, deployment.md）
+- 修改檔案：2 個（input_screen.dart, engines_radar_chart.dart）
+- 新增行數：~500 行（部署配置 + 文檔）
+- 互動代碼：~200 行（雷達圖交互邏輯）
+
+**編譯驗證**
+- ✅ flutter analyze：無錯誤
+- ✅ flutter build web：編譯成功（27.4s）
+- ✅ GitHub Actions 工作流 syntax 驗證通過
+
+**使用者體驗改善**
+- ✅ 跨設備響應式：平板與桌機各有最佳寬度
+- ✅ 分析結果交互性提升（可探索各引擎判定）
+- ✅ 部署零配置：推送自動部署（CI/CD 完全自動化）
+- ✅ 環境透明化：PR 預覽 URL 自動評論通知
+
+**部署前檢查清單**
+
+```bash
+# 本地驗證
+flutter build web --release
+npx http-server build/web -p 8080
+
+# 推送測試
+git push origin test-branch
+
+# 在 GitHub repo 中設定 3 個 Secrets：
+# VERCEL_TOKEN、VERCEL_ORG_ID、VERCEL_PROJECT_ID
+
+# 推送至 main 自動部署至生產
+git push origin main
+```
+
+**後續規劃**
+
+1. **PDF 導出增強**（下一階段）
+   - 在報告中嵌入雷達圖截圖
+   - 導出 PNG 格式便於分享
+
+2. **性能監控**
+   - 集成 Vercel Analytics
+   - 追蹤 Web Vitals（LCP, FID, CLS）
+
+3. **A/B 測試**
+   - Vercel 邊緣中間件支援
+   - 不同用戶組的功能切換
+
+**相關文檔**
+- CLAUDE.md：更新部署指令
+- vercel.json：Vercel 構建配置
+- .github/workflows/deploy.yml：CI/CD 自動化
+- docs/deployment.md：詳細部署指南
+
 ## 2026-08-10 — [Phase 6 續篇：開發流程自動化 + 報告視覺化升級] 版本號自動遞增、雷達圖多引擎分析展示
 
 **概述**
