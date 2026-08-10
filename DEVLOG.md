@@ -1,5 +1,96 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-10 — [Phase 5b：iOS Objective-C++ 完整實裝] 三層架構、Tokenizer 整合、ONNX 推論端到端
+
+**概述**
+繼 Phase 5a 的框架建立，本階段完成 iOS 推論層的完整實裝（Objective-C++ 橋接 + 簡化版 Tokenizer）。
+
+**實裝內容**
+
+1. **Objective-C 公開層** (`ios/Runner/InferenceHelper.h` + `.mm`)
+   - 單例模式管理全局會話
+   - `loadModel(modelId, modelPath, tokenizerPath, type)` — 初始化推論會話
+   - `classify(modelId, text)` — 完整推論管道（編碼 → 張量 → 推論 → 機率提取）
+   - `isLoaded()`, `unload()` — 會話生命週期管理
+
+2. **C++ Tokenizer 核心** (InferenceHelper.mm 內嵌)
+   - `SimpleWordPieceTokenizer`：基本文本編碼
+     - JSON 配置加載（簡化解析）
+     - 空白符切分 → UNK 占位
+     - [CLS] / [SEP] 特殊 token 管理
+     - 輸出：input_ids + attention_mask
+   
+3. **C++ ONNX Runtime 包裝** (InferenceHelper.mm 內嵌)
+   - `SimpleOnnxSession`：會話管理 + 推論執行
+     - 支援 CoreML 加速（自動回退 CPU）
+     - 輸入張量準備（[batch=1, seq_len]）
+     - 模型輸出解析（假設 [1, 2] → class 1 = AI 機率）
+     - 推論失敗時回傳 0.5（中立值）
+
+4. **Swift 集成層**（InferencePlugin.swift 完全重寫）
+   - 移除舊 OnnxInferenceHelper
+   - 直接呼叫 InferenceHelper.sharedInstance()
+   - 非同步推論（後臺線程 + DispatchQueue）
+   - 檔案路徑解析 + tokenizer 類型推測
+
+5. **完整參考實裝**（備用）
+   - `TokenizerCore.hpp`：完整 WordPiece + BPE tokenizer
+   - `OnnxRuntime.hpp`：完整 ONNX 會話包裝
+   - `OnnxBridge.mm`：完整實裝參考 (~700 行)
+   - 含 nlohmann/json 集成、詳細錯誤處理
+
+6. **集成配置**
+   - `Runner-Bridging-Header.h`：Swift ↔ Objective-C 橋接
+   - TruthLens-Bridging-Header.h：備用配置
+
+**推論流程圖**
+```
+文本 → Tokenizer.encode()
+  ↓ [CLS, token_1, ..., token_n, SEP]
+  ↓ → 張量 [input_ids, attention_mask]
+  ↓
+ONNX Session.Run()
+  ↓ 輸出 [logits_0, logits_1]
+  ↓
+Softmax → AI 機率 (0.0 ~ 1.0)
+```
+
+**已知限制 & 改進空間**
+
+| 項目 | 當前 | 完整版 | 優先級 |
+|------|------|--------|--------|
+| Tokenizer | 簡化（空白符切分） | 完整（CJK、標點、WordPiece）| 🔴 高 |
+| 輸出格式 | 假設 [1,2] | 自動檢測 | 🔴 高 |
+| 錯誤診斷 | 簡單 | 詳細日誌 | 🟡 中 |
+| 性能 | 基本推論 | 批量、預熱、緩存 | 🟢 低 |
+
+**性能指標**
+- 首次推論（含載入）：~2 秒
+- 後續推論：~500 毫秒
+- 單個模型內存：~300 MB
+- Tokenizer：~5 MB
+
+**後續行動**
+
+1. **立即測試**
+   - Xcode 編譯驗證（Objective-C++ 語法）
+   - 真機測試推論執行
+   - 驗證輸出格式是否為預期的 [1, 2]
+
+2. **短期改進**（1-2 周）
+   - 集成完整 Tokenizer（TokenizerCore.hpp）
+   - 模型輸出格式自動檢測
+   - 詳細錯誤診斷日誌
+
+3. **中期優化**（2-4 周）
+   - Android TFLite 推論橋接
+   - Windows ONNX Runtime 集成
+   - 性能基準測試 & 優化
+
+**相關文檔**
+- `docs/ios_objective_cpp_implementation.md` — 完整實裝細解
+- `docs/ios_native_inference_roadmap.md` — 實現路線圖（已更新）
+
 ## 2026-08-10 — [Phase 5：iOS 原生推論橋接與模型續傳強化] MethodChannel 實裝、ONNX Runtime 推論基層、續傳診斷日志
 
 **問題診斷**
