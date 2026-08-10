@@ -199,19 +199,24 @@ class _VerdictSummaryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    result.isLowConfidence
-                        ? '⚠️ 信心度低'
-                        : '✓ 信心度高',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                        ),
+                Tooltip(
+                  message: result.isLowConfidence
+                      ? '信心度低：部分檢測模型未啟用或結果分散，建議人工審核'
+                      : '信心度高：多個檢測模型一致同意此判定，結果可信度高',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      result.isLowConfidence
+                          ? '⚠️ 信心度低（需人工審核）'
+                          : '✓ 信心度高（多引擎一致）',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
                   ),
                 ),
               ],
@@ -350,6 +355,22 @@ class _EngineContributionCard extends StatelessWidget {
     required this.l10n,
   });
 
+  /// 根據引擎 ID 返回顯示名稱
+  static String _getEngineDisplayName(String engineId) {
+    switch (engineId) {
+      case 'transformer':
+        return '🧠 Transformer 模型';
+      case 'statistical':
+        return '📊 統計分析';
+      case 'stylometry':
+        return '✒️ 風格分析';
+      case 'adversarial':
+        return '🛡️ 對抗防禦';
+      default:
+        return '⚙️ ${engineId.toUpperCase()}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -378,7 +399,18 @@ class _EngineContributionCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 引擎列表
-          for (final score in result.engineScores)
+          if (result.engineScores.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                '尚無引擎分析數據',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[500],
+                    ),
+              ),
+            )
+          else
+            for (final score in result.engineScores)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
@@ -403,7 +435,9 @@ class _EngineContributionCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              score.engineName,
+                              score.engineName.isNotEmpty
+                                  ? score.engineName
+                                  : _getEngineDisplayName(score.engineId),
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w600,
                               ),
