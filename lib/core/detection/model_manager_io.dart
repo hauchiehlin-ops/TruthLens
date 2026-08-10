@@ -461,6 +461,7 @@ class ModelManager extends ChangeNotifier {
     var currentUrl = url;
     http.StreamedResponse? response;
     int redirectCount = 0;
+    bool isResuming = false;
 
     while (redirectCount < 5) {
       final request = http.Request('GET', Uri.parse(currentUrl));
@@ -470,6 +471,8 @@ class ModelManager extends ChangeNotifier {
 
       if (existingLen > 0 && redirectCount == 0) {
         request.headers['Range'] = 'bytes=$existingLen-';
+        isResuming = true;
+        debugPrint('[下載] 偵測到部分檔案 (${(existingLen / (1024 * 1024)).toStringAsFixed(1)} MB)，嘗試續傳...');
       }
 
       final res = await _client.send(request);
@@ -497,7 +500,9 @@ class ModelManager extends ChangeNotifier {
 
     if (response.statusCode == 206) {
       // 伺服器支援斷點續傳 (HTTP 206 Partial Content)
-      final total = (response.contentLength ?? 0) + existingLen;
+      final partialSize = response.contentLength ?? 0;
+      final total = partialSize + existingLen;
+      debugPrint('[下載] ✓ 伺服器支援續傳 (HTTP 206)，續傳 ${(partialSize / (1024 * 1024)).toStringAsFixed(1)} MB');
       final sink = dest.openWrite(mode: FileMode.append);
       var received = existingLen;
       await for (final chunk in response.stream) {
@@ -508,22 +513,36 @@ class ModelManager extends ChangeNotifier {
         }
       }
       await sink.close();
+      debugPrint('[下載] ✓ 續傳完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB');
       return;
     }
-    if (response.statusCode != 200) {
-      throw HttpException('HTTP ${response.statusCode}');
-    }
-    final total = response.contentLength ?? expected ?? 0;
-    final sink = dest.openWrite(mode: FileMode.write);
-    var received = 0;
-    await for (final chunk in response.stream) {
-      sink.add(chunk);
-      received += chunk.length;
-      if (onProgress != null && total > 0) {
-        onProgress((received / total).clamp(0, 1));
+    if (response.statusCode == 200) {
+      // 伺服器不支援 Range 或要求重新開始，清除並重新下載
+      if (isResuming) {
+        debugPrint('[下載] ⚠️ 伺服器不支援續傳，清除部分檔案並重新開始...');
+        if (dest.existsSync()) await dest.delete();
       }
+      final total = response.contentLength ?? expected ?? 0;
+      final sink = dest.openWrite(mode: FileMode.write);
+      var received = 0;
+      await for (final chunk in response.stream) {
+        sink.add(chunk);
+        received += chunk.length;
+        if (onProgress != null && total > 0) {
+          onProgress((received / total).clamp(0, 1));
+        }
+      }
+      await sink.close();
+      debugPrint('[下載] ✓ 完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB');
+      return;
     }
-    await sink.close();
+    if (response.statusCode == 416) {
+      // 416 Range Not Satisfiable — 請求的範圍無效（可能檔案已完成或損毀）
+      debugPrint('[下載] ⚠️ 伺服器無法滿足 Range 要求 (HTTP 416)，清除部分檔案並重新開始...');
+      if (dest.existsSync()) await dest.delete();
+      throw HttpException('需要重新開始下載 (HTTP 416)');
+    }
+    throw HttpException('HTTP ${response.statusCode}：${response.reasonPhrase}');
   }
 
   /// 匯入本機 ONNX 模型檔。強化驗證與錯誤恢復。

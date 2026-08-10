@@ -12,8 +12,9 @@ import Vision
     if let reg = registrar {
       OcrPlugin.register(with: reg)
       DevicePlugin.register(with: reg)
+      InferencePlugin.register(with: reg)
     }
-    
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
