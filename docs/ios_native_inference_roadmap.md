@@ -1,26 +1,65 @@
 # iOS 原生推論實現路線圖
 
-## 當前狀態（2026-08-10）
+## 當前狀態（2026-08-10 — 實裝完成第一版）
 
-### ✅ 已完成
-- `ios/Runner/InferencePlugin.swift`：MethodChannel 基層框架
-- `ios/Runner/OnnxInferenceHelper.swift`：ONNX Runtime 模型管理層
-- iOS AppDelegate 中已註冊 `com.truthlens/inference` channel
+### ✅ 已完成（第一版實裝）
 
-### ⚠️ 占位實作（需後續完成）
+#### 架構層次
+1. **Swift ↔ Objective-C 橋接**：`Runner-Bridging-Header.h`
+2. **Objective-C 公開介面**：`ios/Runner/InferenceHelper.h`
+3. **Objective-C++ 實裝**：`ios/Runner/InferenceHelper.mm`
+   - 簡化版 WordPiece Tokenizer（支援基本文本編碼）
+   - 簡化版 ONNX Runtime 會話管理
+   - 模型加載、推論、卸載
 
-#### InferencePlugin
-- `loadModel()` — 已支援 ONNX 檔案偵測，但未實現 ORTSession 初始化
-- `classify()` — 暫時回傳 0.5（占位值），需要：
-  1. Tokenizer 初始化（BERT WordPiece 或 RoBERTa BPE）
-  2. 文本 → Token ID 轉換
-  3. 張量準備（輸入 shape 對應）
-  4. ORTSession::Run() 推論
-  5. Softmax 或 Sigmoid 解析
+#### 關鍵實裝
+- ✅ `InferencePlugin.swift` — 完全重寫，呼叫 InferenceHelper
+- ✅ `InferenceHelper.h` — Objective-C 公開 API
+- ✅ `InferenceHelper.mm` — C++ 核心實裝（~350 行）
+  - `SimpleWordPieceTokenizer`：基本文本編碼（空白符切分 + UNK 占位）
+  - `SimpleOnnxSession`：ONNX Runtime 會話管理
+  - `loadModel()`：Tokenizer JSON 載入 + ONNX 模型初始化
+  - `classify()`：完整推論管道（編碼 → 張量 → 推論 → 機率提取）
+  
+#### 架構圖
+```
+Dart (lib/core/detection/native_inference_service.dart)
+  ↓ MethodChannel("com.truthlens/inference")
+  ↓
+Swift (InferencePlugin.swift)
+  ↓ 呼叫
+  ↓
+Objective-C (InferenceHelper.h/mm)
+  ↓ 使用
+  ↓
+C++ (SimpleOnnxSession + SimpleWordPieceTokenizer)
+  ↓ 呼叫
+  ↓
+ONNX Runtime C++ API → CoreML / CPU 推論
+```
 
-#### OnnxInferenceHelper
-- `classify()` — 目前只檢查檔案存在性，需實現上述完整推論邏輯
-- `perplexity()` — 返回 nil（困惑度用統計模型，不需 ONNX）
+### ⚠️ 已知限制與後續改進
+
+1. **Tokenizer 簡化實裝**
+   - 當前：基本空白符切分 + UNK 占位
+   - 完整版需要：
+     - 完整 JSON vocab 解析
+     - 標點符號分割
+     - WordPiece 貪心匹配（##subword）
+     - 參見 `TokenizerCore.hpp` 的完整實裝參考
+
+2. **模型推論假設**
+   - 假設輸出為 `[batch_size, 2]` → class 1 = AI 機率
+   - 實際模型可能不同，需驗證與調整
+
+3. **CoreML 加速**
+   - 已嘗試啟用 `.AppendExecutionProvider_CoreML()`
+   - 若不可用自動回退到 CPU
+
+4. **性能優化機會**
+   - 模型預熱（第一次推論較慢）
+   - 批量推論支援
+   - 輸入緩存
 
 ---
 
