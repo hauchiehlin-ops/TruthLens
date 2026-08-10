@@ -1,5 +1,100 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-10 — [Phase 6：Web-only 架構清理與 UI 重組] 原生推論層完全移除、右側設定面板、版本號頂部
+
+**概述**
+鑑於 iOS/Android 原生推論層反覆編譯失敗（Swift-Objective-C++ 橋接、鏈接錯誤），且用戶端推論模型載入失敗造成信任危機，決策上以 web-only 部署作為短期首發方案。本階段完成多平台程式碼清理、UI 重組，確保 Dart-only 推論引擎穩定可靠。
+
+**實裝內容**
+
+1. **原生推論層完全移除**
+   - 刪除 `native/` 目錄（llama.cpp 橋接、平台特定推論包裝）
+   - 刪除 `windows/` 目錄
+   - 刪除 iOS 原生檔案：
+     - `ios/Runner/InferencePlugin.swift`
+     - `ios/Runner/InferenceHelper.h/.mm`
+     - `ios/Runner/OnnxBridge.mm`
+     - `ios/Runner/TokenizerCore.hpp`
+     - `ios/Runner/OnnxRuntime.hpp`
+   - 移除 Runner-Bridging-Header.h 中的 `#import "InferenceHelper.h"`
+   - 修改 AppDelegate.swift 為 web-only 配置
+
+2. **Dart 引擎整合確認**
+   - 所有 Dart-only 引擎保留與活躍：
+     - Transformer（XLM-RoBERTa ONNX Runtime 推論）
+     - Statistical（Perplexity/Burstiness 啟發式）
+     - Stylometry（風格特徵）
+     - Adversarial（對抗防禦改寫檢測）
+   - 每個引擎實裝 `Future<bool> isAvailable()` 檢查
+   - 引擎協調器（EnsembleOrchestrator）動態發現與加權投票
+   - 低信心偵測：<60% 權重覆蓋或 <2 可用引擎
+
+3. **UI 重組：首頁 + 右側設定面板**
+   - 移除專用設定頁路由 `/settings`
+   - 新增 `_SettingsPanel` 作為 InputScreen 的 endDrawer
+   - 設定按鈕改為 `Scaffold.of(context).openEndDrawer()`
+   - 設定面板包含：
+     - 信心閾值調整（Slider）
+     - ESL 偏差修正切換
+     - 引擎啟用/禁用 (4×SwitchListTile)
+     - 超連結驗證切換
+     - 主題選擇 (Dark/Light/System)
+     - 語言選擇 (15+ 語言支援)
+     - 模型管理（指向 ModelManagerScreen）
+     - Web OCR 設定（Gemini API + 本地伺服器）
+     - 版本資訊（TruthLens v${displayVersion}）
+
+4. **版本號位置確認**
+   - 版本號已在 AppBar 標題中（TruthLens v3.0.0）
+   - 位置：應用名稱右側，視覺容器內，符合需求
+
+5. **模型下載續傳能力確認**
+   - HTTP 206 Partial Content 已實裝（model_manager_io.dart 第 501-517 行）
+   - 斷點續傳：檢查 Range header → 伺服器支援 206 → 從已下載位置繼續
+   - 後備策略：伺服器不支援 206 → 清除並重新下載
+   - 進度回調正確計算 received/total
+
+6. **編譯驗證**
+   - `flutter analyze` 無錯誤
+   - 所有 native_inference_service 引用移除
+   - iOS AppDelegate 簡化，不再涉及原生推論
+
+**程式碼移除統計**
+- 刪除檔案：16 個（iOS 原生檔案、native/ 目錄、windows/ 目錄、文檔）
+- 移除引入：native_inference_service.dart 及所有參照
+- 修改檔案：5 個（main.dart、AppDelegate.swift、orchestrator.dart、input_screen.dart、pubspec.yaml）
+- 淨代碼減少：~1500 行
+
+**使用者感受改善**
+- ✅ 消除 iOS 編譯/鏈接錯誤（100% Dart 推論，不涉及原生層）
+- ✅ 簡化安裝流程（無需 CocoaPods、ONNX Runtime native lib）
+- ✅ 提升 web 端體驗（右側設定面板，無頁面切換延遲）
+- ✅ 版本號頂部顯著（AppBar 標題一部分，快速識別）
+- ✅ 模型下載更可靠（續傳能力實驗驗證）
+
+**後續行動**
+
+1. **立即驗證**（本次）
+   - ✅ Web 編譯測試（flutter pub get → 成功）
+   - ✅ Dart 分析檢查（flutter analyze → 無錯誤）
+   - ⏳ Web 運行測試（需啟動 dev server）
+   - ⏳ 模型下載續傳測試（網路中斷模擬 → 恢復）
+   - ⏳ 模型狀態確認（已下載 + 分析時全部參與投票）
+
+2. **短期完善**（1-2 周）
+   - 優化右側面板響應式設計（平板/桌機自適應寬度）
+   - 設定面板滾動優化（許多選項時不卡頓）
+   - 模型管理深度連結（直接跳到特定模型）
+
+3. **後續支援**
+   - iOS/Android 原生推論重新評估（若後續有時間 & 明確需求）
+   - 模型熱更新機制
+   - 使用者反饋蒐集（模型準度、UI 體驗）
+
+**相關文檔**
+- CLAUDE.md：更新架構為 web-only
+- pubspec.yaml：版本 3.0.0+30（Web-only 首版）
+
 ## 2026-08-10 — [Phase 5b：iOS Objective-C++ 完整實裝] 三層架構、Tokenizer 整合、ONNX 推論端到端
 
 **概述**

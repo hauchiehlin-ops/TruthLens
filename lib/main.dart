@@ -8,7 +8,6 @@ import 'core/detection/model_catalog_service.dart';
 import 'core/detection/model_manager.dart';
 import 'core/detection/llm_manager.dart';
 import 'core/detection/model_provisioner.dart';
-import 'core/detection/native_inference_service.dart';
 import 'core/detection/orchestrator.dart';
 import 'core/detection/report_llm_service.dart';
 import 'core/services/history_repository.dart';
@@ -37,7 +36,6 @@ void main() async {
 
   final modelManager = ModelManager();
   await modelManager.refreshInstallStates();
-  final native = NativeInferenceService();
   final catalogService = ModelCatalogService();
   final provisioner = ModelProvisioner(
     catalogService: catalogService,
@@ -51,7 +49,6 @@ void main() async {
   runApp(TruthLensApp(
     prefs: prefs,
     modelManager: modelManager,
-    native: native,
     provisioner: provisioner,
     initialLocation: needsOnboarding ? '/onboarding' : '/',
   ));
@@ -60,14 +57,12 @@ void main() async {
 class TruthLensApp extends StatelessWidget {
   final PreferencesService prefs;
   final ModelManager modelManager;
-  final NativeInferenceService native;
   final ModelProvisioner provisioner;
   final String initialLocation;
   const TruthLensApp({
     super.key,
     required this.prefs,
     required this.modelManager,
-    required this.native,
     required this.provisioner,
     required this.initialLocation,
   });
@@ -79,14 +74,12 @@ class TruthLensApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: prefs),
         ChangeNotifierProvider.value(value: modelManager),
-        Provider.value(value: native),
         Provider.value(value: provisioner),
         Provider.value(value: provisioner.catalogService),
         ChangeNotifierProvider(create: (_) => LlmManager(modelManager: modelManager)),
         Provider(
           create: (_) => EnsembleOrchestrator(
             modelManager: modelManager,
-            native: native,
           ),
         ),
         Provider(

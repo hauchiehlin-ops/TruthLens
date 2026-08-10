@@ -11,7 +11,6 @@ import 'engines/statistical_engine.dart';
 import 'engines/stylometry_engine.dart';
 import 'engines/transformer_engine.dart';
 import 'model_manager.dart';
-import 'native_inference_service.dart';
 
 /// 分析協調器：驅動四個子模型並執行加權投票。
 /// 權重（A 40% / B 25% / C 20% / D 15%）會在兩種情況下重新分配：
@@ -23,16 +22,13 @@ class EnsembleOrchestrator {
   EnsembleOrchestrator({
     List<DetectionEngine>? engines,
     ModelManager? modelManager,
-    NativeInferenceService? native,
   }) : engines = engines ??
             _defaultEngines(
               modelManager ?? ModelManager(),
-              native ?? NativeInferenceService(),
             );
 
   static List<DetectionEngine> _defaultEngines(
     ModelManager mm,
-    NativeInferenceService native,
   ) {
     final discovered = <DetectionEngine>[];
 

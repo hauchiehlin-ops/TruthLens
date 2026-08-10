@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
+import '../settings/settings_screen.dart' show ModelManagerScreen;
 
 /// 首頁：極簡輸入區 + 三個快捷入口（貼上 / 拍照 OCR / 匯入文件）
 class InputScreen extends StatefulWidget {
@@ -237,10 +239,11 @@ class _InputScreenState extends State<InputScreen> {
               child: const Icon(Icons.settings_outlined),
             ),
             tooltip: l10n.inputSettingsTooltip,
-            onPressed: () => context.push('/settings'),
+            onPressed: () => Scaffold.of(context).openEndDrawer(),
           ),
         ],
       ),
+      endDrawer: _SettingsPanel(),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
@@ -339,3 +342,285 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 }
+
+class _SettingsPanel extends StatefulWidget {
+  const _SettingsPanel();
+
+  @override
+  State<_SettingsPanel> createState() => _SettingsPanelState();
+}
+
+class _SettingsPanelState extends State<_SettingsPanel> {
+  late TextEditingController _apiKeyController;
+  late TextEditingController _serverUrlController;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiKeyController = TextEditingController();
+    _serverUrlController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (kIsWeb) {
+      try {
+        _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
+        _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
+      } catch (_) {}
+    }
+  }
+
+  @override
+  void dispose() {
+    _apiKeyController.dispose();
+    _serverUrlController.dispose();
+    super.dispose();
+  }
+
+  void _saveOcrSettings() {
+    if (!kIsWeb) return;
+    try {
+      OcrService.setGeminiApiKey(_apiKeyController.text);
+      OcrService.setLocalServerUrl(_serverUrlController.text);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('設定保存失敗：$e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = context.watch<PreferencesService>();
+    final modelManager = context.watch<ModelManager>();
+    final scheme = Theme.of(context).colorScheme;
+
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: scheme.primary),
+            child: Text(
+              l10n.settingsAppBarTitle,
+              style: TextStyle(
+                color: scheme.onPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListTile(
+            title: Text(l10n.settingsThresholdTitle),
+            subtitle: Text(
+              l10n.settingsThresholdSubtitle(
+                (prefs.confidenceThreshold * 100).round(),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Slider(
+              value: prefs.confidenceThreshold,
+              min: 0.4,
+              max: 0.9,
+              divisions: 10,
+              label: '${(prefs.confidenceThreshold * 100).round()}%',
+              onChanged: (v) => prefs.setThreshold(v),
+            ),
+          ),
+          const Divider(),
+          SwitchListTile(
+            title: Text(l10n.settingsEslTitle),
+            subtitle: Text(l10n.settingsEslSubtitle),
+            value: prefs.eslCorrectionEnabled,
+            onChanged: (v) => prefs.setEslCorrection(v),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              l10n.settingsEngineSectionTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
+          SwitchListTile(
+            title: Text(l10n.settingsEngineTransformerTitle),
+            subtitle: Text(l10n.settingsEngineTransformerSubtitle),
+            value: prefs.isEngineEnabled('transformer'),
+            onChanged: (v) => prefs.setEngineEnabled('transformer', v),
+          ),
+          SwitchListTile(
+            title: Text(l10n.settingsEngineStatisticalTitle),
+            subtitle: Text(l10n.settingsEngineStatisticalSubtitle),
+            value: prefs.isEngineEnabled('statistical'),
+            onChanged: (v) => prefs.setEngineEnabled('statistical', v),
+          ),
+          SwitchListTile(
+            title: Text(l10n.settingsEngineStylometryTitle),
+            subtitle: Text(l10n.settingsEngineStylometrySubtitle),
+            value: prefs.isEngineEnabled('stylometry'),
+            onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
+          ),
+          SwitchListTile(
+            title: Text(l10n.settingsEngineAdversarialTitle),
+            subtitle: Text(l10n.settingsEngineAdversarialSubtitle),
+            value: prefs.isEngineEnabled('adversarial'),
+            onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
+          ),
+          const Divider(),
+          SwitchListTile(
+            title: Text(l10n.settingsLinkVerificationTitle),
+            subtitle: Text(l10n.settingsLinkVerificationSubtitle),
+            value: prefs.linkVerificationEnabled,
+            onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(l10n.settingsThemeTitle),
+            trailing: SegmentedButton<ThemeMode>(
+              segments: const [
+                ButtonSegment(
+                  value: ThemeMode.dark,
+                  icon: Icon(Icons.dark_mode_outlined),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.light,
+                  icon: Icon(Icons.light_mode_outlined),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.system,
+                  icon: Icon(Icons.brightness_auto_outlined),
+                ),
+              ],
+              selected: {prefs.themeMode},
+              onSelectionChanged: (s) => prefs.setThemeMode(s.first),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.translate),
+            title: Text(l10n.settingsLanguageTitle),
+            subtitle: Text(l10n.settingsLanguageSubtitle),
+            trailing: DropdownButton<Locale?>(
+              value: prefs.locale,
+              items: [
+                for (final option in kSupportedLanguageOptions)
+                  DropdownMenuItem(value: option.$1, child: Text(option.$2)),
+              ],
+              onChanged: (value) => prefs.setLocale(value),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: Badge(
+              isLabelVisible: modelManager.hasAnyUpdate,
+              child: const Icon(Icons.download_outlined),
+            ),
+            title: Text(l10n.settingsModelManagementTitle),
+            subtitle: Text(
+              modelManager.hasAnyUpdate
+                  ? l10n.settingsModelManagementUpdateSubtitle
+                  : l10n.settingsModelManagementSubtitle,
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ModelManagerScreen(),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          if (kIsWeb) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'Web OCR 設定',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '🔑 Gemini API 金鑰',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _apiKeyController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'sk-proj-...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                      suffixIcon: _apiKeyController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _apiKeyController.clear();
+                                _saveOcrSettings();
+                              },
+                            )
+                          : null,
+                    ),
+                    onChanged: (_) => _saveOcrSettings(),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '🖥️ 本地 OCR 伺服器',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _serverUrlController,
+                    decoration: InputDecoration(
+                      hintText: 'http://127.0.0.1:5001/ocr',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                      suffixIcon: _serverUrlController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _serverUrlController.clear();
+                                _saveOcrSettings();
+                              },
+                            )
+                          : null,
+                    ),
+                    onChanged: (_) => _saveOcrSettings(),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+          ],
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('TruthLens'),
+            subtitle: Text(
+              '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

@@ -8,14 +8,7 @@ import Vision
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    let registrar = self.registrar(forPlugin: "OcrPlugin")
-    if let reg = registrar {
-      OcrPlugin.register(with: reg)
-      DevicePlugin.register(with: reg)
-      // TODO: InferencePlugin 註冊待 InferencePlugin.swift 被正確編譯後啟用
-      // InferencePlugin.register(with: reg)
-    }
-
+    // Web-only 版本：原生推論層已移除
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
