@@ -1,5 +1,51 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-10 — [Phase 5：iOS 原生推論橋接與模型續傳強化] MethodChannel 實裝、ONNX Runtime 推論基層、續傳診斷日志
+
+**問題診斷**
+用戶反映 iOS 設備上模型仍顯示「載入失敗」，所有截圖均顯示：
+1. Transformer 模型：`ArgumentError: Failed to lookup symbol 'OrtGetApiBase'`（原生庫鏈接失敗）
+2. Adversarial 模型：`未安裝`
+3. 權重覆蓋 ~45%，標記「低信心」（符合預期）
+
+根本原因：Phase 4 完成了 macOS llama.cpp Metal 推論，但 iOS/Android/Windows 的原生推論橋接層仍是缺失的占位實作。
+
+**修正內容**
+
+1. **iOS MethodChannel 實裝** (`ios/Runner/InferencePlugin.swift`)
+   - 新增 `com.truthlens/inference` MethodChannel，負責 `ping`, `loadModel`, `classify`, `perplexity`, `unload` 五個操作
+   - 自動在 AppDelegate 中註冊，使 Dart 端的原生推論調用不再拋出 `MissingPluginException`
+   - 支援 Core ML (.mlmodel) 和 ONNX (.onnx) 模型偵測
+
+2. **ONNX Runtime 推論幫助類** (`ios/Runner/OnnxInferenceHelper.swift`)
+   - 封裝會話管理邏輯（`loadModel`, `classify`, `perplexity`, `unload`, `isLoaded`）
+   - 目前實作為「佔位版本」（file 檢查 + 日誌記錄），等待後續 Objective-C++ 橋接完成
+   - 為何佔位？Swift 無法直接調用 C++ API；需透過 `.mm` 檔進行 `#import <onnxruntime/ort_cxx_api.h>`
+
+3. **模型下載續傳完整診斷** (`lib/core/detection/model_manager_io.dart`)
+   - 續傳功能已存在（HTTP 206 Partial Content），現加入詳細的 debugPrint 日誌：
+     - 偵測部分檔案時：`✓ 續傳 {size} MB`
+     - 伺服器不支援時：`⚠️ 清除並重新開始`
+     - HTTP 416 (Range 不滿足)：自動清除損毀檔案並重試
+   - 用戶可從日誌中明確看到「正在恢復下載」進度
+
+4. **實現路線圖文件** (`docs/ios_native_inference_roadmap.md`)
+   - 詳述為何目前返回佔位值（符號未解析的根本原因）
+   - 完整的三階段實現計劃（ONNX Bridge → Tokenization → 整合測試）
+   - 優先級排序與風險評估
+
+**技術亮點**
+- ✅ Dart Fallback 完整可用（統計 + 風格分析）
+- ✅ 低信心檢測生效（現在能解釋為何 iOS 上權重低）
+- ✅ 模型續傳診斷透明（用戶能看到進度日誌）
+- ⏳ iOS 原生推論框架已建立（Objective-C++ 邏輯待實裝）
+
+**下一步**
+1. 實現 Objective-C++ 橋接 (`OnnxBridge.mm`)
+2. 整合 Tokenizer 到 iOS 推論層
+3. Android TFLite 推論橋接
+4. Windows ONNX Runtime 推論橋接
+
 ## 2026-08-09 — [模型狀態檢查與參考文獻邏輯修正] 模型動態掃描、Tokenizer 完整性驗證、參考文獻嚴格化
 
 **問題 1：所有平台模型顯示「未安裝」且無法參與分析** (`model_manager_io.dart`)
