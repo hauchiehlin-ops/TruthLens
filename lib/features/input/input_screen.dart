@@ -189,6 +189,9 @@ class _InputScreenState extends State<InputScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWideScreen = screenWidth >= 1200;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -233,111 +236,505 @@ class _InputScreenState extends State<InputScreen> {
             tooltip: l10n.inputPrivacyTooltip,
             onPressed: () => context.push('/privacy'),
           ),
-          IconButton(
-            icon: Badge(
-              isLabelVisible: context.watch<ModelManager>().hasAnyUpdate,
-              child: const Icon(Icons.settings_outlined),
-            ),
-            tooltip: l10n.inputSettingsTooltip,
-            onPressed: () => Scaffold.of(context).openEndDrawer(),
-          ),
         ],
       ),
-      endDrawer: _SettingsPanel(),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+      body: Row(
+        children: [
+          // 左側：輸入區域
+          Expanded(
+            flex: isWideScreen ? 7 : 1,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n.inputSubtitle,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            TextField(
+                              controller: _controller,
+                              maxLines: null,
+                              expands: true,
+                              textAlignVertical: TextAlignVertical.top,
+                              decoration: InputDecoration(
+                                hintText: l10n.inputHint,
+                              ),
+                              onChanged: (_) => setState(() {}),
+                            ),
+                            if (_controller.text.isNotEmpty)
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  tooltip: l10n.inputClearTooltip,
+                                  onPressed: _clearInput,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      MergeSemantics(
+                        child: Row(
+                          children: [
+                            _activeModelChip(context),
+                            const Spacer(),
+                            Text(
+                              l10n.inputCharCount(_controller.text.trim().length),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _pasteFromClipboard,
+                            icon: const Icon(Icons.content_paste),
+                            label: Text(l10n.inputPasteButton),
+                          ),
+                          const SizedBox(width: 12),
+                          OutlinedButton.icon(
+                            onPressed: _scanImage,
+                            icon: const Icon(Icons.photo_camera_outlined),
+                            label: Text(l10n.inputOcrButton),
+                          ),
+                          const SizedBox(width: 12),
+                          OutlinedButton.icon(
+                            onPressed: _importDocument,
+                            icon: const Icon(Icons.folder_open_outlined),
+                            label: Text(l10n.inputImportButton),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: _controller.text.trim().isEmpty
+                            ? null
+                            : _startAnalysis,
+                        icon: const Icon(Icons.search),
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Text(l10n.inputStartButton,
+                              style: const TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // 右側：設定面板（僅在寬屏顯示）
+          if (isWideScreen)
+            Expanded(
+              flex: 3,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(
+                      color: scheme.outlineVariant,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: _SettingsPanelInline(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 右側設定面板（內聯版本，用於寬屏直接顯示）
+class _SettingsPanelInline extends StatefulWidget {
+  const _SettingsPanelInline();
+
+  @override
+  State<_SettingsPanelInline> createState() => _SettingsPanelInlineState();
+}
+
+class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
+  late TextEditingController _apiKeyController;
+  late TextEditingController _serverUrlController;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiKeyController = TextEditingController();
+    _serverUrlController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (kIsWeb) {
+      try {
+        _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
+        _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
+      } catch (_) {}
+    }
+  }
+
+  @override
+  void dispose() {
+    _apiKeyController.dispose();
+    _serverUrlController.dispose();
+    super.dispose();
+  }
+
+  void _saveOcrSettings() {
+    if (!kIsWeb) return;
+    try {
+      OcrService.setGeminiApiKey(_apiKeyController.text);
+      OcrService.setLocalServerUrl(_serverUrlController.text);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('設定保存失敗：$e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = context.watch<PreferencesService>();
+    final modelManager = context.watch<ModelManager>();
+    final scheme = Theme.of(context).colorScheme;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 標題
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              l10n.settingsAppBarTitle,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: scheme.primary,
+                  ),
+            ),
+          ),
+          const Divider(),
+
+          // 信心度閾值
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.inputSubtitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  l10n.settingsThresholdTitle,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                Text(
+                  l10n.settingsThresholdSubtitle(
+                    (prefs.confidenceThreshold * 100).round(),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      TextField(
-                        controller: _controller,
-                        maxLines: null,
-                        expands: true,
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: InputDecoration(
-                          hintText: l10n.inputHint,
-                        ),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                      if (_controller.text.isNotEmpty)
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: IconButton(
-                            icon: const Icon(Icons.clear),
-                            tooltip: l10n.inputClearTooltip,
-                            onPressed: _clearInput,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                MergeSemantics(
-                  child: Row(
-                    children: [
-                      _activeModelChip(context),
-                      const Spacer(),
-                      Text(
-                        l10n.inputCharCount(_controller.text.trim().length),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: _pasteFromClipboard,
-                      icon: const Icon(Icons.content_paste),
-                      label: Text(l10n.inputPasteButton),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton.icon(
-                      onPressed: _scanImage,
-                      icon: const Icon(Icons.photo_camera_outlined),
-                      label: Text(l10n.inputOcrButton),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton.icon(
-                      onPressed: _importDocument,
-                      icon: const Icon(Icons.folder_open_outlined),
-                      label: Text(l10n.inputImportButton),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: _controller.text.trim().isEmpty
-                      ? null
-                      : _startAnalysis,
-                  icon: const Icon(Icons.search),
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(l10n.inputStartButton,
-                        style: const TextStyle(fontSize: 16)),
-                  ),
+                Slider(
+                  value: prefs.confidenceThreshold,
+                  min: 0.4,
+                  max: 0.9,
+                  divisions: 10,
+                  label: '${(prefs.confidenceThreshold * 100).round()}%',
+                  onChanged: (v) => prefs.setThreshold(v),
                 ),
               ],
             ),
           ),
-        ),
+          const Divider(),
+
+          // ESL 糾正
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsEslTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsEslSubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.eslCorrectionEnabled,
+            onChanged: (v) => prefs.setEslCorrection(v),
+          ),
+          const Divider(),
+
+          // 檢測引擎
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              l10n.settingsEngineSectionTitle,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.primary,
+                  ),
+            ),
+          ),
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsEngineTransformerTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsEngineTransformerSubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.isEngineEnabled('transformer'),
+            onChanged: (v) => prefs.setEngineEnabled('transformer', v),
+          ),
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsEngineStatisticalTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsEngineStatisticalSubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.isEngineEnabled('statistical'),
+            onChanged: (v) => prefs.setEngineEnabled('statistical', v),
+          ),
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsEngineStylometryTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsEngineStylometrySubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.isEngineEnabled('stylometry'),
+            onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
+          ),
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsEngineAdversarialTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsEngineAdversarialSubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.isEngineEnabled('adversarial'),
+            onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
+          ),
+          const Divider(),
+
+          // 鏈接驗證
+          SwitchListTile(
+            dense: true,
+            title: Text(l10n.settingsLinkVerificationTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(l10n.settingsLinkVerificationSubtitle,
+                style: Theme.of(context).textTheme.bodySmall),
+            value: prefs.linkVerificationEnabled,
+            onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+          ),
+          const Divider(),
+
+          // 主題
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.settingsThemeTitle,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                SegmentedButton<ThemeMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      icon: Icon(Icons.dark_mode_outlined),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      icon: Icon(Icons.light_mode_outlined),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      icon: Icon(Icons.brightness_auto_outlined),
+                    ),
+                  ],
+                  selected: {prefs.themeMode},
+                  onSelectionChanged: (s) => prefs.setThemeMode(s.first),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+
+          // 語言選擇
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.settingsLanguageTitle,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              Text(
+                l10n.settingsLanguageSubtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButton<Locale?>(
+                isExpanded: true,
+                value: prefs.locale,
+                items: [
+                  for (final option in kSupportedLanguageOptions)
+                    DropdownMenuItem(value: option.$1, child: Text(option.$2)),
+                ],
+                onChanged: (value) => prefs.setLocale(value),
+              ),
+            ],
+          ),
+          const Divider(),
+
+          // 模型管理
+          ListTile(
+            dense: true,
+            leading: Badge(
+              isLabelVisible: modelManager.hasAnyUpdate,
+              child: const Icon(Icons.download_outlined),
+            ),
+            title: Text(l10n.settingsModelManagementTitle,
+                style: Theme.of(context).textTheme.labelSmall),
+            subtitle: Text(
+              modelManager.hasAnyUpdate
+                  ? l10n.settingsModelManagementUpdateSubtitle
+                  : l10n.settingsModelManagementSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ModelManagerScreen(),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+
+          // Web OCR 設定
+          if (kIsWeb) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'Web OCR 設定',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: scheme.primary,
+                    ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '🔑 Gemini API 金鑰',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _apiKeyController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'sk-proj-...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      isDense: true,
+                      suffixIcon: _apiKeyController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _apiKeyController.clear();
+                                _saveOcrSettings();
+                              },
+                            )
+                          : null,
+                    ),
+                    onChanged: (_) => _saveOcrSettings(),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '🖥️ 本地 OCR 伺服器',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _serverUrlController,
+                    decoration: InputDecoration(
+                      hintText: 'http://127.0.0.1:5001/ocr',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      isDense: true,
+                      suffixIcon: _serverUrlController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _serverUrlController.clear();
+                                _saveOcrSettings();
+                              },
+                            )
+                          : null,
+                    ),
+                    onChanged: (_) => _saveOcrSettings(),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+          ],
+
+          // 關於應用
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.info_outline, size: 18),
+                  const SizedBox(width: 8),
+                  const Text('TruthLens'),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber})\n100% 離線隱私檢測引擎',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
