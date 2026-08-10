@@ -12,7 +12,8 @@ import Vision
     if let reg = registrar {
       OcrPlugin.register(with: reg)
       DevicePlugin.register(with: reg)
-      InferencePlugin.register(with: reg)
+      // TODO: InferencePlugin 註冊待 InferencePlugin.swift 被正確編譯後啟用
+      // InferencePlugin.register(with: reg)
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
