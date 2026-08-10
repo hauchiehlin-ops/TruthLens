@@ -400,10 +400,17 @@ class _SettingsPanelState extends State<_SettingsPanel> {
     final modelManager = context.watch<ModelManager>();
     final scheme = Theme.of(context).colorScheme;
 
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
+    // 響應式寬度：平板 320px，桌機最多 420px
+    final screenWidth = MediaQuery.of(context).size.width;
+    final drawerWidth = screenWidth < 600 ? 320.0 : (screenWidth < 900 ? 380.0 : 420.0);
+
+    return SizedBox(
+      width: drawerWidth,
+      child: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          physics: const BouncingScrollPhysics(),
+          children: [
           DrawerHeader(
             decoration: BoxDecoration(color: scheme.primary),
             child: Text(
@@ -619,6 +626,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
