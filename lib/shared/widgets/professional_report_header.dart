@@ -529,77 +529,52 @@ class _EngineRadarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (engineScores.isEmpty) {
-      return Center(
-        child: Text(
-          '無引擎分析數據',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
-              ),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text(
+            '無引擎數據',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[500],
+                ),
+          ),
         ),
       );
     }
 
-    // 顯示所有引擎（包括未安裝的），未安裝的顯示灰色
-    return Column(
-      children: [
-        Container(
-          height: 280,
-          child: RadarChart(
-            RadarChartData(
-              dataSets: [
-                RadarDataSet(
-                  fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
-                  borderColor: const Color(0xFF6B5B95),
-                  borderWidth: 2,
-                  dataEntries: engineScores
-                      .map((score) => RadarEntry(value: score.aiProbability * 100))
-                      .toList(),
-                ),
-              ],
-              radarBackgroundColor: Colors.transparent,
-              gridBorderData: BorderSide(
-                color: Colors.grey[300]!,
-                width: 1,
-              ),
-              tickBorderData: const BorderSide(
-                color: Colors.grey,
-                width: 0.5,
-              ),
-              getTitle: (index, angle) {
-                final score = engineScores[index];
-                final displayName = _getEngineDisplayName(score.engineId);
-                // 未安裝的引擎使用短名稱
-                final title = score.available ? displayName : '$displayName ❌';
-                return RadarChartTitle(
-                  text: title,
-                  angle: angle,
-                  positionPercentageOffset: 0.15,
-                );
-              },
-              radarTouchData: RadarTouchData(enabled: true),
-            ),
-            swapAnimationDuration: const Duration(milliseconds: 400),
+    return RadarChart(
+      RadarChartData(
+        dataSets: [
+          RadarDataSet(
+            fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
+            borderColor: const Color(0xFF6B5B95),
+            borderWidth: 2,
+            dataEntries: engineScores
+                .map((score) => RadarEntry(value: score.aiProbability * 100))
+                .toList(),
           ),
+        ],
+        radarBackgroundColor: Colors.transparent,
+        gridBorderData: BorderSide(
+          color: Colors.grey[300]!,
+          width: 1,
         ),
-        const SizedBox(height: 8),
-        // 說明：未安裝的引擎顯示灰色標籤
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '💡 灰色標籤表示引擎未安裝，請在模型管理中下載',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontStyle: FontStyle.italic,
-                      ),
-                ),
-              ),
-            ],
-          ),
+        tickBorderData: const BorderSide(
+          color: Colors.grey,
+          width: 0.5,
         ),
-      ],
+        getTitle: (index, angle) {
+          final score = engineScores[index];
+          final displayName = _getEngineDisplayName(score.engineId);
+          return RadarChartTitle(
+            text: displayName,
+            angle: angle,
+            positionPercentageOffset: 0.15,
+          );
+        },
+        radarTouchData: RadarTouchData(enabled: true),
+      ),
+      swapAnimationDuration: const Duration(milliseconds: 400),
     );
   }
 }
