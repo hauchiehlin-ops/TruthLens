@@ -202,8 +202,8 @@ class _VerdictSummaryCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Tooltip(
                   message: result.isLowConfidence
-                      ? '信心度低：部分檢測模型未啟用或結果分散，建議人工審核'
-                      : '信心度高：多個檢測模型一致同意此判定，結果可信度高',
+                      ? '信心度低：可用模型權重不足 60%（${(result.threshold * 100).round()}% 閾值）。${result.availableEngineCount}/${result.totalEngineCount} 引擎參與投票。建議參考各引擎詳細分析結果。'
+                      : '信心度高：${result.availableEngineCount}/${result.totalEngineCount} 個檢測模型達成共識（${((result.threshold) * 100).round()}% 以上權重同意此判定）',
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -212,8 +212,8 @@ class _VerdictSummaryCard extends StatelessWidget {
                     ),
                     child: Text(
                       result.isLowConfidence
-                          ? '⚠️ 信心度低（需人工審核）'
-                          : '✓ 信心度高（多引擎一致）',
+                          ? '⚠️ 信心度低（${result.availableEngineCount}/${result.totalEngineCount}）'
+                          : '✓ 信心度高（${result.availableEngineCount}/${result.totalEngineCount}）',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: Colors.white,
                           ),
@@ -542,39 +542,50 @@ class _EngineRadarChart extends StatelessWidget {
       );
     }
 
-    return RadarChart(
-      RadarChartData(
-        dataSets: [
-          RadarDataSet(
-            fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
-            borderColor: const Color(0xFF6B5B95),
-            borderWidth: 2,
-            dataEntries: engineScores
-                .map((score) => RadarEntry(value: score.aiProbability * 100))
-                .toList(),
+    return SizedBox(
+      height: 300,
+      width: 300,
+      child: RadarChart(
+        RadarChartData(
+          dataSets: [
+            RadarDataSet(
+              fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
+              borderColor: const Color(0xFF6B5B95),
+              borderWidth: 2,
+              dataEntries: engineScores
+                  .map((score) => RadarEntry(value: score.aiProbability * 100))
+                  .toList(),
+            ),
+          ],
+          radarBackgroundColor: Colors.transparent,
+          gridBorderData: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1,
           ),
-        ],
-        radarBackgroundColor: Colors.transparent,
-        gridBorderData: BorderSide(
-          color: Colors.grey[300]!,
-          width: 1,
+          tickBorderData: const BorderSide(
+            color: Colors.grey,
+            width: 0.5,
+          ),
+          ticksTextStyle: const TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
+          ),
+          getTitle: (index, angle) {
+            if (index >= 0 && index < engineScores.length) {
+              final score = engineScores[index];
+              final displayName = _getEngineDisplayName(score.engineId);
+              return RadarChartTitle(
+                text: displayName,
+                angle: angle,
+                positionPercentageOffset: 0.18,
+              );
+            }
+            return RadarChartTitle(text: '', angle: angle);
+          },
+          radarTouchData: RadarTouchData(enabled: true),
         ),
-        tickBorderData: const BorderSide(
-          color: Colors.grey,
-          width: 0.5,
-        ),
-        getTitle: (index, angle) {
-          final score = engineScores[index];
-          final displayName = _getEngineDisplayName(score.engineId);
-          return RadarChartTitle(
-            text: displayName,
-            angle: angle,
-            positionPercentageOffset: 0.15,
-          );
-        },
-        radarTouchData: RadarTouchData(enabled: true),
+        swapAnimationDuration: const Duration(milliseconds: 400),
       ),
-      swapAnimationDuration: const Duration(milliseconds: 400),
     );
   }
 }
