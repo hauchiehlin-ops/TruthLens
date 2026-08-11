@@ -1,5 +1,6 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -33,7 +34,8 @@ class ProfessionalReportHeader extends StatelessWidget {
                   children: [
                     Text(
                       'AI 內容檢測報告',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1E3A5F), // 深青
                           ),
@@ -41,9 +43,9 @@ class ProfessionalReportHeader extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '分析時間：${DateTime.now().toString().split('.')[0]}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -95,16 +97,16 @@ class ProfessionalReportHeader extends StatelessWidget {
                 Text(
                   '可疑內容位置',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E3A5F),
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF1E3A5F),
+                  ),
                 ),
                 const Spacer(),
                 Text(
                   '共 ${result.aiSentenceCount} 句',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -120,10 +122,7 @@ class _VerdictSummaryCard extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
 
-  const _VerdictSummaryCard({
-    required this.result,
-    required this.l10n,
-  });
+  const _VerdictSummaryCard({required this.result, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +135,14 @@ class _VerdictSummaryCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isAI
-              ? [const Color(0xFF6B5B95).withValues(alpha: 0.9), const Color(0xFF6B5B95)]
-              : [const Color(0xFF1E3A5F).withValues(alpha: 0.9), const Color(0xFF1E3A5F)],
+              ? [
+                  const Color(0xFF6B5B95).withValues(alpha: 0.9),
+                  const Color(0xFF6B5B95),
+                ]
+              : [
+                  const Color(0xFF1E3A5F).withValues(alpha: 0.9),
+                  const Color(0xFF1E3A5F),
+                ],
         ),
         boxShadow: [
           BoxShadow(
@@ -161,8 +166,16 @@ class _VerdictSummaryCard extends StatelessWidget {
             ),
             child: Center(
               child: isAI
-                  ? const Icon(Icons.smart_toy_outlined, size: 40, color: Colors.white)
-                  : const Icon(Icons.edit_outlined, size: 40, color: Colors.white),
+                  ? const Icon(
+                      Icons.smart_toy_outlined,
+                      size: 40,
+                      color: Colors.white,
+                    )
+                  : const Icon(
+                      Icons.edit_outlined,
+                      size: 40,
+                      color: Colors.white,
+                    ),
             ),
           ),
           const SizedBox(width: 20),
@@ -175,9 +188,9 @@ class _VerdictSummaryCard extends StatelessWidget {
                 Text(
                   result.verdict.label(l10n),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 RichText(
@@ -185,16 +198,16 @@ class _VerdictSummaryCard extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: 'AI 概率：',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white70,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
                       ),
                       TextSpan(
                         text: '${(result.aiProbability * 100).round()}%',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -205,7 +218,10 @@ class _VerdictSummaryCard extends StatelessWidget {
                       ? '信心度低：可用模型權重不足 60%（${(result.threshold * 100).round()}% 閾值）。${result.availableEngineCount}/${result.totalEngineCount} 引擎參與投票。建議參考各引擎詳細分析結果。'
                       : '信心度高：${result.availableEngineCount}/${result.totalEngineCount} 個檢測模型達成共識（${((result.threshold) * 100).round()}% 以上權重同意此判定）',
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
@@ -214,9 +230,9 @@ class _VerdictSummaryCard extends StatelessWidget {
                       result.isLowConfidence
                           ? '⚠️ 信心度低（${result.availableEngineCount}/${result.totalEngineCount}）'
                           : '✓ 信心度高（${result.availableEngineCount}/${result.totalEngineCount}）',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
@@ -234,10 +250,7 @@ class _MetricsRow extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
 
-  const _MetricsRow({
-    required this.result,
-    required this.l10n,
-  });
+  const _MetricsRow({required this.result, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +262,8 @@ class _MetricsRow extends StatelessWidget {
             icon: Icons.assessment_outlined,
             iconColor: const Color(0xFF6B5B95),
             title: 'AI 句子比例',
-            value: '${((result.aiSentenceCount / result.sentences.length) * 100).toStringAsFixed(1)}%',
+            value:
+                '${((result.aiSentenceCount / result.sentences.length) * 100).toStringAsFixed(1)}%',
             subtitle: '${result.aiSentenceCount}/${result.sentences.length} 句',
           ),
         ),
@@ -261,7 +275,8 @@ class _MetricsRow extends StatelessWidget {
             icon: Icons.schedule_outlined,
             iconColor: const Color(0xFF1E3A5F),
             title: '分析耗時',
-            value: '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
+            value:
+                '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
             subtitle: '0.5-5s 正常',
           ),
         ),
@@ -318,9 +333,9 @@ class _MetricCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -329,16 +344,16 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1E3A5F),
-                ),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1E3A5F),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[500],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
           ),
         ],
       ),
@@ -351,10 +366,7 @@ class _EngineContributionCard extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
 
-  const _EngineContributionCard({
-    required this.result,
-    required this.l10n,
-  });
+  const _EngineContributionCard({required this.result, required this.l10n});
 
   static String _getEngineDisplayName(String engineId) {
     // 引擎 ID 可能包含變體標識（如 'transformer_VARIANT_ID'）
@@ -386,14 +398,18 @@ class _EngineContributionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.layers_outlined, color: Color(0xFF6B5B95), size: 20),
+              const Icon(
+                Icons.layers_outlined,
+                color: Color(0xFF6B5B95),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 '引擎分析層級',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                ),
               ),
             ],
           ),
@@ -401,9 +417,8 @@ class _EngineContributionCard extends StatelessWidget {
 
           // 雷達圖：顯示各引擎 AI 概率
           if (result.engineScores.isNotEmpty)
-            Container(
-              height: 300,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: _EngineRadarChart(engineScores: result.engineScores),
             ),
 
@@ -415,9 +430,9 @@ class _EngineContributionCard extends StatelessWidget {
           Text(
             '詳細分析',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[600],
-                ),
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
           ),
           const SizedBox(height: 8),
 
@@ -427,9 +442,9 @@ class _EngineContributionCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 '尚無引擎分析數據',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[500],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
               ),
             )
           else
@@ -437,6 +452,7 @@ class _EngineContributionCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 可用狀態指示
                     Container(
@@ -444,7 +460,9 @@ class _EngineContributionCard extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: score.available ? const Color(0xFF6B5B95) : Colors.grey[300],
+                        color: score.available
+                            ? const Color(0xFF6B5B95)
+                            : Colors.grey[300],
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -457,42 +475,60 @@ class _EngineContributionCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                score.engineName.isNotEmpty
-                                    ? score.engineName
-                                    : _getEngineDisplayName(score.engineId),
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
+                              Expanded(
+                                child: Text(
+                                  _getEngineDisplayName(score.engineId),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               Text(
                                 score.available
                                     ? '${(score.aiProbability * 100).round()}%'
-                                    : '未安裝',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    : '未參與',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
                                       color: score.available
                                           ? const Color(0xFF1E3A5F)
                                           : Colors.grey[400],
                                       fontWeight: FontWeight.bold,
-                                ),
+                                    ),
                               ),
                             ],
                           ),
-                          if (score.available) ...[
-                            const SizedBox(height: 4),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: score.aiProbability,
-                                minHeight: 4,
-                                backgroundColor: Colors.grey[200],
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  score.aiProbability > 0.7
-                                      ? const Color(0xFF6B5B95)
-                                      : const Color(0xFF1E3A5F),
-                                ),
+                          const SizedBox(height: 4),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: score.available ? score.aiProbability : 0,
+                              minHeight: 4,
+                              backgroundColor: Colors.grey[200],
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                !score.available
+                                    ? Colors.grey[300]!
+                                    : score.aiProbability > 0.7
+                                    ? const Color(0xFF6B5B95)
+                                    : const Color(0xFF1E3A5F),
                               ),
                             ),
+                          ),
+                          if (score.reasons.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            for (final reason in score.reasons.take(2))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  reason,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: Colors.grey[600],
+                                        height: 1.25,
+                                      ),
+                                ),
+                              ),
                           ],
                         ],
                       ),
@@ -513,18 +549,11 @@ class _EngineRadarChart extends StatelessWidget {
   const _EngineRadarChart({required this.engineScores});
 
   static String _getEngineDisplayName(String engineId) {
-    switch (engineId) {
-      case 'transformer':
-        return '🧠 Transformer';
-      case 'statistical':
-        return '📊 統計';
-      case 'stylometry':
-        return '✒️ 風格';
-      case 'adversarial':
-        return '🛡️ 防禦';
-      default:
-        return engineId.toUpperCase();
-    }
+    if (engineId.startsWith('transformer')) return 'Transformer';
+    if (engineId.startsWith('statistical')) return '統計';
+    if (engineId.startsWith('stylometry')) return '風格';
+    if (engineId.startsWith('adversarial')) return '防禦';
+    return '其他';
   }
 
   @override
@@ -535,79 +564,155 @@ class _EngineRadarChart extends StatelessWidget {
         child: Center(
           child: Text(
             '無引擎數據',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[500],
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
           ),
         ),
       );
     }
 
-    return Column(
-      children: [
-        // 雷達圖
-        SizedBox(
-          height: 300,
-          width: 300,
-          child: RadarChart(
-            RadarChartData(
-              dataSets: [
-                RadarDataSet(
-                  fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
-                  borderColor: const Color(0xFF6B5B95),
-                  borderWidth: 2,
-                  dataEntries: engineScores
-                      .map((score) => RadarEntry(value: score.aiProbability * 100))
-                      .toList(),
-                ),
-              ],
-              radarBackgroundColor: Colors.transparent,
-              gridBorderData: BorderSide(
-                color: Colors.grey[300]!,
-                width: 1,
-              ),
-              tickBorderData: const BorderSide(
-                color: Colors.grey,
-                width: 0.5,
-              ),
-              ticksTextStyle: const TextStyle(
-                fontSize: 10,
-                color: Colors.grey,
-              ),
-              radarTouchData: RadarTouchData(enabled: true),
-            ),
-            swapAnimationDuration: const Duration(milliseconds: 400),
+    final displayScores = engineScores.take(5).toList();
+    final chartSize = math
+        .min(MediaQuery.sizeOf(context).width - 96, 280.0)
+        .clamp(220.0, 280.0);
+
+    return Center(
+      child: SizedBox(
+        width: chartSize,
+        height: chartSize,
+        child: CustomPaint(
+          painter: _ReportRadarPainter(
+            scores: displayScores,
+            labels: [
+              for (final score in displayScores)
+                _getEngineDisplayName(score.engineId),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
-        // 引擎名稱圖例
-        Wrap(
-          spacing: 16,
-          runSpacing: 8,
-          children: List.generate(engineScores.length, (index) {
-            final score = engineScores[index];
-            final displayName = _getEngineDisplayName(score.engineId);
-            final isAvailable = score.available;
-            return Chip(
-              label: Text(
-                displayName,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isAvailable ? Colors.black87 : Colors.grey[500],
-                ),
-              ),
-              backgroundColor: isAvailable
-                  ? Colors.grey[200]
-                  : Colors.grey[300],
-              side: BorderSide(
-                color: isAvailable
-                    ? const Color(0xFF6B5B95)
-                    : Colors.grey[400]!,
-              ),
-            );
-          }),
-        ),
-      ],
+      ),
     );
+  }
+}
+
+class _ReportRadarPainter extends CustomPainter {
+  final List<EngineScore> scores;
+  final List<String> labels;
+
+  const _ReportRadarPainter({required this.scores, required this.labels});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (scores.length < 3) return;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.shortestSide / 2 - 42;
+    const axisColor = Color(0xFFE3E1EA);
+    const valueColor = Color(0xFF6B5B95);
+
+    final gridPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = axisColor;
+    final axisPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = axisColor.withValues(alpha: 0.75);
+    final fillPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = valueColor.withValues(alpha: 0.20);
+    final outlinePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = valueColor;
+    final disabledDotPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFFBDBDBD);
+    final dotPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = valueColor;
+
+    for (var ring = 1; ring <= 4; ring++) {
+      final ringPath = Path();
+      for (var i = 0; i < scores.length; i++) {
+        final p = _point(center, radius * ring / 4, i, scores.length);
+        if (i == 0) {
+          ringPath.moveTo(p.dx, p.dy);
+        } else {
+          ringPath.lineTo(p.dx, p.dy);
+        }
+      }
+      ringPath.close();
+      canvas.drawPath(ringPath, gridPaint);
+    }
+
+    for (var i = 0; i < scores.length; i++) {
+      canvas.drawLine(
+        center,
+        _point(center, radius, i, scores.length),
+        axisPaint,
+      );
+    }
+
+    final valuePath = Path();
+    for (var i = 0; i < scores.length; i++) {
+      final value = scores[i].available
+          ? scores[i].aiProbability.clamp(0.0, 1.0)
+          : 0.0;
+      final p = _point(center, radius * value, i, scores.length);
+      if (i == 0) {
+        valuePath.moveTo(p.dx, p.dy);
+      } else {
+        valuePath.lineTo(p.dx, p.dy);
+      }
+    }
+    valuePath.close();
+    canvas.drawPath(valuePath, fillPaint);
+    canvas.drawPath(valuePath, outlinePaint);
+
+    for (var i = 0; i < scores.length; i++) {
+      final value = scores[i].available
+          ? scores[i].aiProbability.clamp(0.0, 1.0)
+          : 0.0;
+      final p = _point(center, radius * value, i, scores.length);
+      canvas.drawCircle(
+        p,
+        4,
+        scores[i].available ? dotPaint : disabledDotPaint,
+      );
+    }
+
+    for (var i = 0; i < labels.length; i++) {
+      final p = _point(center, radius + 24, i, labels.length);
+      final painter = TextPainter(
+        text: TextSpan(
+          text: labels[i],
+          style: const TextStyle(
+            color: Color(0xFF55515D),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: 78);
+      painter.paint(
+        canvas,
+        Offset(p.dx - painter.width / 2, p.dy - painter.height / 2),
+      );
+    }
+  }
+
+  Offset _point(Offset center, double radius, int index, int total) {
+    final angle = (index / total) * 2 * math.pi - math.pi / 2;
+    return Offset(
+      center.dx + math.cos(angle) * radius,
+      center.dy + math.sin(angle) * radius,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ReportRadarPainter oldDelegate) {
+    return oldDelegate.scores != scores || oldDelegate.labels != labels;
   }
 }
