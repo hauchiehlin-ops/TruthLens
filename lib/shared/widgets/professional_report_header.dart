@@ -357,17 +357,18 @@ class _EngineContributionCard extends StatelessWidget {
   });
 
   static String _getEngineDisplayName(String engineId) {
-    switch (engineId) {
-      case 'transformer':
-        return '🧠 Transformer 模型';
-      case 'statistical':
-        return '📊 統計分析';
-      case 'stylometry':
-        return '✒️ 風格分析';
-      case 'adversarial':
-        return '🛡️ 對抗防禦';
-      default:
-        return '⚙️ ${engineId.toUpperCase()}';
+    // 引擎 ID 可能包含變體標識（如 'transformer_VARIANT_ID'）
+    // 使用 startsWith 而不是精確匹配
+    if (engineId.startsWith('transformer')) {
+      return '🧠 Transformer';
+    } else if (engineId.startsWith('statistical')) {
+      return '📊 統計';
+    } else if (engineId.startsWith('stylometry')) {
+      return '✒️ 風格';
+    } else if (engineId.startsWith('adversarial')) {
+      return '🛡️ 防禦';
+    } else {
+      return '⚙️ 未知';
     }
   }
 
