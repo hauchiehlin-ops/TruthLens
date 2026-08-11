@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 enum CitationMatchConfidence { high, uncertain, notFound }
@@ -41,6 +42,20 @@ class BibliographyCheckResult {
 class BibliographyVerifier {
   /// 單次報告最多驗證的條目數，避免長篇文獻目錄拖慢報告載入。
   static const maxEntriesPerCheck = 30;
+
+  /// 取得代理 URL（Web 環境中用以繞過 CORS 限制）
+  static String _getProxiedUrl(String targetUrl) {
+    if (!kIsWeb) return targetUrl;
+
+    // 優先使用同源代理，其次使用 Vercel 代理
+    try {
+      final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return Uri.base.resolve(proxyPath).toString();
+    } catch (_) {
+      // 回退到 Vercel 代理
+      return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+    }
+  }
 
   static final RegExp _sectionHeading = RegExp(
     r'(?:\b(?:references|bibliography|works cited|literature cited|sources)\b|參考文獻|參考書目|引用文獻|主要參考文獻|文獻目錄)',
@@ -686,9 +701,9 @@ class BibliographyVerifier {
 
     if (entry.doi != null) {
       try {
-        final uri = Uri.parse(
-          'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}',
-        ).replace(queryParameters: {'mailto': 'support@truthlens.app'});
+        final baseUrl = 'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}';
+        final proxiedUrl = _getProxiedUrl(baseUrl);
+        final uri = Uri.parse(proxiedUrl).replace(queryParameters: {'mailto': 'support@truthlens.app'});
         final response = await _httpGetWithRetry(client, uri, timeout);
         if (response != null && response.statusCode == 200) {
           final message =
@@ -739,7 +754,7 @@ class BibliographyVerifier {
           'mailto': 'support@truthlens.app',
         };
         final uri = Uri.parse(
-          'https://api.crossref.org/works',
+          _getProxiedUrl('https://api.crossref.org/works'),
         ).replace(queryParameters: queryParams);
         final response = await _httpGetWithRetry(client, uri, timeout);
         if (response != null && response.statusCode == 200) {
@@ -778,7 +793,7 @@ class BibliographyVerifier {
         }
 
         final uri = Uri.parse(
-          'https://api.crossref.org/works',
+          _getProxiedUrl('https://api.crossref.org/works'),
         ).replace(queryParameters: queryParams);
 
         final response = await _httpGetWithRetry(client, uri, timeout);
@@ -816,7 +831,7 @@ class BibliographyVerifier {
         'mailto': 'support@truthlens.app',
       };
       final uri = Uri.parse(
-        'https://api.crossref.org/works',
+        _getProxiedUrl('https://api.crossref.org/works'),
       ).replace(queryParameters: queryParams);
 
       final response = await _httpGetWithRetry(client, uri, timeout);
@@ -845,9 +860,9 @@ class BibliographyVerifier {
     // 2) 策略二：OpenAlex 全文圖書館索引多候選人比對 (per_page=5)
     try {
       final searchKw = _cleanSearchKeywords(searchTitle ?? entry.rawText);
-      final openAlexUri = Uri.parse(
-        'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5',
-      );
+      final openAlexUrl = 'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5';
+      final proxiedUrl = _getProxiedUrl(openAlexUrl);
+      final openAlexUri = Uri.parse(proxiedUrl);
       final oaResp = await _httpGetWithRetry(client, openAlexUri, timeout);
 
       if (oaResp != null && oaResp.statusCode == 200) {

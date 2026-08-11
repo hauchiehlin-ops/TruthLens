@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 /// 文件內超連結的存在性驗證。會依需要連線（見
@@ -47,6 +48,20 @@ class LinkCheckResult {
 class LinkVerifier {
   /// 單次報告最多驗證的連結數，避免內容中含大量連結時拖慢報告載入。
   static const maxLinksPerCheck = 20;
+
+  /// 取得代理 URL（Web 環境中用以繞過 CORS 限制）
+  static String _getProxiedUrl(String targetUrl) {
+    if (!kIsWeb) return targetUrl;
+
+    // 優先使用同源代理，其次使用 Vercel 代理
+    try {
+      final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return Uri.base.resolve(proxyPath).toString();
+    } catch (_) {
+      // 回退到 Vercel 代理
+      return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+    }
+  }
 
   static final RegExp _urlPattern = RegExp(
     r'''https?://[^\s<>"'`　-￿]+''',
@@ -111,7 +126,10 @@ class LinkVerifier {
   ) async {
     final uri = Uri.tryParse(url)!;
     final doi = uri.path.replaceFirst(RegExp(r'^/+'), '');
-    final apiUri = Uri.parse('https://api.crossref.org/works/$doi');
+    final crossrefUrl = 'https://api.crossref.org/works/$doi';
+
+    // 在 Web 環境中使用代理以解決 CORS 問題
+    final apiUri = Uri.parse(_getProxiedUrl(crossrefUrl));
     try {
       final response = await client.get(apiUri).timeout(timeout);
       if (response.statusCode == 200) {
