@@ -542,50 +542,71 @@ class _EngineRadarChart extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      height: 300,
-      width: 300,
-      child: RadarChart(
-        RadarChartData(
-          dataSets: [
-            RadarDataSet(
-              fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
-              borderColor: const Color(0xFF6B5B95),
-              borderWidth: 2,
-              dataEntries: engineScores
-                  .map((score) => RadarEntry(value: score.aiProbability * 100))
-                  .toList(),
+    return Column(
+      children: [
+        // 雷達圖
+        SizedBox(
+          height: 300,
+          width: 300,
+          child: RadarChart(
+            RadarChartData(
+              dataSets: [
+                RadarDataSet(
+                  fillColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
+                  borderColor: const Color(0xFF6B5B95),
+                  borderWidth: 2,
+                  dataEntries: engineScores
+                      .map((score) => RadarEntry(value: score.aiProbability * 100))
+                      .toList(),
+                ),
+              ],
+              radarBackgroundColor: Colors.transparent,
+              gridBorderData: BorderSide(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+              tickBorderData: const BorderSide(
+                color: Colors.grey,
+                width: 0.5,
+              ),
+              ticksTextStyle: const TextStyle(
+                fontSize: 10,
+                color: Colors.grey,
+              ),
+              radarTouchData: RadarTouchData(enabled: true),
             ),
-          ],
-          radarBackgroundColor: Colors.transparent,
-          gridBorderData: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1,
+            swapAnimationDuration: const Duration(milliseconds: 400),
           ),
-          tickBorderData: const BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
-          ticksTextStyle: const TextStyle(
-            fontSize: 10,
-            color: Colors.grey,
-          ),
-          getTitle: (index, angle) {
-            if (index >= 0 && index < engineScores.length) {
-              final score = engineScores[index];
-              final displayName = _getEngineDisplayName(score.engineId);
-              return RadarChartTitle(
-                text: displayName,
-                angle: angle,
-                positionPercentageOffset: 0.18,
-              );
-            }
-            return RadarChartTitle(text: '', angle: angle);
-          },
-          radarTouchData: RadarTouchData(enabled: true),
         ),
-        swapAnimationDuration: const Duration(milliseconds: 400),
-      ),
+        const SizedBox(height: 12),
+        // 引擎名稱圖例
+        Wrap(
+          spacing: 16,
+          runSpacing: 8,
+          children: List.generate(engineScores.length, (index) {
+            final score = engineScores[index];
+            final displayName = _getEngineDisplayName(score.engineId);
+            final isAvailable = score.available;
+            return Chip(
+              label: Text(
+                displayName,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isAvailable ? Colors.black87 : Colors.grey[500],
+                ),
+              ),
+              backgroundColor: isAvailable
+                  ? Colors.grey[200]
+                  : Colors.grey[300],
+              side: BorderSide(
+                color: isAvailable
+                    ? const Color(0xFF6B5B95)
+                    : Colors.grey[400]!,
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }
