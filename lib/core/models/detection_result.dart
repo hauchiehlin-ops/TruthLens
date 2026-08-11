@@ -114,17 +114,13 @@ class DetectionResult {
       engineScores.fold<double>(0, (sum, e) => sum + e.weight);
 
   /// 檢查是否為低信心分析：
-  /// - 可用權重 < 60% 原始總權重
-  /// - 可用引擎 < 2 個
+  /// 只有在引擎投票數極度不足時才認為信心度低
+  /// - 可用引擎 < 2 個（無法多角度驗證）
   bool get isLowConfidence {
     final availableCount = _computeAvailableCount;
-    final usedWeight = _computeUsedWeight;
-    final totalWeight = _computeTotalWeight;
 
-    // 條件 1：缺少太多權重
-    if (totalWeight > 0 && (usedWeight / totalWeight) < 0.60) return true;
-
-    // 條件 2：可用引擎少於 2 個
+    // 只有在引擎數量不足時才判為低信心度
+    // （權重不平衡屬於正常情況，不應降低信心度）
     if (availableCount < 2) return true;
 
     return false;
