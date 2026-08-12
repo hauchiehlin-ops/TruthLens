@@ -41,6 +41,18 @@ class ReportExporter {
       .where((s) => PreprocessedText.isAnalyzableSentence(s.text))
       .toList();
 
+  static ({String label, String body}) _privacySealParts(
+    AppLocalizations l10n,
+  ) {
+    final text = l10n.privacySealNoticeText;
+    final separator = RegExp(r'[:：]').firstMatch(text);
+    if (separator == null) return (label: text, body: '');
+    return (
+      label: text.substring(0, separator.start).trim(),
+      body: text.substring(separator.end).trim(),
+    );
+  }
+
   /// 結構化 JSON（plan 第九節：LMS / 系統整合）。欄位名稱為固定的英文 API schema，
   /// 不隨語系翻譯，僅 headline／reasons 等自然語言內容依 [l10n] 呈現。
   static String buildJson(
@@ -151,6 +163,7 @@ class ReportExporter {
     }
 
     final analyzableSentences = _analyzableSentences(r);
+    final privacySeal = _privacySealParts(l10n);
     final doc = pw.Document(theme: theme);
     doc.addPage(
       pw.MultiPage(
@@ -218,7 +231,7 @@ class ReportExporter {
           ),
           pw.SizedBox(height: 12),
 
-          // 🔐 MVP 3: 100% 本地離線隱私認證標章 (Zero-Cloud Privacy Audit Seal)
+          // MVP 3: Zero-Cloud Privacy Audit Seal
           pw.Container(
             padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: pw.BoxDecoration(
@@ -233,7 +246,7 @@ class ReportExporter {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  '[ 零上傳安全認證 ] ',
+                  '[ ${privacySeal.label} ] ',
                   style: pw.TextStyle(
                     fontSize: 9,
                     fontWeight: pw.FontWeight.bold,
@@ -242,7 +255,7 @@ class ReportExporter {
                 ),
                 pw.Expanded(
                   child: pw.Text(
-                    'TruthLens 離線檢測證明：本文件內容 100% 於裝置本地運算完成。未經過任何雲端伺服器傳輸或資料庫儲存，完整保障個資與智慧財產權。',
+                    privacySeal.body,
                     style: const pw.TextStyle(
                       fontSize: 8.5,
                       color: PdfColor.fromInt(0xFF37474F),
