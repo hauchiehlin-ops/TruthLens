@@ -640,6 +640,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportVerifyNowBibButton => '今すぐ検証（要ネットワーク接続）';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       '著者名、発行年、タイトルの類似度でCrossrefの公開登録データと照合します。絶対的な保証ではありません。「不確定」の場合は自分で確認することをお勧めします。';
 

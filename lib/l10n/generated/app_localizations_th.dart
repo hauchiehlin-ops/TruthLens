@@ -666,6 +666,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportVerifyNowBibButton => 'ตรวจสอบตอนนี้（ต้องใช้เครือข่าย）';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       'จับคู่กับข้อมูลทะเบียนสาธารณะของ Crossref โดยใช้ความคล้ายคลึงของผู้แต่ง ปี และชื่อเรื่อง ไม่ใช่การรับประกันที่แน่นอน หากผลลัพธ์ \"ไม่แน่ใจ\" แนะนำให้ตรวจสอบด้วยตนเอง';
 

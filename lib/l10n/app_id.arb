@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Bibliografi terdeteksi ({count} entri); belum diverifikasi",
   "reportBibDisabledHint": "Konten yang dihasilkan AI sering menyertakan referensi yang tampak masuk akal tetapi fiktif. Anda telah mematikan verifikasi hyperlink di Pengaturan; Anda dapat mengaktifkannya kembali untuk verifikasi otomatis, atau ketuk di bawah untuk pemeriksaan sekali.",
   "reportVerifyNowBibButton": "Verifikasi sekarang (perlu jaringan)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Dicocokkan dengan registri publik Crossref berdasarkan kemiripan penulis, tahun, dan judul. Bukan jaminan mutlak — saat \"tidak pasti\", harap verifikasi secara manual.",
   "reportBibHighConfidence": "Kepercayaan tinggi: kemungkinan ada{journal}",
   "reportBibJournalSuffix": " (terdaftar dengan {journal})",

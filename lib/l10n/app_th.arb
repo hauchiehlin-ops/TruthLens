@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "ตรวจพบบรรณานุกรม（{count} รายการ）ยังไม่ได้ตรวจสอบว่ามีอยู่จริงหรือไม่",
   "reportBibDisabledHint": "เนื้อหาที่สร้างโดย AI มักมีการอ้างอิงที่ดูสมเหตุสมผลแต่ไม่มีอยู่จริง คุณได้ปิดการตรวจสอบลิงก์ใน \"การตั้งค่า\" แล้ว สามารถเปิดอีกครั้งเพื่อตรวจสอบอัตโนมัติ หรือแตะปุ่มด้านล่างเพื่อตรวจสอบเพียงครั้งเดียว",
   "reportVerifyNowBibButton": "ตรวจสอบตอนนี้（ต้องใช้เครือข่าย）",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "จับคู่กับข้อมูลทะเบียนสาธารณะของ Crossref โดยใช้ความคล้ายคลึงของผู้แต่ง ปี และชื่อเรื่อง ไม่ใช่การรับประกันที่แน่นอน หากผลลัพธ์ \"ไม่แน่ใจ\" แนะนำให้ตรวจสอบด้วยตนเอง",
   "reportBibHighConfidence": "ความเชื่อมั่นสูง: น่าจะมีอยู่จริง{journal}",
   "reportBibJournalSuffix": "（ลงทะเบียนกับ {journal}）",

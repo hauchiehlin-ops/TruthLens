@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "参考文献目録（{count} 件）を検出しました。まだ検証されていません",
   "reportBibDisabledHint": "AI生成コンテンツには、もっともらしいが実在しない参考文献がよく含まれます。「設定」でハイパーリンク検証をオフにしています。再度オンにすると自動検証されます。下のボタンで一回限りの検証も可能です。",
   "reportVerifyNowBibButton": "今すぐ検証（要ネットワーク接続）",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "著者名、発行年、タイトルの類似度でCrossrefの公開登録データと照合します。絶対的な保証ではありません。「不確定」の場合は自分で確認することをお勧めします。",
   "reportBibHighConfidence": "高信頼度：実在する可能性が高い{journal}",
   "reportBibJournalSuffix": "（{journal}に登録済み）",

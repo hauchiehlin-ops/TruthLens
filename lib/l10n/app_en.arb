@@ -222,6 +222,8 @@
   "@reportBibDetectedPending": {"placeholders": {"count": {"type": "int"}}},
   "reportBibDisabledHint": "AI-generated content often includes plausible-looking but fabricated references. You've turned off hyperlink verification in Settings; you can turn it back on for automatic verification, or tap below for a one-time check.",
   "reportVerifyNowBibButton": "Verify now (requires network)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Matched against Crossref and OpenAlex by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.",
   "reportBibHighConfidence": "High confidence: likely exists{journal}",
   "@reportBibHighConfidence": {"placeholders": {"journal": {"type": "String"}}},

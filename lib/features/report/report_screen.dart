@@ -153,6 +153,80 @@ class _ReportScreenState extends State<ReportScreen> {
     await Future.wait(tasks);
   }
 
+  Future<void> _recheckBibliographyEntries(List<int> indexes) async {
+    if (_checkingBib || indexes.isEmpty) return;
+
+    final existingChecks = _bibChecks;
+    if (existingChecks == null || existingChecks.isEmpty) {
+      await _runVerification(forceRecheck: true);
+      return;
+    }
+
+    final targetIndexes =
+        indexes
+            .where((i) => i >= 0 && i < existingChecks.length)
+            .toSet()
+            .toList()
+          ..sort();
+    if (targetIndexes.isEmpty) return;
+
+    setState(() {
+      _checkingBib = true;
+      _bibCompleted = 0;
+      _bibTotal = targetIndexes.length;
+      _bibCurrentEntry = existingChecks[targetIndexes.first].entry;
+      _networkAvailable = null;
+    });
+
+    final online = await NetworkStatus.isOnline();
+    if (mounted) setState(() => _networkAvailable = online);
+
+    if (!online) {
+      if (mounted) {
+        setState(() {
+          _checkingBib = false;
+          _bibCurrentEntry = null;
+        });
+      }
+      return;
+    }
+
+    final workingChecks = List<BibliographyCheckResult>.from(existingChecks);
+    final targetEntries = [
+      for (final i in targetIndexes) existingChecks[i].entry,
+    ];
+
+    final updatedChecks = await BibliographyVerifier.verifyAll(
+      targetEntries,
+      onProgress: (progress) {
+        if (!mounted) return;
+        setState(() {
+          _bibCompleted = progress.completed;
+          _bibTotal = progress.total;
+          _bibCurrentEntry = progress.currentEntry;
+          final latest = progress.latestResult;
+          if (latest != null) {
+            final replaceAt = targetIndexes[progress.completed - 1];
+            workingChecks[replaceAt] = latest;
+            _bibChecks = List<BibliographyCheckResult>.from(workingChecks);
+          }
+        });
+      },
+    );
+
+    if (!mounted) return;
+    setState(() {
+      for (var i = 0; i < updatedChecks.length; i += 1) {
+        workingChecks[targetIndexes[i]] = updatedChecks[i];
+      }
+      _bibChecks = workingChecks;
+      _checkingBib = false;
+      _bibCompleted = updatedChecks.length;
+      _bibTotal = updatedChecks.length;
+      _bibCurrentEntry = null;
+    });
+  }
+
   Future<void> _export(
     Future<String?> Function(
       DetectionResult,
@@ -657,22 +731,37 @@ class _ReportScreenState extends State<ReportScreen> {
               l10n.reportBibResultHint,
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (_unreliableBibIndexes(checks).isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: _checkingBib
+                      ? null
+                      : () => _recheckBibliographyEntries(
+                          _unreliableBibIndexes(checks),
+                        ),
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.reportBibRecheckAllUnreliableButton),
+                ),
+              ),
+            ],
             const SizedBox(height: 8),
-            for (final c in checks)
+            for (var i = 0; i < checks.length; i += 1)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      switch (c.confidence) {
+                      switch (checks[i].confidence) {
                         CitationMatchConfidence.high => Icons.check_circle,
                         CitationMatchConfidence.notFound => Icons.link_off,
                         CitationMatchConfidence.uncertain =>
                           Icons.report_problem_outlined,
                       },
                       size: 18,
-                      color: switch (c.confidence) {
+                      color: switch (checks[i].confidence) {
                         CitationMatchConfidence.high => Colors.green,
                         CitationMatchConfidence.notFound => Colors.red,
                         CitationMatchConfidence.uncertain => Colors.orange,
@@ -681,10 +770,20 @@ class _ReportScreenState extends State<ReportScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${c.entry.rawText}\n${_bibStatusLabel(c, l10n)}',
+                        '${checks[i].entry.rawText}\n${_bibStatusLabel(checks[i], l10n)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
+                    if (_isUnreliableBibliographyResult(checks[i])) ...[
+                      const SizedBox(width: 6),
+                      IconButton(
+                        tooltip: l10n.reportBibRecheckOneTooltip,
+                        onPressed: _checkingBib
+                            ? null
+                            : () => _recheckBibliographyEntries([i]),
+                        icon: const Icon(Icons.refresh),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -705,6 +804,14 @@ class _ReportScreenState extends State<ReportScreen> {
       CitationMatchConfidence.uncertain => _bibUnreliableLabel(c, l10n),
     };
   }
+
+  bool _isUnreliableBibliographyResult(BibliographyCheckResult c) =>
+      c.confidence != CitationMatchConfidence.high;
+
+  List<int> _unreliableBibIndexes(List<BibliographyCheckResult> checks) => [
+    for (var i = 0; i < checks.length; i += 1)
+      if (_isUnreliableBibliographyResult(checks[i])) i,
+  ];
 
   String _bibUnreliableLabel(BibliographyCheckResult c, AppLocalizations l10n) {
     final matched = c.matchedTitle;

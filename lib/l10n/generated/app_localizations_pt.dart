@@ -677,6 +677,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportVerifyNowBibButton => 'Verificar agora (requer rede)';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       'Comparado com o registro público da Crossref por similaridade de autor, ano e título. Não é uma garantia absoluta — quando \"incerto\", verifique manualmente.';
 

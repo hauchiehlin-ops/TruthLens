@@ -1220,6 +1220,18 @@ abstract class AppLocalizations {
   /// **'Verify now (requires network)'**
   String get reportVerifyNowBibButton;
 
+  /// No description provided for @reportBibRecheckAllUnreliableButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Recheck all unverified citations'**
+  String get reportBibRecheckAllUnreliableButton;
+
+  /// No description provided for @reportBibRecheckOneTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Recheck this citation'**
+  String get reportBibRecheckOneTooltip;
+
   /// No description provided for @reportBibResultHint.
   ///
   /// In en, this message translates to:

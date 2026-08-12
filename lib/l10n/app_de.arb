@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Bibliografie erkannt ({count} Einträge); noch nicht verifiziert",
   "reportBibDisabledHint": "KI-generierte Inhalte enthalten oft plausibel klingende, aber erfundene Referenzen. Sie haben die Hyperlink-Verifizierung in den Einstellungen deaktiviert; Sie können sie für die automatische Verifizierung wieder aktivieren oder unten für eine einmalige Prüfung antippen.",
   "reportVerifyNowBibButton": "Jetzt verifizieren (Netzwerk erforderlich)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Abgeglichen mit dem öffentlichen Crossref-Register nach Ähnlichkeit von Autor, Jahr und Titel. Keine absolute Garantie — bei \"unsicher\" bitte manuell verifizieren.",
   "reportBibHighConfidence": "Hohe Zuverlässigkeit: existiert wahrscheinlich{journal}",
   "reportBibJournalSuffix": " (registriert bei {journal})",

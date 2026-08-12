@@ -643,6 +643,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportVerifyNowBibButton => '지금 검증（네트워크 필요）';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       '저자, 연도, 제목 유사도를 Crossref 공개 등록 데이터와 대조합니다. 절대적인 보장은 아니며, \"불확실\"할 경우 직접 확인하는 것을 권장합니다.';
 

@@ -181,6 +181,8 @@
   "reportBibDetectedPending": "侦测到参考文献目录（{count} 笔），尚未核实是否存在",
   "reportBibDisabledHint": "AI 生成内容常附上看似合理但实际不存在的参考文献。你已在「设置」关闭超链接验证；可重新打开以自动核实，或点击下方按钮做单次核实。",
   "reportVerifyNowBibButton": "立即核实（需连接）",
+  "reportBibRecheckAllUnreliableButton": "重新查核全部未通过文献",
+  "reportBibRecheckOneTooltip": "重新查核此条文献",
   "reportBibResultHint": "依作者、年份、篇名与期刊信息比对 Crossref 与 OpenAlex 公开登记数据；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。",
   "reportBibHighConfidence": "高可信度：应存在{journal}",
   "reportBibJournalSuffix": "（登记于《{journal}》）",

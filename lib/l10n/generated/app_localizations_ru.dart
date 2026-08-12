@@ -671,6 +671,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportVerifyNowBibButton => 'Проверить сейчас (требуется сеть)';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       'Сопоставлено с публичным реестром Crossref по сходству автора, года и названия. Не является абсолютной гарантией — при статусе «неопределённо» проверьте вручную.';
 

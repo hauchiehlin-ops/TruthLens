@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Bibliografi dikesan ({count} entri); belum disahkan",
   "reportBibDisabledHint": "Kandungan yang dijana AI sering menyertakan rujukan yang kelihatan munasabah tetapi rekaan. Anda telah mematikan pengesahan pautan hiper dalam Tetapan; anda boleh menghidupkannya semula untuk pengesahan automatik, atau ketik di bawah untuk semakan sekali sahaja.",
   "reportVerifyNowBibButton": "Sahkan sekarang (perlu rangkaian)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Dipadankan terhadap daftar awam Crossref mengikut persamaan pengarang, tahun dan tajuk. Bukan jaminan mutlak — apabila \"tidak pasti\", sila sahkan secara manual.",
   "reportBibHighConfidence": "Keyakinan tinggi: kemungkinan wujud{journal}",
   "reportBibJournalSuffix": " (berdaftar dengan {journal})",

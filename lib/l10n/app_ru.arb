@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Обнаружена библиография ({count} записей); ещё не проверено",
   "reportBibDisabledHint": "Контент, созданный ИИ, часто содержит правдоподобные, но вымышленные ссылки. Вы отключили проверку гиперссылок в Настройках; вы можете снова включить её для автоматической проверки или нажать ниже для однократной проверки.",
   "reportVerifyNowBibButton": "Проверить сейчас (требуется сеть)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Сопоставлено с публичным реестром Crossref по сходству автора, года и названия. Не является абсолютной гарантией — при статусе «неопределённо» проверьте вручную.",
   "reportBibHighConfidence": "Высокая уверенность: вероятно, существует{journal}",
   "reportBibJournalSuffix": " (зарегистрировано в {journal})",

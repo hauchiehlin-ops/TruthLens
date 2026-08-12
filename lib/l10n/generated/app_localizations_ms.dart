@@ -668,6 +668,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportVerifyNowBibButton => 'Sahkan sekarang (perlu rangkaian)';
 
   @override
+  String get reportBibRecheckAllUnreliableButton =>
+      'Recheck all unverified citations';
+
+  @override
+  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+
+  @override
   String get reportBibResultHint =>
       'Dipadankan terhadap daftar awam Crossref mengikut persamaan pengarang, tahun dan tajuk. Bukan jaminan mutlak — apabila \"tidak pasti\", sila sahkan secara manual.';
 

@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Bibliografía detectada ({count} entradas); aún no verificada",
   "reportBibDisabledHint": "El contenido generado por IA suele incluir referencias que parecen plausibles pero son inventadas. Has desactivado la verificación de hipervínculos en Ajustes; puedes volver a activarla para la verificación automática, o tocar abajo para una comprobación única.",
   "reportVerifyNowBibButton": "Verificar ahora (requiere red)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Comparado con el registro público de Crossref por similitud de autor, año y título. No es una garantía absoluta; cuando se indique \"incierto\", verifica manualmente.",
   "reportBibHighConfidence": "Alta confianza: probablemente existe{journal}",
   "reportBibJournalSuffix": " (registrado con {journal})",

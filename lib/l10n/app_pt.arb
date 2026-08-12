@@ -192,6 +192,8 @@
   "reportBibDetectedPending": "Bibliografia detectada ({count} entradas); ainda não verificada",
   "reportBibDisabledHint": "O conteúdo gerado por IA geralmente inclui referências plausíveis, mas fictícias. Você desativou a verificação de hiperlinks nas Configurações; você pode reativá-la para verificação automática, ou tocar abaixo para uma verificação única.",
   "reportVerifyNowBibButton": "Verificar agora (requer rede)",
+  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
+  "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Comparado com o registro público da Crossref por similaridade de autor, ano e título. Não é uma garantia absoluta — quando \"incerto\", verifique manualmente.",
   "reportBibHighConfidence": "Alta confiança: provavelmente existe{journal}",
   "reportBibJournalSuffix": " (registrado em {journal})",

@@ -634,6 +634,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportVerifyNowBibButton => '立即核實（需連線）';
 
   @override
+  String get reportBibRecheckAllUnreliableButton => '重新查核全部未通過文獻';
+
+  @override
+  String get reportBibRecheckOneTooltip => '重新查核此筆文獻';
+
+  @override
   String get reportBibResultHint =>
       '依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
 
@@ -1867,6 +1873,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportVerifyNowBibButton => '立即核实（需连接）';
 
   @override
+  String get reportBibRecheckAllUnreliableButton => '重新查核全部未通过文献';
+
+  @override
+  String get reportBibRecheckOneTooltip => '重新查核此条文献';
+
+  @override
   String get reportBibResultHint =>
       '依作者、年份、篇名与期刊信息比对 Crossref 与 OpenAlex 公开登记数据；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。';
 
@@ -3098,6 +3110,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportVerifyNowBibButton => '立即核實（需連線）';
+
+  @override
+  String get reportBibRecheckAllUnreliableButton => '重新查核全部未通過文獻';
+
+  @override
+  String get reportBibRecheckOneTooltip => '重新查核此筆文獻';
 
   @override
   String get reportBibResultHint =>
