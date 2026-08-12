@@ -403,9 +403,10 @@ class _EngineContributionCard extends StatelessWidget {
 
           // 雷達圖：顯示各引擎 AI 概率
           if (engineGroups.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: _EngineRadarChart(engineGroups: engineGroups),
+            _RadarWithVerdict(
+              engineGroups: engineGroups,
+              result: result,
+              l10n: l10n,
             ),
             _EngineSynthesisSummary(
               groups: engineGroups,
@@ -468,12 +469,32 @@ class _EngineContributionCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: Text(
-                                  group.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      group.axisLabel,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF1E3A5F),
+                                          ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      group.label,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: Colors.grey[600]),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -541,6 +562,176 @@ class _EngineContributionCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _RadarWithVerdict extends StatelessWidget {
+  final List<_EngineGroup> engineGroups;
+  final DetectionResult result;
+  final AppLocalizations l10n;
+
+  const _RadarWithVerdict({
+    required this.engineGroups,
+    required this.result,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 560;
+        if (compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: _EngineRadarChart(engineGroups: engineGroups),
+              ),
+              const SizedBox(height: 8),
+              _VerdictSignalBadge(result: result, l10n: l10n),
+            ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: _EngineRadarChart(engineGroups: engineGroups),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: _VerdictSignalBadge(result: result, l10n: l10n),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _VerdictSignalBadge extends StatelessWidget {
+  final DetectionResult result;
+  final AppLocalizations l10n;
+
+  const _VerdictSignalBadge({required this.result, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final meta = _meta(result.verdict);
+    final probability = (result.aiProbability * 100).round();
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: meta.color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: meta.color.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: meta.color.withValues(alpha: 0.16),
+                ),
+                child: Icon(meta.icon, color: meta.color, size: 26),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '綜合判定',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      result.verdict.label(l10n),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: meta.color,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '整體 AI 機率 $probability%',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: const Color(0xFF1E3A5F),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            _verdictHint(result.verdict),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey[700],
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static _VerdictMeta _meta(Verdict verdict) => switch (verdict) {
+    Verdict.human => const _VerdictMeta(
+      icon: Icons.verified_user_outlined,
+      color: Color(0xFF2E7D32),
+    ),
+    Verdict.likelyHuman => const _VerdictMeta(
+      icon: Icons.check_circle_outline,
+      color: Color(0xFF558B2F),
+    ),
+    Verdict.mixed => const _VerdictMeta(
+      icon: Icons.balance_outlined,
+      color: Color(0xFF6B5B95),
+    ),
+    Verdict.likelyAi => const _VerdictMeta(
+      icon: Icons.warning_amber_rounded,
+      color: Color(0xFFC47F17),
+    ),
+    Verdict.ai => const _VerdictMeta(
+      icon: Icons.report_gmailerrorred_outlined,
+      color: Color(0xFFC62828),
+    ),
+  };
+
+  static String _verdictHint(Verdict verdict) => switch (verdict) {
+    Verdict.human => '多數引擎訊號偏向自然人類寫作。',
+    Verdict.likelyHuman => '整體偏人類，但仍保留少量模型不確定性。',
+    Verdict.mixed => '不同引擎訊號分歧，需搭配詳細分析判讀。',
+    Verdict.likelyAi => '多個指標偏向 AI，建議檢查高分片段。',
+    Verdict.ai => '整體訊號高度偏向 AI 生成或改寫。',
+  };
+}
+
+class _VerdictMeta {
+  final IconData icon;
+  final Color color;
+
+  const _VerdictMeta({required this.icon, required this.color});
 }
 
 /// 引擎 AI 概率雷達圖
