@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/detection/model_catalog.dart' show ModelCatalog, CatalogModel, ModelVariant;
+import '../../core/detection/model_catalog.dart'
+    show ModelCatalog, CatalogModel, ModelVariant, PerformanceTier;
 import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
-import '../../core/detection/model_manager_types.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 模型管理頁面：展示下載進度、已安裝模型、引擎狀態
@@ -17,6 +17,7 @@ class ModelManagementScreen extends StatefulWidget {
 
 class _ModelManagementScreenState extends State<ModelManagementScreen> {
   late Future<ModelCatalog> _catalogFuture;
+  bool _downloadingRecommended = false;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.settingsModelManagementTitle ?? '模型管理'),
+        title: Text(l10n.settingsModelManagementTitle),
         elevation: 0,
       ),
       body: FutureBuilder<ModelCatalog>(
@@ -63,7 +64,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
             padding: EdgeInsets.all(16),
             children: [
               // 儲存空間概覽
-              _buildStorageOverview(modelManager),
+              _buildStorageOverview(modelManager, catalog),
               SizedBox(height: 24),
 
               // 按引擎分組的模型列表
@@ -84,10 +85,17 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     );
   }
 
-  Widget _buildStorageOverview(ModelManager modelManager) {
+  Widget _buildStorageOverview(
+    ModelManager modelManager,
+    ModelCatalog catalog,
+  ) {
     final roles = modelManager.roles;
     int totalBytes = 0;
     int installedCount = 0;
+    final recommendedActions = _recommendedAnalysisModelActions(
+      modelManager,
+      catalog,
+    );
 
     for (final role in roles) {
       for (final model in role.installed.values) {
@@ -97,8 +105,9 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     }
 
     final totalMb = (totalBytes / 1024 / 1024).toStringAsFixed(1);
-    final totalGb =
-        totalBytes > 1024 * 1024 * 1024 ? ' ≈ ${(totalBytes / 1024 / 1024 / 1024).toStringAsFixed(2)} GB' : '';
+    final totalGb = totalBytes > 1024 * 1024 * 1024
+        ? ' ≈ ${(totalBytes / 1024 / 1024 / 1024).toStringAsFixed(2)} GB'
+        : '';
 
     return Container(
       decoration: BoxDecoration(
@@ -117,9 +126,9 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
               Text(
                 '儲存空間使用',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF6B5B95),
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF6B5B95),
+                ),
               ),
             ],
           ),
@@ -132,11 +141,96 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
           Text(
             '$totalMb MB$totalGb',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF6B5B95),
-                ),
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF6B5B95),
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            '同一引擎可能提供多個候選模型；只要有一個標示「使用中」的模型，就代表該引擎已有預設分析模型，不需要把所有變體都下載。',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+          ),
+          SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: recommendedActions.isEmpty || _downloadingRecommended
+                ? null
+                : () => _applyRecommendedAnalysisModels(
+                    modelManager,
+                    recommendedActions,
+                  ),
+            icon: _downloadingRecommended
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(Icons.download_for_offline_outlined),
+            label: Text(
+              recommendedActions.isEmpty
+                  ? '推薦分析模型已就緒'
+                  : '套用推薦分析模型（${recommendedActions.length}）',
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  List<(String role, ModelVariant variant)> _recommendedAnalysisModelActions(
+    ModelManager modelManager,
+    ModelCatalog catalog,
+  ) {
+    const analysisRoles = {'transformer', 'statistical', 'adversarial'};
+    return [
+      for (final model in catalog.models)
+        if (analysisRoles.contains(model.role))
+          if (_defaultVariantFor(model) case final recommended?)
+            if (recommended.isDownloadable &&
+                modelManager.roleState(model.role)?.activeVariantId !=
+                    recommended.id)
+              (model.role, recommended),
+    ];
+  }
+
+  ModelVariant? _defaultVariantFor(CatalogModel model) {
+    bool multilingual(ModelVariant variant) =>
+        variant.languages.contains('zh') || variant.languages.contains('multi');
+    if (model.role == 'transformer') {
+      for (final variant in model.variants) {
+        if (variant.isDownloadable && multilingual(variant)) return variant;
+      }
+    }
+    return model.bestFor(PerformanceTier.high, 8192);
+  }
+
+  Future<void> _applyRecommendedAnalysisModels(
+    ModelManager modelManager,
+    List<(String role, ModelVariant variant)> actions,
+  ) async {
+    setState(() => _downloadingRecommended = true);
+    var failed = 0;
+    for (final item in actions) {
+      final installed = modelManager.isVariantInstalled(item.$1, item.$2.id);
+      if (installed) {
+        await modelManager.setActive(item.$1, item.$2.id);
+      } else {
+        final ok = await modelManager.downloadVariant(item.$1, item.$2);
+        if (ok) {
+          await modelManager.setActive(item.$1, item.$2.id);
+        } else {
+          failed++;
+        }
+      }
+    }
+    if (!mounted) return;
+    setState(() => _downloadingRecommended = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          failed == 0 ? '推薦分析模型已套用為預設' : '部分模型下載失敗，請檢查網路後重試（失敗 $failed 個）',
+        ),
       ),
     );
   }
@@ -176,15 +270,22 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                     Text(
                       engineName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     Text(
                       '${role.installed.length}/${catalogModel.variants.length} 個變體已安裝',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                     ),
+                    if (role.installed.isNotEmpty)
+                      Text(
+                        '已可分析；未下載項目只是可選備用模型',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -211,8 +312,8 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                     Text(
                       '${(role.progress * 100).toStringAsFixed(0)}%',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -234,29 +335,37 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
 
         // 已安裝變體列表
         if (role.installed.isNotEmpty)
-          ...role.installed.entries.map((entry) =>
-              _buildInstalledModelTile(context, modelManager, role.role, entry.value))
+          ...role.installed.entries.map(
+            (entry) => _buildInstalledModelTile(
+              context,
+              modelManager,
+              role.role,
+              entry.value,
+            ),
+          )
         else
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text(
               '尚未安裝任何模型',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
             ),
           ),
 
         // 可下載的變體
         ...catalogModel.variants
             .where((v) => !role.installed.containsKey(v.id))
-            .map((variant) => _buildDownloadableTile(
-                  context,
-                  modelManager,
-                  role.role,
-                  variant,
-                  role,
-                )),
+            .map(
+              (variant) => _buildDownloadableTile(
+                context,
+                modelManager,
+                role.role,
+                variant,
+                role,
+              ),
+            ),
 
         SizedBox(height: 16),
       ],
@@ -274,10 +383,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     return Container(
       width: 12,
       height: 12,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 
@@ -288,22 +394,19 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     InstalledModel model,
   ) {
     final sizeMb = (model.sizeBytes / 1024 / 1024).toStringAsFixed(1);
-    final isActive = modelManager.roleState(role)?.activeVariantId == model.variantId;
+    final isActive =
+        modelManager.roleState(role)?.activeVariantId == model.variantId;
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
         dense: true,
-        leading: Icon(
-          Icons.check_circle,
-          color: Colors.green,
-          size: 20,
-        ),
+        leading: Icon(Icons.check_circle, color: Colors.green, size: 20),
         title: Text(
           model.displayName,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              ),
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          ),
         ),
         subtitle: Text(
           'v${model.version} • $sizeMb MB${isActive ? ' • 使用中' : ''}',
@@ -314,13 +417,11 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
             if (!isActive)
               PopupMenuItem(
                 child: Text('設為使用中'),
-                onTap: () =>
-                    modelManager.setActive(role, model.variantId),
+                onTap: () => modelManager.setActive(role, model.variantId),
               ),
             PopupMenuItem(
               child: Text('移除', style: TextStyle(color: Colors.red)),
-              onTap: () =>
-                  modelManager.removeVariant(role, model.variantId),
+              onTap: () => modelManager.removeVariant(role, model.variantId),
             ),
           ],
         ),
@@ -336,7 +437,8 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     RoleState roleState,
   ) {
     final sizeMb = (variant.sizeBytes / 1024 / 1024).toStringAsFixed(1);
-    final isDownloading = roleState.transientState == InstallState.downloading &&
+    final isDownloading =
+        roleState.transientState == InstallState.downloading &&
         roleState.downloadingVariantId == variant.id;
 
     return Card(
@@ -357,8 +459,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : FilledButton.tonal(
-                onPressed: () =>
-                    modelManager.downloadVariant(role, variant),
+                onPressed: () => modelManager.downloadVariant(role, variant),
                 child: Text('下載'),
               ),
       ),

@@ -368,24 +368,10 @@ class _EngineContributionCard extends StatelessWidget {
 
   const _EngineContributionCard({required this.result, required this.l10n});
 
-  static String _getEngineDisplayName(String engineId) {
-    // 引擎 ID 可能包含變體標識（如 'transformer_VARIANT_ID'）
-    // 使用 startsWith 而不是精確匹配
-    if (engineId.startsWith('transformer')) {
-      return '🧠 Transformer';
-    } else if (engineId.startsWith('statistical')) {
-      return '📊 統計';
-    } else if (engineId.startsWith('stylometry')) {
-      return '✒️ 風格';
-    } else if (engineId.startsWith('adversarial')) {
-      return '🛡️ 防禦';
-    } else {
-      return '⚙️ 未知';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final engineGroups = _EngineGroup.fromScores(result.engineScores);
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -416,11 +402,17 @@ class _EngineContributionCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 雷達圖：顯示各引擎 AI 概率
-          if (result.engineScores.isNotEmpty)
+          if (engineGroups.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: _EngineRadarChart(engineScores: result.engineScores),
+              child: _EngineRadarChart(engineGroups: engineGroups),
             ),
+            _EngineSynthesisSummary(
+              groups: engineGroups,
+              overallProbability: result.aiProbability,
+              verdictLabel: result.verdict.label(l10n),
+            ),
+          ],
 
           const SizedBox(height: 12),
           const Divider(height: 1),
@@ -437,7 +429,7 @@ class _EngineContributionCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           // 引擎列表
-          if (result.engineScores.isEmpty)
+          if (engineGroups.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
@@ -448,7 +440,7 @@ class _EngineContributionCard extends StatelessWidget {
               ),
             )
           else
-            for (final score in result.engineScores)
+            for (final group in engineGroups)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
@@ -460,7 +452,7 @@ class _EngineContributionCard extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: score.available
+                        color: group.available
                             ? const Color(0xFF6B5B95)
                             : Colors.grey[300],
                       ),
@@ -477,7 +469,7 @@ class _EngineContributionCard extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  _getEngineDisplayName(score.engineId),
+                                  group.label,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.bodySmall
@@ -486,12 +478,12 @@ class _EngineContributionCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                score.available
-                                    ? '${(score.aiProbability * 100).round()}%'
+                                group.available
+                                    ? '${(group.probability * 100).round()}%'
                                     : '未參與',
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: score.available
+                                      color: group.available
                                           ? const Color(0xFF1E3A5F)
                                           : Colors.grey[400],
                                       fontWeight: FontWeight.bold,
@@ -503,21 +495,30 @@ class _EngineContributionCard extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
-                              value: score.available ? score.aiProbability : 0,
+                              value: group.available ? group.probability : 0,
                               minHeight: 4,
                               backgroundColor: Colors.grey[200],
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                !score.available
+                                !group.available
                                     ? Colors.grey[300]!
-                                    : score.aiProbability > 0.7
+                                    : group.probability > 0.7
                                     ? const Color(0xFF6B5B95)
                                     : const Color(0xFF1E3A5F),
                               ),
                             ),
                           ),
-                          if (score.reasons.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            group.relationshipText,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Colors.grey[600],
+                                  height: 1.25,
+                                ),
+                          ),
+                          if (group.reasons.isNotEmpty) ...[
                             const SizedBox(height: 4),
-                            for (final reason in score.reasons.take(2))
+                            for (final reason in group.reasons.take(2))
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Text(
@@ -544,21 +545,13 @@ class _EngineContributionCard extends StatelessWidget {
 
 /// 引擎 AI 概率雷達圖
 class _EngineRadarChart extends StatelessWidget {
-  final List<EngineScore> engineScores;
+  final List<_EngineGroup> engineGroups;
 
-  const _EngineRadarChart({required this.engineScores});
-
-  static String _getEngineDisplayName(String engineId) {
-    if (engineId.startsWith('transformer')) return 'Transformer';
-    if (engineId.startsWith('statistical')) return '統計';
-    if (engineId.startsWith('stylometry')) return '風格';
-    if (engineId.startsWith('adversarial')) return '防禦';
-    return '其他';
-  }
+  const _EngineRadarChart({required this.engineGroups});
 
   @override
   Widget build(BuildContext context) {
-    if (engineScores.isEmpty) {
+    if (engineGroups.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Center(
@@ -572,7 +565,7 @@ class _EngineRadarChart extends StatelessWidget {
       );
     }
 
-    final displayScores = engineScores.take(5).toList();
+    final displayGroups = engineGroups.take(5).toList();
     final chartSize = math
         .min(MediaQuery.sizeOf(context).width - 96, 280.0)
         .clamp(220.0, 280.0);
@@ -581,29 +574,20 @@ class _EngineRadarChart extends StatelessWidget {
       child: SizedBox(
         width: chartSize,
         height: chartSize,
-        child: CustomPaint(
-          painter: _ReportRadarPainter(
-            scores: displayScores,
-            labels: [
-              for (final score in displayScores)
-                _getEngineDisplayName(score.engineId),
-            ],
-          ),
-        ),
+        child: CustomPaint(painter: _ReportRadarPainter(groups: displayGroups)),
       ),
     );
   }
 }
 
 class _ReportRadarPainter extends CustomPainter {
-  final List<EngineScore> scores;
-  final List<String> labels;
+  final List<_EngineGroup> groups;
 
-  const _ReportRadarPainter({required this.scores, required this.labels});
+  const _ReportRadarPainter({required this.groups});
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (scores.length < 3) return;
+    if (groups.length < 3) return;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.shortestSide / 2 - 42;
@@ -634,8 +618,8 @@ class _ReportRadarPainter extends CustomPainter {
 
     for (var ring = 1; ring <= 4; ring++) {
       final ringPath = Path();
-      for (var i = 0; i < scores.length; i++) {
-        final p = _point(center, radius * ring / 4, i, scores.length);
+      for (var i = 0; i < groups.length; i++) {
+        final p = _point(center, radius * ring / 4, i, groups.length);
         if (i == 0) {
           ringPath.moveTo(p.dx, p.dy);
         } else {
@@ -646,20 +630,20 @@ class _ReportRadarPainter extends CustomPainter {
       canvas.drawPath(ringPath, gridPaint);
     }
 
-    for (var i = 0; i < scores.length; i++) {
+    for (var i = 0; i < groups.length; i++) {
       canvas.drawLine(
         center,
-        _point(center, radius, i, scores.length),
+        _point(center, radius, i, groups.length),
         axisPaint,
       );
     }
 
     final valuePath = Path();
-    for (var i = 0; i < scores.length; i++) {
-      final value = scores[i].available
-          ? scores[i].aiProbability.clamp(0.0, 1.0)
+    for (var i = 0; i < groups.length; i++) {
+      final value = groups[i].available
+          ? groups[i].probability.clamp(0.0, 1.0)
           : 0.0;
-      final p = _point(center, radius * value, i, scores.length);
+      final p = _point(center, radius * value, i, groups.length);
       if (i == 0) {
         valuePath.moveTo(p.dx, p.dy);
       } else {
@@ -670,23 +654,23 @@ class _ReportRadarPainter extends CustomPainter {
     canvas.drawPath(valuePath, fillPaint);
     canvas.drawPath(valuePath, outlinePaint);
 
-    for (var i = 0; i < scores.length; i++) {
-      final value = scores[i].available
-          ? scores[i].aiProbability.clamp(0.0, 1.0)
+    for (var i = 0; i < groups.length; i++) {
+      final value = groups[i].available
+          ? groups[i].probability.clamp(0.0, 1.0)
           : 0.0;
-      final p = _point(center, radius * value, i, scores.length);
+      final p = _point(center, radius * value, i, groups.length);
       canvas.drawCircle(
         p,
         4,
-        scores[i].available ? dotPaint : disabledDotPaint,
+        groups[i].available ? dotPaint : disabledDotPaint,
       );
     }
 
-    for (var i = 0; i < labels.length; i++) {
-      final p = _point(center, radius + 24, i, labels.length);
+    for (var i = 0; i < groups.length; i++) {
+      final p = _point(center, radius + 24, i, groups.length);
       final painter = TextPainter(
         text: TextSpan(
-          text: labels[i],
+          text: groups[i].axisLabel,
           style: const TextStyle(
             color: Color(0xFF55515D),
             fontSize: 11,
@@ -713,6 +697,207 @@ class _ReportRadarPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ReportRadarPainter oldDelegate) {
-    return oldDelegate.scores != scores || oldDelegate.labels != labels;
+    return oldDelegate.groups != groups;
+  }
+}
+
+class _EngineSynthesisSummary extends StatelessWidget {
+  final List<_EngineGroup> groups;
+  final double overallProbability;
+  final String verdictLabel;
+
+  const _EngineSynthesisSummary({
+    required this.groups,
+    required this.overallProbability,
+    required this.verdictLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final available = groups.where((g) => g.available).toList();
+    final strongestSignal = available.isEmpty
+        ? null
+        : available.reduce((a, b) => a.probability >= b.probability ? a : b);
+    final strongestContribution = available.isEmpty
+        ? null
+        : available.reduce((a, b) => a.contribution >= b.contribution ? a : b);
+    _EngineGroup? style;
+    for (final group in groups) {
+      if (group.role == 'stylometry') {
+        style = group;
+        break;
+      }
+    }
+    final hasModelGap = groups.any((g) => !g.available);
+
+    final lines = <String>[
+      '綜合判定：$verdictLabel，整體 AI 機率 ${(overallProbability * 100).round()}%。',
+    ];
+    if (strongestSignal != null) {
+      lines.add(
+        '最高單項訊號是 ${strongestSignal.label}（${(strongestSignal.probability * 100).round()}%），但最終結果會依各引擎權重合併，不等於單一引擎結論。',
+      );
+    }
+    if (strongestContribution != null) {
+      lines.add(
+        '目前最大加權貢獻來自 ${strongestContribution.label}（約 ${(strongestContribution.contribution * 100).round()} 個百分點）。',
+      );
+    }
+    if (style != null &&
+        style.probability < 0.45 &&
+        overallProbability >= 0.45) {
+      lines.add(
+        '「未偵測到明顯 AI 寫作風格」只代表風格引擎沒有抓到固定句式或過渡詞模式；其他模型仍可能因語言規律、句級分類或改寫特徵把整體分數拉高。',
+      );
+    }
+    if (hasModelGap) {
+      lines.add(
+        'Transformer 是端上神經網路文字分類器，負責句級 AI 機率與多語言語意特徵；若未參與，請到模型管理使用「補齊推薦分析模型」。',
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6F4FA),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE3E1EA)),
+      ),
+      child: Text(
+        lines.join('\n'),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: const Color(0xFF3F3A4A),
+          height: 1.35,
+        ),
+      ),
+    );
+  }
+}
+
+class _EngineGroup {
+  final String role;
+  final String label;
+  final String axisLabel;
+  final double probability;
+  final double weight;
+  final double contribution;
+  final bool available;
+  final int variantCount;
+  final List<String> reasons;
+
+  const _EngineGroup({
+    required this.role,
+    required this.label,
+    required this.axisLabel,
+    required this.probability,
+    required this.weight,
+    required this.contribution,
+    required this.available,
+    required this.variantCount,
+    required this.reasons,
+  });
+
+  String get relationshipText {
+    final weightText = '${(weight * 100).round()}%';
+    if (!available) {
+      return '$label 未參與本次加權投票，該面向暫以 0% 顯示。';
+    }
+    final contributionText = '${(contribution * 100).round()} 個百分點';
+    final variantText = variantCount > 1 ? '（已合併 $variantCount 個模型變體）' : '';
+    return '角色權重 $weightText，對整體分數貢獻約 $contributionText$variantText。';
+  }
+
+  static List<_EngineGroup> fromScores(List<EngineScore> scores) {
+    const order = ['transformer', 'statistical', 'stylometry', 'adversarial'];
+    final grouped = <String, List<EngineScore>>{
+      for (final role in order) role: <EngineScore>[],
+    };
+    for (final score in scores) {
+      grouped[_roleOf(score.engineId)]?.add(score);
+    }
+
+    final availableWeight = order.fold<double>(
+      0,
+      (sum, role) =>
+          sum +
+          (grouped[role]!.any((s) => s.available) ? _roleWeight(role) : 0),
+    );
+
+    return [
+      for (final role in order)
+        _fromRole(role, grouped[role]!, availableWeight: availableWeight),
+    ];
+  }
+
+  static _EngineGroup _fromRole(
+    String role,
+    List<EngineScore> scores, {
+    required double availableWeight,
+  }) {
+    final availableScores = scores.where((s) => s.available).toList();
+    final available = availableScores.isNotEmpty;
+    final probability = available
+        ? availableScores.fold<double>(0, (sum, s) => sum + s.aiProbability) /
+              availableScores.length
+        : 0.0;
+    final weight = _roleWeight(role);
+    final contribution = available && availableWeight > 0
+        ? probability * weight / availableWeight
+        : 0.0;
+    final reasons = [
+      for (final score in scores)
+        ...score.reasons.where((reason) => reason.trim().isNotEmpty),
+    ];
+
+    return _EngineGroup(
+      role: role,
+      label: _roleLabel(role),
+      axisLabel: _axisLabel(role),
+      probability: probability,
+      weight: weight,
+      contribution: contribution,
+      available: available,
+      variantCount: math.max(scores.length, 1),
+      reasons: reasons.isEmpty ? [_fallbackReason(role, available)] : reasons,
+    );
+  }
+
+  static String _roleOf(String engineId) {
+    if (engineId.startsWith('transformer')) return 'transformer';
+    if (engineId.startsWith('statistical')) return 'statistical';
+    if (engineId.startsWith('stylometry')) return 'stylometry';
+    if (engineId.startsWith('adversarial')) return 'adversarial';
+    return engineId;
+  }
+
+  static double _roleWeight(String role) => switch (role) {
+    'transformer' => 0.40,
+    'statistical' => 0.25,
+    'stylometry' => 0.20,
+    'adversarial' => 0.15,
+    _ => 0.0,
+  };
+
+  static String _roleLabel(String role) => switch (role) {
+    'transformer' => 'Transformer 分類器',
+    'statistical' => '統計特徵分析',
+    'stylometry' => '風格特徵分析',
+    'adversarial' => '對抗式防禦',
+    _ => role,
+  };
+
+  static String _axisLabel(String role) => switch (role) {
+    'transformer' => '句級分類',
+    'statistical' => '語言規律',
+    'stylometry' => '寫作風格',
+    'adversarial' => '改寫防禦',
+    _ => role,
+  };
+
+  static String _fallbackReason(String role, bool available) {
+    if (!available) return '${_roleLabel(role)}未參與本次投票。';
+    return '${_roleLabel(role)}未回傳額外文字說明。';
   }
 }
