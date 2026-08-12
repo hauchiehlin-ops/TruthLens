@@ -181,6 +181,19 @@ class _SuspiciousSentenceItem {
     if (aiProbability >= 0.8) return const Color(0xFFD4AF37); // 金 - 高
     return const Color(0xFF6B5B95); // 紫 - 中
   }
+
+  String get reasonSummary {
+    final cleaned = patterns
+        .map((p) => p.replaceAll(RegExp(r'\s+'), ' ').trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (cleaned.isNotEmpty) {
+      final first = cleaned.first;
+      return first.length > 34 ? '${first.substring(0, 34)}...' : first;
+    }
+    if (aiProbability >= 0.8) return '多個模型訊號高度偏向 AI';
+    return '句級模型訊號偏高';
+  }
 }
 
 /// 單個可疑句子卡片
@@ -253,7 +266,9 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '原文位置 ${item.pageNumber}',
+                        '原文位置 ${item.pageNumber} · ${item.reasonSummary}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: item.riskColor,

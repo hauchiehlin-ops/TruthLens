@@ -37,6 +37,9 @@ class _ReportScreenState extends State<ReportScreen> {
       BibliographyVerifier.extractEntries(result.inputText);
   bool _checkingBib = false;
   List<BibliographyCheckResult>? _bibChecks;
+  int _bibCompleted = 0;
+  int _bibTotal = 0;
+  BibliographyEntry? _bibCurrentEntry;
 
   /// App 執行時預設假定網路可用；`null` 代表本次報告尚未探測過，
   /// `false` 代表偵測到連線不佳／離線，需提示使用者。
@@ -79,7 +82,15 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() => _checkingLinks = true);
     }
     if (_bibEntries.isNotEmpty && mounted) {
-      setState(() => _checkingBib = true);
+      setState(() {
+        _checkingBib = true;
+        _bibCompleted = 0;
+        _bibTotal = _bibEntries.length > BibliographyVerifier.maxEntriesPerCheck
+            ? BibliographyVerifier.maxEntriesPerCheck
+            : _bibEntries.length;
+        _bibCurrentEntry = _bibEntries.first;
+        _bibChecks = const [];
+      });
     }
 
     final online = _networkAvailable ?? await NetworkStatus.isOnline();
@@ -110,11 +121,32 @@ class _ReportScreenState extends State<ReportScreen> {
     }
     if (_bibEntries.isNotEmpty) {
       tasks.add(
-        BibliographyVerifier.verifyAll(_bibEntries).then((checks) {
+        BibliographyVerifier.verifyAll(
+          _bibEntries,
+          onProgress: (progress) {
+            if (!mounted) return;
+            setState(() {
+              _bibCompleted = progress.completed;
+              _bibTotal = progress.total;
+              _bibCurrentEntry = progress.currentEntry;
+              final latest = progress.latestResult;
+              if (latest != null) {
+                final current = List<BibliographyCheckResult>.from(
+                  _bibChecks ?? const [],
+                );
+                current.add(latest);
+                _bibChecks = current;
+              }
+            });
+          },
+        ).then((checks) {
           if (mounted) {
             setState(() {
               _bibChecks = checks;
               _checkingBib = false;
+              _bibCompleted = checks.length;
+              _bibTotal = checks.length;
+              _bibCurrentEntry = null;
             });
           }
         }),
@@ -273,9 +305,6 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
     );
   }
-
-
-
 
   Widget _networkWarningCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
@@ -505,7 +534,7 @@ class _ReportScreenState extends State<ReportScreen> {
       );
     }
 
-    if (checks == null) {
+    if (checks == null || _checkingBib) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -538,6 +567,64 @@ class _ReportScreenState extends State<ReportScreen> {
                           : l10n.reportBibDetectedPending(_bibEntries.length),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
+                    if (_checkingBib) ...[
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: _bibTotal > 0 ? _bibCompleted / _bibTotal : null,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _bibProgressText(),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                      if ((checks ?? const []).isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          '已完成 ${(checks ?? const []).length} 筆，結果會持續更新。',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 6),
+                        for (final c in (checks ?? const []).take(3))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  switch (c.confidence) {
+                                    CitationMatchConfidence.high =>
+                                      Icons.check_circle,
+                                    CitationMatchConfidence.notFound =>
+                                      Icons.link_off,
+                                    CitationMatchConfidence.uncertain =>
+                                      Icons.help_outline,
+                                  },
+                                  size: 16,
+                                  color: switch (c.confidence) {
+                                    CitationMatchConfidence.high =>
+                                      Colors.green,
+                                    CitationMatchConfidence.notFound =>
+                                      Colors.red,
+                                    CitationMatchConfidence.uncertain =>
+                                      Colors.orange,
+                                  },
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    _bibStatusLabel(c, l10n),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ],
                     if (!_checkingBib) ...[
                       const SizedBox(height: 4),
                       Text(l10n.reportBibDisabledHint),
@@ -618,5 +705,23 @@ class _ReportScreenState extends State<ReportScreen> {
       CitationMatchConfidence.notFound => l10n.reportBibNotFound,
       CitationMatchConfidence.uncertain => l10n.reportBibUncertain,
     };
+  }
+
+  String _bibProgressText() {
+    final total = _bibTotal > 0 ? _bibTotal : _bibEntries.length;
+    final capped = _bibEntries.length > BibliographyVerifier.maxEntriesPerCheck
+        ? '（本次先核實前 ${BibliographyVerifier.maxEntriesPerCheck} 筆）'
+        : '';
+    final current = _bibCurrentEntry;
+    final currentText = current == null
+        ? '正在整理結果'
+        : '目前：${_shortBibText(current.rawText)}';
+    return '進度 $_bibCompleted/$total $capped，$currentText';
+  }
+
+  String _shortBibText(String text) {
+    final compact = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (compact.length <= 72) return compact;
+    return '${compact.substring(0, 72)}...';
   }
 }

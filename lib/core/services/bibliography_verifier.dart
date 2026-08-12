@@ -39,6 +39,22 @@ class BibliographyCheckResult {
   });
 }
 
+class BibliographyVerificationProgress {
+  final int completed;
+  final int total;
+  final BibliographyEntry? currentEntry;
+  final BibliographyCheckResult? latestResult;
+
+  const BibliographyVerificationProgress({
+    required this.completed,
+    required this.total,
+    this.currentEntry,
+    this.latestResult,
+  });
+
+  double get ratio => total == 0 ? 0 : completed / total;
+}
+
 class BibliographyVerifier {
   /// 單次報告最多驗證的條目數，避免長篇文獻目錄拖慢報告載入。
   static const maxEntriesPerCheck = 30;
@@ -667,18 +683,45 @@ class BibliographyVerifier {
   static Future<List<BibliographyCheckResult>> verifyAll(
     List<BibliographyEntry> entries, {
     http.Client? client,
-    Duration timeout = const Duration(seconds: 8),
+    Duration timeout = const Duration(seconds: 5),
+    void Function(BibliographyVerificationProgress progress)? onProgress,
   }) async {
     final c = client ?? http.Client();
     final owns = client == null;
     try {
       final results = <BibliographyCheckResult>[];
-      final targetEntries = entries.toList();
+      final targetEntries = entries.take(maxEntriesPerCheck).toList();
+      onProgress?.call(
+        BibliographyVerificationProgress(
+          completed: 0,
+          total: targetEntries.length,
+          currentEntry: targetEntries.isEmpty ? null : targetEntries.first,
+        ),
+      );
       for (var i = 0; i < targetEntries.length; i++) {
         if (i > 0) {
           await Future.delayed(const Duration(milliseconds: 150));
         }
-        results.add(await _verifyOne(c, targetEntries[i], timeout));
+        final entry = targetEntries[i];
+        onProgress?.call(
+          BibliographyVerificationProgress(
+            completed: i,
+            total: targetEntries.length,
+            currentEntry: entry,
+          ),
+        );
+        final result = await _verifyOne(c, entry, timeout);
+        results.add(result);
+        onProgress?.call(
+          BibliographyVerificationProgress(
+            completed: i + 1,
+            total: targetEntries.length,
+            currentEntry: i + 1 < targetEntries.length
+                ? targetEntries[i + 1]
+                : null,
+            latestResult: result,
+          ),
+        );
       }
       return results;
     } finally {
@@ -701,9 +744,12 @@ class BibliographyVerifier {
 
     if (entry.doi != null) {
       try {
-        final baseUrl = 'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}';
+        final baseUrl =
+            'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}';
         final proxiedUrl = _getProxiedUrl(baseUrl);
-        final uri = Uri.parse(proxiedUrl).replace(queryParameters: {'mailto': 'support@truthlens.app'});
+        final uri = Uri.parse(
+          proxiedUrl,
+        ).replace(queryParameters: {'mailto': 'support@truthlens.app'});
         final response = await _httpGetWithRetry(client, uri, timeout);
         if (response != null && response.statusCode == 200) {
           final message =
@@ -860,7 +906,8 @@ class BibliographyVerifier {
     // 2) 策略二：OpenAlex 全文圖書館索引多候選人比對 (per_page=5)
     try {
       final searchKw = _cleanSearchKeywords(searchTitle ?? entry.rawText);
-      final openAlexUrl = 'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5';
+      final openAlexUrl =
+          'https://api.openalex.org/works?search=${Uri.encodeComponent(searchKw)}&per_page=5';
       final proxiedUrl = _getProxiedUrl(openAlexUrl);
       final openAlexUri = Uri.parse(proxiedUrl);
       final oaResp = await _httpGetWithRetry(client, openAlexUri, timeout);

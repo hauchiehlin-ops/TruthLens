@@ -554,7 +554,7 @@ References
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
 
-    test('verifyAll 解除 30 筆上限，超過 30 筆條目全數執行驗證不截斷', () async {
+    test('verifyAll 套用 30 筆上限並回報逐筆進度', () async {
       final client = MockClient((request) async {
         return http.Response(
           jsonEncode({
@@ -565,10 +565,14 @@ References
                 {
                   'title': ['Test Title'],
                   'container-title': ['Test Journal'],
-                  'issued': {'date-parts': [[2020]]},
-                }
-              ]
-            }
+                  'issued': {
+                    'date-parts': [
+                      [2020],
+                    ],
+                  },
+                },
+              ],
+            },
           }),
           200,
           headers: {'content-type': 'application/json; charset=utf-8'},
@@ -585,11 +589,22 @@ References
         ),
       );
 
+      final progressEvents = <BibliographyVerificationProgress>[];
       final results = await BibliographyVerifier.verifyAll(
         dummyEntries,
         client: client,
+        onProgress: progressEvents.add,
       );
-      expect(results.length, 35);
+      expect(results.length, BibliographyVerifier.maxEntriesPerCheck);
+      expect(progressEvents.first.completed, 0);
+      expect(
+        progressEvents.first.total,
+        BibliographyVerifier.maxEntriesPerCheck,
+      );
+      expect(
+        progressEvents.last.completed,
+        BibliographyVerifier.maxEntriesPerCheck,
+      );
     });
 
     test('一般財經快訊、股票清單與非學術編號敘事不被誤判為參考文獻目錄', () {
@@ -607,4 +622,3 @@ References
     });
   });
 }
-
