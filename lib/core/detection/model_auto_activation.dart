@@ -9,13 +9,13 @@ library;
 
 import 'package:flutter/foundation.dart';
 
-import '../models/detection_result.dart';
-import 'model_manager_web.dart';
+import 'model_manager.dart';
 import 'orchestrator.dart';
 
 /// 管理模型自動激活事件的單例
 class ModelAutoActivationManager {
-  static final ModelAutoActivationManager _instance = ModelAutoActivationManager._();
+  static final ModelAutoActivationManager _instance =
+      ModelAutoActivationManager._();
 
   factory ModelAutoActivationManager() => _instance;
 
@@ -28,7 +28,9 @@ class ModelAutoActivationManager {
   final Map<String, Set<String>> _previousState = {};
 
   /// 自動激活事件流（供 UI 訂閱）
-  final ValueNotifier<ModelActivationEvent?> activationEvent = ValueNotifier(null);
+  final ValueNotifier<ModelActivationEvent?> activationEvent = ValueNotifier(
+    null,
+  );
 
   /// 初始化監聽器
   void init({
@@ -48,8 +50,10 @@ class ModelAutoActivationManager {
       // 掃描已安裝的模型，偵測新增
       final currentState = <String, Set<String>>{};
       for (final role in _modelManager.roles.map((r) => r.role)) {
-        currentState[role] =
-            _modelManager.installedVariants(role).map((v) => v.variantId).toSet();
+        currentState[role] = _modelManager
+            .installedVariants(role)
+            .map((v) => v.variantId)
+            .toSet();
       }
 
       // 比對前次狀態，找出新增的模型
@@ -79,7 +83,8 @@ class ModelAutoActivationManager {
     final events = <String>[];
 
     // 逐個模型進行激活
-    for (final MapEntry(key: role, value: variantId) in newlyInstalled.entries) {
+    for (final MapEntry(key: role, value: variantId)
+        in newlyInstalled.entries) {
       try {
         // 將新模型設為該角色的活躍變體
         await _modelManager.setActive(role, variantId);
@@ -92,9 +97,7 @@ class ModelAutoActivationManager {
       }
     }
 
-    // 通知 Orchestrator 刷新可用引擎
-    // 這樣下次分析時會自動使用新模型
-    _orchestrator.notifyListeners();
+    await _orchestrator.refreshEngines();
 
     // 發出激活事件
     activationEvent.value = ModelActivationEvent(
@@ -142,11 +145,9 @@ extension OrchestratorExtension on EnsembleOrchestrator {
   ///
   /// 呼叫此方法後，[analyze] 方法將使用最新的模型配置。
   Future<void> refreshEngines() async {
-    // 觸發 Orchestrator 的 notifyListeners()
-    // 這會促使任何監聽 Orchestrator 的 Widget 重建
-    notifyListeners();
-
-    debugPrint('[Orchestrator] Engines refreshed - new models will be used in next analysis');
+    debugPrint(
+      '[Orchestrator] Engines refreshed - new models will be used in next analysis',
+    );
   }
 }
 
@@ -169,5 +170,7 @@ void notifyModelDownloadComplete({
   // 通知 Orchestrator 刷新引擎
   orchestrator.refreshEngines();
 
-  debugPrint('[ModelDownload] Complete: $role($variantId) - Orchestrator refreshed');
+  debugPrint(
+    '[ModelDownload] Complete: $role($variantId) - Orchestrator refreshed',
+  );
 }

@@ -15,6 +15,9 @@ external JSPromise<JSAny?> _fsWriteBytes(JSString fileName, JSUint8Array bytes);
 @JS('truthlensFs.exists')
 external JSPromise<JSBoolean> _fsExists(JSString fileName);
 
+@JS('truthlensFs.size')
+external JSPromise<JSNumber> _fsSize(JSString fileName);
+
 @JS('truthlensFs.deleteFile')
 external JSPromise<JSAny?> _fsDeleteFile(JSString fileName);
 
@@ -36,6 +39,9 @@ class WebFs {
 
   static Future<bool> exists(String fileName) async =>
       (await _fsExists(fileName.toJS).toDart).toDart;
+
+  static Future<int> size(String fileName) async =>
+      (await _fsSize(fileName.toJS).toDart).toDartDouble.toInt();
 
   static Future<void> deleteFile(String fileName) =>
       _fsDeleteFile(fileName.toJS).toDart;

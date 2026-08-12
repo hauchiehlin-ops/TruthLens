@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
@@ -19,6 +21,7 @@ class AdversarialEngine implements DetectionEngine {
   OnnxDetector? _detector;
   String? _loadedModelPath;
   String? _loadError;
+  String? _repairMessage;
 
   AdversarialEngine({required this.modelManager, this.variantId});
 
@@ -75,6 +78,7 @@ class AdversarialEngine implements DetectionEngine {
     final (modelPath, tokPath) = paths;
     final active = _resolveVariant()!;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
+    Object? lastError;
 
     for (final tokenizerType in [
       active.tokenizer,
@@ -95,10 +99,14 @@ class AdversarialEngine implements DetectionEngine {
       } catch (e) {
         _detector = null;
         _loadedModelPath = null;
-        _loadError = '${e.runtimeType}: $e';
+        lastError = e;
+        debugPrint('[AdversarialEngine] tokenizer=$tokenizerType 載入失敗: $e');
       }
     }
 
+    debugPrint('[AdversarialEngine] 所有 tokenizer 備援皆失敗，啟動自動修復: $lastError');
+    _repairMessage = await _repairActiveVariant(reason: '改寫偵測模型載入失敗');
+    _loadError = _repairMessage;
     return null;
   }
 
@@ -111,7 +119,7 @@ class AdversarialEngine implements DetectionEngine {
     reasons: [
       _loadError == null
           ? l10n.engineReasonAdversarialNotInstalled
-          : '改寫偵測模型已安裝，但載入失敗，未參與本次投票（$_loadError）',
+          : '改寫偵測模型未參與本次投票。$_loadError',
     ],
   );
 
@@ -134,7 +142,12 @@ class AdversarialEngine implements DetectionEngine {
     try {
       perSentence = await detector.classifySentences(text.sentences);
     } catch (e) {
-      _loadError = '${e.runtimeType}: $e';
+      debugPrint('[AdversarialEngine] 模型推論失敗，啟動自動修復: $e');
+      detector.dispose();
+      _detector = null;
+      _loadedModelPath = null;
+      _repairMessage = await _repairActiveVariant(reason: '改寫偵測模型推論失敗');
+      _loadError = _repairMessage;
       return _unavailable(l10n);
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
@@ -150,5 +163,16 @@ class AdversarialEngine implements DetectionEngine {
             : l10n.engineReasonAdversarialClean,
       ],
     );
+  }
+
+  Future<String> _repairActiveVariant({required String reason}) async {
+    try {
+      return await modelManager.repairActiveVariant(
+        'adversarial',
+        reason: reason,
+      );
+    } catch (_) {
+      return '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載改寫偵測模型與 tokenizer。';
+    }
   }
 }

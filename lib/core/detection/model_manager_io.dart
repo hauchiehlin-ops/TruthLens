@@ -124,12 +124,16 @@ class ModelManager extends ChangeNotifier {
       final installed = <String, InstalledModel>{};
       if (entry != null) {
         final inst = (entry['installed'] as Map<String, dynamic>?) ?? {};
-        inst.forEach((variantId, v) {
+        for (final mapEntry in inst.entries) {
+          final variantId = mapEntry.key;
+          final v = mapEntry.value;
           final model = InstalledModel.fromJson(v as Map<String, dynamic>);
-          if (File(p.join(dir.path, model.fileName)).existsSync()) {
+          if (_isHealthyInstall(dir, model)) {
             installed[variantId] = model;
+          } else {
+            _deleteModelFiles(dir, model);
           }
-        });
+        }
       }
       // 動態掃描：偵測所有 ${role}__*.onnx / *.tflite / *.gguf 檔案並動態註冊
       try {
@@ -333,6 +337,46 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> repairActiveVariant(
+    String role, {
+    String reason = '模型載入或推論失敗',
+  }) async {
+    final active = activeVariant(role);
+    if (active == null) {
+      return '未找到使用中的模型；請在模型管理下載推薦模型。';
+    }
+    if (active.imported) {
+      await removeVariant(role, active.variantId);
+      return '已移除載入失敗的自訂模型。自訂模型無法自動重新下載，請重新匯入模型與 tokenizer。';
+    }
+
+    ModelVariant? catalogVariant;
+    try {
+      final catalog = await ModelCatalogService(client: _client).load();
+      final variants =
+          catalog.forRole(role)?.variants ?? const <ModelVariant>[];
+      for (final v in variants) {
+        if (v.id == active.variantId) {
+          catalogVariant = v;
+          break;
+        }
+      }
+    } catch (_) {
+      // Catalog 讀取失敗時仍先清掉壞檔，避免後續一直誤判為已安裝。
+    }
+
+    await removeVariant(role, active.variantId);
+
+    if (catalogVariant == null || !catalogVariant.isDownloadable) {
+      return '已移除載入失敗的模型檔，但目前找不到可重新下載的 catalog 來源；請到模型管理重新下載推薦模型。';
+    }
+
+    final ok = await downloadVariant(role, catalogVariant);
+    return ok
+        ? '偵測到模型檔可能損毀或不相容，已自動重新下載 ${catalogVariant.name}；請重新執行分析。'
+        : '已移除載入失敗的模型檔，但自動重新下載未完成；請確認網路後在模型管理重新下載 ${catalogVariant.name}。';
+  }
+
   /// 需要更新：已安裝的使用中變體版本落後於 catalog 提供的版本
   bool hasUpdate(String role, ModelVariant catalogVariant) {
     final installed = _roles[role]?.installed[catalogVariant.id];
@@ -375,6 +419,8 @@ class ModelManager extends ChangeNotifier {
           );
         },
       );
+
+      _validateDownloadedSize(tmp.lengthSync(), variant.sizeBytes);
 
       if (variant.sha256 != null) {
         final digest = await _sha256Of(tmp);
@@ -467,6 +513,59 @@ class ModelManager extends ChangeNotifier {
     );
     await _persist();
     notifyListeners();
+  }
+
+  bool _isHealthyInstall(Directory dir, InstalledModel model) {
+    final file = File(p.join(dir.path, model.fileName));
+    if (!file.existsSync()) return false;
+    if (!_isPlausibleSize(file.lengthSync(), model.sizeBytes)) return false;
+
+    if ((model.role == 'transformer' || model.role == 'adversarial') &&
+        model.tokenizer != 'none') {
+      final tokenizer = model.tokenizerFileName;
+      if (tokenizer == null) return false;
+      final tokFile = File(p.join(dir.path, tokenizer));
+      if (!tokFile.existsSync()) return false;
+      try {
+        jsonDecode(tokFile.readAsStringSync());
+      } catch (_) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _deleteModelFiles(Directory dir, InstalledModel model) {
+    final file = File(p.join(dir.path, model.fileName));
+    if (file.existsSync()) {
+      try {
+        file.deleteSync();
+      } catch (_) {}
+    }
+    final tokenizer = model.tokenizerFileName;
+    if (tokenizer != null) {
+      final tokFile = File(p.join(dir.path, tokenizer));
+      if (tokFile.existsSync()) {
+        try {
+          tokFile.deleteSync();
+        } catch (_) {}
+      }
+    }
+  }
+
+  bool _isPlausibleSize(int actual, int expected) {
+    if (expected <= 0) return actual > 100 * 1024;
+    final minExpected = (expected * 0.80).round();
+    return actual >= minExpected;
+  }
+
+  void _validateDownloadedSize(int actual, int expected) {
+    if (!_isPlausibleSize(actual, expected)) {
+      throw FormatException(
+        '模型下載不完整：收到 ${(actual / (1024 * 1024)).toStringAsFixed(1)} MB，'
+        '預期約 ${(expected / (1024 * 1024)).toStringAsFixed(1)} MB',
+      );
+    }
   }
 
   Future<void> _streamDownload(

@@ -103,7 +103,8 @@
         }
       }
 
-      state.sessions.set(modelId, session);
+      const inputTypes = resolveInputTypes(session);
+      state.sessions.set(modelId, { session, inputTypes });
       return usedEp;
     });
   }
@@ -111,25 +112,35 @@
   async function run(modelId, inputIds, attentionMask, seqLen) {
     return enqueueOrtWork(async () => {
       const ort = window.ort;
-      const session = state.sessions.get(modelId);
+      const entry = state.sessions.get(modelId);
+      const session = entry && entry.session ? entry.session : entry;
       if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
       const shape = [1, seqLen];
       let results;
-      try {
-        const ids = BigInt64Array.from(inputIds.map((v) => BigInt(v)));
-        const mask = BigInt64Array.from(attentionMask.map((v) => BigInt(v)));
-        results = await session.run({
-          input_ids: new ort.Tensor('int64', ids, shape),
-          attention_mask: new ort.Tensor('int64', mask, shape),
-        });
-      } catch (e) {
-        console.warn('[truthlensOrt] int64 輸入推論失敗，改用 int32 重試：', e);
-        const ids = Int32Array.from(inputIds);
-        const mask = Int32Array.from(attentionMask);
-        results = await session.run({
-          input_ids: new ort.Tensor('int32', ids, shape),
-          attention_mask: new ort.Tensor('int32', mask, shape),
-        });
+
+      const inputTypes = (entry && entry.inputTypes) || {};
+      const firstType = inputTypes.input_ids || inputTypes.input || 'int64';
+      const typeOrder = firstType === 'int32' ? ['int32', 'int64'] : ['int64', 'int32'];
+      let lastError;
+
+      for (const tensorType of typeOrder) {
+        try {
+          results = await session.run(buildFeeds(ort, tensorType, inputIds, attentionMask, shape));
+          break;
+        } catch (e) {
+          lastError = e;
+          if (isDefinitiveTypeError(e, tensorType)) {
+            continue;
+          }
+          if (mentionsExpectedType(e, tensorType)) {
+            break;
+          }
+          console.warn('[truthlensOrt] ' + tensorType + ' 輸入推論失敗，嘗試其他型別：', e);
+        }
+      }
+
+      if (!results) {
+        throw lastError || new Error('ONNX 推論失敗');
       }
       const outputName = Object.keys(results)[0];
       const output = results[outputName];
@@ -145,6 +156,61 @@
     return Number(value);
   }
 
+  function buildFeeds(ort, tensorType, inputIds, attentionMask, shape) {
+    if (tensorType === 'int32') {
+      return {
+        input_ids: new ort.Tensor('int32', Int32Array.from(inputIds), shape),
+        attention_mask: new ort.Tensor('int32', Int32Array.from(attentionMask), shape),
+      };
+    }
+    return {
+      input_ids: new ort.Tensor(
+        'int64',
+        BigInt64Array.from(Array.from(inputIds, (v) => BigInt(v))),
+        shape,
+      ),
+      attention_mask: new ort.Tensor(
+        'int64',
+        BigInt64Array.from(Array.from(attentionMask, (v) => BigInt(v))),
+        shape,
+      ),
+    };
+  }
+
+  function resolveInputTypes(session) {
+    const out = {};
+    try {
+      const metadata = session.inputMetadata || {};
+      for (const name of Object.keys(metadata)) {
+        const meta = metadata[name];
+        if (meta && typeof meta.type === 'string') out[name] = meta.type;
+      }
+    } catch (_) {
+      /* metadata is best effort */
+    }
+    return out;
+  }
+
+  function errorText(e) {
+    return String((e && (e.message || e.toString && e.toString())) || e || '');
+  }
+
+  function isDefinitiveTypeError(e, tensorType) {
+    const text = errorText(e);
+    return (
+      text.includes('Unexpected input data type') &&
+      text.includes('Actual: (tensor(' + tensorType + '))')
+    );
+  }
+
+  function mentionsExpectedType(e, tensorType) {
+    const text = errorText(e);
+    return (
+      text.includes('Unexpected input data type') &&
+      text.includes('expected: (tensor(' + tensorType + '))')
+    );
+  }
+
   function enqueueOrtWork(task) {
     // onnxruntime-web 的部分 execution provider 不允許同一執行環境重入
     // session.run；全域佇列能徹底避免 Session already started / Session mismatch。
@@ -154,7 +220,8 @@
   }
 
   function releaseModel(modelId) {
-    const session = state.sessions.get(modelId);
+    const entry = state.sessions.get(modelId);
+    const session = entry && entry.session ? entry.session : entry;
     if (session) {
       try {
         session.release();

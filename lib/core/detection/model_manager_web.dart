@@ -31,7 +31,7 @@ class ModelManager extends ChangeNotifier {
   };
 
   ModelManager({http.Client? client, Object? modelsDir})
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   RoleState? roleState(String role) => _roles[role];
 
@@ -101,10 +101,13 @@ class ModelManager extends ChangeNotifier {
       if (entry != null) {
         final inst = (entry['installed'] as Map<String, dynamic>?) ?? {};
         for (final e in inst.entries) {
-          final model =
-              InstalledModel.fromJson(e.value as Map<String, dynamic>);
-          if (await WebFs.exists(model.fileName)) {
+          final model = InstalledModel.fromJson(
+            e.value as Map<String, dynamic>,
+          );
+          if (await _isHealthyInstall(model)) {
             installed[e.key] = model;
+          } else {
+            await _deleteModelFiles(model);
           }
         }
       }
@@ -155,6 +158,46 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> repairActiveVariant(
+    String role, {
+    String reason = '模型載入或推論失敗',
+  }) async {
+    final active = activeVariant(role);
+    if (active == null) {
+      return '未找到使用中的模型；請在模型管理下載推薦模型。';
+    }
+    if (active.imported) {
+      await removeVariant(role, active.variantId);
+      return '已移除載入失敗的自訂模型。自訂模型無法自動重新下載，請重新匯入模型與 tokenizer。';
+    }
+
+    ModelVariant? catalogVariant;
+    try {
+      final catalog = await ModelCatalogService(client: _client).load();
+      final variants =
+          catalog.forRole(role)?.variants ?? const <ModelVariant>[];
+      for (final v in variants) {
+        if (v.id == active.variantId) {
+          catalogVariant = v;
+          break;
+        }
+      }
+    } catch (_) {
+      // Catalog 讀取失敗時仍先清掉壞檔，避免後續一直誤判為已安裝。
+    }
+
+    await removeVariant(role, active.variantId);
+
+    if (catalogVariant == null || !catalogVariant.isDownloadable) {
+      return '已移除載入失敗的模型檔，但目前找不到可重新下載的 catalog 來源；請到模型管理重新下載推薦模型。';
+    }
+
+    final ok = await downloadVariant(role, catalogVariant);
+    return ok
+        ? '偵測到模型檔可能損毀或不相容，已自動重新下載 ${catalogVariant.name}；請重新執行分析。'
+        : '已移除載入失敗的模型檔，但自動重新下載未完成；請確認網路後在模型管理重新下載 ${catalogVariant.name}。';
+  }
+
   bool hasUpdate(String role, ModelVariant catalogVariant) {
     final installed = _roles[role]?.installed[catalogVariant.id];
     if (installed == null) return false;
@@ -170,17 +213,30 @@ class ModelManager extends ChangeNotifier {
       _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
       return false;
     }
-    _mark(role, InstallState.downloading,
-        downloadingVariantId: variant.id, progress: 0);
+    _mark(
+      role,
+      InstallState.downloading,
+      downloadingVariantId: variant.id,
+      progress: 0,
+    );
     final fileName = variant.fileName(role);
     String? tokenizerFileName;
 
     try {
-      final bytes = await _streamDownload(variant.url!,
-          expected: variant.sizeBytes, onProgress: (r) {
-        _mark(role, InstallState.downloading,
-            downloadingVariantId: variant.id, progress: r);
-      });
+      final bytes = await _streamDownload(
+        variant.url!,
+        expected: variant.sizeBytes,
+        onProgress: (r) {
+          _mark(
+            role,
+            InstallState.downloading,
+            downloadingVariantId: variant.id,
+            progress: r,
+          );
+        },
+      );
+
+      _validateDownloadedSize(bytes.length, variant.sizeBytes);
 
       if (variant.sha256 != null) {
         final digest = sha256.convert(bytes).toString();
@@ -192,6 +248,11 @@ class ModelManager extends ChangeNotifier {
       if (variant.tokenizerUrl != null) {
         tokenizerFileName = '${role}__${variant.id}.tokenizer.json';
         final tokBytes = await _streamDownload(variant.tokenizerUrl!);
+        try {
+          jsonDecode(utf8.decode(tokBytes));
+        } catch (e) {
+          throw FormatException('下載之 Tokenizer JSON 格式不完整或網路斷傳: $e');
+        }
         await WebFs.writeBytes(tokenizerFileName, tokBytes);
       }
 
@@ -219,8 +280,12 @@ class ModelManager extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _mark(role, InstallState.failed,
-          downloadingVariantId: variant.id, error: e.toString());
+      _mark(
+        role,
+        InstallState.failed,
+        downloadingVariantId: variant.id,
+        error: e.toString(),
+      );
       return false;
     }
   }
@@ -253,8 +318,52 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Uint8List> _streamDownload(String originalUrl,
-      {int? expected, void Function(double)? onProgress}) async {
+  Future<bool> _isHealthyInstall(InstalledModel model) async {
+    final modelSize = await WebFs.size(model.fileName);
+    if (modelSize <= 0) return false;
+    if (!_isPlausibleSize(modelSize, model.sizeBytes)) return false;
+
+    if ((model.role == 'transformer' || model.role == 'adversarial') &&
+        model.tokenizer != 'none') {
+      final tokenizer = model.tokenizerFileName;
+      if (tokenizer == null || !await WebFs.exists(tokenizer)) return false;
+      final tokenizerText = await WebFs.readText(tokenizer);
+      if (tokenizerText == null || tokenizerText.trim().isEmpty) return false;
+      try {
+        jsonDecode(tokenizerText);
+      } catch (_) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<void> _deleteModelFiles(InstalledModel model) async {
+    await WebFs.deleteFile(model.fileName);
+    final tokenizer = model.tokenizerFileName;
+    if (tokenizer != null) await WebFs.deleteFile(tokenizer);
+  }
+
+  bool _isPlausibleSize(int actual, int expected) {
+    if (expected <= 0) return actual > 100 * 1024;
+    final minExpected = (expected * 0.80).round();
+    return actual >= minExpected;
+  }
+
+  void _validateDownloadedSize(int actual, int expected) {
+    if (!_isPlausibleSize(actual, expected)) {
+      throw FormatException(
+        '模型下載不完整：收到 ${(actual / (1024 * 1024)).toStringAsFixed(1)} MB，'
+        '預期約 ${(expected / (1024 * 1024)).toStringAsFixed(1)} MB',
+      );
+    }
+  }
+
+  Future<Uint8List> _streamDownload(
+    String originalUrl, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
     final urlsToTry = <String>[];
 
     final proxyPath = '/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
@@ -281,7 +390,11 @@ class ModelManager extends ChangeNotifier {
     Object? lastError;
     for (final url in urlsToTry) {
       try {
-        final result = await _tryChunkedDownload(url, expected: expected, onProgress: onProgress);
+        final result = await _tryChunkedDownload(
+          url,
+          expected: expected,
+          onProgress: onProgress,
+        );
         if (result != null && result.isNotEmpty) {
           return result;
         }
@@ -293,8 +406,11 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 以 2MB 分塊 (Range: bytes=start-end) 執行斷點續傳下載
-  Future<Uint8List?> _tryChunkedDownload(String url,
-      {int? expected, void Function(double)? onProgress}) async {
+  Future<Uint8List?> _tryChunkedDownload(
+    String url, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
     int totalSize = expected ?? 0;
     bool supportsRange = false;
 
@@ -302,7 +418,9 @@ class ModelManager extends ChangeNotifier {
     try {
       final headReq = http.Request('GET', Uri.parse(url));
       headReq.headers['Range'] = 'bytes=0-1023';
-      final headRes = await _client.send(headReq).timeout(const Duration(seconds: 15));
+      final headRes = await _client
+          .send(headReq)
+          .timeout(const Duration(seconds: 15));
 
       if (headRes.statusCode == 206) {
         supportsRange = true;
@@ -354,7 +472,9 @@ class ModelManager extends ChangeNotifier {
           final chunkReq = http.Request('GET', Uri.parse(url));
           chunkReq.headers['Range'] = 'bytes=$downloaded-$end';
 
-          final chunkRes = await _client.send(chunkReq).timeout(const Duration(seconds: 30));
+          final chunkRes = await _client
+              .send(chunkReq)
+              .timeout(const Duration(seconds: 30));
           if (chunkRes.statusCode == 206 || chunkRes.statusCode == 200) {
             final chunkBytes = await chunkRes.stream.toBytes();
             if (chunkBytes.isNotEmpty) {
@@ -367,7 +487,9 @@ class ModelManager extends ChangeNotifier {
 
         if (chunkData == null) {
           retry++;
-          await Future.delayed(Duration(milliseconds: 500 * (1 << retry))); // 指數退避 1s, 2s, 4s...
+          await Future.delayed(
+            Duration(milliseconds: 500 * (1 << retry)),
+          ); // 指數退避 1s, 2s, 4s...
         }
       }
 
@@ -394,8 +516,7 @@ class ModelManager extends ChangeNotifier {
     Object? tokenizerFile,
     String tokenizerType = 'bert-wordpiece',
     int aiLabelIndex = 1,
-  }) async =>
-      throw UnsupportedError('自訂模型匯入尚未支援於網頁版');
+  }) async => throw UnsupportedError('自訂模型匯入尚未支援於網頁版');
 
   Future<String> hashOf(Object file) async =>
       throw UnsupportedError('自訂模型匯入尚未支援於網頁版');
@@ -426,11 +547,15 @@ class ModelManager extends ChangeNotifier {
     String tokenizerType = 'bert-wordpiece',
     int aiLabelIndex = 1,
     required String text,
-  }) async =>
-      throw UnsupportedError('自訂模型測試尚未支援於網頁版');
+  }) async => throw UnsupportedError('自訂模型測試尚未支援於網頁版');
 
-  void _mark(String role, InstallState state,
-      {String? downloadingVariantId, double? progress, String? error}) {
+  void _mark(
+    String role,
+    InstallState state, {
+    String? downloadingVariantId,
+    double? progress,
+    String? error,
+  }) {
     final r = _roles[role]!;
     _roles[role] = r.copyWith(
       transientState: state,

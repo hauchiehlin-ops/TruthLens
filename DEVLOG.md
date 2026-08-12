@@ -1,5 +1,24 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第二十次更新）— 修復：模型推論失敗自動修復與 Web int64 相容性
+
+**概述**
+回應已下載模型仍顯示未安裝、載入失敗或推論失敗的信任問題，新增自動修復與更嚴格的模型健康檢查：
+1. Web ONNX bridge 修正 BigInt64Array 建立方式，避免 int64 模型被錯誤降級成 int32 後必然推論失敗
+2. Web ONNX bridge 讀取 session input metadata，依模型實際需求優先使用 int64 或 int32
+3. Web / 原生 ModelManager 在刷新安裝狀態時檢查模型檔大小、tokenizer 是否存在與 JSON 格式，壞檔會自動清除
+4. 模型載入或推論失敗時，Transformer / 對抗式防禦會觸發自動修復：移除疑似損毀模型，並依 catalog 嘗試重新下載同一使用中變體
+5. 使用者報告不再直接顯示 `JSObject` / ONNX 原始錯誤碼，改顯示已嘗試修復或需重新下載的可行動訊息；詳細錯誤保留在 debug log
+
+**修復內容**：✅ **完成**
+
+- `web/ort_bridge.js` 改用 `Array.from(... BigInt)` 建立 int64 tensor，修正 `Actual int32, expected int64` 問題
+- OPFS 增加檔案大小查詢，Web 模型管理可辨識半套下載或空檔
+- `repairActiveVariant()` 支援 Web 與原生平台，自動移除壞模型並嘗試重新下載
+- `model_auto_activation.dart` 改用跨平台 ModelManager import，並移除錯誤的 `notifyListeners()` 呼叫
+
+---
+
 ## 2026-08-12（第十九次更新）— 修復：Web ONNX 推論 Session 競爭
 
 **概述**

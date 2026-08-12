@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
@@ -21,6 +23,7 @@ class TransformerEngine implements DetectionEngine {
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
+  String? _repairMessage;
 
   TransformerEngine({required this.modelManager, this.variantId});
 
@@ -118,7 +121,11 @@ class TransformerEngine implements DetectionEngine {
           await modelManager.refreshInstallStates();
         } catch (_) {}
       } else {
-        _loadError = '模型載入失敗: ${e.runtimeType}: $errorMsg';
+        debugPrint('[TransformerEngine] 模型載入失敗，啟動自動修復: $errorMsg');
+        _repairMessage = await _repairActiveVariant(
+          reason: 'Transformer 模型載入失敗',
+        );
+        _loadError = _repairMessage;
       }
       return null;
     }
@@ -134,7 +141,9 @@ class TransformerEngine implements DetectionEngine {
       detector = await _ensureLoaded();
       if (detector == null || text.sentences.isEmpty) return _unavailable(l10n);
     } catch (e) {
-      _loadError = '模型載入失敗: ${e.runtimeType}: $e';
+      debugPrint('[TransformerEngine] 模型載入例外，啟動自動修復: $e');
+      _repairMessage = await _repairActiveVariant(reason: 'Transformer 模型載入失敗');
+      _loadError = _repairMessage;
       return _unavailable(l10n);
     }
 
@@ -142,7 +151,12 @@ class TransformerEngine implements DetectionEngine {
     try {
       perSentence = await detector.classifySentences(text.sentences);
     } catch (e) {
-      _loadError = '模型推論失敗: ${e.runtimeType}: $e';
+      debugPrint('[TransformerEngine] 模型推論失敗，啟動自動修復: $e');
+      detector.dispose();
+      _detector = null;
+      _loadedModelPath = null;
+      _repairMessage = await _repairActiveVariant(reason: 'Transformer 模型推論失敗');
+      _loadError = _repairMessage;
       return _unavailable(l10n);
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
@@ -193,7 +207,18 @@ class TransformerEngine implements DetectionEngine {
     reasons: [
       _loadError == null
           ? l10n.engineReasonTransformerNotInstalled
-          : l10n.engineReasonTransformerLoadFailed(_loadError!),
+          : '模型未參與本次投票。$_loadError',
     ],
   );
+
+  Future<String> _repairActiveVariant({required String reason}) async {
+    try {
+      return await modelManager.repairActiveVariant(
+        'transformer',
+        reason: reason,
+      );
+    } catch (_) {
+      return '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載使用中的 Transformer 模型與 tokenizer。';
+    }
+  }
 }
