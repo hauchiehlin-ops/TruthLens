@@ -182,6 +182,7 @@ class EnsembleOrchestrator {
     for (var i = 0; i < text.sentences.length; i++) {
       final s = text.sentences[i];
       final patterns = <String>[];
+      final analyzable = PreprocessedText.isAnalyzableSentence(s);
 
       // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準，
       // 並結合單句長度變化度（如與平均句長之偏差）產生自然的句級差異。
@@ -213,6 +214,12 @@ class EnsembleOrchestrator {
           patterns.add(l10n.patternGenericTransition(t));
           p += 0.05;
         }
+      }
+      if (!analyzable) {
+        p = 0.5;
+        patterns
+          ..clear()
+          ..add('片段過短或疑似 PDF/OCR 噪音，未作 AI 句級判讀');
       }
       result.add(
         SentenceScore(

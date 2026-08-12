@@ -25,6 +25,29 @@ class PreprocessedText {
     return parts;
   }
 
+  /// 判斷一段斷句是否有足夠語義內容可做 AI 句級判讀。
+  ///
+  /// PDF/OCR 來源常會產生 `J.`、`S.`、`C.`、頁碼、章節序號或頁首頁尾碎片。
+  /// 這些片段不能可靠代表作者寫作風格，應排除在「可疑句子」排名之外。
+  static bool isAnalyzableSentence(String sentence) {
+    final trimmed = sentence.trim();
+    if (trimmed.isEmpty) return false;
+    if (RegExp(r'^[A-Za-z]\.$').hasMatch(trimmed)) return false;
+    if (RegExp(r'^[A-Za-z]{1,2}$').hasMatch(trimmed)) return false;
+    if (RegExp(r'^\d{1,4}[.)、]?$').hasMatch(trimmed)) return false;
+
+    final tokens = _tokenize(trimmed);
+    if (tokens.length < 4) return false;
+
+    final lettersAndNumbers = RegExp(
+      r'[\p{L}\p{N}]',
+      unicode: true,
+    ).allMatches(trimmed).length;
+    if (lettersAndNumbers < 12) return false;
+
+    return true;
+  }
+
   static List<String> _tokenize(String sentence) {
     final cjk = RegExp(r'[一-鿿぀-ヿ가-힯]');
     if (cjk.hasMatch(sentence)) {
@@ -44,8 +67,7 @@ class PreprocessedText {
   List<String> get allTokens => sentenceTokens.expand((t) => t).toList();
 
   /// 句長列表（詞數）
-  List<int> get sentenceLengths =>
-      sentenceTokens.map((t) => t.length).toList();
+  List<int> get sentenceLengths => sentenceTokens.map((t) => t.length).toList();
 
   /// Type-Token Ratio：詞彙多樣性
   double get typeTokenRatio {
@@ -62,7 +84,7 @@ class PreprocessedText {
     if (mean == 0) return 0;
     final variance =
         lengths.map((l) => math.pow(l - mean, 2)).reduce((a, b) => a + b) /
-            lengths.length;
+        lengths.length;
     return math.sqrt(variance) / mean;
   }
 

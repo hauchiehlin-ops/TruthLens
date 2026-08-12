@@ -2,6 +2,7 @@
 library;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../utils/text_stats.dart';
 
 /// 五級分類（依整體 AI 機率劃分）
 enum Verdict {
@@ -21,12 +22,12 @@ enum Verdict {
 
   /// 判定結果的顯示文字，依 [l10n] 語系呈現。
   String label(AppLocalizations l10n) => switch (this) {
-        Verdict.human => l10n.verdictHuman,
-        Verdict.likelyHuman => l10n.verdictLikelyHuman,
-        Verdict.mixed => l10n.verdictMixed,
-        Verdict.likelyAi => l10n.verdictLikelyAi,
-        Verdict.ai => l10n.verdictAi,
-      };
+    Verdict.human => l10n.verdictHuman,
+    Verdict.likelyHuman => l10n.verdictLikelyHuman,
+    Verdict.mixed => l10n.verdictMixed,
+    Verdict.likelyAi => l10n.verdictLikelyAi,
+    Verdict.ai => l10n.verdictAi,
+  };
 }
 
 /// 單一子模型（引擎）的評分結果
@@ -104,10 +105,9 @@ class DetectionResult {
       engineScores.where((e) => e.available).length;
 
   /// 計算使用中的總權重（只計算 available 引擎的權重）
-  double get _computeUsedWeight =>
-      engineScores
-          .where((e) => e.available)
-          .fold<double>(0, (sum, e) => sum + e.weight);
+  double get _computeUsedWeight => engineScores
+      .where((e) => e.available)
+      .fold<double>(0, (sum, e) => sum + e.weight);
 
   /// 計算理想的總權重（所有引擎）
   double get _computeTotalWeight =>
@@ -137,8 +137,7 @@ class DetectionResult {
     final availableCount = _computeAvailableCount;
     final usedWeight = _computeUsedWeight;
     final totalWeight = _computeTotalWeight;
-    final confidenceRatio =
-        totalWeight > 0 ? (usedWeight / totalWeight) : 0.0;
+    final confidenceRatio = totalWeight > 0 ? (usedWeight / totalWeight) : 0.0;
 
     if (availableCount < 2) {
       reasons.add('只有 $availableCount 個模型參與分析（建議至少 2 個）');
@@ -159,12 +158,32 @@ class DetectionResult {
         '建議查看「設定」中的模型狀態，下載或修復缺失的模型。';
   }
 
-  int get aiSentenceCount =>
-      sentences.where((s) => s.aiProbability >= 0.5).length;
-  int get humanSentenceCount =>
-      sentences.where((s) => s.aiProbability < 0.5).length;
-  int get strictAiSentenceCount =>
-      sentences.where((s) => s.aiProbability >= 0.6).length;
-  int get strictHumanSentenceCount =>
-      sentences.where((s) => s.aiProbability < 0.4).length;
+  int get aiSentenceCount => sentences
+      .where(
+        (s) =>
+            PreprocessedText.isAnalyzableSentence(s.text) &&
+            s.aiProbability >= 0.5,
+      )
+      .length;
+  int get humanSentenceCount => sentences
+      .where(
+        (s) =>
+            PreprocessedText.isAnalyzableSentence(s.text) &&
+            s.aiProbability < 0.5,
+      )
+      .length;
+  int get strictAiSentenceCount => sentences
+      .where(
+        (s) =>
+            PreprocessedText.isAnalyzableSentence(s.text) &&
+            s.aiProbability >= 0.6,
+      )
+      .length;
+  int get strictHumanSentenceCount => sentences
+      .where(
+        (s) =>
+            PreprocessedText.isAnalyzableSentence(s.text) &&
+            s.aiProbability < 0.4,
+      )
+      .length;
 }

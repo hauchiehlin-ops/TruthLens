@@ -7,7 +7,8 @@ void main() {
   group('PreprocessedText', () {
     test('英文斷句與斷詞', () {
       final t = PreprocessedText.from(
-          'This is a test. It has three sentences! Right?');
+        'This is a test. It has three sentences! Right?',
+      );
       expect(t.sentences.length, 3);
       expect(t.sentenceTokens.first, ['this', 'is', 'a', 'test']);
     });
@@ -26,13 +27,27 @@ void main() {
       expect(t.entropy, 0);
     });
 
+    test('單一字母與頁碼片段不作 AI 句級判讀', () {
+      expect(PreprocessedText.isAnalyzableSentence('J.'), isFalse);
+      expect(PreprocessedText.isAnalyzableSentence('S.'), isFalse);
+      expect(PreprocessedText.isAnalyzableSentence('29'), isFalse);
+      expect(
+        PreprocessedText.isAnalyzableSentence(
+          'The Dark Side of Virtual Agents: Oh No!',
+        ),
+        isTrue,
+      );
+    });
+
     test('burstiness：均勻句長低於起伏句長', () {
       final uniform = PreprocessedText.from(
-          'One two three four five. Six seven eight nine ten. '
-          'Ala bee cee dee eee. Fff ggg hhh iii jjj.');
+        'One two three four five. Six seven eight nine ten. '
+        'Ala bee cee dee eee. Fff ggg hhh iii jjj.',
+      );
       final varied = PreprocessedText.from(
-          'Short. This sentence is quite a bit longer than the previous one indeed. '
-          'Hm. Another moderately sized sentence follows here now.');
+        'Short. This sentence is quite a bit longer than the previous one indeed. '
+        'Hm. Another moderately sized sentence follows here now.',
+      );
       expect(uniform.burstiness, lessThan(varied.burstiness));
     });
   });
@@ -64,10 +79,13 @@ void main() {
         'The quick brown fox jumps over the lazy dog. '
         'Pack my box with five dozen liquor jugs today.',
       );
-      final unavailable =
-          result.engineScores.where((s) => !s.available).toList();
-      expect(unavailable.map((s) => s.engineId),
-          containsAll(['transformer', 'adversarial']));
+      final unavailable = result.engineScores
+          .where((s) => !s.available)
+          .toList();
+      expect(
+        unavailable.map((s) => s.engineId),
+        containsAll(['transformer', 'adversarial']),
+      );
     });
 
     test('進度回呼依引擎觸發', () async {
@@ -80,7 +98,8 @@ void main() {
     });
 
     test('信心閾值影響 flaggedAsAi 但不影響機率', () async {
-      const text = '此外，人工智慧正在改變世界。值得注意的是，這項技術發展迅速。'
+      const text =
+          '此外，人工智慧正在改變世界。值得注意的是，這項技術發展迅速。'
           '首先，我們需要了解其原理。其次，我們必須評估其影響。'
           '綜上所述，人工智慧的未來充滿可能性。';
       final low = await EnsembleOrchestrator().analyze(text, threshold: 0.3);
@@ -92,6 +111,21 @@ void main() {
       // 高閾值更難被標記為 AI（降低偽陽性）
       expect(low.flaggedAsAi, isTrue);
       expect(high.flaggedAsAi, isFalse);
+    });
+
+    test('OCR/PDF 碎片句子給中性分數並標示不可判讀', () async {
+      final result = await EnsembleOrchestrator().analyze(
+        'J. S. C. The Dark Side of Virtual Agents: Oh No!',
+      );
+
+      final fragments = result.sentences.where(
+        (s) => ['J.', 'S.', 'C.'].contains(s.text),
+      );
+      expect(fragments.length, 3);
+      for (final fragment in fragments) {
+        expect(fragment.aiProbability, 0.5);
+        expect(fragment.patterns.single, contains('片段過短'));
+      }
     });
   });
 }

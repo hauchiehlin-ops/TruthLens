@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 可疑句子清單：句子 + 頁數 + 評分
@@ -33,13 +34,19 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
     _items = widget.sentences
         .asMap()
         .entries
-        .where((e) => e.value.aiProbability > 0.5) // 只保留可疑句子
-        .map((e) => _SuspiciousSentenceItem(
-              index: e.key,
-              sentence: _truncateSentence(e.value.text),
-              aiProbability: e.value.aiProbability,
-              patterns: e.value.patterns,
-            ))
+        .where(
+          (e) =>
+              e.value.aiProbability >= 0.6 &&
+              PreprocessedText.isAnalyzableSentence(e.value.text),
+        )
+        .map(
+          (e) => _SuspiciousSentenceItem(
+            index: e.key,
+            sentence: _truncateSentence(e.value.text),
+            aiProbability: e.value.aiProbability,
+            patterns: e.value.patterns,
+          ),
+        )
         .toList();
 
     // 按 AI 概率排序（高到低）
@@ -56,7 +63,9 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
   List<_SuspiciousSentenceItem> _getFilteredItems() {
     return _items.where((item) {
       if (_filterLevel == 'high') return item.aiProbability >= 0.8;
-      if (_filterLevel == 'medium') return item.aiProbability >= 0.5 && item.aiProbability < 0.8;
+      if (_filterLevel == 'medium') {
+        return item.aiProbability >= 0.5 && item.aiProbability < 0.8;
+      }
       return true;
     }).toList();
   }
@@ -73,17 +82,20 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              _buildFilterButton('全部', 'all'),
+              _buildFilterButton('可疑', 'all'),
               const SizedBox(width: 8),
               _buildFilterButton('高危', 'high'),
               const SizedBox(width: 8),
               _buildFilterButton('中等', 'medium'),
               const Spacer(),
-              Text(
-                '${filteredItems.length} 項',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+              Tooltip(
+                message: '已排除單一字母、頁碼、章節序號與過短 OCR/PDF 片段。',
+                child: Text(
+                  '${filteredItems.length} 項',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                ),
               ),
             ],
           ),
@@ -111,9 +123,9 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
             child: Center(
               child: Text(
                 '無可疑內容',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[400],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[400]),
               ),
             ),
           ),
@@ -157,21 +169,17 @@ class _SuspiciousSentenceItem {
   });
 
   String get pageNumber {
-    // 假設每頁 ~300 字（可根據實際文檔配置調整）
-    const charsPerPage = 300;
-    return ((index * 15) ~/ charsPerPage + 1).toString();
+    return '#${index + 1}';
   }
 
   String get riskLevel {
-    if (aiProbability >= 0.8) return '高危';
-    if (aiProbability >= 0.65) return '中等';
-    return '低危';
+    if (aiProbability >= 0.8) return '高';
+    return '中';
   }
 
   Color get riskColor {
-    if (aiProbability >= 0.8) return const Color(0xFFD4AF37); // 金 - 高危
-    if (aiProbability >= 0.65) return const Color(0xFF6B5B95); // 紫 - 中等
-    return const Color(0xFF1E3A5F); // 深青 - 低危
+    if (aiProbability >= 0.8) return const Color(0xFFD4AF37); // 金 - 高
+    return const Color(0xFF6B5B95); // 紫 - 中
   }
 }
 
@@ -245,16 +253,16 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '第 ${item.pageNumber} 頁',
+                        '原文位置 ${item.pageNumber}',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: item.riskColor,
-                            ),
+                          fontWeight: FontWeight.bold,
+                          color: item.riskColor,
+                        ),
                       ),
                       Text(
                         '句子 #${item.index + 1}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                          color: Colors.grey[600],
                         ),
                       ),
                     ],
@@ -277,18 +285,18 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                       child: Text(
                         item.riskLevel,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: item.riskColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: item.riskColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${(item.aiProbability * 100).round()}%',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: item.riskColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: item.riskColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -312,9 +320,9 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                   child: Text(
                     item.sentence,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          height: 1.6,
-                          color: const Color(0xFF1E3A5F),
-                        ),
+                      height: 1.6,
+                      color: const Color(0xFF1E3A5F),
+                    ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -333,9 +341,9 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                   Text(
                     '判定依據：',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
-                        ),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Wrap(
@@ -354,10 +362,8 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                         ),
                         child: Text(
                           pattern,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[700],
-                            fontSize: 12,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[700], fontSize: 12),
                         ),
                       );
                     }).toList(),
@@ -375,25 +381,23 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
               ),
-              border: Border(
-                top: BorderSide(color: Colors.grey[200]!),
-              ),
+              border: Border(top: BorderSide(color: Colors.grey[200]!)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '📄 第 ${item.pageNumber} 頁',
+                  '原文位置 ${item.pageNumber}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 Text(
                   '$index/$totalCount',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[400],
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[400]),
                 ),
               ],
             ),
