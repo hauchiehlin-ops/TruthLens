@@ -46,12 +46,14 @@ void main() async {
   final needsOnboarding =
       !prefs.firstRunHandled && !modelManager.isInstalled('transformer');
 
-  runApp(TruthLensApp(
-    prefs: prefs,
-    modelManager: modelManager,
-    provisioner: provisioner,
-    initialLocation: needsOnboarding ? '/onboarding' : '/',
-  ));
+  runApp(
+    TruthLensApp(
+      prefs: prefs,
+      modelManager: modelManager,
+      provisioner: provisioner,
+      initialLocation: needsOnboarding ? '/onboarding' : '/',
+    ),
+  );
 }
 
 class TruthLensApp extends StatelessWidget {
@@ -76,16 +78,14 @@ class TruthLensApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: modelManager),
         Provider.value(value: provisioner),
         Provider.value(value: provisioner.catalogService),
-        ChangeNotifierProvider(create: (_) => LlmManager(modelManager: modelManager)),
-        Provider(
-          create: (_) => EnsembleOrchestrator(
-            modelManager: modelManager,
-          ),
+        ChangeNotifierProvider(
+          create: (_) => LlmManager(modelManager: modelManager),
         ),
         Provider(
-          create: (ctx) => ReportLlmService(
-            llmManager: ctx.read<LlmManager>(),
-          ),
+          create: (_) => EnsembleOrchestrator(modelManager: modelManager),
+        ),
+        Provider(
+          create: (ctx) => ReportLlmService(llmManager: ctx.read<LlmManager>()),
         ),
         Provider(create: (_) => OcrService()),
         Provider(create: (_) => HistoryRepository()),
@@ -97,7 +97,7 @@ class TruthLensApp extends StatelessWidget {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: prefs.themeMode,
-          locale: prefs.locale,
+          locale: prefs.locale ?? const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -116,9 +116,9 @@ class TruthLensApp extends StatelessWidget {
             for (final l in supportedLocales) {
               if (l.languageCode == deviceLocale.languageCode) return l;
             }
-            // 裝置語系不在支援清單內時，回退至繁體中文（本 App 的原生預設語言）。
+            // 裝置語系不在支援清單內時，回退至英文（專案預設介面語系）。
             return supportedLocales.firstWhere(
-              (l) => l.languageCode == 'zh' && l.scriptCode == 'Hant',
+              (l) => l.languageCode == 'en',
               orElse: () => supportedLocales.first,
             );
           },

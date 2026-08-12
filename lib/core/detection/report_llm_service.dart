@@ -46,7 +46,7 @@ class ReportLlmService {
     final payload = {
       'overall_score': r.aiProbability,
       'classification': r.verdict.name,
-      'sentence_count': r.sentences.length,
+      'sentence_count': r.analyzableSentenceCount,
       'ai_sentences': r.aiSentenceCount,
       'human_sentences': r.humanSentenceCount,
       'dominant_patterns': r.dominantPatterns,

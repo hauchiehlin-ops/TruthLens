@@ -11,6 +11,7 @@ import '../../features/report/report_document.dart';
 import '../../features/report/summary_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
+import '../utils/text_stats.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
 /// 產生邏輯（buildCsv / buildJson / buildPdf）與存檔對話框分離，前者可單元測試。
@@ -34,6 +35,11 @@ class ReportExporter {
     if (text.length <= _pdfMaxCellChars) return text;
     return '${text.substring(0, _pdfMaxCellChars)}…';
   }
+
+  static List<SentenceScore> _analyzableSentences(DetectionResult r) => r
+      .sentences
+      .where((s) => PreprocessedText.isAnalyzableSentence(s.text))
+      .toList();
 
   /// 結構化 JSON（plan 第九節：LMS / 系統整合）。欄位名稱為固定的英文 API schema，
   /// 不隨語系翻譯，僅 headline／reasons 等自然語言內容依 [l10n] 呈現。
@@ -64,7 +70,7 @@ class ReportExporter {
         'threshold': r.threshold,
       },
       'esl_adjusted': r.eslAdjusted,
-      'sentence_count': r.sentences.length,
+      'sentence_count': r.analyzableSentenceCount,
       'ai_sentences': r.aiSentenceCount,
       'human_sentences': r.humanSentenceCount,
       'engines': [
@@ -80,10 +86,10 @@ class ReportExporter {
           },
       ],
       'sentences': [
-        for (final s in r.sentences)
+        for (final s in _analyzableSentences(r))
           {
             'index': s.index,
-            'text': s.text,
+            'text': PreprocessedText.normalizeSentenceForAnalysis(s.text),
             'ai_probability': s.aiProbability,
             'patterns': s.patterns,
           },
@@ -103,11 +109,11 @@ class ReportExporter {
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
       ..writeln('index,sentence,ai_probability,patterns');
-    for (final s in r.sentences) {
+    for (final s in _analyzableSentences(r)) {
       buf.writeln(
         [
           s.index.toString(),
-          _csvEscape(s.text),
+          _csvEscape(PreprocessedText.normalizeSentenceForAnalysis(s.text)),
           s.aiProbability.toStringAsFixed(4),
           _csvEscape(s.patterns.join('; ')),
         ].join(','),
@@ -144,6 +150,7 @@ class ReportExporter {
       return PdfColor.fromInt(0xFFF44336);
     }
 
+    final analyzableSentences = _analyzableSentences(r);
     final doc = pw.Document(theme: theme);
     doc.addPage(
       pw.MultiPage(
@@ -203,7 +210,7 @@ class ReportExporter {
           pw.SizedBox(height: 6),
           pw.Text(
             l10n.pdfSentenceCounts(
-              r.sentences.length,
+              r.analyzableSentenceCount,
               r.aiSentenceCount,
               r.humanSentenceCount,
             ),
@@ -216,7 +223,10 @@ class ReportExporter {
             padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: pw.BoxDecoration(
               color: PdfColor.fromInt(0xFFF0F4F8),
-              border: pw.Border.all(color: PdfColor.fromInt(0xFFB0BEC5), width: 0.8),
+              border: pw.Border.all(
+                color: PdfColor.fromInt(0xFFB0BEC5),
+                width: 0.8,
+              ),
               borderRadius: pw.BorderRadius.circular(6),
             ),
             child: pw.Row(
@@ -233,7 +243,10 @@ class ReportExporter {
                 pw.Expanded(
                   child: pw.Text(
                     'TruthLens 離線檢測證明：本文件內容 100% 於裝置本地運算完成。未經過任何雲端伺服器傳輸或資料庫儲存，完整保障個資與智慧財產權。',
-                    style: const pw.TextStyle(fontSize: 8.5, color: PdfColor.fromInt(0xFF37474F)),
+                    style: const pw.TextStyle(
+                      fontSize: 8.5,
+                      color: PdfColor.fromInt(0xFF37474F),
+                    ),
                   ),
                 ),
               ],
@@ -300,13 +313,13 @@ class ReportExporter {
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 6),
-          if (r.sentences.length > _pdfMaxTableRows)
+          if (analyzableSentences.length > _pdfMaxTableRows)
             pw.Padding(
               padding: const pw.EdgeInsets.only(bottom: 6),
               child: pw.Text(
                 l10n.pdfTruncationNotice(
                   _pdfMaxTableRows,
-                  r.sentences.length,
+                  analyzableSentences.length,
                   l10n.reportExportCsv,
                   l10n.reportExportJson,
                 ),
@@ -332,15 +345,17 @@ class ReportExporter {
                   _cell('AI%', bold: true),
                 ],
               ),
-              for (final s in r.sentences.take(_pdfMaxTableRows))
+              for (final s in analyzableSentences.take(_pdfMaxTableRows))
                 pw.TableRow(
                   children: [
                     _cell('${s.index + 1}'),
                     _cell(
                       _truncateForPdf(
                         s.patterns.isEmpty
-                            ? s.text
-                            : '${s.text}\n→ ${s.patterns.join('、')}',
+                            ? PreprocessedText.normalizeSentenceForAnalysis(
+                                s.text,
+                              )
+                            : '${PreprocessedText.normalizeSentenceForAnalysis(s.text)}\n→ ${s.patterns.join('、')}',
                       ),
                     ),
                     pw.Padding(

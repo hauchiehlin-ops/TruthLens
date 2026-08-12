@@ -45,7 +45,10 @@ class ReportComposer {
   }
 
   List<ReportComponent> _components(
-      DetectionResult r, String templateId, AppLocalizations l10n) {
+    DetectionResult r,
+    String templateId,
+    AppLocalizations l10n,
+  ) {
     final list = <ReportComponent>[
       const ReportComponent(type: ReportComponentType.overallGauge),
       ReportComponent(
@@ -63,34 +66,42 @@ class ReportComposer {
 
     // 改寫警告優先呈現
     if (_paraphraseDetected(r)) {
-      list.add(ReportComponent(
-        type: ReportComponentType.paraphraseWarning,
-        title: l10n.composerParaphraseTitle,
-        body: l10n.composerParaphraseBody,
-      ));
+      list.add(
+        ReportComponent(
+          type: ReportComponentType.paraphraseWarning,
+          title: l10n.composerParaphraseTitle,
+          body: l10n.composerParaphraseBody,
+        ),
+      );
     }
 
     if (r.dominantPatterns.isNotEmpty) {
-      list.add(ReportComponent(
-        type: ReportComponentType.patternList,
-        title: l10n.composerPatternListTitle,
-        body: r.dominantPatterns.join('\n'),
-      ));
+      list.add(
+        ReportComponent(
+          type: ReportComponentType.patternList,
+          title: l10n.composerPatternListTitle,
+          body: r.dominantPatterns.join('\n'),
+        ),
+      );
     }
 
     // 混合內容最適合逐句熱力圖（plan 範例）
-    if (templateId == 'mixed_detailed' || r.sentences.length >= 3) {
-      list.add(const ReportComponent(type: ReportComponentType.sentenceHeatmap));
+    if (templateId == 'mixed_detailed' || r.analyzableSentenceCount >= 3) {
+      list.add(
+        const ReportComponent(type: ReportComponentType.sentenceHeatmap),
+      );
     }
 
     list.add(const ReportComponent(type: ReportComponentType.engineBreakdown));
 
     if (r.eslAdjusted) {
-      list.add(ReportComponent(
-        type: ReportComponentType.eslNotice,
-        title: l10n.composerEslTitle,
-        body: l10n.composerEslBody,
-      ));
+      list.add(
+        ReportComponent(
+          type: ReportComponentType.eslNotice,
+          title: l10n.composerEslTitle,
+          body: l10n.composerEslBody,
+        ),
+      );
     }
 
     return list;
@@ -99,11 +110,16 @@ class ReportComposer {
   /// 規則式自然語言解讀：綜合分佈、主要特徵與可解釋引擎的理由
   String _narrative(DetectionResult r, AppLocalizations l10n) {
     final parts = <String>[];
-    final total = r.sentences.length;
+    final total = r.analyzableSentenceCount;
 
     if (total > 0) {
-      parts.add(l10n.composerNarrativeIntro(
-          total, r.aiSentenceCount, r.humanSentenceCount));
+      parts.add(
+        l10n.composerNarrativeIntro(
+          total,
+          r.aiSentenceCount,
+          r.humanSentenceCount,
+        ),
+      );
     }
 
     switch (r.verdict) {

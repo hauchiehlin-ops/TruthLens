@@ -165,6 +165,9 @@ class DetectionResult {
             s.aiProbability >= 0.5,
       )
       .length;
+  int get analyzableSentenceCount => sentences
+      .where((s) => PreprocessedText.isAnalyzableSentence(s.text))
+      .length;
   int get humanSentenceCount => sentences
       .where(
         (s) =>

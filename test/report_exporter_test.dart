@@ -13,7 +13,7 @@ final _l10n = lookupAppLocalizations(const Locale('en'));
 DetectionResult _sampleResult() => DetectionResult(
   id: 'test-1',
   analyzedAt: DateTime(2026, 7, 3, 21, 30),
-  inputText: '這是第一句。這是「含引號, 與逗號」的第二句。',
+  inputText: '這是第一段可以分析的完整句子。這是「含引號, 與逗號」的第二個完整句子。',
   aiProbability: 0.55,
   verdict: Verdict.mixed,
   engineScores: const [
@@ -34,10 +34,10 @@ DetectionResult _sampleResult() => DetectionResult(
     ),
   ],
   sentences: const [
-    SentenceScore(index: 0, text: '這是第一句。', aiProbability: 0.3),
+    SentenceScore(index: 0, text: '這是第一段可以分析的完整句子。', aiProbability: 0.3),
     SentenceScore(
       index: 1,
-      text: '這是「含引號, 與逗號」的第二句。',
+      text: '這是「含引號, 與逗號」的第二個完整句子。',
       aiProbability: 0.7,
       patterns: ['通用過渡詞「此外」'],
     ),
@@ -76,7 +76,7 @@ void main() {
 
     test('逗號與引號正確跳脫', () {
       final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
-      expect(csv, contains('"這是「含引號, 與逗號」的第二句。"'));
+      expect(csv, contains('"這是「含引號, 與逗號」的第二個完整句子。"'));
       // 跳脫後的欄位數不變
       final dataLine = csv
           .trim()

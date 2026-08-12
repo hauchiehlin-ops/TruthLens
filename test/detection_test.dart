@@ -7,16 +7,17 @@ void main() {
   group('PreprocessedText', () {
     test('英文斷句與斷詞', () {
       final t = PreprocessedText.from(
-        'This is a test. It has three sentences! Right?',
+        'This is a complete test sentence. It has another complete sentence! '
+        'The final sentence still contains enough semantic content.',
       );
       expect(t.sentences.length, 3);
-      expect(t.sentenceTokens.first, ['this', 'is', 'a', 'test']);
+      expect(t.sentenceTokens.first.take(4), ['this', 'is', 'a', 'complete']);
     });
 
     test('中文斷句與逐字斷詞', () {
-      final t = PreprocessedText.from('這是測試。第二句話！');
+      final t = PreprocessedText.from('這是一段可分析的測試句子。第二句話也具有完整語義！');
       expect(t.sentences.length, 2);
-      expect(t.sentenceTokens.first, ['這', '是', '測', '試']);
+      expect(t.sentenceTokens.first.take(4), ['這', '是', '一', '段']);
     });
 
     test('空文本不崩潰', () {
@@ -27,13 +28,31 @@ void main() {
       expect(t.entropy, 0);
     });
 
-    test('單一字母與頁碼片段不作 AI 句級判讀', () {
+    test('單一字母、頁碼、標題與引用殘片不作 AI 句級判讀', () {
       expect(PreprocessedText.isAnalyzableSentence('J.'), isFalse);
       expect(PreprocessedText.isAnalyzableSentence('S.'), isFalse);
       expect(PreprocessedText.isAnalyzableSentence('29'), isFalse);
+      expect(PreprocessedText.isAnalyzableSentence('1.'), isFalse);
+      expect(PreprocessedText.isAnalyzableSentence(', 2025)'), isFalse);
+      expect(
+        PreprocessedText.isAnalyzableSentence('第一章 緒論（Introduction） 1.'),
+        isFalse,
+      );
+      expect(
+        PreprocessedText.isAnalyzableSentence(
+          '1 研究背景與動機（Research Background & Motivation） 1.',
+        ),
+        isFalse,
+      );
       expect(
         PreprocessedText.isAnalyzableSentence(
           'The Dark Side of Virtual Agents: Oh No!',
+        ),
+        isFalse,
+      );
+      expect(
+        PreprocessedText.isAnalyzableSentence(
+          '生成式 AI 與綠色行銷的本體論張力近年來，生成式人工智慧（generative AI, GenAI）技術快速發展，已成為行銷與廣告產製的重要工具。',
         ),
         isTrue,
       );
@@ -45,8 +64,9 @@ void main() {
         'Ala bee cee dee eee. Fff ggg hhh iii jjj.',
       );
       final varied = PreprocessedText.from(
-        'Short. This sentence is quite a bit longer than the previous one indeed. '
-        'Hm. Another moderately sized sentence follows here now.',
+        'This opening sentence has enough semantic content. '
+        'This sentence is quite a bit longer than the previous one and includes several additional descriptive words for variation. '
+        'Another moderately sized sentence follows here now.',
       );
       expect(uniform.burstiness, lessThan(varied.burstiness));
     });
@@ -113,19 +133,12 @@ void main() {
       expect(high.flaggedAsAi, isFalse);
     });
 
-    test('OCR/PDF 碎片句子給中性分數並標示不可判讀', () async {
+    test('OCR/PDF 碎片與標題不進入句級結果', () async {
       final result = await EnsembleOrchestrator().analyze(
-        'J. S. C. The Dark Side of Virtual Agents: Oh No!',
+        'J. S. C. 第一章 緒論（Introduction） 1. , 2025)',
       );
 
-      final fragments = result.sentences.where(
-        (s) => ['J.', 'S.', 'C.'].contains(s.text),
-      );
-      expect(fragments.length, 3);
-      for (final fragment in fragments) {
-        expect(fragment.aiProbability, 0.5);
-        expect(fragment.patterns.single, contains('片段過短'));
-      }
+      expect(result.sentences, isEmpty);
     });
   });
 }

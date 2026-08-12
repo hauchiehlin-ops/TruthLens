@@ -270,6 +270,10 @@ class _MetricsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final analyzableSentenceCount = result.analyzableSentenceCount;
+    final aiSentenceRatio = analyzableSentenceCount == 0
+        ? 0.0
+        : result.aiSentenceCount / analyzableSentenceCount;
     return Row(
       children: [
         // 卡 1：AI 判定比例
@@ -278,9 +282,8 @@ class _MetricsRow extends StatelessWidget {
             icon: Icons.assessment_outlined,
             iconColor: const Color(0xFF6B5B95),
             title: l10n.reportMetricAiSentenceRatio,
-            value:
-                '${((result.aiSentenceCount / result.sentences.length) * 100).toStringAsFixed(1)}%',
-            subtitle: l10n.reportSentenceCount(result.sentences.length),
+            value: '${(aiSentenceRatio * 100).toStringAsFixed(1)}%',
+            subtitle: l10n.reportSentenceCount(analyzableSentenceCount),
           ),
         ),
         const SizedBox(width: 12),

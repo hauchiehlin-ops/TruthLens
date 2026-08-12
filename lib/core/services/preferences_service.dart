@@ -22,7 +22,7 @@ class PreferencesService extends ChangeNotifier {
   // 是否允許連線驗證文件中的超連結／期刊引用是否真實存在；核心 AI 推論仍完全
   // 在裝置端執行，但此為主動分析所需的必要連線功能，預設開啟，使用者可在設定關閉。
   bool linkVerificationEnabled = true;
-  // null＝跟隨系統語言（不支援時回退至繁體中文）；非 null＝使用者於設定手動選擇的語系。
+  // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
   Set<String> _disabledEngines = {};
 
