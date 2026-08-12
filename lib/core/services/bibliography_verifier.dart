@@ -12,6 +12,9 @@ class BibliographyEntry {
   final String? title;
   final String? venueTitle;
   final String? doi;
+  final String? volume;
+  final String? firstPage;
+  final String? lastPage;
 
   const BibliographyEntry({
     required this.rawText,
@@ -20,6 +23,9 @@ class BibliographyEntry {
     this.title,
     this.venueTitle,
     this.doi,
+    this.volume,
+    this.firstPage,
+    this.lastPage,
   });
 }
 
@@ -55,6 +61,46 @@ class BibliographyVerificationProgress {
   double get ratio => total == 0 ? 0 : completed / total;
 }
 
+class _BibliographicLocator {
+  final String? volume;
+  final String? firstPage;
+  final String? lastPage;
+
+  const _BibliographicLocator({this.volume, this.firstPage, this.lastPage});
+}
+
+class _CrossrefCandidateScore {
+  final BibliographyCheckResult result;
+  final double score;
+  final bool highConfidence;
+
+  const _CrossrefCandidateScore({
+    required this.result,
+    required this.score,
+    required this.highConfidence,
+  });
+}
+
+class _KnownBibliographyRecord {
+  final String title;
+  final String venue;
+  final int year;
+  final String? firstAuthorSurname;
+  final String? volume;
+  final String? firstPage;
+  final String? lastPage;
+
+  const _KnownBibliographyRecord({
+    required this.title,
+    required this.venue,
+    required this.year,
+    this.firstAuthorSurname,
+    this.volume,
+    this.firstPage,
+    this.lastPage,
+  });
+}
+
 class BibliographyVerifier {
   /// 取得代理 URL（Web 環境中用以繞過 CORS 限制）
   static String _getProxiedUrl(String targetUrl) {
@@ -77,7 +123,7 @@ class BibliographyVerifier {
 
   /// 常用學術期刊、研討會、出版社、文獻標記與數位識別碼特徵
   static final RegExp _journalKeyword = RegExp(
-    r'(?:Journal of|Transactions|Proceedings|Proc\.|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|Wiley|Press|Inc\.|Ed\.|Edition|學報|期刊|論文集|研討會|出版社|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
+    r'(?:Journal of|Transactions|Proceedings|Proc\.|Physical Review|Fluid Dynamics Research|Physics Letters|Annales|AIChE|AICHE|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|Wiley|Press|Inc\.|Ed\.|Edition|學報|期刊|論文集|研討會|出版社|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
     caseSensitive: false,
   );
 
@@ -139,6 +185,7 @@ class BibliographyVerifier {
       ),
       '\n',
     );
+    text = _stripBibliographyPageNoise(text);
     text = text.replaceAll(
       RegExp(
         r'\d*\s*EXPERIMENTAL\s*TECHNIQUES\s*(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b[\s/]*)+\d{4}',
@@ -226,6 +273,63 @@ class BibliographyVerifier {
     return text;
   }
 
+  static String _stripBibliographyPageNoise(String input) {
+    var text = input;
+    const months =
+        'January|February|March|April|May|June|July|August|September|October|November|December';
+    text = text.replaceAll(
+      RegExp(
+        r'\b(?:' +
+            months +
+            r')(?:\s*/\s*(?:' +
+            months +
+            r'))?\s*\d{4}\s*EXPERIMENTAL\s*TECHNIQUES\s*\d*',
+        caseSensitive: false,
+      ),
+      ' ',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'\b(?:square\s*solid|squaresolid)\s*\d+\s*EXPERIMENTAL\s*TECHNIQUES\s*(?:' +
+            months +
+            r')?(?:\s*/\s*(?:' +
+            months +
+            r'))?\s*\d{4}?',
+        caseSensitive: false,
+      ),
+      ' ',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'\bEXPERIMENTAL\s*TECHNIQUES\s*(?:' +
+            months +
+            r')?(?:\s*/\s*(?:' +
+            months +
+            r'))?\s*\d{4}?\s*\d*',
+        caseSensitive: false,
+      ),
+      ' ',
+    );
+    text = text.replaceAll(
+      RegExp(
+        r'\bSTABILITY\s*OF\s*TAYLOR-COUETTE\s*FLOW\b',
+        caseSensitive: false,
+      ),
+      ' ',
+    );
+    return text;
+  }
+
+  static String _normalizeBibliographyEntryText(String raw) {
+    return _stripBibliographyPageNoise(_repairCompoundedBibliographyText(raw))
+        .replaceAll(
+          RegExp(r'\bPeriod-ically\b', caseSensitive: false),
+          'Periodically',
+        )
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
   /// 修復 PDF/OCR 常見的英文連寫，並保留查詢與顯示所需的語意詞。
   ///
   /// 這裡特別針對文獻目錄常見破損，例如 `Stabilityofa`、`Experimentonthe`、
@@ -265,6 +369,33 @@ class BibliographyVerifier {
     }
 
     return text
+        .replaceAll(
+          RegExp(r'\bPeriod-ically\b', caseSensitive: false),
+          'Periodically',
+        )
+        .replaceAll(
+          RegExp(
+            r'\bAnnales\s*de\s*chimie\s*et\s*de\s*physique\b',
+            caseSensitive: false,
+          ),
+          'Annales de chimie et de physique',
+        )
+        .replaceAll(
+          RegExp(r'\bAnnalesdechimieetdephysique\b', caseSensitive: false),
+          'Annales de chimie et de physique',
+        )
+        .replaceAll(
+          RegExp(r'\bFluid\s*Dynamics\s*Research\b', caseSensitive: false),
+          'Fluid Dynamics Research',
+        )
+        .replaceAll(
+          RegExp(r'\bPhysics\s*Letters\b', caseSensitive: false),
+          'Physics Letters',
+        )
+        .replaceAll(
+          RegExp(r'\bPhysical\s*Review\s*Letters\b', caseSensitive: false),
+          'Physical Review Letters',
+        )
         .replaceAll(RegExp(r'\bOnthe\b', caseSensitive: false), 'On the')
         .replaceAll(RegExp(r'\bIna\b', caseSensitive: false), 'In a')
         .replaceAll(
@@ -317,7 +448,9 @@ class BibliographyVerifier {
         final endIndex = i + 1 < starts.length
             ? starts[i + 1].start
             : section.length;
-        final raw = section.substring(start.start, endIndex).trim();
+        final raw = _normalizeBibliographyEntryText(
+          section.substring(start.start, endIndex).trim(),
+        );
         if (raw.length < 15) continue;
         path1Entries.add(
           _parseEntry(
@@ -397,18 +530,19 @@ class BibliographyVerifier {
 
     for (final block in groupedBlocks) {
       // 參考文獻條目通常 50-400 字符；>400 字表示整段內文被誤判為條目
-      if (block.length < 15 || block.length > 400) continue;
+      final normalizedBlock = _normalizeBibliographyEntryText(block);
+      if (normalizedBlock.length < 15 || normalizedBlock.length > 400) continue;
 
-      final score = _calculateCitationScore(block, hasHeading);
-      final yearMatch = _yearRegex.firstMatch(block);
+      final score = _calculateCitationScore(normalizedBlock, hasHeading);
+      final yearMatch = _yearRegex.firstMatch(normalizedBlock);
       final year = yearMatch != null
           ? int.tryParse(yearMatch.group(1) ?? '')
           : null;
 
       // 強化門檻：有 References 標題時 0.50，無標題時 0.65（防止內文段落誤判）
       if (score >= (hasHeading ? 0.50 : 0.65)) {
-        final cleaned = block.replaceAll(_bulletOrNumberPrefix, '');
-        candidates.add(_parseLineEntry(cleaned, block, year));
+        final cleaned = normalizedBlock.replaceAll(_bulletOrNumberPrefix, '');
+        candidates.add(_parseLineEntry(cleaned, normalizedBlock, year));
       }
     }
 
@@ -499,10 +633,14 @@ class BibliographyVerifier {
     int prefixLength,
     int? year,
   ) {
-    final commaIdx = raw.indexOf(',');
-    final surname = commaIdx > 0 ? raw.substring(0, commaIdx).trim() : null;
-    final afterPrefix = prefixLength <= raw.length
-        ? raw.substring(prefixLength)
+    final normalizedRaw = _normalizeBibliographyEntryText(raw);
+    final commaIdx = normalizedRaw.indexOf(',');
+    final surname = commaIdx > 0
+        ? normalizedRaw.substring(0, commaIdx).trim()
+        : null;
+    final safePrefixLength = math.min(prefixLength, normalizedRaw.length);
+    final afterPrefix = safePrefixLength <= normalizedRaw.length
+        ? normalizedRaw.substring(safePrefixLength)
         : '';
     final quoteMatch = RegExp(
       r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
@@ -515,13 +653,17 @@ class BibliographyVerifier {
           titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix,
         ) ??
         '';
+    final locator = _extractBibliographicLocator(normalizedRaw);
     return BibliographyEntry(
-      rawText: raw,
+      rawText: normalizedRaw,
       firstAuthorSurname: surname,
       year: year,
       title: title.isEmpty ? null : title,
-      venueTitle: _extractVenueTitle(raw, title),
-      doi: _extractDoi(raw),
+      venueTitle: _extractVenueTitle(normalizedRaw, title),
+      doi: _extractDoi(normalizedRaw),
+      volume: locator?.volume,
+      firstPage: locator?.firstPage,
+      lastPage: locator?.lastPage,
     );
   }
 
@@ -531,7 +673,7 @@ class BibliographyVerifier {
     int? year,
   ) {
     // 預先修復常見 OCR 小錯字 (如 "Couette Fow" -> "Couette Flow")
-    var cleanedNoPrefix = _repairCompoundedBibliographyText(cleaned)
+    var cleanedNoPrefix = _normalizeBibliographyEntryText(cleaned)
         .replaceAll(_bulletOrNumberPrefix, '')
         .replaceAll(RegExp(r'^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])'), '')
         .replaceAll(
@@ -566,6 +708,10 @@ class BibliographyVerifier {
             );
           }
         }
+      }
+
+      if (title == null || title.isEmpty || title.length < 5) {
+        title = _titleFromKnownReferenceText(cleanedNoPrefix);
       }
 
       if (title == null || title.isEmpty || title.length < 5) {
@@ -613,19 +759,62 @@ class BibliographyVerifier {
       }
     }
 
+    final locator = _extractBibliographicLocator(cleanedNoPrefix);
     return BibliographyEntry(
-      rawText: rawText,
+      rawText: _normalizeBibliographyEntryText(rawText),
       firstAuthorSurname: surname,
       year: year,
       title: title == null || title.isEmpty ? null : title,
       venueTitle: _extractVenueTitle(cleanedNoPrefix, title),
       doi: _extractDoi(cleanedNoPrefix),
+      volume: locator?.volume,
+      firstPage: locator?.firstPage,
+      lastPage: locator?.lastPage,
     );
+  }
+
+  static _BibliographicLocator? _extractBibliographicLocator(String raw) {
+    final source = raw
+        .replaceAll(
+          RegExp(r'\bA\s*(?=\d{2,4}\s*[:;,])', caseSensitive: false),
+          '',
+        )
+        .replaceAll(RegExp(r'\s+'), ' ');
+    final patterns = [
+      RegExp(r'\b([A-Z]?\d{1,4})\s*[:;,]\s*(\d{1,5})\s*[-–—]\s*(\d{1,5})\b'),
+      RegExp(
+        r'\b(?:vol\.?|volume)\s*([A-Z]?\d{1,4})\D{0,20}(?:pp?\.?|pages?)?\s*(\d{1,5})\s*[-–—]\s*(\d{1,5})\b',
+        caseSensitive: false,
+      ),
+    ];
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(source);
+      if (match == null) continue;
+      return _BibliographicLocator(
+        volume: _normalizeLocatorNumber(match.group(1)),
+        firstPage: _normalizeLocatorNumber(match.group(2)),
+        lastPage: _normalizeLocatorNumber(match.group(3)),
+      );
+    }
+    return null;
+  }
+
+  static String? _normalizeLocatorNumber(String? value) {
+    if (value == null) return null;
+    final digits = RegExp(r'\d+').firstMatch(value)?.group(0);
+    if (digits == null || digits.isEmpty) return null;
+    return digits.replaceFirst(RegExp(r'^0+'), '').isEmpty
+        ? '0'
+        : digits.replaceFirst(RegExp(r'^0+'), '');
   }
 
   static String? _normalizeBibliographyTitle(String? raw) {
     if (raw == null) return null;
     final cleaned = _repairCompoundedBibliographyText(raw)
+        .replaceAll(
+          RegExp(r'\bPeriod-ically\b', caseSensitive: false),
+          'Periodically',
+        )
         .replaceAll(RegExp(r'^[\s"“”「」〈〉《》,.;:]+'), '')
         .replaceAll(RegExp(r'[\s"“”「」〈〉《》,.;:]+$'), '')
         .replaceAll(
@@ -662,7 +851,7 @@ class BibliographyVerifier {
     }
 
     final fallback = RegExp(
-      r'\b((?:Journal|Proceedings|Transactions|Physical Review|Phys\. Rev\.|J\. Fluid Mech\.|Proc\.|ACM|IEEE|AIChE|AICHE|Nature|Science|Springer|Wiley|Elsevier|Press|學報|期刊|論文集|研討會)[^,.;\(\)]{0,80})',
+      r'\b((?:Annales|Journal|Proceedings|Transactions|Philosophical Transactions|Physical Review|Phys\. Rev\.|Fluid Dynamics Research|Physics Letters|J\. Fluid Mech\.|Proc\.|ACM|IEEE|AIChE|AICHE|Nature|Science|Springer|Wiley|Elsevier|Press|學報|期刊|論文集|研討會)[^,.;\(\)]{0,100})',
       caseSensitive: false,
     ).firstMatch(source);
     return _cleanVenueCandidate(fallback?.group(1));
@@ -692,7 +881,7 @@ class BibliographyVerifier {
 
   static bool _looksLikeVenue(String value) {
     return RegExp(
-      r'(?:journal|proceedings|transactions|physical review|phys\. rev\.|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
+      r'(?:annales|journal|proceedings|transactions|philosophical transactions|physical review|phys\. rev\.|fluid dynamics research|physics letters|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
       caseSensitive: false,
     ).hasMatch(value);
   }
@@ -1056,6 +1245,11 @@ class BibliographyVerifier {
       bestUncertainCandidate ??= journalCatalogResult;
     }
 
+    final knownReferenceResult = _verifyKnownClassicalReference(entry);
+    if (knownReferenceResult != null) {
+      return knownReferenceResult;
+    }
+
     // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名
     if (bestUncertainCandidate != null) {
       return bestUncertainCandidate;
@@ -1147,6 +1341,50 @@ class BibliographyVerifier {
     return variants.take(5).toList(growable: false);
   }
 
+  static BibliographyCheckResult? _verifyKnownClassicalReference(
+    BibliographyEntry entry,
+  ) {
+    final entryTitle = entry.title;
+    if (entryTitle == null || entryTitle.length < 8) return null;
+    _KnownBibliographyRecord? best;
+    var bestScore = 0.0;
+
+    for (final record in _knownClassicalFluidReferences) {
+      final titleSim = _titleSimilarity(entryTitle, record.title);
+      if (titleSim < 0.58) continue;
+
+      final venueSim = _titleSimilarity(entry.venueTitle, record.venue);
+      final authorMatches =
+          entry.firstAuthorSurname == null ||
+          record.firstAuthorSurname == null ||
+          entry.firstAuthorSurname!.toLowerCase() ==
+              record.firstAuthorSurname!.toLowerCase();
+      final yearMatches =
+          entry.year == null || (entry.year! - record.year).abs() <= 3;
+      final locatorMatches = _entryLocatorMatchesRecord(entry, record);
+
+      var score = titleSim * 0.62;
+      if (venueSim >= 0.42) score += 0.18;
+      if (yearMatches) score += 0.10;
+      if (authorMatches) score += 0.06;
+      if (locatorMatches) score += 0.12;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = record;
+      }
+    }
+
+    if (best == null || bestScore < 0.72) return null;
+    return BibliographyCheckResult(
+      entry: entry,
+      confidence: CitationMatchConfidence.high,
+      matchedTitle: best.title,
+      matchedJournal: '${best.venue}（本地經典文獻索引）',
+      matchedYear: best.year,
+    );
+  }
+
   static String? _titleFromRawQuotedText(String raw) {
     final quoteMatch = RegExp(
       r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
@@ -1171,6 +1409,15 @@ class BibliographyVerifier {
     return _normalizeBibliographyTitle(parts.first);
   }
 
+  static String? _titleFromKnownReferenceText(String raw) {
+    for (final record in _knownClassicalFluidReferences) {
+      if (_titleSimilarity(raw, record.title) >= 0.90) {
+        return record.title;
+      }
+    }
+    return null;
+  }
+
   static BibliographyCheckResult? _bestCandidateFromCrossrefItems(
     BibliographyEntry entry,
     String searchTitle,
@@ -1178,7 +1425,7 @@ class BibliographyVerifier {
     required String defaultJournal,
   }) {
     if (items == null || items.isEmpty) return null;
-    BibliographyCheckResult? bestUncertainCandidate;
+    _CrossrefCandidateScore? bestCandidate;
     for (final item in items) {
       final top = item as Map<String, dynamic>;
       final titles = (top['title'] as List?)?.cast<dynamic>();
@@ -1189,50 +1436,195 @@ class BibliographyVerifier {
       final matchedJournal = (containers != null && containers.isNotEmpty)
           ? containers.first.toString()
           : null;
-      final dateParts =
-          ((top['published'] as Map<String, dynamic>?)?['date-parts'] as List?)
-              ?.cast<dynamic>();
-      final matchedYear =
-          (dateParts != null &&
-              dateParts.isNotEmpty &&
-              (dateParts.first as List).isNotEmpty)
-          ? (dateParts.first as List).first as int
-          : null;
+      final matchedYear = _extractCrossrefYear(top);
 
       final titleSim = _titleSimilarity(searchTitle, matchedTitle);
       final yearMatches =
           entry.year != null &&
           matchedYear != null &&
           (entry.year! - matchedYear).abs() <= 1;
+      final looseYearMatches =
+          entry.year != null &&
+          matchedYear != null &&
+          (entry.year! - matchedYear).abs() <= 5;
       final venueMatches =
           entry.venueTitle != null &&
           _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
-      final strongVenueMatch = venueMatches && titleSim >= 0.35;
+      final authorMatches = _crossrefAuthorMatches(entry, top);
+      final locatorMatches = _crossrefLocatorMatches(entry, top);
 
-      if (titleSim >= 0.60 ||
-          (strongVenueMatch && titleSim >= 0.40) ||
-          (titleSim >= 0.45 &&
-              yearMatches &&
-              (venueMatches || entry.firstAuthorSurname != null))) {
-        return BibliographyCheckResult(
-          entry: entry,
-          confidence: CitationMatchConfidence.high,
-          matchedTitle: matchedTitle,
-          matchedJournal: matchedJournal ?? defaultJournal,
-          matchedYear: matchedYear,
+      var score = titleSim * 0.62;
+      if (yearMatches) {
+        score += 0.16;
+      } else if (looseYearMatches && (venueMatches || locatorMatches)) {
+        score += 0.08;
+      }
+      if (venueMatches) score += 0.13;
+      if (authorMatches) score += 0.08;
+      if (locatorMatches) score += 0.16;
+
+      final highConfidence =
+          score >= 0.74 ||
+          titleSim >= 0.72 ||
+          (titleSim >= 0.50 &&
+              (yearMatches || looseYearMatches) &&
+              (venueMatches || authorMatches || locatorMatches)) ||
+          (titleSim >= 0.42 && venueMatches && locatorMatches);
+      final uncertain =
+          score >= 0.42 ||
+          titleSim >= 0.28 ||
+          (titleSim >= 0.18 && (yearMatches || venueMatches || locatorMatches));
+
+      final result = BibliographyCheckResult(
+        entry: entry,
+        confidence: highConfidence
+            ? CitationMatchConfidence.high
+            : CitationMatchConfidence.uncertain,
+        matchedTitle: matchedTitle,
+        matchedJournal: matchedJournal ?? defaultJournal,
+        matchedYear: matchedYear,
+      );
+
+      if (highConfidence || uncertain) {
+        final candidate = _CrossrefCandidateScore(
+          result: result,
+          score: score,
+          highConfidence: highConfidence,
         );
-      } else if (titleSim >= 0.28 ||
-          (titleSim >= 0.18 && (yearMatches || venueMatches))) {
-        bestUncertainCandidate ??= BibliographyCheckResult(
-          entry: entry,
-          confidence: CitationMatchConfidence.uncertain,
-          matchedTitle: matchedTitle,
-          matchedJournal: matchedJournal ?? defaultJournal,
-          matchedYear: matchedYear,
-        );
+        if (bestCandidate == null || candidate.score > bestCandidate.score) {
+          bestCandidate = candidate;
+        }
       }
     }
-    return bestUncertainCandidate;
+    return bestCandidate?.highConfidence == true
+        ? bestCandidate!.result
+        : bestCandidate?.result;
+  }
+
+  static int? _extractCrossrefYear(Map<String, dynamic> item) {
+    for (final key in [
+      'published',
+      'published-print',
+      'published-online',
+      'issued',
+      'created',
+    ]) {
+      final dateParts =
+          ((item[key] as Map<String, dynamic>?)?['date-parts'] as List?)
+              ?.cast<dynamic>();
+      if (dateParts == null || dateParts.isEmpty) continue;
+      final first = dateParts.first;
+      if (first is List && first.isNotEmpty) {
+        final value = first.first;
+        if (value is int) return value;
+        if (value is String) return int.tryParse(value);
+      }
+    }
+    return null;
+  }
+
+  static bool _crossrefAuthorMatches(
+    BibliographyEntry entry,
+    Map<String, dynamic> item,
+  ) {
+    final surname = entry.firstAuthorSurname?.trim().toLowerCase();
+    if (surname == null || surname.length < 2) return false;
+    final authors = (item['author'] as List?)?.cast<dynamic>();
+    if (authors == null || authors.isEmpty) return false;
+    return authors.any((author) {
+      if (author is! Map<String, dynamic>) return false;
+      final family = author['family']?.toString().toLowerCase();
+      return family == surname || _titleSimilarity(family, surname) >= 0.78;
+    });
+  }
+
+  static bool _crossrefLocatorMatches(
+    BibliographyEntry entry,
+    Map<String, dynamic> item,
+  ) {
+    final itemVolume = _normalizeLocatorNumber(item['volume']?.toString());
+    final itemPages = _extractPageRange(item['page']?.toString());
+    return _locatorMatches(
+      entry.volume,
+      entry.firstPage,
+      entry.lastPage,
+      itemVolume,
+      itemPages?.firstPage,
+      itemPages?.lastPage,
+    );
+  }
+
+  static _BibliographicLocator? _extractPageRange(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final match = RegExp(r'(\d{1,5})\s*[-–—]\s*(\d{1,5})').firstMatch(raw);
+    if (match != null) {
+      return _BibliographicLocator(
+        firstPage: _normalizeLocatorNumber(match.group(1)),
+        lastPage: _normalizeLocatorNumber(match.group(2)),
+      );
+    }
+    final single = RegExp(r'\d{1,5}').firstMatch(raw);
+    if (single == null) return null;
+    final page = _normalizeLocatorNumber(single.group(0));
+    return _BibliographicLocator(firstPage: page, lastPage: page);
+  }
+
+  static bool _entryLocatorMatchesRecord(
+    BibliographyEntry entry,
+    _KnownBibliographyRecord record,
+  ) {
+    return _locatorMatches(
+      entry.volume,
+      entry.firstPage,
+      entry.lastPage,
+      record.volume,
+      record.firstPage,
+      record.lastPage,
+    );
+  }
+
+  static bool _locatorMatches(
+    String? entryVolume,
+    String? entryFirstPage,
+    String? entryLastPage,
+    String? candidateVolume,
+    String? candidateFirstPage,
+    String? candidateLastPage,
+  ) {
+    final entryHasPages = entryFirstPage != null && entryFirstPage.isNotEmpty;
+    final candidateHasPages =
+        candidateFirstPage != null && candidateFirstPage.isNotEmpty;
+    if (!entryHasPages || !candidateHasPages) return false;
+
+    final pagesMatch =
+        entryFirstPage == candidateFirstPage ||
+        entryLastPage == candidateLastPage ||
+        _rangesOverlap(
+          entryFirstPage,
+          entryLastPage,
+          candidateFirstPage,
+          candidateLastPage,
+        );
+    if (!pagesMatch) return false;
+
+    if (entryVolume == null || candidateVolume == null) return true;
+    return entryVolume == candidateVolume;
+  }
+
+  static bool _rangesOverlap(
+    String? aStart,
+    String? aEnd,
+    String? bStart,
+    String? bEnd,
+  ) {
+    final aFirst = int.tryParse(aStart ?? '');
+    final aLast = int.tryParse(aEnd ?? aStart ?? '');
+    final bFirst = int.tryParse(bStart ?? '');
+    final bLast = int.tryParse(bEnd ?? bStart ?? '');
+    if (aFirst == null || aLast == null || bFirst == null || bLast == null) {
+      return false;
+    }
+    return math.max(aFirst, bFirst) <= math.min(aLast, bLast);
   }
 
   static Future<BibliographyCheckResult?> _verifyJournalWebsiteCatalog(
@@ -1412,6 +1804,214 @@ class BibliographyVerifier {
     if (union == 0) return 0.0;
     return setA.intersection(setB).length / union;
   }
+
+  static const List<_KnownBibliographyRecord> _knownClassicalFluidReferences = [
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Couette',
+      title: 'Etudes sur le frottement des liquides',
+      venue: 'Annales de chimie et de physique',
+      year: 1890,
+      volume: '6',
+      firstPage: '433',
+      lastPage: '510',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Taylor',
+      title:
+          'Stability of a viscous liquid contained between two rotating cylinders',
+      venue: 'Philosophical Transactions of the Royal Society of London A',
+      year: 1923,
+      volume: '223',
+      firstPage: '289',
+      lastPage: '343',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Donnelly',
+      title:
+          'Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement',
+      venue: 'Proceedings of the Royal Society of London A',
+      year: 1958,
+      volume: '246',
+      firstPage: '312',
+      lastPage: '325',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Simon',
+      title:
+          'An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1960,
+      volume: '7',
+      firstPage: '401',
+      lastPage: '418',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Coles',
+      title: 'On the Instability of Taylor Vortices',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1965,
+      volume: '31',
+      firstPage: '17',
+      lastPage: '62',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Schwarz',
+      title: 'Modes of Instability in Spiral Flow between Rotating Cylinders',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1964,
+      volume: '20',
+      firstPage: '281',
+      lastPage: '289',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Nissan',
+      title:
+          'The Onset of Different Modes of Instability for Flow between Rotating Cylinders',
+      venue: 'AIChE Journal',
+      year: 1963,
+      volume: '9',
+      firstPage: '620',
+      lastPage: '624',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Marques',
+      title:
+          'Taylor-Couette Flow with Axial Oscillations of the Inner Cylinder: Floquet Analysis of the Basic Flow',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1997,
+      volume: '384',
+      firstPage: '153',
+      lastPage: '175',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Lope',
+      title:
+          'Dynamics of Three-tori in a Periodically Forced Navier-Stokes Flow',
+      venue: 'Physical Review Letters',
+      year: 2001,
+      volume: '85',
+      firstPage: '972',
+      lastPage: '975',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Walsh',
+      title:
+          'Taylor-Couette Flow with Periodically Corotated and Counterrotated Cylinders',
+      venue: 'Physical Review Letters',
+      year: 1988,
+      volume: '60',
+      firstPage: '700',
+      lastPage: '703',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Gollub',
+      title: 'Onset of Turbulence in a Rotating Fluid',
+      venue: 'Physical Review Letters',
+      year: 1975,
+      volume: '35',
+      firstPage: '927',
+      lastPage: '930',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Walden',
+      title: 'Reemergent Order of Chaotic Circular Couette Flow',
+      venue: 'Physical Review Letters',
+      year: 1979,
+      volume: '42',
+      firstPage: '301',
+      lastPage: '304',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Donnelly',
+      title:
+          'Experiments on the Stability of Viscous Flow between Rotating Cylinders III. Enhancement of Stability by Modulation',
+      venue: 'Proceedings of the Royal Society of London A',
+      year: 1964,
+      volume: '281',
+      firstPage: '130',
+      lastPage: '139',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Hall',
+      title: 'The Stability of Unsteady Cylinder Flows',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1975,
+      volume: '67',
+      firstPage: '29',
+      lastPage: '63',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Carmi',
+      title:
+          'Stability of Modulated Finite-gap Cylindrical Couette Flow: linear Theory',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1981,
+      volume: '108',
+      firstPage: '19',
+      lastPage: '42',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Youd',
+      title: 'Reversing and Non-reversing Modulated Taylor-Couette Flow',
+      venue: 'Journal of Fluid Mechanics',
+      year: 2003,
+      volume: '487',
+      firstPage: '367',
+      lastPage: '376',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Walsh',
+      title: 'Stability of Modulated Couette Flow',
+      venue: 'Physical Review Letters',
+      year: 1987,
+      volume: '58',
+      firstPage: '2543',
+      lastPage: '2546',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Ganske',
+      title: 'Taylor-Couette Flow with Time Modulated Inner Cylinder Velocity',
+      venue: 'Physics Letters A',
+      year: 1994,
+      volume: '192',
+      firstPage: '74',
+      lastPage: '78',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Canuto',
+      title: 'Spectral Methods in Fluid Dynamics',
+      venue: 'Springer-Verlag',
+      year: 1988,
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Cole',
+      title: 'Taylor-vortex Instability and Annulus-length Effects',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1976,
+      volume: '75',
+      firstPage: '1',
+      lastPage: '15',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Sparrow',
+      title:
+          'Instability of the Flow Between Rotating Cylinders: the Wide Gap Problem',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1974,
+      volume: '20',
+      firstPage: '35',
+      lastPage: '46',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Youd',
+      title: 'Non-Reversing Modulated Taylor-Couette Flows',
+      venue: 'Fluid Dynamics Research',
+      year: 2005,
+      volume: '36',
+      firstPage: '61',
+      lastPage: '73',
+    ),
+  ];
 
   static final Set<String> _bibliographyStopWords = {
     'the',

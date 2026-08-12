@@ -668,6 +668,137 @@ References
       expect(results.single.confidence, CitationMatchConfidence.high);
     });
 
+    test('Crossref 正確候選不在第一順位且年份登錄不同時，可用期刊卷頁證據判定高可信度', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {
+              'items': [
+                {
+                  'title': [
+                    'Pritchard, Stephens, and Donnelly on Population Structure',
+                  ],
+                  'container-title': ['Some Other Journal'],
+                  'published': {
+                    'date-parts': [
+                      [1965],
+                    ],
+                  },
+                  'volume': '31',
+                  'page': '17-62',
+                },
+                {
+                  'title': ['A note on Taylor vortices'],
+                  'container-title': ['Journal of Fluid Mechanics'],
+                  'published': {
+                    'date-parts': [
+                      [1965],
+                    ],
+                  },
+                  'volume': '31',
+                  'page': '1-6',
+                },
+                {
+                  'title': ['On the instability of Taylor vortices'],
+                  'container-title': ['Journal of Fluid Mechanics'],
+                  'published': {
+                    'date-parts': [
+                      [1968],
+                    ],
+                  },
+                  'volume': '31',
+                  'page': '17-62',
+                  'author': [
+                    {'family': 'Coles', 'given': 'D'},
+                  ],
+                },
+              ],
+            },
+          }),
+          200,
+        );
+      });
+
+      final entries = BibliographyVerifier.extractEntries('''
+References
+5.Coles, D., "On the Instability of Taylor Vortices," Journal of Fluid Mechanics 31: 17-62 (1965).
+''');
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(
+        results.single.matchedTitle,
+        'On the instability of Taylor vortices',
+      );
+      expect(results.single.matchedYear, 1968);
+    });
+
+    test('截圖中的 22 筆 Taylor-Couette 經典文獻即使公共資料庫空回應也不被誤判不存在', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        return http.Response(
+          '<html><body>No direct catalog result</body></html>',
+          200,
+        );
+      });
+
+      final entries = BibliographyVerifier.extractEntries('''
+References
+1. Couette, M., "Etudes Sur Le Frottement Des Liquids,"Annalesdechimieetdephysique 6: 433-510 (1890).
+2.Taylor, G.I., "Stability of a Viscous Liquid Contained between Two Rotating Cylinders,"Philosophical Transactions of the Royal Society of London A233: 289-343 (1923). November/December 2010 EXPERIMENTALTECHNIQUES 47
+3. Donnelly, R.J., "Experiment on the Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement,"Proceedingsofthe Royal Society of London A246: 312-325 (1958).
+4.Simon, N.J.,and Donnelly, R.J., "An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders," Journal of Fluid Mechanics 7: 401-418 (1960).
+5.Coles, D., "On the Instability of Taylor Vortices," Journal of Fluid Mechanics 31: 17-62 (1965).
+6.Schwarz, K.W.,Springett, B.E.,and Donnelly, R.J., "Modes of Instability in Spiral Flow between Rotating Cylinders,"Journal of Fluid Mechanics 20: 281-289 (1964).
+7.Nissan A. H.,Nardacci J. L.,and Ho C. Y.,"The Onset of Different Modes of Instability for Flow between Rotating Cylinders,"AIChE Journal 9: 620-624 (1963).
+8.Marques, F.,and Lope, J.M.,"Taylor-Couette Flow with Axial Oscillations of the Inner Cylinder:floquet Analysis of the Basic Flow,"Journal of Fluid Mechanics 384: 153-175 (1997).
+9.Lope, J.M.,and Marques, F.,"Dynamics of Three-tori in a Periodically Forced Navier-Stokes Flow,"Physical Review Letters 85: 972-975 (2001).
+10. Walsh, T.J.,and Donnelly, R.J.,"Couette Fow with Period-ically Corotated and Counterrotated Cylinders,"Physical Review Letters 60: 700-703 (1988).
+11. Gollub J. P.,and Swinney H.L.,"Onset of Turbulent in a Rotating Fluid,"Physical Review Letters 35: 927-930 (1975).
+12. Walden, R.W.,and Donnelly, R.J.,"Reemergent Order of Chaotic Circular Couette Flow,"Physical Review Letters 42: 301-304 (1979).
+13. Donnelly, R.J.,"Experiments on the Stability of Viscous Flow between Rotating Cylinders III. Enhancement of Stability by Modulation,"Proceedings ofthe Royal Society of London A281: 130-139 (1964).
+14. Hall, P.,"The Stability of Unsteady Cylinder Flows,"Journal of Fluid Mechanics 67: 29-63 (1975).
+15. Carmi, S.,and Tustaniwskyj, J.I.,"Stability of Modulated Finite-gap Cylindrical Couette Flow: linear Theory,"Journal of Fluid Mechanics 108: 19-42 (1981).
+16. Youd, A.J.,Willis, A.P.,and Barenghi, C.F."Reversing and Non-reversing Modulated Taylor-Couette Flow,"Journal of Fluid Mechanics 487: 367-376 (2003).
+17. Walsh T. J.,Wagner W. T.,and Donnelly R. J.,"Stability of Modulated Couette Flow,"Physical Review Letters 58: 2543-2546 (1987).
+18. Ganske, A.,Gebhardt, T.,and Grossmann, S.,"Taylor-Couette Flow with Time Modulated Inner Cylinder Velocity,"Physics Letters: Part A192: 74-78 (1994).
+19. Canuto, C.,Hussaini, M.Y.,Quarteroni A.,and Zang, T.A.,Spectral Methods in Fluid Dynamics, Springer-Verlag, New York(1988).
+20. Cole, J.A.,"Taylor-vortex Instability and Annulus-length Effects,"Journal of Fluid Mechanics 75: 1-15 (1976).
+21. Sparrow, E.M.,Munro, W.D.,and Jonsson, V.K.,"Instability of the Flow Between Rotating Cylinders: the Wide Gap Problem,"Journal of Fluid Mechanics 20: 35-46 (1974).
+22. Youd, A.J.,Willis, A.P.,and Barenghi, C.F.,"Non-Reversing Modulated Taylor-Couette Flows,"Fluid Dynamics Research 36: 61-73 (2005). squaresolid 48 EXPERIMENTALTECHNIQUESNovember/December 2010
+''');
+
+      expect(entries.length, 22);
+      expect(entries[1].rawText, isNot(contains('EXPERIMENTAL')));
+      expect(entries[21].rawText, isNot(contains('squaresolid')));
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+      expect(results, hasLength(22));
+      final notHigh = <String>[
+        for (var i = 0; i < results.length; i++)
+          if (results[i].confidence != CitationMatchConfidence.high)
+            '${i + 1}: ${results[i].entry.title}',
+      ];
+      expect(notHigh, isEmpty);
+    });
+
     test('verifyAll 不截斷文獻清單並回報逐筆進度', () async {
       final client = MockClient((request) async {
         return http.Response(
