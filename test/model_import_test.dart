@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:truthlens/core/detection/model_manager.dart';
 
+File _writeMockModel(File file, int byteValue) =>
+    file..writeAsBytesSync(List<int>.filled(128 * 1024, byteValue));
+
 void main() {
   late Directory tempDir;
   late ModelManager manager;
@@ -17,70 +20,85 @@ void main() {
     await tempDir.delete(recursive: true);
   });
 
-  test('ModelManager importLocalModel copies files and updates manifest', () async {
-    // Create mock model and tokenizer files
-    final mockModelFile = File(p.join(tempDir.path, 'mock_model.onnx'))..writeAsStringSync('onnx data');
-    final mockTokFile = File(p.join(tempDir.path, 'mock_tok.json'))..writeAsStringSync('{"vocab": {}}');
+  test(
+    'ModelManager importLocalModel copies files and updates manifest',
+    () async {
+      // Create mock model and tokenizer files
+      final mockModelFile = _writeMockModel(
+        File(p.join(tempDir.path, 'mock_model.onnx')),
+        1,
+      );
+      final mockTokFile = File(p.join(tempDir.path, 'mock_tok.json'))
+        ..writeAsStringSync('{"vocab": {}}');
 
-    final success = await manager.importLocalModel(
-      role: 'transformer',
-      name: 'My Custom Model',
-      modelFile: mockModelFile,
-      tokenizerFile: mockTokFile,
-      tokenizerType: 'bert-wordpiece',
-      aiLabelIndex: 0,
-    );
+      final success = await manager.importLocalModel(
+        role: 'transformer',
+        name: 'My Custom Model',
+        modelFile: mockModelFile,
+        tokenizerFile: mockTokFile,
+        tokenizerType: 'bert-wordpiece',
+        aiLabelIndex: 0,
+      );
 
-    expect(success, isTrue);
-    expect(manager.isInstalled('transformer'), isTrue);
+      expect(success, isTrue);
+      expect(manager.isInstalled('transformer'), isTrue);
 
-    final variants = manager.installedVariants('transformer');
-    expect(variants.length, 1);
-    expect(variants.first.name, 'My Custom Model');
-    expect(variants.first.imported, isTrue);
-    expect(variants.first.tokenizer, 'bert-wordpiece');
-    expect(variants.first.aiLabelIndex, 0);
+      final variants = manager.installedVariants('transformer');
+      expect(variants.length, 1);
+      expect(variants.first.name, 'My Custom Model');
+      expect(variants.first.imported, isTrue);
+      expect(variants.first.tokenizer, 'bert-wordpiece');
+      expect(variants.first.aiLabelIndex, 0);
 
-    // Verify files were copied to models directory
-    final activePath = await manager.activeModelPath('transformer');
-    final tokPath = await manager.activeTokenizerPath('transformer');
+      // Verify files were copied to models directory
+      final activePath = await manager.activeModelPath('transformer');
+      final tokPath = await manager.activeTokenizerPath('transformer');
 
-    expect(activePath, isNotNull);
-    expect(File(activePath!).existsSync(), isTrue);
-    expect(tokPath, isNotNull);
-    expect(File(tokPath!).existsSync(), isTrue);
+      expect(activePath, isNotNull);
+      expect(File(activePath!).existsSync(), isTrue);
+      expect(tokPath, isNotNull);
+      expect(File(tokPath!).existsSync(), isTrue);
 
-    // Verify deletion works for custom model
-    await manager.removeVariant('transformer', variants.first.variantId);
-    expect(manager.isInstalled('transformer'), isFalse);
-    expect(File(activePath).existsSync(), isFalse);
-    expect(File(tokPath).existsSync(), isFalse);
-  });
+      // Verify deletion works for custom model
+      await manager.removeVariant('transformer', variants.first.variantId);
+      expect(manager.isInstalled('transformer'), isFalse);
+      expect(File(activePath).existsSync(), isFalse);
+      expect(File(tokPath).existsSync(), isFalse);
+    },
+  );
 
-  test('ModelManager importLocalModel handles none tokenizer correctly', () async {
-    final mockModelFile = File(p.join(tempDir.path, 'mock_model2.onnx'))..writeAsStringSync('onnx data 2');
+  test(
+    'ModelManager importLocalModel handles none tokenizer correctly',
+    () async {
+      final mockModelFile = _writeMockModel(
+        File(p.join(tempDir.path, 'mock_model2.onnx')),
+        2,
+      );
 
-    final success = await manager.importLocalModel(
-      role: 'transformer',
-      name: 'Custom Model None Tok',
-      modelFile: mockModelFile,
-      tokenizerType: 'none',
-      aiLabelIndex: 1,
-    );
+      final success = await manager.importLocalModel(
+        role: 'transformer',
+        name: 'Custom Model None Tok',
+        modelFile: mockModelFile,
+        tokenizerType: 'none',
+        aiLabelIndex: 1,
+      );
 
-    expect(success, isTrue);
-    final variants = manager.installedVariants('transformer');
-    expect(variants.length, 1);
-    expect(variants.first.tokenizer, 'none');
-    expect(variants.first.tokenizerFileName, isNull);
+      expect(success, isTrue);
+      final variants = manager.installedVariants('transformer');
+      expect(variants.length, 1);
+      expect(variants.first.tokenizer, 'none');
+      expect(variants.first.tokenizerFileName, isNull);
 
-    final tokPath = await manager.activeTokenizerPath('transformer');
-    expect(tokPath, isNull);
-  });
+      final tokPath = await manager.activeTokenizerPath('transformer');
+      expect(tokPath, isNull);
+    },
+  );
 
   test('importLocalModel 計算並儲存 sha256', () async {
-    final mockModelFile = File(p.join(tempDir.path, 'mock_model3.onnx'))
-      ..writeAsStringSync('identical content');
+    final mockModelFile = _writeMockModel(
+      File(p.join(tempDir.path, 'mock_model3.onnx')),
+      3,
+    );
 
     await manager.importLocalModel(
       role: 'transformer',
@@ -95,10 +113,11 @@ void main() {
   });
 
   test('findByHash 找到內容相同的已安裝模型（即使角色不同）', () async {
-    final modelA = File(p.join(tempDir.path, 'a.onnx'))
-      ..writeAsStringSync('same bytes for dedup test');
-    final modelB = File(p.join(tempDir.path, 'b.onnx'))
-      ..writeAsStringSync('same bytes for dedup test'); // 內容相同、檔名不同
+    final modelA = _writeMockModel(File(p.join(tempDir.path, 'a.onnx')), 4);
+    final modelB = _writeMockModel(
+      File(p.join(tempDir.path, 'b.onnx')),
+      4,
+    ); // 內容相同、檔名不同
 
     await manager.importLocalModel(
       role: 'transformer',
@@ -123,9 +142,8 @@ void main() {
 
   test('refreshInstallStates 為舊資料（無 sha256）自動補算雜湊', () async {
     // 模擬「本功能上線前」就已存在、manifest 沒有 sha256 欄位的匯入項目
-    final legacyFile =
-        File(p.join(tempDir.path, 'transformer__legacy_1.onnx'))
-          ..writeAsBytesSync([1, 2, 3, 4, 5]);
+    final legacyFile = File(p.join(tempDir.path, 'transformer__legacy_1.onnx'))
+      ..writeAsBytesSync([1, 2, 3, 4, 5]);
     File(p.join(tempDir.path, 'installed.json')).writeAsStringSync('''
 {
   "transformer": {

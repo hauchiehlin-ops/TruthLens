@@ -16,13 +16,24 @@ import 'model_manager.dart';
 /// 權重（A 40% / B 25% / C 20% / D 15%）會在兩種情況下重新分配：
 /// 1. 引擎不可用（模型未下載或使用者關閉）→ 權重按比例分給可用引擎
 /// 2. ESL 偏差修正 → 降低統計模型 (B) 權重，避免誤判非母語者
-class EnsembleOrchestrator {
+class EnsembleOrchestrator extends ChangeNotifier {
   final List<DetectionEngine> engines;
 
   EnsembleOrchestrator({
     List<DetectionEngine>? engines,
     ModelManager? modelManager,
   }) : engines = engines ?? _defaultEngines(modelManager ?? ModelManager());
+
+  /// 重新掃描後續分析所使用的引擎狀態。
+  ///
+  /// 引擎會在每次 [analyze] 時讀取 ModelManager 的最新使用中變體，
+  /// 這裡同時發出通知，讓監聽器可即時更新模型啟用狀態。
+  Future<void> refreshEngines() async {
+    debugPrint(
+      '[Orchestrator] Engines refreshed - new models will be used in next analysis',
+    );
+    notifyListeners();
+  }
 
   static List<DetectionEngine> _defaultEngines(ModelManager mm) {
     final discovered = <DetectionEngine>[];

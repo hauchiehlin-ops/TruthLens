@@ -21,6 +21,9 @@ class ModelAutoActivationManager {
 
   ModelAutoActivationManager._();
 
+  @visibleForTesting
+  ModelAutoActivationManager.test();
+
   late EnsembleOrchestrator _orchestrator;
   late ModelManager _modelManager;
 
@@ -126,29 +129,6 @@ class ModelActivationEvent {
   @override
   String toString() =>
       'ModelActivationEvent(activated: ${activatedModels.join(', ')}, at: $timestamp)';
-}
-
-/// 擴展 EnsembleOrchestrator，支持動態引擎刷新
-///
-/// **使用方式**（在 analysis_screen.dart 或 input_screen.dart）：
-/// ```dart
-/// final orchestrator = context.read<EnsembleOrchestrator>();
-///
-/// // 當模型下載完成時
-/// await orchestrator.refreshEngines();
-///
-/// // 下次分析自動使用新模型
-/// final result = await orchestrator.analyze(text, l10n);
-/// ```
-extension OrchestratorExtension on EnsembleOrchestrator {
-  /// 重新掃描已安裝的模型，更新可用引擎列表
-  ///
-  /// 呼叫此方法後，[analyze] 方法將使用最新的模型配置。
-  Future<void> refreshEngines() async {
-    debugPrint(
-      '[Orchestrator] Engines refreshed - new models will be used in next analysis',
-    );
-  }
 }
 
 /// UI 集成輔助：在模型下載完成時通知自動激活

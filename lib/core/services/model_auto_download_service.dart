@@ -5,15 +5,15 @@ import 'package:flutter/foundation.dart';
 import '../detection/model_catalog.dart';
 import '../detection/model_catalog_service.dart';
 import '../detection/model_manager.dart';
-import '../detection/model_manager_types.dart';
+import '../detection/model_registry.dart';
 import 'device_performance_service.dart';
 
 /// 模型下載策略
 enum ModelDownloadStrategy {
-  manual,        // 用戶手動下載
-  autoSmall,     // 自動下載小型模型（< 100MB）
-  autoMedium,    // 自動下載中型模型（100-500MB）
-  promptLarge,   // 提示用戶（大型模型）
+  manual, // 用戶手動下載
+  autoSmall, // 自動下載小型模型（< 100MB）
+  autoMedium, // 自動下載中型模型（100-500MB）
+  promptLarge, // 提示用戶（大型模型）
 }
 
 /// 模型下載計畫
@@ -45,7 +45,7 @@ class ModelAutoDownloadService extends ChangeNotifier {
   final DevicePerformanceService deviceService;
 
   List<ModelDownloadPlan> _pendingPlans = [];
-  Map<String, bool> _userApprovals = {}; // role -> 用戶決定
+  final Map<String, bool> _userApprovals = {}; // role -> 用戶決定
   bool _isProcessing = false;
 
   ModelAutoDownloadService({
@@ -113,8 +113,7 @@ class ModelAutoDownloadService extends ChangeNotifier {
     try {
       for (final plan in _pendingPlans) {
         // 檢查用戶決定
-        if (plan.needsUserConfirmation &&
-            _userApprovals[plan.role] != true) {
+        if (plan.needsUserConfirmation && _userApprovals[plan.role] != true) {
           continue;
         }
 
@@ -122,8 +121,10 @@ class ModelAutoDownloadService extends ChangeNotifier {
         if (plan.strategy == ModelDownloadStrategy.manual) continue;
 
         try {
-          final success =
-              await modelManager.downloadVariant(plan.role, plan.variant);
+          final success = await modelManager.downloadVariant(
+            plan.role,
+            plan.variant,
+          );
           if (success) successCount++;
         } catch (e) {
           debugPrint('[ModelAutoDownload] 下載失敗 ${plan.role}: $e');
@@ -179,12 +180,10 @@ class ModelAutoDownloadService extends ChangeNotifier {
     return switch (strategy) {
       ModelDownloadStrategy.autoSmall =>
         '小型模型 ($sizeMb MB)，您的設備支援自動下載（預計 $estimatedTime 秒）',
-      ModelDownloadStrategy.autoMedium =>
-        '中型模型 ($sizeMb MB)，背景下載中...',
+      ModelDownloadStrategy.autoMedium => '中型模型 ($sizeMb MB)，背景下載中...',
       ModelDownloadStrategy.promptLarge =>
         '大型模型 ($sizeMb MB)，需要 $estimatedTime 秒。是否下載？',
-      ModelDownloadStrategy.manual =>
-        '模型可選（$sizeMb MB），您可在設定中手動下載',
+      ModelDownloadStrategy.manual => '模型可選（$sizeMb MB），您可在設定中手動下載',
     };
   }
 }

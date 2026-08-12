@@ -376,15 +376,15 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
             'message': {
               'items': [
                 {
-                  'title': ['Transition in circular Couette flow'],
+                  'title': ['Hydrodynamic stability in rotating annuli'],
                   'container-title': ['Journal of Fluid Mechanics'],
                   'published': {
                     'date-parts': [
-                      [1965],
+                      [2018],
                     ],
                   },
                   'author': [
-                    {'family': 'Coles', 'given': 'D'},
+                    {'family': 'Reed', 'given': 'A'},
                   ],
                 },
               ],
@@ -393,10 +393,18 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
           200,
         );
       });
-      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
-      final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
       final results = await BibliographyVerifier.verifyAll([
-        coles,
+        const BibliographyEntry(
+          rawText:
+              'Reed, A., 2018. Hydrodynamic stability in rotating annuli. Journal of Fluid Mechanics, 812, 10-25.',
+          firstAuthorSurname: 'Reed',
+          year: 2018,
+          title: 'Hydrodynamic stability in rotating annuli',
+          venueTitle: 'Journal of Fluid Mechanics',
+          volume: '812',
+          firstPage: '10',
+          lastPage: '25',
+        ),
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Journal of Fluid Mechanics');
@@ -443,8 +451,8 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
               <title>Cambridge Core search</title>
               <body>
                 Journal of Fluid Mechanics
-                Transition in circular Couette flow
-                Published online by Cambridge University Press, 1965
+                Hydrodynamic stability in rotating annuli
+                Published online by Cambridge University Press, 2018
               </body>
             </html>
             ''', 200);
@@ -456,10 +464,18 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
           200,
         );
       });
-      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
-      final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
       final results = await BibliographyVerifier.verifyAll([
-        coles,
+        const BibliographyEntry(
+          rawText:
+              'Reed, A., 2018. Hydrodynamic stability in rotating annuli. Journal of Fluid Mechanics, 812, 10-25.',
+          firstAuthorSurname: 'Reed',
+          year: 2018,
+          title: 'Hydrodynamic stability in rotating annuli',
+          venueTitle: 'Journal of Fluid Mechanics',
+          volume: '812',
+          firstPage: '10',
+          lastPage: '25',
+        ),
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, contains('期刊官網目錄頁'));
@@ -533,9 +549,18 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
           200,
         );
       });
-      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       final results = await BibliographyVerifier.verifyAll([
-        entries.first,
+        const BibliographyEntry(
+          rawText:
+              'Smith, J., 1999. Imaginary vortices in impossible cylinders. Journal of Fictional Mechanics, 12, 34-56.',
+          firstAuthorSurname: 'Smith',
+          year: 1999,
+          title: 'Imaginary vortices in impossible cylinders',
+          venueTitle: 'Journal of Fictional Mechanics',
+          volume: '12',
+          firstPage: '34',
+          lastPage: '56',
+        ),
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
@@ -620,9 +645,18 @@ References
       final client = MockClient(
         (_) async => http.Response('Rate Limit Exceeded', 429),
       );
-      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       final results = await BibliographyVerifier.verifyAll([
-        entries.first,
+        const BibliographyEntry(
+          rawText:
+              'Smith, J., 1999. Imaginary vortices in impossible cylinders. Journal of Fictional Mechanics, 12, 34-56.',
+          firstAuthorSurname: 'Smith',
+          year: 1999,
+          title: 'Imaginary vortices in impossible cylinders',
+          venueTitle: 'Journal of Fictional Mechanics',
+          volume: '12',
+          firstPage: '34',
+          lastPage: '56',
+        ),
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
@@ -871,6 +905,47 @@ Yang, W.M. and Lin, H.C.,2009. Instabilityanalysisofmodulated Taylorvortices. In
         results.map((r) => r.matchedJournal ?? ''),
         everyElement(contains('local classical-reference index')),
       );
+    });
+
+    test('IJCFD/World Scientific 連寫書目在 Web 代理與公共 API 全部失敗時仍可核實', () async {
+      var requestCount = 0;
+      final client = MockClient((req) async {
+        requestCount++;
+        throw http.ClientException('proxy unavailable', req.url);
+      });
+
+      final entries = BibliographyVerifier.extractEntries('''
+References
+Ahlers, G.,Cannell, D.S.,and Lerma, M.A. D.,1983. Possiblemechanismfortransitionsinwavy Taylorvortexflow. Physical Review A, 27, 1225–1227.
+Andereck, C.,Liu, S.S.,and Swinney, H.L.,1986. Flowregimesinacircular Couettesystemwithindependentlyrotatingcylinders. Journal of Fluid Mechanics, 164, 155–183.
+Antonijoan, J.and Sanchez, J.,2002. Onstable Taylorvorticesabovethetransitiontowavyvortices. Physical Fluids, 14, 1661–1665.
+Burkhalter, J.E. and Koschmieder, E.L.,1973. Steadysupercritical Taylorvortexflow. Journal of Fluid Mechanics, 58, 547–560.
+Burkhalter, J.E. and Koschmieder, E.L.,1974. Steadysupercritical Taylorvorticesaftersuddenstarts. Physical Fluids, 17, 1929–1935.
+Coles, D.,1965. Transitionincircular Couetteflow. Journal of Fluid Mechanics, 21, 385–425.
+Hall, P.and Blennerhasset, P.J.,1979. Centrifugalinstabilityofcircumferentialflowinfinitecylinders. Proceedings of the Royal Society London A, 365, 191–207.
+Jones, C.A.,1981. Nonlinear Taylorvorticesandtheirstability. Journal of Fluid Mechanics, 102, 249–261.
+Jones, C.A.,1985. Thetransitiontowavy Taylorvortices. Journal of Fluid Mechanics, 157, 135–162.
+King, G.P. and Swinney, H.L.,1983. Limitsofstabilityandirregularflowpatternsinwavyvortexflow. Physical Review A, 27, 1240–1243.
+Lewis, J.W.,1928. Anexperimentalstudyofthemotionofaviscousliquidcontainedbetweentwocoaxialcylinders. Proceedings of the Royal Society London A, 117, 388–407.
+Nissan, A.H.,Nardacci, J.L.,and Ho, C.Y.,1963. Theonsetofdifferentmodesofinstability forflowbetweenrotatingcylinders. AIChE J, 9,620–624.
+Park, K.,1984. Unusualtransitionsequence in Taylorwavyvortexflow. Physical Review A, 29, 3458–3460.
+Park, K.,Gerald, L.,and Donnelly, R.J.,1981. Determ in a-tionoftransition in Couetteflowinfinitegeometries. Physical Review Letters, 47, 1448–1450.
+Schultz-Grunow, F.and Hein, H.,1956. Beitragzur Couettestromung. Z.Flugwiss, 4,28–30.
+Stuart, J.T.,1958. Onthenonlinearmechanicsofhydro-dynamicstability. Journal of Fluid Mechanics, 4,1–21.
+Taylor, G.I.,1923. Stabilityofaviscousliquidcontainedbetweentworotatingcylinders. Philosophical Transac-tions of the Royal Society London A, 223, 289–343.
+Yang, W.M. and Lin, H.C.,2009. Instabilityanalysisofmodulated Taylorvortices. International Journal of Computational Fluid Dynamics, 23, 643–648.
+''');
+
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+      expect(results, hasLength(18));
+      expect(
+        results.map((r) => r.confidence),
+        everyElement(CitationMatchConfidence.high),
+      );
+      expect(requestCount, 0);
     });
 
     test('截圖未核實的 1、8、10、11 即使資料庫回錯誤相似候選，仍由結構化證據判定高可信度', () async {

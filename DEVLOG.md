@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-13（第三十八次更新）— 修復：文獻核實零通過的 Web 連線與部署根因
+
+**概述**
+回應同一批 18 筆已確認存在文獻在 Web 端全數顯示未核實的問題：
+1. 根因一是本地可信書目索引雖已命中，卻錯把 Crossref 與 OpenAlex 都必須成功回應設為啟用前置條件；實機只要發生 CORS、逾時、代理失敗就會讓本地證據一併失效
+2. 根因二是專案有兩條 main production Vercel workflow 同時發布，其中一條會把 Flutter 已複製的正確 `web/vercel.json` 覆蓋成根目錄 SPA catch-all 設定，使 `/api/proxy` 被導向 `index.html`
+3. 本地可信索引改為只要篇名、第一作者、年份、期刊、卷頁的嚴格結構化證據達標即直接核實，不再受外部服務可用性影響
+4. Web 端 Crossref/OpenAlex 改走官方原生 CORS API，期刊官網頁面才使用同源代理，降低單點失敗
+5. 部署流程改為只有 `deploy_vercel.yml` 可從 main 發布 production；另一條 workflow 只負責 PR preview，並不再覆蓋 Web 專用 Vercel 路由檔
+6. 已知本地文獻命中時略過不必要的逐筆 150ms 節流，同時提升速度
+7. 新增回歸測試，模擬代理與公共 API 全數拋出連線錯誤，18 筆 IJCFD/World Scientific OCR 連寫文獻仍必須全數高可信通過，且外部請求數為 0
+8. 修復原有 Web build 編譯阻塞：補上模型登記表匯入、將 `refreshEngines` 納入協調器正式介面，並更新模型匯入測試檔案以符合 100KB 完整性門檻，確保 CI 可實際發布本次修復
+
+**修復內容**：✅ **完成**
+
+- 已知可信文獻不再因 Crossref/OpenAlex/代理任一失效而整批誤報未核實
+- Web 正式部署不再由兩條 workflow 競爭覆蓋，`/api/proxy` 路由會保留於正確佈署產物
+
+---
+
 ## 2026-08-13（第三十七次更新）— 修復：跨期刊文獻核實支援 IJCFD/World Scientific OCR 連寫清單
 
 **概述**

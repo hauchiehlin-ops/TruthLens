@@ -106,14 +106,15 @@ class BibliographyVerifier {
   static String _getProxiedUrl(String targetUrl) {
     if (!kIsWeb) return targetUrl;
 
-    // 優先使用同源代理，其次使用 Vercel 代理
-    try {
-      final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
-      return Uri.base.resolve(proxyPath).toString();
-    } catch (_) {
-      // 回退到 Vercel 代理
-      return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+    // Crossref 與 OpenAlex 兩個官方 API 都允許瀏覽器跨網域 GET。
+    // 直連可避免文獻核實被同源代理的部署、驗證或暫時故障連帶阻斷。
+    final targetHost = Uri.tryParse(targetUrl)?.host.toLowerCase();
+    if (targetHost == 'api.crossref.org' || targetHost == 'api.openalex.org') {
+      return targetUrl;
     }
+
+    final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+    return Uri.base.resolve(proxyPath).toString();
   }
 
   static final RegExp _sectionHeading = RegExp(
@@ -957,10 +958,12 @@ class BibliographyVerifier {
         ),
       );
       for (var i = 0; i < targetEntries.length; i++) {
-        if (i > 0) {
+        final entry = targetEntries[i];
+        final isLocallyVerifiable =
+            _verifyKnownClassicalReference(entry) != null;
+        if (i > 0 && !isLocallyVerifiable) {
           await Future.delayed(const Duration(milliseconds: 150));
         }
-        final entry = targetEntries[i];
         onProgress?.call(
           BibliographyVerificationProgress(
             completed: i,
@@ -1004,6 +1007,10 @@ class BibliographyVerifier {
       entry,
     );
     final trustedLocalResult = _verifyKnownClassicalReference(entry);
+
+    // 內建可信索引需同時通過篇名、作者、年份、期刊與卷頁的嚴格比對。
+    // 命中後即可核實，不應再以 Crossref/OpenAlex 連線成功作為前置條件。
+    if (trustedLocalResult != null) return trustedLocalResult;
 
     if (entry.doi != null) {
       try {
@@ -1272,14 +1279,6 @@ class BibliographyVerifier {
         return journalCatalogResult;
       }
       bestUncertainCandidate ??= journalCatalogResult;
-    }
-
-    // 本地可信書目索引只作為補救層：公共資料庫/期刊頁已嘗試但未提供可靠候選時，
-    // 再用篇名、作者、年份、卷頁共同吻合的經典文獻索引避免把真實舊文獻誤判為不存在。
-    if (trustedLocalResult != null &&
-        crossrefSearchSucceeded &&
-        openAlexSearchSucceeded) {
-      return trustedLocalResult;
     }
 
     // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名

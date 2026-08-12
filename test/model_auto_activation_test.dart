@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/detection/model_auto_activation.dart';
-import 'package:truthlens/core/detection/model_manager_types.dart';
+import 'package:truthlens/core/detection/model_manager.dart';
 import 'package:truthlens/core/detection/orchestrator.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
     setUp(() {
       mockOrchestrator = MockEnsembleOrchestrator();
       mockModelManager = MockModelManager();
-      manager = ModelAutoActivationManager();
+      manager = ModelAutoActivationManager.test();
       manager.init(
         orchestrator: mockOrchestrator,
         modelManager: mockModelManager,
@@ -75,10 +75,7 @@ void main() {
       );
 
       await Future.delayed(const Duration(milliseconds: 100));
-      expect(
-        manager.activationEvent.value?.activatedModels?.length,
-        2,
-      );
+      expect(manager.activationEvent.value?.activatedModels.length, 2);
 
       // 移除一個模型
       mockModelManager.simulateModelRemoved(
@@ -157,21 +154,14 @@ void main() {
 
 // Mock 類別（實裝詳見測試文件）
 
-class MockEnsembleOrchestrator {
+class MockEnsembleOrchestrator extends EnsembleOrchestrator {
   bool refreshEnginesCalled = false;
   int refreshEnginesCallCount = 0;
   bool shouldUseRefreshedEngines = false;
 
-  final List<VoidCallback> _listeners = [];
+  MockEnsembleOrchestrator() : super(engines: const []);
 
-  void addListener(VoidCallback callback) => _listeners.add(callback);
-
-  void notifyListeners() {
-    for (final listener in _listeners) {
-      listener();
-    }
-  }
-
+  @override
   Future<void> refreshEngines() async {
     refreshEnginesCalled = true;
     refreshEnginesCallCount++;
@@ -180,42 +170,42 @@ class MockEnsembleOrchestrator {
   }
 }
 
-class MockModelManager {
+class MockModelManager extends ModelManager {
   final List<(String role, String variantId)> _installed = [];
-  final List<VoidCallback> _listeners = [];
 
   void simulateModelInstalled({
     required String role,
     required String variantId,
   }) {
     _installed.add((role, variantId));
-    _notifyListeners();
+    notifyListeners();
   }
 
-  void simulateModelRemoved({
-    required String role,
-    required String variantId,
-  }) {
+  void simulateModelRemoved({required String role, required String variantId}) {
     _installed.removeWhere((item) => item.$1 == role && item.$2 == variantId);
-    _notifyListeners();
+    notifyListeners();
   }
 
-  void addListener(VoidCallback callback) => _listeners.add(callback);
-
-  void removeListener(VoidCallback callback) => _listeners.remove(callback);
-
-  void _notifyListeners() {
-    for (final listener in _listeners) {
-      listener();
-    }
-  }
-
+  @override
   Iterable<RoleState> get roles => _installed
-      .map((item) => RoleState(role: item.$1))
-      .toList()
-      .cast<RoleState>();
+      .map((item) => item.$1)
+      .toSet()
+      .map((role) => RoleState(role: role));
 
-  List<InstalledModel> installedVariants(String role) => const [];
+  @override
+  List<InstalledModel> installedVariants(String role) => _installed
+      .where((item) => item.$1 == role)
+      .map(
+        (item) => InstalledModel(
+          role: item.$1,
+          variantId: item.$2,
+          fileName: '${item.$2}.onnx',
+          version: '1.0.0',
+          sizeBytes: 1,
+        ),
+      )
+      .toList();
 
+  @override
   Future<void> setActive(String role, String variantId) async {}
 }
