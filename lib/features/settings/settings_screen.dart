@@ -193,7 +193,7 @@ class SettingsScreen extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),
-                        child: const Text('關閉'),
+                        child: Text(l10n.commonClose),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -386,7 +386,9 @@ class _WebOcrSettingsState extends State<_WebOcrSettings> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('設定保存失敗：$e'),
+            content: Text(
+              AppLocalizations.of(context).settingsSaveFailed('$e'),
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

@@ -129,6 +129,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get analysisDoneSemantics => '已完成';
 
   @override
+  String analysisPreliminaryResult(int percent) {
+    return '初步結果：AI 機率 $percent%';
+  }
+
+  @override
+  String analysisPreliminaryResultRefining(int percent) {
+    return '初步結果：AI 機率 $percent%（精修中…）';
+  }
+
+  @override
   String get engineNameAdversarialFull => '對抗式防禦（改寫偵測）';
 
   @override
@@ -230,6 +240,28 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String modelListFailedPrefix(String error) {
     return '失敗：$error';
+  }
+
+  @override
+  String get modelCatalogLoadFailed => '無法載入模型目錄';
+
+  @override
+  String get modelCatalogEmpty => '暫無可用模型';
+
+  @override
+  String modelDownloadPathChip(String label) {
+    return '$label下載路徑';
+  }
+
+  @override
+  String get modelDownloadPathModelFile => '模型檔';
+
+  @override
+  String get modelDownloadPathCopied => '下載路徑已複製';
+
+  @override
+  String settingsSaveFailed(String error) {
+    return '設定保存失敗：$error';
   }
 
   @override
@@ -428,6 +460,9 @@ class AppLocalizationsZh extends AppLocalizations {
       '匯入本機的自訂 ONNX 模型與 Tokenizer 設定並進行推論測試';
 
   @override
+  String get modelImportWebUnsupported => '匯入自訂模型尚未支援於網頁版，請使用 App 版本。';
+
+  @override
   String get settingsLanguagePackTitle => '語言包';
 
   @override
@@ -559,7 +594,135 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportEngineLoadFailedBadge => '載入失敗';
 
   @override
+  String get reportEngineAnalysisLevelTitle => '引擎分析層級';
+
+  @override
+  String get reportDetailAnalysisTitle => '詳細分析';
+
+  @override
+  String get reportNoEngineData => '尚無引擎分析數據';
+
+  @override
+  String get reportEngineNotParticipated => '未參與';
+
+  @override
+  String get reportAiContentReportTitle => 'AI 內容檢測報告';
+
+  @override
+  String reportAnalysisTimeLabel(String time) {
+    return '分析時間：$time';
+  }
+
+  @override
+  String get reportDownloadPdfButton => '下載 PDF';
+
+  @override
+  String get reportSuspiciousLocationsTitle => '可疑內容位置';
+
+  @override
+  String reportSentenceCount(int count) {
+    return '共 $count 句';
+  }
+
+  @override
+  String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String reportConfidenceLowTooltip(int threshold, int available, int total) {
+    return '信心度低：可用模型權重不足 60%（$threshold% 閾值）。$available/$total 引擎參與投票。建議參考各引擎詳細分析結果。';
+  }
+
+  @override
+  String reportConfidenceHighTooltip(int available, int total, int threshold) {
+    return '信心度高：$available/$total 個檢測模型達成共識（$threshold% 以上權重同意此判定）';
+  }
+
+  @override
+  String reportConfidenceLowBadge(int available, int total) {
+    return '信心度低（$available/$total）';
+  }
+
+  @override
+  String reportConfidenceHighBadge(int available, int total) {
+    return '信心度高（$available/$total）';
+  }
+
+  @override
+  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+
+  @override
+  String get reportMetricElapsed => '分析耗時';
+
+  @override
+  String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricReliability => '可信度';
+
+  @override
+  String get reportReliabilityLow => '低';
+
+  @override
+  String get reportReliabilityHigh => '高';
+
+  @override
+  String get reportReliabilityNeedsReview => '需人工驗證';
+
+  @override
+  String get reportReliabilityHighTrust => '高度可信';
+
+  @override
   String get reportSentenceAnalysisTitle => '逐句分析';
+
+  @override
+  String get suspiciousFilterAll => '可疑';
+
+  @override
+  String get suspiciousFilterHigh => '高危';
+
+  @override
+  String get suspiciousFilterMedium => '中等';
+
+  @override
+  String get suspiciousExcludedTooltip => '已排除單一字母、頁碼、章節序號與過短 OCR/PDF 片段。';
+
+  @override
+  String suspiciousCount(int count) {
+    return '$count 項';
+  }
+
+  @override
+  String get suspiciousEmpty => '無可疑內容';
+
+  @override
+  String get suspiciousRiskHigh => '高';
+
+  @override
+  String get suspiciousRiskMedium => '中';
+
+  @override
+  String get suspiciousReasonHighModelSignals => '多個模型訊號高度偏向 AI';
+
+  @override
+  String get suspiciousReasonSentenceSignal => '句級模型訊號偏高';
+
+  @override
+  String suspiciousOriginalLocation(String location) {
+    return '原文位置 $location';
+  }
+
+  @override
+  String suspiciousOriginalLocationWithReason(String location, String reason) {
+    return '原文位置 $location · $reason';
+  }
+
+  @override
+  String suspiciousSentenceNumber(int number) {
+    return '句子 #$number';
+  }
+
+  @override
+  String get suspiciousEvidenceLabel => '判定依據：';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -662,6 +825,34 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String reportBibTruncated(int max, int count) {
     return '將逐筆核實全部文獻（共偵測到 $count 筆）';
+  }
+
+  @override
+  String reportBibCompletedPreview(int count) {
+    return '已完成 $count 筆，結果會持續更新。';
+  }
+
+  @override
+  String reportBibProgress(int completed, int total, String current) {
+    return '進度 $completed/$total，$current';
+  }
+
+  @override
+  String reportBibProgressCurrent(String text) {
+    return '目前：$text';
+  }
+
+  @override
+  String get reportBibProgressFinalizing => '正在整理結果';
+
+  @override
+  String reportBibUncertainWithCandidate(String base, String candidate) {
+    return '$base：找到相似候選「$candidate」，但作者、年份或篇名未達可靠匹配門檻。';
+  }
+
+  @override
+  String reportBibUncertainNoReliableResponse(String base) {
+    return '$base：查核來源無可靠回應或條目資訊不足，系統不將此文獻視為已核實存在。';
   }
 
   @override
@@ -1368,6 +1559,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get analysisDoneSemantics => '已完成';
 
   @override
+  String analysisPreliminaryResult(int percent) {
+    return '初步结果：AI 几率 $percent%';
+  }
+
+  @override
+  String analysisPreliminaryResultRefining(int percent) {
+    return '初步结果：AI 几率 $percent%（精修中…）';
+  }
+
+  @override
   String get engineNameAdversarialFull => '对抗式防御（改写侦测）';
 
   @override
@@ -1469,6 +1670,28 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String modelListFailedPrefix(String error) {
     return '失败：$error';
+  }
+
+  @override
+  String get modelCatalogLoadFailed => '无法加载模型目录';
+
+  @override
+  String get modelCatalogEmpty => '暂无可用模型';
+
+  @override
+  String modelDownloadPathChip(String label) {
+    return '$label下载路径';
+  }
+
+  @override
+  String get modelDownloadPathModelFile => '模型文件';
+
+  @override
+  String get modelDownloadPathCopied => '下载路径已复制';
+
+  @override
+  String settingsSaveFailed(String error) {
+    return '设置保存失败：$error';
   }
 
   @override
@@ -1667,6 +1890,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '导入本机的自订 ONNX 模型与 Tokenizer 设置并进行推论测试';
 
   @override
+  String get modelImportWebUnsupported => '导入自定义模型尚未支持网页版，请使用 App 版本。';
+
+  @override
   String get settingsLanguagePackTitle => '语言包';
 
   @override
@@ -1798,7 +2024,135 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportEngineLoadFailedBadge => '加载失败';
 
   @override
+  String get reportEngineAnalysisLevelTitle => '引擎分析层级';
+
+  @override
+  String get reportDetailAnalysisTitle => '详细分析';
+
+  @override
+  String get reportNoEngineData => '暂无引擎分析数据';
+
+  @override
+  String get reportEngineNotParticipated => '未参与';
+
+  @override
+  String get reportAiContentReportTitle => 'AI 内容检测报告';
+
+  @override
+  String reportAnalysisTimeLabel(String time) {
+    return '分析时间：$time';
+  }
+
+  @override
+  String get reportDownloadPdfButton => '下载 PDF';
+
+  @override
+  String get reportSuspiciousLocationsTitle => '可疑内容位置';
+
+  @override
+  String reportSentenceCount(int count) {
+    return '共 $count 句';
+  }
+
+  @override
+  String get reportAiProbabilityPrefix => 'AI 几率：';
+
+  @override
+  String reportConfidenceLowTooltip(int threshold, int available, int total) {
+    return '信心度低：可用模型权重不足 60%（$threshold% 阈值）。$available/$total 引擎参与投票。建议参考各引擎详细分析结果。';
+  }
+
+  @override
+  String reportConfidenceHighTooltip(int available, int total, int threshold) {
+    return '信心度高：$available/$total 个检测模型达成共识（$threshold% 以上权重同意此判定）';
+  }
+
+  @override
+  String reportConfidenceLowBadge(int available, int total) {
+    return '信心度低（$available/$total）';
+  }
+
+  @override
+  String reportConfidenceHighBadge(int available, int total) {
+    return '信心度高（$available/$total）';
+  }
+
+  @override
+  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+
+  @override
+  String get reportMetricElapsed => '分析耗时';
+
+  @override
+  String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricReliability => '可信度';
+
+  @override
+  String get reportReliabilityLow => '低';
+
+  @override
+  String get reportReliabilityHigh => '高';
+
+  @override
+  String get reportReliabilityNeedsReview => '需人工验证';
+
+  @override
+  String get reportReliabilityHighTrust => '高度可信';
+
+  @override
   String get reportSentenceAnalysisTitle => '逐句分析';
+
+  @override
+  String get suspiciousFilterAll => '可疑';
+
+  @override
+  String get suspiciousFilterHigh => '高危';
+
+  @override
+  String get suspiciousFilterMedium => '中等';
+
+  @override
+  String get suspiciousExcludedTooltip => '已排除单一字母、页码、章节序号与过短 OCR/PDF 片段。';
+
+  @override
+  String suspiciousCount(int count) {
+    return '$count 项';
+  }
+
+  @override
+  String get suspiciousEmpty => '无可疑内容';
+
+  @override
+  String get suspiciousRiskHigh => '高';
+
+  @override
+  String get suspiciousRiskMedium => '中';
+
+  @override
+  String get suspiciousReasonHighModelSignals => '多个模型信号高度偏向 AI';
+
+  @override
+  String get suspiciousReasonSentenceSignal => '句级模型信号偏高';
+
+  @override
+  String suspiciousOriginalLocation(String location) {
+    return '原文位置 $location';
+  }
+
+  @override
+  String suspiciousOriginalLocationWithReason(String location, String reason) {
+    return '原文位置 $location · $reason';
+  }
+
+  @override
+  String suspiciousSentenceNumber(int number) {
+    return '句子 #$number';
+  }
+
+  @override
+  String get suspiciousEvidenceLabel => '判定依据：';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -1901,6 +2255,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String reportBibTruncated(int max, int count) {
     return '将逐笔核实全部文献（共侦测到 $count 笔）';
+  }
+
+  @override
+  String reportBibCompletedPreview(int count) {
+    return '已完成 $count 笔，结果会持续更新。';
+  }
+
+  @override
+  String reportBibProgress(int completed, int total, String current) {
+    return '进度 $completed/$total，$current';
+  }
+
+  @override
+  String reportBibProgressCurrent(String text) {
+    return '目前：$text';
+  }
+
+  @override
+  String get reportBibProgressFinalizing => '正在整理结果';
+
+  @override
+  String reportBibUncertainWithCandidate(String base, String candidate) {
+    return '$base：找到相似候选「$candidate」，但作者、年份或篇名未达可靠匹配门槛。';
+  }
+
+  @override
+  String reportBibUncertainNoReliableResponse(String base) {
+    return '$base：查核来源无可靠响应或条目信息不足，系统不将此文献视为已核实存在。';
   }
 
   @override
@@ -2607,6 +2989,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get analysisDoneSemantics => '已完成';
 
   @override
+  String analysisPreliminaryResult(int percent) {
+    return '初步結果：AI 機率 $percent%';
+  }
+
+  @override
+  String analysisPreliminaryResultRefining(int percent) {
+    return '初步結果：AI 機率 $percent%（精修中…）';
+  }
+
+  @override
   String get engineNameAdversarialFull => '對抗式防禦（改寫偵測）';
 
   @override
@@ -2708,6 +3100,28 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String modelListFailedPrefix(String error) {
     return '失敗：$error';
+  }
+
+  @override
+  String get modelCatalogLoadFailed => '無法載入模型目錄';
+
+  @override
+  String get modelCatalogEmpty => '暫無可用模型';
+
+  @override
+  String modelDownloadPathChip(String label) {
+    return '$label下載路徑';
+  }
+
+  @override
+  String get modelDownloadPathModelFile => '模型檔';
+
+  @override
+  String get modelDownloadPathCopied => '下載路徑已複製';
+
+  @override
+  String settingsSaveFailed(String error) {
+    return '設定保存失敗：$error';
   }
 
   @override
@@ -2906,6 +3320,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '匯入本機的自訂 ONNX 模型與 Tokenizer 設定並進行推論測試';
 
   @override
+  String get modelImportWebUnsupported => '匯入自訂模型尚未支援於網頁版，請使用 App 版本。';
+
+  @override
   String get settingsLanguagePackTitle => '語言包';
 
   @override
@@ -3037,7 +3454,135 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportEngineLoadFailedBadge => '載入失敗';
 
   @override
+  String get reportEngineAnalysisLevelTitle => '引擎分析層級';
+
+  @override
+  String get reportDetailAnalysisTitle => '詳細分析';
+
+  @override
+  String get reportNoEngineData => '尚無引擎分析數據';
+
+  @override
+  String get reportEngineNotParticipated => '未參與';
+
+  @override
+  String get reportAiContentReportTitle => 'AI 內容檢測報告';
+
+  @override
+  String reportAnalysisTimeLabel(String time) {
+    return '分析時間：$time';
+  }
+
+  @override
+  String get reportDownloadPdfButton => '下載 PDF';
+
+  @override
+  String get reportSuspiciousLocationsTitle => '可疑內容位置';
+
+  @override
+  String reportSentenceCount(int count) {
+    return '共 $count 句';
+  }
+
+  @override
+  String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String reportConfidenceLowTooltip(int threshold, int available, int total) {
+    return '信心度低：可用模型權重不足 60%（$threshold% 閾值）。$available/$total 引擎參與投票。建議參考各引擎詳細分析結果。';
+  }
+
+  @override
+  String reportConfidenceHighTooltip(int available, int total, int threshold) {
+    return '信心度高：$available/$total 個檢測模型達成共識（$threshold% 以上權重同意此判定）';
+  }
+
+  @override
+  String reportConfidenceLowBadge(int available, int total) {
+    return '信心度低（$available/$total）';
+  }
+
+  @override
+  String reportConfidenceHighBadge(int available, int total) {
+    return '信心度高（$available/$total）';
+  }
+
+  @override
+  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+
+  @override
+  String get reportMetricElapsed => '分析耗時';
+
+  @override
+  String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricReliability => '可信度';
+
+  @override
+  String get reportReliabilityLow => '低';
+
+  @override
+  String get reportReliabilityHigh => '高';
+
+  @override
+  String get reportReliabilityNeedsReview => '需人工驗證';
+
+  @override
+  String get reportReliabilityHighTrust => '高度可信';
+
+  @override
   String get reportSentenceAnalysisTitle => '逐句分析';
+
+  @override
+  String get suspiciousFilterAll => '可疑';
+
+  @override
+  String get suspiciousFilterHigh => '高危';
+
+  @override
+  String get suspiciousFilterMedium => '中等';
+
+  @override
+  String get suspiciousExcludedTooltip => '已排除單一字母、頁碼、章節序號與過短 OCR/PDF 片段。';
+
+  @override
+  String suspiciousCount(int count) {
+    return '$count 項';
+  }
+
+  @override
+  String get suspiciousEmpty => '無可疑內容';
+
+  @override
+  String get suspiciousRiskHigh => '高';
+
+  @override
+  String get suspiciousRiskMedium => '中';
+
+  @override
+  String get suspiciousReasonHighModelSignals => '多個模型訊號高度偏向 AI';
+
+  @override
+  String get suspiciousReasonSentenceSignal => '句級模型訊號偏高';
+
+  @override
+  String suspiciousOriginalLocation(String location) {
+    return '原文位置 $location';
+  }
+
+  @override
+  String suspiciousOriginalLocationWithReason(String location, String reason) {
+    return '原文位置 $location · $reason';
+  }
+
+  @override
+  String suspiciousSentenceNumber(int number) {
+    return '句子 #$number';
+  }
+
+  @override
+  String get suspiciousEvidenceLabel => '判定依據：';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -3140,6 +3685,34 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String reportBibTruncated(int max, int count) {
     return '將逐筆核實全部文獻（共偵測到 $count 筆）';
+  }
+
+  @override
+  String reportBibCompletedPreview(int count) {
+    return '已完成 $count 筆，結果會持續更新。';
+  }
+
+  @override
+  String reportBibProgress(int completed, int total, String current) {
+    return '進度 $completed/$total，$current';
+  }
+
+  @override
+  String reportBibProgressCurrent(String text) {
+    return '目前：$text';
+  }
+
+  @override
+  String get reportBibProgressFinalizing => '正在整理結果';
+
+  @override
+  String reportBibUncertainWithCandidate(String base, String candidate) {
+    return '$base：找到相似候選「$candidate」，但作者、年份或篇名未達可靠匹配門檻。';
+  }
+
+  @override
+  String reportBibUncertainNoReliableResponse(String base) {
+    return '$base：查核來源無可靠回應或條目資訊不足，系統不將此文獻視為已核實存在。';
   }
 
   @override

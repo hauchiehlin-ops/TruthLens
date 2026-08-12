@@ -49,6 +49,7 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
   }
 
   void _showEngineDetails(EngineScore score) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -71,42 +72,41 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'AI 概率：${(score.aiProbability * 100).round()}%',
-              style: Theme.of(ctx).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              '${l10n.reportAiProbabilityPrefix}${(score.aiProbability * 100).round()}%',
+              style: Theme.of(
+                ctx,
+              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
-              score.available ? '狀態：運作正常' : '狀態：未安裝',
+              score.available
+                  ? l10n.reportReliabilityHighTrust
+                  : l10n.reportEngineNotInstalled,
               style: Theme.of(ctx).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
             Text(
-              '權重：${(score.weight * 100).round()}%',
+              '${l10n.reportEngineWeightLabel}: ${(score.weight * 100).round()}%',
               style: Theme.of(ctx).textTheme.bodySmall,
             ),
             if (score.reasons.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
-                '判定依據：',
-                style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                l10n.suspiciousEvidenceLabel,
+                style: Theme.of(
+                  ctx,
+                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               for (final reason in score.reasons.take(3))
-                Text(
-                  '• $reason',
-                  style: Theme.of(ctx).textTheme.bodySmall,
-                ),
+                Text('• $reason', style: Theme.of(ctx).textTheme.bodySmall),
             ],
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('關閉'),
+            child: Text(l10n.commonClose),
           ),
         ],
       ),
@@ -166,7 +166,10 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
               child: GestureDetector(
                 onTap: () => _showEngineDetails(score),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     color: isHighlighted
@@ -192,17 +195,16 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
                       Text(
                         score.engineName,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight:
-                                  isHighlighted ? FontWeight.bold : null,
-                            ),
+                          fontWeight: isHighlighted ? FontWeight.bold : null,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${(score.aiProbability * 100).round()}%',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: color,
-                            ),
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
                       ),
                       if (!isAvailable)
                         Padding(
@@ -233,16 +235,16 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
               Text(
                 widget.verdict.label(l10n),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: scheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: scheme.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 '${(widget.overallProbability * 100).round()}% AI',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onPrimaryContainer,
-                    ),
+                  color: scheme.onPrimaryContainer,
+                ),
               ),
             ],
           ),
@@ -293,11 +295,15 @@ class _RadarChartPainter extends CustomPainter {
 
       final axisLinePaint = highlightedIndex == i
           ? (Paint()
-            ..strokeWidth = 1.5
-            ..color = colorScheme.primary)
+              ..strokeWidth = 1.5
+              ..color = colorScheme.primary)
           : axisPaint;
 
-      canvas.drawLine(center, Offset(center.dx + dx, center.dy + dy), axisLinePaint);
+      canvas.drawLine(
+        center,
+        Offset(center.dx + dx, center.dy + dy),
+        axisLinePaint,
+      );
     }
 
     // 繪製雷達數據多邊形
@@ -311,8 +317,9 @@ class _RadarChartPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < scores.length; i++) {
       final angle = (i / axisCount) * 2 * math.pi - math.pi / 2;
-      final score =
-          scores[i].available ? scores[i].aiProbability : 0.0; // 未安裝引擎設為 0
+      final score = scores[i].available
+          ? scores[i].aiProbability
+          : 0.0; // 未安裝引擎設為 0
       final r = radius * score;
       final x = center.dx + math.cos(angle) * r;
       final y = center.dy + math.sin(angle) * r;
@@ -335,8 +342,7 @@ class _RadarChartPainter extends CustomPainter {
 
     for (int i = 0; i < scores.length; i++) {
       final angle = (i / axisCount) * 2 * math.pi - math.pi / 2;
-      final score =
-          scores[i].available ? scores[i].aiProbability : 0.0;
+      final score = scores[i].available ? scores[i].aiProbability : 0.0;
       final r = radius * score;
       final x = center.dx + math.cos(angle) * r;
       final y = center.dy + math.sin(angle) * r;
@@ -344,9 +350,7 @@ class _RadarChartPainter extends CustomPainter {
     }
 
     // 繪製軸標籤
-    final textPaint = TextPainter(
-      textDirection: TextDirection.ltr,
-    );
+    final textPaint = TextPainter(textDirection: TextDirection.ltr);
 
     for (int i = 0; i < scores.length; i++) {
       final angle = (i / axisCount) * 2 * math.pi - math.pi / 2;

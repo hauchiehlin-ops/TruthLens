@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
+
 /// 「匯入本機模型」在原生版仰賴 dart:io 檔案存取（見 model_import_screen_io.dart），
 /// web 版尚未支援，顯示提示頁面取代。
 class ModelImportScreen extends StatelessWidget {
@@ -7,13 +9,14 @@ class ModelImportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('匯入自訂模型')),
-      body: const Center(
+      appBar: AppBar(title: Text(l10n.settingsCustomImportTitle)),
+      body: Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            '匯入自訂模型尚未支援於網頁版，請使用 App 版本。',
+            l10n.modelImportWebUnsupported,
             textAlign: TextAlign.center,
           ),
         ),

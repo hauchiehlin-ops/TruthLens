@@ -27,11 +27,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   final _scores = <String, EngineScore>{};
 
   Map<String, String> _engineLabels(AppLocalizations l10n) => {
-        'transformer': l10n.analysisEngineTransformer,
-        'statistical': l10n.analysisEngineStatistical,
-        'stylometry': l10n.analysisEngineStylometry,
-        'adversarial': l10n.analysisEngineAdversarial,
-      };
+    'transformer': l10n.analysisEngineTransformer,
+    'statistical': l10n.analysisEngineStatistical,
+    'stylometry': l10n.analysisEngineStylometry,
+    'adversarial': l10n.analysisEngineAdversarial,
+  };
 
   @override
   void initState() {
@@ -94,20 +94,28 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             children: [
               Semantics(
                 label: l10n.analysisProgressSemantics(
-                    _done.length, engineLabels.length),
+                  _done.length,
+                  engineLabels.length,
+                ),
                 child: const AnalysisWave(),
               ),
               if (running != null) ...[
                 const SizedBox(height: 20),
-                _PreliminaryResultCard(probability: running, refining: refining),
+                _PreliminaryResultCard(
+                  probability: running,
+                  refining: refining,
+                  l10n: l10n,
+                ),
               ],
               const SizedBox(height: 24),
               for (final entry in engineLabels.entries)
                 ListTile(
                   leading: _done.contains(entry.key)
-                      ? Icon(Icons.check_circle,
+                      ? Icon(
+                          Icons.check_circle,
                           color: Colors.green,
-                          semanticLabel: l10n.analysisDoneSemantics)
+                          semanticLabel: l10n.analysisDoneSemantics,
+                        )
                       : const SizedBox(
                           width: 24,
                           height: 24,
@@ -135,7 +143,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 class _PreliminaryResultCard extends StatelessWidget {
   final double probability;
   final bool refining;
-  const _PreliminaryResultCard({required this.probability, required this.refining});
+  final AppLocalizations l10n;
+  const _PreliminaryResultCard({
+    required this.probability,
+    required this.refining,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,11 +171,12 @@ class _PreliminaryResultCard extends StatelessWidget {
               Icon(Icons.check_circle_outline, size: 18, color: cs.primary),
             const SizedBox(width: 10),
             Text(
-              refining ? '初步結果：AI 機率 $percent%（精修中…）' : '初步結果：AI 機率 $percent%',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              refining
+                  ? l10n.analysisPreliminaryResultRefining(percent)
+                  : l10n.analysisPreliminaryResult(percent),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

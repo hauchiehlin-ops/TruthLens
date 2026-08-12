@@ -129,6 +129,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get analysisDoneSemantics => '完了';
 
   @override
+  String analysisPreliminaryResult(int percent) {
+    return 'Preliminary result: AI probability $percent%';
+  }
+
+  @override
+  String analysisPreliminaryResultRefining(int percent) {
+    return 'Preliminary result: AI probability $percent% (refining…)';
+  }
+
+  @override
   String get engineNameAdversarialFull => '敵対的防御（言い換え検出）';
 
   @override
@@ -232,6 +242,28 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String modelListFailedPrefix(String error) {
     return '失敗：$error';
+  }
+
+  @override
+  String get modelCatalogLoadFailed => 'Could not load model catalog';
+
+  @override
+  String get modelCatalogEmpty => 'No models available';
+
+  @override
+  String modelDownloadPathChip(String label) {
+    return '$label download path';
+  }
+
+  @override
+  String get modelDownloadPathModelFile => 'Model file';
+
+  @override
+  String get modelDownloadPathCopied => 'Download path copied';
+
+  @override
+  String settingsSaveFailed(String error) {
+    return 'Failed to save settings: $error';
   }
 
   @override
@@ -434,6 +466,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'ローカルのカスタムONNXモデルとTokenizer設定をインポートして推論テストを実行';
 
   @override
+  String get modelImportWebUnsupported =>
+      'Custom model import is not supported on the web version yet. Please use the app version.';
+
+  @override
   String get settingsLanguagePackTitle => '言語パック';
 
   @override
@@ -565,7 +601,138 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportEngineLoadFailedBadge => '読み込み失敗';
 
   @override
+  String get reportEngineAnalysisLevelTitle => 'Engine analysis layers';
+
+  @override
+  String get reportDetailAnalysisTitle => 'Detailed analysis';
+
+  @override
+  String get reportNoEngineData => 'No engine analysis data yet';
+
+  @override
+  String get reportEngineNotParticipated => 'Not involved';
+
+  @override
+  String get reportAiContentReportTitle => 'AI Content Detection Report';
+
+  @override
+  String reportAnalysisTimeLabel(String time) {
+    return 'Analysis time: $time';
+  }
+
+  @override
+  String get reportDownloadPdfButton => 'Download PDF';
+
+  @override
+  String get reportSuspiciousLocationsTitle => 'Suspicious content locations';
+
+  @override
+  String reportSentenceCount(int count) {
+    return '$count sentences';
+  }
+
+  @override
+  String get reportAiProbabilityPrefix => 'AI probability: ';
+
+  @override
+  String reportConfidenceLowTooltip(int threshold, int available, int total) {
+    return 'Low confidence: available model weight is below 60% ($threshold% threshold). $available/$total engines participated. Review detailed engine analysis.';
+  }
+
+  @override
+  String reportConfidenceHighTooltip(int available, int total, int threshold) {
+    return 'High confidence: $available/$total detection models reached consensus ($threshold% or more weight agrees with this verdict).';
+  }
+
+  @override
+  String reportConfidenceLowBadge(int available, int total) {
+    return 'Low confidence ($available/$total)';
+  }
+
+  @override
+  String reportConfidenceHighBadge(int available, int total) {
+    return 'High confidence ($available/$total)';
+  }
+
+  @override
+  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+
+  @override
+  String get reportMetricElapsed => 'Analysis time';
+
+  @override
+  String get reportMetricElapsedNormal => '0.5-5s normal';
+
+  @override
+  String get reportMetricReliability => 'Reliability';
+
+  @override
+  String get reportReliabilityLow => 'Low';
+
+  @override
+  String get reportReliabilityHigh => 'High';
+
+  @override
+  String get reportReliabilityNeedsReview => 'Needs review';
+
+  @override
+  String get reportReliabilityHighTrust => 'Highly reliable';
+
+  @override
   String get reportSentenceAnalysisTitle => '文単位の分析';
+
+  @override
+  String get suspiciousFilterAll => 'Suspicious';
+
+  @override
+  String get suspiciousFilterHigh => 'High';
+
+  @override
+  String get suspiciousFilterMedium => 'Medium';
+
+  @override
+  String get suspiciousExcludedTooltip =>
+      'Single letters, page numbers, section numbers, and overly short OCR/PDF fragments have been excluded.';
+
+  @override
+  String suspiciousCount(int count) {
+    return '$count items';
+  }
+
+  @override
+  String get suspiciousEmpty => 'No suspicious content';
+
+  @override
+  String get suspiciousRiskHigh => 'High';
+
+  @override
+  String get suspiciousRiskMedium => 'Medium';
+
+  @override
+  String get suspiciousReasonHighModelSignals =>
+      'Multiple model signals strongly lean AI';
+
+  @override
+  String get suspiciousReasonSentenceSignal =>
+      'Sentence-level model signal is elevated';
+
+  @override
+  String suspiciousOriginalLocation(String location) {
+    return 'Original location $location';
+  }
+
+  @override
+  String suspiciousOriginalLocationWithReason(String location, String reason) {
+    return 'Original location $location · $reason';
+  }
+
+  @override
+  String suspiciousSentenceNumber(int number) {
+    return 'Sentence #$number';
+  }
+
+  @override
+  String get suspiciousEvidenceLabel => 'Evidence:';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -669,6 +836,34 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String reportBibTruncated(int max, int count) {
     return '最初の $max 件のみ検証しました（検出総数 $count 件）';
+  }
+
+  @override
+  String reportBibCompletedPreview(int count) {
+    return '$count completed; results will keep updating.';
+  }
+
+  @override
+  String reportBibProgress(int completed, int total, String current) {
+    return 'Progress $completed/$total, $current';
+  }
+
+  @override
+  String reportBibProgressCurrent(String text) {
+    return 'Current: $text';
+  }
+
+  @override
+  String get reportBibProgressFinalizing => 'Finalizing results';
+
+  @override
+  String reportBibUncertainWithCandidate(String base, String candidate) {
+    return '$base: similar candidate found “$candidate”, but author, year, or title did not meet the reliable-match threshold.';
+  }
+
+  @override
+  String reportBibUncertainNoReliableResponse(String base) {
+    return '$base: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.';
   }
 
   @override

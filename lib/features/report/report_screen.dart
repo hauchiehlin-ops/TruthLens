@@ -654,7 +654,9 @@ class _ReportScreenState extends State<ReportScreen> {
                       if ((checks ?? const []).isNotEmpty) ...[
                         const SizedBox(height: 8),
                         Text(
-                          '已完成 ${(checks ?? const []).length} 筆，結果會持續更新。',
+                          l10n.reportBibCompletedPreview(
+                            (checks ?? const []).length,
+                          ),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: 6),
@@ -816,18 +818,25 @@ class _ReportScreenState extends State<ReportScreen> {
   String _bibUnreliableLabel(BibliographyCheckResult c, AppLocalizations l10n) {
     final matched = c.matchedTitle;
     if (matched != null && matched.trim().isNotEmpty) {
-      return '${l10n.reportBibUncertain}：找到相似候選「${_shortBibText(matched)}」，但作者、年份或篇名未達可靠匹配門檻。';
+      return l10n.reportBibUncertainWithCandidate(
+        l10n.reportBibUncertain,
+        _shortBibText(matched),
+      );
     }
-    return '${l10n.reportBibUncertain}：查核來源無可靠回應或條目資訊不足，系統不將此文獻視為已核實存在。';
+    return l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain);
   }
 
   String _bibProgressText() {
     final total = _bibTotal > 0 ? _bibTotal : _bibEntries.length;
     final current = _bibCurrentEntry;
     final currentText = current == null
-        ? '正在整理結果'
-        : '目前：${_shortBibText(current.rawText)}';
-    return '進度 $_bibCompleted/$total，$currentText';
+        ? AppLocalizations.of(context).reportBibProgressFinalizing
+        : AppLocalizations.of(
+            context,
+          ).reportBibProgressCurrent(_shortBibText(current.rawText));
+    return AppLocalizations.of(
+      context,
+    ).reportBibProgress(_bibCompleted, total, currentText);
   }
 
   String _shortBibText(String text) {

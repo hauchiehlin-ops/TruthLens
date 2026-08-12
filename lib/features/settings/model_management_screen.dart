@@ -50,7 +50,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                 children: [
                   Icon(Icons.error_outline, size: 48, color: Colors.grey),
                   SizedBox(height: 16),
-                  Text('無法載入模型目錄'),
+                  Text(l10n.modelCatalogLoadFailed),
                 ],
               ),
             );
@@ -58,7 +58,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
 
           final catalog = snapshot.data;
           if (catalog == null || catalog.models.isEmpty) {
-            return Center(child: Text('暫無可用模型'));
+            return Center(child: Text(l10n.modelCatalogEmpty));
           }
 
           return ListView(
@@ -410,6 +410,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     InstalledModel model,
     ModelVariant? catalogVariant,
   ) {
+    final l10n = AppLocalizations.of(context);
     final sizeMb = (model.sizeBytes / 1024 / 1024).toStringAsFixed(1);
     final isActive =
         modelManager.roleState(role)?.activeVariantId == model.variantId;
@@ -440,11 +441,14 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
           itemBuilder: (context) => [
             if (!isActive)
               PopupMenuItem(
-                child: Text('設為使用中'),
+                child: Text(l10n.modelListSetActiveButton),
                 onTap: () => modelManager.setActive(role, model.variantId),
               ),
             PopupMenuItem(
-              child: Text('移除', style: TextStyle(color: Colors.red)),
+              child: Text(
+                l10n.commonDelete,
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () => modelManager.removeVariant(role, model.variantId),
             ),
           ],
@@ -460,6 +464,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     ModelVariant variant,
     RoleState roleState,
   ) {
+    final l10n = AppLocalizations.of(context);
     final sizeMb = (variant.sizeBytes / 1024 / 1024).toStringAsFixed(1);
     final isDownloading =
         roleState.transientState == InstallState.downloading &&
@@ -490,7 +495,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
               )
             : FilledButton.tonal(
                 onPressed: () => modelManager.downloadVariant(role, variant),
-                child: Text('下載'),
+                child: Text(l10n.modelListDownloadButton('$sizeMb MB')),
               ),
       ),
     );
@@ -515,7 +520,8 @@ class _DownloadPathSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final urls = [
-      if (variant.url != null && variant.url!.isNotEmpty) ('模型檔', variant.url!),
+      if (variant.url != null && variant.url!.isNotEmpty)
+        (AppLocalizations.of(context).modelDownloadPathModelFile, variant.url!),
       if (variant.tokenizerUrl != null && variant.tokenizerUrl!.isNotEmpty)
         ('Tokenizer', variant.tokenizerUrl!),
     ];
@@ -531,7 +537,9 @@ class _DownloadPathSummary extends StatelessWidget {
           for (final item in urls)
             ActionChip(
               avatar: const Icon(Icons.link, size: 14),
-              label: Text('${item.$1}下載路徑'),
+              label: Text(
+                AppLocalizations.of(context).modelDownloadPathChip(item.$1),
+              ),
               visualDensity: VisualDensity.compact,
               onPressed: () => _copyUrl(context, item.$2),
             ),
@@ -543,8 +551,10 @@ class _DownloadPathSummary extends StatelessWidget {
   static Future<void> _copyUrl(BuildContext context, String url) async {
     await Clipboard.setData(ClipboardData(text: url));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('下載路徑已複製')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).modelDownloadPathCopied),
+      ),
+    );
   }
 }

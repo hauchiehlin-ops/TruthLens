@@ -336,6 +336,18 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get analysisDoneSemantics;
 
+  /// No description provided for @analysisPreliminaryResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary result: AI probability {percent}%'**
+  String analysisPreliminaryResult(int percent);
+
+  /// No description provided for @analysisPreliminaryResultRefining.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary result: AI probability {percent}% (refining…)'**
+  String analysisPreliminaryResultRefining(int percent);
+
   /// No description provided for @engineNameAdversarialFull.
   ///
   /// In en, this message translates to:
@@ -512,6 +524,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed: {error}'**
   String modelListFailedPrefix(String error);
+
+  /// No description provided for @modelCatalogLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load model catalog'**
+  String get modelCatalogLoadFailed;
+
+  /// No description provided for @modelCatalogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No models available'**
+  String get modelCatalogEmpty;
+
+  /// No description provided for @modelDownloadPathChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} download path'**
+  String modelDownloadPathChip(String label);
+
+  /// No description provided for @modelDownloadPathModelFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Model file'**
+  String get modelDownloadPathModelFile;
+
+  /// No description provided for @modelDownloadPathCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Download path copied'**
+  String get modelDownloadPathCopied;
+
+  /// No description provided for @settingsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save settings: {error}'**
+  String settingsSaveFailed(String error);
 
   /// No description provided for @modelListDeleteConfirmTitle.
   ///
@@ -867,6 +915,12 @@ abstract class AppLocalizations {
   /// **'Import a local custom ONNX model and tokenizer configuration, and run a test inference'**
   String get settingsCustomImportSubtitle;
 
+  /// No description provided for @modelImportWebUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom model import is not supported on the web version yet. Please use the app version.'**
+  String get modelImportWebUnsupported;
+
   /// No description provided for @settingsLanguagePackTitle.
   ///
   /// In en, this message translates to:
@@ -1094,11 +1148,227 @@ abstract class AppLocalizations {
   /// **'Load failed'**
   String get reportEngineLoadFailedBadge;
 
+  /// No description provided for @reportEngineAnalysisLevelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine analysis layers'**
+  String get reportEngineAnalysisLevelTitle;
+
+  /// No description provided for @reportDetailAnalysisTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed analysis'**
+  String get reportDetailAnalysisTitle;
+
+  /// No description provided for @reportNoEngineData.
+  ///
+  /// In en, this message translates to:
+  /// **'No engine analysis data yet'**
+  String get reportNoEngineData;
+
+  /// No description provided for @reportEngineNotParticipated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not involved'**
+  String get reportEngineNotParticipated;
+
+  /// No description provided for @reportAiContentReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Content Detection Report'**
+  String get reportAiContentReportTitle;
+
+  /// No description provided for @reportAnalysisTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis time: {time}'**
+  String reportAnalysisTimeLabel(String time);
+
+  /// No description provided for @reportDownloadPdfButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get reportDownloadPdfButton;
+
+  /// No description provided for @reportSuspiciousLocationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspicious content locations'**
+  String get reportSuspiciousLocationsTitle;
+
+  /// No description provided for @reportSentenceCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sentences'**
+  String reportSentenceCount(int count);
+
+  /// No description provided for @reportAiProbabilityPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'AI probability: '**
+  String get reportAiProbabilityPrefix;
+
+  /// No description provided for @reportConfidenceLowTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Low confidence: available model weight is below 60% ({threshold}% threshold). {available}/{total} engines participated. Review detailed engine analysis.'**
+  String reportConfidenceLowTooltip(int threshold, int available, int total);
+
+  /// No description provided for @reportConfidenceHighTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'High confidence: {available}/{total} detection models reached consensus ({threshold}% or more weight agrees with this verdict).'**
+  String reportConfidenceHighTooltip(int available, int total, int threshold);
+
+  /// No description provided for @reportConfidenceLowBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Low confidence ({available}/{total})'**
+  String reportConfidenceLowBadge(int available, int total);
+
+  /// No description provided for @reportConfidenceHighBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'High confidence ({available}/{total})'**
+  String reportConfidenceHighBadge(int available, int total);
+
+  /// No description provided for @reportMetricAiSentenceRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'AI sentence ratio'**
+  String get reportMetricAiSentenceRatio;
+
+  /// No description provided for @reportMetricElapsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis time'**
+  String get reportMetricElapsed;
+
+  /// No description provided for @reportMetricElapsedNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'0.5-5s normal'**
+  String get reportMetricElapsedNormal;
+
+  /// No description provided for @reportMetricReliability.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliability'**
+  String get reportMetricReliability;
+
+  /// No description provided for @reportReliabilityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get reportReliabilityLow;
+
+  /// No description provided for @reportReliabilityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get reportReliabilityHigh;
+
+  /// No description provided for @reportReliabilityNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get reportReliabilityNeedsReview;
+
+  /// No description provided for @reportReliabilityHighTrust.
+  ///
+  /// In en, this message translates to:
+  /// **'Highly reliable'**
+  String get reportReliabilityHighTrust;
+
   /// No description provided for @reportSentenceAnalysisTitle.
   ///
   /// In en, this message translates to:
   /// **'Sentence-level analysis'**
   String get reportSentenceAnalysisTitle;
+
+  /// No description provided for @suspiciousFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspicious'**
+  String get suspiciousFilterAll;
+
+  /// No description provided for @suspiciousFilterHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get suspiciousFilterHigh;
+
+  /// No description provided for @suspiciousFilterMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get suspiciousFilterMedium;
+
+  /// No description provided for @suspiciousExcludedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Single letters, page numbers, section numbers, and overly short OCR/PDF fragments have been excluded.'**
+  String get suspiciousExcludedTooltip;
+
+  /// No description provided for @suspiciousCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String suspiciousCount(int count);
+
+  /// No description provided for @suspiciousEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No suspicious content'**
+  String get suspiciousEmpty;
+
+  /// No description provided for @suspiciousRiskHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get suspiciousRiskHigh;
+
+  /// No description provided for @suspiciousRiskMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get suspiciousRiskMedium;
+
+  /// No description provided for @suspiciousReasonHighModelSignals.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple model signals strongly lean AI'**
+  String get suspiciousReasonHighModelSignals;
+
+  /// No description provided for @suspiciousReasonSentenceSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence-level model signal is elevated'**
+  String get suspiciousReasonSentenceSignal;
+
+  /// No description provided for @suspiciousOriginalLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Original location {location}'**
+  String suspiciousOriginalLocation(String location);
+
+  /// No description provided for @suspiciousOriginalLocationWithReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Original location {location} · {reason}'**
+  String suspiciousOriginalLocationWithReason(String location, String reason);
+
+  /// No description provided for @suspiciousSentenceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence #{number}'**
+  String suspiciousSentenceNumber(int number);
+
+  /// No description provided for @suspiciousEvidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence:'**
+  String get suspiciousEvidenceLabel;
 
   /// No description provided for @reportSentenceTooltip.
   ///
@@ -1267,6 +1537,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All detected entries are verified with live progress (detected {count} total)'**
   String reportBibTruncated(int max, int count);
+
+  /// No description provided for @reportBibCompletedPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} completed; results will keep updating.'**
+  String reportBibCompletedPreview(int count);
+
+  /// No description provided for @reportBibProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress {completed}/{total}, {current}'**
+  String reportBibProgress(int completed, int total, String current);
+
+  /// No description provided for @reportBibProgressCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {text}'**
+  String reportBibProgressCurrent(String text);
+
+  /// No description provided for @reportBibProgressFinalizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing results'**
+  String get reportBibProgressFinalizing;
+
+  /// No description provided for @reportBibUncertainWithCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'{base}: similar candidate found “{candidate}”, but author, year, or title did not meet the reliable-match threshold.'**
+  String reportBibUncertainWithCandidate(String base, String candidate);
+
+  /// No description provided for @reportBibUncertainNoReliableResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'{base}: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.'**
+  String reportBibUncertainNoReliableResponse(String base);
 
   /// No description provided for @reportNetworkWarningTitle.
   ///

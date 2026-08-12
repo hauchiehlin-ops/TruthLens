@@ -545,9 +545,13 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
       OcrService.setLocalServerUrl(_serverUrlController.text);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('設定保存失敗：$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).settingsSaveFailed('$e'),
+            ),
+          ),
+        );
       }
     }
   }
@@ -1003,9 +1007,13 @@ class _SettingsPanelState extends State<_SettingsPanel> {
       OcrService.setLocalServerUrl(_serverUrlController.text);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('設定保存失敗：$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).settingsSaveFailed('$e'),
+            ),
+          ),
+        );
       }
     }
   }

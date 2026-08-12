@@ -33,7 +33,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'AI 內容檢測報告',
+                      l10n.reportAiContentReportTitle,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             fontWeight: FontWeight.bold,
@@ -42,7 +42,9 @@ class ProfessionalReportHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '分析時間：${DateTime.now().toString().split('.')[0]}',
+                      l10n.reportAnalysisTimeLabel(
+                        DateTime.now().toString().split('.')[0],
+                      ),
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
@@ -53,7 +55,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onDownloadPdf,
                   icon: const Icon(Icons.file_download_outlined),
-                  label: const Text('下載 PDF'),
+                  label: Text(l10n.reportDownloadPdfButton),
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF6B5B95), // 紫
                   ),
@@ -95,7 +97,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '可疑內容位置',
+                  l10n.reportSuspiciousLocationsTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1E3A5F),
@@ -103,7 +105,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '共 ${result.aiSentenceCount} 句',
+                  l10n.reportSentenceCount(result.aiSentenceCount),
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
@@ -197,7 +199,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: 'AI 概率：',
+                        text: l10n.reportAiProbabilityPrefix,
                         style: Theme.of(
                           context,
                         ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
@@ -215,8 +217,16 @@ class _VerdictSummaryCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Tooltip(
                   message: result.isLowConfidence
-                      ? '信心度低：可用模型權重不足 60%（${(result.threshold * 100).round()}% 閾值）。${result.availableEngineCount}/${result.totalEngineCount} 引擎參與投票。建議參考各引擎詳細分析結果。'
-                      : '信心度高：${result.availableEngineCount}/${result.totalEngineCount} 個檢測模型達成共識（${((result.threshold) * 100).round()}% 以上權重同意此判定）',
+                      ? l10n.reportConfidenceLowTooltip(
+                          (result.threshold * 100).round(),
+                          result.availableEngineCount,
+                          result.totalEngineCount,
+                        )
+                      : l10n.reportConfidenceHighTooltip(
+                          result.availableEngineCount,
+                          result.totalEngineCount,
+                          (result.threshold * 100).round(),
+                        ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -228,8 +238,14 @@ class _VerdictSummaryCard extends StatelessWidget {
                     ),
                     child: Text(
                       result.isLowConfidence
-                          ? '⚠️ 信心度低（${result.availableEngineCount}/${result.totalEngineCount}）'
-                          : '✓ 信心度高（${result.availableEngineCount}/${result.totalEngineCount}）',
+                          ? l10n.reportConfidenceLowBadge(
+                              result.availableEngineCount,
+                              result.totalEngineCount,
+                            )
+                          : l10n.reportConfidenceHighBadge(
+                              result.availableEngineCount,
+                              result.totalEngineCount,
+                            ),
                       style: Theme.of(
                         context,
                       ).textTheme.labelSmall?.copyWith(color: Colors.white),
@@ -261,10 +277,10 @@ class _MetricsRow extends StatelessWidget {
           child: _MetricCard(
             icon: Icons.assessment_outlined,
             iconColor: const Color(0xFF6B5B95),
-            title: 'AI 句子比例',
+            title: l10n.reportMetricAiSentenceRatio,
             value:
                 '${((result.aiSentenceCount / result.sentences.length) * 100).toStringAsFixed(1)}%',
-            subtitle: '${result.aiSentenceCount}/${result.sentences.length} 句',
+            subtitle: l10n.reportSentenceCount(result.sentences.length),
           ),
         ),
         const SizedBox(width: 12),
@@ -274,10 +290,10 @@ class _MetricsRow extends StatelessWidget {
           child: _MetricCard(
             icon: Icons.schedule_outlined,
             iconColor: const Color(0xFF1E3A5F),
-            title: '分析耗時',
+            title: l10n.reportMetricElapsed,
             value:
                 '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
-            subtitle: '0.5-5s 正常',
+            subtitle: l10n.reportMetricElapsedNormal,
           ),
         ),
         const SizedBox(width: 12),
@@ -287,9 +303,13 @@ class _MetricsRow extends StatelessWidget {
           child: _MetricCard(
             icon: Icons.verified_user_outlined,
             iconColor: const Color(0xFFD4AF37),
-            title: '可信度',
-            value: result.isLowConfidence ? '低' : '高',
-            subtitle: result.isLowConfidence ? '需人工驗證' : '高度可信',
+            title: l10n.reportMetricReliability,
+            value: result.isLowConfidence
+                ? l10n.reportReliabilityLow
+                : l10n.reportReliabilityHigh,
+            subtitle: result.isLowConfidence
+                ? l10n.reportReliabilityNeedsReview
+                : l10n.reportReliabilityHighTrust,
           ),
         ),
       ],
@@ -391,7 +411,7 @@ class _EngineContributionCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '引擎分析層級',
+                l10n.reportEngineAnalysisLevelTitle,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[600],
@@ -412,6 +432,7 @@ class _EngineContributionCard extends StatelessWidget {
               groups: engineGroups,
               overallProbability: result.aiProbability,
               verdictLabel: result.verdict.label(l10n),
+              l10n: l10n,
             ),
           ],
 
@@ -421,7 +442,7 @@ class _EngineContributionCard extends StatelessWidget {
 
           // 引擎詳細列表
           Text(
-            '詳細分析',
+            l10n.reportDetailAnalysisTitle,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.grey[600],
@@ -434,7 +455,7 @@ class _EngineContributionCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                '尚無引擎分析數據',
+                l10n.reportNoEngineData,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
@@ -501,7 +522,7 @@ class _EngineContributionCard extends StatelessWidget {
                               Text(
                                 group.available
                                     ? '${(group.probability * 100).round()}%'
-                                    : '未參與',
+                                    : l10n.reportEngineNotParticipated,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: group.available
@@ -896,11 +917,13 @@ class _EngineSynthesisSummary extends StatelessWidget {
   final List<_EngineGroup> groups;
   final double overallProbability;
   final String verdictLabel;
+  final AppLocalizations l10n;
 
   const _EngineSynthesisSummary({
     required this.groups,
     required this.overallProbability,
     required this.verdictLabel,
+    required this.l10n,
   });
 
   @override
