@@ -697,8 +697,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine nahe Übereinstimmung gefunden — möglicherweise erfundene Referenz';
 
   @override
-  String get reportBibUncertain =>
-      'Mäßige Ähnlichkeit oder Verbindung fehlgeschlagen — unsicher, bitte manuell verifizieren';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

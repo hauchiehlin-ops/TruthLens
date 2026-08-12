@@ -660,8 +660,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportBibNotFound => '유사한 항목을 찾을 수 없습니다. 허위 참고 문헌일 가능성이 있습니다';
 
   @override
-  String get reportBibUncertain =>
-      '유사도가 중간 정도이거나 연결에 실패했습니다. 불확실하므로 직접 확인하는 것을 권장합니다';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

@@ -554,7 +554,7 @@ References
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
 
-    test('verifyAll 套用 30 筆上限並回報逐筆進度', () async {
+    test('verifyAll 不截斷文獻清單並回報逐筆進度', () async {
       final client = MockClient((request) async {
         return http.Response(
           jsonEncode({
@@ -595,16 +595,10 @@ References
         client: client,
         onProgress: progressEvents.add,
       );
-      expect(results.length, BibliographyVerifier.maxEntriesPerCheck);
+      expect(results.length, 35);
       expect(progressEvents.first.completed, 0);
-      expect(
-        progressEvents.first.total,
-        BibliographyVerifier.maxEntriesPerCheck,
-      );
-      expect(
-        progressEvents.last.completed,
-        BibliographyVerifier.maxEntriesPerCheck,
-      );
+      expect(progressEvents.first.total, 35);
+      expect(progressEvents.last.completed, 35);
     });
 
     test('一般財經快訊、股票清單與非學術編號敘事不被誤判為參考文獻目錄', () {

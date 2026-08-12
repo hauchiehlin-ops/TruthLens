@@ -698,8 +698,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune correspondance proche trouvée — référence potentiellement fictive';
 
   @override
-  String get reportBibUncertain =>
-      'Similarité modérée ou échec de connexion — incertain, veuillez vérifier manuellement';
+  String get reportBibUncertain => 'Suspect : not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

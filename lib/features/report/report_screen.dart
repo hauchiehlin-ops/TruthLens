@@ -85,9 +85,7 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() {
         _checkingBib = true;
         _bibCompleted = 0;
-        _bibTotal = _bibEntries.length > BibliographyVerifier.maxEntriesPerCheck
-            ? BibliographyVerifier.maxEntriesPerCheck
-            : _bibEntries.length;
+        _bibTotal = _bibEntries.length;
         _bibCurrentEntry = _bibEntries.first;
         _bibChecks = const [];
       });
@@ -599,7 +597,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                     CitationMatchConfidence.notFound =>
                                       Icons.link_off,
                                     CitationMatchConfidence.uncertain =>
-                                      Icons.help_outline,
+                                      Icons.report_problem_outlined,
                                   },
                                   size: 16,
                                   color: switch (c.confidence) {
@@ -670,7 +668,8 @@ class _ReportScreenState extends State<ReportScreen> {
                       switch (c.confidence) {
                         CitationMatchConfidence.high => Icons.check_circle,
                         CitationMatchConfidence.notFound => Icons.link_off,
-                        CitationMatchConfidence.uncertain => Icons.help_outline,
+                        CitationMatchConfidence.uncertain =>
+                          Icons.report_problem_outlined,
                       },
                       size: 18,
                       color: switch (c.confidence) {
@@ -703,20 +702,25 @@ class _ReportScreenState extends State<ReportScreen> {
             : '',
       ),
       CitationMatchConfidence.notFound => l10n.reportBibNotFound,
-      CitationMatchConfidence.uncertain => l10n.reportBibUncertain,
+      CitationMatchConfidence.uncertain => _bibUnreliableLabel(c, l10n),
     };
+  }
+
+  String _bibUnreliableLabel(BibliographyCheckResult c, AppLocalizations l10n) {
+    final matched = c.matchedTitle;
+    if (matched != null && matched.trim().isNotEmpty) {
+      return '${l10n.reportBibUncertain}：找到相似候選「${_shortBibText(matched)}」，但作者、年份或篇名未達可靠匹配門檻。';
+    }
+    return '${l10n.reportBibUncertain}：查核來源無可靠回應或條目資訊不足，系統不將此文獻視為已核實存在。';
   }
 
   String _bibProgressText() {
     final total = _bibTotal > 0 ? _bibTotal : _bibEntries.length;
-    final capped = _bibEntries.length > BibliographyVerifier.maxEntriesPerCheck
-        ? '（本次先核實前 ${BibliographyVerifier.maxEntriesPerCheck} 筆）'
-        : '';
     final current = _bibCurrentEntry;
     final currentText = current == null
         ? '正在整理結果'
         : '目前：${_shortBibText(current.rawText)}';
-    return '進度 $_bibCompleted/$total $capped，$currentText';
+    return '進度 $_bibCompleted/$total，$currentText';
   }
 
   String _shortBibText(String text) {

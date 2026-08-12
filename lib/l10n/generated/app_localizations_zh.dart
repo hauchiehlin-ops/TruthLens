@@ -635,7 +635,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份與篇名相似度比對 Crossref 公開登記資料，非絕對保證，「無法確定」時建議自行核對。';
+      '依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -651,11 +651,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportBibNotFound => '查無相近匹配，可能為虛構文獻';
 
   @override
-  String get reportBibUncertain => '相似度中等或連線失敗，無法確定，建議自行核對';
+  String get reportBibUncertain => '疑似不可靠，未通過登記資料核實';
 
   @override
   String reportBibTruncated(int max, int count) {
-    return '僅核實前 $max 筆（共偵測到 $count 筆）';
+    return '將逐筆核實全部文獻（共偵測到 $count 筆）';
   }
 
   @override
@@ -1868,7 +1868,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份与篇名相似度比对 Crossref 公开登记数据，非绝对保证，「无法确定」时建议自行核对。';
+      '依作者、年份、篇名与期刊信息比对 Crossref 与 OpenAlex 公开登记数据；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1884,11 +1884,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportBibNotFound => '查无相近匹配，可能为虚构文献';
 
   @override
-  String get reportBibUncertain => '相似度中等或连接失败，无法确定，建议自行核对';
+  String get reportBibUncertain => '疑似不可靠，未通过登记数据核实';
 
   @override
   String reportBibTruncated(int max, int count) {
-    return '仅核实前 $max 笔（共侦测到 $count 笔）';
+    return '将逐笔核实全部文献（共侦测到 $count 笔）';
   }
 
   @override
@@ -3101,7 +3101,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份與篇名相似度比對 Crossref 公開登記資料，非絕對保證，「無法確定」時建議自行核對。';
+      '依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -3117,11 +3117,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportBibNotFound => '查無相近匹配，可能為虛構文獻';
 
   @override
-  String get reportBibUncertain => '相似度中等或連線失敗，無法確定，建議自行核對';
+  String get reportBibUncertain => '疑似不可靠，未通過登記資料核實';
 
   @override
   String reportBibTruncated(int max, int count) {
-    return '僅核實前 $max 筆（共偵測到 $count 筆）';
+    return '將逐筆核實全部文獻（共偵測到 $count 筆）';
   }
 
   @override

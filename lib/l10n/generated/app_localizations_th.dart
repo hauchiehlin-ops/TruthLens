@@ -684,8 +684,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่พบรายการที่ใกล้เคียง อาจเป็นบรรณานุกรมที่ปลอมแปลง';
 
   @override
-  String get reportBibUncertain =>
-      'ความคล้ายคลึงปานกลางหรือการเชื่อมต่อล้มเหลว ไม่แน่ใจ แนะนำให้ตรวจสอบด้วยตนเอง';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

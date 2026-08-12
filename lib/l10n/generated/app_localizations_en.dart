@@ -664,7 +664,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      'Matched against Crossref\'s public registry by author, year, and title similarity. Not an absolute guarantee — when \"uncertain\", please double-check manually.';
+      'Matched against Crossref and OpenAlex by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -681,12 +681,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'No close match found — possibly a fabricated reference';
 
   @override
-  String get reportBibUncertain =>
-      'Moderate similarity or connection failed — uncertain, please verify manually';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {
-    return 'Only the first $max entries were verified (detected $count total)';
+    return 'All detected entries are verified with live progress (detected $count total)';
   }
 
   @override

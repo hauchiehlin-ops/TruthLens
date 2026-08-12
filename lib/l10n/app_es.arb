@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "Alta confianza: probablemente existe{journal}",
   "reportBibJournalSuffix": " (registrado con {journal})",
   "reportBibNotFound": "No se encontró ninguna coincidencia cercana; posible referencia inventada",
-  "reportBibUncertain": "Similitud moderada o conexión fallida; incierto, verifica manualmente",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "Solo se verificaron las primeras {max} entradas (se detectaron {count} en total)",
   "reportNetworkWarningTitle": "Conexión de red débil",
   "reportNetworkWarningBody": "Esta aplicación asume por defecto que hay conexión de red disponible; tanto el análisis de autenticidad de hipervínculos como el de citas requieren acceso a la red para producir resultados. No se pudo establecer conexión; verifica tu red e inténtalo de nuevo.",

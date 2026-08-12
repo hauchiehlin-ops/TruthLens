@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "Hohe Zuverlässigkeit: existiert wahrscheinlich{journal}",
   "reportBibJournalSuffix": " (registriert bei {journal})",
   "reportBibNotFound": "Keine nahe Übereinstimmung gefunden — möglicherweise erfundene Referenz",
-  "reportBibUncertain": "Mäßige Ähnlichkeit oder Verbindung fehlgeschlagen — unsicher, bitte manuell verifizieren",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "Nur die ersten {max} Einträge wurden verifiziert (insgesamt {count} erkannt)",
   "reportNetworkWarningTitle": "Schwache Netzwerkverbindung",
   "reportNetworkWarningBody": "Diese App geht standardmäßig davon aus, dass eine Netzwerkverbindung verfügbar ist; sowohl die Analyse der Hyperlink-Authentizität als auch der Zitat-Authentizität erfordert Netzwerkzugriff, um Ergebnisse zu liefern. Es konnte keine Verbindung hergestellt werden — bitte Netzwerk prüfen und erneut versuchen.",

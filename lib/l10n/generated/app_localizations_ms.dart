@@ -686,8 +686,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tiada padanan hampir ditemui — mungkin rujukan rekaan';
 
   @override
-  String get reportBibUncertain =>
-      'Persamaan sederhana atau sambungan gagal — tidak pasti, sila sahkan secara manual';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

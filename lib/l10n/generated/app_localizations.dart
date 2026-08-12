@@ -1223,7 +1223,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportBibResultHint.
   ///
   /// In en, this message translates to:
-  /// **'Matched against Crossref\'s public registry by author, year, and title similarity. Not an absolute guarantee — when \"uncertain\", please double-check manually.'**
+  /// **'Matched against Crossref and OpenAlex by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.'**
   String get reportBibResultHint;
 
   /// No description provided for @reportBibHighConfidence.
@@ -1247,13 +1247,13 @@ abstract class AppLocalizations {
   /// No description provided for @reportBibUncertain.
   ///
   /// In en, this message translates to:
-  /// **'Moderate similarity or connection failed — uncertain, please verify manually'**
+  /// **'Suspect: not verified by registry match'**
   String get reportBibUncertain;
 
   /// No description provided for @reportBibTruncated.
   ///
   /// In en, this message translates to:
-  /// **'Only the first {max} entries were verified (detected {count} total)'**
+  /// **'All detected entries are verified with live progress (detected {count} total)'**
   String reportBibTruncated(int max, int count);
 
   /// No description provided for @reportNetworkWarningTitle.

@@ -657,8 +657,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportBibNotFound => '近い一致が見つかりません。虚偽の参考文献の可能性があります';
 
   @override
-  String get reportBibUncertain =>
-      '類似度が中程度、または接続に失敗しました。不確定のため、自分で確認することをお勧めします';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

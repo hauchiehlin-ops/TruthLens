@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "Keyakinan tinggi: kemungkinan wujud{journal}",
   "reportBibJournalSuffix": " (berdaftar dengan {journal})",
   "reportBibNotFound": "Tiada padanan hampir ditemui — mungkin rujukan rekaan",
-  "reportBibUncertain": "Persamaan sederhana atau sambungan gagal — tidak pasti, sila sahkan secara manual",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "Hanya {max} entri pertama disahkan (jumlah {count} dikesan)",
   "reportNetworkWarningTitle": "Sambungan rangkaian lemah",
   "reportNetworkWarningBody": "Apl ini mengandaikan sambungan rangkaian tersedia secara lalai; analisis ketulenan pautan hiper dan petikan kedua-duanya memerlukan akses rangkaian untuk menghasilkan keputusan. Sambungan tidak dapat diwujudkan — sila semak rangkaian anda dan cuba lagi.",

@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "高信頼度：実在する可能性が高い{journal}",
   "reportBibJournalSuffix": "（{journal}に登録済み）",
   "reportBibNotFound": "近い一致が見つかりません。虚偽の参考文献の可能性があります",
-  "reportBibUncertain": "類似度が中程度、または接続に失敗しました。不確定のため、自分で確認することをお勧めします",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "最初の {max} 件のみ検証しました（検出総数 {count} 件）",
   "reportNetworkWarningTitle": "ネットワーク接続が不安定です",
   "reportNetworkWarningBody": "本アプリは実行時にネットワーク接続があることを前提としています。ハイパーリンクと引用文献の実在性分析には、結果を判定するためにネットワーク接続が必要です。現在接続できません。ネットワーク状態を確認して再試行してください。",

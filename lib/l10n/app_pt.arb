@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "Alta confiança: provavelmente existe{journal}",
   "reportBibJournalSuffix": " (registrado em {journal})",
   "reportBibNotFound": "Nenhuma correspondência próxima encontrada — possível referência fictícia",
-  "reportBibUncertain": "Similaridade moderada ou falha na conexão — incerto, verifique manualmente",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "Apenas as primeiras {max} entradas foram verificadas (total de {count} detectadas)",
   "reportNetworkWarningTitle": "Conexão de rede fraca",
   "reportNetworkWarningBody": "Este aplicativo assume por padrão que há conexão de rede disponível; a análise de autenticidade de hiperlinks e citações requer acesso à rede para produzir resultados. Não foi possível estabelecer conexão — verifique sua rede e tente novamente.",

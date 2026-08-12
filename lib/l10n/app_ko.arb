@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "높은 신뢰도: 존재할 가능성이 높음{journal}",
   "reportBibJournalSuffix": "（{journal}에 등록됨）",
   "reportBibNotFound": "유사한 항목을 찾을 수 없습니다. 허위 참고 문헌일 가능성이 있습니다",
-  "reportBibUncertain": "유사도가 중간 정도이거나 연결에 실패했습니다. 불확실하므로 직접 확인하는 것을 권장합니다",
+  "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "처음 {max}개 항목만 검증했습니다（총 감지된 항목 {count}개）",
   "reportNetworkWarningTitle": "네트워크 연결 상태가 좋지 않습니다",
   "reportNetworkWarningBody": "이 앱은 실행 시 기본적으로 네트워크 연결이 있다고 가정합니다. 하이퍼링크 및 인용 문헌 실재성 분석은 결과를 판정하기 위해 네트워크 연결이 필요합니다. 현재 연결할 수 없습니다. 네트워크 상태를 확인한 후 다시 시도해 주세요.",

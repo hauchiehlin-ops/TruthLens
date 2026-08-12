@@ -56,9 +56,6 @@ class BibliographyVerificationProgress {
 }
 
 class BibliographyVerifier {
-  /// 單次報告最多驗證的條目數，避免長篇文獻目錄拖慢報告載入。
-  static const maxEntriesPerCheck = 30;
-
   /// 取得代理 URL（Web 環境中用以繞過 CORS 限制）
   static String _getProxiedUrl(String targetUrl) {
     if (!kIsWeb) return targetUrl;
@@ -690,7 +687,7 @@ class BibliographyVerifier {
     final owns = client == null;
     try {
       final results = <BibliographyCheckResult>[];
-      final targetEntries = entries.take(maxEntriesPerCheck).toList();
+      final targetEntries = entries.toList();
       onProgress?.call(
         BibliographyVerificationProgress(
           completed: 0,

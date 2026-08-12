@@ -689,8 +689,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Близкое совпадение не найдено — возможно, вымышленная ссылка';
 
   @override
-  String get reportBibUncertain =>
-      'Умеренное сходство или сбой соединения — неопределённо, проверьте вручную';
+  String get reportBibUncertain => 'Suspect: not verified by registry match';
 
   @override
   String reportBibTruncated(int max, int count) {

@@ -196,7 +196,7 @@
   "reportBibHighConfidence": "Confiance élevée : existe probablement{journal}",
   "reportBibJournalSuffix": " (enregistré auprès de {journal})",
   "reportBibNotFound": "Aucune correspondance proche trouvée — référence potentiellement fictive",
-  "reportBibUncertain": "Similarité modérée ou échec de connexion — incertain, veuillez vérifier manuellement",
+  "reportBibUncertain": "Suspect : not verified by registry match",
   "reportBibTruncated": "Seules les {max} premières entrées ont été vérifiées (total de {count} détectées)",
   "reportNetworkWarningTitle": "Connexion réseau faible",
   "reportNetworkWarningBody": "Cette application suppose par défaut qu'une connexion réseau est disponible ; l'analyse de l'authenticité des hyperliens et des citations nécessite un accès réseau pour produire des résultats. Impossible d'établir une connexion — veuillez vérifier votre réseau et réessayer.",
