@@ -1233,6 +1233,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get helpWorkflowTitle => '전체 작동 흐름';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return '$step단계';
+  }
+
+  @override
   String get helpWorkflowStep1Title => '모델 다운로드 및 업데이트';
 
   @override
@@ -1286,6 +1291,64 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       '리포트 페이지에는 종합 AI 확률 게이지, 문장 단위 히트맵, 4개 엔진의 점수 및 근거 상세, 하이퍼링크 실재성, 인용 문헌 실재성이 포함됩니다. 전체 PDF 리포트, 문장별 CSV 데이터, JSON（시스템 연동용）, PNG 요약 카드（공유용）를 내보낼 수 있습니다. 각 분석 결과는 자동으로 \"기록\"에 저장되어 언제든지 다시 확인할 수 있습니다.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => '첫 실행 안내';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => '모델 관리';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => '자동 업데이트 확인';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => '통계 분석 (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => '문체 분석 (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => '적대적 방어 (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => '리포트 LLM (선택)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => '텍스트 붙여넣기';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => '이미지 OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => '코드/수식 제외';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '4개 엔진 병렬 추론';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => '실시간 진행률';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL 작문 보정';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI 개요 게이지';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => '문장 히트맵';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => '문헌 검증';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'PDF / CSV / JSON / PNG 내보내기';
 
   @override
   String get helpTuningTitle => '모델 다운로드 및 조정 가이드（초보자용）';

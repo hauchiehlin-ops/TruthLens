@@ -1230,6 +1230,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get helpWorkflowTitle => '完全な操作フロー';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'ステップ $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'モデルのダウンロードと更新';
 
   @override
@@ -1283,6 +1288,63 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'レポートページには、総合AI確率のゲージ、文単位のヒートマップ、4つのエンジンのスコアと理由の内訳、ハイパーリンクの実在性、引用文献の実在性が含まれます。完全なPDFレポート、文単位のCSVデータ、JSON（システム連携用）、PNGサマリーカード（共有用）をエクスポートできます。各分析結果は自動的に「履歴」に保存され、いつでも確認できます。';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => '初回起動ガイド';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'モデル管理';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => '自動更新チェック';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => '統計分析 (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => '文体分析 (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => '敵対的防御 (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'レポート LLM (任意)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'テキスト貼り付け';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => '画像 OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => 'コード/数式の除外';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '4エンジン並列推論';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'ライブ進捗';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL 文体補正';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI 概要ゲージ';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => '文単位ヒートマップ';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => '文献検証';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats => 'PDF / CSV / JSON / PNG 出力';
 
   @override
   String get helpTuningTitle => 'モデルのダウンロードと調整ガイド（初心者向け）';

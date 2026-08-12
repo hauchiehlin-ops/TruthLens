@@ -47,10 +47,7 @@ class HelpScreen extends StatelessWidget {
                 children: [
                   Text(l10n.helpAboutTitle, style: textTheme.titleLarge),
                   const SizedBox(height: 8),
-                  Text(
-                    l10n.helpAboutBody,
-                    style: const TextStyle(height: 1.5),
-                  ),
+                  Text(l10n.helpAboutBody, style: const TextStyle(height: 1.5)),
                 ],
               ),
             ),
@@ -58,10 +55,7 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 20),
           Text(l10n.helpComparisonTitle, style: textTheme.titleLarge),
           const SizedBox(height: 4),
-          Text(
-            l10n.helpComparisonDisclaimer,
-            style: textTheme.bodySmall,
-          ),
+          Text(l10n.helpComparisonDisclaimer, style: textTheme.bodySmall),
           const SizedBox(height: 12),
           _compareCard(
             context,
@@ -84,30 +78,23 @@ class HelpScreen extends StatelessWidget {
           _compareCard(
             context,
             title: l10n.helpVsOriginalityTitle,
-            points: [
-              l10n.helpVsOriginality1,
-              l10n.helpVsOriginality2,
-            ],
+            points: [l10n.helpVsOriginality1, l10n.helpVsOriginality2],
           ),
           _compareCard(
             context,
             title: l10n.helpVsCopyleaksTitle,
-            points: [
-              l10n.helpVsCopyleaks1,
-              l10n.helpVsCopyleaks2,
-            ],
+            points: [l10n.helpVsCopyleaks1, l10n.helpVsCopyleaks2],
           ),
           _compareCard(
             context,
             title: l10n.helpVsWinstonTitle,
-            points: [
-              l10n.helpVsWinston1,
-              l10n.helpVsWinston2,
-            ],
+            points: [l10n.helpVsWinston1, l10n.helpVsWinston2],
           ),
           const SizedBox(height: 8),
           Card(
-            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
+            color: Theme.of(
+              context,
+            ).colorScheme.primaryContainer.withValues(alpha: 0.4),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -184,8 +171,11 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  Widget _compareCard(BuildContext context,
-      {required String title, required List<String> points}) {
+  Widget _compareCard(
+    BuildContext context, {
+    required String title,
+    required List<String> points,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -233,7 +223,8 @@ class HelpScreen extends StatelessWidget {
                   children: [
                     Text(title, style: Theme.of(context).textTheme.titleSmall),
                     const SizedBox(height: 6),
-                    if (body != null) Text(body, style: const TextStyle(height: 1.5)),
+                    if (body != null)
+                      Text(body, style: const TextStyle(height: 1.5)),
                     ?child,
                   ],
                 ),
@@ -309,7 +300,11 @@ class _WorkflowInfographicWidgetState
         title: widget.l10n.helpWorkflowStep1Title,
         icon: Icons.cloud_download_rounded,
         accentColor: Colors.blue,
-        chips: const ['首次啟動引導', '模型管理中心', '自動版本偵測'],
+        chips: [
+          widget.l10n.helpWorkflowStep1ChipOnboarding,
+          widget.l10n.helpWorkflowStep1ChipModelManager,
+          widget.l10n.helpWorkflowStep1ChipUpdateCheck,
+        ],
         body: widget.l10n.helpWorkflowStep1Body,
       ),
       _WorkflowStepData(
@@ -317,12 +312,12 @@ class _WorkflowInfographicWidgetState
         title: widget.l10n.helpWorkflowStep2Title,
         icon: Icons.tune_rounded,
         accentColor: Colors.purple,
-        chips: const [
-          'Transformer (40%)',
-          '統計分析 (25%)',
-          '風格特徵 (20%)',
-          '對抗防禦 (15%)',
-          '報告 LLM (選用)'
+        chips: [
+          widget.l10n.helpWorkflowStep2ChipTransformer,
+          widget.l10n.helpWorkflowStep2ChipStatistics,
+          widget.l10n.helpWorkflowStep2ChipStylometry,
+          widget.l10n.helpWorkflowStep2ChipAdversarial,
+          widget.l10n.helpWorkflowStep2ChipReportLlm,
         ],
         bullets: [
           widget.l10n.helpWorkflowStep2Bullet1,
@@ -338,7 +333,12 @@ class _WorkflowInfographicWidgetState
         title: widget.l10n.helpWorkflowStep3Title,
         icon: Icons.upload_file_rounded,
         accentColor: Colors.teal,
-        chips: const ['直接貼上', '相機/相簿 OCR', 'PDF / DOCX / TXT / MD', '碼段/公式隔離'],
+        chips: [
+          widget.l10n.helpWorkflowStep3ChipPaste,
+          widget.l10n.helpWorkflowStep3ChipImageOcr,
+          widget.l10n.helpWorkflowStep3ChipImportFormats,
+          widget.l10n.helpWorkflowStep3ChipCodeFormulaIsolation,
+        ],
         body: widget.l10n.helpWorkflowStep3Body,
       ),
       _WorkflowStepData(
@@ -346,7 +346,11 @@ class _WorkflowInfographicWidgetState
         title: widget.l10n.helpWorkflowStep4Title,
         icon: Icons.analytics_rounded,
         accentColor: Colors.amber,
-        chips: const ['四引擎並列推論', '即時動態進度', 'ESL 非母語寫作校正'],
+        chips: [
+          widget.l10n.helpWorkflowStep4ChipEnsemble,
+          widget.l10n.helpWorkflowStep4ChipLiveProgress,
+          widget.l10n.helpWorkflowStep4ChipEslCorrection,
+        ],
         body: widget.l10n.helpWorkflowStep4Body,
       ),
       _WorkflowStepData(
@@ -354,7 +358,12 @@ class _WorkflowInfographicWidgetState
         title: widget.l10n.helpWorkflowStep5Title,
         icon: Icons.assessment_rounded,
         accentColor: Colors.green,
-        chips: const ['AI 總覽儀表', '句級熱力圖', 'Crossref 文獻驗證', 'PDF / CSV / JSON / PNG 匯出'],
+        chips: [
+          widget.l10n.helpWorkflowStep5ChipOverviewGauge,
+          widget.l10n.helpWorkflowStep5ChipSentenceHeatmap,
+          widget.l10n.helpWorkflowStep5ChipCitationVerification,
+          widget.l10n.helpWorkflowStep5ChipExportFormats,
+        ],
         body: widget.l10n.helpWorkflowStep5Body,
       ),
     ];
@@ -395,8 +404,11 @@ class _WorkflowInfographicWidgetState
             Column(
               children: [
                 for (int i = 0; i < steps.length; i++)
-                  _buildTimelineNode(context, steps[i],
-                      isLast: i == steps.length - 1),
+                  _buildTimelineNode(
+                    context,
+                    steps[i],
+                    isLast: i == steps.length - 1,
+                  ),
               ],
             ),
           ],
@@ -441,20 +453,27 @@ class _WorkflowInfographicWidgetState
                 child: Text(
                   '${step.step}',
                   style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
+                    fontSize: 11,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(step.icon, size: 16, color: isSelected ? step.accentColor : scheme.onSurfaceVariant),
+              Icon(
+                step.icon,
+                size: 16,
+                color: isSelected ? step.accentColor : scheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 step.title,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? scheme.onSurface : scheme.onSurfaceVariant,
+                  color: isSelected
+                      ? scheme.onSurface
+                      : scheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -464,8 +483,11 @@ class _WorkflowInfographicWidgetState
     );
   }
 
-  Widget _buildTimelineNode(BuildContext context, _WorkflowStepData step,
-      {required bool isLast}) {
+  Widget _buildTimelineNode(
+    BuildContext context,
+    _WorkflowStepData step, {
+    required bool isLast,
+  }) {
     final scheme = Theme.of(context).colorScheme;
     final isSelected = _selectedStep == step.step;
 
@@ -495,7 +517,7 @@ class _WorkflowInfographicWidgetState
                               color: step.accentColor.withAlpha(100),
                               blurRadius: 8,
                               spreadRadius: 1,
-                            )
+                            ),
                           ]
                         : null,
                   ),
@@ -549,13 +571,15 @@ class _WorkflowInfographicWidgetState
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: step.accentColor,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              'Step ${step.step}',
+                              widget.l10n.helpWorkflowStepLabel(step.step),
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -567,12 +591,8 @@ class _WorkflowInfographicWidgetState
                           Expanded(
                             child: Text(
                               step.title,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
@@ -586,7 +606,9 @@ class _WorkflowInfographicWidgetState
                           for (final chip in step.chips)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: step.accentColor.withAlpha(30),
                                 borderRadius: BorderRadius.circular(6),

@@ -1262,6 +1262,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get helpWorkflowTitle => 'ขั้นตอนการทำงานแบบสมบูรณ์';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'ขั้นตอน $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'การดาวน์โหลดและอัปเดตโมเดล';
 
   @override
@@ -1315,6 +1320,64 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'หน้ารายงานประกอบด้วย: มาตรวัดความน่าจะเป็น AI โดยรวม, แผนที่ความร้อนระดับประโยค, รายละเอียดคะแนนและเหตุผลของเอนจินทั้งสี่, ความถูกต้องของลิงก์, ความถูกต้องของการอ้างอิง สามารถส่งออกรายงาน PDF ฉบับสมบูรณ์, ข้อมูล CSV รายประโยค, JSON（สำหรับเชื่อมต่อระบบ）, การ์ดสรุป PNG（สำหรับแชร์） ผลการวิเคราะห์แต่ละครั้งจะถูกบันทึกใน \"ประวัติ\" โดยอัตโนมัติเพื่อให้ดูย้อนหลังได้ทุกเมื่อ';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'เริ่มใช้งานครั้งแรก';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'จัดการโมเดล';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'ตรวจอัปเดตอัตโนมัติ';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'วิเคราะห์สถิติ (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'วิเคราะห์สำนวน (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'ป้องกัน adversarial (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'LLM รายงาน (เลือกได้)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'วางข้อความ';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'OCR รูปภาพ';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => 'แยกโค้ด/สูตร';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => 'อนุมาน 4 เอนจิน';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'ความคืบหน้าแบบสด';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'แก้ไข ESL';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'มาตรวัด AI รวม';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => 'ฮีตแมปประโยค';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => 'ตรวจสอบการอ้างอิง';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'ส่งออก PDF / CSV / JSON / PNG';
 
   @override
   String get helpTuningTitle =>

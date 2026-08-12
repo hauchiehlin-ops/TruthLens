@@ -1265,6 +1265,11 @@ class AppLocalizationsMs extends AppLocalizations {
   String get helpWorkflowTitle => 'Aliran kerja operasi penuh';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'Langkah $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'Muat turun & kemas kini model';
 
   @override
@@ -1318,6 +1323,65 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'Halaman laporan termasuk: tolok kebarangkalian AI keseluruhan, peta haba peringkat ayat, perincian skor dan sebab setiap enjin, ketulenan pautan hiper, dan ketulenan petikan. Anda boleh mengeksport laporan PDF penuh, data CSV setiap ayat, JSON (untuk integrasi sistem), atau kad ringkasan PNG (untuk perkongsian). Setiap analisis disimpan secara automatik dalam \"Sejarah\" untuk semakan kemudian.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'Pelancaran pertama';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'Pengurusan model';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'Semakan auto kemas kini';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'Analisis statistik (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'Stilometri (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'Pertahanan adversarial (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'LLM laporan (pilihan)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'Tampal teks';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'OCR imej';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation =>
+      'Asingkan kod/formula';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => 'Ensembel 4 enjin';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'Kemajuan langsung';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'Pembetulan ESL';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'Tolok gambaran AI';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => 'Peta haba ayat';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => 'Pengesahan petikan';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'Eksport PDF / CSV / JSON / PNG';
 
   @override
   String get helpTuningTitle =>

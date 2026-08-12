@@ -1277,6 +1277,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get helpWorkflowTitle => 'Flux de travail opérationnel complet';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'Étape $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title =>
       'Télécharger et mettre à jour les modèles';
 
@@ -1332,6 +1337,67 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'La page du rapport comprend : l\'indicateur global de probabilité IA, la carte thermique au niveau de la phrase, la répartition des scores et des raisons de chaque moteur, l\'authenticité des hyperliens et l\'authenticité des citations. Vous pouvez exporter le rapport PDF complet, les données CSV par phrase, le JSON (pour l\'intégration système), ou une carte récapitulative PNG (pour le partage). Chaque analyse est automatiquement enregistrée dans l\'\"Historique\" pour un examen ultérieur.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'Premier lancement';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'Gestion des modèles';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'Vérification automatique';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'Analyse statistique (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'Stylométrie (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'Défense adversariale (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'LLM de rapport (facultatif)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'Coller le texte';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'OCR d’image';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation =>
+      'Isoler code/formules';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => 'Ensemble de 4 moteurs';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'Progression en direct';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'Correction ESL';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'Jauge IA globale';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap =>
+      'Carte thermique par phrase';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification =>
+      'Vérification des citations';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'Export PDF / CSV / JSON / PNG';
 
   @override
   String get helpTuningTitle =>

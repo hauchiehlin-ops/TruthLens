@@ -1259,6 +1259,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpWorkflowTitle => 'Full operating workflow';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'Step $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'Model download & update';
 
   @override
@@ -1312,6 +1317,66 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'The report page includes: an overall AI-probability gauge, a sentence-level heatmap, a breakdown of each engine\'s score and reasoning, hyperlink authenticity, and citation authenticity. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card (for sharing). Every analysis is automatically saved to \"History\" for later review.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'First launch';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'Model management';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'Auto update check';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'Statistical analysis (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'Stylometry (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'Adversarial defense (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'Report LLM (optional)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'Paste text';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'Image OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation =>
+      'Code/formula isolation';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => 'Four-engine ensemble';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'Live progress';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL writing correction';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI overview gauge';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => 'Sentence heatmap';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification =>
+      'Citation verification';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'PDF / CSV / JSON / PNG export';
 
   @override
   String get helpTuningTitle =>

@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第三十次更新）— 修復：Help 工作流程標籤改走多國語系
+
+**概述**
+回應英文介面中的 Help 工作流程 chip 標籤仍顯示中文的問題：
+1. 移除 Help 工作流程 Step 1–5 的中文硬編碼 chip 文案
+2. 新增 19 個 workflow chip l10n key，涵蓋模型下載、模型選擇、文件上傳、分析執行與結果匯出
+3. 將 `Step {number}` badge 改為可翻譯的 `helpWorkflowStepLabel`
+4. 補齊英文、繁中、簡中、日文、韓文、西文、法文、德文、葡文、俄文、印尼文、馬來文、泰文 ARB 文案並重新產生 localization
+5. 新增英文 locale widget test，防止 Help 工作流程再次混入中文 chip
+
+**修復內容**：✅ **完成**
+
+- 英文介面顯示 `Paste text`、`Four-engine ensemble`、`AI overview gauge`
+- 繁中／簡中與其他支援語系各自顯示對應翻譯
+- `help_screen.dart` 已掃描確認不再殘留截圖中的中文 chip 常量
+
+---
+
 ## 2026-08-12（第二十九次更新）— 修復：PDF 隱私認證標章改走介面語系
 
 **概述**

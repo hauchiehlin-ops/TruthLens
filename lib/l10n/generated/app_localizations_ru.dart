@@ -1269,6 +1269,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpWorkflowTitle => 'Полный рабочий процесс';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'Шаг $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'Загрузка и обновление моделей';
 
   @override
@@ -1322,6 +1327,66 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'Страница отчёта включает: общий индикатор вероятности ИИ, тепловую карту на уровне предложений, разбивку баллов и причин по каждому модулю, подлинность гиперссылок и подлинность цитирования. Вы можете экспортировать полный отчёт в PDF, данные по каждому предложению в CSV, JSON (для интеграции систем) или карточку сводки в PNG (для обмена). Каждый анализ автоматически сохраняется в «Истории» для последующего просмотра.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'Первый запуск';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'Управление моделями';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'Автопроверка обновлений';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'Статистический анализ (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'Стилометрия (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'Adversarial defense (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'LLM отчёта (опционально)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'Вставить текст';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'OCR изображения';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation =>
+      'Исключить код/формулы';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => 'Ансамбль 4 движков';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'Прогресс в реальном времени';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'Коррекция ESL';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'Общий индикатор ИИ';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => 'Теплокарта предложений';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification =>
+      'Проверка цитирований';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'Экспорт PDF / CSV / JSON / PNG';
 
   @override
   String get helpTuningTitle =>

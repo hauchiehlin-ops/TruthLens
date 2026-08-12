@@ -2119,6 +2119,12 @@ abstract class AppLocalizations {
   /// **'Full operating workflow'**
   String get helpWorkflowTitle;
 
+  /// No description provided for @helpWorkflowStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step}'**
+  String helpWorkflowStepLabel(int step);
+
   /// No description provided for @helpWorkflowStep1Title.
   ///
   /// In en, this message translates to:
@@ -2208,6 +2214,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The report page includes: an overall AI-probability gauge, a sentence-level heatmap, a breakdown of each engine\'s score and reasoning, hyperlink authenticity, and citation authenticity. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card (for sharing). Every analysis is automatically saved to \"History\" for later review.'**
   String get helpWorkflowStep5Body;
+
+  /// No description provided for @helpWorkflowStep1ChipOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'First launch'**
+  String get helpWorkflowStep1ChipOnboarding;
+
+  /// No description provided for @helpWorkflowStep1ChipModelManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Model management'**
+  String get helpWorkflowStep1ChipModelManager;
+
+  /// No description provided for @helpWorkflowStep1ChipUpdateCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto update check'**
+  String get helpWorkflowStep1ChipUpdateCheck;
+
+  /// No description provided for @helpWorkflowStep2ChipTransformer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformer (40%)'**
+  String get helpWorkflowStep2ChipTransformer;
+
+  /// No description provided for @helpWorkflowStep2ChipStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistical analysis (25%)'**
+  String get helpWorkflowStep2ChipStatistics;
+
+  /// No description provided for @helpWorkflowStep2ChipStylometry.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylometry (20%)'**
+  String get helpWorkflowStep2ChipStylometry;
+
+  /// No description provided for @helpWorkflowStep2ChipAdversarial.
+  ///
+  /// In en, this message translates to:
+  /// **'Adversarial defense (15%)'**
+  String get helpWorkflowStep2ChipAdversarial;
+
+  /// No description provided for @helpWorkflowStep2ChipReportLlm.
+  ///
+  /// In en, this message translates to:
+  /// **'Report LLM (optional)'**
+  String get helpWorkflowStep2ChipReportLlm;
+
+  /// No description provided for @helpWorkflowStep3ChipPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste text'**
+  String get helpWorkflowStep3ChipPaste;
+
+  /// No description provided for @helpWorkflowStep3ChipImageOcr.
+  ///
+  /// In en, this message translates to:
+  /// **'Image OCR'**
+  String get helpWorkflowStep3ChipImageOcr;
+
+  /// No description provided for @helpWorkflowStep3ChipImportFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF / DOCX / TXT / MD'**
+  String get helpWorkflowStep3ChipImportFormats;
+
+  /// No description provided for @helpWorkflowStep3ChipCodeFormulaIsolation.
+  ///
+  /// In en, this message translates to:
+  /// **'Code/formula isolation'**
+  String get helpWorkflowStep3ChipCodeFormulaIsolation;
+
+  /// No description provided for @helpWorkflowStep4ChipEnsemble.
+  ///
+  /// In en, this message translates to:
+  /// **'Four-engine ensemble'**
+  String get helpWorkflowStep4ChipEnsemble;
+
+  /// No description provided for @helpWorkflowStep4ChipLiveProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Live progress'**
+  String get helpWorkflowStep4ChipLiveProgress;
+
+  /// No description provided for @helpWorkflowStep4ChipEslCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'ESL writing correction'**
+  String get helpWorkflowStep4ChipEslCorrection;
+
+  /// No description provided for @helpWorkflowStep5ChipOverviewGauge.
+  ///
+  /// In en, this message translates to:
+  /// **'AI overview gauge'**
+  String get helpWorkflowStep5ChipOverviewGauge;
+
+  /// No description provided for @helpWorkflowStep5ChipSentenceHeatmap.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence heatmap'**
+  String get helpWorkflowStep5ChipSentenceHeatmap;
+
+  /// No description provided for @helpWorkflowStep5ChipCitationVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Citation verification'**
+  String get helpWorkflowStep5ChipCitationVerification;
+
+  /// No description provided for @helpWorkflowStep5ChipExportFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF / CSV / JSON / PNG export'**
+  String get helpWorkflowStep5ChipExportFormats;
 
   /// No description provided for @helpTuningTitle.
   ///

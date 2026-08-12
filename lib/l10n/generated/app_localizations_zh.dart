@@ -1211,6 +1211,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpWorkflowTitle => '完整操作流程';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return '第 $step 步';
+  }
+
+  @override
   String get helpWorkflowStep1Title => '模型下載與更新';
 
   @override
@@ -1264,6 +1269,63 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       '報告頁包含：整體 AI 機率環狀圖、逐句熱力圖、四引擎明細評分與理由、超連結真實性、文獻參考真實性。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡（社群分享用）。每次分析結果自動保存於「歷史紀錄」，可隨時回顧。';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => '模型管理中心';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => '自動版本偵測';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => '統計分析 (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => '風格特徵 (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => '對抗防禦 (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => '報告 LLM (選用)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => '直接貼上';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => '圖片 OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '四引擎並列推論';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => '即時動態進度';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母語寫作校正';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI 總覽儀表';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => '句級熱力圖';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => '文獻驗證';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats => 'PDF / CSV / JSON / PNG 匯出';
 
   @override
   String get helpTuningTitle => '模型下載與調適教學（零基礎）';
@@ -2641,6 +2703,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get helpWorkflowTitle => '完整操作流程';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return '第 $step 步';
+  }
+
+  @override
   String get helpWorkflowStep1Title => '模型下载与更新';
 
   @override
@@ -2694,6 +2761,63 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get helpWorkflowStep5Body =>
       '报告页包含：整体 AI 几率环状图、逐句热力图、四引擎明细评分与理由、超链接真实性、文献参考真实性。可导出 PDF 完整报告、CSV 逐句数据、JSON（供系统集成）、PNG 摘要卡（社群分享用）。每次分析结果自动保存于「历史纪录」，可随时回顾。';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => '模型管理中心';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => '自动版本侦测';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => '统计分析 (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => '风格特征 (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => '对抗防御 (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => '报告 LLM (选用)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => '直接粘贴';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => '图片 OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => '代码/公式隔离';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '四引擎并行推理';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => '实时动态进度';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母语写作校正';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI 总览仪表';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => '句级热力图';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => '文献验证';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats => 'PDF / CSV / JSON / PNG 导出';
 
   @override
   String get helpTuningTitle => '模型下载与调适教学（零基础）';
@@ -4071,6 +4195,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get helpWorkflowTitle => '完整操作流程';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return '第 $step 步';
+  }
+
+  @override
   String get helpWorkflowStep1Title => '模型下載與更新';
 
   @override
@@ -4124,6 +4253,63 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get helpWorkflowStep5Body =>
       '報告頁包含：整體 AI 機率環狀圖、逐句熱力圖、四引擎明細評分與理由、超連結真實性、文獻參考真實性。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡（社群分享用）。每次分析結果自動保存於「歷史紀錄」，可隨時回顧。';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => '模型管理中心';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => '自動版本偵測';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => '統計分析 (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => '風格特徵 (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => '對抗防禦 (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => '報告 LLM (選用)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => '直接貼上';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => '圖片 OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '四引擎並列推論';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => '即時動態進度';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母語寫作校正';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'AI 總覽儀表';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => '句級熱力圖';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => '文獻驗證';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats => 'PDF / CSV / JSON / PNG 匯出';
 
   @override
   String get helpTuningTitle => '模型下載與調適教學（零基礎）';

@@ -1277,6 +1277,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get helpWorkflowTitle => 'Vollständiger Betriebsablauf';
 
   @override
+  String helpWorkflowStepLabel(int step) {
+    return 'Schritt $step';
+  }
+
+  @override
   String get helpWorkflowStep1Title => 'Modelle herunterladen & aktualisieren';
 
   @override
@@ -1330,6 +1335,65 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'Die Berichtsseite umfasst: den Gesamtindikator der KI-Wahrscheinlichkeit, die Heatmap auf Satzebene, die Aufschlüsselung von Punktzahl und Gründen jeder Engine, die Hyperlink-Authentizität und die Zitat-Authentizität. Sie können den vollständigen PDF-Bericht, satzweise CSV-Daten, JSON (für Systemintegration) oder eine PNG-Übersichtskarte (zum Teilen) exportieren. Jede Analyse wird automatisch im \"Verlauf\" zur späteren Überprüfung gespeichert.';
+
+  @override
+  String get helpWorkflowStep1ChipOnboarding => 'Erster Start';
+
+  @override
+  String get helpWorkflowStep1ChipModelManager => 'Modellverwaltung';
+
+  @override
+  String get helpWorkflowStep1ChipUpdateCheck => 'Auto-Updateprüfung';
+
+  @override
+  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+
+  @override
+  String get helpWorkflowStep2ChipStatistics => 'Statistische Analyse (25%)';
+
+  @override
+  String get helpWorkflowStep2ChipStylometry => 'Stilometrie (20%)';
+
+  @override
+  String get helpWorkflowStep2ChipAdversarial => 'Adversarial Defense (15%)';
+
+  @override
+  String get helpWorkflowStep2ChipReportLlm => 'Berichts-LLM (optional)';
+
+  @override
+  String get helpWorkflowStep3ChipPaste => 'Text einfügen';
+
+  @override
+  String get helpWorkflowStep3ChipImageOcr => 'Bild-OCR';
+
+  @override
+  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+
+  @override
+  String get helpWorkflowStep3ChipCodeFormulaIsolation =>
+      'Code/Formeln isolieren';
+
+  @override
+  String get helpWorkflowStep4ChipEnsemble => '4-Engine-Ensemble';
+
+  @override
+  String get helpWorkflowStep4ChipLiveProgress => 'Live-Fortschritt';
+
+  @override
+  String get helpWorkflowStep4ChipEslCorrection => 'ESL-Korrektur';
+
+  @override
+  String get helpWorkflowStep5ChipOverviewGauge => 'KI-Übersichtsanzeige';
+
+  @override
+  String get helpWorkflowStep5ChipSentenceHeatmap => 'Satz-Heatmap';
+
+  @override
+  String get helpWorkflowStep5ChipCitationVerification => 'Zitierungsprüfung';
+
+  @override
+  String get helpWorkflowStep5ChipExportFormats =>
+      'PDF / CSV / JSON / PNG exportieren';
 
   @override
   String get helpTuningTitle =>
