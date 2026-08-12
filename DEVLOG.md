@@ -1,5 +1,22 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-13（第三十四次更新）— 優化：OCR 後處理強化學術文獻與正文分析品質
+
+**概述**
+回應 OCR 辨識品質會直接影響文獻核實與 AI 機率分析真實性的問題：
+1. 共用 `OcrPostProcessor` 新增 Gemini/視覺模型 Markdown code fence 清除與 Unicode ligature 正規化
+2. OCR 後處理新增學術文獻常見 PDF/OCR 擠壓修復，提前處理 `Stabilityofa`、`Journalof`、`containedbetween`、`ina` 等髒字串
+3. 新增標點後漏空格修復，改善 `Taylor,G.I.`、`7:401-418`、句號後直接接大寫字母等 OCR/PDF 抽字結果
+4. Web 本地 OCR 伺服器回傳與原生平台 OCR channel 回傳都統一經過同一套後處理，避免不同 OCR 來源文字品質不一致
+5. 新增測試確認學術連寫可修復，且 `Transition`、`Simon` 等正常英文單字不會被誤切
+
+**修復內容**：✅ **完成**
+
+- OCR 輸入端先降低髒字串，讓文獻查核與正文 AI 分析吃到更乾淨的文字
+- 本地 OCR server、Gemini OCR 與原生 OCR 的輸出流程更一致
+
+---
+
 ## 2026-08-13（第三十三次更新）— 修復：文獻驗證進度預覽去除重複提示
 
 **概述**

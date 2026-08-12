@@ -56,12 +56,18 @@ class OcrService {
         final results = json['results'] as List<dynamic>? ?? [];
         if (results.isNotEmpty) {
           // 本地伺服器回傳的是結構化結果，這裡簡單合併為文字
-          return results
-              .map((r) => (r as Map<String, dynamic>)['text'] as String? ?? '')
-              .join('\n');
+          return OcrPostProcessor.clean(
+            results
+                .map(
+                  (r) => (r as Map<String, dynamic>)['text'] as String? ?? '',
+                )
+                .join('\n'),
+          );
         }
         final text = json['text'] as String?;
-        if (text != null && text.trim().isNotEmpty) return text;
+        if (text != null && text.trim().isNotEmpty) {
+          return OcrPostProcessor.clean(text);
+        }
         _lastErrorMessage =
             '本地 OCR 伺服器有回應，但未回傳文字。請確認回應格式含 results[].text 或 text。';
       } else {

@@ -16,9 +16,13 @@ void main() {
     });
 
     test('修復英文跨行連字號', () {
-      const input = 'The artificial in-\ntelligence model demonstrated high accuracy.';
+      const input =
+          'The artificial in-\ntelligence model demonstrated high accuracy.';
       final cleaned = OcrPostProcessor.clean(input);
-      expect(cleaned, equals('The artificial intelligence model demonstrated high accuracy.'));
+      expect(
+        cleaned,
+        equals('The artificial intelligence model demonstrated high accuracy.'),
+      );
     });
 
     test('清理 CJK 與全形標點符號間的空格', () {
@@ -31,6 +35,49 @@ void main() {
       const input = '第一段\n\n\n\n\n第二段';
       final cleaned = OcrPostProcessor.clean(input);
       expect(cleaned, equals('第一段\n\n第二段'));
+    });
+
+    test('修復學術 OCR/PDF 常見連寫與標點漏空格', () {
+      const input =
+          '```text\n'
+          'Taylor,G.I.,“Stabilityofa Viscous Liquid Containedbetween Two Rotating Cylinders,”'
+          'Journalof Fluid Mechanics 7:401-418(1960).\n'
+          'Lope,J.M.,“Dynamics of Three-tori ina Periodically Forced Navier-Stokes Flow,”'
+          'Physical Review Letters 85:972-975(2001).\n'
+          '```';
+      final cleaned = OcrPostProcessor.clean(input);
+
+      expect(cleaned, isNot(contains('```')));
+      expect(cleaned, contains('Taylor, G. I.'));
+      expect(
+        cleaned,
+        contains(
+          'Stability of a Viscous Liquid Contained between Two Rotating Cylinders',
+        ),
+      );
+      expect(cleaned, contains('Journal of Fluid Mechanics 7: 401-418'));
+      expect(cleaned, contains('Dynamics of Three-tori In a Periodically'));
+      expect(cleaned, contains('Physical Review Letters 85: 972-975'));
+    });
+
+    test('保留正常英文單字，不把 Transition 或 Simon 誤切成尾隨介詞', () {
+      const input =
+          'Transition in circular Couette flow. Simon, N.J., and Donnelly, R.J.';
+      final cleaned = OcrPostProcessor.clean(input);
+
+      expect(cleaned, contains('Transition in circular Couette flow'));
+      expect(cleaned, contains('Simon'));
+      expect(cleaned, isNot(contains('Transiti on')));
+      expect(cleaned, isNot(contains('Sim on')));
+    });
+
+    test('正規化 OCR 常見 ligature 與不可斷行空格', () {
+      const input = 'The ﬁnal ﬂow model uses non\u00A0reversing modulation.';
+      final cleaned = OcrPostProcessor.clean(input);
+      expect(
+        cleaned,
+        equals('The final flow model uses non reversing modulation.'),
+      );
     });
   });
 }

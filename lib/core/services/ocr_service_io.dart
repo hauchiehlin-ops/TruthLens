@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/ocr_post_processor.dart';
+
 /// 原生平台 OCR 服務（macOS、iOS、Android；Windows 需註冊對應外掛後才可用）
 ///
 /// 透過 MethodChannel 呼叫各平台的 on-device 文字辨識：
@@ -93,7 +95,7 @@ class OcrService {
       if (text == null || text.trim().isEmpty) {
         _lastErrorMessage = '原生 OCR 已執行，但圖片中未辨識到可用文字。';
       }
-      return text;
+      return text == null ? null : OcrPostProcessor.clean(text);
     } on MissingPluginException {
       _lastErrorMessage = '此平台尚未註冊原生 OCR 外掛。';
       return null;
