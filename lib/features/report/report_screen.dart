@@ -14,6 +14,23 @@ import '../../shared/widgets/professional_report_header.dart';
 import '../../shared/widgets/suspicious_sentences_list.dart';
 import 'report_document.dart';
 
+@visibleForTesting
+List<BibliographyCheckResult> deduplicateBibliographyPreviewResults(
+  List<BibliographyCheckResult>? checks,
+  String Function(BibliographyCheckResult check) labelFor,
+) {
+  if (checks == null || checks.isEmpty) return const [];
+  final preview = <BibliographyCheckResult>[];
+  final seenLabels = <String>{};
+  for (final check in checks) {
+    final label = labelFor(check);
+    if (!seenLabels.add(label)) continue;
+    preview.add(check);
+    if (preview.length >= 3) break;
+  }
+  return preview;
+}
+
 /// 報告頁：版面由 [ReportDocument] 動態決定（LLM 或確定性模板生成）。
 /// 依 document 的元件順序渲染，並標示生成來源。
 class ReportScreen extends StatefulWidget {
@@ -577,6 +594,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget _bibliographyCard(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     final checks = _bibChecks;
+    final previewChecks = _deduplicatedBibliographyPreview(checks, l10n);
 
     if (_bibEntries.isEmpty) {
       return Card(
@@ -660,7 +678,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: 6),
-                        for (final c in (checks ?? const []).take(3))
+                        for (final c in previewChecks)
                           Padding(
                             padding: const EdgeInsets.only(top: 3),
                             child: Row(
@@ -825,6 +843,14 @@ class _ReportScreenState extends State<ReportScreen> {
     }
     return l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain);
   }
+
+  List<BibliographyCheckResult> _deduplicatedBibliographyPreview(
+    List<BibliographyCheckResult>? checks,
+    AppLocalizations l10n,
+  ) => deduplicateBibliographyPreviewResults(
+    checks,
+    (check) => _bibStatusLabel(check, l10n),
+  );
 
   String _bibProgressText() {
     final total = _bibTotal > 0 ? _bibTotal : _bibEntries.length;
