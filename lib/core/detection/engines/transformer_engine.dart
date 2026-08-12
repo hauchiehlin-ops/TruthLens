@@ -49,11 +49,29 @@ class TransformerEngine implements DetectionEngine {
   /// 依變體檔解析模型與 tokenizer 檔案路徑
   Future<(String, String)?> _resolvePaths() async {
     final active = _resolveVariant();
-    if (active == null || !_supported(active.tokenizer)) return null;
-    final modelPath = await modelManager.variantModelPath('transformer', active.variantId);
-    final tokPath = await modelManager.variantTokenizerPath('transformer', active.variantId);
-    if (modelPath == null || tokPath == null) return null;
+    if (active == null) {
+      _loadError = '未找到使用中的 Transformer 模型；請到模型管理下載或設為使用中';
+      return null;
+    }
+    if (!_supported(active.tokenizer)) {
+      _loadError =
+          '使用中模型的 tokenizer 類型不支援（${active.tokenizer}）；請切換到支援 bert-wordpiece 或 roberta-bpe 的模型';
+      return null;
+    }
+    final modelPath = await modelManager.variantModelPath(
+      'transformer',
+      active.variantId,
+    );
+    final tokPath = await modelManager.variantTokenizerPath(
+      'transformer',
+      active.variantId,
+    );
+    if (modelPath == null || tokPath == null) {
+      _loadError = 'Transformer 模型或 tokenizer 路徑缺失；請在模型管理重新下載';
+      return null;
+    }
     if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
+      _loadError = 'Transformer 模型或 tokenizer 檔案不存在；請在模型管理重新下載';
       return null;
     }
     return (modelPath, tokPath);
@@ -87,7 +105,8 @@ class TransformerEngine implements DetectionEngine {
       final errorMsg = e.toString();
 
       // 區分 opset 版本不支援 vs 其他錯誤，設定對應的錯誤消息
-      if (errorMsg.contains('opset') || errorMsg.contains('Opset') ||
+      if (errorMsg.contains('opset') ||
+          errorMsg.contains('Opset') ||
           errorMsg.contains('ValidateOpsetForDomain')) {
         _loadError = 'ONNX opset 版本不支援（該模型版本太新，需更新應用）: ${active.variantId}';
       } else if (e is FormatException) {
@@ -106,12 +125,16 @@ class TransformerEngine implements DetectionEngine {
   }
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n,
+  ) async {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded();
       if (detector == null || text.sentences.isEmpty) return _unavailable(l10n);
-    } catch (_) {
+    } catch (e) {
+      _loadError = '模型載入失敗: ${e.runtimeType}: $e';
       return _unavailable(l10n);
     }
 
@@ -119,6 +142,7 @@ class TransformerEngine implements DetectionEngine {
     try {
       perSentence = await detector.classifySentences(text.sentences);
     } catch (e) {
+      _loadError = '模型推論失敗: ${e.runtimeType}: $e';
       return _unavailable(l10n);
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
@@ -151,22 +175,25 @@ class TransformerEngine implements DetectionEngine {
       },
       reasons: [
         l10n.engineReasonTransformerResult(
-            variant?.variantId ?? name(l10n), aiCount, perSentence.length),
+          variant?.variantId ?? name(l10n),
+          aiCount,
+          perSentence.length,
+        ),
       ],
       sentenceScores: perSentence,
     );
   }
 
   EngineScore _unavailable(AppLocalizations l10n) => EngineScore(
-        engineId: id,
-        engineName: name(l10n),
-        aiProbability: 0.5,
-        weight: defaultWeight,
-        available: false,
-        reasons: [
-          _loadError != null
-              ? l10n.engineReasonTransformerLoadFailed(_loadError!)
-              : l10n.engineReasonTransformerNotInstalled,
-        ],
-      );
+    engineId: id,
+    engineName: name(l10n),
+    aiProbability: 0.5,
+    weight: defaultWeight,
+    available: false,
+    reasons: [
+      _loadError == null
+          ? l10n.engineReasonTransformerNotInstalled
+          : l10n.engineReasonTransformerLoadFailed(_loadError!),
+    ],
+  );
 }

@@ -108,16 +108,34 @@
     const session = state.sessions.get(modelId);
     if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
     const shape = [1, seqLen];
-    const ids = BigInt64Array.from(inputIds.map((v) => BigInt(v)));
-    const mask = BigInt64Array.from(attentionMask.map((v) => BigInt(v)));
-    const feeds = {
-      input_ids: new ort.Tensor('int64', ids, shape),
-      attention_mask: new ort.Tensor('int64', mask, shape),
-    };
-    const results = await session.run(feeds);
+    let results;
+    try {
+      const ids = BigInt64Array.from(inputIds.map((v) => BigInt(v)));
+      const mask = BigInt64Array.from(attentionMask.map((v) => BigInt(v)));
+      results = await session.run({
+        input_ids: new ort.Tensor('int64', ids, shape),
+        attention_mask: new ort.Tensor('int64', mask, shape),
+      });
+    } catch (e) {
+      console.warn('[truthlensOrt] int64 輸入推論失敗，改用 int32 重試：', e);
+      const ids = Int32Array.from(inputIds);
+      const mask = Int32Array.from(attentionMask);
+      results = await session.run({
+        input_ids: new ort.Tensor('int32', ids, shape),
+        attention_mask: new ort.Tensor('int32', mask, shape),
+      });
+    }
     const outputName = Object.keys(results)[0];
     const output = results[outputName];
-    return { data: Array.from(output.data), dims: Array.from(output.dims) };
+    return {
+      data: Array.from(output.data, numberFromTensorValue),
+      dims: Array.from(output.dims, numberFromTensorValue),
+    };
+  }
+
+  function numberFromTensorValue(value) {
+    if (typeof value === 'bigint') return Number(value);
+    return Number(value);
   }
 
   function releaseModel(modelId) {

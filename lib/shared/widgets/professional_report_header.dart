@@ -752,7 +752,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
     }
     if (hasModelGap) {
       lines.add(
-        'Transformer 是端上神經網路文字分類器，負責句級 AI 機率與多語言語意特徵；若未參與，請到模型管理使用「補齊推薦分析模型」。',
+        '有引擎未參與時，請先到模型管理使用「補齊推薦分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案遺失或 Web/ONNX Runtime 相容性限制。',
       );
     }
 
@@ -802,7 +802,7 @@ class _EngineGroup {
   String get relationshipText {
     final weightText = '${(weight * 100).round()}%';
     if (!available) {
-      return '$label 未參與本次加權投票，該面向暫以 0% 顯示。';
+      return '$label 未參與本次加權投票，該面向暫以 0% 顯示。${_resolutionHint(role)}';
     }
     final contributionText = '${(contribution * 100).round()} 個百分點';
     final variantText = variantCount > 1 ? '（已合併 $variantCount 個模型變體）' : '';
@@ -846,9 +846,12 @@ class _EngineGroup {
     final contribution = available && availableWeight > 0
         ? probability * weight / availableWeight
         : 0.0;
-    final reasons = [
+    final reasons = <String>[
       for (final score in scores)
         ...score.reasons.where((reason) => reason.trim().isNotEmpty),
+    ];
+    final uniqueReasons = <String>[
+      for (final reason in reasons.toSet()) _explainReason(role, reason),
     ];
 
     return _EngineGroup(
@@ -860,7 +863,9 @@ class _EngineGroup {
       contribution: contribution,
       available: available,
       variantCount: math.max(scores.length, 1),
-      reasons: reasons.isEmpty ? [_fallbackReason(role, available)] : reasons,
+      reasons: uniqueReasons.isEmpty
+          ? [_fallbackReason(role, available)]
+          : uniqueReasons,
     );
   }
 
@@ -899,5 +904,26 @@ class _EngineGroup {
   static String _fallbackReason(String role, bool available) {
     if (!available) return '${_roleLabel(role)}未參與本次投票。';
     return '${_roleLabel(role)}未回傳額外文字說明。';
+  }
+
+  static String _resolutionHint(String role) => switch (role) {
+    'transformer' => '解法：在模型管理下載並啟用多語言 Transformer；若已下載，重新下載模型與 tokenizer。',
+    'adversarial' =>
+      '解法：在模型管理重新下載改寫偵測模型與 tokenizer；Web 端請更新到已修補 BigInt 相容性的版本後重新分析。',
+    _ => '',
+  };
+
+  static String _explainReason(String role, String reason) {
+    if (role == 'adversarial' &&
+        reason.contains('Cannot convert a BigInt value to a number')) {
+      return '$reason。原因：Web 端 ONNX Runtime 回傳 BigInt 張量，舊版橋接無法轉換；已修補為 JS 端先轉 Number，請更新後重新分析。';
+    }
+    if (role == 'transformer' && reason.contains('tokenizer')) {
+      return '$reason。解法：切換到 catalog 內建模型，或重新下載模型與 tokenizer。';
+    }
+    if (role == 'transformer' && reason.contains('未找到使用中的')) {
+      return '$reason。解法：到模型管理點「補齊推薦分析模型」，並確認多語言 Transformer 標示為使用中。';
+    }
+    return reason;
   }
 }

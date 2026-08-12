@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第十七次更新）— 修復：Transformer/對抗式引擎未參與原因可解釋化
+
+**概述**
+針對分析報告中 Transformer 與對抗式防禦未參與投票的問題，修正 Web 端推論橋接與報告說明：
+1. Web ONNX Runtime 輸出含 BigInt 時，JS 橋接先轉成 Number，避免 Dart 端發生 `Cannot convert a BigInt value to a number`
+2. Web 推論輸入先嘗試 int64，失敗後降級 int32 重試，提高不同 ONNX 模型相容性
+3. Transformer 引擎細分未參與原因：未找到使用中模型、tokenizer 不支援、模型/tokenizer 檔案缺失、載入失敗、推論失敗
+4. 報告頁對未參與引擎加入具體解法，並去除重複原因文字
+
+**修復內容**：✅ **完成**
+
+- `web/ort_bridge.js` 正規化 ONNX output data/dims，避免 BigInt 跨 JS/Dart 邊界失敗
+- `web_js_bridge.dart` 使用 double→int 方式讀取 dims，降低 JSNumber 轉型脆弱性
+- `TransformerEngine` 在 `_resolvePaths` 與推論例外時保留具體錯誤
+- 報告詳細分析會說明「補齊推薦分析模型」「重新下載模型與 tokenizer」「Web/ONNX Runtime 相容性限制」等處理方向
+
+---
+
 ## 2026-08-12（第十六次更新）— 修復：改寫偵測模型狀態與下載路徑顯示
 
 **概述**

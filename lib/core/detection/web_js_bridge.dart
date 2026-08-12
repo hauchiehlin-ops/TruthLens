@@ -53,11 +53,18 @@ extension type _OrtRunResult._(JSObject _) implements JSObject {
 }
 
 @JS('truthlensOrt.loadModel')
-external JSPromise<JSString> _ortLoadModel(JSString modelId, JSUint8Array bytes);
+external JSPromise<JSString> _ortLoadModel(
+  JSString modelId,
+  JSUint8Array bytes,
+);
 
 @JS('truthlensOrt.run')
 external JSPromise<_OrtRunResult> _ortRun(
-    JSString modelId, JSInt32Array inputIds, JSInt32Array attentionMask, JSNumber seqLen);
+  JSString modelId,
+  JSInt32Array inputIds,
+  JSInt32Array attentionMask,
+  JSNumber seqLen,
+);
 
 @JS('truthlensOrt.releaseModel')
 external void _ortReleaseModel(JSString modelId);
@@ -85,13 +92,19 @@ class WebOrtSession {
   /// 執行推論，回傳輸出張量的扁平資料與形狀；呼叫端依模型輸出形狀自行 reshape
   /// （分類器為 [1,2]，困惑度模型為 [1,seq,vocab]）。
   Future<(List<double>, List<int>)> run(
-      List<int> inputIds, List<int> attentionMask) async {
+    List<int> inputIds,
+    List<int> attentionMask,
+  ) async {
     final ids = Int32List.fromList(inputIds).toJS;
     final mask = Int32List.fromList(attentionMask).toJS;
-    final result =
-        await _ortRun(modelId.toJS, ids, mask, inputIds.length.toJS).toDart;
+    final result = await _ortRun(
+      modelId.toJS,
+      ids,
+      mask,
+      inputIds.length.toJS,
+    ).toDart;
     final data = result.data.toDart.map((n) => n.toDartDouble).toList();
-    final dims = result.dims.toDart.map((n) => n.toDartInt).toList();
+    final dims = result.dims.toDart.map((n) => n.toDartDouble.toInt()).toList();
     return (data, dims);
   }
 
@@ -126,8 +139,7 @@ class WebDb {
   static Future<String> getAllJson() async =>
       (await _dbGetAllJson().toDart).toDart;
 
-  static Future<void> deleteEntry(String id) =>
-      _dbDeleteEntry(id.toJS).toDart;
+  static Future<void> deleteEntry(String id) => _dbDeleteEntry(id.toJS).toDart;
 
   static Future<void> clear() => _dbClear().toDart;
 }
