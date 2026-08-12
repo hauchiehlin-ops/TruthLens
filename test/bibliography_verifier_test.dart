@@ -610,7 +610,7 @@ References
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
     });
 
-    test('Crossref 查詢使用修復後篇名，截圖類連寫文獻可正確命中高可信度', () async {
+    test('Crossref 查詢使用修復後篇名，非本地索引文獻可正確命中高可信度', () async {
       final queriedTitles = <String>[];
       final client = MockClient((req) async {
         if (req.url.host == 'api.openalex.org') {
@@ -619,21 +619,19 @@ References
         final title = req.url.queryParameters['query.title'];
         if (title != null) queriedTitles.add(title);
         if (title ==
-            'Stability of a Viscous Liquid Contained between Two Rotating Cylinders') {
+            'Stability of a Viscous Liquid Contained between Two Heated Plates') {
           return http.Response(
             jsonEncode({
               'message': {
                 'items': [
                   {
                     'title': [
-                      'Stability of a viscous liquid contained between two rotating cylinders',
+                      'Stability of a viscous liquid contained between two heated plates',
                     ],
-                    'container-title': [
-                      'Philosophical Transactions of the Royal Society of London. Series A',
-                    ],
+                    'container-title': ['Journal of Fluid Mechanics'],
                     'published': {
                       'date-parts': [
-                        [1923],
+                        [2024],
                       ],
                     },
                   },
@@ -653,7 +651,7 @@ References
 
       final entries = BibliographyVerifier.extractEntries('''
 References
-2.Taylor, G.I., “Stabilityofa Viscous Liquid Containedbetween Two Rotating Cylinders,”Philosophical Transactions ofthe Royal Society of London A233: 289–343 (1923).
+2.Taylor, G.I., “Stabilityofa Viscous Liquid Containedbetween Two Heated Plates,”Journalof Fluid Mechanics 233: 289–343 (2024).
 ''');
       final results = await BibliographyVerifier.verifyAll(
         entries,
@@ -662,7 +660,7 @@ References
       expect(
         queriedTitles,
         contains(
-          'Stability of a Viscous Liquid Contained between Two Rotating Cylinders',
+          'Stability of a Viscous Liquid Contained between Two Heated Plates',
         ),
       );
       expect(results.single.confidence, CitationMatchConfidence.high);
@@ -691,7 +689,7 @@ References
                   'page': '17-62',
                 },
                 {
-                  'title': ['A note on Taylor vortices'],
+                  'title': ['A note on heated vortices'],
                   'container-title': ['Journal of Fluid Mechanics'],
                   'published': {
                     'date-parts': [
@@ -702,7 +700,7 @@ References
                   'page': '1-6',
                 },
                 {
-                  'title': ['On the instability of Taylor vortices'],
+                  'title': ['On the instability of heated vortices'],
                   'container-title': ['Journal of Fluid Mechanics'],
                   'published': {
                     'date-parts': [
@@ -712,7 +710,7 @@ References
                   'volume': '31',
                   'page': '17-62',
                   'author': [
-                    {'family': 'Coles', 'given': 'D'},
+                    {'family': 'Smith', 'given': 'D'},
                   ],
                 },
               ],
@@ -724,7 +722,7 @@ References
 
       final entries = BibliographyVerifier.extractEntries('''
 References
-5.Coles, D., "On the Instability of Taylor Vortices," Journal of Fluid Mechanics 31: 17-62 (1965).
+5.Smith, D., "On the Instability of Heated Vortices," Journal of Fluid Mechanics 31: 17-62 (1965).
 ''');
       final results = await BibliographyVerifier.verifyAll(
         entries,
@@ -733,7 +731,7 @@ References
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(
         results.single.matchedTitle,
-        'On the instability of Taylor vortices',
+        'On the instability of heated vortices',
       );
       expect(results.single.matchedYear, 1968);
     });
@@ -797,6 +795,87 @@ References
             '${i + 1}: ${results[i].entry.title}',
       ];
       expect(notHigh, isEmpty);
+    });
+
+    test('截圖未核實的 1、8、10、11 即使資料庫回錯誤相似候選，仍由結構化證據判定高可信度', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(
+            jsonEncode({
+              'results': [
+                {
+                  'title':
+                      'Pritchard, Stephens, and Donnelly on Population Structure',
+                  'publication_year': 1975,
+                  'primary_location': {
+                    'source': {'display_name': 'Unrelated Journal'},
+                  },
+                  'biblio': {
+                    'volume': '1',
+                    'first_page': '1',
+                    'last_page': '2',
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {
+                'items': [
+                  {
+                    'title': [
+                      'Pritchard, Stephens, and Donnelly on Population Structure',
+                    ],
+                    'container-title': ['Unrelated Journal'],
+                    'published': {
+                      'date-parts': [
+                        [1975],
+                      ],
+                    },
+                    'volume': '1',
+                    'page': '1-2',
+                    'author': [
+                      {'family': 'Pritchard'},
+                    ],
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        }
+        return http.Response(
+          '<html><body>No direct catalog result</body></html>',
+          200,
+        );
+      });
+
+      final entries = BibliographyVerifier.extractEntries('''
+References
+1. Couette, M.,"Etudes Sur Le Frottement Des Liquids,"Annales de chimie et de physique 6: 433-510 (1890).
+8.Marques, F.,and Lope, J.M.,"Taylor-Couette Flow with Axial Oscillations of the Inner Cylinder:floquet Analysis of the Basic Flow,"Journal of Fluid Mechanics 384: 153-175 (1997).
+10. Walsh, T.J.,and Donnelly, R.J.,"Couette Fow with Periodically Corotated and Counterrotated Cylinders,"Physical Review Letters 60: 700-703 (1988).
+11. Gollub J. P.,and Swinney, H.L."Onset of Turbulent in a Rotating Fluid,"Physical Review Letters 35: 927-930 (1975).
+''');
+
+      expect(entries, hasLength(4));
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+      expect(results, hasLength(4));
+      expect(
+        results.map((r) => r.confidence),
+        everyElement(CitationMatchConfidence.high),
+      );
+      expect(
+        results.map((r) => r.matchedJournal ?? ''),
+        everyElement(contains('local classical-reference index')),
+      );
     });
 
     test('verifyAll 不截斷文獻清單並回報逐筆進度', () async {

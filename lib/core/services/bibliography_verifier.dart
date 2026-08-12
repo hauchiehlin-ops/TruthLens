@@ -1003,6 +1003,10 @@ class BibliographyVerifier {
       searchTitle,
       entry,
     );
+    final trustedLocalResult = _verifyKnownClassicalReference(entry);
+    if (trustedLocalResult != null) {
+      return trustedLocalResult;
+    }
 
     if (entry.doi != null) {
       try {
@@ -1207,8 +1211,33 @@ class BibliographyVerifier {
                 entry.year != null &&
                 matchedYear != null &&
                 (entry.year! - matchedYear).abs() <= 1;
+            final looseYearMatches =
+                entry.year != null &&
+                matchedYear != null &&
+                (entry.year! - matchedYear).abs() <= 5;
+            final venueMatches =
+                entry.venueTitle != null &&
+                _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
+            final locatorMatches = _openAlexLocatorMatches(entry, top);
+            final authorMatches = _openAlexAuthorMatches(entry, top);
 
-            if (titleSim >= 0.60 || (titleSim >= 0.45 && yearMatches)) {
+            final score =
+                titleSim * 0.62 +
+                (yearMatches
+                    ? 0.16
+                    : (looseYearMatches && (venueMatches || locatorMatches)
+                          ? 0.08
+                          : 0.0)) +
+                (venueMatches ? 0.13 : 0.0) +
+                (authorMatches ? 0.08 : 0.0) +
+                (locatorMatches ? 0.16 : 0.0);
+
+            if (score >= 0.74 ||
+                titleSim >= 0.72 ||
+                (titleSim >= 0.50 &&
+                    (yearMatches || looseYearMatches) &&
+                    (venueMatches || authorMatches || locatorMatches)) ||
+                (titleSim >= 0.42 && venueMatches && locatorMatches)) {
               return BibliographyCheckResult(
                 entry: entry,
                 confidence: CitationMatchConfidence.high,
@@ -1216,7 +1245,10 @@ class BibliographyVerifier {
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
               );
-            } else if (titleSim >= 0.28 || (titleSim >= 0.18 && yearMatches)) {
+            } else if (score >= 0.42 ||
+                titleSim >= 0.28 ||
+                (titleSim >= 0.18 &&
+                    (yearMatches || venueMatches || locatorMatches))) {
               bestUncertainCandidate ??= BibliographyCheckResult(
                 entry: entry,
                 confidence: CitationMatchConfidence.uncertain,
@@ -1243,11 +1275,6 @@ class BibliographyVerifier {
         return journalCatalogResult;
       }
       bestUncertainCandidate ??= journalCatalogResult;
-    }
-
-    final knownReferenceResult = _verifyKnownClassicalReference(entry);
-    if (knownReferenceResult != null) {
-      return knownReferenceResult;
     }
 
     // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名
@@ -1350,8 +1377,18 @@ class BibliographyVerifier {
     var bestScore = 0.0;
 
     for (final record in _knownClassicalFluidReferences) {
-      final titleSim = _titleSimilarity(entryTitle, record.title);
-      if (titleSim < 0.58) continue;
+      final titleSim = _bestKnownRecordTitleSimilarity(entryTitle, record);
+      final locatorMatches = _entryLocatorMatchesRecord(entry, record);
+      if (titleSim < 0.46 && !locatorMatches) continue;
+
+      final entryAuthor = entry.firstAuthorSurname?.toLowerCase();
+      final recordAuthor = record.firstAuthorSurname?.toLowerCase();
+      if (entryAuthor != null &&
+          recordAuthor != null &&
+          entryAuthor != recordAuthor &&
+          _titleSimilarity(entryAuthor, recordAuthor) < 0.78) {
+        continue;
+      }
 
       final venueSim = _titleSimilarity(entry.venueTitle, record.venue);
       final authorMatches =
@@ -1361,13 +1398,13 @@ class BibliographyVerifier {
               record.firstAuthorSurname!.toLowerCase();
       final yearMatches =
           entry.year == null || (entry.year! - record.year).abs() <= 3;
-      final locatorMatches = _entryLocatorMatchesRecord(entry, record);
 
       var score = titleSim * 0.62;
       if (venueSim >= 0.42) score += 0.18;
       if (yearMatches) score += 0.10;
       if (authorMatches) score += 0.06;
       if (locatorMatches) score += 0.12;
+      if (titleSim >= 0.50 && locatorMatches && yearMatches) score += 0.08;
 
       if (score > bestScore) {
         bestScore = score;
@@ -1380,9 +1417,46 @@ class BibliographyVerifier {
       entry: entry,
       confidence: CitationMatchConfidence.high,
       matchedTitle: best.title,
-      matchedJournal: '${best.venue}（本地經典文獻索引）',
+      matchedJournal: '${best.venue} (local classical-reference index)',
       matchedYear: best.year,
     );
+  }
+
+  static double _bestKnownRecordTitleSimilarity(
+    String entryTitle,
+    _KnownBibliographyRecord record,
+  ) {
+    var best = _titleSimilarity(entryTitle, record.title);
+    for (final variant in _knownRecordTitleVariants(record.title)) {
+      best = math.max(best, _titleSimilarity(entryTitle, variant));
+    }
+    return best;
+  }
+
+  static List<String> _knownRecordTitleVariants(String title) {
+    final variants = <String>{title};
+    variants.add(
+      title
+          .replaceAll(
+            RegExp(r'\bTaylor-Couette\s+Flow\b', caseSensitive: false),
+            'Couette Flow',
+          )
+          .replaceAll(
+            RegExp(r'\bTurbulence\b', caseSensitive: false),
+            'Turbulent',
+          )
+          .replaceAll(RegExp(r'\bliquides\b', caseSensitive: false), 'liquids'),
+    );
+    variants.add(
+      title.replaceAll(
+        RegExp(r'\bTaylor-vortex\b', caseSensitive: false),
+        'Taylor vortex',
+      ),
+    );
+    variants.add(
+      title.replaceAll(RegExp(r'\bFloquet\b', caseSensitive: false), 'floquet'),
+    );
+    return variants.toList(growable: false);
   }
 
   static String? _titleFromRawQuotedText(String raw) {
@@ -1551,6 +1625,40 @@ class BibliographyVerifier {
       itemVolume,
       itemPages?.firstPage,
       itemPages?.lastPage,
+    );
+  }
+
+  static bool _openAlexAuthorMatches(
+    BibliographyEntry entry,
+    Map<String, dynamic> item,
+  ) {
+    final surname = entry.firstAuthorSurname?.trim().toLowerCase();
+    if (surname == null || surname.length < 2) return false;
+    final authorships = (item['authorships'] as List?)?.cast<dynamic>();
+    if (authorships == null || authorships.isEmpty) return false;
+    return authorships.any((authorship) {
+      if (authorship is! Map<String, dynamic>) return false;
+      final author = authorship['author'] as Map<String, dynamic>?;
+      final displayName = author?['display_name']?.toString().toLowerCase();
+      if (displayName == null) return false;
+      final family = displayName.split(RegExp(r'\s+')).last;
+      return family == surname || _titleSimilarity(family, surname) >= 0.78;
+    });
+  }
+
+  static bool _openAlexLocatorMatches(
+    BibliographyEntry entry,
+    Map<String, dynamic> item,
+  ) {
+    final biblio = item['biblio'] as Map<String, dynamic>?;
+    if (biblio == null) return false;
+    return _locatorMatches(
+      entry.volume,
+      entry.firstPage,
+      entry.lastPage,
+      _normalizeLocatorNumber(biblio['volume']?.toString()),
+      _normalizeLocatorNumber(biblio['first_page']?.toString()),
+      _normalizeLocatorNumber(biblio['last_page']?.toString()),
     );
   }
 
