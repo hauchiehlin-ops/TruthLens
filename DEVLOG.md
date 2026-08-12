@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第三十一次更新）— 修復：報告雷達圖與綜合判定改走介面語系
+
+**概述**
+回應英文報告頁中雷達圖軸標籤、右側綜合判定卡與下方綜合說明仍顯示中文的問題：
+1. 將專業報告頭的雷達圖角色名稱與軸標籤改由 l10n 產生
+2. 將右側「綜合判定」卡片標題、整體 AI 機率與判定提示改由 l10n 產生
+3. 將雷達圖下方綜合摘要、最強訊號、最大加權貢獻、風格引擎 caveat 與模型缺口提示改由 l10n 產生
+4. 將引擎關係文字、未參與/無說明 fallback、Transformer/tokenizer/BigInt 修復提示改由 l10n 產生
+5. 新增英文 locale widget test，確認報告頭不再顯示截圖中的中文綜合判定文字
+
+**修復內容**：✅ **完成**
+
+- 英文介面顯示 `Sentence classifier`、`Language regularity`、`Writing style`、`Rewrite defense`
+- 英文綜合判定卡顯示 `Overall verdict` 與 `Overall AI probability`
+- `professional_report_header.dart` 已掃描確認不再殘留截圖中的中文硬編碼
+
+---
+
 ## 2026-08-12（第三十次更新）— 修復：Help 工作流程標籤改走多國語系
 
 **概述**

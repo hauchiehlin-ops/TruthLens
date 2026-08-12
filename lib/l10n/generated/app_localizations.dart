@@ -1154,6 +1154,202 @@ abstract class AppLocalizations {
   /// **'Engine analysis layers'**
   String get reportEngineAnalysisLevelTitle;
 
+  /// No description provided for @reportVerdictAiLikelihood.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Leaning'**
+  String get reportVerdictAiLikelihood;
+
+  /// No description provided for @reportVerdictHumanLikelihood.
+  ///
+  /// In en, this message translates to:
+  /// **'Human Writing'**
+  String get reportVerdictHumanLikelihood;
+
+  /// No description provided for @reportRadarRoleTransformer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformer classifier'**
+  String get reportRadarRoleTransformer;
+
+  /// No description provided for @reportRadarRoleStatistical.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistical analysis'**
+  String get reportRadarRoleStatistical;
+
+  /// No description provided for @reportRadarRoleStylometry.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylometry analysis'**
+  String get reportRadarRoleStylometry;
+
+  /// No description provided for @reportRadarRoleAdversarial.
+  ///
+  /// In en, this message translates to:
+  /// **'Adversarial defense'**
+  String get reportRadarRoleAdversarial;
+
+  /// No description provided for @reportRadarAxisTransformer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence classifier'**
+  String get reportRadarAxisTransformer;
+
+  /// No description provided for @reportRadarAxisStatistical.
+  ///
+  /// In en, this message translates to:
+  /// **'Language regularity'**
+  String get reportRadarAxisStatistical;
+
+  /// No description provided for @reportRadarAxisStylometry.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing style'**
+  String get reportRadarAxisStylometry;
+
+  /// No description provided for @reportRadarAxisAdversarial.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewrite defense'**
+  String get reportRadarAxisAdversarial;
+
+  /// No description provided for @reportVerdictBadgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall verdict'**
+  String get reportVerdictBadgeTitle;
+
+  /// No description provided for @reportVerdictBadgeProbability.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall AI probability {percent}%'**
+  String reportVerdictBadgeProbability(int percent);
+
+  /// No description provided for @reportVerdictHintHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Most engine signals lean toward natural human writing.'**
+  String get reportVerdictHintHuman;
+
+  /// No description provided for @reportVerdictHintLikelyHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall leans human, with a small amount of model uncertainty retained.'**
+  String get reportVerdictHintLikelyHuman;
+
+  /// No description provided for @reportVerdictHintMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine signals are mixed; read the detailed analysis together with this result.'**
+  String get reportVerdictHintMixed;
+
+  /// No description provided for @reportVerdictHintLikelyAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple indicators lean AI; review the high-scoring passages.'**
+  String get reportVerdictHintLikelyAi;
+
+  /// No description provided for @reportVerdictHintAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall signals strongly lean AI-generated or rewritten.'**
+  String get reportVerdictHintAi;
+
+  /// No description provided for @reportSynthesisOverall.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall verdict: {verdict}; overall AI probability {percent}%.'**
+  String reportSynthesisOverall(String verdict, int percent);
+
+  /// No description provided for @reportSynthesisStrongestSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.'**
+  String reportSynthesisStrongestSignal(String label, int percent);
+
+  /// No description provided for @reportSynthesisStrongestContribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Largest weighted contribution currently comes from {label} (about {points} percentage points).'**
+  String reportSynthesisStrongestContribution(String label, int points);
+
+  /// No description provided for @reportSynthesisStyleCaveat.
+  ///
+  /// In en, this message translates to:
+  /// **'“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.'**
+  String get reportSynthesisStyleCaveat;
+
+  /// No description provided for @reportSynthesisModelGap.
+  ///
+  /// In en, this message translates to:
+  /// **'When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.'**
+  String get reportSynthesisModelGap;
+
+  /// No description provided for @reportEngineRelationshipUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}'**
+  String reportEngineRelationshipUnavailable(String label, String hint);
+
+  /// No description provided for @reportEngineRelationshipAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.'**
+  String reportEngineRelationshipAvailable(
+    int weight,
+    int points,
+    String variantText,
+  );
+
+  /// No description provided for @reportEngineVariantMerged.
+  ///
+  /// In en, this message translates to:
+  /// **' (merged {count} model variants)'**
+  String reportEngineVariantMerged(int count);
+
+  /// No description provided for @reportEngineFallbackUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} did not participate in this vote.'**
+  String reportEngineFallbackUnavailable(String label);
+
+  /// No description provided for @reportEngineFallbackAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} returned no additional text explanation.'**
+  String reportEngineFallbackAvailable(String label);
+
+  /// No description provided for @reportEngineResolutionTransformer.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.'**
+  String get reportEngineResolutionTransformer;
+
+  /// No description provided for @reportEngineResolutionAdversarial.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.'**
+  String get reportEngineResolutionAdversarial;
+
+  /// No description provided for @reportEngineReasonBigInt.
+  ///
+  /// In en, this message translates to:
+  /// **'{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.'**
+  String reportEngineReasonBigInt(String reason);
+
+  /// No description provided for @reportEngineReasonTokenizer.
+  ///
+  /// In en, this message translates to:
+  /// **'{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.'**
+  String reportEngineReasonTokenizer(String reason);
+
+  /// No description provided for @reportEngineReasonNoActiveTransformer.
+  ///
+  /// In en, this message translates to:
+  /// **'{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.'**
+  String reportEngineReasonNoActiveTransformer(String reason);
+
   /// No description provided for @reportDetailAnalysisTitle.
   ///
   /// In en, this message translates to:
@@ -1860,18 +2056,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ESL non-native writing adjustment applied (statistical model weight halved)'**
   String get reportFormulaEslApplied;
-
-  /// No description provided for @reportVerdictAiLikelihood.
-  ///
-  /// In en, this message translates to:
-  /// **'AI Leaning'**
-  String get reportVerdictAiLikelihood;
-
-  /// No description provided for @reportVerdictHumanLikelihood.
-  ///
-  /// In en, this message translates to:
-  /// **'Human Writing'**
-  String get reportVerdictHumanLikelihood;
 
   /// No description provided for @engineReasonNeutral.
   ///

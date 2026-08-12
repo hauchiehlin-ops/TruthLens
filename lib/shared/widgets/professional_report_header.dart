@@ -393,7 +393,7 @@ class _EngineContributionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final engineGroups = _EngineGroup.fromScores(result.engineScores);
+    final engineGroups = _EngineGroup.fromScores(result.engineScores, l10n);
 
     return Container(
       decoration: BoxDecoration(
@@ -679,7 +679,7 @@ class _VerdictSignalBadge extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '綜合判定',
+                      l10n.reportVerdictBadgeTitle,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600,
@@ -700,7 +700,7 @@ class _VerdictSignalBadge extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            '整體 AI 機率 $probability%',
+            l10n.reportVerdictBadgeProbability(probability),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF1E3A5F),
               fontWeight: FontWeight.w700,
@@ -708,7 +708,7 @@ class _VerdictSignalBadge extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            _verdictHint(result.verdict),
+            _verdictHint(result.verdict, l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.grey[700],
               height: 1.3,
@@ -742,13 +742,14 @@ class _VerdictSignalBadge extends StatelessWidget {
     ),
   };
 
-  static String _verdictHint(Verdict verdict) => switch (verdict) {
-    Verdict.human => '多數引擎訊號偏向自然人類寫作。',
-    Verdict.likelyHuman => '整體偏人類，但仍保留少量模型不確定性。',
-    Verdict.mixed => '不同引擎訊號分歧，需搭配詳細分析判讀。',
-    Verdict.likelyAi => '多個指標偏向 AI，建議檢查高分片段。',
-    Verdict.ai => '整體訊號高度偏向 AI 生成或改寫。',
-  };
+  static String _verdictHint(Verdict verdict, AppLocalizations l10n) =>
+      switch (verdict) {
+        Verdict.human => l10n.reportVerdictHintHuman,
+        Verdict.likelyHuman => l10n.reportVerdictHintLikelyHuman,
+        Verdict.mixed => l10n.reportVerdictHintMixed,
+        Verdict.likelyAi => l10n.reportVerdictHintLikelyAi,
+        Verdict.ai => l10n.reportVerdictHintAi,
+      };
 }
 
 class _VerdictMeta {
@@ -948,29 +949,34 @@ class _EngineSynthesisSummary extends StatelessWidget {
     final hasModelGap = groups.any((g) => !g.available);
 
     final lines = <String>[
-      '綜合判定：$verdictLabel，整體 AI 機率 ${(overallProbability * 100).round()}%。',
+      l10n.reportSynthesisOverall(
+        verdictLabel,
+        (overallProbability * 100).round(),
+      ),
     ];
     if (strongestSignal != null) {
       lines.add(
-        '最高單項訊號是 ${strongestSignal.label}（${(strongestSignal.probability * 100).round()}%），但最終結果會依各引擎權重合併，不等於單一引擎結論。',
+        l10n.reportSynthesisStrongestSignal(
+          strongestSignal.label,
+          (strongestSignal.probability * 100).round(),
+        ),
       );
     }
     if (strongestContribution != null) {
       lines.add(
-        '目前最大加權貢獻來自 ${strongestContribution.label}（約 ${(strongestContribution.contribution * 100).round()} 個百分點）。',
+        l10n.reportSynthesisStrongestContribution(
+          strongestContribution.label,
+          (strongestContribution.contribution * 100).round(),
+        ),
       );
     }
     if (style != null &&
         style.probability < 0.45 &&
         overallProbability >= 0.45) {
-      lines.add(
-        '「未偵測到明顯 AI 寫作風格」只代表風格引擎沒有抓到固定句式或過渡詞模式；其他模型仍可能因語言規律、句級分類或改寫特徵把整體分數拉高。',
-      );
+      lines.add(l10n.reportSynthesisStyleCaveat);
     }
     if (hasModelGap) {
-      lines.add(
-        '有引擎未參與時，請先到模型管理使用「補齊推薦分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案遺失或 Web/ONNX Runtime 相容性限制。',
-      );
+      lines.add(l10n.reportSynthesisModelGap);
     }
 
     return Container(
@@ -1003,6 +1009,7 @@ class _EngineGroup {
   final bool available;
   final int variantCount;
   final List<String> reasons;
+  final AppLocalizations l10n;
 
   const _EngineGroup({
     required this.role,
@@ -1014,19 +1021,31 @@ class _EngineGroup {
     required this.available,
     required this.variantCount,
     required this.reasons,
+    required this.l10n,
   });
 
   String get relationshipText {
-    final weightText = '${(weight * 100).round()}%';
+    final weightPercent = (weight * 100).round();
     if (!available) {
-      return '$label 未參與本次加權投票，該面向暫以 0% 顯示。${_resolutionHint(role)}';
+      return l10n.reportEngineRelationshipUnavailable(
+        label,
+        _resolutionHint(role, l10n),
+      );
     }
-    final contributionText = '${(contribution * 100).round()} 個百分點';
-    final variantText = variantCount > 1 ? '（已合併 $variantCount 個模型變體）' : '';
-    return '角色權重 $weightText，對整體分數貢獻約 $contributionText$variantText。';
+    final variantText = variantCount > 1
+        ? l10n.reportEngineVariantMerged(variantCount)
+        : '';
+    return l10n.reportEngineRelationshipAvailable(
+      weightPercent,
+      (contribution * 100).round(),
+      variantText,
+    );
   }
 
-  static List<_EngineGroup> fromScores(List<EngineScore> scores) {
+  static List<_EngineGroup> fromScores(
+    List<EngineScore> scores,
+    AppLocalizations l10n,
+  ) {
     const order = ['transformer', 'statistical', 'stylometry', 'adversarial'];
     final grouped = <String, List<EngineScore>>{
       for (final role in order) role: <EngineScore>[],
@@ -1044,7 +1063,12 @@ class _EngineGroup {
 
     return [
       for (final role in order)
-        _fromRole(role, grouped[role]!, availableWeight: availableWeight),
+        _fromRole(
+          role,
+          grouped[role]!,
+          availableWeight: availableWeight,
+          l10n: l10n,
+        ),
     ];
   }
 
@@ -1052,6 +1076,7 @@ class _EngineGroup {
     String role,
     List<EngineScore> scores, {
     required double availableWeight,
+    required AppLocalizations l10n,
   }) {
     final availableScores = scores.where((s) => s.available).toList();
     final available = availableScores.isNotEmpty;
@@ -1068,21 +1093,22 @@ class _EngineGroup {
         ...score.reasons.where((reason) => reason.trim().isNotEmpty),
     ];
     final uniqueReasons = <String>[
-      for (final reason in reasons.toSet()) _explainReason(role, reason),
+      for (final reason in reasons.toSet()) _explainReason(role, reason, l10n),
     ];
 
     return _EngineGroup(
       role: role,
-      label: _roleLabel(role),
-      axisLabel: _axisLabel(role),
+      label: _roleLabel(role, l10n),
+      axisLabel: _axisLabel(role, l10n),
       probability: probability,
       weight: weight,
       contribution: contribution,
       available: available,
       variantCount: math.max(scores.length, 1),
       reasons: uniqueReasons.isEmpty
-          ? [_fallbackReason(role, available)]
+          ? [_fallbackReason(role, available, l10n)]
           : uniqueReasons,
+      l10n: l10n,
     );
   }
 
@@ -1102,44 +1128,55 @@ class _EngineGroup {
     _ => 0.0,
   };
 
-  static String _roleLabel(String role) => switch (role) {
-    'transformer' => 'Transformer 分類器',
-    'statistical' => '統計特徵分析',
-    'stylometry' => '風格特徵分析',
-    'adversarial' => '對抗式防禦',
-    _ => role,
-  };
+  static String _roleLabel(String role, AppLocalizations l10n) =>
+      switch (role) {
+        'transformer' => l10n.reportRadarRoleTransformer,
+        'statistical' => l10n.reportRadarRoleStatistical,
+        'stylometry' => l10n.reportRadarRoleStylometry,
+        'adversarial' => l10n.reportRadarRoleAdversarial,
+        _ => role,
+      };
 
-  static String _axisLabel(String role) => switch (role) {
-    'transformer' => '句級分類',
-    'statistical' => '語言規律',
-    'stylometry' => '寫作風格',
-    'adversarial' => '改寫防禦',
-    _ => role,
-  };
+  static String _axisLabel(String role, AppLocalizations l10n) =>
+      switch (role) {
+        'transformer' => l10n.reportRadarAxisTransformer,
+        'statistical' => l10n.reportRadarAxisStatistical,
+        'stylometry' => l10n.reportRadarAxisStylometry,
+        'adversarial' => l10n.reportRadarAxisAdversarial,
+        _ => role,
+      };
 
-  static String _fallbackReason(String role, bool available) {
-    if (!available) return '${_roleLabel(role)}未參與本次投票。';
-    return '${_roleLabel(role)}未回傳額外文字說明。';
+  static String _fallbackReason(
+    String role,
+    bool available,
+    AppLocalizations l10n,
+  ) {
+    final label = _roleLabel(role, l10n);
+    if (!available) return l10n.reportEngineFallbackUnavailable(label);
+    return l10n.reportEngineFallbackAvailable(label);
   }
 
-  static String _resolutionHint(String role) => switch (role) {
-    'transformer' => '解法：在模型管理下載並啟用多語言 Transformer；若已下載，重新下載模型與 tokenizer。',
-    'adversarial' =>
-      '解法：在模型管理重新下載改寫偵測模型與 tokenizer；Web 端請更新到已修補 BigInt 相容性的版本後重新分析。',
-    _ => '',
-  };
+  static String _resolutionHint(String role, AppLocalizations l10n) =>
+      switch (role) {
+        'transformer' => l10n.reportEngineResolutionTransformer,
+        'adversarial' => l10n.reportEngineResolutionAdversarial,
+        _ => '',
+      };
 
-  static String _explainReason(String role, String reason) {
+  static String _explainReason(
+    String role,
+    String reason,
+    AppLocalizations l10n,
+  ) {
     if (role == 'adversarial' &&
         reason.contains('Cannot convert a BigInt value to a number')) {
-      return '$reason。原因：Web 端 ONNX Runtime 回傳 BigInt 張量，舊版橋接無法轉換；已修補為 JS 端先轉 Number，請更新後重新分析。';
+      return l10n.reportEngineReasonBigInt(reason);
     }
     if (role == 'transformer' && reason.contains('tokenizer')) {
-      return '$reason。解法：切換到 catalog 內建模型，或重新下載模型與 tokenizer。';
+      return l10n.reportEngineReasonTokenizer(reason);
     }
     if (role == 'transformer' && reason.contains('未找到使用中的')) {
-      return '$reason。解法：到模型管理點「補齊推薦分析模型」，並確認多語言 Transformer 標示為使用中。';
+      return l10n.reportEngineReasonNoActiveTransformer(reason);
     }
     return reason;
   }

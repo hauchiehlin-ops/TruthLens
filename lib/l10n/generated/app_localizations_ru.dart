@@ -629,6 +629,139 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportEngineAnalysisLevelTitle => 'Engine analysis layers';
 
   @override
+  String get reportVerdictAiLikelihood => 'AI Leaning';
+
+  @override
+  String get reportVerdictHumanLikelihood => 'Human Writing';
+
+  @override
+  String get reportRadarRoleTransformer => 'Transformer classifier';
+
+  @override
+  String get reportRadarRoleStatistical => 'Statistical analysis';
+
+  @override
+  String get reportRadarRoleStylometry => 'Stylometry analysis';
+
+  @override
+  String get reportRadarRoleAdversarial => 'Adversarial defense';
+
+  @override
+  String get reportRadarAxisTransformer => 'Sentence classifier';
+
+  @override
+  String get reportRadarAxisStatistical => 'Language regularity';
+
+  @override
+  String get reportRadarAxisStylometry => 'Writing style';
+
+  @override
+  String get reportRadarAxisAdversarial => 'Rewrite defense';
+
+  @override
+  String get reportVerdictBadgeTitle => 'Overall verdict';
+
+  @override
+  String reportVerdictBadgeProbability(int percent) {
+    return 'Overall AI probability $percent%';
+  }
+
+  @override
+  String get reportVerdictHintHuman =>
+      'Most engine signals lean toward natural human writing.';
+
+  @override
+  String get reportVerdictHintLikelyHuman =>
+      'Overall leans human, with a small amount of model uncertainty retained.';
+
+  @override
+  String get reportVerdictHintMixed =>
+      'Engine signals are mixed; read the detailed analysis together with this result.';
+
+  @override
+  String get reportVerdictHintLikelyAi =>
+      'Multiple indicators lean AI; review the high-scoring passages.';
+
+  @override
+  String get reportVerdictHintAi =>
+      'Overall signals strongly lean AI-generated or rewritten.';
+
+  @override
+  String reportSynthesisOverall(String verdict, int percent) {
+    return 'Overall verdict: $verdict; overall AI probability $percent%.';
+  }
+
+  @override
+  String reportSynthesisStrongestSignal(String label, int percent) {
+    return 'Strongest single signal: $label ($percent%), but the final result merges engine weights and is not the conclusion of one engine alone.';
+  }
+
+  @override
+  String reportSynthesisStrongestContribution(String label, int points) {
+    return 'Largest weighted contribution currently comes from $label (about $points percentage points).';
+  }
+
+  @override
+  String get reportSynthesisStyleCaveat =>
+      '“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.';
+
+  @override
+  String get reportSynthesisModelGap =>
+      'When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.';
+
+  @override
+  String reportEngineRelationshipUnavailable(String label, String hint) {
+    return '$label did not participate in this weighted vote, so this dimension is shown as 0%. $hint';
+  }
+
+  @override
+  String reportEngineRelationshipAvailable(
+    int weight,
+    int points,
+    String variantText,
+  ) {
+    return 'Role weight $weight%, contributing about $points percentage points to the overall score$variantText.';
+  }
+
+  @override
+  String reportEngineVariantMerged(int count) {
+    return ' (merged $count model variants)';
+  }
+
+  @override
+  String reportEngineFallbackUnavailable(String label) {
+    return '$label did not participate in this vote.';
+  }
+
+  @override
+  String reportEngineFallbackAvailable(String label) {
+    return '$label returned no additional text explanation.';
+  }
+
+  @override
+  String get reportEngineResolutionTransformer =>
+      'Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.';
+
+  @override
+  String get reportEngineResolutionAdversarial =>
+      'Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.';
+
+  @override
+  String reportEngineReasonBigInt(String reason) {
+    return '$reason. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.';
+  }
+
+  @override
+  String reportEngineReasonTokenizer(String reason) {
+    return '$reason. Fix: switch to a catalog model, or re-download the model and tokenizer.';
+  }
+
+  @override
+  String reportEngineReasonNoActiveTransformer(String reason) {
+    return '$reason. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.';
+  }
+
+  @override
   String get reportDetailAnalysisTitle => 'Detailed analysis';
 
   @override
@@ -1102,12 +1235,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get reportFormulaEslApplied =>
       'ESL non-native writing adjustment applied (statistical model weight halved)';
-
-  @override
-  String get reportVerdictAiLikelihood => 'AI Leaning';
-
-  @override
-  String get reportVerdictHumanLikelihood => 'Human Writing';
 
   @override
   String get engineReasonNeutral =>

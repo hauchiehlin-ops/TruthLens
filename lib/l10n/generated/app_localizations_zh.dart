@@ -597,6 +597,134 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportEngineAnalysisLevelTitle => '引擎分析層級';
 
   @override
+  String get reportVerdictAiLikelihood => 'AI 傾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人類自然寫作';
+
+  @override
+  String get reportRadarRoleTransformer => 'Transformer 分類器';
+
+  @override
+  String get reportRadarRoleStatistical => '統計特徵分析';
+
+  @override
+  String get reportRadarRoleStylometry => '風格特徵分析';
+
+  @override
+  String get reportRadarRoleAdversarial => '對抗式防禦';
+
+  @override
+  String get reportRadarAxisTransformer => '句級分類';
+
+  @override
+  String get reportRadarAxisStatistical => '語言規律';
+
+  @override
+  String get reportRadarAxisStylometry => '寫作風格';
+
+  @override
+  String get reportRadarAxisAdversarial => '改寫防禦';
+
+  @override
+  String get reportVerdictBadgeTitle => '綜合判定';
+
+  @override
+  String reportVerdictBadgeProbability(int percent) {
+    return '整體 AI 機率 $percent%';
+  }
+
+  @override
+  String get reportVerdictHintHuman => '多數引擎訊號偏向自然人類寫作。';
+
+  @override
+  String get reportVerdictHintLikelyHuman => '整體偏人類，但仍保留少量模型不確定性。';
+
+  @override
+  String get reportVerdictHintMixed => '不同引擎訊號分歧，需搭配詳細分析判讀。';
+
+  @override
+  String get reportVerdictHintLikelyAi => '多個指標偏向 AI，建議檢查高分片段。';
+
+  @override
+  String get reportVerdictHintAi => '整體訊號高度偏向 AI 生成或改寫。';
+
+  @override
+  String reportSynthesisOverall(String verdict, int percent) {
+    return '綜合判定：$verdict，整體 AI 機率 $percent%。';
+  }
+
+  @override
+  String reportSynthesisStrongestSignal(String label, int percent) {
+    return '最高單項訊號是 $label（$percent%），但最終結果會依各引擎權重合併，不等於單一引擎結論。';
+  }
+
+  @override
+  String reportSynthesisStrongestContribution(String label, int points) {
+    return '目前最大加權貢獻來自 $label（約 $points 個百分點）。';
+  }
+
+  @override
+  String get reportSynthesisStyleCaveat =>
+      '「未偵測到明顯 AI 寫作風格」只代表風格引擎沒有抓到固定句式或過渡詞模式；其他模型仍可能因語言規律、句級分類或改寫特徵把整體分數拉高。';
+
+  @override
+  String get reportSynthesisModelGap =>
+      '有引擎未參與時，請先到模型管理使用「補齊推薦分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案遺失或 Web/ONNX Runtime 相容性限制。';
+
+  @override
+  String reportEngineRelationshipUnavailable(String label, String hint) {
+    return '$label 未參與本次加權投票，該面向暫以 0% 顯示。$hint';
+  }
+
+  @override
+  String reportEngineRelationshipAvailable(
+    int weight,
+    int points,
+    String variantText,
+  ) {
+    return '角色權重 $weight%，對整體分數貢獻約 $points 個百分點$variantText。';
+  }
+
+  @override
+  String reportEngineVariantMerged(int count) {
+    return '（已合併 $count 個模型變體）';
+  }
+
+  @override
+  String reportEngineFallbackUnavailable(String label) {
+    return '$label 未參與本次投票。';
+  }
+
+  @override
+  String reportEngineFallbackAvailable(String label) {
+    return '$label 未回傳額外文字說明。';
+  }
+
+  @override
+  String get reportEngineResolutionTransformer =>
+      '解法：在模型管理下載並啟用多語言 Transformer；若已下載，重新下載模型與 tokenizer。';
+
+  @override
+  String get reportEngineResolutionAdversarial =>
+      '解法：在模型管理重新下載改寫偵測模型與 tokenizer；Web 端請更新到已修補 BigInt 相容性的版本後重新分析。';
+
+  @override
+  String reportEngineReasonBigInt(String reason) {
+    return '$reason。原因：Web 端 ONNX Runtime 回傳 BigInt 張量，舊版橋接無法轉換；已修補為 JS 端先轉 Number，請更新後重新分析。';
+  }
+
+  @override
+  String reportEngineReasonTokenizer(String reason) {
+    return '$reason。解法：切換到 catalog 內建模型，或重新下載模型與 tokenizer。';
+  }
+
+  @override
+  String reportEngineReasonNoActiveTransformer(String reason) {
+    return '$reason。解法：到模型管理點「補齊推薦分析模型」，並確認多語言 Transformer 標示為使用中。';
+  }
+
+  @override
   String get reportDetailAnalysisTitle => '詳細分析';
 
   @override
@@ -1054,12 +1182,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportFormulaEslApplied => '已套用 ESL 非母語寫作偏差修正（統計模型權重已減半）';
-
-  @override
-  String get reportVerdictAiLikelihood => 'AI 傾向';
-
-  @override
-  String get reportVerdictHumanLikelihood => '人類自然寫作';
 
   @override
   String get engineReasonNeutral => '統計指標未呈現顯著傾向，維持中性判定';
@@ -2089,6 +2211,134 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportEngineAnalysisLevelTitle => '引擎分析层级';
 
   @override
+  String get reportVerdictAiLikelihood => 'AI 倾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人类自然写作';
+
+  @override
+  String get reportRadarRoleTransformer => 'Transformer 分類器';
+
+  @override
+  String get reportRadarRoleStatistical => '统计特徵分析';
+
+  @override
+  String get reportRadarRoleStylometry => '风格特徵分析';
+
+  @override
+  String get reportRadarRoleAdversarial => '对抗式防御';
+
+  @override
+  String get reportRadarAxisTransformer => '句級分類';
+
+  @override
+  String get reportRadarAxisStatistical => '语言規律';
+
+  @override
+  String get reportRadarAxisStylometry => '写作风格';
+
+  @override
+  String get reportRadarAxisAdversarial => '改写防御';
+
+  @override
+  String get reportVerdictBadgeTitle => '综合判定';
+
+  @override
+  String reportVerdictBadgeProbability(int percent) {
+    return '整體 AI 几率 $percent%';
+  }
+
+  @override
+  String get reportVerdictHintHuman => '多數引擎信号偏向自然人类写作。';
+
+  @override
+  String get reportVerdictHintLikelyHuman => '整體偏人类，但仍保留少量模型不確定性。';
+
+  @override
+  String get reportVerdictHintMixed => '不同引擎信号分歧，需搭配詳細分析判讀。';
+
+  @override
+  String get reportVerdictHintLikelyAi => '多个指標偏向 AI，建議检查高分片段。';
+
+  @override
+  String get reportVerdictHintAi => '整體信号高度偏向 AI 生成或改写。';
+
+  @override
+  String reportSynthesisOverall(String verdict, int percent) {
+    return '综合判定：$verdict，整體 AI 几率 $percent%。';
+  }
+
+  @override
+  String reportSynthesisStrongestSignal(String label, int percent) {
+    return '最高单项信号是 $label（$percent%），但最終結果會依各引擎权重合併，不等於單一引擎結論。';
+  }
+
+  @override
+  String reportSynthesisStrongestContribution(String label, int points) {
+    return '目前最大加權贡献來自 $label（約 $points 个百分點）。';
+  }
+
+  @override
+  String get reportSynthesisStyleCaveat =>
+      '「未侦测到明顯 AI 写作风格」只代表风格引擎沒有抓到固定句式或过渡词模式；其他模型仍可能因语言規律、句級分類或改写特徵把整體分數拉高。';
+
+  @override
+  String get reportSynthesisModelGap =>
+      '有引擎未参与時，請先到模型管理使用「补齐推荐分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案丢失或 Web/ONNX Runtime 兼容性限制。';
+
+  @override
+  String reportEngineRelationshipUnavailable(String label, String hint) {
+    return '$label 未参与本次加權投票，該面向暫以 0% 顯示。$hint';
+  }
+
+  @override
+  String reportEngineRelationshipAvailable(
+    int weight,
+    int points,
+    String variantText,
+  ) {
+    return '角色权重 $weight%，對整體分數贡献約 $points 个百分點$variantText。';
+  }
+
+  @override
+  String reportEngineVariantMerged(int count) {
+    return '（已合併 $count 个模型变体）';
+  }
+
+  @override
+  String reportEngineFallbackUnavailable(String label) {
+    return '$label 未参与本次投票。';
+  }
+
+  @override
+  String reportEngineFallbackAvailable(String label) {
+    return '$label 未回傳额外文字說明。';
+  }
+
+  @override
+  String get reportEngineResolutionTransformer =>
+      '解法：在模型管理下載並启用多语言 Transformer；若已下載，重新下载模型與 tokenizer。';
+
+  @override
+  String get reportEngineResolutionAdversarial =>
+      '解法：在模型管理重新下载改写侦测模型與 tokenizer；Web 端請更新到已修補 BigInt 兼容性的版本後重新分析。';
+
+  @override
+  String reportEngineReasonBigInt(String reason) {
+    return '$reason。原因：Web 端 ONNX Runtime 回傳 BigInt 张量，旧版橋接無法转换；已修補為 JS 端先轉 Number，請更新後重新分析。';
+  }
+
+  @override
+  String reportEngineReasonTokenizer(String reason) {
+    return '$reason。解法：切換到 catalog 內建模型，或重新下载模型與 tokenizer。';
+  }
+
+  @override
+  String reportEngineReasonNoActiveTransformer(String reason) {
+    return '$reason。解法：到模型管理點「补齐推荐分析模型」，並确认多语言 Transformer 标示為使用中。';
+  }
+
+  @override
   String get reportDetailAnalysisTitle => '详细分析';
 
   @override
@@ -2546,12 +2796,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportFormulaEslApplied => '已套用 ESL 非母语写作偏差修正（统计模型权重已减半）';
-
-  @override
-  String get reportVerdictAiLikelihood => 'AI 倾向';
-
-  @override
-  String get reportVerdictHumanLikelihood => '人类自然写作';
 
   @override
   String get engineReasonNeutral => '统计指针未呈现显著倾向，维持中性判定';
@@ -3581,6 +3825,134 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportEngineAnalysisLevelTitle => '引擎分析層級';
 
   @override
+  String get reportVerdictAiLikelihood => 'AI 傾向';
+
+  @override
+  String get reportVerdictHumanLikelihood => '人類自然寫作';
+
+  @override
+  String get reportRadarRoleTransformer => 'Transformer 分類器';
+
+  @override
+  String get reportRadarRoleStatistical => '統計特徵分析';
+
+  @override
+  String get reportRadarRoleStylometry => '風格特徵分析';
+
+  @override
+  String get reportRadarRoleAdversarial => '對抗式防禦';
+
+  @override
+  String get reportRadarAxisTransformer => '句級分類';
+
+  @override
+  String get reportRadarAxisStatistical => '語言規律';
+
+  @override
+  String get reportRadarAxisStylometry => '寫作風格';
+
+  @override
+  String get reportRadarAxisAdversarial => '改寫防禦';
+
+  @override
+  String get reportVerdictBadgeTitle => '綜合判定';
+
+  @override
+  String reportVerdictBadgeProbability(int percent) {
+    return '整體 AI 機率 $percent%';
+  }
+
+  @override
+  String get reportVerdictHintHuman => '多數引擎訊號偏向自然人類寫作。';
+
+  @override
+  String get reportVerdictHintLikelyHuman => '整體偏人類，但仍保留少量模型不確定性。';
+
+  @override
+  String get reportVerdictHintMixed => '不同引擎訊號分歧，需搭配詳細分析判讀。';
+
+  @override
+  String get reportVerdictHintLikelyAi => '多個指標偏向 AI，建議檢查高分片段。';
+
+  @override
+  String get reportVerdictHintAi => '整體訊號高度偏向 AI 生成或改寫。';
+
+  @override
+  String reportSynthesisOverall(String verdict, int percent) {
+    return '綜合判定：$verdict，整體 AI 機率 $percent%。';
+  }
+
+  @override
+  String reportSynthesisStrongestSignal(String label, int percent) {
+    return '最高單項訊號是 $label（$percent%），但最終結果會依各引擎權重合併，不等於單一引擎結論。';
+  }
+
+  @override
+  String reportSynthesisStrongestContribution(String label, int points) {
+    return '目前最大加權貢獻來自 $label（約 $points 個百分點）。';
+  }
+
+  @override
+  String get reportSynthesisStyleCaveat =>
+      '「未偵測到明顯 AI 寫作風格」只代表風格引擎沒有抓到固定句式或過渡詞模式；其他模型仍可能因語言規律、句級分類或改寫特徵把整體分數拉高。';
+
+  @override
+  String get reportSynthesisModelGap =>
+      '有引擎未參與時，請先到模型管理使用「補齊推薦分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案遺失或 Web/ONNX Runtime 相容性限制。';
+
+  @override
+  String reportEngineRelationshipUnavailable(String label, String hint) {
+    return '$label 未參與本次加權投票，該面向暫以 0% 顯示。$hint';
+  }
+
+  @override
+  String reportEngineRelationshipAvailable(
+    int weight,
+    int points,
+    String variantText,
+  ) {
+    return '角色權重 $weight%，對整體分數貢獻約 $points 個百分點$variantText。';
+  }
+
+  @override
+  String reportEngineVariantMerged(int count) {
+    return '（已合併 $count 個模型變體）';
+  }
+
+  @override
+  String reportEngineFallbackUnavailable(String label) {
+    return '$label 未參與本次投票。';
+  }
+
+  @override
+  String reportEngineFallbackAvailable(String label) {
+    return '$label 未回傳額外文字說明。';
+  }
+
+  @override
+  String get reportEngineResolutionTransformer =>
+      '解法：在模型管理下載並啟用多語言 Transformer；若已下載，重新下載模型與 tokenizer。';
+
+  @override
+  String get reportEngineResolutionAdversarial =>
+      '解法：在模型管理重新下載改寫偵測模型與 tokenizer；Web 端請更新到已修補 BigInt 相容性的版本後重新分析。';
+
+  @override
+  String reportEngineReasonBigInt(String reason) {
+    return '$reason。原因：Web 端 ONNX Runtime 回傳 BigInt 張量，舊版橋接無法轉換；已修補為 JS 端先轉 Number，請更新後重新分析。';
+  }
+
+  @override
+  String reportEngineReasonTokenizer(String reason) {
+    return '$reason。解法：切換到 catalog 內建模型，或重新下載模型與 tokenizer。';
+  }
+
+  @override
+  String reportEngineReasonNoActiveTransformer(String reason) {
+    return '$reason。解法：到模型管理點「補齊推薦分析模型」，並確認多語言 Transformer 標示為使用中。';
+  }
+
+  @override
   String get reportDetailAnalysisTitle => '詳細分析';
 
   @override
@@ -4038,12 +4410,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportFormulaEslApplied => '已套用 ESL 非母語寫作偏差修正（統計模型權重已減半）';
-
-  @override
-  String get reportVerdictAiLikelihood => 'AI 傾向';
-
-  @override
-  String get reportVerdictHumanLikelihood => '人類自然寫作';
 
   @override
   String get engineReasonNeutral => '統計指標未呈現顯著傾向，維持中性判定';
