@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第十八次更新）— 修復：Web OCR 圖片輸入與診斷訊息
+
+**概述**
+修復 Web 圖片 OCR 顯示「未辨識到文字」但實際可能是 OCR 未啟動／未設定／金鑰錯誤的問題：
+1. Web 圖片選取改用 bytes 轉 data URL，確保 Gemini 與本地 OCR 伺服器真的收到圖片內容
+2. Web OcrService 直接接受 data URL，不再呼叫未實作的 Blob 載入流程
+3. OCR 失敗時保留診斷訊息，UI 顯示具體原因，而非一律顯示「未辨識到文字」
+4. 本地 OCR 伺服器改為只有使用者設定 URL 時才呼叫，避免預設 localhost 逾時拖慢 Gemini
+5. 設定頁補充本地 OCR 伺服器 JSON 介面格式與 Web/原生 OCR 差異
+
+**修復內容**：✅ **完成**
+
+- `ImagePicker.pick()` 在 Web 回傳 `data:image/...;base64,...`
+- `ocr_service_web.dart` 區分未設定、Gemini 401/400/429、伺服器不可用、伺服器格式錯誤與圖片無文字
+- 原生 OCR 也會回報外掛未註冊、ping 失敗或平台 OCR 例外
+- 首頁與設定頁的 Gemini key hint 改為 `AIza...`
+- 本地 OCR 伺服器說明：接受 `{image: dataURL, languages:[...]}`，回傳 `{text:"..."}` 或 `{results:[{text:"..."}]}`
+
+---
+
 ## 2026-08-12（第十七次更新）— 修復：Transformer/對抗式引擎未參與原因可解釋化
 
 **概述**

@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 原生平台 OCR 服務（macOS、iOS、Android、Windows）
+/// 原生平台 OCR 服務（macOS、iOS、Android；Windows 需註冊對應外掛後才可用）
 ///
 /// 透過 MethodChannel 呼叫各平台的 on-device 文字辨識：
 ///   macOS  → Vision 框架（VNRecognizeTextRequest，已實作）
 ///   iOS    → Vision 框架
 ///   Android→ ML Kit Text Recognition
-///   Windows→ Windows.Media.Ocr
+///   Windows→ Windows.Media.Ocr（規劃/需外掛註冊）
 ///
 /// 原生端未實作的平台會拋 [MissingPluginException]，此處捕捉後回傳 null，
 /// UI 顯示「此平台尚未支援 OCR」。
@@ -21,6 +21,9 @@ class OcrService {
   static String? _cachedApiKey;
   static String? _cachedServerUrl;
   static bool _hydrated = false;
+  static String? _lastErrorMessage;
+
+  static String? get lastErrorMessage => _lastErrorMessage;
 
   /// 由 App 啟動時呼叫一次，將持久化的設定載入記憶體快取。
   static Future<void> hydrate() async {
@@ -65,10 +68,15 @@ class OcrService {
   Future<bool> get isSupported async {
     try {
       final ok = await _channel.invokeMethod<bool>('ping');
+      if (ok != true) {
+        _lastErrorMessage = '此平台的原生 OCR 外掛未回應 ping。';
+      }
       return ok ?? false;
     } on MissingPluginException {
+      _lastErrorMessage = '此平台尚未註冊原生 OCR 外掛。';
       return false;
-    } catch (_) {
+    } catch (e) {
+      _lastErrorMessage = '原生 OCR 外掛檢查失敗：$e';
       return false;
     }
   }
@@ -76,14 +84,22 @@ class OcrService {
   /// 辨識圖片檔中的文字。回傳 null 表示平台不支援或辨識失敗。
   /// [languages] 為 BCP-47 語言提示（如 ['zh-Hant','en-US']），部分平台會參考。
   Future<String?> recognize(String imagePath, {List<String>? languages}) async {
+    _lastErrorMessage = null;
     try {
-      return await _channel.invokeMethod<String>('recognize', {
+      final text = await _channel.invokeMethod<String>('recognize', {
         'path': imagePath,
         'languages': languages ?? const ['zh-Hant', 'zh-Hans', 'en-US'],
       });
+      if (text == null || text.trim().isEmpty) {
+        _lastErrorMessage = '原生 OCR 已執行，但圖片中未辨識到可用文字。';
+      }
+      return text;
     } on MissingPluginException {
+      _lastErrorMessage = '此平台尚未註冊原生 OCR 外掛。';
       return null;
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      _lastErrorMessage =
+          '原生 OCR 執行失敗：${e.code}${e.message == null ? '' : '，${e.message}'}';
       return null;
     }
   }

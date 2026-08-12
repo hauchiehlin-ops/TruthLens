@@ -50,9 +50,9 @@ class _InputScreenState extends State<InputScreen> {
   void initState() {
     super.initState();
     // 主動、靜默地檢查模型是否有更新；離線或失敗時不影響任何功能。
-    context
-        .read<ModelManager>()
-        .checkForUpdates(context.read<ModelCatalogService>());
+    context.read<ModelManager>().checkForUpdates(
+      context.read<ModelCatalogService>(),
+    );
   }
 
   @override
@@ -122,7 +122,7 @@ class _InputScreenState extends State<InputScreen> {
     final rawText = await ocr.recognize(path);
     if (!mounted) return;
     if (rawText == null || rawText.trim().isEmpty) {
-      _showFloatingSnackBar(l10n.inputOcrNoText);
+      _showFloatingSnackBar(OcrService.lastErrorMessage ?? l10n.inputOcrNoText);
       return;
     }
     final text = OcrPostProcessor.clean(rawText);
@@ -146,7 +146,9 @@ class _InputScreenState extends State<InputScreen> {
     }
     _controller.text = doc.text;
     setState(() {});
-    _showFloatingSnackBar(l10n.inputImportSuccess(doc.fileName, doc.text.length));
+    _showFloatingSnackBar(
+      l10n.inputImportSuccess(doc.fileName, doc.text.length),
+    );
   }
 
   /// 顯示目前使用中的偵測模型，或提示未安裝（僅統計/風格分析）
@@ -157,8 +159,11 @@ class _InputScreenState extends State<InputScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(active != null ? Icons.memory : Icons.info_outline,
-            size: 14, color: scheme.onSurfaceVariant),
+        Icon(
+          active != null ? Icons.memory : Icons.info_outline,
+          size: 14,
+          color: scheme.onSurfaceVariant,
+        ),
         const SizedBox(width: 4),
         Text(
           active != null
@@ -176,13 +181,11 @@ class _InputScreenState extends State<InputScreen> {
       icon: const Icon(Icons.translate),
       tooltip: 'Language',
       initialValue: prefs.locale,
-      onSelected: (value) => context.read<PreferencesService>().setLocale(value),
+      onSelected: (value) =>
+          context.read<PreferencesService>().setLocale(value),
       itemBuilder: (context) => [
         for (final option in kSupportedLanguageOptions)
-          PopupMenuItem(
-            value: option.$1,
-            child: Text(option.$2),
-          ),
+          PopupMenuItem(value: option.$1, child: Text(option.$2)),
       ],
     );
   }
@@ -255,12 +258,8 @@ class _InputScreenState extends State<InputScreen> {
                           children: [
                             Text(
                               l10n.inputSubtitle,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: scheme.onSurfaceVariant,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: scheme.onSurfaceVariant),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
@@ -298,8 +297,11 @@ class _InputScreenState extends State<InputScreen> {
                                   const Spacer(),
                                   Text(
                                     l10n.inputCharCount(
-                                        _controller.text.trim().length),
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                      _controller.text.trim().length,
+                                    ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
                                   ),
                                 ],
                               ),
@@ -316,15 +318,13 @@ class _InputScreenState extends State<InputScreen> {
                                 const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _scanImage,
-                                  icon: const Icon(
-                                      Icons.photo_camera_outlined),
+                                  icon: const Icon(Icons.photo_camera_outlined),
                                   label: Text(l10n.inputOcrButton),
                                 ),
                                 const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _importDocument,
-                                  icon:
-                                      const Icon(Icons.folder_open_outlined),
+                                  icon: const Icon(Icons.folder_open_outlined),
                                   label: Text(l10n.inputImportButton),
                                 ),
                               ],
@@ -336,10 +336,13 @@ class _InputScreenState extends State<InputScreen> {
                                   : _startAnalysis,
                               icon: const Icon(Icons.search),
                               label: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                child: Text(l10n.inputStartButton,
-                                    style: const TextStyle(fontSize: 16)),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                child: Text(
+                                  l10n.inputStartButton,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                               ),
                             ),
                           ],
@@ -354,9 +357,8 @@ class _InputScreenState extends State<InputScreen> {
                   child: GestureDetector(
                     onHorizontalDragUpdate: (details) {
                       setState(() {
-                        _rightPanelWidth =
-                            (_rightPanelWidth - details.delta.dx)
-                                .clamp(300, 600);
+                        _rightPanelWidth = (_rightPanelWidth - details.delta.dx)
+                            .clamp(300, 600);
                       });
                     },
                     child: Container(
@@ -369,7 +371,9 @@ class _InputScreenState extends State<InputScreen> {
                             width: 3,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: scheme.outlineVariant.withValues(alpha: 0.5),
+                              color: scheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
                               borderRadius: BorderRadius.circular(1.5),
                             ),
                           ),
@@ -405,9 +409,8 @@ class _InputScreenState extends State<InputScreen> {
                     children: [
                       Text(
                         l10n.inputSubtitle,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: scheme.onSurfaceVariant,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: scheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -444,7 +447,9 @@ class _InputScreenState extends State<InputScreen> {
                             _activeModelChip(context),
                             const Spacer(),
                             Text(
-                              l10n.inputCharCount(_controller.text.trim().length),
+                              l10n.inputCharCount(
+                                _controller.text.trim().length,
+                              ),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
@@ -481,8 +486,10 @@ class _InputScreenState extends State<InputScreen> {
                         icon: const Icon(Icons.search),
                         label: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Text(l10n.inputStartButton,
-                              style: const TextStyle(fontSize: 16)),
+                          child: Text(
+                            l10n.inputStartButton,
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ),
                       ),
                     ],
@@ -538,9 +545,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
       OcrService.setLocalServerUrl(_serverUrlController.text);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('設定保存失敗：$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('設定保存失敗：$e')));
       }
     }
   }
@@ -563,9 +570,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             child: Text(
               l10n.settingsAppBarTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: scheme.primary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: scheme.primary,
+              ),
             ),
           ),
           const Divider(),
@@ -579,16 +586,16 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 Text(
                   l10n.settingsThresholdTitle,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   l10n.settingsThresholdSubtitle(
                     (prefs.confidenceThreshold * 100).round(),
                   ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
                 Slider(
                   value: prefs.confidenceThreshold,
@@ -606,10 +613,14 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           // ESL 糾正
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsEslTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsEslSubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsEslTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsEslSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.eslCorrectionEnabled,
             onChanged: (v) => prefs.setEslCorrection(v),
           ),
@@ -621,9 +632,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             child: Text(
               l10n.settingsEngineSectionTitle,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: scheme.primary,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: scheme.primary,
+              ),
             ),
           ),
           Padding(
@@ -631,44 +642,60 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             child: Text(
               '所有檢測引擎自動啟用以提高準確性。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
-                  ),
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsEngineTransformerTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsEngineTransformerSubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsEngineTransformerTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsEngineTransformerSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.isEngineEnabled('transformer'),
             onChanged: (v) => prefs.setEngineEnabled('transformer', v),
           ),
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsEngineStatisticalTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsEngineStatisticalSubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsEngineStatisticalTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsEngineStatisticalSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.isEngineEnabled('statistical'),
             onChanged: (v) => prefs.setEngineEnabled('statistical', v),
           ),
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsEngineStylometryTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsEngineStylometrySubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsEngineStylometryTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsEngineStylometrySubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.isEngineEnabled('stylometry'),
             onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
           ),
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsEngineAdversarialTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsEngineAdversarialSubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsEngineAdversarialTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsEngineAdversarialSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.isEngineEnabled('adversarial'),
             onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
           ),
@@ -677,10 +704,14 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           // 鏈接驗證
           SwitchListTile(
             dense: true,
-            title: Text(l10n.settingsLinkVerificationTitle,
-                style: Theme.of(context).textTheme.labelSmall),
-            subtitle: Text(l10n.settingsLinkVerificationSubtitle,
-                style: Theme.of(context).textTheme.bodySmall),
+            title: Text(
+              l10n.settingsLinkVerificationTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsLinkVerificationSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
           ),
@@ -695,8 +726,8 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 Text(
                   l10n.settingsThemeTitle,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 SegmentedButton<ThemeMode>(
@@ -728,15 +759,15 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             children: [
               Text(
                 l10n.settingsLanguageTitle,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
                 l10n.settingsLanguageSubtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
               DropdownButton<Locale?>(
@@ -759,8 +790,10 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               isLabelVisible: modelManager.hasAnyUpdate,
               child: const Icon(Icons.download_outlined),
             ),
-            title: Text(l10n.settingsModelManagementTitle,
-                style: Theme.of(context).textTheme.labelSmall),
+            title: Text(
+              l10n.settingsModelManagementTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
             subtitle: Text(
               modelManager.hasAnyUpdate
                   ? l10n.settingsModelManagementUpdateSubtitle
@@ -769,9 +802,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             ),
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ModelManagerScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
               );
             },
           ),
@@ -784,18 +815,18 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               child: Text(
                 'Web OCR 設定',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: scheme.primary,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: scheme.primary,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Text(
                 '📷 用於識別上傳文件中的手寫或印刷文字。點擊相機圖標後使用。',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ),
             Padding(
@@ -812,17 +843,23 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () async {
-                          final url = Uri.parse('https://aistudio.google.com/app/apikey');
+                          final url = Uri.parse(
+                            'https://aistudio.google.com/app/apikey',
+                          );
                           if (await canLaunchUrl(url)) {
-                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
                           }
                         },
                         child: Text(
                           '免費申請',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: scheme.primary,
-                            decoration: TextDecoration.underline,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: scheme.primary,
+                                decoration: TextDecoration.underline,
+                              ),
                         ),
                       ),
                     ],
@@ -832,12 +869,14 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                     controller: _apiKeyController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'sk-proj-...',
+                      hintText: 'AIza...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       isDense: true,
                       suffixIcon: _apiKeyController.text.isNotEmpty
                           ? IconButton(
@@ -856,6 +895,13 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                     '🖥️ 本地 OCR 伺服器（可選）',
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Web 版可使用本機 OCR 服務。伺服器需接受 JSON：{image: dataURL, languages: [...]}，並回傳 {text: "..."} 或 {results:[{text:"..."}]}。',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: _serverUrlController,
@@ -865,7 +911,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       isDense: true,
                       suffixIcon: _serverUrlController.text.isNotEmpty
                           ? IconButton(
@@ -899,9 +947,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               const SizedBox(height: 4),
               Text(
                 '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber})\n100% 離線隱私檢測引擎',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -955,9 +1003,9 @@ class _SettingsPanelState extends State<_SettingsPanel> {
       OcrService.setLocalServerUrl(_serverUrlController.text);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('設定保存失敗：$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('設定保存失敗：$e')));
       }
     }
   }
@@ -971,7 +1019,9 @@ class _SettingsPanelState extends State<_SettingsPanel> {
 
     // 響應式寬度：平板 320px，桌機最多 420px
     final screenWidth = MediaQuery.of(context).size.width;
-    final drawerWidth = screenWidth < 600 ? 320.0 : (screenWidth < 900 ? 380.0 : 420.0);
+    final drawerWidth = screenWidth < 600
+        ? 320.0
+        : (screenWidth < 900 ? 380.0 : 420.0);
 
     return SizedBox(
       width: drawerWidth,
@@ -980,224 +1030,235 @@ class _SettingsPanelState extends State<_SettingsPanel> {
           padding: EdgeInsets.zero,
           physics: const BouncingScrollPhysics(),
           children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: scheme.primary),
-            child: Text(
-              l10n.settingsAppBarTitle,
-              style: TextStyle(
-                color: scheme.onPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            DrawerHeader(
+              decoration: BoxDecoration(color: scheme.primary),
+              child: Text(
+                l10n.settingsAppBarTitle,
+                style: TextStyle(
+                  color: scheme.onPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          ListTile(
-            title: Text(l10n.settingsThresholdTitle),
-            subtitle: Text(
-              l10n.settingsThresholdSubtitle(
-                (prefs.confidenceThreshold * 100).round(),
+            ListTile(
+              title: Text(l10n.settingsThresholdTitle),
+              subtitle: Text(
+                l10n.settingsThresholdSubtitle(
+                  (prefs.confidenceThreshold * 100).round(),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Slider(
-              value: prefs.confidenceThreshold,
-              min: 0.4,
-              max: 0.9,
-              divisions: 10,
-              label: '${(prefs.confidenceThreshold * 100).round()}%',
-              onChanged: (v) => prefs.setThreshold(v),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Slider(
+                value: prefs.confidenceThreshold,
+                min: 0.4,
+                max: 0.9,
+                divisions: 10,
+                label: '${(prefs.confidenceThreshold * 100).round()}%',
+                onChanged: (v) => prefs.setThreshold(v),
+              ),
             ),
-          ),
-          const Divider(),
-          SwitchListTile(
-            title: Text(l10n.settingsEslTitle),
-            subtitle: Text(l10n.settingsEslSubtitle),
-            value: prefs.eslCorrectionEnabled,
-            onChanged: (v) => prefs.setEslCorrection(v),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              l10n.settingsEngineSectionTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            const Divider(),
+            SwitchListTile(
+              title: Text(l10n.settingsEslTitle),
+              subtitle: Text(l10n.settingsEslSubtitle),
+              value: prefs.eslCorrectionEnabled,
+              onChanged: (v) => prefs.setEslCorrection(v),
             ),
-          ),
-          SwitchListTile(
-            title: Text(l10n.settingsEngineTransformerTitle),
-            subtitle: Text(l10n.settingsEngineTransformerSubtitle),
-            value: prefs.isEngineEnabled('transformer'),
-            onChanged: (v) => prefs.setEngineEnabled('transformer', v),
-          ),
-          SwitchListTile(
-            title: Text(l10n.settingsEngineStatisticalTitle),
-            subtitle: Text(l10n.settingsEngineStatisticalSubtitle),
-            value: prefs.isEngineEnabled('statistical'),
-            onChanged: (v) => prefs.setEngineEnabled('statistical', v),
-          ),
-          SwitchListTile(
-            title: Text(l10n.settingsEngineStylometryTitle),
-            subtitle: Text(l10n.settingsEngineStylometrySubtitle),
-            value: prefs.isEngineEnabled('stylometry'),
-            onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
-          ),
-          SwitchListTile(
-            title: Text(l10n.settingsEngineAdversarialTitle),
-            subtitle: Text(l10n.settingsEngineAdversarialSubtitle),
-            value: prefs.isEngineEnabled('adversarial'),
-            onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
-          ),
-          const Divider(),
-          SwitchListTile(
-            title: Text(l10n.settingsLinkVerificationTitle),
-            subtitle: Text(l10n.settingsLinkVerificationSubtitle),
-            value: prefs.linkVerificationEnabled,
-            onChanged: (v) => prefs.setLinkVerificationEnabled(v),
-          ),
-          const Divider(),
-          ListTile(
-            title: Text(l10n.settingsThemeTitle),
-            trailing: SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(
-                  value: ThemeMode.dark,
-                  icon: Icon(Icons.dark_mode_outlined),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.light,
-                  icon: Icon(Icons.light_mode_outlined),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.system,
-                  icon: Icon(Icons.brightness_auto_outlined),
-                ),
-              ],
-              selected: {prefs.themeMode},
-              onSelectionChanged: (s) => prefs.setThemeMode(s.first),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.translate),
-            title: Text(l10n.settingsLanguageTitle),
-            subtitle: Text(l10n.settingsLanguageSubtitle),
-            trailing: DropdownButton<Locale?>(
-              value: prefs.locale,
-              items: [
-                for (final option in kSupportedLanguageOptions)
-                  DropdownMenuItem(value: option.$1, child: Text(option.$2)),
-              ],
-              onChanged: (value) => prefs.setLocale(value),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: Badge(
-              isLabelVisible: modelManager.hasAnyUpdate,
-              child: const Icon(Icons.download_outlined),
-            ),
-            title: Text(l10n.settingsModelManagementTitle),
-            subtitle: Text(
-              modelManager.hasAnyUpdate
-                  ? l10n.settingsModelManagementUpdateSubtitle
-                  : l10n.settingsModelManagementSubtitle,
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ModelManagerScreen(),
-                ),
-              );
-            },
-          ),
-          const Divider(),
-          if (kIsWeb) ...[
+            const Divider(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
-                'Web OCR 設定',
+                l10n.settingsEngineSectionTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '🔑 Gemini API 金鑰',
-                    style: Theme.of(context).textTheme.titleSmall,
+            SwitchListTile(
+              title: Text(l10n.settingsEngineTransformerTitle),
+              subtitle: Text(l10n.settingsEngineTransformerSubtitle),
+              value: prefs.isEngineEnabled('transformer'),
+              onChanged: (v) => prefs.setEngineEnabled('transformer', v),
+            ),
+            SwitchListTile(
+              title: Text(l10n.settingsEngineStatisticalTitle),
+              subtitle: Text(l10n.settingsEngineStatisticalSubtitle),
+              value: prefs.isEngineEnabled('statistical'),
+              onChanged: (v) => prefs.setEngineEnabled('statistical', v),
+            ),
+            SwitchListTile(
+              title: Text(l10n.settingsEngineStylometryTitle),
+              subtitle: Text(l10n.settingsEngineStylometrySubtitle),
+              value: prefs.isEngineEnabled('stylometry'),
+              onChanged: (v) => prefs.setEngineEnabled('stylometry', v),
+            ),
+            SwitchListTile(
+              title: Text(l10n.settingsEngineAdversarialTitle),
+              subtitle: Text(l10n.settingsEngineAdversarialSubtitle),
+              value: prefs.isEngineEnabled('adversarial'),
+              onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
+            ),
+            const Divider(),
+            SwitchListTile(
+              title: Text(l10n.settingsLinkVerificationTitle),
+              subtitle: Text(l10n.settingsLinkVerificationSubtitle),
+              value: prefs.linkVerificationEnabled,
+              onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+            ),
+            const Divider(),
+            ListTile(
+              title: Text(l10n.settingsThemeTitle),
+              trailing: SegmentedButton<ThemeMode>(
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.dark,
+                    icon: Icon(Icons.dark_mode_outlined),
                   ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _apiKeyController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'sk-proj-...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.all(12),
-                      suffixIcon: _apiKeyController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _apiKeyController.clear();
-                                _saveOcrSettings();
-                              },
-                            )
-                          : null,
-                    ),
-                    onChanged: (_) => _saveOcrSettings(),
+                  ButtonSegment(
+                    value: ThemeMode.light,
+                    icon: Icon(Icons.light_mode_outlined),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '🖥️ 本地 OCR 伺服器',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _serverUrlController,
-                    decoration: InputDecoration(
-                      hintText: 'http://127.0.0.1:5001/ocr',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.all(12),
-                      suffixIcon: _serverUrlController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _serverUrlController.clear();
-                                _saveOcrSettings();
-                              },
-                            )
-                          : null,
-                    ),
-                    onChanged: (_) => _saveOcrSettings(),
+                  ButtonSegment(
+                    value: ThemeMode.system,
+                    icon: Icon(Icons.brightness_auto_outlined),
                   ),
                 ],
+                selected: {prefs.themeMode},
+                onSelectionChanged: (s) => prefs.setThemeMode(s.first),
               ),
             ),
             const Divider(),
-          ],
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('TruthLens'),
-            subtitle: Text(
-              '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎',
+            ListTile(
+              leading: const Icon(Icons.translate),
+              title: Text(l10n.settingsLanguageTitle),
+              subtitle: Text(l10n.settingsLanguageSubtitle),
+              trailing: DropdownButton<Locale?>(
+                value: prefs.locale,
+                items: [
+                  for (final option in kSupportedLanguageOptions)
+                    DropdownMenuItem(value: option.$1, child: Text(option.$2)),
+                ],
+                onChanged: (value) => prefs.setLocale(value),
+              ),
             ),
-          ),
-        ],
+            const Divider(),
+            ListTile(
+              leading: Badge(
+                isLabelVisible: modelManager.hasAnyUpdate,
+                child: const Icon(Icons.download_outlined),
+              ),
+              title: Text(l10n.settingsModelManagementTitle),
+              subtitle: Text(
+                modelManager.hasAnyUpdate
+                    ? l10n.settingsModelManagementUpdateSubtitle
+                    : l10n.settingsModelManagementSubtitle,
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
+                );
+              },
+            ),
+            const Divider(),
+            if (kIsWeb) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Text(
+                  'Web OCR 設定',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '🔑 Gemini API 金鑰',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _apiKeyController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'AIza...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.all(12),
+                        suffixIcon: _apiKeyController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _apiKeyController.clear();
+                                  _saveOcrSettings();
+                                },
+                              )
+                            : null,
+                      ),
+                      onChanged: (_) => _saveOcrSettings(),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '🖥️ 本地 OCR 伺服器',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Web 版不會直接呼叫作業系統 OCR；可填入本機 OCR 服務 URL。服務需接受 JSON：{image: dataURL, languages: [...]}，並回傳 {text: "..."} 或 {results:[{text:"..."}]}。',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _serverUrlController,
+                      decoration: InputDecoration(
+                        hintText: 'http://127.0.0.1:5001/ocr',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.all(12),
+                        suffixIcon: _serverUrlController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _serverUrlController.clear();
+                                  _saveOcrSettings();
+                                },
+                              )
+                            : null,
+                      ),
+                      onChanged: (_) => _saveOcrSettings(),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+            ],
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('TruthLens'),
+              subtitle: Text(
+                '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎',
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-

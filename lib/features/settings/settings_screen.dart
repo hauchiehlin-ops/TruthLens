@@ -290,7 +290,7 @@ class _WebOcrSettingsState extends State<_WebOcrSettings> {
                 controller: _apiKeyController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: 'sk-proj-...',
+                  hintText: 'AIza...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -315,7 +315,9 @@ class _WebOcrSettingsState extends State<_WebOcrSettings> {
               const SizedBox(height: 8),
               Text(
                 '若已在本機運行 OCR 伺服器（見 https://github.com/hauchiehlin-ops/ocr），'
-                '填入 URL。格式：http://127.0.0.1:5001/ocr',
+                '填入 URL。格式：http://127.0.0.1:5001/ocr。'
+                '\nWeb 版不具備瀏覽器標準原生 OCR；本地伺服器應在你的電腦上使用系統 OCR 或高效 OCR 引擎，'
+                '並接受 JSON：{image: dataURL, languages: [...]}，回傳 {text: "..."} 或 {results:[{text:"..."}]}。',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 8),
@@ -359,7 +361,7 @@ class _WebOcrSettingsState extends State<_WebOcrSettings> {
                     Text(
                       '1️⃣ 本地伺服器（若已設定 URL）\n'
                       '2️⃣ Gemini API（若已提供金鑰）\n'
-                      '3️⃣ 無法進行 OCR',
+                      '3️⃣ 顯示具體診斷原因（未設定、金鑰錯誤、伺服器不可用或圖片無文字）',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
