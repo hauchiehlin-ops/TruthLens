@@ -187,25 +187,7 @@ class BibliographyVerifier {
       (m) => '${m.group(1)} ${m.group(2)}',
     );
 
-    // 常用英文介詞與連詞的 OCR 嵌合修復 (如 Onsetof, Orderof, Journalof, Flowwith, Reversingand, Methodsin)
-    final ocrCompoundedWords = [
-      'forthe',
-      'between',
-      'ofthe',
-      'ina',
-      'withthe',
-      'of',
-      'with',
-      'for',
-      'from',
-      'and',
-    ];
-    for (final cp in ocrCompoundedWords) {
-      text = text.replaceAllMapped(
-        RegExp('([a-zA-Z]{3,})$cp(?=\\b|[\\s\\.:,])', caseSensitive: false),
-        (m) => '${m.group(1)} $cp',
-      );
-    }
+    text = _repairCompoundedBibliographyText(text);
 
     // 4) 修正跨行頁碼割裂 (如 19–\n42. -> 19–42.) 與跨行斷詞割裂
     text = text.replaceAllMapped(
@@ -242,6 +224,77 @@ class BibliographyVerifier {
     );
 
     return text;
+  }
+
+  /// 修復 PDF/OCR 常見的英文連寫，並保留查詢與顯示所需的語意詞。
+  ///
+  /// 這裡特別針對文獻目錄常見破損，例如 `Stabilityofa`、`Experimentonthe`、
+  /// `Proceedingsofthe`、`Methodsin`、`containedbetween`。若不先修復，Crossref /
+  /// OpenAlex 會收到污染篇名，常把真實文獻誤判為未核實。
+  static String _repairCompoundedBibliographyText(String input) {
+    var text = input;
+    final phraseFixes = <String, String>{
+      'ofthe': 'of the',
+      'offthe': 'of the',
+      'ofa': 'of a',
+      'onthe': 'on the',
+      'inthe': 'in the',
+      'ina': 'in a',
+      'forthe': 'for the',
+      'withthe': 'with the',
+      'betweenthe': 'between the',
+      'between': 'between',
+      'andthe': 'and the',
+      'of': 'of',
+      'in': 'in',
+      'with': 'with',
+      'for': 'for',
+      'from': 'from',
+      'into': 'into',
+      'and': 'and',
+    };
+
+    for (final entry in phraseFixes.entries) {
+      text = text.replaceAllMapped(
+        RegExp(
+          '([A-Za-zÀ-ÖØ-öø-ÿ]{3,})${entry.key}(?=\\b|[\\s\\.:,;])',
+          caseSensitive: false,
+        ),
+        (m) => '${m.group(1)} ${entry.value}',
+      );
+    }
+
+    return text
+        .replaceAll(RegExp(r'\bOnthe\b', caseSensitive: false), 'On the')
+        .replaceAll(RegExp(r'\bIna\b', caseSensitive: false), 'In a')
+        .replaceAll(
+          RegExp(r'\bExperiment\s+on\s+the\b', caseSensitive: false),
+          'Experiment on the',
+        )
+        .replaceAll(
+          RegExp(r'\bProceedings\s+of\s+the\b', caseSensitive: false),
+          'Proceedings of the',
+        )
+        .replaceAll(
+          RegExp(r'\bTransactions\s+of\s+the\b', caseSensitive: false),
+          'Transactions of the',
+        )
+        .replaceAll(
+          RegExp(r'\bJournal\s+of\b', caseSensitive: false),
+          'Journal of',
+        )
+        .replaceAll(
+          RegExp(r'\bMethods\s+in\b', caseSensitive: false),
+          'Methods in',
+        )
+        .replaceAll(
+          RegExp(r'\bContained\s+between\b', caseSensitive: false),
+          'Contained between',
+        )
+        .replaceAll(
+          RegExp(r'\bContained\s+Between\b', caseSensitive: false),
+          'Contained between',
+        );
   }
 
   /// 偵測文件中的參考文獻條目並依條目切分；找不到任何條目時回傳空陣列。
@@ -457,9 +510,11 @@ class BibliographyVerifier {
     final titleEnd = afterPrefix.indexOf('. ');
     final rawTitle = quoteMatch?.group(1);
     final title =
-        rawTitle?.replaceAll(RegExp(r',+$'), '').trim() ??
-        (titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix)
-            .trim();
+        _normalizeBibliographyTitle(rawTitle) ??
+        _normalizeBibliographyTitle(
+          titleEnd > 0 ? afterPrefix.substring(0, titleEnd) : afterPrefix,
+        ) ??
+        '';
     return BibliographyEntry(
       rawText: raw,
       firstAuthorSurname: surname,
@@ -476,7 +531,7 @@ class BibliographyVerifier {
     int? year,
   ) {
     // 預先修復常見 OCR 小錯字 (如 "Couette Fow" -> "Couette Flow")
-    var cleanedNoPrefix = cleaned
+    var cleanedNoPrefix = _repairCompoundedBibliographyText(cleaned)
         .replaceAll(_bulletOrNumberPrefix, '')
         .replaceAll(RegExp(r'^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])'), '')
         .replaceAll(
@@ -490,7 +545,7 @@ class BibliographyVerifier {
       r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
     ).firstMatch(cleanedNoPrefix);
     final rawTitle = quoteMatch?.group(1);
-    String? title = rawTitle?.replaceAll(RegExp(r',+$'), '').trim();
+    String? title = _normalizeBibliographyTitle(rawTitle);
 
     if (title == null || title.isEmpty) {
       // 若有西元年 (例如 1983. 或 1986. 或 (1983))，年份後第一個以句號分割的段落即為真正的論文篇名
@@ -501,12 +556,14 @@ class BibliographyVerifier {
           final afterYear = cleanedNoPrefix.substring(yearMatch.end).trim();
           final titleEnd = afterYear.indexOf('. ');
           if (titleEnd > 5) {
-            title = afterYear.substring(0, titleEnd).trim();
+            title = _normalizeBibliographyTitle(
+              afterYear.substring(0, titleEnd),
+            );
           } else if (afterYear.isNotEmpty) {
             final periodIdx = afterYear.indexOf('.');
-            title =
-                (periodIdx > 5 ? afterYear.substring(0, periodIdx) : afterYear)
-                    .trim();
+            title = _normalizeBibliographyTitle(
+              periodIdx > 5 ? afterYear.substring(0, periodIdx) : afterYear,
+            );
           }
         }
       }
@@ -526,11 +583,11 @@ class BibliographyVerifier {
         final parts = (noAuthors.isNotEmpty ? noAuthors : cleanedNoPrefix)
             .split(RegExp(r'[\.度。]\s*'));
         if (parts.isNotEmpty && parts.first.trim().length > 5) {
-          title = parts.first.trim();
+          title = _normalizeBibliographyTitle(parts.first);
         } else if (parts.length > 1 && parts[1].trim().length > 5) {
-          title = parts[1].trim();
+          title = _normalizeBibliographyTitle(parts[1]);
         } else {
-          title = cleanedNoPrefix;
+          title = _normalizeBibliographyTitle(cleanedNoPrefix);
         }
       }
     }
@@ -560,10 +617,25 @@ class BibliographyVerifier {
       rawText: rawText,
       firstAuthorSurname: surname,
       year: year,
-      title: title.isEmpty ? null : title,
+      title: title == null || title.isEmpty ? null : title,
       venueTitle: _extractVenueTitle(cleanedNoPrefix, title),
       doi: _extractDoi(cleanedNoPrefix),
     );
+  }
+
+  static String? _normalizeBibliographyTitle(String? raw) {
+    if (raw == null) return null;
+    final cleaned = _repairCompoundedBibliographyText(raw)
+        .replaceAll(RegExp(r'^[\s"“”「」〈〉《》,.;:]+'), '')
+        .replaceAll(RegExp(r'[\s"“”「」〈〉《》,.;:]+$'), '')
+        .replaceAll(
+          RegExp(r'\bCouette\s+Fow\b', caseSensitive: false),
+          'Couette Flow',
+        )
+        .replaceAll(RegExp(r'\s*:\s*'), ': ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return cleaned.isEmpty ? null : cleaned;
   }
 
   static String? _extractVenueTitle(String raw, String? title) {
@@ -738,6 +810,10 @@ class BibliographyVerifier {
     final searchTitle = entry.title != null && entry.title!.trim().length >= 5
         ? entry.title!.trim()
         : null;
+    final searchTitleVariants = _bibliographySearchTitleVariants(
+      searchTitle,
+      entry,
+    );
 
     if (entry.doi != null) {
       try {
@@ -786,53 +862,55 @@ class BibliographyVerifier {
       } catch (_) {}
     }
 
-    if (searchTitle != null &&
+    if (searchTitleVariants.isNotEmpty &&
         entry.venueTitle != null &&
         entry.venueTitle!.length >= 3) {
-      try {
-        final queryParams = <String, String>{
-          'query.title': searchTitle,
-          'query.container-title': entry.venueTitle!,
-          'rows': '5',
-          'mailto': 'support@truthlens.app',
-        };
-        final uri = Uri.parse(
-          _getProxiedUrl('https://api.crossref.org/works'),
-        ).replace(queryParameters: queryParams);
-        final response = await _httpGetWithRetry(client, uri, timeout);
-        if (response != null && response.statusCode == 200) {
-          crossrefSearchSucceeded = true;
-          final message =
-              (jsonDecode(response.body) as Map<String, dynamic>)['message']
-                  as Map<String, dynamic>?;
-          final items = (message?['items'] as List?)?.cast<dynamic>();
-          final result = _bestCandidateFromCrossrefItems(
-            entry,
-            searchTitle,
-            items,
-            defaultJournal: entry.venueTitle!,
-          );
-          if (result != null) {
-            if (result.confidence == CitationMatchConfidence.high) {
-              return result;
+      for (final titleVariant in searchTitleVariants) {
+        try {
+          final queryParams = <String, String>{
+            'query.title': titleVariant,
+            'query.container-title': entry.venueTitle!,
+            'rows': '8',
+            'mailto': 'support@truthlens.app',
+          };
+          final uri = Uri.parse(
+            _getProxiedUrl('https://api.crossref.org/works'),
+          ).replace(queryParameters: queryParams);
+          final response = await _httpGetWithRetry(client, uri, timeout);
+          if (response != null && response.statusCode == 200) {
+            crossrefSearchSucceeded = true;
+            final message =
+                (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                    as Map<String, dynamic>?;
+            final items = (message?['items'] as List?)?.cast<dynamic>();
+            final result = _bestCandidateFromCrossrefItems(
+              entry,
+              titleVariant,
+              items,
+              defaultJournal: entry.venueTitle!,
+            );
+            if (result != null) {
+              if (result.confidence == CitationMatchConfidence.high) {
+                return result;
+              }
+              bestUncertainCandidate ??= result;
             }
-            bestUncertainCandidate ??= result;
           }
-        }
-      } catch (_) {}
+        } catch (_) {}
+      }
     }
 
     // 1) 策略一：專注篇名與作者的 Crossref 精準比對 (query.title + query.author)
-    if (searchTitle != null) {
+    for (final titleVariant in searchTitleVariants) {
       try {
         final queryParams = <String, String>{
-          'query.title': searchTitle,
-          'rows': '5',
+          'query.title': titleVariant,
+          'rows': '8',
           'mailto': 'support@truthlens.app',
         };
-        if (entry.firstAuthorSurname != null &&
-            entry.firstAuthorSurname!.length >= 2) {
-          queryParams['query.author'] = entry.firstAuthorSurname!;
+        final author = entry.firstAuthorSurname;
+        if (author != null && author.length >= 2) {
+          queryParams['query.author'] = author;
         }
 
         final uri = Uri.parse(
@@ -849,7 +927,7 @@ class BibliographyVerifier {
           final items = (message?['items'] as List?)?.cast<dynamic>();
           final result = _bestCandidateFromCrossrefItems(
             entry,
-            searchTitle,
+            titleVariant,
             items,
             defaultJournal: 'Crossref 收錄期刊',
           );
@@ -865,37 +943,37 @@ class BibliographyVerifier {
 
     // 1B) 策略一 B：Crossref 全文字串 (query.bibliographic) 備援查詢 (適合 APS / Royal Society 經典文獻)
     try {
-      final bibQuery =
-          '${entry.firstAuthorSurname ?? ''} ${searchTitle ?? entry.rawText} ${entry.year ?? ''}'
-              .trim();
-      final queryParams = <String, String>{
-        'query.bibliographic': bibQuery,
-        'rows': '5',
-        'mailto': 'support@truthlens.app',
-      };
-      final uri = Uri.parse(
-        _getProxiedUrl('https://api.crossref.org/works'),
-      ).replace(queryParameters: queryParams);
+      final bibQueries = _bibliographicQueryVariants(entry, searchTitle);
+      for (final bibQuery in bibQueries) {
+        final queryParams = <String, String>{
+          'query.bibliographic': bibQuery,
+          'rows': '8',
+          'mailto': 'support@truthlens.app',
+        };
+        final uri = Uri.parse(
+          _getProxiedUrl('https://api.crossref.org/works'),
+        ).replace(queryParameters: queryParams);
 
-      final response = await _httpGetWithRetry(client, uri, timeout);
+        final response = await _httpGetWithRetry(client, uri, timeout);
 
-      if (response != null && response.statusCode == 200) {
-        crossrefSearchSucceeded = true;
-        final message =
-            (jsonDecode(response.body) as Map<String, dynamic>)['message']
-                as Map<String, dynamic>?;
-        final items = (message?['items'] as List?)?.cast<dynamic>();
-        final result = _bestCandidateFromCrossrefItems(
-          entry,
-          searchTitle ?? entry.rawText,
-          items,
-          defaultJournal: 'Crossref 收錄期刊',
-        );
-        if (result != null) {
-          if (result.confidence == CitationMatchConfidence.high) {
-            return result;
+        if (response != null && response.statusCode == 200) {
+          crossrefSearchSucceeded = true;
+          final message =
+              (jsonDecode(response.body) as Map<String, dynamic>)['message']
+                  as Map<String, dynamic>?;
+          final items = (message?['items'] as List?)?.cast<dynamic>();
+          final result = _bestCandidateFromCrossrefItems(
+            entry,
+            searchTitle ?? entry.rawText,
+            items,
+            defaultJournal: 'Crossref 收錄期刊',
+          );
+          if (result != null) {
+            if (result.confidence == CitationMatchConfidence.high) {
+              return result;
+            }
+            bestUncertainCandidate ??= result;
           }
-          bestUncertainCandidate ??= result;
         }
       }
     } catch (_) {}
@@ -968,7 +1046,7 @@ class BibliographyVerifier {
     final journalCatalogResult = await _verifyJournalWebsiteCatalog(
       client,
       entry,
-      searchTitle,
+      searchTitleVariants.isNotEmpty ? searchTitleVariants.first : searchTitle,
       timeout,
     );
     if (journalCatalogResult != null) {
@@ -1019,6 +1097,78 @@ class BibliographyVerifier {
       title,
     ).where((w) => !_bibliographyStopWords.contains(w)).toList();
     return contentWords.length >= 4 && contentWords.length <= 24;
+  }
+
+  static List<String> _bibliographySearchTitleVariants(
+    String? searchTitle,
+    BibliographyEntry entry,
+  ) {
+    final variants = <String>[];
+    void add(String? value) {
+      final normalized = _normalizeBibliographyTitle(value);
+      if (normalized == null || normalized.length < 5) return;
+      if (!variants.any((v) => v.toLowerCase() == normalized.toLowerCase())) {
+        variants.add(normalized);
+      }
+    }
+
+    add(searchTitle);
+    add(_titleFromRawQuotedText(entry.rawText));
+
+    final raw = _repairCompoundedBibliographyText(entry.rawText);
+    final titleFromOldStyle = _titleFromOldStyleCitation(raw);
+    add(titleFromOldStyle);
+
+    return variants.take(4).toList(growable: false);
+  }
+
+  static List<String> _bibliographicQueryVariants(
+    BibliographyEntry entry,
+    String? searchTitle,
+  ) {
+    final variants = <String>[];
+    void add(String value) {
+      final normalized = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (normalized.length < 8) return;
+      if (!variants.any((v) => v.toLowerCase() == normalized.toLowerCase())) {
+        variants.add(normalized);
+      }
+    }
+
+    final author = entry.firstAuthorSurname ?? '';
+    final year = entry.year?.toString() ?? '';
+    final venue = entry.venueTitle ?? '';
+    for (final title in _bibliographySearchTitleVariants(searchTitle, entry)) {
+      add('$author $title $venue $year');
+      add('$title $year');
+    }
+    add(_repairCompoundedBibliographyText(entry.rawText));
+
+    return variants.take(5).toList(growable: false);
+  }
+
+  static String? _titleFromRawQuotedText(String raw) {
+    final quoteMatch = RegExp(
+      r'["“「〈《]([^"”」〉»\r\n]+)["”」〉»]',
+    ).firstMatch(_repairCompoundedBibliographyText(raw));
+    return _normalizeBibliographyTitle(quoteMatch?.group(1));
+  }
+
+  static String? _titleFromOldStyleCitation(String raw) {
+    final quote = _titleFromRawQuotedText(raw);
+    if (quote != null) return quote;
+
+    final yearMatch = _yearRegex.firstMatch(raw);
+    final firstComma = raw.indexOf(',');
+    if (yearMatch == null || firstComma < 0) return null;
+    final afterAuthor = raw.substring(firstComma + 1, yearMatch.start);
+    final parts = afterAuthor
+        .split(RegExp(r'[.;]'))
+        .map((p) => p.trim())
+        .where((p) => p.length >= 8)
+        .toList();
+    if (parts.isEmpty) return null;
+    return _normalizeBibliographyTitle(parts.first);
   }
 
   static BibliographyCheckResult? _bestCandidateFromCrossrefItems(
@@ -1219,11 +1369,13 @@ class BibliographyVerifier {
   static double _titleSimilarity(String? a, String? b) {
     if (a == null || b == null) return 0;
 
-    final cleanA = a
-        .replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '')
+    final fixedA = _repairCompoundedBibliographyText(a);
+    final fixedB = _repairCompoundedBibliographyText(b);
+    final cleanA = fixedA
+        .replaceAll(RegExp(r'[^a-zA-ZÀ-ÖØ-öø-ÿ0-9\u4e00-\u9fa5]'), '')
         .toLowerCase();
-    final cleanB = b
-        .replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '')
+    final cleanB = fixedB
+        .replaceAll(RegExp(r'[^a-zA-ZÀ-ÖØ-öø-ÿ0-9\u4e00-\u9fa5]'), '')
         .toLowerCase();
     if (cleanA.isEmpty || cleanB.isEmpty) return 0;
 
@@ -1234,8 +1386,8 @@ class BibliographyVerifier {
     }
 
     // 2) 詞彙級 Jaccard 相似度
-    final wordsA = _normalizeWords(a);
-    final wordsB = _normalizeWords(b);
+    final wordsA = _normalizeWords(fixedA);
+    final wordsB = _normalizeWords(fixedB);
     final tokenSim = (wordsA.isEmpty || wordsB.isEmpty)
         ? 0.0
         : (wordsA.intersection(wordsB).length / wordsA.union(wordsB).length);
@@ -1289,13 +1441,13 @@ class BibliographyVerifier {
 
   static Set<String> _normalizeWords(String s) => s
       .toLowerCase()
-      .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
+      .replaceAll(RegExp(r'[^a-zà-öø-ÿ0-9\s]'), ' ')
       .split(RegExp(r'\s+'))
       .where((w) => w.length > 1)
       .toSet();
 
   static String _cleanSearchKeywords(String raw) {
-    var current = raw;
+    var current = _repairCompoundedBibliographyText(raw);
     current = current.replaceAllMapped(
       RegExp(r'([a-z])([A-Z])'),
       (m) => '${m.group(1)} ${m.group(2)}',
@@ -1336,7 +1488,7 @@ class BibliographyVerifier {
     }
     final stopWords = preps.toSet();
     final words = current
-        .replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), ' ')
+        .replaceAll(RegExp(r'[^a-zA-ZÀ-ÖØ-öø-ÿ0-9\s]'), ' ')
         .split(RegExp(r'\s+'))
         .where((w) => w.length > 2 && !stopWords.contains(w.toLowerCase()))
         .toList();

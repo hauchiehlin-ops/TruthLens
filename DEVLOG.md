@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-13（第三十二次更新）— 修復：文獻核實強化 OCR/PDF 連寫與髒查詢容錯
+
+**概述**
+回應 Taylor-Couette／流體力學文獻實際存在卻大量顯示未核實的問題：
+1. 文獻抽取新增專用連寫修復，處理 `Stabilityofa`、`Experimentonthe`、`Proceedingsofthe`、`Journalof`、`ina`、`containedbetween` 等 PDF/OCR 常見破損
+2. 篇名正規化會移除尾端標點與修復 `Couette Fow` 等小錯，避免把髒篇名直接送往 Crossref/OpenAlex
+3. Crossref 查詢改用多個篇名／書目查詢版本，包含修復後篇名、原始引號篇名與完整 bibliographic fallback
+4. 篇名相似度與搜尋關鍵字保留拉丁擴展字母，避免法文／德文等舊文獻因重音字母被剃除而查詢失準
+5. 新增截圖類流體力學 OCR 破損測試，確認真實文獻不會因漏空格、期刊卷頁黏連與年份置後而被誤殺
+
+**修復內容**：✅ **完成**
+
+- 文獻核實不再只相信第一個受污染查詢字串
+- `Stability of a Viscous Liquid Contained between Two Rotating Cylinders` 等截圖型案例可用修復後篇名命中高可信度
+- 保留既有 notFound 嚴格條件：只有 Crossref/OpenAlex 都成功回應且仍無可靠候選時才判未通過
+
+---
+
 ## 2026-08-12（第三十一次更新）— 修復：報告雷達圖與綜合判定改走介面語系
 
 **概述**

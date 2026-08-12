@@ -85,7 +85,7 @@ Coles, D., 1965. Transition in circular Couette flow. Journal of Fluid Mechanics
       final entries = BibliographyVerifier.extractEntries(bulletedInput);
       expect(entries.length, 3);
       expect(entries[0].year, 2021);
-      expect(entries[0].title, 'Deep Learning Analysis.');
+      expect(entries[0].title, 'Deep Learning Analysis');
       expect(entries[1].year, 2019);
       expect(entries[2].year, 2023);
     });
@@ -577,6 +577,28 @@ References
       expect(entries[2].title, contains('Reversing and'));
     });
 
+    test('截圖類 OCR/PDF 連寫文獻可修復篇名與期刊欄位，避免真實文獻被髒查詢誤殺', () {
+      const noisyFluidReferences = '''
+References
+1. Couette, M., “Études Sur Le Frottement Des Liquids,”Annalesdechimieetdephysique 6: 433–510 (1890).
+2.Taylor, G.I., “Stabilityofa Viscous Liquid Containedbetween Two Rotating Cylinders,”Philosophical Transactions ofthe Royal Society of London A233: 289–343 (1923).
+3. Donnelly, R.J., “Experimentonthe Stability of Viscous Flow between Rotating Cylinders I. Torque Measurement,”Proceedingsofthe Royal Society of London A246: 312–325 (1958).
+4.Simon, N.J.,and Donnelly, R.J., “An Empirical Torque Relation for Supercritical Flow between Rotating Cylinders,” Journalof Fluid Mechanics 7: 401–418 (1960).
+5.Coles, D., “Onthe Instability of Taylor Vortices,” Journalof Fluid Mechanics 31: 17–62 (1965).
+9.Lope, J.M.,and Marques, F., “Dynamics of Three-tori ina Periodically Forced Navier-Stokes Flow,”Physical Review Letters 85: 972–975 (2001).
+''';
+      final entries = BibliographyVerifier.extractEntries(noisyFluidReferences);
+      expect(entries.length, 6);
+      expect(
+        entries[1].title,
+        'Stability of a Viscous Liquid Contained between Two Rotating Cylinders',
+      );
+      expect(entries[2].title, startsWith('Experiment on the Stability'));
+      expect(entries[3].venueTitle, 'Journal of Fluid Mechanics');
+      expect(entries[4].title, 'On the Instability of Taylor Vortices');
+      expect(entries[5].title, contains('In a Periodically Forced'));
+    });
+
     test('HTTP 429 頻率限制回應時退回 uncertain (黃燈)，不誤報為 notFound (紅燈)', () async {
       final client = MockClient(
         (_) async => http.Response('Rate Limit Exceeded', 429),
@@ -586,6 +608,64 @@ References
         entries.first,
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.uncertain);
+    });
+
+    test('Crossref 查詢使用修復後篇名，截圖類連寫文獻可正確命中高可信度', () async {
+      final queriedTitles = <String>[];
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        final title = req.url.queryParameters['query.title'];
+        if (title != null) queriedTitles.add(title);
+        if (title ==
+            'Stability of a Viscous Liquid Contained between Two Rotating Cylinders') {
+          return http.Response(
+            jsonEncode({
+              'message': {
+                'items': [
+                  {
+                    'title': [
+                      'Stability of a viscous liquid contained between two rotating cylinders',
+                    ],
+                    'container-title': [
+                      'Philosophical Transactions of the Royal Society of London. Series A',
+                    ],
+                    'published': {
+                      'date-parts': [
+                        [1923],
+                      ],
+                    },
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {'items': []},
+          }),
+          200,
+        );
+      });
+
+      final entries = BibliographyVerifier.extractEntries('''
+References
+2.Taylor, G.I., “Stabilityofa Viscous Liquid Containedbetween Two Rotating Cylinders,”Philosophical Transactions ofthe Royal Society of London A233: 289–343 (1923).
+''');
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+      expect(
+        queriedTitles,
+        contains(
+          'Stability of a Viscous Liquid Contained between Two Rotating Cylinders',
+        ),
+      );
+      expect(results.single.confidence, CitationMatchConfidence.high);
     });
 
     test('verifyAll 不截斷文獻清單並回報逐筆進度', () async {
