@@ -194,7 +194,7 @@
   "reportVerifyNowBibButton": "立即核實（需連線）",
   "reportBibRecheckAllUnreliableButton": "重新查核全部未通過文獻",
   "reportBibRecheckOneTooltip": "重新查核此筆文獻",
-  "reportBibResultHint": "依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。",
+  "reportBibResultHint": "依作者、年份、篇名與期刊資訊比對 Crossref、OpenAlex 與可辨識的期刊／出版商目錄頁；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。",
   "reportBibHighConfidence": "高可信度：應存在{journal}",
   "reportBibJournalSuffix": "（登記於《{journal}》）",
   "reportBibNotFound": "查無相近匹配，可能為虛構文獻",

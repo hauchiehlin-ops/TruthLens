@@ -1,5 +1,22 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第二十六次更新）— 功能：文獻核實新增期刊官網目錄頁查核
+
+**概述**
+回應文獻真實性不能只依賴登記資料庫、需要直接查期刊網站目錄頁的要求：
+1. 文獻核實流程新增第三層查核來源：期刊／出版商網站目錄搜尋頁
+2. 目前支援可辨識平台包含 Cambridge Core、APS、Wiley、IEEE Xplore、ACM Digital Library、Springer、ScienceDirect、Nature、SAGE、Taylor & Francis 等常見目錄搜尋入口
+3. 期刊頁 HTML 會以篇名、年份與期刊名交叉比對；若期刊頁直接命中篇名且年份或期刊名吻合，結果升級為高可信度
+4. 報告說明同步更新為 Crossref、OpenAlex 與期刊／出版商目錄頁三層查核
+
+**修復內容**：✅ **完成**
+
+- `BibliographyVerifier` 新增 `_verifyJournalWebsiteCatalog()`
+- 新增期刊目錄搜尋 URL 建構與 HTML 文字比對
+- 新增測試覆蓋「資料庫查無但期刊官網目錄頁找到篇名與年份」案例
+
+---
+
 ## 2026-08-12（第二十五次更新）— 功能：文獻未通過項目支援單筆與批次重新查核
 
 **概述**

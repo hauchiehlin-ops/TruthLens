@@ -641,7 +641,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
+      '依作者、年份、篇名與期刊資訊比對 Crossref、OpenAlex 與可辨識的期刊／出版商目錄頁；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1880,7 +1880,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名与期刊信息比对 Crossref 与 OpenAlex 公开登记数据；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。';
+      '依作者、年份、篇名与期刊信息比对 Crossref、OpenAlex 与可识别的期刊／出版商目录页；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -3119,7 +3119,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名與期刊資訊比對 Crossref 與 OpenAlex 公開登記資料；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
+      '依作者、年份、篇名與期刊資訊比對 Crossref、OpenAlex 與可辨識的期刊／出版商目錄頁；TruthLens 會直接標示每筆文獻是否通過核實，未達可靠匹配者視為未通過核實。';
 
   @override
   String reportBibHighConfidence(String journal) {

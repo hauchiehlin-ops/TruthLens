@@ -963,6 +963,21 @@ class BibliographyVerifier {
       }
     } catch (_) {}
 
+    // 3) 策略三：直接查詢期刊／出版商目錄頁。Crossref/OpenAlex 是登記資料庫；
+    // 這裡再到期刊網站搜尋目錄頁，若頁面內容同時吻合篇名與年份/期刊，提升為高可信度。
+    final journalCatalogResult = await _verifyJournalWebsiteCatalog(
+      client,
+      entry,
+      searchTitle,
+      timeout,
+    );
+    if (journalCatalogResult != null) {
+      if (journalCatalogResult.confidence == CitationMatchConfidence.high) {
+        return journalCatalogResult;
+      }
+      bestUncertainCandidate ??= journalCatalogResult;
+    }
+
     // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名
     if (bestUncertainCandidate != null) {
       return bestUncertainCandidate;
@@ -1068,6 +1083,136 @@ class BibliographyVerifier {
       }
     }
     return bestUncertainCandidate;
+  }
+
+  static Future<BibliographyCheckResult?> _verifyJournalWebsiteCatalog(
+    http.Client client,
+    BibliographyEntry entry,
+    String? searchTitle,
+    Duration timeout,
+  ) async {
+    final title = searchTitle?.trim();
+    final venue = entry.venueTitle?.trim();
+    if (title == null ||
+        title.length < 8 ||
+        venue == null ||
+        venue.length < 3) {
+      return null;
+    }
+
+    for (final uri in _journalCatalogSearchUris(entry, title)) {
+      try {
+        final response = await _httpGetWithRetry(
+          client,
+          Uri.parse(_getProxiedUrl(uri.toString())),
+          timeout,
+          maxRetries: 1,
+        );
+        if (response == null || response.statusCode != 200) continue;
+        final body = _htmlToSearchableText(response.body);
+        if (body.isEmpty) continue;
+
+        final titleMatches = _titleSimilarity(title, body) >= 0.75;
+        final yearMatches =
+            entry.year == null || body.contains('${entry.year}');
+        final venueMatches =
+            body.toLowerCase().contains(venue.toLowerCase()) ||
+            _titleSimilarity(venue, body) >= 0.55;
+
+        if (titleMatches && (yearMatches || venueMatches)) {
+          return BibliographyCheckResult(
+            entry: entry,
+            confidence: CitationMatchConfidence.high,
+            matchedTitle: title,
+            matchedJournal: '期刊官網目錄頁：$venue',
+            matchedYear: entry.year,
+          );
+        }
+        if (titleMatches) {
+          return BibliographyCheckResult(
+            entry: entry,
+            confidence: CitationMatchConfidence.uncertain,
+            matchedTitle: title,
+            matchedJournal: '期刊官網目錄頁：$venue',
+            matchedYear: entry.year,
+          );
+        }
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  static List<Uri> _journalCatalogSearchUris(
+    BibliographyEntry entry,
+    String title,
+  ) {
+    final venue = entry.venueTitle?.toLowerCase() ?? '';
+    final encodedTitle = Uri.encodeQueryComponent(title);
+    final urls = <String>[];
+
+    if (venue.contains('journal of fluid mechanics')) {
+      urls.add('https://www.cambridge.org/core/search?q=$encodedTitle');
+    }
+    if (venue.contains('physical review') || venue.contains('phys. rev')) {
+      urls.add(
+        'https://journals.aps.org/search/results?clauses=%5B%7B%22operator%22%3A%22AND%22%2C%22field%22%3A%22all%22%2C%22value%22%3A%22$encodedTitle%22%7D%5D',
+      );
+    }
+    if (venue.contains('aiche') || venue.contains('ai che')) {
+      urls.add(
+        'https://aiche.onlinelibrary.wiley.com/action/doSearch?AllField=$encodedTitle',
+      );
+    }
+    if (venue.contains('ieee')) {
+      urls.add(
+        'https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=$encodedTitle',
+      );
+    }
+    if (venue.contains('acm')) {
+      urls.add('https://dl.acm.org/action/doSearch?AllField=$encodedTitle');
+    }
+    if (venue.contains('springer')) {
+      urls.add('https://link.springer.com/search?query=$encodedTitle');
+    }
+    if (venue.contains('elsevier') || venue.contains('science direct')) {
+      urls.add('https://www.sciencedirect.com/search?qs=$encodedTitle');
+    }
+    if (venue.contains('wiley')) {
+      urls.add(
+        'https://onlinelibrary.wiley.com/action/doSearch?AllField=$encodedTitle',
+      );
+    }
+    if (venue.contains('nature')) {
+      urls.add('https://www.nature.com/search?q=$encodedTitle');
+    }
+    if (venue.contains('sage')) {
+      urls.add(
+        'https://journals.sagepub.com/action/doSearch?AllField=$encodedTitle',
+      );
+    }
+    if (venue.contains('taylor') || venue.contains('routledge')) {
+      urls.add(
+        'https://www.tandfonline.com/action/doSearch?AllField=$encodedTitle',
+      );
+    }
+
+    return urls.map(Uri.parse).toList(growable: false);
+  }
+
+  static String _htmlToSearchableText(String html) {
+    return html
+        .replaceAll(
+          RegExp(r'<script[\s\S]*?</script>', caseSensitive: false),
+          ' ',
+        )
+        .replaceAll(
+          RegExp(r'<style[\s\S]*?</style>', caseSensitive: false),
+          ' ',
+        )
+        .replaceAll(RegExp(r'<[^>]+>'), ' ')
+        .replaceAll(RegExp(r'&(?:amp|nbsp|quot|apos|lt|gt);'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
   }
 
   /// 升級版篇名相似度：支援「無空格連寫 (OCR 擠壓文字)」、「詞彙 Jaccard」與「3-Gram 字元序列 (耐受拼寫小錯)」三重比對。

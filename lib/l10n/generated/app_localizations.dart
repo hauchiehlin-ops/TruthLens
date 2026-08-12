@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportBibResultHint.
   ///
   /// In en, this message translates to:
-  /// **'Matched against Crossref and OpenAlex by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.'**
+  /// **'Matched against Crossref, OpenAlex, and recognizable journal or publisher catalog pages by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.'**
   String get reportBibResultHint;
 
   /// No description provided for @reportBibHighConfidence.

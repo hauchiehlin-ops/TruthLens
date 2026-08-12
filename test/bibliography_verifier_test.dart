@@ -422,6 +422,40 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
       expect(results.single.confidence, CitationMatchConfidence.notFound);
     });
 
+    test('資料庫查無但期刊官網目錄頁找到篇名與年份 → 高可信度', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (req.url.host == 'www.cambridge.org') {
+          expect(req.url.path, '/core/search');
+          return http.Response('''
+            <html>
+              <title>Cambridge Core search</title>
+              <body>
+                Journal of Fluid Mechanics
+                Transition in circular Couette flow
+                Published online by Cambridge University Press, 1965
+              </body>
+            </html>
+            ''', 200);
+        }
+        return http.Response(
+          jsonEncode({
+            'message': {'items': []},
+          }),
+          200,
+        );
+      });
+      final entries = BibliographyVerifier.extractEntries(_sampleReferences);
+      final coles = entries.firstWhere((e) => e.firstAuthorSurname == 'Coles');
+      final results = await BibliographyVerifier.verifyAll([
+        coles,
+      ], client: client);
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, contains('期刊官網目錄頁'));
+    });
+
     test('兩個資料源候選篇名完全不同、年份與作者皆不吻合 → notFound', () async {
       final client = MockClient((req) async {
         if (req.url.host == 'api.openalex.org') {

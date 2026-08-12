@@ -671,7 +671,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      'Matched against Crossref and OpenAlex by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.';
+      'Matched against Crossref, OpenAlex, and recognizable journal or publisher catalog pages by author, year, title, and venue. TruthLens gives a direct verification judgment for each entry; items without a reliable match are marked as not verified.';
 
   @override
   String reportBibHighConfidence(String journal) {
