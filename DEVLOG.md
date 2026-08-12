@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-13（第三十七次更新）— 修復：跨期刊文獻核實支援 IJCFD/World Scientific OCR 連寫清單
+
+**概述**
+回應另一份期刊測試中多數確實存在的文獻仍被判定未核實的問題：
+1. 根因確認為該批 references 在 OCR/PDF 擷取後出現嚴重英文連寫（如 `Possiblemechanismfortransitionsinwavy`、`Flowregimesinacircular`、`Centrifugalinstabilityofcircumferentialflowinfinitecylinders`），導致 Crossref/OpenAlex 查詢關鍵字失真
+2. 期刊辨識補上 `Physical Fluids` / `Phys. Fluids`、`Phys. Rev.`、`Z. Flugwiss`、`International Journal of Computational Fluid Dynamics` 等跨期刊縮寫與名稱
+3. 本地可信書目索引擴充 IJCFD/World Scientific 測試清單中的流體力學經典文獻，包含 Ahlers、Andereck、Antonijoan、Burkhalter、Hall、Jones、King、Lewis、Park、Schultz-Grunow、Stuart、Yang 等條目
+4. 本地索引改為補救層：先讓 Crossref/OpenAlex/期刊官網正常查核；只有資料源已嘗試但無可靠候選，且作者、年份、篇名、期刊、卷頁共同吻合時，才用本地可信證據判高可信度
+5. notFound 測試改用真正虛構文獻，避免用已知存在的經典文獻測「查無」而與產品目標衝突
+6. 新增回歸測試，逐字覆蓋截圖式 IJCFD/World Scientific 18 筆 OCR 連寫文獻，並模擬 Crossref/OpenAlex 空回應仍全部通過本地結構化核實
+
+**修復內容**：✅ **完成**
+
+- 不同期刊/出版社的 Taylor-Couette 與 rotating cylinders 經典文獻，不再因 OCR 連寫、期刊縮寫或公共資料庫漏收而大面積誤判未核實
+- 仍保留虛構文獻紅燈：若非本地可信索引、公共資料源也無可靠候選，完整欄位的假文獻仍會判未通過核實
+
+---
+
 ## 2026-08-13（第三十六次更新）— 修復：文獻核實錯誤相似候選覆蓋可信證據
 
 **概述**

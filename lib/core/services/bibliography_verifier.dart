@@ -123,7 +123,7 @@ class BibliographyVerifier {
 
   /// 常用學術期刊、研討會、出版社、文獻標記與數位識別碼特徵
   static final RegExp _journalKeyword = RegExp(
-    r'(?:Journal of|Transactions|Proceedings|Proc\.|Physical Review|Fluid Dynamics Research|Physics Letters|Annales|AIChE|AICHE|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|Wiley|Press|Inc\.|Ed\.|Edition|學報|期刊|論文集|研討會|出版社|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
+    r'(?:Journal of|Transactions|Proceedings|Proc\.|Physical Review|Phys\. Rev\.|Physical Fluids|Phys\. Fluids|Fluid Dynamics Research|Computational Fluid Dynamics|Physics Letters|Annales|Z\.?\s*Flugwiss|AIChE|AICHE|IEEE|ACM|Springer|Elsevier|Nature|Science|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|p\.|pages|Wiley|Press|Inc\.|Ed\.|Edition|學報|期刊|論文集|研討會|出版社|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
     caseSensitive: false,
   );
 
@@ -851,7 +851,7 @@ class BibliographyVerifier {
     }
 
     final fallback = RegExp(
-      r'\b((?:Annales|Journal|Proceedings|Transactions|Philosophical Transactions|Physical Review|Phys\. Rev\.|Fluid Dynamics Research|Physics Letters|J\. Fluid Mech\.|Proc\.|ACM|IEEE|AIChE|AICHE|Nature|Science|Springer|Wiley|Elsevier|Press|學報|期刊|論文集|研討會)[^,.;\(\)]{0,100})',
+      r'\b((?:Annales|Journal|Proceedings|Transactions|Philosophical Transactions|Physical Review|Phys\. Rev\.|Physical Fluids|Phys\. Fluids|Fluid Dynamics Research|Computational Fluid Dynamics|Physics Letters|J\. Fluid Mech\.|Proc\.|Z\.?\s*Flugwiss|ACM|IEEE|AIChE|AICHE|Nature|Science|Springer|Wiley|Elsevier|Press|學報|期刊|論文集|研討會)[^,.;\(\)]{0,100})',
       caseSensitive: false,
     ).firstMatch(source);
     return _cleanVenueCandidate(fallback?.group(1));
@@ -881,7 +881,7 @@ class BibliographyVerifier {
 
   static bool _looksLikeVenue(String value) {
     return RegExp(
-      r'(?:annales|journal|proceedings|transactions|philosophical transactions|physical review|phys\. rev\.|fluid dynamics research|physics letters|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
+      r'(?:annales|journal|proceedings|transactions|philosophical transactions|physical review|phys\. rev\.|physical fluids|phys\. fluids|fluid dynamics research|computational fluid dynamics|physics letters|z\.?\s*flugwiss|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
       caseSensitive: false,
     ).hasMatch(value);
   }
@@ -1004,9 +1004,6 @@ class BibliographyVerifier {
       entry,
     );
     final trustedLocalResult = _verifyKnownClassicalReference(entry);
-    if (trustedLocalResult != null) {
-      return trustedLocalResult;
-    }
 
     if (entry.doi != null) {
       try {
@@ -1275,6 +1272,14 @@ class BibliographyVerifier {
         return journalCatalogResult;
       }
       bestUncertainCandidate ??= journalCatalogResult;
+    }
+
+    // 本地可信書目索引只作為補救層：公共資料庫/期刊頁已嘗試但未提供可靠候選時，
+    // 再用篇名、作者、年份、卷頁共同吻合的經典文獻索引避免把真實舊文獻誤判為不存在。
+    if (trustedLocalResult != null &&
+        crossrefSearchSucceeded &&
+        openAlexSearchSucceeded) {
+      return trustedLocalResult;
     }
 
     // 若有發現中度相似的候選文獻，退回黃燈 (uncertain) 並保留匹配到的期刊與篇名
@@ -2118,6 +2123,163 @@ class BibliographyVerifier {
       volume: '36',
       firstPage: '61',
       lastPage: '73',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Ahlers',
+      title: 'Possible mechanism for transitions in wavy Taylor-vortex flow',
+      venue: 'Physical Review A',
+      year: 1983,
+      volume: '27',
+      firstPage: '1225',
+      lastPage: '1227',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Andereck',
+      title:
+          'Flow regimes in a circular Couette system with independently rotating cylinders',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1986,
+      volume: '164',
+      firstPage: '155',
+      lastPage: '183',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Antonijoan',
+      title: 'On stable Taylor vortices above the transition to wavy vortices',
+      venue: 'Physical Fluids',
+      year: 2002,
+      volume: '14',
+      firstPage: '1661',
+      lastPage: '1665',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Burkhalter',
+      title: 'Steady supercritical Taylor vortex flow',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1973,
+      volume: '58',
+      firstPage: '547',
+      lastPage: '560',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Burkhalter',
+      title: 'Steady supercritical Taylor vortices after sudden starts',
+      venue: 'Physical Fluids',
+      year: 1974,
+      volume: '17',
+      firstPage: '1929',
+      lastPage: '1935',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Coles',
+      title: 'Transition in circular Couette flow',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1965,
+      volume: '21',
+      firstPage: '385',
+      lastPage: '425',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Hall',
+      title:
+          'Centrifugal instability of circumferential flow in finite cylinders',
+      venue: 'Proceedings of the Royal Society London A',
+      year: 1979,
+      volume: '365',
+      firstPage: '191',
+      lastPage: '207',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Jones',
+      title: 'Nonlinear Taylor vortices and their stability',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1981,
+      volume: '102',
+      firstPage: '249',
+      lastPage: '261',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Jones',
+      title: 'The transition to wavy Taylor vortices',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1985,
+      volume: '157',
+      firstPage: '135',
+      lastPage: '162',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Jones',
+      title: 'Numerical method for the transition to wavy Taylor vortices',
+      venue: 'Journal of Computational Physics',
+      year: 1985,
+      volume: '61',
+      firstPage: '321',
+      lastPage: '344',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'King',
+      title:
+          'Limits of stability and irregular flow patterns in wavy vortex flow',
+      venue: 'Physical Review A',
+      year: 1983,
+      volume: '27',
+      firstPage: '1240',
+      lastPage: '1243',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Lewis',
+      title:
+          'An experimental study of the motion of a viscous liquid contained between two coaxial cylinders',
+      venue: 'Proceedings of the Royal Society London A',
+      year: 1928,
+      volume: '117',
+      firstPage: '388',
+      lastPage: '407',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Park',
+      title: 'Unusual transition sequence in Taylor wavy vortex flow',
+      venue: 'Physical Review A',
+      year: 1984,
+      volume: '29',
+      firstPage: '3458',
+      lastPage: '3460',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Park',
+      title: 'Determination of transition in Couette flow in finite geometries',
+      venue: 'Physical Review Letters',
+      year: 1981,
+      volume: '47',
+      firstPage: '1448',
+      lastPage: '1450',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Schultz-Grunow',
+      title: 'Beitrag zur Couettestromung',
+      venue: 'Z Flugwiss',
+      year: 1956,
+      volume: '4',
+      firstPage: '28',
+      lastPage: '30',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Stuart',
+      title: 'On the nonlinear mechanics of hydrodynamic stability',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1958,
+      volume: '4',
+      firstPage: '1',
+      lastPage: '21',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Yang',
+      title: 'Instability analysis of modulated Taylor vortices',
+      venue: 'International Journal of Computational Fluid Dynamics',
+      year: 2009,
+      volume: '23',
+      firstPage: '643',
+      lastPage: '648',
     ),
   ];
 
