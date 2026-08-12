@@ -27,8 +27,8 @@ class ModelManager extends ChangeNotifier {
   };
 
   ModelManager({http.Client? client, Directory? modelsDir})
-      : _client = client ?? http.Client(),
-        _dirOverride = modelsDir;
+    : _client = client ?? http.Client(),
+      _dirOverride = modelsDir;
 
   RoleState? roleState(String role) => _roles[role];
 
@@ -69,6 +69,7 @@ class ModelManager extends ChangeNotifier {
       // 離線／連線失敗：保留目前已知狀態，不中斷使用者流程。
     }
   }
+
   Iterable<RoleState> get roles => _roles.values;
 
   Future<Directory> _modelsDir() async {
@@ -91,8 +92,7 @@ class ModelManager extends ChangeNotifier {
       if (r.installed.isEmpty) continue;
       map[r.role] = {
         'active': r.activeVariantId,
-        'installed':
-            r.installed.map((k, v) => MapEntry(k, v.toJson())),
+        'installed': r.installed.map((k, v) => MapEntry(k, v.toJson())),
       };
     }
     f.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
@@ -109,7 +109,9 @@ class ModelManager extends ChangeNotifier {
     if (f.existsSync()) {
       try {
         raw = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
-        debugPrint('[ModelManager] 讀入 installed.json，包含 ${raw.keys.length} 個 role');
+        debugPrint(
+          '[ModelManager] 讀入 installed.json，包含 ${raw.keys.length} 個 role',
+        );
       } catch (e) {
         debugPrint('[ModelManager] ❌ installed.json 解析失敗: $e');
       }
@@ -143,7 +145,10 @@ class ModelManager extends ChangeNotifier {
                 final extension = p.extension(name);
                 if (['.onnx', '.tflite', '.gguf'].contains(extension)) {
                   // 從檔名提取 variantId（去掉副檔名）
-                  final variantId = withoutPrefix.substring(0, withoutPrefix.length - extension.length);
+                  final variantId = withoutPrefix.substring(
+                    0,
+                    withoutPrefix.length - extension.length,
+                  );
 
                   if (!installed.containsKey(variantId)) {
                     // Transformer / Adversarial 分類器強制需要 tokenizer；
@@ -154,23 +159,35 @@ class ModelManager extends ChangeNotifier {
                     if ((role == 'transformer' || role == 'adversarial') &&
                         ['.onnx', '.tflite'].contains(extension)) {
                       // 強制檢查 tokenizer 是否存在且格式完整
-                      final tokFile = File(p.join(dir.path, '${role}__$variantId.tokenizer.json'));
-                      debugPrint('[ModelManager] 檢查 $role/$variantId 的 tokenizer...');
+                      final tokFile = File(
+                        p.join(dir.path, '${role}__$variantId.tokenizer.json'),
+                      );
+                      debugPrint(
+                        '[ModelManager] 檢查 $role/$variantId 的 tokenizer...',
+                      );
                       if (!tokFile.existsSync()) {
-                        debugPrint('[ModelManager]   ❌ Tokenizer 不存在: ${tokFile.path}');
+                        debugPrint(
+                          '[ModelManager]   ❌ Tokenizer 不存在: ${tokFile.path}',
+                        );
                         shouldRegister = false; // 缺 tokenizer，不註冊
                       } else {
                         try {
                           final content = tokFile.readAsStringSync();
                           final sizeKb = content.length / 1024;
-                          debugPrint('[ModelManager]   ✓ Tokenizer 檔案存在 (${sizeKb.toStringAsFixed(1)} KB)');
+                          debugPrint(
+                            '[ModelManager]   ✓ Tokenizer 檔案存在 (${sizeKb.toStringAsFixed(1)} KB)',
+                          );
                           jsonDecode(content);
                           debugPrint('[ModelManager]   ✓ JSON 格式有效');
                           tokName = '${role}__$variantId.tokenizer.json';
                         } catch (e) {
                           // 格式損毀，刪除並不註冊該模型
-                          debugPrint('[ModelManager]   ❌ Tokenizer JSON 解析失敗: $e');
-                          try { tokFile.deleteSync(); } catch (_) {}
+                          debugPrint(
+                            '[ModelManager]   ❌ Tokenizer JSON 解析失敗: $e',
+                          );
+                          try {
+                            tokFile.deleteSync();
+                          } catch (_) {}
                           shouldRegister = false;
                         }
                       }
@@ -178,19 +195,25 @@ class ModelManager extends ChangeNotifier {
 
                     if (shouldRegister) {
                       final modelSizeMb = entity.lengthSync() / (1024 * 1024);
-                      debugPrint('[ModelManager]   ✓ 註冊模型: $role/$variantId (${modelSizeMb.toStringAsFixed(1)} MB)${tokName != null ? ' + tokenizer' : ''}');
+                      debugPrint(
+                        '[ModelManager]   ✓ 註冊模型: $role/$variantId (${modelSizeMb.toStringAsFixed(1)} MB)${tokName != null ? ' + tokenizer' : ''}',
+                      );
                       installed[variantId] = InstalledModel(
                         role: role,
                         variantId: variantId,
                         fileName: name,
                         tokenizerFileName: tokName,
-                        tokenizer: tokName != null ? 'roberta-bpe' : 'none',
+                        tokenizer: tokName != null
+                            ? _defaultTokenizerFor(role, variantId)
+                            : 'none',
                         aiLabelIndex: 1,
                         version: '1.0.0',
                         sizeBytes: entity.lengthSync().toInt(),
                       );
                     } else {
-                      debugPrint('[ModelManager]   ❌ 未註冊: $role/$variantId (缺少必要檔案或格式無效)');
+                      debugPrint(
+                        '[ModelManager]   ❌ 未註冊: $role/$variantId (缺少必要檔案或格式無效)',
+                      );
                     }
                   }
                 }
@@ -326,8 +349,12 @@ class ModelManager extends ChangeNotifier {
       _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
       return false;
     }
-    _mark(role, InstallState.downloading,
-        downloadingVariantId: variant.id, progress: 0);
+    _mark(
+      role,
+      InstallState.downloading,
+      downloadingVariantId: variant.id,
+      progress: 0,
+    );
     final dir = await _modelsDir();
     final fileName = variant.fileName(role);
     final target = File(p.join(dir.path, fileName));
@@ -335,11 +362,19 @@ class ModelManager extends ChangeNotifier {
     String? tokenizerFileName;
 
     try {
-      await _streamDownload(variant.url!, tmp, expected: variant.sizeBytes,
-          onProgress: (r) {
-        _mark(role, InstallState.downloading,
-            downloadingVariantId: variant.id, progress: r);
-      });
+      await _streamDownload(
+        variant.url!,
+        tmp,
+        expected: variant.sizeBytes,
+        onProgress: (r) {
+          _mark(
+            role,
+            InstallState.downloading,
+            downloadingVariantId: variant.id,
+            progress: r,
+          );
+        },
+      );
 
       if (variant.sha256 != null) {
         final digest = await _sha256Of(tmp);
@@ -392,8 +427,12 @@ class ModelManager extends ChangeNotifier {
       return true;
     } catch (e) {
       if (tmp.existsSync()) await tmp.delete();
-      _mark(role, InstallState.failed,
-          downloadingVariantId: variant.id, error: e.toString());
+      _mark(
+        role,
+        InstallState.failed,
+        downloadingVariantId: variant.id,
+        error: e.toString(),
+      );
       return false;
     }
   }
@@ -430,8 +469,12 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _streamDownload(String originalUrl, File dest,
-      {int? expected, void Function(double)? onProgress}) async {
+  Future<void> _streamDownload(
+    String originalUrl,
+    File dest, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
     final urlsToTry = <String>[originalUrl];
 
     // 如果是 GitHub Releases 連結，加入備用鏡像代理（如 ghproxy, ghfast）作為 fallback
@@ -445,8 +488,12 @@ class ModelManager extends ChangeNotifier {
     Object? lastError;
     for (final tryUrl in urlsToTry) {
       try {
-        await _streamDownloadSingle(tryUrl, dest,
-            expected: expected, onProgress: onProgress);
+        await _streamDownloadSingle(
+          tryUrl,
+          dest,
+          expected: expected,
+          onProgress: onProgress,
+        );
         return;
       } catch (e) {
         lastError = e;
@@ -455,8 +502,12 @@ class ModelManager extends ChangeNotifier {
     throw lastError ?? HttpException('下載失敗');
   }
 
-  Future<void> _streamDownloadSingle(String url, File dest,
-      {int? expected, void Function(double)? onProgress}) async {
+  Future<void> _streamDownloadSingle(
+    String url,
+    File dest, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
     final existingLen = dest.existsSync() ? dest.lengthSync() : 0;
     var currentUrl = url;
     http.StreamedResponse? response;
@@ -472,7 +523,9 @@ class ModelManager extends ChangeNotifier {
       if (existingLen > 0 && redirectCount == 0) {
         request.headers['Range'] = 'bytes=$existingLen-';
         isResuming = true;
-        debugPrint('[下載] 偵測到部分檔案 (${(existingLen / (1024 * 1024)).toStringAsFixed(1)} MB)，嘗試續傳...');
+        debugPrint(
+          '[下載] 偵測到部分檔案 (${(existingLen / (1024 * 1024)).toStringAsFixed(1)} MB)，嘗試續傳...',
+        );
       }
 
       final res = await _client.send(request);
@@ -502,7 +555,9 @@ class ModelManager extends ChangeNotifier {
       // 伺服器支援斷點續傳 (HTTP 206 Partial Content)
       final partialSize = response.contentLength ?? 0;
       final total = partialSize + existingLen;
-      debugPrint('[下載] ✓ 伺服器支援續傳 (HTTP 206)，續傳 ${(partialSize / (1024 * 1024)).toStringAsFixed(1)} MB');
+      debugPrint(
+        '[下載] ✓ 伺服器支援續傳 (HTTP 206)，續傳 ${(partialSize / (1024 * 1024)).toStringAsFixed(1)} MB',
+      );
       final sink = dest.openWrite(mode: FileMode.append);
       var received = existingLen;
       await for (final chunk in response.stream) {
@@ -513,7 +568,9 @@ class ModelManager extends ChangeNotifier {
         }
       }
       await sink.close();
-      debugPrint('[下載] ✓ 續傳完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB');
+      debugPrint(
+        '[下載] ✓ 續傳完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB',
+      );
       return;
     }
     if (response.statusCode == 200) {
@@ -533,7 +590,9 @@ class ModelManager extends ChangeNotifier {
         }
       }
       await sink.close();
-      debugPrint('[下載] ✓ 完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB');
+      debugPrint(
+        '[下載] ✓ 完成，總大小 ${(total / (1024 * 1024)).toStringAsFixed(1)} MB',
+      );
       return;
     }
     if (response.statusCode == 416) {
@@ -575,7 +634,9 @@ class ModelManager extends ChangeNotifier {
       if (modelSize < 1024 * 100) {
         throw Exception('模型檔過小 (<100KB)，可能是空檔或格式錯誤: $modelSize bytes');
       }
-      debugPrint('[ImportModel] 驗證模型檔: $name (${(modelSize / (1024 * 1024)).toStringAsFixed(1)} MB)');
+      debugPrint(
+        '[ImportModel] 驗證模型檔: $name (${(modelSize / (1024 * 1024)).toStringAsFixed(1)} MB)',
+      );
 
       // 複製模型檔
       await modelFile.copy(target.path);
@@ -699,13 +760,19 @@ class ModelManager extends ChangeNotifier {
     return digest.toString();
   }
 
-  void _mark(String role, InstallState state,
-      {String? downloadingVariantId, double? progress, String? error}) {
+  void _mark(
+    String role,
+    InstallState state, {
+    String? downloadingVariantId,
+    double? progress,
+    String? error,
+  }) {
     final r = _roles[role]!;
     _roles[role] = r.copyWith(
       transientState: state,
       downloadingVariantId: downloadingVariantId,
-      progress: progress ?? (state == InstallState.downloading ? 0 : r.progress),
+      progress:
+          progress ?? (state == InstallState.downloading ? 0 : r.progress),
       error: error,
     );
     notifyListeners();
@@ -715,5 +782,11 @@ class ModelManager extends ChangeNotifier {
   void dispose() {
     _client.close();
     super.dispose();
+  }
+
+  String _defaultTokenizerFor(String role, String variantId) {
+    if (role == 'adversarial') return 'bert-wordpiece';
+    if (role == 'transformer') return 'roberta-bpe';
+    return 'none';
   }
 }

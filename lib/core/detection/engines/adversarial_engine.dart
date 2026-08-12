@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
@@ -20,6 +18,7 @@ class AdversarialEngine implements DetectionEngine {
 
   OnnxDetector? _detector;
   String? _loadedModelPath;
+  String? _loadError;
 
   AdversarialEngine({required this.modelManager, this.variantId});
 
@@ -45,11 +44,15 @@ class AdversarialEngine implements DetectionEngine {
 
   Future<(String, String)?> _resolvePaths() async {
     final active = _resolveVariant();
-    if (active == null || !_supportedTokenizers.contains(active.tokenizer)) {
-      return null;
-    }
-    final modelPath = await modelManager.variantModelPath('adversarial', active.variantId);
-    final tokPath = await modelManager.variantTokenizerPath('adversarial', active.variantId);
+    if (active == null) return null;
+    final modelPath = await modelManager.variantModelPath(
+      'adversarial',
+      active.variantId,
+    );
+    final tokPath = await modelManager.variantTokenizerPath(
+      'adversarial',
+      active.variantId,
+    );
     if (modelPath == null || tokPath == null) return null;
     if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
       return null;
@@ -62,36 +65,61 @@ class AdversarialEngine implements DetectionEngine {
 
   Future<OnnxDetector?> _ensureLoaded() async {
     final paths = await _resolvePaths();
-    if (paths == null) return null;
+    if (paths == null) {
+      final active = _resolveVariant();
+      _loadError = active == null
+          ? '未找到使用中的改寫偵測模型'
+          : '模型或 tokenizer 檔案不存在，請在模型管理重新下載';
+      return null;
+    }
     final (modelPath, tokPath) = paths;
     final active = _resolveVariant()!;
     if (_detector != null && _loadedModelPath == modelPath) return _detector;
-    try {
-      _detector?.dispose();
-      _detector = await OnnxDetector.load(
-        modelPath: modelPath,
-        tokenizerJsonPath: tokPath,
-        tokenizerType: active.tokenizer,
-        aiLabelIndex: active.aiLabelIndex,
-      );
-      _loadedModelPath = modelPath;
-      return _detector;
-    } catch (e) {
-      _detector = null;
-      _loadedModelPath = null;
-      if (e is FormatException) {
-        try {
-          final tokFile = File(tokPath);
-          if (tokFile.existsSync()) await tokFile.delete();
-          await modelManager.refreshInstallStates();
-        } catch (_) {}
+
+    for (final tokenizerType in [
+      active.tokenizer,
+      if (active.tokenizer != 'bert-wordpiece') 'bert-wordpiece',
+      if (active.tokenizer != 'roberta-bpe') 'roberta-bpe',
+    ].where(_supportedTokenizers.contains)) {
+      try {
+        _detector?.dispose();
+        _detector = await OnnxDetector.load(
+          modelPath: modelPath,
+          tokenizerJsonPath: tokPath,
+          tokenizerType: tokenizerType,
+          aiLabelIndex: active.aiLabelIndex,
+        );
+        _loadedModelPath = modelPath;
+        _loadError = null;
+        return _detector;
+      } catch (e) {
+        _detector = null;
+        _loadedModelPath = null;
+        _loadError = '${e.runtimeType}: $e';
       }
-      return null;
     }
+
+    return null;
   }
 
+  EngineScore _unavailable(AppLocalizations l10n) => EngineScore(
+    engineId: id,
+    engineName: name(l10n),
+    aiProbability: 0.5,
+    weight: defaultWeight,
+    available: false,
+    reasons: [
+      _loadError == null
+          ? l10n.engineReasonAdversarialNotInstalled
+          : '改寫偵測模型已安裝，但載入失敗，未參與本次投票（$_loadError）',
+    ],
+  );
+
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n,
+  ) async {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded();
@@ -99,28 +127,15 @@ class AdversarialEngine implements DetectionEngine {
       detector = null;
     }
     if (detector == null || text.sentences.isEmpty) {
-      return EngineScore(
-        engineId: id,
-        engineName: name(l10n),
-        aiProbability: 0.5,
-        weight: defaultWeight,
-        available: false,
-        reasons: [l10n.engineReasonAdversarialNotInstalled],
-      );
+      return _unavailable(l10n);
     }
 
     List<double> perSentence;
     try {
       perSentence = await detector.classifySentences(text.sentences);
     } catch (e) {
-      return EngineScore(
-        engineId: id,
-        engineName: name(l10n),
-        aiProbability: 0.5,
-        weight: defaultWeight,
-        available: false,
-        reasons: [l10n.engineReasonAdversarialNotInstalled],
-      );
+      _loadError = '${e.runtimeType}: $e';
+      return _unavailable(l10n);
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
     return EngineScore(

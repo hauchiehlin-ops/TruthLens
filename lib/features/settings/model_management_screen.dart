@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/model_catalog.dart'
@@ -169,8 +170,8 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                 : Icon(Icons.download_for_offline_outlined),
             label: Text(
               recommendedActions.isEmpty
-                  ? '推薦分析模型已就緒'
-                  : '套用推薦分析模型（${recommendedActions.length}）',
+                  ? '補齊推薦分析模型（已就緒）'
+                  : '補齊推薦分析模型（${recommendedActions.length}）',
             ),
           ),
         ],
@@ -286,6 +287,13 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
                           color: Colors.grey[500],
                         ),
                       ),
+                    if (role.role == 'adversarial')
+                      Text(
+                        '也就是對抗性防禦模型，用來偵測改寫或去 AI 痕跡處理。',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -341,6 +349,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
               modelManager,
               role.role,
               entry.value,
+              _variantById(catalogModel, entry.value.variantId),
             ),
           )
         else
@@ -372,6 +381,13 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     );
   }
 
+  ModelVariant? _variantById(CatalogModel model, String variantId) {
+    for (final variant in model.variants) {
+      if (variant.id == variantId) return variant;
+    }
+    return null;
+  }
+
   Widget _buildStatusIndicator(RoleState role) {
     final color = switch (role.transientState) {
       InstallState.installed => Colors.green,
@@ -392,6 +408,7 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
     ModelManager modelManager,
     String role,
     InstalledModel model,
+    ModelVariant? catalogVariant,
   ) {
     final sizeMb = (model.sizeBytes / 1024 / 1024).toStringAsFixed(1);
     final isActive =
@@ -403,14 +420,21 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
         dense: true,
         leading: Icon(Icons.check_circle, color: Colors.green, size: 20),
         title: Text(
-          model.displayName,
+          catalogVariant?.name ?? model.displayName,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        subtitle: Text(
-          'v${model.version} • $sizeMb MB${isActive ? ' • 使用中' : ''}',
-          style: Theme.of(context).textTheme.bodySmall,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'v${model.version} • $sizeMb MB${isActive ? ' • 使用中' : ''}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (catalogVariant != null)
+              _DownloadPathSummary(variant: catalogVariant),
+          ],
         ),
         trailing: PopupMenuButton(
           itemBuilder: (context) => [
@@ -450,8 +474,14 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
           color: Colors.grey,
           size: 20,
         ),
-        title: Text(variant.id),
-        subtitle: Text('v${variant.version} • $sizeMb MB'),
+        title: Text(variant.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('v${variant.version} • $sizeMb MB'),
+            _DownloadPathSummary(variant: variant),
+          ],
+        ),
         trailing: isDownloading
             ? SizedBox(
                 width: 20,
@@ -474,5 +504,47 @@ class _ModelManagementScreenState extends State<ModelManagementScreen> {
       'adversarial' => '🛡️ ${l10n.engineNameAdversarialFull}',
       _ => roleId,
     };
+  }
+}
+
+class _DownloadPathSummary extends StatelessWidget {
+  final ModelVariant variant;
+
+  const _DownloadPathSummary({required this.variant});
+
+  @override
+  Widget build(BuildContext context) {
+    final urls = [
+      if (variant.url != null && variant.url!.isNotEmpty) ('模型檔', variant.url!),
+      if (variant.tokenizerUrl != null && variant.tokenizerUrl!.isNotEmpty)
+        ('Tokenizer', variant.tokenizerUrl!),
+    ];
+    if (urls.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          for (final item in urls)
+            ActionChip(
+              avatar: const Icon(Icons.link, size: 14),
+              label: Text('${item.$1}下載路徑'),
+              visualDensity: VisualDensity.compact,
+              onPressed: () => _copyUrl(context, item.$2),
+            ),
+        ],
+      ),
+    );
+  }
+
+  static Future<void> _copyUrl(BuildContext context, String url) async {
+    await Clipboard.setData(ClipboardData(text: url));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('下載路徑已複製')));
   }
 }
