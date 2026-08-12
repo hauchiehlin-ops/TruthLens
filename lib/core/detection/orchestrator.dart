@@ -22,28 +22,22 @@ class EnsembleOrchestrator {
   EnsembleOrchestrator({
     List<DetectionEngine>? engines,
     ModelManager? modelManager,
-  }) : engines = engines ??
-            _defaultEngines(
-              modelManager ?? ModelManager(),
-            );
+  }) : engines = engines ?? _defaultEngines(modelManager ?? ModelManager());
 
-  static List<DetectionEngine> _defaultEngines(
-    ModelManager mm,
-  ) {
+  static List<DetectionEngine> _defaultEngines(ModelManager mm) {
     final discovered = <DetectionEngine>[];
 
-    // 1. 動態探索並註冊所有已安裝的 Transformer AI 分類器變體
-    final installedTransformers = mm.installedVariants('transformer');
-    if (installedTransformers.isNotEmpty) {
-      for (final variant in installedTransformers) {
-        discovered.add(TransformerEngine(
-          modelManager: mm,
-          variantId: variant.variantId,
-        ));
-      }
-    } else {
-      discovered.add(TransformerEngine(modelManager: mm));
-    }
+    // 1. Transformer AI 分類器。
+    // 同一 role 可安裝多個候選變體，但一次分析只跑「使用中」變體。
+    // 這能避免 Web ONNX Runtime 同時啟動多個同類 session 而產生
+    // Session already started / Session mismatch，權重也保持固定 40%。
+    final activeTransformer = mm.activeVariant('transformer');
+    discovered.add(
+      TransformerEngine(
+        modelManager: mm,
+        variantId: activeTransformer?.variantId,
+      ),
+    );
 
     // 2. 統計特徵模型 (Perplexity)
     discovered.add(StatisticalEngine(modelManager: mm));
@@ -51,18 +45,14 @@ class EnsembleOrchestrator {
     // 3. 風格特徵模型 (Stylometry)
     discovered.add(StylometryEngine());
 
-    // 4. 動態探索並註冊所有已安裝的對抗防禦變體
-    final installedAdversarials = mm.installedVariants('adversarial');
-    if (installedAdversarials.isNotEmpty) {
-      for (final variant in installedAdversarials) {
-        discovered.add(AdversarialEngine(
-          modelManager: mm,
-          variantId: variant.variantId,
-        ));
-      }
-    } else {
-      discovered.add(AdversarialEngine(modelManager: mm));
-    }
+    // 4. 對抗防禦同樣只跑使用中變體，避免同 role 多 session 競爭。
+    final activeAdversarial = mm.activeVariant('adversarial');
+    discovered.add(
+      AdversarialEngine(
+        modelManager: mm,
+        variantId: activeAdversarial?.variantId,
+      ),
+    );
 
     return discovered;
   }
@@ -94,9 +84,7 @@ class EnsembleOrchestrator {
               aiProbability: 0.5,
               weight: engine.defaultWeight,
               available: false,
-              reasons: [
-                loc.engineReasonGenericNotInstalled
-              ],
+              reasons: [loc.engineReasonGenericNotInstalled],
             );
       onEngineDone?.call(engine.id);
       onEngineScore?.call(score);
@@ -112,14 +100,19 @@ class EnsembleOrchestrator {
     // 統計引擎參與情況
     final availableCount = scores.where((s) => s.available).length;
     final totalCount = scores.length;
-    final availableWeight =
-        scores.where((s) => s.available).fold<double>(0, (sum, s) => sum + s.weight);
+    final availableWeight = scores
+        .where((s) => s.available)
+        .fold<double>(0, (sum, s) => sum + s.weight);
     final totalWeight = scores.fold<double>(0, (sum, s) => sum + s.weight);
-    final confidenceRatio = totalWeight > 0 ? (availableWeight / totalWeight) : 0.0;
+    final confidenceRatio = totalWeight > 0
+        ? (availableWeight / totalWeight)
+        : 0.0;
 
-    debugPrint('[Ensemble] 分析完成: $availableCount/$totalCount 引擎可用，'
-        '權重覆蓋 ${(confidenceRatio * 100).toStringAsFixed(0)}% '
-        '(${availableWeight.toStringAsFixed(2)}/${totalWeight.toStringAsFixed(2)})');
+    debugPrint(
+      '[Ensemble] 分析完成: $availableCount/$totalCount 引擎可用，'
+      '權重覆蓋 ${(confidenceRatio * 100).toStringAsFixed(0)}% '
+      '(${availableWeight.toStringAsFixed(2)}/${totalWeight.toStringAsFixed(2)})',
+    );
     if (confidenceRatio < 0.60) {
       debugPrint('[Ensemble] ⚠️ 低信心分析：權重覆蓋不足 60%');
     }
@@ -176,7 +169,12 @@ class EnsembleOrchestrator {
   ) {
     // 收集所有可用的神經模型 (sentenceScores)
     final neuralList = scores
-        .where((s) => s.available && s.sentenceScores != null && s.sentenceScores!.isNotEmpty)
+        .where(
+          (s) =>
+              s.available &&
+              s.sentenceScores != null &&
+              s.sentenceScores!.isNotEmpty,
+        )
         .map((s) => s.sentenceScores!)
         .toList();
 
@@ -184,7 +182,7 @@ class EnsembleOrchestrator {
     for (var i = 0; i < text.sentences.length; i++) {
       final s = text.sentences[i];
       final patterns = <String>[];
-      
+
       // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準，
       // 並結合單句長度變化度（如與平均句長之偏差）產生自然的句級差異。
       var p = overall;
@@ -216,12 +214,14 @@ class EnsembleOrchestrator {
           p += 0.05;
         }
       }
-      result.add(SentenceScore(
-        index: i,
-        text: s,
-        aiProbability: p.clamp(0.0, 1.0),
-        patterns: patterns,
-      ));
+      result.add(
+        SentenceScore(
+          index: i,
+          text: s,
+          aiProbability: p.clamp(0.0, 1.0),
+          patterns: patterns,
+        ),
+      );
     }
     return result;
   }

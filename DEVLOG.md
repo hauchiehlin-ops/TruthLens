@@ -1,5 +1,23 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-12（第十九次更新）— 修復：Web ONNX 推論 Session 競爭
+
+**概述**
+修復 Web 端 Transformer 與對抗式防禦在分析報告中出現 `Session already started` / `Session mismatch`，導致已安裝模型仍顯示推論或載入失敗的問題：
+1. Ensemble orchestrator 改為每個模型角色只跑「使用中」變體，避免同一 role 多個候選模型同時啟動 ONNX session
+2. Web ONNX Runtime bridge 對 `loadModel` 與 `run` 建立全域佇列，序列化所有 session 建立與推論工作
+3. 重新載入同一 `modelId` 前先釋放舊 session，避免 session key 被覆蓋造成 mismatch
+4. 保留既有 int64 → int32 fallback 與 BigInt output 正規化，兼顧不同 ONNX 模型與 Web/Dart 邊界相容性
+
+**修復內容**：✅ **完成**
+
+- Transformer 分類器一次分析只使用模型管理中設定的使用中變體，權重維持固定 40%
+- 對抗式防禦一次分析只使用使用中變體，避免改寫偵測模型和其他候選對抗模型互搶 Web ORT session
+- Web `session.run` 與 session 建立全域排隊，避免 onnxruntime-web execution provider 重入
+- 同 modelId 重載會先 release 舊 session，再建立新 session
+
+---
+
 ## 2026-08-12（第十八次更新）— 修復：Web OCR 圖片輸入與診斷訊息
 
 **概述**
