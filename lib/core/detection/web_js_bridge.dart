@@ -64,11 +64,12 @@ external JSPromise<JSString> _ortLoadModel(
   JSUint8Array bytes,
 );
 
-@JS('truthlensOrt.run')
-external JSPromise<_OrtRunResult> _ortRun(
+@JS('truthlensOrt.runBatch')
+external JSPromise<_OrtRunResult> _ortRunBatch(
   JSString modelId,
   JSInt32Array inputIds,
   JSInt32Array attentionMask,
+  JSNumber batchSize,
   JSNumber seqLen,
 );
 
@@ -100,14 +101,22 @@ class WebOrtSession {
   Future<(List<double>, List<int>)> run(
     List<int> inputIds,
     List<int> attentionMask,
+  ) => runBatch(inputIds, attentionMask, 1, inputIds.length);
+
+  Future<(List<double>, List<int>)> runBatch(
+    List<int> inputIds,
+    List<int> attentionMask,
+    int batchSize,
+    int sequenceLength,
   ) async {
     final ids = Int32List.fromList(inputIds).toJS;
     final mask = Int32List.fromList(attentionMask).toJS;
-    final result = await _ortRun(
+    final result = await _ortRunBatch(
       modelId.toJS,
       ids,
       mask,
-      inputIds.length.toJS,
+      batchSize.toJS,
+      sequenceLength.toJS,
     ).toDart;
     final data = result.data.toDart.map((n) => n.toDartDouble).toList();
     final dims = result.dims.toDart.map((n) => n.toDartDouble.toInt()).toList();

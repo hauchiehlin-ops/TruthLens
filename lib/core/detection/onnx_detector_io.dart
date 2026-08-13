@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:onnxruntime/onnxruntime.dart';
 
+import 'adaptive_sentence_batcher.dart';
 import 'text_tokenizer.dart';
 
 /// 以 ONNX Runtime 執行 Transformer 分類器的端上推論。
@@ -16,8 +17,19 @@ class OnnxDetector {
   final TextTokenizer _tokenizer;
   final int maxLen;
   final int aiLabelIndex; // 輸出中對應「AI」的類別索引（依模型 id2label）
+  // Dynamic INT8 activation scales can vary when unrelated sentences share a
+  // batch. Native inference therefore keeps exact one-sentence semantics while
+  // still benefiting from duplicate elimination and the in-memory LRU cache.
+  final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
+    initialBatchSize: 1,
+  );
 
-  OnnxDetector._(this._session, this._tokenizer, this.maxLen, this.aiLabelIndex);
+  OnnxDetector._(
+    this._session,
+    this._tokenizer,
+    this.maxLen,
+    this.aiLabelIndex,
+  );
 
   static bool _envReady = false;
 
@@ -36,10 +48,10 @@ class OnnxDetector {
               '@rpath/onnxruntime.framework/onnxruntime',
             ]
           : Platform.isAndroid || Platform.isLinux
-              ? ['libonnxruntime.so']
-              : Platform.isWindows
-                  ? ['onnxruntime.dll']
-                  : <String>[];
+          ? ['libonnxruntime.so']
+          : Platform.isWindows
+          ? ['onnxruntime.dll']
+          : <String>[];
       for (final candidate in candidates) {
         try {
           DynamicLibrary.open(candidate);
@@ -68,25 +80,33 @@ class OnnxDetector {
     final modelName = modelFile.path.split('/').last;
     debugPrint('[OnnxDetector] 載入模型: $modelName');
 
-    final options = OrtSessionOptions();
+    final options = OrtSessionOptions()
+      ..setSessionGraphOptimizationLevel(GraphOptimizationLevel.ortEnableAll);
     OrtSession session;
     try {
       session = OrtSession.fromFile(modelFile, options);
       debugPrint('[OnnxDetector] ✓ 模型載入成功: $modelName');
     } catch (e) {
       final errorMsg = e.toString();
-      if (errorMsg.contains('opset') || errorMsg.contains('Opset') || errorMsg.contains('ValidateOpsetForDomain')) {
+      if (errorMsg.contains('opset') ||
+          errorMsg.contains('Opset') ||
+          errorMsg.contains('ValidateOpsetForDomain')) {
         debugPrint('[OnnxDetector] ❌ ONNX opset 版本不支援: $modelName');
         debugPrint('[OnnxDetector]    錯誤: $errorMsg');
-        debugPrint('[OnnxDetector]    提示: ONNX Runtime 只支援官方發布的 opset 版本（通常 ≤3），opset 5+ 尚在開發中');
+        debugPrint(
+          '[OnnxDetector]    提示: ONNX Runtime 只支援官方發布的 opset 版本（通常 ≤3），opset 5+ 尚在開發中',
+        );
       } else {
         debugPrint('[OnnxDetector] ❌ 模型載入失敗: $modelName');
         debugPrint('[OnnxDetector]    錯誤: $errorMsg');
       }
       rethrow;
+    } finally {
+      options.release();
     }
 
-    final String tokenizerJson = (tokenizerType == 'none' || tokenizerJsonPath.isEmpty)
+    final String tokenizerJson =
+        (tokenizerType == 'none' || tokenizerJsonPath.isEmpty)
         ? '{}'
         : await File(tokenizerJsonPath).readAsString();
     final tokenizer = buildTokenizer(tokenizerType, tokenizerJson);
@@ -95,44 +115,56 @@ class OnnxDetector {
 
   /// 對單句推論，回傳 AI 機率（0..1）。
   Future<double> classify(String text) async {
-    final enc = _tokenizer.encode(text, maxLen: maxLen);
-    final shape = [1, enc.inputIds.length];
-    final inputIds =
-        OrtValueTensor.createTensorWithDataList([enc.inputIds], shape);
-    final attentionMask =
-        OrtValueTensor.createTensorWithDataList([enc.attentionMask], shape);
+    return (await _classifyBatch([text])).first;
+  }
+
+  Future<List<double>> _classifyBatch(List<String> texts) async {
+    final batch = encodeTextBatch(_tokenizer, texts, maxLen: maxLen);
+    final shape = [batch.batchSize, batch.sequenceLength];
+    final inputIds = OrtValueTensor.createTensorWithDataList(
+      batch.inputIds,
+      shape,
+    );
+    final attentionMask = OrtValueTensor.createTensorWithDataList(
+      batch.attentionMasks,
+      shape,
+    );
     final runOptions = OrtRunOptions();
+    List<OrtValue?>? outputs;
     try {
       // 不指定輸出名稱 → 回傳模型全部輸出（輸出名稱因模型而異：logits / output）
-      final outputs = _session.run(
-        runOptions,
-        {'input_ids': inputIds, 'attention_mask': attentionMask},
-      );
-      // 輸出形狀 [1,2] → 取第一列
+      outputs = _session.run(runOptions, {
+        'input_ids': inputIds,
+        'attention_mask': attentionMask,
+      });
+      // 輸出形狀 [batch,2] → 每列轉成 AI 機率。
       final raw = outputs.first?.value as List;
-      final row = (raw.first as List).cast<num>();
-      final probs = _softmax([row[0].toDouble(), row[1].toDouble()]);
-      for (final o in outputs) {
-        o?.release();
+      if (raw.length != batch.batchSize) {
+        throw StateError(
+          'Expected ${batch.batchSize} output rows, received ${raw.length}.',
+        );
       }
-      return probs[aiLabelIndex];
+      return [
+        for (final value in raw)
+          () {
+            final row = (value as List).cast<num>();
+            final probs = _softmax([row[0].toDouble(), row[1].toDouble()]);
+            return probs[aiLabelIndex];
+          }(),
+      ];
     } finally {
+      for (final output in outputs ?? const <OrtValue?>[]) {
+        output?.release();
+      }
       inputIds.release();
       attentionMask.release();
       runOptions.release();
     }
   }
 
-  /// 逐句推論，回傳每句 AI 機率；每處理數句讓出微任務讓 UI 動畫保持流暢
+  /// 逐句推論，回傳每句 AI 機率；重複內容由記憶體快取直接回傳。
   Future<List<double>> classifySentences(List<String> sentences) async {
-    final out = <double>[];
-    for (var i = 0; i < sentences.length; i++) {
-      out.add(await classify(sentences[i]));
-      if (i % 3 == 2) {
-        await Future.microtask(() {});
-      }
-    }
-    return out;
+    return _batcher.classify(sentences, _classifyBatch);
   }
 
   static List<double> _softmax(List<double> x) {

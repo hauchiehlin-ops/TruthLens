@@ -12,6 +12,8 @@ class BpeTokenizer implements TextTokenizer {
   final int bosId;
   final int eosId;
   final int unkId;
+  @override
+  final int padId;
   final Map<String, List<String>> _cache = {};
 
   // GPT-2 前處理正則
@@ -26,20 +28,21 @@ class BpeTokenizer implements TextTokenizer {
     this.bosId = 0,
     this.eosId = 2,
     this.unkId = 3,
-  })  : _bpeRanks = {for (var i = 0; i < merges.length; i++) merges[i]: i},
-        _byteToChar = _bytesToUnicode();
+    this.padId = 1,
+  }) : _bpeRanks = {for (var i = 0; i < merges.length; i++) merges[i]: i},
+       _byteToChar = _bytesToUnicode();
 
   factory BpeTokenizer.fromTokenizerJson(String jsonStr) {
     final model = tokenizerModel(jsonStr);
     final rawVocab = model['vocab'] as Map;
     final vocab = <String, int>{
-      for (final e in rawVocab.entries) e.key as String: (e.value as num).toInt()
+      for (final e in rawVocab.entries)
+        e.key as String: (e.value as num).toInt(),
     };
     // merges 可能是 List<String>（"a b"）或 List<List<String>>（新格式）
     final rawMerges = model['merges'] as List;
     final merges = <String>[
-      for (final m in rawMerges)
-        m is String ? m : (m as List).join(' '),
+      for (final m in rawMerges) m is String ? m : (m as List).join(' '),
     ];
     return BpeTokenizer(
       vocab: vocab,
@@ -47,6 +50,7 @@ class BpeTokenizer implements TextTokenizer {
       bosId: vocab['<s>'] ?? 0,
       eosId: vocab['</s>'] ?? 2,
       unkId: vocab['<unk>'] ?? 3,
+      padId: vocab['<pad>'] ?? 1,
     );
   }
 
@@ -128,6 +132,8 @@ class BpeTokenizer implements TextTokenizer {
         n++;
       }
     }
-    return {for (var i = 0; i < bs.length; i++) bs[i]: String.fromCharCode(cs[i])};
+    return {
+      for (var i = 0; i < bs.length; i++) bs[i]: String.fromCharCode(cs[i]),
+    };
   }
 }

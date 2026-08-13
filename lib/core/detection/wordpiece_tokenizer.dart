@@ -11,6 +11,7 @@ class WordPieceTokenizer implements TextTokenizer {
   final int clsId;
   final int sepId;
   final int unkId;
+  @override
   final int padId;
   static const int _maxCharsPerWord = 100;
 

@@ -110,12 +110,16 @@
   }
 
   async function run(modelId, inputIds, attentionMask, seqLen) {
+    return runBatch(modelId, inputIds, attentionMask, 1, seqLen);
+  }
+
+  async function runBatch(modelId, inputIds, attentionMask, batchSize, seqLen) {
     return enqueueOrtWork(async () => {
       const ort = window.ort;
       const entry = state.sessions.get(modelId);
       const session = entry && entry.session ? entry.session : entry;
       if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
-      const shape = [1, seqLen];
+      const shape = [batchSize, seqLen];
       let results;
 
       const inputTypes = (entry && entry.inputTypes) || {};
@@ -236,5 +240,5 @@
     return state.epKind;
   }
 
-  window.truthlensOrt = { loadModel, run, releaseModel, epKind, ensureOrt };
+  window.truthlensOrt = { loadModel, run, runBatch, releaseModel, epKind, ensureOrt };
 })();

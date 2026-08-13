@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'adaptive_sentence_batcher.dart';
 import 'text_tokenizer.dart';
 import 'web_js_bridge.dart';
 
@@ -15,8 +16,19 @@ class OnnxDetector {
   final TextTokenizer _tokenizer;
   final int maxLen;
   final int aiLabelIndex;
+  // Web ONNX calls share a non-reentrant queue. Small batches substantially
+  // reduce Dart/JS/WASM crossings while the adaptive fallback preserves
+  // compatibility with imported models that expose a fixed batch dimension.
+  final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
+    initialBatchSize: 4,
+  );
 
-  OnnxDetector._(this._session, this._tokenizer, this.maxLen, this.aiLabelIndex);
+  OnnxDetector._(
+    this._session,
+    this._tokenizer,
+    this.maxLen,
+    this.aiLabelIndex,
+  );
 
   static Future<OnnxDetector> load({
     required String modelPath,
@@ -42,21 +54,32 @@ class OnnxDetector {
   }
 
   Future<double> classify(String text) async {
-    final enc = _tokenizer.encode(text, maxLen: maxLen);
-    final (data, dims) = await _session.run(enc.inputIds, enc.attentionMask);
-    // 輸出形狀 [1,2]（batch=1）→ data 即為該列的兩個 logits。
-    assert(dims.isEmpty || dims.last == 2,
-        '預期分類器輸出最後一維為 2，實際為 $dims');
-    final probs = _softmax([data[0], data[1]]);
-    return probs[aiLabelIndex];
+    return (await _classifyBatch([text])).first;
+  }
+
+  Future<List<double>> _classifyBatch(List<String> texts) async {
+    final batch = encodeTextBatch(_tokenizer, texts, maxLen: maxLen);
+    final (data, dims) = await _session.runBatch(
+      batch.flatInputIds,
+      batch.flatAttentionMasks,
+      batch.batchSize,
+      batch.sequenceLength,
+    );
+    // 輸出形狀 [batch,2]，扁平資料每兩個 logits 對應一句。
+    assert(dims.isEmpty || dims.last == 2, '預期分類器輸出最後一維為 2，實際為 $dims');
+    if (data.length != batch.batchSize * 2) {
+      throw StateError(
+        'Expected ${batch.batchSize * 2} logits, received ${data.length}.',
+      );
+    }
+    return [
+      for (var index = 0; index < batch.batchSize; index++)
+        _softmax([data[index * 2], data[index * 2 + 1]])[aiLabelIndex],
+    ];
   }
 
   Future<List<double>> classifySentences(List<String> sentences) async {
-    final out = <double>[];
-    for (final s in sentences) {
-      out.add(await classify(s));
-    }
-    return out;
+    return _batcher.classify(sentences, _classifyBatch);
   }
 
   static List<double> _softmax(List<double> x) {

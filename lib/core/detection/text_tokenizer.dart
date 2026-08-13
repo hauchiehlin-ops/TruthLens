@@ -10,9 +10,57 @@ class Encoded {
   const Encoded(this.inputIds, this.attentionMask);
 }
 
+/// A padded rectangular input suitable for one ONNX batch invocation.
+class EncodedBatch {
+  final List<List<int>> inputIds;
+  final List<List<int>> attentionMasks;
+  final int sequenceLength;
+
+  const EncodedBatch(this.inputIds, this.attentionMasks, this.sequenceLength);
+
+  int get batchSize => inputIds.length;
+  List<int> get flatInputIds => inputIds.expand((row) => row).toList();
+  List<int> get flatAttentionMasks =>
+      attentionMasks.expand((row) => row).toList();
+}
+
 /// 文字 tokenizer 介面。各實作負責自己的特殊 token（BERT: [CLS]/[SEP]，RoBERTa: <s>/</s>）。
 abstract class TextTokenizer {
+  int get padId;
+
   Encoded encode(String text, {int maxLen = 192});
+}
+
+EncodedBatch encodeTextBatch(
+  TextTokenizer tokenizer,
+  List<String> texts, {
+  int maxLen = 192,
+}) {
+  if (texts.isEmpty) {
+    throw ArgumentError.value(texts, 'texts', 'Batch cannot be empty.');
+  }
+  final encoded = [
+    for (final text in texts) tokenizer.encode(text, maxLen: maxLen),
+  ];
+  final sequenceLength = encoded
+      .map((item) => item.inputIds.length)
+      .reduce((a, b) => a > b ? a : b);
+  final inputIds = <List<int>>[];
+  final attentionMasks = <List<int>>[];
+  for (final item in encoded) {
+    inputIds.add([
+      ...item.inputIds,
+      ...List<int>.filled(
+        sequenceLength - item.inputIds.length,
+        tokenizer.padId,
+      ),
+    ]);
+    attentionMasks.add([
+      ...item.attentionMask,
+      ...List<int>.filled(sequenceLength - item.attentionMask.length, 0),
+    ]);
+  }
+  return EncodedBatch(inputIds, attentionMasks, sequenceLength);
 }
 
 /// 依模型類型從 HuggingFace tokenizer.json 建構對應 tokenizer。
@@ -32,6 +80,9 @@ TextTokenizer buildTokenizer(String type, String tokenizerJson) {
 
 class NoneTokenizer implements TextTokenizer {
   const NoneTokenizer();
+
+  @override
+  int get padId => 0;
 
   @override
   Encoded encode(String text, {int maxLen = 192}) {
