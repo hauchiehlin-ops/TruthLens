@@ -66,6 +66,7 @@ class ReportExporter {
     final map = {
       'version': 1,
       'analyzed_at': r.analyzedAt.toIso8601String(),
+      'source_file_name': r.sourceFileName,
       'headline': doc.headline,
       'report_source': doc.source.name,
       'template_id': doc.templateId,

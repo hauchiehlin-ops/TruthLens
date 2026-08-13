@@ -84,6 +84,7 @@ class DetectionResult {
   final String id;
   final DateTime analyzedAt;
   final String inputText;
+  final String sourceFileName;
   final double aiProbability; // 加權投票後的整體 AI 機率
   final Verdict verdict;
   final List<EngineScore> engineScores;
@@ -99,6 +100,7 @@ class DetectionResult {
     required this.id,
     required this.analyzedAt,
     required this.inputText,
+    this.sourceFileName = '',
     required this.aiProbability,
     required this.verdict,
     required this.engineScores,

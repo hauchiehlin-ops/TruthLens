@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../core/models/analysis_request.dart';
 import '../core/models/detection_result.dart';
 import '../features/analysis/analysis_screen.dart';
 import '../features/help/help_screen.dart';
@@ -17,7 +18,14 @@ GoRouter createRouter({required String initialLocation}) => GoRouter(
     GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(
       path: '/analysis',
-      builder: (_, state) => AnalysisScreen(text: state.extra as String),
+      builder: (_, state) {
+        final extra = state.extra;
+        return AnalysisScreen(
+          request: extra is AnalysisRequest
+              ? extra
+              : AnalysisRequest(text: extra as String),
+        );
+      },
     ),
     GoRoute(
       path: '/report',

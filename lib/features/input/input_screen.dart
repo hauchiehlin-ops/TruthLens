@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
+import '../../core/models/analysis_request.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
@@ -46,6 +47,7 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
 class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
   double _rightPanelWidth = 400; // 右側面板預設寬度
+  String _sourceFileName = '';
 
   @override
   void initState() {
@@ -97,13 +99,17 @@ class _InputScreenState extends State<InputScreen> {
       // skip / dismissed → 以現有引擎（統計/風格）繼續分析
     }
     if (!mounted) return;
-    context.push('/analysis', extra: text);
+    context.push(
+      '/analysis',
+      extra: AnalysisRequest(text: text, sourceFileName: _sourceFileName),
+    );
   }
 
   Future<void> _pasteFromClipboard() async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     if (data?.text != null && data!.text!.isNotEmpty) {
       _controller.text = data.text!;
+      _sourceFileName = '';
       setState(() {});
     }
   }
@@ -128,12 +134,14 @@ class _InputScreenState extends State<InputScreen> {
     }
     final text = OcrPostProcessor.clean(rawText);
     _controller.text = text;
+    _sourceFileName = '';
     setState(() {});
     _showFloatingSnackBar(l10n.inputOcrRecognized(text.length));
   }
 
   void _clearInput() {
     _controller.clear();
+    _sourceFileName = '';
     setState(() {});
   }
 
@@ -146,6 +154,7 @@ class _InputScreenState extends State<InputScreen> {
       return;
     }
     _controller.text = doc.text;
+    _sourceFileName = doc.fileName;
     setState(() {});
     _showFloatingSnackBar(
       l10n.inputImportSuccess(doc.fileName, doc.text.length),
@@ -263,6 +272,17 @@ class _InputScreenState extends State<InputScreen> {
                                   ?.copyWith(color: scheme.onSurfaceVariant),
                               textAlign: TextAlign.center,
                             ),
+                            if (_sourceFileName.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                _sourceFileName,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: scheme.onSurfaceVariant),
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                             const SizedBox(height: 16),
                             Expanded(
                               child: Stack(
@@ -275,7 +295,12 @@ class _InputScreenState extends State<InputScreen> {
                                     decoration: InputDecoration(
                                       hintText: l10n.inputHint,
                                     ),
-                                    onChanged: (_) => setState(() {}),
+                                    onChanged: (value) {
+                                      if (value.trim().isEmpty) {
+                                        _sourceFileName = '';
+                                      }
+                                      setState(() {});
+                                    },
                                   ),
                                   if (_controller.text.isNotEmpty)
                                     Positioned(
@@ -414,6 +439,17 @@ class _InputScreenState extends State<InputScreen> {
                             ?.copyWith(color: scheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
+                      if (_sourceFileName.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          _sourceFileName,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: scheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Expanded(
                         child: Stack(
@@ -426,7 +462,12 @@ class _InputScreenState extends State<InputScreen> {
                               decoration: InputDecoration(
                                 hintText: l10n.inputHint,
                               ),
-                              onChanged: (_) => setState(() {}),
+                              onChanged: (value) {
+                                if (value.trim().isEmpty) {
+                                  _sourceFileName = '';
+                                }
+                                setState(() {});
+                              },
                             ),
                             if (_controller.text.isNotEmpty)
                               Positioned(
@@ -558,9 +599,9 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 ),
                 Slider(
                   value: prefs.confidenceThreshold,
-                  min: 0.4,
-                  max: 0.9,
-                  divisions: 10,
+                  min: PreferencesService.minConfidenceThreshold,
+                  max: PreferencesService.maxConfidenceThreshold,
+                  divisions: PreferencesService.confidenceThresholdDivisions,
                   label: '${(prefs.confidenceThreshold * 100).round()}%',
                   onChanged: (v) => prefs.setThreshold(v),
                 ),
@@ -845,9 +886,9 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Slider(
                 value: prefs.confidenceThreshold,
-                min: 0.4,
-                max: 0.9,
-                divisions: 10,
+                min: PreferencesService.minConfidenceThreshold,
+                max: PreferencesService.maxConfidenceThreshold,
+                divisions: PreferencesService.confidenceThresholdDivisions,
                 label: '${(prefs.confidenceThreshold * 100).round()}%',
                 onChanged: (v) => prefs.setThreshold(v),
               ),

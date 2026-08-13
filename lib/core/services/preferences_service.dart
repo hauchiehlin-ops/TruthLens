@@ -24,6 +24,9 @@ class PreferencesService extends ChangeNotifier {
   static const _kLinkVerificationEnabled = 'link_verification_enabled';
   static const _kLocale = 'app_locale';
   static const _kEngineWeightPrefix = 'engine_weight_';
+  static const minConfidenceThreshold = 0.2;
+  static const maxConfidenceThreshold = 0.9;
+  static const confidenceThresholdDivisions = 14;
 
   SharedPreferences? _prefs;
 
@@ -47,7 +50,9 @@ class PreferencesService extends ChangeNotifier {
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
-    confidenceThreshold = _prefs!.getDouble(_kThreshold) ?? 0.5;
+    confidenceThreshold = _clampThreshold(
+      _prefs!.getDouble(_kThreshold) ?? 0.5,
+    );
     themeMode = ThemeMode.values.byName(
       _prefs!.getString(_kThemeMode) ?? ThemeMode.dark.name,
     );
@@ -147,10 +152,13 @@ class PreferencesService extends ChangeNotifier {
   }
 
   Future<void> setThreshold(double value) async {
-    confidenceThreshold = value;
-    await _prefs?.setDouble(_kThreshold, value);
+    confidenceThreshold = _clampThreshold(value);
+    await _prefs?.setDouble(_kThreshold, confidenceThreshold);
     notifyListeners();
   }
+
+  static double _clampThreshold(double value) =>
+      value.clamp(minConfidenceThreshold, maxConfidenceThreshold).toDouble();
 
   Future<void> setThemeMode(ThemeMode mode) async {
     themeMode = mode;

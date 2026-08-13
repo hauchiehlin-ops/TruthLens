@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/orchestrator.dart';
+import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/history_repository.dart';
 import '../../core/services/preferences_service.dart';
@@ -15,8 +16,8 @@ import '../../shared/widgets/analysis_wave.dart';
 /// 更新加權分數，全部完成後才轉場到完整報告頁——體感延遲低，但最終判定仍是
 /// 完整 Ensemble，準確度不打折。
 class AnalysisScreen extends StatefulWidget {
-  final String text;
-  const AnalysisScreen({super.key, required this.text});
+  final AnalysisRequest request;
+  const AnalysisScreen({super.key, required this.request});
 
   @override
   State<AnalysisScreen> createState() => _AnalysisScreenState();
@@ -50,7 +51,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final prefs = context.read<PreferencesService>();
     final l10n = AppLocalizations.of(context);
     final result = await orchestrator.analyze(
-      widget.text,
+      widget.request.text,
+      sourceFileName: widget.request.sourceFileName,
       eslCorrectionEnabled: prefs.eslCorrectionEnabled,
       threshold: prefs.confidenceThreshold,
       prefs: prefs,

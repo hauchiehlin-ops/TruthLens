@@ -73,6 +73,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
   /// [threshold] 為使用者設定的 AI 判定信心閾值（降低偽陽性）。
   Future<DetectionResult> analyze(
     String input, {
+    String sourceFileName = '',
     bool eslCorrectionEnabled = true,
     double threshold = 0.6,
     PreferencesService? prefs,
@@ -143,6 +144,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
       id: started.microsecondsSinceEpoch.toString(),
       analyzedAt: started,
       inputText: input,
+      sourceFileName: sourceFileName,
       aiProbability: overall,
       verdict: Verdict.fromProbability(overall),
       engineScores: scores,

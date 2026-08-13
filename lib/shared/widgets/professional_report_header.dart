@@ -29,28 +29,35 @@ class ProfessionalReportHeader extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.reportAiContentReportTitle,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E3A5F), // 深青
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.reportAnalysisTimeLabel(
-                        DateTime.now().toString().split('.')[0],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        result.sourceFileName.isEmpty
+                            ? l10n.reportAiContentReportTitle
+                            : '${l10n.reportAiContentReportTitle}：${result.sourceFileName}',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E3A5F), // 深青
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.reportAnalysisTimeLabel(
+                          DateTime.now().toString().split('.')[0],
+                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 16),
                 // 下載按鈕（簡約樣式）
                 FilledButton.icon(
                   onPressed: onDownloadPdf,

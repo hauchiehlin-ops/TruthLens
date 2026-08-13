@@ -38,9 +38,9 @@ class SettingsScreen extends StatelessWidget {
           ),
           Slider(
             value: prefs.confidenceThreshold,
-            min: 0.4,
-            max: 0.9,
-            divisions: 10,
+            min: PreferencesService.minConfidenceThreshold,
+            max: PreferencesService.maxConfidenceThreshold,
+            divisions: PreferencesService.confidenceThresholdDivisions,
             label: '${(prefs.confidenceThreshold * 100).round()}%',
             onChanged: (v) => prefs.setThreshold(v),
           ),

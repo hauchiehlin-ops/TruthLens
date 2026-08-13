@@ -23,6 +23,22 @@ void main() {
     expect(preferences.confidenceThreshold, 0.75);
   });
 
+  test(
+    'AI confidence threshold is clamped to the 20 percent minimum',
+    () async {
+      SharedPreferences.setMockInitialValues({'confidence_threshold': 0.1});
+      final preferences = PreferencesService();
+
+      await preferences.load();
+
+      expect(preferences.confidenceThreshold, 0.2);
+
+      await preferences.setThreshold(0.1);
+
+      expect(preferences.confidenceThreshold, 0.2);
+    },
+  );
+
   test('engine weights default to 40/25/20/15 and persist locally', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = PreferencesService();
