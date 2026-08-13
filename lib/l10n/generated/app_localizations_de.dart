@@ -1703,4 +1703,72 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => 'Diese Plattform';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'Der integrierte mehrsprachige Detektor von TruthLens unterstützt bereits über 104 Sprachen. In der KI-Modellverwaltung können Sie sprachoptimierte Community-Modelle suchen, herunterladen oder wechseln.';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return 'Version $version (Build $build) · Lokale, datenschutzfreundliche Erkennung';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Web-OCR-Einstellungen';
+
+  @override
+  String get webOcrPurpose =>
+      'Gedruckten oder handgeschriebenen Text in einem Bild vor der Analyse erkennen.';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Gemini-API-Schlüssel (optional)';
+
+  @override
+  String get webOcrGetKeyButton => 'Schlüssel abrufen';
+
+  @override
+  String get webOcrGeminiDescription =>
+      'Wird nur verwendet, wenn der lokale OCR-Server nicht verfügbar ist. Der Schlüssel bleibt in diesem Browser.';
+
+  @override
+  String get webOcrLocalServerTitle => 'Lokaler OCR-Server (empfohlen)';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      'OCR läuft auf Ihrem Computer: Apple Vision unter macOS oder Windows OCR unter Windows. Geben Sie unten den lokalen Endpunkt ein.';
+
+  @override
+  String get webOcrSetupGuideButton => 'Einrichtungsanleitung';
+
+  @override
+  String get webOcrPriorityTitle => 'Erkennungsreihenfolge';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. Lokaler OCR-Server bei gesetzter URL\n2. Gemini bei gesetztem API-Schlüssel\n3. Genaue Diagnose, wenn beide Wege fehlschlagen';
+
+  @override
+  String get webOcrSetupGuideTitle => 'Lokalen OCR-Server einrichten';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. Wählen Sie unten OCR-Projekt öffnen.\n2. macOS: Laden Sie setup_and_run_ocr.sh herunter, öffnen Sie Terminal und führen Sie aus: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: Laden Sie setup_and_run_ocr.bat herunter, doppelklicken Sie darauf und erlauben Sie die Installation.\n4. Warten Sie, bis der Installer meldet, dass OCR bereit ist; der Autostart wird ebenfalls eingerichtet.\n5. Geben Sie hier http://127.0.0.1:5001/ocr ein und wählen Sie Verbindung testen.\n6. Öffnen Sie Bild-OCR und wählen Sie ein deutliches Bild.\n\nFür 127.0.0.1 müssen Browser und OCR-Server auf demselben Computer laufen. Prüfen Sie bei Fehlern Installation, Port 5001 und die Endung /ocr.';
+
+  @override
+  String get webOcrOpenProjectButton => 'OCR-Projekt öffnen';
+
+  @override
+  String get webOcrTestServerButton => 'Verbindung testen';
+
+  @override
+  String get webOcrTestServerMissingUrl =>
+      'Geben Sie zuerst die URL des lokalen OCR-Servers ein.';
+
+  @override
+  String get webOcrTestServerSuccess =>
+      'Der lokale OCR-Server läuft und ist bereit.';
+
+  @override
+  String get webOcrTestServerFailure =>
+      'Der lokale OCR-Server ist nicht erreichbar. Prüfen Sie Anleitung, Firewall und URL.';
 }

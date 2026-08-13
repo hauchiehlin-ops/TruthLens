@@ -66,6 +66,9 @@ class OcrService {
   /// 取得目前設定的本地伺服器 URL
   static String? getLocalServerUrl() => _cachedServerUrl;
 
+  /// The local companion server is only used by the Web build.
+  static Future<bool> testLocalServer() async => false;
+
   /// 此平台是否已實作 OCR
   Future<bool> get isSupported async {
     try {

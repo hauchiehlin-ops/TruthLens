@@ -2806,6 +2806,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This platform'**
   String get privacyGenericPlatformName;
+
+  /// No description provided for @settingsLanguagePackDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'TruthLens\'s built-in multilingual detector already supports 104+ languages. Use AI Model Management to explore, download, or switch language-enhanced community models.'**
+  String get settingsLanguagePackDialogBody;
+
+  /// No description provided for @settingsVersionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} (Build {build}) · Local-first private detection engine'**
+  String settingsVersionSubtitle(String version, String build);
+
+  /// No description provided for @webOcrSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Web OCR settings'**
+  String get webOcrSettingsTitle;
+
+  /// No description provided for @webOcrPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognize printed or handwritten text in an uploaded image before analysis.'**
+  String get webOcrPurpose;
+
+  /// No description provided for @webOcrGeminiKeyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini API key (optional)'**
+  String get webOcrGeminiKeyTitle;
+
+  /// No description provided for @webOcrGetKeyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a key'**
+  String get webOcrGetKeyButton;
+
+  /// No description provided for @webOcrGeminiDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Used only when the local OCR server is unavailable. The key is saved in this browser.'**
+  String get webOcrGeminiDescription;
+
+  /// No description provided for @webOcrLocalServerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR server (recommended)'**
+  String get webOcrLocalServerTitle;
+
+  /// No description provided for @webOcrLocalServerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs OCR on your computer with Apple Vision on macOS or Windows OCR on Windows. Enter the local endpoint below.'**
+  String get webOcrLocalServerDescription;
+
+  /// No description provided for @webOcrSetupGuideButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner setup guide'**
+  String get webOcrSetupGuideButton;
+
+  /// No description provided for @webOcrPriorityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognition order'**
+  String get webOcrPriorityTitle;
+
+  /// No description provided for @webOcrPriorityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Local OCR server when a URL is set\n2. Gemini when an API key is set\n3. A specific diagnostic message when neither path succeeds'**
+  String get webOcrPriorityDescription;
+
+  /// No description provided for @webOcrSetupGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the local OCR server'**
+  String get webOcrSetupGuideTitle;
+
+  /// No description provided for @webOcrSetupGuideBody.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Select Open OCR project below.\n2. macOS: download setup_and_run_ocr.sh, open Terminal, and run: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: download setup_and_run_ocr.bat, then double-click it and allow the requested installation.\n4. Wait until the installer says OCR is ready. It will also configure automatic startup.\n5. Return here, enter http://127.0.0.1:5001/ocr, and select Test connection.\n6. Open Image OCR and choose a clear image to confirm text recognition.\n\nThe browser and OCR server must run on the same computer for 127.0.0.1 to work. If testing fails, check that the installer completed, port 5001 is not blocked, and the URL ends with /ocr.'**
+  String get webOcrSetupGuideBody;
+
+  /// No description provided for @webOcrOpenProjectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Open OCR project'**
+  String get webOcrOpenProjectButton;
+
+  /// No description provided for @webOcrTestServerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get webOcrTestServerButton;
+
+  /// No description provided for @webOcrTestServerMissingUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the local OCR server URL first.'**
+  String get webOcrTestServerMissingUrl;
+
+  /// No description provided for @webOcrTestServerSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR server is running and ready.'**
+  String get webOcrTestServerSuccess;
+
+  /// No description provided for @webOcrTestServerFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the local OCR server. Open the setup guide and check the installer, firewall, and URL.'**
+  String get webOcrTestServerFailure;
 }
 
 class _AppLocalizationsDelegate

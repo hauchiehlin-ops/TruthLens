@@ -1686,4 +1686,72 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => 'แพลตฟอร์มนี้';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'ตัวตรวจจับหลายภาษาใน TruthLens รองรับมากกว่า 104 ภาษาแล้ว ใช้การจัดการโมเดล AI เพื่อค้นหา ดาวน์โหลด หรือสลับโมเดลชุมชนที่ปรับปรุงสำหรับแต่ละภาษา';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return 'เวอร์ชัน $version (Build $build) · กลไกตรวจจับแบบเน้นการประมวลผลในเครื่อง';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'การตั้งค่า Web OCR';
+
+  @override
+  String get webOcrPurpose =>
+      'อ่านข้อความพิมพ์หรือลายมือในรูปภาพก่อนการวิเคราะห์';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'คีย์ Gemini API (ไม่บังคับ)';
+
+  @override
+  String get webOcrGetKeyButton => 'รับคีย์';
+
+  @override
+  String get webOcrGeminiDescription =>
+      'ใช้เมื่อเซิร์ฟเวอร์ OCR ในเครื่องไม่พร้อมเท่านั้น คีย์จะเก็บไว้ในเบราว์เซอร์นี้';
+
+  @override
+  String get webOcrLocalServerTitle => 'เซิร์ฟเวอร์ OCR ในเครื่อง (แนะนำ)';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      'เรียกใช้ OCR บนคอมพิวเตอร์ด้วย Apple Vision บน macOS หรือ Windows OCR บน Windows โปรดป้อนปลายทางในเครื่องด้านล่าง';
+
+  @override
+  String get webOcrSetupGuideButton => 'คู่มือการตั้งค่าสำหรับผู้เริ่มต้น';
+
+  @override
+  String get webOcrPriorityTitle => 'ลำดับการอ่านข้อความ';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. เซิร์ฟเวอร์ OCR ในเครื่องเมื่อกำหนด URL\n2. Gemini เมื่อกำหนดคีย์ API\n3. แสดงสาเหตุโดยละเอียดเมื่อทั้งสองวิธีล้มเหลว';
+
+  @override
+  String get webOcrSetupGuideTitle => 'ตั้งค่าเซิร์ฟเวอร์ OCR ในเครื่อง';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. เลือก เปิดโครงการ OCR ด้านล่าง\n2. macOS: ดาวน์โหลด setup_and_run_ocr.sh เปิด Terminal แล้วรัน: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: ดาวน์โหลด setup_and_run_ocr.bat ดับเบิลคลิกและอนุญาตการติดตั้ง\n4. รอจนตัวติดตั้งแจ้งว่า OCR พร้อมใช้งาน ระบบจะตั้งค่าเริ่มอัตโนมัติด้วย\n5. ป้อน http://127.0.0.1:5001/ocr แล้วเลือก ทดสอบการเชื่อมต่อ\n6. เปิด OCR รูปภาพและเลือกรูปที่ชัดเจนเพื่อทดสอบ\n\nเมื่อใช้ 127.0.0.1 เบราว์เซอร์และเซิร์ฟเวอร์ต้องทำงานบนคอมพิวเตอร์เครื่องเดียวกัน หากล้มเหลวให้ตรวจสอบการติดตั้ง พอร์ต 5001 และส่วนท้าย /ocr';
+
+  @override
+  String get webOcrOpenProjectButton => 'เปิดโครงการ OCR';
+
+  @override
+  String get webOcrTestServerButton => 'ทดสอบการเชื่อมต่อ';
+
+  @override
+  String get webOcrTestServerMissingUrl =>
+      'โปรดป้อน URL เซิร์ฟเวอร์ OCR ในเครื่องก่อน';
+
+  @override
+  String get webOcrTestServerSuccess =>
+      'เซิร์ฟเวอร์ OCR ในเครื่องทำงานและพร้อมใช้งาน';
+
+  @override
+  String get webOcrTestServerFailure =>
+      'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ OCR ในเครื่อง โปรดตรวจสอบคู่มือ ไฟร์วอลล์ และ URL';
 }

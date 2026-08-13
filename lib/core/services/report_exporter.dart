@@ -11,6 +11,7 @@ import '../../features/report/report_document.dart';
 import '../../features/report/summary_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
+import 'bibliography_verifier.dart';
 import '../utils/text_stats.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
@@ -59,6 +60,7 @@ class ReportExporter {
     DetectionResult r,
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) {
     final doc = reportDocument ?? _composer.compose(r, l10n);
     final map = {
@@ -106,6 +108,20 @@ class ReportExporter {
             'patterns': s.patterns,
           },
       ],
+      if (bibliographyChecks != null)
+        'bibliography_verification': [
+          for (final check in bibliographyChecks)
+            {
+              'citation': check.entry.rawText,
+              'status': check.confidence.name,
+              'status_label': _bibliographyStatus(check, l10n),
+              if (check.matchedTitle != null)
+                'matched_title': check.matchedTitle,
+              if (check.matchedJournal != null)
+                'matched_journal': check.matchedJournal,
+              if (check.matchedYear != null) 'matched_year': check.matchedYear,
+            },
+        ],
     };
     return const JsonEncoder.withIndent('  ').convert(map);
   }
@@ -148,6 +164,7 @@ class ReportExporter {
     required ByteData regularFont,
     required ByteData boldFont,
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
     final reportDoc = reportDocument ?? _composer.compose(r, l10n);
     final regular = pw.Font.ttf(regularFont);
@@ -320,6 +337,56 @@ class ReportExporter {
             ),
           pw.SizedBox(height: 10),
 
+          if (bibliographyChecks != null) ...[
+            pw.Text(
+              l10n.reportBibAuthenticityTitle,
+              style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 4),
+            pw.Text(
+              l10n.reportBibResultHint,
+              style: const pw.TextStyle(
+                fontSize: 8.5,
+                color: PdfColors.grey700,
+              ),
+            ),
+            pw.SizedBox(height: 6),
+            if (bibliographyChecks.isEmpty)
+              pw.Text(
+                l10n.reportBibNoneDetected,
+                style: const pw.TextStyle(fontSize: 9),
+              )
+            else
+              for (var i = 0; i < bibliographyChecks.length; i++)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 7),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        '${i + 1}. ${_truncateForPdf(bibliographyChecks[i].entry.rawText)}',
+                        style: pw.TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                      pw.Text(
+                        _bibliographyStatus(bibliographyChecks[i], l10n),
+                        style: pw.TextStyle(
+                          fontSize: 9,
+                          color:
+                              bibliographyChecks[i].confidence ==
+                                  CitationMatchConfidence.high
+                              ? PdfColors.green700
+                              : PdfColors.orange800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            pw.SizedBox(height: 10),
+          ],
+
           // 逐句分析（超過上限僅顯示前段，避免大量/超長句子撐爆 PDF 分頁）
           pw.Text(
             l10n.reportSentenceAnalysisTitle,
@@ -403,6 +470,29 @@ class ReportExporter {
     ),
   );
 
+  static String _bibliographyStatus(
+    BibliographyCheckResult check,
+    AppLocalizations l10n,
+  ) {
+    if (check.confidence == CitationMatchConfidence.high) {
+      final journal = check.matchedJournal;
+      return l10n.reportBibHighConfidence(
+        journal == null ? '' : l10n.reportBibJournalSuffix(journal),
+      );
+    }
+    if (check.confidence == CitationMatchConfidence.notFound) {
+      return l10n.reportBibNotFound;
+    }
+    final candidate = check.matchedTitle;
+    if (candidate != null && candidate.trim().isNotEmpty) {
+      return l10n.reportBibUncertainWithCandidate(
+        l10n.reportBibUncertain,
+        candidate,
+      );
+    }
+    return l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain);
+  }
+
   // ---- 存檔（UI 層呼叫）----
 
   static String _timestamp(DateTime t) =>
@@ -415,6 +505,7 @@ class ReportExporter {
     DetectionResult r,
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
     final bytes = Uint8List.fromList([
       0xEF,
@@ -434,12 +525,20 @@ class ReportExporter {
     DetectionResult r,
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
     final bytes = Uint8List.fromList([
       0xEF,
       0xBB,
       0xBF,
-      ...utf8.encode(buildJson(r, l10n, reportDocument: reportDocument)),
+      ...utf8.encode(
+        buildJson(
+          r,
+          l10n,
+          reportDocument: reportDocument,
+          bibliographyChecks: bibliographyChecks,
+        ),
+      ),
     ]);
     return _save(
       bytes: bytes,
@@ -453,6 +552,7 @@ class ReportExporter {
     DetectionResult r,
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
     final bytes = await SummaryCard.renderPng(r, l10n);
     return _save(
@@ -467,6 +567,7 @@ class ReportExporter {
     DetectionResult r,
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
+    List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
     final bytes = await buildPdf(
       r,
@@ -474,6 +575,7 @@ class ReportExporter {
       regularFont: await rootBundle.load('assets/fonts/NotoSansTC-Regular.ttf'),
       boldFont: await rootBundle.load('assets/fonts/NotoSansTC-Bold.ttf'),
       reportDocument: reportDocument,
+      bibliographyChecks: bibliographyChecks,
     );
     return _save(
       bytes: bytes,

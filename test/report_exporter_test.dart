@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 import 'package:truthlens/core/models/detection_result.dart';
+import 'package:truthlens/core/services/bibliography_verifier.dart';
 import 'package:truthlens/core/services/report_exporter.dart';
 import 'package:truthlens/features/report/report_document.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
@@ -63,6 +65,21 @@ ReportDocument _llmDocument() => const ReportDocument(
   ],
 );
 
+final _bibliographyChecks = [
+  BibliographyCheckResult(
+    entry: const BibliographyEntry(
+      rawText: 'Doe, J. (2024). Verified research article.',
+      firstAuthorSurname: 'Doe',
+      year: 2024,
+      title: 'Verified research article',
+    ),
+    confidence: CitationMatchConfidence.high,
+    matchedTitle: 'Verified research article',
+    matchedJournal: 'Journal of Verification',
+    matchedYear: 2024,
+  ),
+];
+
 void main() {
   group('ReportExporter.buildCsv', () {
     test('含摘要註解與逐句資料列', () {
@@ -105,6 +122,22 @@ void main() {
               as Map<String, dynamic>;
       final second = (map['sentences'] as List)[1] as Map<String, dynamic>;
       expect(second['patterns'], ['通用過渡詞「此外」']);
+    });
+
+    test('文獻核實結果保留為結構化資料', () {
+      final map =
+          jsonDecode(
+                ReportExporter.buildJson(
+                  _sampleResult(),
+                  _l10n,
+                  bibliographyChecks: _bibliographyChecks,
+                ),
+              )
+              as Map<String, dynamic>;
+      final checks = map['bibliography_verification'] as List<dynamic>;
+      expect(checks, hasLength(1));
+      expect(checks.first['status'], 'high');
+      expect(checks.first['matched_journal'], 'Journal of Verification');
     });
 
     test('可匯出畫面上的 LLM ReportDocument，而非重新模板化', () {
@@ -162,6 +195,29 @@ void main() {
         reportDocument: _llmDocument(),
       );
       expect(String.fromCharCodes(bytes.take(4)), '%PDF');
+    });
+
+    test('PDF 包含逐筆文獻核實結果', () async {
+      final regular = File(
+        'assets/fonts/NotoSansTC-Regular.ttf',
+      ).readAsBytesSync();
+      final bold = File('assets/fonts/NotoSansTC-Bold.ttf').readAsBytesSync();
+      final bytes = await ReportExporter.buildPdf(
+        _sampleResult(),
+        _l10n,
+        regularFont: regular.buffer.asByteData(),
+        boldFont: bold.buffer.asByteData(),
+        bibliographyChecks: _bibliographyChecks,
+      );
+      final pdf = sf.PdfDocument(inputBytes: bytes);
+      final text = sf.PdfTextExtractor(
+        pdf,
+      ).extractText().replaceAll(RegExp(r'\s+'), ' ');
+      pdf.dispose();
+
+      expect(text, contains(_l10n.reportBibAuthenticityTitle));
+      expect(text, contains('Verified research article'));
+      expect(text, contains('Journal of Verification'));
     });
 
     test('超長單句（如誤貼入的原始文件標記）不應丟出 PdfTooBigPageException', () async {

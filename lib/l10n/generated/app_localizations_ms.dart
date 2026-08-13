@@ -1690,4 +1690,72 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => 'Platform ini';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'Pengesan berbilang bahasa terbina dalam TruthLens sudah menyokong lebih 104 bahasa. Gunakan Pengurusan Model AI untuk meneroka, memuat turun atau menukar model komuniti yang dipertingkat mengikut bahasa.';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return 'Versi $version (Build $build) · Enjin privasi yang mengutamakan setempat';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Tetapan OCR Web';
+
+  @override
+  String get webOcrPurpose =>
+      'Mengecam teks bercetak atau tulisan tangan dalam imej sebelum analisis.';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Kunci API Gemini (pilihan)';
+
+  @override
+  String get webOcrGetKeyButton => 'Dapatkan kunci';
+
+  @override
+  String get webOcrGeminiDescription =>
+      'Hanya digunakan apabila pelayan OCR setempat tidak tersedia. Kunci disimpan dalam pelayar ini.';
+
+  @override
+  String get webOcrLocalServerTitle => 'Pelayan OCR setempat (disyorkan)';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      'Menjalankan OCR pada komputer dengan Apple Vision di macOS atau Windows OCR di Windows. Masukkan titik akhir setempat di bawah.';
+
+  @override
+  String get webOcrSetupGuideButton => 'Panduan persediaan';
+
+  @override
+  String get webOcrPriorityTitle => 'Turutan pengecaman';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. Pelayan OCR setempat apabila URL ditetapkan\n2. Gemini apabila kunci API ditetapkan\n3. Diagnosis khusus jika kedua-duanya gagal';
+
+  @override
+  String get webOcrSetupGuideTitle => 'Sediakan pelayan OCR setempat';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. Pilih Buka projek OCR di bawah.\n2. macOS: muat turun setup_and_run_ocr.sh, buka Terminal dan jalankan: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: muat turun setup_and_run_ocr.bat, klik dua kali dan benarkan pemasangan.\n4. Tunggu sehingga pemasang menyatakan OCR sedia; mula automatik turut disediakan.\n5. Masukkan http://127.0.0.1:5001/ocr dan pilih Uji sambungan.\n6. Buka OCR Imej dan pilih imej yang jelas.\n\nUntuk menggunakan 127.0.0.1, pelayar dan pelayan mesti berjalan pada komputer yang sama. Jika gagal, semak pemasangan, port 5001 dan akhiran /ocr.';
+
+  @override
+  String get webOcrOpenProjectButton => 'Buka projek OCR';
+
+  @override
+  String get webOcrTestServerButton => 'Uji sambungan';
+
+  @override
+  String get webOcrTestServerMissingUrl =>
+      'Masukkan URL pelayan OCR setempat dahulu.';
+
+  @override
+  String get webOcrTestServerSuccess =>
+      'Pelayan OCR setempat sedang berjalan dan sedia.';
+
+  @override
+  String get webOcrTestServerFailure =>
+      'Pelayan OCR setempat tidak dapat dicapai. Semak panduan, tembok api dan URL.';
 }

@@ -315,6 +315,31 @@ class OcrService {
     return window.localStorage.getItem(_storageKeyServerUrl);
   }
 
+  /// Checks the companion server's lightweight status endpoint without
+  /// sending any image data.
+  static Future<bool> testLocalServer() async {
+    final configured = getLocalServerUrl()?.trim();
+    if (configured == null || configured.isEmpty) return false;
+    try {
+      final endpoint = Uri.parse(configured);
+      final segments = [...endpoint.pathSegments];
+      if (segments.isNotEmpty && segments.last.toLowerCase() == 'ocr') {
+        segments[segments.length - 1] = 'status';
+      } else {
+        segments.add('status');
+      }
+      final statusUri = endpoint.replace(pathSegments: segments);
+      final response = await http
+          .get(statusUri)
+          .timeout(const Duration(seconds: 5));
+      if (response.statusCode != 200) return false;
+      final payload = jsonDecode(response.body);
+      return payload is Map<String, dynamic> && payload['status'] == 'running';
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// 檢查是否配置了任何 OCR 方案
   static bool hasAnyOcrConfigured() {
     final hasApiKey =

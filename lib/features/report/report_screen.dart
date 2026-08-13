@@ -249,13 +249,19 @@ class _ReportScreenState extends State<ReportScreen> {
       DetectionResult,
       AppLocalizations, {
       ReportDocument? reportDocument,
+      List<BibliographyCheckResult>? bibliographyChecks,
     })
     exporter,
   ) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
     try {
-      final path = await exporter(result, l10n, reportDocument: _doc);
+      final path = await exporter(
+        result,
+        l10n,
+        reportDocument: _doc,
+        bibliographyChecks: _bibChecks,
+      );
       if (path != null) {
         messenger.showSnackBar(
           SnackBar(content: Text(l10n.reportExported(path))),

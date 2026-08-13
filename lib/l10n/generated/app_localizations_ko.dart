@@ -1651,4 +1651,69 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => '이 플랫폼';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'TruthLens 내장 다국어 탐지 모델은 이미 104개 이상의 언어를 지원합니다. AI 모델 관리에서 언어 강화 커뮤니티 모델을 탐색, 다운로드 또는 전환할 수 있습니다.';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return '버전 $version (Build $build) · 로컬 우선 개인정보 보호 탐지 엔진';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Web OCR 설정';
+
+  @override
+  String get webOcrPurpose => '분석 전에 이미지의 인쇄 문자나 손글씨를 인식합니다.';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Gemini API 키(선택 사항)';
+
+  @override
+  String get webOcrGetKeyButton => '키 받기';
+
+  @override
+  String get webOcrGeminiDescription =>
+      '로컬 OCR 서버를 사용할 수 없을 때만 사용하며 키는 이 브라우저에 저장됩니다.';
+
+  @override
+  String get webOcrLocalServerTitle => '로컬 OCR 서버(권장)';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      'macOS에서는 Apple Vision, Windows에서는 Windows OCR을 사용해 컴퓨터에서 OCR을 실행합니다. 아래에 로컬 엔드포인트를 입력하세요.';
+
+  @override
+  String get webOcrSetupGuideButton => '초보자 설정 안내';
+
+  @override
+  String get webOcrPriorityTitle => '인식 우선순위';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. URL 설정 시 로컬 OCR 서버\n2. API 키 설정 시 Gemini\n3. 둘 다 실패하면 구체적인 진단 표시';
+
+  @override
+  String get webOcrSetupGuideTitle => '로컬 OCR 서버 설정';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. 아래에서 OCR 프로젝트 열기를 선택합니다.\n2. macOS: setup_and_run_ocr.sh를 다운로드하고 터미널에서 실행합니다: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: setup_and_run_ocr.bat를 다운로드해 두 번 클릭하고 설치를 허용합니다.\n4. OCR 준비 완료 메시지가 나올 때까지 기다립니다. 자동 시작도 설정됩니다.\n5. http://127.0.0.1:5001/ocr 을 입력하고 연결 테스트를 선택합니다.\n6. 이미지 OCR을 열고 선명한 이미지로 확인합니다.\n\n127.0.0.1 사용 시 브라우저와 OCR 서버는 같은 컴퓨터에서 실행해야 합니다. 실패하면 설치, 포트 5001, /ocr 끝부분을 확인하세요.';
+
+  @override
+  String get webOcrOpenProjectButton => 'OCR 프로젝트 열기';
+
+  @override
+  String get webOcrTestServerButton => '연결 테스트';
+
+  @override
+  String get webOcrTestServerMissingUrl => '먼저 로컬 OCR 서버 URL을 입력하세요.';
+
+  @override
+  String get webOcrTestServerSuccess => '로컬 OCR 서버가 실행 중이며 준비되었습니다.';
+
+  @override
+  String get webOcrTestServerFailure =>
+      '로컬 OCR 서버에 연결할 수 없습니다. 안내, 방화벽, URL을 확인하세요.';
 }

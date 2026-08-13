@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
@@ -15,6 +14,7 @@ import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
+import '../settings/web_ocr_settings.dart';
 
 /// 首頁：極簡輸入區 + 三個快捷入口（貼上 / 拍照 OCR / 匯入文件）
 class InputScreen extends StatefulWidget {
@@ -510,52 +510,6 @@ class _SettingsPanelInline extends StatefulWidget {
 }
 
 class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
-  late TextEditingController _apiKeyController;
-  late TextEditingController _serverUrlController;
-
-  @override
-  void initState() {
-    super.initState();
-    _apiKeyController = TextEditingController();
-    _serverUrlController = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (kIsWeb) {
-      try {
-        _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
-        _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
-      } catch (_) {}
-    }
-  }
-
-  @override
-  void dispose() {
-    _apiKeyController.dispose();
-    _serverUrlController.dispose();
-    super.dispose();
-  }
-
-  void _saveOcrSettings() {
-    if (!kIsWeb) return;
-    try {
-      OcrService.setGeminiApiKey(_apiKeyController.text);
-      OcrService.setLocalServerUrl(_serverUrlController.text);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).settingsSaveFailed('$e'),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -638,16 +592,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: scheme.primary,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Text(
-              '所有檢測引擎自動啟用以提高準確性。',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
               ),
             ),
           ),
@@ -814,126 +758,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
 
           // Web OCR 設定
           if (kIsWeb) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'Web OCR 設定',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: scheme.primary,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Text(
-                '📷 用於識別上傳文件中的手寫或印刷文字。點擊相機圖標後使用。',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '🔑 Gemini API 金鑰',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () async {
-                          final url = Uri.parse(
-                            'https://aistudio.google.com/app/apikey',
-                          );
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(
-                              url,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          }
-                        },
-                        child: Text(
-                          '免費申請',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: scheme.primary,
-                                decoration: TextDecoration.underline,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: _apiKeyController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'AIza...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      isDense: true,
-                      suffixIcon: _apiKeyController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _apiKeyController.clear();
-                                _saveOcrSettings();
-                              },
-                            )
-                          : null,
-                    ),
-                    onChanged: (_) => _saveOcrSettings(),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '🖥️ 本地 OCR 伺服器（可選）',
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Web 版可使用本機 OCR 服務。伺服器需接受 JSON：{image: dataURL, languages: [...]}，並回傳 {text: "..."} 或 {results:[{text:"..."}]}。',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: _serverUrlController,
-                    decoration: InputDecoration(
-                      hintText: 'http://127.0.0.1:5001/ocr',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      isDense: true,
-                      suffixIcon: _serverUrlController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _serverUrlController.clear();
-                                _saveOcrSettings();
-                              },
-                            )
-                          : null,
-                    ),
-                    onChanged: (_) => _saveOcrSettings(),
-                  ),
-                ],
-              ),
-            ),
+            const WebOcrSettingsCard(compact: true),
             const Divider(),
           ],
 
@@ -950,7 +775,10 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
               ),
               const SizedBox(height: 4),
               Text(
-                '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber})\n100% 離線隱私檢測引擎',
+                l10n.settingsVersionSubtitle(
+                  AppVersion.displayVersion,
+                  AppVersion.buildNumber,
+                ),
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
@@ -972,52 +800,6 @@ class _SettingsPanel extends StatefulWidget {
 }
 
 class _SettingsPanelState extends State<_SettingsPanel> {
-  late TextEditingController _apiKeyController;
-  late TextEditingController _serverUrlController;
-
-  @override
-  void initState() {
-    super.initState();
-    _apiKeyController = TextEditingController();
-    _serverUrlController = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (kIsWeb) {
-      try {
-        _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
-        _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
-      } catch (_) {}
-    }
-  }
-
-  @override
-  void dispose() {
-    _apiKeyController.dispose();
-    _serverUrlController.dispose();
-    super.dispose();
-  }
-
-  void _saveOcrSettings() {
-    if (!kIsWeb) return;
-    try {
-      OcrService.setGeminiApiKey(_apiKeyController.text);
-      OcrService.setLocalServerUrl(_serverUrlController.text);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).settingsSaveFailed('$e'),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1173,95 +955,15 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               },
             ),
             const Divider(),
-            if (kIsWeb) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Text(
-                  'Web OCR 設定',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '🔑 Gemini API 金鑰',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _apiKeyController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'AIza...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.all(12),
-                        suffixIcon: _apiKeyController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _apiKeyController.clear();
-                                  _saveOcrSettings();
-                                },
-                              )
-                            : null,
-                      ),
-                      onChanged: (_) => _saveOcrSettings(),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      '🖥️ 本地 OCR 伺服器',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Web 版不會直接呼叫作業系統 OCR；可填入本機 OCR 服務 URL。服務需接受 JSON：{image: dataURL, languages: [...]}，並回傳 {text: "..."} 或 {results:[{text:"..."}]}。',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _serverUrlController,
-                      decoration: InputDecoration(
-                        hintText: 'http://127.0.0.1:5001/ocr',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.all(12),
-                        suffixIcon: _serverUrlController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _serverUrlController.clear();
-                                  _saveOcrSettings();
-                                },
-                              )
-                            : null,
-                      ),
-                      onChanged: (_) => _saveOcrSettings(),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(),
-            ],
+            if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: const Text('TruthLens'),
               subtitle: Text(
-                '版本 ${AppVersion.displayVersion} (Build ${AppVersion.buildNumber}) · 100% 離線隱私檢測引擎',
+                l10n.settingsVersionSubtitle(
+                  AppVersion.displayVersion,
+                  AppVersion.buildNumber,
+                ),
               ),
             ),
           ],

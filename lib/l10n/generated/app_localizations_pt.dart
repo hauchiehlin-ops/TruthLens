@@ -1702,4 +1702,72 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => 'Esta plataforma';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'O detector multilíngue integrado do TruthLens já oferece suporte a mais de 104 idiomas. Use o Gerenciamento de modelos de IA para explorar, baixar ou alternar modelos da comunidade otimizados por idioma.';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return 'Versão $version (Build $build) · Motor privado com prioridade local';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Configurações de OCR Web';
+
+  @override
+  String get webOcrPurpose =>
+      'Reconhece texto impresso ou manuscrito em uma imagem antes da análise.';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Chave da API Gemini (opcional)';
+
+  @override
+  String get webOcrGetKeyButton => 'Obter chave';
+
+  @override
+  String get webOcrGeminiDescription =>
+      'Usada apenas quando o servidor OCR local não está disponível. A chave fica neste navegador.';
+
+  @override
+  String get webOcrLocalServerTitle => 'Servidor OCR local (recomendado)';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      'Executa OCR no computador com Apple Vision no macOS ou Windows OCR no Windows. Digite o endpoint local abaixo.';
+
+  @override
+  String get webOcrSetupGuideButton => 'Guia de configuração';
+
+  @override
+  String get webOcrPriorityTitle => 'Ordem de reconhecimento';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. Servidor OCR local quando há URL\n2. Gemini quando há chave API\n3. Diagnóstico específico se ambos falharem';
+
+  @override
+  String get webOcrSetupGuideTitle => 'Configurar o servidor OCR local';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. Selecione Abrir projeto OCR abaixo.\n2. macOS: baixe setup_and_run_ocr.sh, abra o Terminal e execute: bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows: baixe setup_and_run_ocr.bat, clique duas vezes e permita a instalação.\n4. Aguarde o instalador informar que o OCR está pronto; a inicialização automática também será configurada.\n5. Digite http://127.0.0.1:5001/ocr e selecione Testar conexão.\n6. Abra OCR de imagem e escolha uma imagem nítida.\n\nPara usar 127.0.0.1, navegador e servidor devem estar no mesmo computador. Em caso de falha, verifique a instalação, a porta 5001 e o final /ocr.';
+
+  @override
+  String get webOcrOpenProjectButton => 'Abrir projeto OCR';
+
+  @override
+  String get webOcrTestServerButton => 'Testar conexão';
+
+  @override
+  String get webOcrTestServerMissingUrl =>
+      'Digite primeiro a URL do servidor OCR local.';
+
+  @override
+  String get webOcrTestServerSuccess =>
+      'O servidor OCR local está ativo e pronto.';
+
+  @override
+  String get webOcrTestServerFailure =>
+      'Não foi possível acessar o servidor OCR local. Verifique o guia, firewall e URL.';
 }

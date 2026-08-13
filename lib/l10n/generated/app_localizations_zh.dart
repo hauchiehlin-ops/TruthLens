@@ -1616,6 +1616,69 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyGenericPlatformName => '本平台';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'TruthLens 內建的多語言偵測器已支援 104 種以上語言。請至「AI 模型管理」探索、下載或切換特定語言的強化社群模型。';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return '版本 $version（Build $build）· 本地優先的隱私檢測引擎';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Web OCR 設定';
+
+  @override
+  String get webOcrPurpose => '在分析前辨識上傳圖片中的印刷或手寫文字。';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Gemini API 金鑰（可選）';
+
+  @override
+  String get webOcrGetKeyButton => '取得金鑰';
+
+  @override
+  String get webOcrGeminiDescription => '僅在本地 OCR 伺服器無法使用時啟用，金鑰只儲存在此瀏覽器。';
+
+  @override
+  String get webOcrLocalServerTitle => '本地 OCR 伺服器（建議）';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      '在您的電腦上執行 OCR；macOS 使用 Apple Vision，Windows 使用 Windows OCR。請在下方填入本地端點。';
+
+  @override
+  String get webOcrSetupGuideButton => '零基礎設定指引';
+
+  @override
+  String get webOcrPriorityTitle => '辨識順序';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. 已設定 URL 時優先使用本地 OCR\n2. 已設定金鑰時改用 Gemini\n3. 兩者皆失敗時顯示具體診斷原因';
+
+  @override
+  String get webOcrSetupGuideTitle => '設定本地 OCR 伺服器';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. 點選下方「開啟 OCR 專案」。\n2. macOS：下載 setup_and_run_ocr.sh，開啟「終端機」，執行：bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows：下載 setup_and_run_ocr.bat，按兩下執行並允許安裝要求。\n4. 等待安裝程式顯示 OCR 已就緒；它也會設定登入後自動啟動。\n5. 回到此處，填入 http://127.0.0.1:5001/ocr，再按「測試連線」。\n6. 開啟圖片 OCR，選一張清晰圖片確認能辨識文字。\n\n使用 127.0.0.1 時，瀏覽器與 OCR 伺服器必須在同一台電腦執行。測試失敗時，請確認安裝已完成、連接埠 5001 未被封鎖，且網址以 /ocr 結尾。';
+
+  @override
+  String get webOcrOpenProjectButton => '開啟 OCR 專案';
+
+  @override
+  String get webOcrTestServerButton => '測試連線';
+
+  @override
+  String get webOcrTestServerMissingUrl => '請先輸入本地 OCR 伺服器網址。';
+
+  @override
+  String get webOcrTestServerSuccess => '本地 OCR 伺服器已啟動並可使用。';
+
+  @override
+  String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3230,6 +3293,69 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyGenericPlatformName => '本平台';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'TruthLens 内置的多语言检测器已支持 104 种以上语言。请至“AI 模型管理”探索、下载或切换特定语言的增强社区模型。';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return '版本 $version（Build $build）· 本地优先的隐私检测引擎';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Web OCR 设置';
+
+  @override
+  String get webOcrPurpose => '在分析前识别上传图片中的印刷或手写文字。';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Gemini API 密钥（可选）';
+
+  @override
+  String get webOcrGetKeyButton => '获取密钥';
+
+  @override
+  String get webOcrGeminiDescription => '仅在本地 OCR 服务器不可用时启用，密钥只保存在此浏览器。';
+
+  @override
+  String get webOcrLocalServerTitle => '本地 OCR 服务器（推荐）';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      '在您的电脑上运行 OCR；macOS 使用 Apple Vision，Windows 使用 Windows OCR。请在下方填写本地端点。';
+
+  @override
+  String get webOcrSetupGuideButton => '零基础设置指南';
+
+  @override
+  String get webOcrPriorityTitle => '识别顺序';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. 已设置 URL 时优先使用本地 OCR\n2. 已设置密钥时改用 Gemini\n3. 两者均失败时显示具体诊断原因';
+
+  @override
+  String get webOcrSetupGuideTitle => '设置本地 OCR 服务器';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. 点击下方“打开 OCR 项目”。\n2. macOS：下载 setup_and_run_ocr.sh，打开“终端”，执行：bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows：下载 setup_and_run_ocr.bat，双击运行并允许安装请求。\n4. 等待安装程序显示 OCR 已就绪；它也会设置登录后自动启动。\n5. 返回此处，填写 http://127.0.0.1:5001/ocr，再点击“测试连接”。\n6. 打开图片 OCR，选择一张清晰图片确认能识别文字。\n\n使用 127.0.0.1 时，浏览器和 OCR 服务器必须在同一台电脑运行。测试失败时，请确认安装已完成、端口 5001 未被阻止，且网址以 /ocr 结尾。';
+
+  @override
+  String get webOcrOpenProjectButton => '打开 OCR 项目';
+
+  @override
+  String get webOcrTestServerButton => '测试连接';
+
+  @override
+  String get webOcrTestServerMissingUrl => '请先输入本地 OCR 服务器网址。';
+
+  @override
+  String get webOcrTestServerSuccess => '本地 OCR 服务器已启动并可使用。';
+
+  @override
+  String get webOcrTestServerFailure => '无法连接本地 OCR 服务器，请打开设置指南并检查安装程序、防火墙和网址。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4844,4 +4970,67 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyGenericPlatformName => '本平台';
+
+  @override
+  String get settingsLanguagePackDialogBody =>
+      'TruthLens 內建的多語言偵測器已支援 104 種以上語言。請至「AI 模型管理」探索、下載或切換特定語言的強化社群模型。';
+
+  @override
+  String settingsVersionSubtitle(String version, String build) {
+    return '版本 $version（Build $build）· 本地優先的隱私檢測引擎';
+  }
+
+  @override
+  String get webOcrSettingsTitle => 'Web OCR 設定';
+
+  @override
+  String get webOcrPurpose => '在分析前辨識上傳圖片中的印刷或手寫文字。';
+
+  @override
+  String get webOcrGeminiKeyTitle => 'Gemini API 金鑰（可選）';
+
+  @override
+  String get webOcrGetKeyButton => '取得金鑰';
+
+  @override
+  String get webOcrGeminiDescription => '僅在本地 OCR 伺服器無法使用時啟用，金鑰只儲存在此瀏覽器。';
+
+  @override
+  String get webOcrLocalServerTitle => '本地 OCR 伺服器（建議）';
+
+  @override
+  String get webOcrLocalServerDescription =>
+      '在您的電腦上執行 OCR；macOS 使用 Apple Vision，Windows 使用 Windows OCR。請在下方填入本地端點。';
+
+  @override
+  String get webOcrSetupGuideButton => '零基礎設定指引';
+
+  @override
+  String get webOcrPriorityTitle => '辨識順序';
+
+  @override
+  String get webOcrPriorityDescription =>
+      '1. 已設定 URL 時優先使用本地 OCR\n2. 已設定金鑰時改用 Gemini\n3. 兩者皆失敗時顯示具體診斷原因';
+
+  @override
+  String get webOcrSetupGuideTitle => '設定本地 OCR 伺服器';
+
+  @override
+  String get webOcrSetupGuideBody =>
+      '1. 點選下方「開啟 OCR 專案」。\n2. macOS：下載 setup_and_run_ocr.sh，開啟「終端機」，執行：bash ~/Downloads/setup_and_run_ocr.sh\n3. Windows：下載 setup_and_run_ocr.bat，按兩下執行並允許安裝要求。\n4. 等待安裝程式顯示 OCR 已就緒；它也會設定登入後自動啟動。\n5. 回到此處，填入 http://127.0.0.1:5001/ocr，再按「測試連線」。\n6. 開啟圖片 OCR，選一張清晰圖片確認能辨識文字。\n\n使用 127.0.0.1 時，瀏覽器與 OCR 伺服器必須在同一台電腦執行。測試失敗時，請確認安裝已完成、連接埠 5001 未被封鎖，且網址以 /ocr 結尾。';
+
+  @override
+  String get webOcrOpenProjectButton => '開啟 OCR 專案';
+
+  @override
+  String get webOcrTestServerButton => '測試連線';
+
+  @override
+  String get webOcrTestServerMissingUrl => '請先輸入本地 OCR 伺服器網址。';
+
+  @override
+  String get webOcrTestServerSuccess => '本地 OCR 伺服器已啟動並可使用。';
+
+  @override
+  String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
 }

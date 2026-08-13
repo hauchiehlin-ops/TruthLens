@@ -18,6 +18,45 @@ class ModelOptionsList extends StatelessWidget {
       ? '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB'
       : '${(bytes / (1024 * 1024)).round()} MB';
 
+  static String roleLabel(
+    String role,
+    String fallback,
+    AppLocalizations l10n,
+  ) => switch (role) {
+    'transformer' => l10n.settingsEngineTransformerTitle,
+    'statistical' => l10n.settingsEngineStatisticalTitle,
+    'stylometry' => l10n.settingsEngineStylometryTitle,
+    'adversarial' => l10n.settingsEngineAdversarialTitle,
+    _ => fallback,
+  };
+
+  static String variantLabel(ModelVariant variant) => switch (variant.id) {
+    'chatgpt-detector-roberta-onnx-int8' => 'RoBERTa ChatGPT Detector (INT8)',
+    'truthlens-multilingual-distil-int8' =>
+      'TruthLens Multilingual Detector (INT8)',
+    'distilgpt2-ppl-int8' => 'DistilGPT2 Perplexity (INT8)',
+    'truthlens-adversarial-distil-int8' => 'TruthLens Rewrite Detector (INT8)',
+    'gemma-2-2b-it-q4km' => 'Gemma 2 · 2B Instruct (Q4_K_M)',
+    _ => variant.name,
+  };
+
+  static String? variantDescription(
+    String role,
+    ModelVariant variant,
+    AppLocalizations l10n,
+  ) {
+    if (variant.id.startsWith('hf_')) {
+      return l10n.reportCommunityDiscoveredTag;
+    }
+    return switch (role) {
+      'transformer' => l10n.settingsEngineTransformerSubtitle,
+      'statistical' => l10n.settingsEngineStatisticalSubtitle,
+      'stylometry' => l10n.settingsEngineStylometrySubtitle,
+      'adversarial' => l10n.settingsEngineAdversarialSubtitle,
+      _ => null,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -28,7 +67,10 @@ class ModelOptionsList extends StatelessWidget {
   Widget _roleSection(BuildContext context, ProvisionPlan plan) {
     final l10n = AppLocalizations.of(context);
     final manager = context.watch<ModelManager>();
-    final customModels = manager.installedVariants(plan.role).where((m) => m.imported).toList();
+    final customModels = manager
+        .installedVariants(plan.role)
+        .where((m) => m.imported)
+        .toList();
 
     return Card(
       child: Padding(
@@ -36,17 +78,23 @@ class ModelOptionsList extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(plan.roleName,
-                style: Theme.of(context).textTheme.titleSmall),
+            Text(
+              ModelOptionsList.roleLabel(plan.role, plan.roleName, l10n),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             const SizedBox(height: 8),
-            for (final v in plan.variants)
-              _VariantTile(plan: plan, variant: v),
+            for (final v in plan.variants) _VariantTile(plan: plan, variant: v),
             if (customModels.isNotEmpty) ...[
               const Divider(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(l10n.modelListCustomImportedLabel,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  l10n.modelListCustomImportedLabel,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               for (final custom in customModels)
                 _CustomModelTile(role: plan.role, model: custom),
@@ -78,9 +126,11 @@ class _VariantTile extends StatelessWidget {
         final rs = manager.roleState(plan.role);
         final installed = manager.isVariantInstalled(plan.role, variant.id);
         final isActive = rs?.activeVariantId == variant.id;
-        final downloadingThis = rs?.transientState == InstallState.downloading &&
+        final downloadingThis =
+            rs?.transientState == InstallState.downloading &&
             rs?.downloadingVariantId == variant.id;
-        final failedThis = rs?.transientState == InstallState.failed &&
+        final failedThis =
+            rs?.transientState == InstallState.failed &&
             rs?.downloadingVariantId == variant.id;
         final hasUpdate = installed && manager.hasUpdate(plan.role, variant);
         final recommended = plan.isRecommended(variant);
@@ -93,8 +143,8 @@ class _VariantTile extends StatelessWidget {
               color: isActive
                   ? Theme.of(context).colorScheme.primary
                   : recommended
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
-                      : Theme.of(context).dividerColor,
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                  : Theme.of(context).dividerColor,
               width: isActive ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -105,8 +155,10 @@ class _VariantTile extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(variant.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      ModelOptionsList.variantLabel(variant),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   if (isActive)
                     Chip(
@@ -118,27 +170,30 @@ class _VariantTile extends StatelessWidget {
                     Chip(
                       label: Text(l10n.modelListRecommendedChip),
                       visualDensity: VisualDensity.compact,
-                      backgroundColor: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.15),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15),
                     ),
                 ],
               ),
               const SizedBox(height: 2),
               Text(
                 l10n.modelListSizeLangRam(
-                    ModelOptionsList.sizeLabel(variant.sizeBytes),
-                    variant.languages.join('/'),
-                    (variant.minRamMb / 1024).round(),
-                    variant.version),
+                  ModelOptionsList.sizeLabel(variant.sizeBytes),
+                  variant.languages.join('/'),
+                  (variant.minRamMb / 1024).round(),
+                  variant.version,
+                ),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              if (variant.note.isNotEmpty)
+              if (ModelOptionsList.variantDescription(plan.role, variant, l10n)
+                  case final description?)
                 Padding(
                   padding: const EdgeInsets.only(top: 2),
-                  child: Text(variant.note,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  child: Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
               const SizedBox(height: 8),
               if (downloadingThis)
@@ -149,21 +204,27 @@ class _VariantTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       l10n.modelListDownloadingProgress(
-                          ((rs?.progress ?? 0) * 100).round(),
-                          ModelOptionsList.sizeLabel(
-                              ((rs?.progress ?? 0) * variant.sizeBytes).round()),
-                          ModelOptionsList.sizeLabel(variant.sizeBytes)),
+                        ((rs?.progress ?? 0) * 100).round(),
+                        ModelOptionsList.sizeLabel(
+                          ((rs?.progress ?? 0) * variant.sizeBytes).round(),
+                        ),
+                        ModelOptionsList.sizeLabel(variant.sizeBytes),
+                      ),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 )
               else
-                _actions(context, manager, l10n,
-                    installed: installed,
-                    isActive: isActive,
-                    hasUpdate: hasUpdate,
-                    failed: failedThis,
-                    error: rs?.error),
+                _actions(
+                  context,
+                  manager,
+                  l10n,
+                  installed: installed,
+                  isActive: isActive,
+                  hasUpdate: hasUpdate,
+                  failed: failedThis,
+                  error: rs?.error,
+                ),
             ],
           ),
         );
@@ -193,8 +254,11 @@ class _VariantTile extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: () => provisioner.downloadVariant(plan.role, variant),
             icon: const Icon(Icons.download, size: 18),
-            label: Text(l10n.modelListDownloadButton(
-                ModelOptionsList.sizeLabel(variant.sizeBytes))),
+            label: Text(
+              l10n.modelListDownloadButton(
+                ModelOptionsList.sizeLabel(variant.sizeBytes),
+              ),
+            ),
           ),
         if (!installed && !variant.isDownloadable)
           Chip(label: Text(l10n.modelListComingSoonChip)),
@@ -223,26 +287,39 @@ class _VariantTile extends StatelessWidget {
             label: Text(l10n.modelListPageButton),
           ),
         if (!fits && !installed)
-          Text(l10n.modelListMayExceedMemory,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.error, fontSize: 12)),
+          Text(
+            l10n.modelListMayExceedMemory,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.error,
+              fontSize: 12,
+            ),
+          ),
         if (failed)
-          Text(l10n.modelListFailedPrefix(error ?? ''),
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.error, fontSize: 12)),
+          Text(
+            l10n.modelListFailedPrefix(error ?? ''),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.error,
+              fontSize: 12,
+            ),
+          ),
       ],
     );
   }
 
   Future<void> _confirmDelete(
-      BuildContext context, ModelManager manager, AppLocalizations l10n) async {
+    BuildContext context,
+    ModelManager manager,
+    AppLocalizations l10n,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.modelListDeleteConfirmTitle),
         content: Text(
           l10n.modelListDeleteConfirmBody(
-              variant.name, ModelOptionsList.sizeLabel(variant.sizeBytes)),
+            ModelOptionsList.variantLabel(variant),
+            ModelOptionsList.sizeLabel(variant.sizeBytes),
+          ),
         ),
         actions: [
           TextButton(
@@ -299,8 +376,10 @@ class _CustomModelTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(model.displayName,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      model.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   if (isActive)
                     Chip(
@@ -313,9 +392,10 @@ class _CustomModelTile extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 l10n.modelListSizeTokenizerLabel(
-                    ModelOptionsList.sizeLabel(model.sizeBytes),
-                    model.tokenizer,
-                    model.aiLabelIndex),
+                  ModelOptionsList.sizeLabel(model.sizeBytes),
+                  model.tokenizer,
+                  model.aiLabelIndex,
+                ),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 8),
@@ -339,8 +419,9 @@ class _CustomModelTile extends StatelessWidget {
                           title: Text(l10n.modelListDeleteConfirmTitle),
                           content: Text(
                             l10n.modelListDeleteCustomConfirmBody(
-                                model.displayName,
-                                ModelOptionsList.sizeLabel(model.sizeBytes)),
+                              model.displayName,
+                              ModelOptionsList.sizeLabel(model.sizeBytes),
+                            ),
                           ),
                           actions: [
                             TextButton(
