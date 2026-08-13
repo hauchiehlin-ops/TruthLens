@@ -141,6 +141,61 @@ class DetectionResult {
   /// 閾值調高 → 需更高信心才標記 → 降低偽陽性（誤判人類文章）。
   bool get flaggedAsAi => aiProbability >= threshold;
 
+  double effectiveWeightFor(EngineScore score) {
+    final statistical =
+        score.engineId == 'statistical' ||
+        score.engineId.startsWith('statistical_');
+    return eslAdjusted && statistical ? score.weight * 0.5 : score.weight;
+  }
+
+  double get _activeEffectiveWeight => engineScores
+      .where((score) => score.available)
+      .fold<double>(0, (sum, score) => sum + effectiveWeightFor(score));
+
+  double contributionFor(EngineScore score) {
+    final total = _activeEffectiveWeight;
+    if (!score.available || total <= 0) return 0;
+    return score.aiProbability * effectiveWeightFor(score) / total;
+  }
+
+  /// 將各引擎的完整精度貢獻換算為整數百分點，同時保證加總恰好等於
+  /// 畫面顯示的整體 AI 百分比，避免逐列四捨五入造成 20% 對 23% 的矛盾。
+  Map<String, int> get roundedEngineContributionPoints {
+    final active = engineScores.where((score) => score.available).toList();
+    if (active.isEmpty || _activeEffectiveWeight <= 0) return const {};
+
+    final exact = <String, double>{
+      for (final score in active) score.engineId: contributionFor(score) * 100,
+    };
+    final points = <String, int>{
+      for (final entry in exact.entries) entry.key: entry.value.floor(),
+    };
+    var remaining =
+        (aiProbability * 100).round() -
+        points.values.fold<int>(0, (sum, value) => sum + value);
+    final order = exact.keys.toList()
+      ..sort((a, b) {
+        final aFraction = exact[a]! - exact[a]!.floor();
+        final bFraction = exact[b]! - exact[b]!.floor();
+        return bFraction.compareTo(aFraction);
+      });
+
+    for (var i = 0; remaining > 0 && order.isNotEmpty; i++, remaining--) {
+      final id = order[i % order.length];
+      points[id] = points[id]! + 1;
+    }
+    for (var i = 0; remaining < 0 && order.isNotEmpty; i++) {
+      final id = order.reversed.elementAt(i % order.length);
+      if (points[id]! <= 0) {
+        if (points.values.every((value) => value <= 0)) break;
+        continue;
+      }
+      points[id] = points[id]! - 1;
+      remaining++;
+    }
+    return points;
+  }
+
   /// 生成低信心分析的警告消息（用戶友好）
   String lowConfidenceWarning() {
     final reasons = <String>[];
@@ -173,7 +228,7 @@ class DetectionResult {
       .where(
         (s) =>
             PreprocessedText.isAnalyzableSentence(s.text) &&
-            s.aiProbability >= 0.5,
+            s.aiProbability >= 0.6,
       )
       .length;
   int get analyzableSentenceCount => sentences
@@ -183,7 +238,7 @@ class DetectionResult {
       .where(
         (s) =>
             PreprocessedText.isAnalyzableSentence(s.text) &&
-            s.aiProbability < 0.5,
+            s.aiProbability < 0.6,
       )
       .length;
   int get strictAiSentenceCount => sentences

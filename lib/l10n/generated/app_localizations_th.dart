@@ -511,6 +511,24 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'สัญญาณ AI คือความน่าจะเป็นที่แต่ละเอนจินประเมินให้เอกสารนี้ น้ำหนักที่ตั้งไว้กำหนดอิทธิพล และคะแนนการมีส่วนร่วมจะถูกจัดสรรให้ผลรวมที่แสดงตรงกับความน่าจะเป็น AI โดยรวมพอดี ‘ไม่พบ’ หมายถึงต่ำกว่าเกณฑ์สัญญาณชัดเจน 60% ไม่ได้หมายความว่าค่าต้องเป็นศูนย์';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'ไม่มีประโยคใดจาก $total ประโยคเกินเกณฑ์สัญญาณการถอดความที่ชัดเจน สัญญาณอ่อนหลังการปรับเทียบคือ $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count จาก $total ประโยคเกินเกณฑ์สัญญาณการถอดความที่ชัดเจน สัญญาณเอกสารหลังการปรับเทียบคือ $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'การตรวจสอบความถูกต้องของลิงก์และบรรณานุกรม';
 
@@ -873,7 +891,13 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio =>
+      'สัดส่วนประโยคที่มีสัญญาณ AI ชัดเจน';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count จาก $total ประโยคเกินเกณฑ์สัญญาณชัดเจน 60%';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

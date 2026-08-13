@@ -943,6 +943,28 @@ abstract class AppLocalizations {
   /// **'AI signal {percent}%'**
   String reportEngineSignalLabel(int percent);
 
+  /// No description provided for @reportEngineSignalExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'AI signal is the engine\'s probability for this document; configured weight controls its influence, and contribution points are allocated so their displayed sum exactly matches the overall AI probability. ‘Not detected’ means below the 60% strong-signal threshold, not necessarily mathematically zero.'**
+  String get reportEngineSignalExplanation;
+
+  /// No description provided for @engineReasonAdversarialNoStrongSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'None of {total} sentences crossed the strong paraphrase threshold; the calibrated weak signal is {percent}%'**
+  String engineReasonAdversarialNoStrongSentence(int total, int percent);
+
+  /// No description provided for @engineReasonAdversarialStrongSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} sentences crossed the strong paraphrase threshold; the calibrated document signal is {percent}%'**
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  );
+
   /// No description provided for @settingsLinkVerificationTitle.
   ///
   /// In en, this message translates to:
@@ -1525,8 +1547,14 @@ abstract class AppLocalizations {
   /// No description provided for @reportMetricAiSentenceRatio.
   ///
   /// In en, this message translates to:
-  /// **'AI sentence ratio'**
+  /// **'Strong AI-signal sentence ratio'**
   String get reportMetricAiSentenceRatio;
+
+  /// No description provided for @reportStrongAiSentenceCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} crossed the 60% strong-signal threshold'**
+  String reportStrongAiSentenceCount(int count, int total);
 
   /// No description provided for @reportMetricElapsed.
   ///

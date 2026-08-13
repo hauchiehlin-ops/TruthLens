@@ -486,6 +486,24 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return '$total 句均未跨越強改寫訊號閾值；校準後的微弱訊號為 $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$total 句中有 $count 句跨越強改寫訊號閾值；校準後的文件訊號為 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
@@ -837,7 +855,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+  String get reportMetricAiSentenceRatio => '強 AI 訊號句比例';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$total 句中有 $count 句跨越 60% 強訊號閾值';
+  }
 
   @override
   String get reportMetricElapsed => '分析耗時';
@@ -2221,6 +2244,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI 信号是引擎对本文档的判定概率；设置权重决定影响比例，显示的贡献百分点会分配为合计后恰好等于总体 AI 概率。‘未检测’表示低于 60% 强信号阈值，不等于数值必须为 0。';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return '$total 个句子均未跨越强改写信号阈值；校准后的微弱信号为 $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$total 个句子中有 $count 个跨越强改写信号阈值；校准后的文档信号为 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超链接与参考文献目录验证';
 
   @override
@@ -2572,7 +2613,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+  String get reportMetricAiSentenceRatio => '强 AI 信号句比例';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$total 个句子中有 $count 个跨越 60% 强信号阈值';
+  }
 
   @override
   String get reportMetricElapsed => '分析耗时';
@@ -3956,6 +4002,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return '$total 句均未跨越強改寫訊號閾值；校準後的微弱訊號為 $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$total 句中有 $count 句跨越強改寫訊號閾值；校準後的文件訊號為 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
@@ -4307,7 +4371,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI 句子比例';
+  String get reportMetricAiSentenceRatio => '強 AI 訊號句比例';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$total 句中有 $count 句跨越 60% 強訊號閾值';
+  }
 
   @override
   String get reportMetricElapsed => '分析耗時';

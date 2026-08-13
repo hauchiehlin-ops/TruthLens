@@ -515,6 +515,24 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'Sinyal AI adalah probabilitas mesin untuk dokumen ini. Bobot yang diatur mengendalikan pengaruhnya, dan poin kontribusi dialokasikan agar jumlah yang ditampilkan sama persis dengan probabilitas AI keseluruhan. ‘Tidak terdeteksi’ berarti di bawah ambang sinyal kuat 60%, bukan berarti nilainya harus nol.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'Tidak satu pun dari $total kalimat melewati ambang parafrasa kuat; sinyal lemah yang dikalibrasi adalah $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count dari $total kalimat melewati ambang parafrasa kuat; sinyal dokumen yang dikalibrasi adalah $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Verifikasi hyperlink & bibliografi';
 
@@ -877,7 +895,13 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio =>
+      'Rasio kalimat dengan sinyal AI kuat';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count dari $total melewati ambang sinyal kuat 60%';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

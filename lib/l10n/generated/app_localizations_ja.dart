@@ -491,6 +491,24 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI信号は、この文書に対する各エンジンの確率です。設定した重みが影響度を決め、表示される寄与ポイントの合計が総合AI確率と正確に一致するよう配分されます。「未検出」は強い信号のしきい値60%未満を意味し、必ずしも数値が0という意味ではありません。';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return '$total文のいずれも強い言い換え信号のしきい値を超えませんでした。校正後の弱い信号は$percent%です';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$total文中$count文が強い言い換え信号のしきい値を超えました。校正後の文書信号は$percent%です';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => 'ハイパーリンク・参考文献の実在性検証';
 
   @override
@@ -850,7 +868,12 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio => '強いAI信号を示す文の割合';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$total文中$count文が60%の強い信号しきい値を超えました';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

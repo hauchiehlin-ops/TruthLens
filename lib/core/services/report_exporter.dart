@@ -181,16 +181,7 @@ class ReportExporter {
 
     final analyzableSentences = _analyzableSentences(r);
     final privacySeal = _privacySealParts(l10n);
-    double effectiveWeight(EngineScore score) {
-      final statistical =
-          score.engineId == 'statistical' ||
-          score.engineId.startsWith('statistical_');
-      return r.eslAdjusted && statistical ? score.weight * 0.5 : score.weight;
-    }
-
-    final activeWeight = r.engineScores
-        .where((score) => score.available)
-        .fold<double>(0, (sum, score) => sum + effectiveWeight(score));
+    final contributionPoints = r.roundedEngineContributionPoints;
 
     final doc = pw.Document(theme: theme);
     doc.addPage(
@@ -321,6 +312,15 @@ class ReportExporter {
             l10n.reportEngineBreakdownTitle,
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
+          pw.SizedBox(height: 3),
+          pw.Text(
+            l10n.reportEngineSignalExplanation,
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfColors.grey700,
+              lineSpacing: 1.5,
+            ),
+          ),
           pw.SizedBox(height: 6),
           for (final e in r.engineScores)
             pw.Padding(
@@ -341,13 +341,7 @@ class ReportExporter {
                     pw.Text(
                       l10n.reportEngineRelationshipAvailable(
                         (e.weight * 100).round(),
-                        activeWeight > 0
-                            ? (e.aiProbability *
-                                      effectiveWeight(e) /
-                                      activeWeight *
-                                      100)
-                                  .round()
-                            : 0,
+                        contributionPoints[e.engineId] ?? 0,
                         '',
                       ),
                       style: const pw.TextStyle(

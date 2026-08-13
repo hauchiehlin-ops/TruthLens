@@ -508,6 +508,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI signal is the engine\'s probability for this document; configured weight controls its influence, and contribution points are allocated so their displayed sum exactly matches the overall AI probability. ‘Not detected’ means below the 60% strong-signal threshold, not necessarily mathematically zero.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'None of $total sentences crossed the strong paraphrase threshold; the calibrated weak signal is $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count of $total sentences crossed the strong paraphrase threshold; the calibrated document signal is $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Hyperlink & bibliography verification';
 
@@ -869,7 +887,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio => 'Strong AI-signal sentence ratio';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count of $total crossed the 60% strong-signal threshold';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

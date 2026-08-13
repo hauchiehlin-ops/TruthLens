@@ -283,7 +283,10 @@ class _MetricsRow extends StatelessWidget {
             iconColor: const Color(0xFF6B5B95),
             title: l10n.reportMetricAiSentenceRatio,
             value: '${(aiSentenceRatio * 100).toStringAsFixed(1)}%',
-            subtitle: l10n.reportSentenceCount(analyzableSentenceCount),
+            subtitle: l10n.reportStrongAiSentenceCount(
+              result.aiSentenceCount,
+              analyzableSentenceCount,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -397,6 +400,7 @@ class _EngineContributionCard extends StatelessWidget {
       result.engineScores,
       l10n,
       eslAdjusted: result.eslAdjusted,
+      contributionPointsByEngineId: result.roundedEngineContributionPoints,
     );
 
     return Container(
@@ -453,6 +457,14 @@ class _EngineContributionCard extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.reportEngineSignalExplanation,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey[500],
+              height: 1.25,
             ),
           ),
           const SizedBox(height: 8),
@@ -944,7 +956,9 @@ class _EngineSynthesisSummary extends StatelessWidget {
         : available.reduce((a, b) => a.probability >= b.probability ? a : b);
     final strongestContribution = available.isEmpty
         ? null
-        : available.reduce((a, b) => a.contribution >= b.contribution ? a : b);
+        : available.reduce(
+            (a, b) => a.contributionPoints >= b.contributionPoints ? a : b,
+          );
     _EngineGroup? style;
     for (final group in groups) {
       if (group.role == 'stylometry') {
@@ -972,7 +986,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
       lines.add(
         l10n.reportSynthesisStrongestContribution(
           strongestContribution.label,
-          (strongestContribution.contribution * 100).round(),
+          strongestContribution.contributionPoints,
         ),
       );
     }
@@ -1012,6 +1026,7 @@ class _EngineGroup {
   final double probability;
   final double weight;
   final double contribution;
+  final int contributionPoints;
   final bool available;
   final int variantCount;
   final List<String> reasons;
@@ -1024,6 +1039,7 @@ class _EngineGroup {
     required this.probability,
     required this.weight,
     required this.contribution,
+    required this.contributionPoints,
     required this.available,
     required this.variantCount,
     required this.reasons,
@@ -1043,7 +1059,7 @@ class _EngineGroup {
         : '';
     return l10n.reportEngineRelationshipAvailable(
       weightPercent,
-      (contribution * 100).round(),
+      contributionPoints,
       variantText,
     );
   }
@@ -1052,6 +1068,7 @@ class _EngineGroup {
     List<EngineScore> scores,
     AppLocalizations l10n, {
     bool eslAdjusted = false,
+    Map<String, int> contributionPointsByEngineId = const {},
   }) {
     const order = ['transformer', 'statistical', 'stylometry', 'adversarial'];
     final grouped = <String, List<EngineScore>>{
@@ -1083,6 +1100,11 @@ class _EngineGroup {
           grouped[role]!,
           availableWeight: availableWeight,
           effectiveWeight: effectiveWeight(role),
+          contributionPoints: grouped[role]!.fold<int>(
+            0,
+            (sum, score) =>
+                sum + (contributionPointsByEngineId[score.engineId] ?? 0),
+          ),
           l10n: l10n,
         ),
     ];
@@ -1093,6 +1115,7 @@ class _EngineGroup {
     List<EngineScore> scores, {
     required double availableWeight,
     required double effectiveWeight,
+    required int contributionPoints,
     required AppLocalizations l10n,
   }) {
     final availableScores = scores.where((s) => s.available).toList();
@@ -1120,6 +1143,7 @@ class _EngineGroup {
       probability: probability,
       weight: weight,
       contribution: contribution,
+      contributionPoints: contributionPoints,
       available: available,
       variantCount: math.max(scores.length, 1),
       reasons: uniqueReasons.isEmpty

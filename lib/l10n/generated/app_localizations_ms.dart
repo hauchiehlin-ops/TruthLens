@@ -512,6 +512,24 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'Isyarat AI ialah kebarangkalian enjin untuk dokumen ini. Berat yang ditetapkan mengawal pengaruhnya dan mata sumbangan diagihkan supaya jumlah yang dipaparkan sepadan tepat dengan kebarangkalian AI keseluruhan. ‘Tidak dikesan’ bermaksud di bawah ambang isyarat kuat 60%, bukan semestinya bernilai sifar.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'Tiada satu pun daripada $total ayat melepasi ambang parafrasa kuat; isyarat lemah yang ditentukur ialah $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count daripada $total ayat melepasi ambang parafrasa kuat; isyarat dokumen yang ditentukur ialah $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Pengesahan pautan hiper & bibliografi';
 
@@ -874,7 +892,13 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio =>
+      'Nisbah ayat dengan isyarat AI kuat';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count daripada $total melepasi ambang isyarat kuat 60%';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

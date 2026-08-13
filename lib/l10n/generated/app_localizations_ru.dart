@@ -515,6 +515,24 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'Сигнал ИИ — это вероятность, назначенная модулем этому документу. Заданный вес определяет его влияние, а баллы вклада распределяются так, чтобы их отображаемая сумма точно совпадала с общей вероятностью ИИ. «Не обнаружено» означает значение ниже порога сильного сигнала 60%, а не обязательно ноль.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'Ни одно из $total предложений не превысило порог сильного сигнала перефразирования; откалиброванный слабый сигнал составляет $percent%';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count из $total предложений превысили порог сильного сигнала перефразирования; откалиброванный сигнал документа составляет $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Проверка гиперссылок и библиографии';
 
@@ -877,7 +895,13 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio =>
+      'Доля предложений с сильным сигналом ИИ';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count из $total превысили порог сильного сигнала 60%';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

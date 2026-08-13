@@ -520,6 +520,24 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'Das KI-Signal ist die Wahrscheinlichkeit dieses Moduls für das Dokument. Das eingestellte Gewicht bestimmt seinen Einfluss; die Beitragspunkte werden so verteilt, dass ihre angezeigte Summe genau der gesamten KI-Wahrscheinlichkeit entspricht. „Nicht erkannt“ bedeutet unterhalb der starken Signalschwelle von 60 %, nicht zwingend den Wert null.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'Keiner von $total Sätzen überschritt die Schwelle für ein starkes Umschreibungssignal; das kalibrierte schwache Signal beträgt $percent %';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count von $total Sätzen überschritten die Schwelle für ein starkes Umschreibungssignal; das kalibrierte Dokumentsignal beträgt $percent %';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Verifizierung von Hyperlinks und Bibliografie';
 
@@ -883,7 +901,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio =>
+      'Anteil der Sätze mit starkem KI-Signal';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count von $total überschritten die starke Signalschwelle von 60 %';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

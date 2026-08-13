@@ -151,16 +151,43 @@ class AdversarialEngine implements DetectionEngine {
       return _unavailable(l10n);
     }
     final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
+    final strongScores = perSentence.where((score) => score >= 0.6).toList();
+    final strongCount = strongScores.length;
+    final strongRatio = strongCount / perSentence.length;
+    double calibratedProbability;
+    if (strongCount == 0) {
+      final peak = perSentence.reduce((a, b) => a > b ? a : b);
+      final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
+      final peakMargin = (peak - 0.5).clamp(0.0, 0.1) / 0.1;
+      calibratedProbability = (averageMargin * 0.07) + (peakMargin * 0.03);
+    } else {
+      final strongAverage = strongScores.reduce((a, b) => a + b) / strongCount;
+      calibratedProbability = (strongRatio * 0.7) + (strongAverage * 0.3);
+    }
+    calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
-      aiProbability: avg,
+      aiProbability: calibratedProbability,
       weight: defaultWeight,
       sentenceScores: perSentence,
+      features: {
+        'strong_sentence_ratio': strongRatio,
+        'raw_avg_prob': avg,
+        'calibrated_prob': calibratedProbability,
+      },
       reasons: [
-        avg >= 0.6
-            ? l10n.engineReasonAdversarialDetected
-            : l10n.engineReasonAdversarialClean,
+        if (strongCount == 0)
+          l10n.engineReasonAdversarialNoStrongSentence(
+            perSentence.length,
+            (calibratedProbability * 100).round(),
+          )
+        else
+          l10n.engineReasonAdversarialStrongSentences(
+            strongCount,
+            perSentence.length,
+            (calibratedProbability * 100).round(),
+          ),
       ],
     );
   }

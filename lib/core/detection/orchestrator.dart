@@ -169,7 +169,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
 
     double weightOf(EngineScore s) {
       // ESL 修正：統計模型權重減半（低困惑度/低突發性可能是語言能力，非 AI 特徵）
-      if (eslAdjusted && s.engineId == 'statistical') return s.weight * 0.5;
+      if (eslAdjusted && _roleOf(s.engineId) == 'statistical') {
+        return s.weight * 0.5;
+      }
       return s.weight;
     }
 
@@ -186,22 +188,23 @@ class EnsembleOrchestrator extends ChangeNotifier {
     return text.typeTokenRatio < 0.38 && text.burstiness > 0.45;
   }
 
-  /// 句子級評分：多神經模型即時平均，再依單句命中的風格模式微調。
+  /// 句子級評分：依使用者設定權重合併神經模型，再依風格模式微調。
   List<SentenceScore> _scoreSentences(
     PreprocessedText text,
     double overall,
     List<EngineScore> scores,
     AppLocalizations l10n,
   ) {
-    // 收集所有可用的神經模型 (sentenceScores)
-    final neuralList = scores
+    // 收集所有可用神經模型及其實際設定權重；句子級結果必須與文件級
+    // Ensemble 使用同一權重定義，不能再以簡單平均產生不同結論。
+    final neuralScores = scores
         .where(
           (s) =>
               s.available &&
               s.sentenceScores != null &&
               s.sentenceScores!.isNotEmpty,
         )
-        .map((s) => s.sentenceScores!)
+        .map((s) => (values: s.sentenceScores!, weight: s.weight))
         .toList();
 
     final result = <SentenceScore>[];
@@ -210,19 +213,19 @@ class EnsembleOrchestrator extends ChangeNotifier {
       final patterns = <String>[];
       final analyzable = PreprocessedText.isAnalyzableSentence(s);
 
-      // 基準：有神經模型時對多個神經模型的逐句結果取平均，否則以整體分數為基準，
+      // 基準：有神經模型時依設定權重合併逐句結果，否則以整體分數為基準，
       // 並結合單句長度變化度（如與平均句長之偏差）產生自然的句級差異。
       var p = overall;
-      if (neuralList.isNotEmpty) {
+      if (neuralScores.isNotEmpty) {
         var sum = 0.0;
-        var count = 0;
-        for (final ns in neuralList) {
-          if (i < ns.length) {
-            sum += ns[i];
-            count++;
+        var totalWeight = 0.0;
+        for (final neural in neuralScores) {
+          if (i < neural.values.length && neural.weight > 0) {
+            sum += neural.values[i] * neural.weight;
+            totalWeight += neural.weight;
           }
         }
-        if (count > 0) p = sum / count;
+        if (totalWeight > 0) p = sum / totalWeight;
       } else if (text.sentenceTokens.isNotEmpty) {
         final avgLen = text.allTokens.length / text.sentenceTokens.length;
         final curLen = text.sentenceTokens[i].length;

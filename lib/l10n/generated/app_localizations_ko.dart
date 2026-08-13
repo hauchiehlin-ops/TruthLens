@@ -492,6 +492,24 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'AI 신호는 이 문서에 대한 각 엔진의 확률입니다. 설정한 가중치가 영향도를 결정하며, 표시된 기여 점수의 합이 전체 AI 확률과 정확히 일치하도록 배분됩니다. ‘감지되지 않음’은 강한 신호 기준인 60% 미만이라는 뜻이며 반드시 0이라는 뜻은 아닙니다.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return '$total개 문장 모두 강한 바꿔쓰기 신호 기준을 넘지 않았습니다. 보정된 약한 신호는 $percent%입니다';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$total개 문장 중 $count개가 강한 바꿔쓰기 신호 기준을 넘었습니다. 보정된 문서 신호는 $percent%입니다';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '하이퍼링크 및 참고 문헌 실재성 검증';
 
   @override
@@ -851,7 +869,12 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio => '강한 AI 신호 문장 비율';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$total개 문장 중 $count개가 60% 강한 신호 기준을 넘었습니다';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';

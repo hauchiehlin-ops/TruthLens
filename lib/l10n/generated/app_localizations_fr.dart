@@ -520,6 +520,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get reportEngineSignalExplanation =>
+      'Le signal IA est la probabilité attribuée à ce document par le moteur. Le poids configuré détermine son influence et les points de contribution sont répartis afin que leur somme affichée corresponde exactement à la probabilité IA globale. « Non détecté » signifie sous le seuil de signal fort de 60 %, et non nécessairement une valeur nulle.';
+
+  @override
+  String engineReasonAdversarialNoStrongSentence(int total, int percent) {
+    return 'Aucune des $total phrases n’a franchi le seuil fort de paraphrase ; le signal faible calibré est de $percent %';
+  }
+
+  @override
+  String engineReasonAdversarialStrongSentences(
+    int count,
+    int total,
+    int percent,
+  ) {
+    return '$count phrases sur $total ont franchi le seuil fort de paraphrase ; le signal calibré du document est de $percent %';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Vérification des hyperliens et de la bibliographie';
 
@@ -885,7 +903,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get reportMetricAiSentenceRatio => 'AI sentence ratio';
+  String get reportMetricAiSentenceRatio => 'Part des phrases à signal IA fort';
+
+  @override
+  String reportStrongAiSentenceCount(int count, int total) {
+    return '$count phrases sur $total ont franchi le seuil de signal fort de 60 %';
+  }
 
   @override
   String get reportMetricElapsed => 'Analysis time';
