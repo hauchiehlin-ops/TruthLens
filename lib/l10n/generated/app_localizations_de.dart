@@ -456,6 +456,70 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erkennt, ob der Text maschinell paraphrasiert oder zur Entfernung von KI-Spuren bearbeitet wurde';
 
   @override
+  String get settingsEngineWeightsTitle => 'Gewichtung der KI-Modelle';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Legen Sie fest, wie stark jede Engine das Gesamtergebnis beeinflusst. Vor dem Speichern muss die Summe 100 % betragen.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'Funktion dieser Engine';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Bewertet vollständige Sätze mit einem mehrsprachigen Transformer-Modell. Die Gewichtung bestimmt den Einfluss, das KI-Signal den tatsächlichen Beitrag.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Misst Perplexität, Vorhersagbarkeit, Burstiness und Satzlängenvariation. Die ESL-Korrektur kann die effektive Gewichtung reduzieren.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Prüft erklärbare Stilmerkmale wie wiederholte Satzanfänge, formelhafte Übergänge und übermäßige Listen. Ohne Treffer beträgt das Signal 0 %.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Sucht nach paraphrasiertem KI-Text oder entfernten KI-Spuren. Ein niedriger Wert bedeutet nur schwache Restsignale, keinen positiven Nachweis.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Summe: $total % — bereit zum Speichern';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Summe: $total % — genau auf 100 % einstellen';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Gewichtungen speichern';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'KI-Modellgewichtungen wurden auf diesem Gerät gespeichert';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Standardwerte';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'Benutzer hat diese Engine in den Einstellungen deaktiviert';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: Keiner von $total Sätzen überschritt den starken KI-Schwellenwert; das kalibrierte schwache Signal beträgt $percent %';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'KI-Signal $percent %';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Verifizierung von Hyperlinks und Bibliografie';
 
@@ -1287,10 +1351,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'Keine klaren Spuren einer Paraphrasierungs-Umgehung erkannt';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'Benutzer hat diese Engine in den Einstellungen deaktiviert';
 
   @override
   String get engineReasonGenericNotInstalled =>

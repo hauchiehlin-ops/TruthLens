@@ -444,6 +444,70 @@ class AppLocalizationsEn extends AppLocalizations {
       'Detects whether text has been machine-paraphrased or AI-trace-scrubbed';
 
   @override
+  String get settingsEngineWeightsTitle => 'AI model weights';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Set how strongly each engine affects the combined result. The total must equal 100% before saving.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'What this engine does';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Evaluates complete sentences with a multilingual Transformer model. It is strongest at sentence-level AI pattern recognition; its configured weight controls influence, while its AI signal controls the actual contribution.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Measures perplexity, predictability, burstiness, and sentence-length variation. Regular text can raise this signal, so ESL correction may reduce its effective weight.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Checks explainable writing-style markers such as repeated openings, formulaic transitions, and excessive list structure. No matched markers now produce a 0% signal.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Looks for AI text that may have been paraphrased or processed to hide AI traces. A low score means only weak residual evidence, not a positive detection.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Total: $total% — ready to save';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Total: $total% — adjust to exactly 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Save weights';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'AI model weights saved on this device';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Restore defaults';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'The user disabled this engine in Settings';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: none of $total sentences crossed the strong-AI threshold; the calibrated weak signal is $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI signal $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Hyperlink & bibliography verification';
 
@@ -1269,10 +1333,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'No clear paraphrase-evasion traces detected';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'The user disabled this engine in Settings';
 
   @override
   String get engineReasonGenericNotInstalled =>

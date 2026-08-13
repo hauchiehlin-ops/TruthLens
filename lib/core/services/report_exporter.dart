@@ -181,6 +181,17 @@ class ReportExporter {
 
     final analyzableSentences = _analyzableSentences(r);
     final privacySeal = _privacySealParts(l10n);
+    double effectiveWeight(EngineScore score) {
+      final statistical =
+          score.engineId == 'statistical' ||
+          score.engineId.startsWith('statistical_');
+      return r.eslAdjusted && statistical ? score.weight * 0.5 : score.weight;
+    }
+
+    final activeWeight = r.engineScores
+        .where((score) => score.available)
+        .fold<double>(0, (sum, score) => sum + effectiveWeight(score));
+
     final doc = pw.Document(theme: theme);
     doc.addPage(
       pw.MultiPage(
@@ -319,13 +330,31 @@ class ReportExporter {
                 children: [
                   pw.Text(
                     e.available
-                        ? '${e.engineName} — ${(e.aiProbability * 100).round()}%'
-                        : '${e.engineName} — ${l10n.reportEngineNotInstalled}',
+                        ? '${e.engineName} — ${l10n.reportEngineSignalLabel((e.aiProbability * 100).round())}'
+                        : '${e.engineName} — ${l10n.reportEngineNotParticipated}',
                     style: pw.TextStyle(
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
                   ),
+                  if (e.available)
+                    pw.Text(
+                      l10n.reportEngineRelationshipAvailable(
+                        (e.weight * 100).round(),
+                        activeWeight > 0
+                            ? (e.aiProbability *
+                                      effectiveWeight(e) /
+                                      activeWeight *
+                                      100)
+                                  .round()
+                            : 0,
+                        '',
+                      ),
+                      style: const pw.TextStyle(
+                        fontSize: 9,
+                        color: PdfColors.grey700,
+                      ),
+                    ),
                   for (final reason in e.reasons)
                     pw.Bullet(
                       text: reason,

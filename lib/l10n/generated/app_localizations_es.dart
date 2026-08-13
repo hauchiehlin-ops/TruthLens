@@ -456,6 +456,70 @@ class AppLocalizationsEs extends AppLocalizations {
       'Detecta si el texto ha sido parafraseado por máquina o procesado para eliminar rastros de IA';
 
   @override
+  String get settingsEngineWeightsTitle => 'Pesos de los modelos de IA';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Define cuánto influye cada motor en el resultado combinado. El total debe ser 100 % antes de guardar.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'Función de este motor';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Evalúa oraciones completas con un Transformer multilingüe. El peso configura su influencia y la señal de IA determina su contribución real.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Mide perplejidad, previsibilidad, variación y longitud de oraciones. La corrección ESL puede reducir su peso efectivo.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Busca rasgos explicables como inicios repetidos, transiciones formularias y exceso de listas. Sin coincidencias, la señal es 0 %.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Busca texto de IA parafraseado o procesado para ocultar rastros. Una puntuación baja es evidencia residual débil, no una detección positiva.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Total: $total % — listo para guardar';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Total: $total % — ajústalo exactamente a 100 %';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Guardar pesos';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'Pesos guardados en este dispositivo';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Restaurar valores';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'El usuario ha desactivado este motor en Ajustes';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: ninguna de $total oraciones superó el umbral fuerte de IA; la señal débil calibrada es $percent %';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'Señal de IA $percent %';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Verificación de hipervínculos y bibliografía';
 
@@ -1286,10 +1350,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'No se detectaron rastros claros de evasión mediante paráfrasis';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'El usuario ha desactivado este motor en Ajustes';
 
   @override
   String get engineReasonGenericNotInstalled =>

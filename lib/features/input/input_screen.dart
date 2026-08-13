@@ -14,6 +14,7 @@ import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
+import '../settings/engine_weight_settings.dart';
 import '../settings/web_ocr_settings.dart';
 
 /// 首頁：極簡輸入區 + 三個快捷入口（貼上 / 拍照 OCR / 匯入文件）
@@ -647,6 +648,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             value: prefs.isEngineEnabled('adversarial'),
             onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
           ),
+          const EngineWeightSettingsCard(compact: true),
           const Divider(),
 
           // 鏈接驗證
@@ -892,6 +894,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               value: prefs.isEngineEnabled('adversarial'),
               onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
             ),
+            const EngineWeightSettingsCard(),
             const Divider(),
             SwitchListTile(
               title: Text(l10n.settingsLinkVerificationTitle),

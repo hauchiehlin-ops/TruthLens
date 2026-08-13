@@ -425,6 +425,67 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsEngineAdversarialSubtitle => '辨識是否經過機器改寫或去 AI 痕跡處理';
 
   @override
+  String get settingsEngineWeightsTitle => 'AI 模型權重';
+
+  @override
+  String get settingsEngineWeightsSubtitle => '設定各引擎影響綜合結果的比例；合計必須為 100% 才能儲存。';
+
+  @override
+  String get settingsEngineInfoTooltip => '查看此引擎功能';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      '使用多語言 Transformer 評估完整句子的 AI 模式。設定權重決定影響比例；AI 訊號決定實際貢獻。';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      '分析困惑度、可預測性、Burstiness 與句長變化。規律文字可能提高訊號，因此 ESL 修正可能降低其有效權重。';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      '檢查重複開頭、公式化轉折與過度條列等可解釋風格特徵；未命中特徵時訊號為 0%。';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      '偵測可能經改寫或去除 AI 痕跡的文字。低分僅代表微弱殘餘訊號，不代表偵測成立。';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return '合計：$total% — 可以儲存';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return '合計：$total% — 請調整為正好 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => '儲存權重';
+
+  @override
+  String get settingsEngineWeightsSaved => 'AI 模型權重已儲存於此裝置';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => '恢復預設值';
+
+  @override
+  String get engineReasonDisabledByUser => '使用者在設定中關閉此引擎';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model：$total 句均未跨越強 AI 閾值；校準後的微弱訊號為 $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI 訊號 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
@@ -1221,9 +1282,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get engineReasonAdversarialClean => '未偵測到明顯的改寫規避特徵';
-
-  @override
-  String get engineReasonDisabledByUser => '使用者在設定中關閉此引擎';
 
   @override
   String get engineReasonGenericNotInstalled => '模型尚未安裝，未參與本次投票';
@@ -2102,6 +2160,67 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settingsEngineAdversarialSubtitle => '辨识是否经过机器改写或去 AI 痕迹处理';
 
   @override
+  String get settingsEngineWeightsTitle => 'AI 模型权重';
+
+  @override
+  String get settingsEngineWeightsSubtitle => '设置各引擎影响综合结果的比例；合计必须为 100% 才能保存。';
+
+  @override
+  String get settingsEngineInfoTooltip => '查看此引擎功能';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      '使用多语言 Transformer 评估完整句子的 AI 模式。设置权重决定影响比例；AI 信号决定实际贡献。';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      '分析困惑度、可预测性、Burstiness 与句长变化。规律文字可能提高信号，因此 ESL 修正可能降低其有效权重。';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      '检查重复开头、公式化转折与过度列表等可解释风格特征；未命中特征时信号为 0%。';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      '检测可能经改写或去除 AI 痕迹的文字。低分仅代表微弱残余信号，不代表检测成立。';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return '合计：$total% — 可以保存';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return '合计：$total% — 请调整为正好 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => '保存权重';
+
+  @override
+  String get settingsEngineWeightsSaved => 'AI 模型权重已保存于此设备';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => '恢复默认值';
+
+  @override
+  String get engineReasonDisabledByUser => '用户在设置中关闭此引擎';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model：$total 句均未跨越强 AI 阈值；校准后的微弱信号为 $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI 信号 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超链接与参考文献目录验证';
 
   @override
@@ -2898,9 +3017,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get engineReasonAdversarialClean => '未侦测到明显的改写规避特征';
-
-  @override
-  String get engineReasonDisabledByUser => '用户在设置中关闭此引擎';
 
   @override
   String get engineReasonGenericNotInstalled => '模型尚未安装，未参与本次投票';
@@ -3779,6 +3895,67 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settingsEngineAdversarialSubtitle => '辨識是否經過機器改寫或去 AI 痕跡處理';
 
   @override
+  String get settingsEngineWeightsTitle => 'AI 模型權重';
+
+  @override
+  String get settingsEngineWeightsSubtitle => '設定各引擎影響綜合結果的比例；合計必須為 100% 才能儲存。';
+
+  @override
+  String get settingsEngineInfoTooltip => '查看此引擎功能';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      '使用多語言 Transformer 評估完整句子的 AI 模式。設定權重決定影響比例；AI 訊號決定實際貢獻。';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      '分析困惑度、可預測性、Burstiness 與句長變化。規律文字可能提高訊號，因此 ESL 修正可能降低其有效權重。';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      '檢查重複開頭、公式化轉折與過度條列等可解釋風格特徵；未命中特徵時訊號為 0%。';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      '偵測可能經改寫或去除 AI 痕跡的文字。低分僅代表微弱殘餘訊號，不代表偵測成立。';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return '合計：$total% — 可以儲存';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return '合計：$total% — 請調整為正好 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => '儲存權重';
+
+  @override
+  String get settingsEngineWeightsSaved => 'AI 模型權重已儲存於此裝置';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => '恢復預設值';
+
+  @override
+  String get engineReasonDisabledByUser => '使用者在設定中關閉此引擎';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model：$total 句均未跨越強 AI 閾值；校準後的微弱訊號為 $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI 訊號 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
@@ -4575,9 +4752,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get engineReasonAdversarialClean => '未偵測到明顯的改寫規避特徵';
-
-  @override
-  String get engineReasonDisabledByUser => '使用者在設定中關閉此引擎';
 
   @override
   String get engineReasonGenericNotInstalled => '模型尚未安裝，未參與本次投票';

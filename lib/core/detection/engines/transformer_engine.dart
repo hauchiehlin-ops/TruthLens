@@ -167,8 +167,11 @@ class TransformerEngine implements DetectionEngine {
     // 置信度校準：避免隨機 Softmax 浮動（~0.50）在 0 句 AI 時輸出 52% 的矛盾
     double calibratedProbability;
     if (aiCount == 0) {
-      final margin = (maxSentence - 0.5).clamp(0.0, 0.1) / 0.1;
-      calibratedProbability = (avg * 0.10) + (margin * 0.10);
+      final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
+      final peakMargin = (maxSentence - 0.5).clamp(0.0, 0.1) / 0.1;
+      // 沒有任何句子跨過強 AI 閾值時，只保留最多 10% 的弱訊號，
+      // 避免 Softmax 在 0.5 附近的浮動被誤解成肯定的 AI 證據。
+      calibratedProbability = (averageMargin * 0.07) + (peakMargin * 0.03);
     } else {
       final aiAvg =
           perSentence.where((s) => s >= 0.6).reduce((a, b) => a + b) / aiCount;
@@ -188,11 +191,18 @@ class TransformerEngine implements DetectionEngine {
         'calibrated_prob': calibratedProbability,
       },
       reasons: [
-        l10n.engineReasonTransformerResult(
-          variant?.variantId ?? name(l10n),
-          aiCount,
-          perSentence.length,
-        ),
+        if (aiCount == 0)
+          l10n.engineReasonTransformerNoStrongSentence(
+            variant?.variantId ?? name(l10n),
+            perSentence.length,
+            (calibratedProbability * 100).round(),
+          )
+        else
+          l10n.engineReasonTransformerResult(
+            variant?.variantId ?? name(l10n),
+            aiCount,
+            perSentence.length,
+          ),
       ],
       sentenceScores: perSentence,
     );

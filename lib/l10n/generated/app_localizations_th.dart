@@ -448,6 +448,69 @@ class AppLocalizationsTh extends AppLocalizations {
       'ตรวจจับว่าข้อความถูกเขียนใหม่โดยเครื่องหรือผ่านการลบร่องรอย AI หรือไม่';
 
   @override
+  String get settingsEngineWeightsTitle => 'น้ำหนักโมเดล AI';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'กำหนดอิทธิพลของแต่ละเอนจินต่อผลรวม ยอดรวมต้องเท่ากับ 100% ก่อนบันทึก';
+
+  @override
+  String get settingsEngineInfoTooltip => 'หน้าที่ของเอนจินนี้';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'ประเมินประโยคสมบูรณ์ด้วย Transformer หลายภาษา น้ำหนักกำหนดอิทธิพล ส่วนสัญญาณ AI กำหนดผลต่อคะแนนจริง';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'วัด perplexity ความคาดเดาได้ burstiness และความแปรผันของความยาวประโยค การแก้ไข ESL อาจลดน้ำหนักที่ใช้จริง';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'ตรวจลักษณะสำนวนที่อธิบายได้ เช่น การขึ้นต้นซ้ำ คำเชื่อมแบบสูตร และรายการมากเกินไป หากไม่พบ สัญญาณเป็น 0%';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'ค้นหาข้อความ AI ที่ถูกเขียนใหม่หรือลบร่องรอย คะแนนต่ำหมายถึงหลักฐานตกค้างที่อ่อน ไม่ใช่ผลตรวจเชิงบวก';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'รวม: $total% — พร้อมบันทึก';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'รวม: $total% — ปรับให้เท่ากับ 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'บันทึกน้ำหนัก';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'บันทึกน้ำหนักโมเดล AI บนอุปกรณ์นี้แล้ว';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'คืนค่าเริ่มต้น';
+
+  @override
+  String get engineReasonDisabledByUser => 'ผู้ใช้ปิดเอนจินนี้ในการตั้งค่า';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: ไม่มีประโยคใดจาก $total ประโยคผ่านเกณฑ์ AI ระดับสูง สัญญาณอ่อนหลังปรับเทียบคือ $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'สัญญาณ AI $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'การตรวจสอบความถูกต้องของลิงก์และบรรณานุกรม';
 
@@ -1273,9 +1336,6 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'ไม่พบร่องรอยการหลบเลี่ยงด้วยการเขียนใหม่ที่ชัดเจน';
-
-  @override
-  String get engineReasonDisabledByUser => 'ผู้ใช้ปิดเอนจินนี้ในการตั้งค่า';
 
   @override
   String get engineReasonGenericNotInstalled =>

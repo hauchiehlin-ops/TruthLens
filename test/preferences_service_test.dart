@@ -22,4 +22,43 @@ void main() {
 
     expect(preferences.confidenceThreshold, 0.75);
   });
+
+  test('engine weights default to 40/25/20/15 and persist locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = PreferencesService();
+    await preferences.load();
+
+    expect(preferences.engineWeight('transformer'), 0.40);
+    expect(preferences.engineWeight('statistical'), 0.25);
+    expect(preferences.engineWeight('stylometry'), 0.20);
+    expect(preferences.engineWeight('adversarial'), 0.15);
+
+    await preferences.setEngineWeights(const {
+      'transformer': 0.10,
+      'statistical': 0.20,
+      'stylometry': 0.30,
+      'adversarial': 0.40,
+    });
+    final reloaded = PreferencesService();
+    await reloaded.load();
+
+    expect(reloaded.engineWeight('transformer'), 0.10);
+    expect(reloaded.engineWeight('adversarial'), 0.40);
+  });
+
+  test('engine weights cannot be saved unless they total 100%', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = PreferencesService();
+    await preferences.load();
+
+    await expectLater(
+      preferences.setEngineWeights(const {
+        'transformer': 0.40,
+        'statistical': 0.25,
+        'stylometry': 0.20,
+        'adversarial': 0.20,
+      }),
+      throwsArgumentError,
+    );
+  });
 }

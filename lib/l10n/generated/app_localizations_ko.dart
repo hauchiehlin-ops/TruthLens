@@ -430,6 +430,68 @@ class AppLocalizationsKo extends AppLocalizations {
       '기계에 의한 패러프레이징 또는 AI 흔적 제거 처리 여부를 감지합니다';
 
   @override
+  String get settingsEngineWeightsTitle => 'AI 모델 가중치';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      '각 엔진이 종합 결과에 미치는 영향을 설정합니다. 저장하려면 합계가 100%여야 합니다.';
+
+  @override
+  String get settingsEngineInfoTooltip => '이 엔진의 기능';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      '다국어 Transformer로 완전한 문장을 평가합니다. 설정 가중치는 영향도를, AI 신호는 실제 기여도를 결정합니다.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      '당혹도, 예측 가능성, 버스트성, 문장 길이 변화를 측정합니다. ESL 보정 시 유효 가중치가 낮아질 수 있습니다.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      '반복되는 문장 시작, 정형화된 전환어, 과도한 목록 등 설명 가능한 문체 특징을 검사합니다. 특징이 없으면 신호는 0%입니다.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      '패러프레이징되거나 AI 흔적이 제거된 텍스트를 찾습니다. 낮은 점수는 약한 잔여 증거일 뿐 양성 판정이 아닙니다.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return '합계: $total% — 저장 가능';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return '합계: $total% — 정확히 100%로 조정하세요';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => '가중치 저장';
+
+  @override
+  String get settingsEngineWeightsSaved => 'AI 모델 가중치를 이 기기에 저장했습니다';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => '기본값 복원';
+
+  @override
+  String get engineReasonDisabledByUser => '사용자가 설정에서 이 엔진을 비활성화했습니다';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: $total개 문장 중 강한 AI 임계값을 넘은 문장이 없습니다. 보정된 약한 신호는 $percent%입니다';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI 신호 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => '하이퍼링크 및 참고 문헌 실재성 검증';
 
   @override
@@ -1245,9 +1307,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get engineReasonAdversarialClean => '뚜렷한 패러프레이즈 회피 흔적이 감지되지 않았습니다';
-
-  @override
-  String get engineReasonDisabledByUser => '사용자가 설정에서 이 엔진을 비활성화했습니다';
 
   @override
   String get engineReasonGenericNotInstalled => '모델이 설치되지 않아 이번 투표에 참여하지 않았습니다';

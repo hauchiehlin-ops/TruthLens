@@ -59,7 +59,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         if (mounted) setState(() => _done.add(id));
       },
       onEngineScore: (score) {
-        if (mounted) setState(() => _scores[score.engineId] = score);
+        final role = _engineLabels(l10n).keys.firstWhere(
+          (candidate) =>
+              score.engineId == candidate ||
+              score.engineId.startsWith('${candidate}_'),
+          orElse: () => score.engineId,
+        );
+        if (mounted) setState(() => _scores[role] = score);
       },
     );
     await history.save(result);

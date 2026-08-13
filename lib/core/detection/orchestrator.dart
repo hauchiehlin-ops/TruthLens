@@ -85,19 +85,27 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final text = PreprocessedText.from(input);
 
     final futures = engines.map((engine) async {
-      // 強制所有引擎自動啟用以提高分析準確性（忽略用戶禁用設置）
-      final available = await engine.isAvailable();
-      final score = available
+      final role = _roleOf(engine.id);
+      final enabled = prefs?.isEngineEnabled(role) ?? true;
+      final configuredWeight =
+          prefs?.engineWeight(role) ?? engine.defaultWeight;
+      final available = enabled && await engine.isAvailable();
+      final rawScore = available
           ? await engine.analyze(text, loc)
           : EngineScore(
               engineId: engine.id,
               engineName: engine.name(loc),
               aiProbability: 0.5,
-              weight: engine.defaultWeight,
+              weight: configuredWeight,
               available: false,
-              reasons: [loc.engineReasonGenericNotInstalled],
+              reasons: [
+                enabled
+                    ? loc.engineReasonGenericNotInstalled
+                    : loc.engineReasonDisabledByUser,
+              ],
             );
-      onEngineDone?.call(engine.id);
+      final score = rawScore.copyWith(weight: configuredWeight);
+      onEngineDone?.call(role);
       onEngineScore?.call(score);
       return score;
     });
@@ -146,6 +154,13 @@ class EnsembleOrchestrator extends ChangeNotifier {
       availableEngineCount: availableCount,
       totalEngineCount: totalCount,
     );
+  }
+
+  static String _roleOf(String engineId) {
+    for (final role in PreferencesService.engineRoles) {
+      if (engineId == role || engineId.startsWith('${role}_')) return role;
+    }
+    return engineId;
   }
 
   double _weightedVote(List<EngineScore> scores, {required bool eslAdjusted}) {

@@ -849,6 +849,100 @@ abstract class AppLocalizations {
   /// **'Detects whether text has been machine-paraphrased or AI-trace-scrubbed'**
   String get settingsEngineAdversarialSubtitle;
 
+  /// No description provided for @settingsEngineWeightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI model weights'**
+  String get settingsEngineWeightsTitle;
+
+  /// No description provided for @settingsEngineWeightsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set how strongly each engine affects the combined result. The total must equal 100% before saving.'**
+  String get settingsEngineWeightsSubtitle;
+
+  /// No description provided for @settingsEngineInfoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'What this engine does'**
+  String get settingsEngineInfoTooltip;
+
+  /// No description provided for @settingsEngineTransformerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Evaluates complete sentences with a multilingual Transformer model. It is strongest at sentence-level AI pattern recognition; its configured weight controls influence, while its AI signal controls the actual contribution.'**
+  String get settingsEngineTransformerHelp;
+
+  /// No description provided for @settingsEngineStatisticalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Measures perplexity, predictability, burstiness, and sentence-length variation. Regular text can raise this signal, so ESL correction may reduce its effective weight.'**
+  String get settingsEngineStatisticalHelp;
+
+  /// No description provided for @settingsEngineStylometryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks explainable writing-style markers such as repeated openings, formulaic transitions, and excessive list structure. No matched markers now produce a 0% signal.'**
+  String get settingsEngineStylometryHelp;
+
+  /// No description provided for @settingsEngineAdversarialHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks for AI text that may have been paraphrased or processed to hide AI traces. A low score means only weak residual evidence, not a positive detection.'**
+  String get settingsEngineAdversarialHelp;
+
+  /// No description provided for @settingsEngineWeightsTotalValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {total}% — ready to save'**
+  String settingsEngineWeightsTotalValid(int total);
+
+  /// No description provided for @settingsEngineWeightsTotalInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {total}% — adjust to exactly 100%'**
+  String settingsEngineWeightsTotalInvalid(int total);
+
+  /// No description provided for @settingsEngineWeightsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save weights'**
+  String get settingsEngineWeightsSave;
+
+  /// No description provided for @settingsEngineWeightsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'AI model weights saved on this device'**
+  String get settingsEngineWeightsSaved;
+
+  /// No description provided for @settingsEngineWeightsRestoreDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore defaults'**
+  String get settingsEngineWeightsRestoreDefaults;
+
+  /// No description provided for @engineReasonDisabledByUser.
+  ///
+  /// In en, this message translates to:
+  /// **'The user disabled this engine in Settings'**
+  String get engineReasonDisabledByUser;
+
+  /// No description provided for @engineReasonTransformerNoStrongSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'{model}: none of {total} sentences crossed the strong-AI threshold; the calibrated weak signal is {percent}%'**
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  );
+
+  /// No description provided for @reportEngineSignalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'AI signal {percent}%'**
+  String reportEngineSignalLabel(int percent);
+
   /// No description provided for @settingsLinkVerificationTitle.
   ///
   /// In en, this message translates to:
@@ -2116,12 +2210,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No clear paraphrase-evasion traces detected'**
   String get engineReasonAdversarialClean;
-
-  /// No description provided for @engineReasonDisabledByUser.
-  ///
-  /// In en, this message translates to:
-  /// **'The user disabled this engine in Settings'**
-  String get engineReasonDisabledByUser;
 
   /// No description provided for @engineReasonGenericNotInstalled.
   ///

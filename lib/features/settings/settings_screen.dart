@@ -10,6 +10,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../input/input_screen.dart' show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
 import 'model_import_screen.dart';
+import 'engine_weight_settings.dart';
 import 'web_ocr_settings.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -82,6 +83,7 @@ class SettingsScreen extends StatelessWidget {
             value: prefs.isEngineEnabled('adversarial'),
             onChanged: (v) => prefs.setEngineEnabled('adversarial', v),
           ),
+          const EngineWeightSettingsCard(),
           const Divider(),
           SwitchListTile(
             title: Text(l10n.settingsLinkVerificationTitle),

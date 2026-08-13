@@ -451,6 +451,70 @@ class AppLocalizationsId extends AppLocalizations {
       'Mendeteksi apakah teks telah diparafrasakan mesin atau diproses untuk menghilangkan jejak AI';
 
   @override
+  String get settingsEngineWeightsTitle => 'Bobot model AI';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Atur pengaruh setiap mesin pada hasil gabungan. Total harus tepat 100% sebelum disimpan.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'Fungsi mesin ini';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Menilai kalimat lengkap dengan Transformer multibahasa. Bobot mengatur pengaruh, sedangkan sinyal AI menentukan kontribusi aktual.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Mengukur perplexity, prediktabilitas, burstiness, dan variasi panjang kalimat. Koreksi ESL dapat mengurangi bobot efektifnya.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Memeriksa penanda gaya yang dapat dijelaskan seperti pembuka berulang, transisi formulaik, dan daftar berlebihan. Tanpa penanda, sinyalnya 0%.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Mencari teks AI yang diparafrase atau dibersihkan jejaknya. Skor rendah hanya berarti bukti sisa yang lemah, bukan deteksi positif.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Total: $total% — siap disimpan';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Total: $total% — sesuaikan tepat menjadi 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Simpan bobot';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'Bobot model AI disimpan di perangkat ini';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Pulihkan default';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'Pengguna telah mematikan mesin ini di Pengaturan';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: tidak ada dari $total kalimat yang melewati ambang AI kuat; sinyal lemah terkalibrasi adalah $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'Sinyal AI $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Verifikasi hyperlink & bibliografi';
 
@@ -1279,10 +1343,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'Tidak ada jejak penghindaran parafrasa yang jelas terdeteksi';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'Pengguna telah mematikan mesin ini di Pengaturan';
 
   @override
   String get engineReasonGenericNotInstalled =>

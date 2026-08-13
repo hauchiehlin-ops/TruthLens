@@ -429,6 +429,68 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsEngineAdversarialSubtitle => '機械による言い換えやAI痕跡除去処理を検出します';
 
   @override
+  String get settingsEngineWeightsTitle => 'AIモデルの重み';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      '各エンジンが総合結果に与える影響を設定します。保存するには合計を100%にしてください。';
+
+  @override
+  String get settingsEngineInfoTooltip => 'このエンジンの役割';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      '多言語Transformerで完全な文を評価します。設定した重みが影響度を、AI信号が実際の寄与度を決定します。';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      '困惑度、予測可能性、バースト性、文長の変動を測定します。ESL補正により実効重みが下がる場合があります。';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      '書き出しの反復、定型的な接続表現、過剰な箇条書きなど説明可能な文体特徴を確認します。特徴がなければ信号は0%です。';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      '言い換えやAI痕跡除去が行われた文章を検出します。低い値は弱い残留証拠であり、陽性判定ではありません。';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return '合計：$total% — 保存できます';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return '合計：$total% — 100%に調整してください';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => '重みを保存';
+
+  @override
+  String get settingsEngineWeightsSaved => 'AIモデルの重みをこの端末に保存しました';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => '初期値に戻す';
+
+  @override
+  String get engineReasonDisabledByUser => 'ユーザーが設定でこのエンジンを無効にしています';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model：$total文のうち強いAI閾値を超えた文はありません。校正後の弱い信号は$percent%です';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'AI信号 $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle => 'ハイパーリンク・参考文献の実在性検証';
 
   @override
@@ -1242,9 +1304,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get engineReasonAdversarialClean => '明らかな言い換え回避の痕跡は検出されませんでした';
-
-  @override
-  String get engineReasonDisabledByUser => 'ユーザーが設定でこのエンジンを無効にしています';
 
   @override
   String get engineReasonGenericNotInstalled => 'モデルが未インストールのため、今回の投票に参加していません';

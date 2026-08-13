@@ -19,18 +19,40 @@ class StylometryEngine implements DetectionEngine {
 
   /// 通用過渡詞特徵庫（中英，可透過更新包擴充）；句級分析亦引用
   static const genericTransitions = [
-    '此外', '值得注意的是', '綜上所述', '總而言之', '首先', '其次', '最後',
-    '換句話說', '不僅如此', '需要指出的是',
-    'furthermore', 'moreover', 'in conclusion', 'additionally',
-    'it is important to note', 'in summary', 'overall', 'consequently',
-    "it's worth noting", 'in today\'s world', 'delve into', 'tapestry',
+    '此外',
+    '值得注意的是',
+    '綜上所述',
+    '總而言之',
+    '首先',
+    '其次',
+    '最後',
+    '換句話說',
+    '不僅如此',
+    '需要指出的是',
+    'furthermore',
+    'moreover',
+    'in conclusion',
+    'additionally',
+    'it is important to note',
+    'in summary',
+    'overall',
+    'consequently',
+    "it's worth noting",
+    'in today\'s world',
+    'delve into',
+    'tapestry',
   ];
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n,
+  ) async {
     final reasons = <String>[];
     final features = <String, double>{};
-    var score = 0.20;
+    // 規則式引擎的分數代表實際命中特徵；沒有命中時應為 0，不能把
+    // 先驗基線誤當成 AI 證據。
+    var score = 0.0;
 
     // 特徵 1：通用過渡詞密度
     final lower = text.raw.toLowerCase();
@@ -49,8 +71,12 @@ class StylometryEngine implements DetectionEngine {
     features['transition_density'] = density;
     if (density > 0.25 && transitionHits >= 3) {
       score += 0.35;
-      reasons.add(l10n.engineReasonTransitionWords(
-          hitWords.take(4).join('、'), density.toStringAsFixed(2)));
+      reasons.add(
+        l10n.engineReasonTransitionWords(
+          hitWords.take(4).join('、'),
+          density.toStringAsFixed(2),
+        ),
+      );
     }
 
     // 特徵 2：句式開頭重複（連續句子以相同詞開頭）
@@ -70,9 +96,10 @@ class StylometryEngine implements DetectionEngine {
     }
 
     // 特徵 3：清單化/條列傾向（過度結構化）
-    final bulletLines = RegExp(r'^\s*([-*•]|\d+[.、)])', multiLine: true)
-        .allMatches(text.raw)
-        .length;
+    final bulletLines = RegExp(
+      r'^\s*([-*•]|\d+[.、)])',
+      multiLine: true,
+    ).allMatches(text.raw).length;
     features['bullet_lines'] = bulletLines.toDouble();
     if (text.sentences.length >= 5 &&
         bulletLines / text.sentences.length > 0.4) {

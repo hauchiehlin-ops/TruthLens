@@ -3,6 +3,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// 使用者偏好設定（閾值、主題、ESL 修正開關）
 class PreferencesService extends ChangeNotifier {
+  static const engineRoles = <String>[
+    'transformer',
+    'statistical',
+    'stylometry',
+    'adversarial',
+  ];
+  static const defaultEngineWeights = <String, double>{
+    'transformer': 0.40,
+    'statistical': 0.25,
+    'stylometry': 0.20,
+    'adversarial': 0.15,
+  };
   static const _kThreshold = 'confidence_threshold';
   static const _kThemeMode = 'theme_mode';
   static const _kEslCorrection = 'esl_correction';
@@ -11,6 +23,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kDisabledEngines = 'disabled_engines';
   static const _kLinkVerificationEnabled = 'link_verification_enabled';
   static const _kLocale = 'app_locale';
+  static const _kEngineWeightPrefix = 'engine_weight_';
 
   SharedPreferences? _prefs;
 
@@ -25,6 +38,12 @@ class PreferencesService extends ChangeNotifier {
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
   Set<String> _disabledEngines = {};
+  Map<String, double> _engineWeights = Map.of(defaultEngineWeights);
+
+  Map<String, double> get engineWeights => Map.unmodifiable(_engineWeights);
+
+  double engineWeight(String engineId) =>
+      _engineWeights[engineId] ?? defaultEngineWeights[engineId] ?? 0;
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -39,6 +58,39 @@ class PreferencesService extends ChangeNotifier {
         _prefs!.getBool(_kLinkVerificationEnabled) ?? true;
     locale = _decodeLocale(_prefs!.getString(_kLocale));
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
+    final loadedWeights = <String, double>{
+      for (final role in engineRoles)
+        role:
+            _prefs!.getDouble('$_kEngineWeightPrefix$role') ??
+            defaultEngineWeights[role]!,
+    };
+    _engineWeights = _isValidWeightSet(loadedWeights)
+        ? loadedWeights
+        : Map.of(defaultEngineWeights);
+    notifyListeners();
+  }
+
+  static bool _isValidWeightSet(Map<String, double> values) {
+    if (!engineRoles.every(values.containsKey)) return false;
+    if (values.values.any((value) => value < 0 || value > 1)) return false;
+    final total = engineRoles.fold<double>(
+      0,
+      (sum, role) => sum + values[role]!,
+    );
+    return (total - 1).abs() < 0.0001;
+  }
+
+  Future<void> setEngineWeights(Map<String, double> values) async {
+    final normalized = <String, double>{
+      for (final role in engineRoles) role: values[role] ?? -1,
+    };
+    if (!_isValidWeightSet(normalized)) {
+      throw ArgumentError('Engine weights must total 100%.');
+    }
+    _engineWeights = normalized;
+    for (final entry in normalized.entries) {
+      await _prefs?.setDouble('$_kEngineWeightPrefix${entry.key}', entry.value);
+    }
     notifyListeners();
   }
 

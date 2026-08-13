@@ -393,7 +393,11 @@ class _EngineContributionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final engineGroups = _EngineGroup.fromScores(result.engineScores, l10n);
+    final engineGroups = _EngineGroup.fromScores(
+      result.engineScores,
+      l10n,
+      eslAdjusted: result.eslAdjusted,
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -524,7 +528,9 @@ class _EngineContributionCard extends StatelessWidget {
                               const SizedBox(width: 8),
                               Text(
                                 group.available
-                                    ? '${(group.probability * 100).round()}%'
+                                    ? l10n.reportEngineSignalLabel(
+                                        (group.probability * 100).round(),
+                                      )
                                     : l10n.reportEngineNotParticipated,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
@@ -1044,8 +1050,9 @@ class _EngineGroup {
 
   static List<_EngineGroup> fromScores(
     List<EngineScore> scores,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    bool eslAdjusted = false,
+  }) {
     const order = ['transformer', 'statistical', 'stylometry', 'adversarial'];
     final grouped = <String, List<EngineScore>>{
       for (final role in order) role: <EngineScore>[],
@@ -1054,12 +1061,20 @@ class _EngineGroup {
       grouped[_roleOf(score.engineId)]?.add(score);
     }
 
-    final availableWeight = order.fold<double>(
-      0,
-      (sum, role) =>
-          sum +
-          (grouped[role]!.any((s) => s.available) ? _roleWeight(role) : 0),
-    );
+    double configuredWeight(String role) => grouped[role]!.isNotEmpty
+        ? grouped[role]!.first.weight
+        : _roleWeight(role);
+    double effectiveWeight(String role) {
+      final configured = configuredWeight(role);
+      return eslAdjusted && role == 'statistical'
+          ? configured * 0.5
+          : configured;
+    }
+
+    final availableWeight = order.fold<double>(0, (sum, role) {
+      if (!grouped[role]!.any((s) => s.available)) return sum;
+      return sum + effectiveWeight(role);
+    });
 
     return [
       for (final role in order)
@@ -1067,6 +1082,7 @@ class _EngineGroup {
           role,
           grouped[role]!,
           availableWeight: availableWeight,
+          effectiveWeight: effectiveWeight(role),
           l10n: l10n,
         ),
     ];
@@ -1076,6 +1092,7 @@ class _EngineGroup {
     String role,
     List<EngineScore> scores, {
     required double availableWeight,
+    required double effectiveWeight,
     required AppLocalizations l10n,
   }) {
     final availableScores = scores.where((s) => s.available).toList();
@@ -1084,9 +1101,9 @@ class _EngineGroup {
         ? availableScores.fold<double>(0, (sum, s) => sum + s.aiProbability) /
               availableScores.length
         : 0.0;
-    final weight = _roleWeight(role);
+    final weight = scores.isNotEmpty ? scores.first.weight : _roleWeight(role);
     final contribution = available && availableWeight > 0
-        ? probability * weight / availableWeight
+        ? probability * effectiveWeight / availableWeight
         : 0.0;
     final reasons = <String>[
       for (final score in scores)

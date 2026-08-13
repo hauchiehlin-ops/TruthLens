@@ -51,6 +51,17 @@ class EngineScore {
     this.reasons = const [],
     this.sentenceScores,
   });
+
+  EngineScore copyWith({double? weight}) => EngineScore(
+    engineId: engineId,
+    engineName: engineName,
+    aiProbability: aiProbability,
+    weight: weight ?? this.weight,
+    available: available,
+    features: features,
+    reasons: reasons,
+    sentenceScores: sentenceScores,
+  );
 }
 
 /// 句子級分析結果

@@ -451,6 +451,70 @@ class AppLocalizationsRu extends AppLocalizations {
       'Обнаруживает, был ли текст перефразирован машиной или обработан для удаления следов ИИ';
 
   @override
+  String get settingsEngineWeightsTitle => 'Веса моделей ИИ';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Задайте влияние каждого движка на общий результат. Перед сохранением сумма должна составлять ровно 100%.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'Назначение этого движка';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Оценивает полные предложения многоязычной моделью Transformer. Вес задаёт влияние, а сигнал ИИ определяет фактический вклад.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Измеряет перплексию, предсказуемость, вариативность и длину предложений. Коррекция ESL может уменьшить эффективный вес.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Проверяет объяснимые признаки стиля: повторяющиеся начала, шаблонные переходы и избыток списков. Без признаков сигнал равен 0%.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Ищет перефразированный текст ИИ или удалённые следы ИИ. Низкий балл означает лишь слабый остаточный сигнал, а не положительное обнаружение.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Сумма: $total% — можно сохранить';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Сумма: $total% — установите ровно 100%';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Сохранить веса';
+
+  @override
+  String get settingsEngineWeightsSaved =>
+      'Веса моделей ИИ сохранены на устройстве';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Вернуть значения';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'Пользователь отключил этот модуль в Настройках';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model: ни одно из $total предложений не превысило строгий порог ИИ; откалиброванный слабый сигнал — $percent%';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'Сигнал ИИ $percent%';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Проверка гиперссылок и библиографии';
 
@@ -1279,10 +1343,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'Явных следов обхода через перефразирование не обнаружено';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'Пользователь отключил этот модуль в Настройках';
 
   @override
   String get engineReasonGenericNotInstalled =>

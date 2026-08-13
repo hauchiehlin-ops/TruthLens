@@ -457,6 +457,69 @@ class AppLocalizationsFr extends AppLocalizations {
       'Détecte si le texte a été paraphrasé par une machine ou traité pour supprimer les traces d\'IA';
 
   @override
+  String get settingsEngineWeightsTitle => 'Poids des modèles d\'IA';
+
+  @override
+  String get settingsEngineWeightsSubtitle =>
+      'Définissez l\'influence de chaque moteur sur le résultat combiné. Le total doit atteindre 100 % avant l\'enregistrement.';
+
+  @override
+  String get settingsEngineInfoTooltip => 'Rôle de ce moteur';
+
+  @override
+  String get settingsEngineTransformerHelp =>
+      'Évalue les phrases complètes avec un Transformer multilingue. Le poids règle son influence et le signal d\'IA détermine sa contribution réelle.';
+
+  @override
+  String get settingsEngineStatisticalHelp =>
+      'Mesure perplexité, prévisibilité, burstiness et variation des phrases. La correction ESL peut réduire son poids effectif.';
+
+  @override
+  String get settingsEngineStylometryHelp =>
+      'Recherche des marqueurs explicables : débuts répétés, transitions formulaires et listes excessives. Sans marqueur, le signal est de 0 %.';
+
+  @override
+  String get settingsEngineAdversarialHelp =>
+      'Recherche du texte d\'IA paraphrasé ou nettoyé de ses traces. Un score faible indique un résidu faible, pas une détection positive.';
+
+  @override
+  String settingsEngineWeightsTotalValid(int total) {
+    return 'Total : $total % — prêt à enregistrer';
+  }
+
+  @override
+  String settingsEngineWeightsTotalInvalid(int total) {
+    return 'Total : $total % — ajustez exactement à 100 %';
+  }
+
+  @override
+  String get settingsEngineWeightsSave => 'Enregistrer les poids';
+
+  @override
+  String get settingsEngineWeightsSaved => 'Poids enregistrés sur cet appareil';
+
+  @override
+  String get settingsEngineWeightsRestoreDefaults => 'Valeurs par défaut';
+
+  @override
+  String get engineReasonDisabledByUser =>
+      'L\'utilisateur a désactivé ce moteur dans les paramètres';
+
+  @override
+  String engineReasonTransformerNoStrongSentence(
+    String model,
+    int total,
+    int percent,
+  ) {
+    return '$model : aucune des $total phrases n\'a franchi le seuil IA fort ; le signal faible calibré est de $percent %';
+  }
+
+  @override
+  String reportEngineSignalLabel(int percent) {
+    return 'Signal IA $percent %';
+  }
+
+  @override
   String get settingsLinkVerificationTitle =>
       'Vérification des hyperliens et de la bibliographie';
 
@@ -1287,10 +1350,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get engineReasonAdversarialClean =>
       'Aucune trace claire d\'évasion par paraphrase détectée';
-
-  @override
-  String get engineReasonDisabledByUser =>
-      'L\'utilisateur a désactivé ce moteur dans les paramètres';
 
   @override
   String get engineReasonGenericNotInstalled =>
