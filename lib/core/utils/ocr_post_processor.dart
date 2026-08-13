@@ -133,13 +133,6 @@ class OcrPostProcessor {
       'betweenthe': 'between the',
       'between': 'between',
       'andthe': 'and the',
-      'of': 'of',
-      'in': 'in',
-      'with': 'with',
-      'for': 'for',
-      'from': 'from',
-      'into': 'into',
-      'and': 'and',
     };
 
     for (final entry in phraseFixes.entries) {
@@ -153,6 +146,17 @@ class OcrPostProcessor {
     }
 
     return text
+        .replaceAll(
+          RegExp(r'\bJournalof\b', caseSensitive: false),
+          'Journal of',
+        )
+        .replaceAll(
+          RegExp(r'\bMethodsin\b', caseSensitive: false),
+          'Methods in',
+        )
+        .replaceAll(RegExp(r'\bOnsetof\b', caseSensitive: false), 'Onset of')
+        .replaceAll(RegExp(r'\bOrderof\b', caseSensitive: false), 'Order of')
+        .replaceAll(RegExp(r'\bFlowwith\b', caseSensitive: false), 'Flow with')
         .replaceAll(RegExp(r'\bOnthe\b', caseSensitive: false), 'On the')
         .replaceAll(RegExp(r'\bIna\b', caseSensitive: false), 'In a')
         .replaceAll(

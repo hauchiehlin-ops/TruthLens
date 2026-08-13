@@ -62,13 +62,16 @@ void main() {
 
     test('保留正常英文單字，不把 Transition 或 Simon 誤切成尾隨介詞', () {
       const input =
-          'Transition in circular Couette flow. Simon, N.J., and Donnelly, R.J.';
+          'Transition in circular Couette flow. Simon, N.J., and Donnelly, R.J. '
+          'Plain language remains intact within the final report.';
       final cleaned = OcrPostProcessor.clean(input);
 
       expect(cleaned, contains('Transition in circular Couette flow'));
       expect(cleaned, contains('Simon'));
       expect(cleaned, isNot(contains('Transiti on')));
       expect(cleaned, isNot(contains('Sim on')));
+      expect(cleaned, contains('Plain language'));
+      expect(cleaned, contains('within the final report'));
     });
 
     test('正規化 OCR 常見 ligature 與不可斷行空格', () {

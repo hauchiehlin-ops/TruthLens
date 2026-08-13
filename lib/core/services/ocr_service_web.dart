@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart';
 import 'package:http/http.dart' as http;
+import 'local_ocr_response_parser.dart';
 import '../utils/ocr_post_processor.dart';
 
 /// Web 版 OCR 服務 — Gemini API + 本地伺服器備援
@@ -52,24 +53,16 @@ class OcrService {
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        final results = json['results'] as List<dynamic>? ?? [];
-        if (results.isNotEmpty) {
-          // 本地伺服器回傳的是結構化結果，這裡簡單合併為文字
-          return OcrPostProcessor.clean(
-            results
-                .map(
-                  (r) => (r as Map<String, dynamic>)['text'] as String? ?? '',
-                )
-                .join('\n'),
-          );
+        final parsed = parseLocalOcrResponse(jsonDecode(response.body));
+        if (parsed.hasText) return parsed.text;
+        if (parsed.error != null) {
+          _lastErrorMessage = '本地 OCR 伺服器回報錯誤：${parsed.error}';
+        } else if (!parsed.supportedFormat) {
+          _lastErrorMessage =
+              '本地 OCR 伺服器回應格式不相容；預期文字區塊陣列、results[].text 或 text。';
+        } else {
+          _lastErrorMessage = '本地 OCR 已完成，但圖片中未辨識到可用文字。';
         }
-        final text = json['text'] as String?;
-        if (text != null && text.trim().isNotEmpty) {
-          return OcrPostProcessor.clean(text);
-        }
-        _lastErrorMessage =
-            '本地 OCR 伺服器有回應，但未回傳文字。請確認回應格式含 results[].text 或 text。';
       } else {
         _lastErrorMessage =
             '本地 OCR 伺服器回應 ${response.statusCode}：${response.body}';
@@ -280,7 +273,9 @@ class OcrService {
       return localResult;
     }
 
-    // 備援：Gemini API（自動處理速率限制與重試）
+    // 本地 OCR 失敗時，只有已設定 Gemini 才進入備援。否則保留本地端的
+    // 真正錯誤，不能用「尚未設定」覆蓋，讓使用者誤以為 URL 未儲存。
+    if (!hasApiKey) return null;
     return await _recognizeFromGemini(imageDataUrl, languages: languages);
   }
 
@@ -334,7 +329,30 @@ class OcrService {
           .timeout(const Duration(seconds: 5));
       if (response.statusCode != 200) return false;
       final payload = jsonDecode(response.body);
-      return payload is Map<String, dynamic> && payload['status'] == 'running';
+      if (payload is! Map<String, dynamic> || payload['status'] != 'running') {
+        return false;
+      }
+
+      // Also exercise the real OCR route and browser CORS/PNA path. The probe
+      // is 10x10 because Apple Vision rejects images whose dimensions are not
+      // both greater than two pixels. No text is a legitimate result here;
+      // the response format and successful POST are what this test validates.
+      const probeImage =
+          'data:image/png;base64,'
+          'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFElEQVR42mP8z8AA'
+          'RLQYqGZVAgC66QETMhfyGAAAAABJRU5ErkJggg==';
+      final probe = await http
+          .post(
+            endpoint,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'image': probeImage,
+              'languages': const ['zh-Hant', 'zh-Hans', 'en-US'],
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (probe.statusCode != 200) return false;
+      return parseLocalOcrResponse(jsonDecode(probe.body)).supportedFormat;
     } catch (_) {
       return false;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/services/preferences_service.dart';
@@ -153,7 +154,7 @@ class _EngineWeightSettingsCardState extends State<EngineWeightSettingsCard> {
   };
 }
 
-class _WeightRow extends StatelessWidget {
+class _WeightRow extends StatefulWidget {
   final String label;
   final String help;
   final String helpTooltip;
@@ -169,6 +170,39 @@ class _WeightRow extends StatelessWidget {
   });
 
   @override
+  State<_WeightRow> createState() => _WeightRowState();
+}
+
+class _WeightRowState extends State<_WeightRow> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value.toString());
+  }
+
+  @override
+  void didUpdateWidget(covariant _WeightRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value &&
+        _controller.text != widget.value.toString()) {
+      _controller.value = TextEditingValue(
+        text: widget.value.toString(),
+        selection: TextSelection.collapsed(
+          offset: widget.value.toString().length,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -176,7 +210,7 @@ class _WeightRow extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              label,
+              widget.label,
               style: Theme.of(
                 context,
               ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -185,12 +219,12 @@ class _WeightRow extends StatelessWidget {
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 18,
-            tooltip: helpTooltip,
+            tooltip: widget.helpTooltip,
             onPressed: () => showDialog<void>(
               context: context,
               builder: (dialogContext) => AlertDialog(
-                title: Text(label),
-                content: Text(help),
+                title: Text(widget.label),
+                content: Text(widget.help),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(dialogContext).pop(),
@@ -202,25 +236,38 @@ class _WeightRow extends StatelessWidget {
             icon: const Icon(Icons.info_outline),
           ),
           SizedBox(
-            width: 44,
-            child: Text(
-              '$value%',
+            width: 88,
+            child: TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
               textAlign: TextAlign.end,
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  if (newValue.text.isEmpty) return newValue;
+                  final value = int.tryParse(newValue.text);
+                  return value != null && value <= 100 ? newValue : oldValue;
+                }),
+              ],
+              decoration: const InputDecoration(
+                suffixText: '%',
+                isDense: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 9,
+                ),
+              ),
+              onChanged: (text) {
+                final parsed = int.tryParse(text) ?? 0;
+                widget.onChanged(parsed.clamp(0, 100));
+              },
             ),
           ),
         ],
       ),
-      Slider(
-        value: value.toDouble(),
-        min: 0,
-        max: 100,
-        divisions: 100,
-        label: '$value%',
-        onChanged: (next) => onChanged(next.round()),
-      ),
+      const SizedBox(height: 8),
     ],
   );
 }

@@ -35,8 +35,25 @@ void main() {
       );
 
       expect(find.text('AI model weights'), findsOneWidget);
+      expect(find.byType(Slider), findsNothing);
+      expect(find.byType(TextField), findsNWidgets(4));
       expect(find.text('Total: 100% — ready to save'), findsOneWidget);
       expect(find.byIcon(Icons.info_outline), findsNWidgets(4));
+
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(0), '10');
+      await tester.enterText(fields.at(1), '20');
+      await tester.enterText(fields.at(2), '30');
+      await tester.enterText(fields.at(3), '40');
+      await tester.pump();
+      expect(find.text('Total: 100% — ready to save'), findsOneWidget);
+      await tester.enterText(fields.at(3), '250');
+      await tester.pump();
+      expect(tester.widget<TextField>(fields.at(3)).controller!.text, '40');
+      await tester.tap(find.text('Save weights'));
+      await tester.pump();
+      expect(prefs.engineWeight('transformer'), 0.10);
+      expect(prefs.engineWeight('adversarial'), 0.40);
 
       await tester.tap(find.byIcon(Icons.info_outline).first);
       await tester.pumpAndSettle();
