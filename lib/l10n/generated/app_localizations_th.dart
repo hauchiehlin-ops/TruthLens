@@ -1725,6 +1725,10 @@ class AppLocalizationsTh extends AppLocalizations {
       '3. การตรวจสอบความถูกต้องของลิงก์และการอ้างอิง: เปิดใช้งานเป็นค่าเริ่มต้น สามารถปิดได้ใน \"การตั้งค่า\" เมื่อเปิดใช้งาน URL หรือข้อความบรรณานุกรมที่ตรวจพบในเอกสารจะถูกส่งไปยัง URL นั้นโดยตรงหรือ API สาธารณะของ Crossref โดยส่งเฉพาะข้อความ URL／DOI／บรรณานุกรมเท่านั้น ไม่รวมเนื้อหาอื่นในเอกสาร';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'คุณสามารถล้างประวัติการวิเคราะห์ในเครื่องได้ทุกเมื่อที่ \"ประวัติ\" หรือปิดฟังก์ชันตรวจสอบลิงก์／บรรณานุกรมได้ที่ \"การตั้งค่า\" หรือ';
 

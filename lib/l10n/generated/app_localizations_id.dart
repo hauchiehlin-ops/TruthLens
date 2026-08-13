@@ -1732,6 +1732,10 @@ class AppLocalizationsId extends AppLocalizations {
       '3. Verifikasi keaslian hyperlink & kutipan: diaktifkan secara default, dapat dimatikan di Pengaturan. Saat diaktifkan, URL atau teks bibliografi yang terdeteksi dalam dokumen dikirim langsung ke URL itu sendiri, atau ke API publik Crossref, hanya mengirim teks URL/DOI/kutipan itu sendiri — tidak pernah konten dokumen lainnya.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'Anda dapat membersihkan riwayat analisis lokal Anda kapan saja di \"Riwayat\", atau mematikan verifikasi hyperlink/kutipan di \"Pengaturan\", atau menghapus semua data lokal dengan';
 

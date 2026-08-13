@@ -2266,7 +2266,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent sub-models — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated, with sentence-by-sentence, explainable reasoning: not just a \"looks like AI\" percentage, but an explanation of \"why\".'**
+  /// **'TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent engines — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated. Reports show sentence-level evidence, engine contributions, the confidence threshold used for the verdict, and the imported file name when a file was selected.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -2410,7 +2410,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAdvantage4.
   ///
   /// In en, this message translates to:
-  /// **'Custom model import: advanced users can import their own local ONNX model to replace or supplement the built-in detection engines.'**
+  /// **'Local records and exports: reports can be saved as PDF/CSV/JSON/PNG, and the app keeps analysis history locally with the source file name when available, so you can re-run or review prior checks without an account.'**
   String get helpAdvantage4;
 
   /// No description provided for @helpWorkflowTitle.
@@ -2476,19 +2476,19 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet6.
   ///
   /// In en, this message translates to:
-  /// **'You can individually enable/disable engines and adjust the AI-detection confidence threshold in Settings (raising it lowers the chance of misjudging human writing as AI).'**
+  /// **'You can individually enable/disable engines, adjust engine weights, and set the AI-detection confidence threshold from 20% to 90% in Settings (raising it lowers the chance of misjudging human writing as AI).'**
   String get helpWorkflowStep2Bullet6;
 
   /// No description provided for @helpWorkflowStep3Title.
   ///
   /// In en, this message translates to:
-  /// **'Uploading a document'**
+  /// **'Adding content'**
   String get helpWorkflowStep3Title;
 
   /// No description provided for @helpWorkflowStep3Body.
   ///
   /// In en, this message translates to:
-  /// **'Three input methods: paste text directly, image OCR (recognized on-device with each platform\'s native framework), or import a file (txt / md / pdf / docx / doc). Text must be at least 40 characters long to submit for analysis.'**
+  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. On installed apps, OCR uses platform-native recognition; on Web, OCR uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
   String get helpWorkflowStep3Body;
 
   /// No description provided for @helpWorkflowStep4Title.
@@ -2512,7 +2512,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'The report page includes: an overall AI-probability gauge, a sentence-level heatmap, a breakdown of each engine\'s score and reasoning, hyperlink authenticity, and citation authenticity. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card (for sharing). Every analysis is automatically saved to \"History\" for later review.'**
+  /// **'The report page includes: an overall verdict, AI probability, confidence badge, elapsed time, sentence-level heatmap, engine contribution breakdown, hyperlink checks, and citation checks. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card. Every analysis is automatically saved to \"History\" on this device, including the source file name when one exists.'**
   String get helpWorkflowStep5Body;
 
   /// No description provided for @helpWorkflowStep1ChipOnboarding.
@@ -2578,7 +2578,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep3ChipImportFormats.
   ///
   /// In en, this message translates to:
-  /// **'PDF / DOCX / TXT / MD'**
+  /// **'PDF / DOCX / DOC / TXT / MD'**
   String get helpWorkflowStep3ChipImportFormats;
 
   /// No description provided for @helpWorkflowStep3ChipCodeFormulaIsolation.
@@ -2644,7 +2644,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpTuningStep1Body.
   ///
   /// In en, this message translates to:
-  /// **'From the home screen, tap the gear icon to open \"Settings\", then tap \"Open\" next to \"AI Model Management\".'**
+  /// **'From the full Settings page or the right-side settings panel on wide screens, open \"AI Model Management\" to download, update, activate, or remove local models.'**
   String get helpTuningStep1Body;
 
   /// No description provided for @helpTuningStep2Title.
@@ -2692,7 +2692,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpTuningStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates.'**
+  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI verdict threshold from Settings.'**
   String get helpTuningStep5Body;
 
   /// No description provided for @helpOfficialLinksTitle.
@@ -2806,19 +2806,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataHandling2.
   ///
   /// In en, this message translates to:
-  /// **'Any document content you type, paste, or import is analyzed entirely by on-device AI models on your own device — it is never uploaded to TruthLens or any third-party server.'**
+  /// **'Any text you type, paste, or import is analyzed entirely by on-device AI models on your own device. TruthLens does not upload document text to its own server or to a third-party AI-detection service.'**
   String get privacyDataHandling2;
 
   /// No description provided for @privacyDataHandling3.
   ///
   /// In en, this message translates to:
-  /// **'Analysis results and history are stored only in a local database on your device; uninstalling the app or clearing history removes them completely — TruthLens keeps no copy anywhere.'**
+  /// **'Analysis results and history are stored only in a local database on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; uninstalling the app or clearing history removes this local copy — TruthLens keeps no copy anywhere.'**
   String get privacyDataHandling3;
 
   /// No description provided for @privacyNetworkIntro.
   ///
   /// In en, this message translates to:
-  /// **'This app\'s core AI detection runs entirely on-device, but the following three features require network access:'**
+  /// **'This app\'s core AI detection runs entirely on-device, but the following optional or supporting features require network access:'**
   String get privacyNetworkIntro;
 
   /// No description provided for @privacyNetwork1.
@@ -2836,8 +2836,14 @@ abstract class AppLocalizations {
   /// No description provided for @privacyNetwork3.
   ///
   /// In en, this message translates to:
-  /// **'3. Hyperlink & citation authenticity verification: on by default, can be turned off in Settings. When enabled, URLs or bibliography text detected in a document are sent directly to that URL itself, or to the Crossref public API, sending only the URL/DOI/citation text itself — never the rest of the document\'s content.'**
+  /// **'3. Hyperlink & citation authenticity verification: on by default, can be turned off in Settings. When enabled, URLs, DOI values, or bibliography text detected in a document are sent directly to the target website and/or public bibliographic registries such as Crossref/OpenAlex for verification — never the rest of the document\'s content.'**
   String get privacyNetwork3;
+
+  /// No description provided for @privacyNetwork4.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.'**
+  String get privacyNetwork4;
 
   /// No description provided for @privacyRightsIntro.
   ///

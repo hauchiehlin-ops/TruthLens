@@ -1741,6 +1741,10 @@ class AppLocalizationsPt extends AppLocalizations {
       '3. Verificação de autenticidade de hiperlinks e citações: ativada por padrão, pode ser desativada nas Configurações. Quando ativada, a URL ou o texto bibliográfico detectado no documento é enviado diretamente para essa URL, ou para a API pública da Crossref, enviando apenas o texto da URL/DOI/citação em si — nunca o restante do conteúdo do documento.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'Você pode limpar seu histórico de análise local a qualquer momento em \"Histórico\", desativar a verificação de hiperlinks/citações em \"Configurações\", ou remover todos os dados locais';
 

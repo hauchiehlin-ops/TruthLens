@@ -1744,6 +1744,10 @@ class AppLocalizationsEs extends AppLocalizations {
       '3. Verificación de autenticidad de hipervínculos y citas: activada por defecto, se puede desactivar en Ajustes. Cuando está activada, la URL o el texto bibliográfico detectados en el documento se envían directamente a esa URL, o a la API pública de Crossref, enviando solo el texto de la URL/DOI/cita en sí; nunca el resto del contenido del documento.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'Puedes borrar tu historial de análisis local en cualquier momento en \"Historial\", o desactivar la verificación de hipervínculos/citas en \"Ajustes\", o eliminar todos los datos locales';
 

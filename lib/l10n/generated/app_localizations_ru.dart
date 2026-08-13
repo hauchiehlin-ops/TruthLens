@@ -1736,6 +1736,10 @@ class AppLocalizationsRu extends AppLocalizations {
       '3. Проверка подлинности гиперссылок и цитирования: включена по умолчанию, можно отключить в Настройках. При включении URL-адрес или библиографический текст, обнаруженный в документе, отправляется напрямую на этот URL или в публичный API Crossref, отправляя только текст URL/DOI/цитирования — никогда остальное содержимое документа.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'Вы можете в любое время очистить свою локальную историю анализа в разделе «История», отключить проверку гиперссылок/цитирования в «Настройках» или удалить все локальные данные, выполнив';
 

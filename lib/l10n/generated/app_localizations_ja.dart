@@ -1685,6 +1685,10 @@ class AppLocalizationsJa extends AppLocalizations {
       '3. ハイパーリンクと引用文献の実在性検証：デフォルトで有効になっており、「設定」でオフにできます。有効時、文書内で検出されたURLや参考文献のテキストを、そのURL自体またはCrossref公開APIに直接送信します。送信するのはURL／DOI／書誌情報のテキストのみで、文書内の他の内容は含まれません。';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       '「履歴」でいつでもローカルの分析記録をクリアしたり、「設定」でハイパーリンク／引用文献検証機能をオフにしたり、または直接';
 

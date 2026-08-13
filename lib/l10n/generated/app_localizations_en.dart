@@ -1374,7 +1374,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent sub-models — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated, with sentence-by-sentence, explainable reasoning: not just a \"looks like AI\" percentage, but an explanation of \"why\".';
+      'TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent engines — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated. Reports show sentence-level evidence, engine contributions, the confidence threshold used for the verdict, and the imported file name when a file was selected.';
 
   @override
   String get helpComparisonTitle => 'Comparison with leading tools';
@@ -1463,7 +1463,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAdvantage4 =>
-      'Custom model import: advanced users can import their own local ONNX model to replace or supplement the built-in detection engines.';
+      'Local records and exports: reports can be saved as PDF/CSV/JSON/PNG, and the app keeps analysis history locally with the source file name when available, so you can re-run or review prior checks without an account.';
 
   @override
   String get helpWorkflowTitle => 'Full operating workflow';
@@ -1505,14 +1505,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'You can individually enable/disable engines and adjust the AI-detection confidence threshold in Settings (raising it lowers the chance of misjudging human writing as AI).';
+      'You can individually enable/disable engines, adjust engine weights, and set the AI-detection confidence threshold from 20% to 90% in Settings (raising it lowers the chance of misjudging human writing as AI).';
 
   @override
-  String get helpWorkflowStep3Title => 'Uploading a document';
+  String get helpWorkflowStep3Title => 'Adding content';
 
   @override
   String get helpWorkflowStep3Body =>
-      'Three input methods: paste text directly, image OCR (recognized on-device with each platform\'s native framework), or import a file (txt / md / pdf / docx / doc). Text must be at least 40 characters long to submit for analysis.';
+      'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. On installed apps, OCR uses platform-native recognition; on Web, OCR uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.';
 
   @override
   String get helpWorkflowStep4Title => 'Running analysis';
@@ -1526,7 +1526,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      'The report page includes: an overall AI-probability gauge, a sentence-level heatmap, a breakdown of each engine\'s score and reasoning, hyperlink authenticity, and citation authenticity. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card (for sharing). Every analysis is automatically saved to \"History\" for later review.';
+      'The report page includes: an overall verdict, AI probability, confidence badge, elapsed time, sentence-level heatmap, engine contribution breakdown, hyperlink checks, and citation checks. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card. Every analysis is automatically saved to \"History\" on this device, including the source file name when one exists.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => 'First launch';
@@ -1559,7 +1559,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'Image OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>
@@ -1597,7 +1598,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpTuningStep1Body =>
-      'From the home screen, tap the gear icon to open \"Settings\", then tap \"Open\" next to \"AI Model Management\".';
+      'From the full Settings page or the right-side settings panel on wide screens, open \"AI Model Management\" to download, update, activate, or remove local models.';
 
   @override
   String get helpTuningStep2Title => 'Pick a model for your device';
@@ -1625,7 +1626,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates.';
+      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI verdict threshold from Settings.';
 
   @override
   String get helpOfficialLinksTitle => 'Official model download links';
@@ -1700,15 +1701,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyDataHandling2 =>
-      'Any document content you type, paste, or import is analyzed entirely by on-device AI models on your own device — it is never uploaded to TruthLens or any third-party server.';
+      'Any text you type, paste, or import is analyzed entirely by on-device AI models on your own device. TruthLens does not upload document text to its own server or to a third-party AI-detection service.';
 
   @override
   String get privacyDataHandling3 =>
-      'Analysis results and history are stored only in a local database on your device; uninstalling the app or clearing history removes them completely — TruthLens keeps no copy anywhere.';
+      'Analysis results and history are stored only in a local database on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; uninstalling the app or clearing history removes this local copy — TruthLens keeps no copy anywhere.';
 
   @override
   String get privacyNetworkIntro =>
-      'This app\'s core AI detection runs entirely on-device, but the following three features require network access:';
+      'This app\'s core AI detection runs entirely on-device, but the following optional or supporting features require network access:';
 
   @override
   String get privacyNetwork1 =>
@@ -1720,7 +1721,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. Hyperlink & citation authenticity verification: on by default, can be turned off in Settings. When enabled, URLs or bibliography text detected in a document are sent directly to that URL itself, or to the Crossref public API, sending only the URL/DOI/citation text itself — never the rest of the document\'s content.';
+      '3. Hyperlink & citation authenticity verification: on by default, can be turned off in Settings. When enabled, URLs, DOI values, or bibliography text detected in a document are sent directly to the target website and/or public bibliographic registries such as Crossref/OpenAlex for verification — never the rest of the document\'s content.';
+
+  @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
 
   @override
   String get privacyRightsIntro =>

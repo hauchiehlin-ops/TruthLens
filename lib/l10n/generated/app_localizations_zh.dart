@@ -1322,7 +1322,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立子模型——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，並提供逐句、可解釋的分析理由：不是只給一個「像 AI」的百分比，而是說明「為什麼」。';
+      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成。報告會顯示逐句證據、各引擎貢獻、本次使用的判定信心閾值，以及匯入文件時的來源檔名。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -1408,7 +1408,8 @@ class AppLocalizationsZh extends AppLocalizations {
       'ESL（非母語寫作者）偏差修正：自動偵測非母語寫作特徵並降低統計模型權重，避免將非母語人士的自然寫作誤判為 AI。';
 
   @override
-  String get helpAdvantage4 => '自訂模型匯入：進階使用者可自行匯入本機 ONNX 模型，取代或補充內建偵測引擎。';
+  String get helpAdvantage4 =>
+      '本機紀錄與匯出：報告可匯出 PDF／CSV／JSON／PNG，歷史紀錄只保存在本機，並在有匯入檔案時保留來源檔名，方便重新分析或回顧。';
 
   @override
   String get helpWorkflowTitle => '完整操作流程';
@@ -1450,14 +1451,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整 AI 判定信心閾值（調高可降低誤判人類文章為 AI 的機率）。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 判定信心閾值設為 20%–90%（調高可降低誤判人類文章為 AI 的機率）。';
 
   @override
-  String get helpWorkflowStep3Title => '文檔上傳';
+  String get helpWorkflowStep3Title => '加入內容';
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識（OCR，各平台原生框架離線辨識）、匯入文件（txt / md / pdf / docx / doc）。文字需達 40 字元以上才能送出分析。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -1471,7 +1472,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      '報告頁包含：整體 AI 機率環狀圖、逐句熱力圖、四引擎明細評分與理由、超連結真實性、文獻參考真實性。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡（社群分享用）。每次分析結果自動保存於「歷史紀錄」，可隨時回顧。';
+      '報告頁包含：整體判定、AI 機率、信心度標籤、分析耗時、逐句熱力圖、四引擎貢獻與理由、超連結驗證、文獻參考驗證。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡。每次分析結果會自動保存於本機「歷史紀錄」，有來源檔名時也會一併保存。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -1504,7 +1505,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => '圖片 OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';
@@ -1537,7 +1539,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpTuningStep1Title => '開啟模型管理畫面';
 
   @override
-  String get helpTuningStep1Body => '從首頁點齒輪圖示進入「設定」，再點「AI 模型管理」旁的「開啟」。';
+  String get helpTuningStep1Body =>
+      '可從完整「設定」頁，或寬螢幕首頁右側設定面板，開啟「AI 模型管理」來下載、更新、啟用或移除本機模型。';
 
   @override
   String get helpTuningStep2Title => '依裝置能力挑選模型';
@@ -1565,7 +1568,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 判定閾值。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';
@@ -1635,14 +1638,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyDataHandling2 =>
-      '您輸入、貼上或匯入的文件內容，皆在您的裝置上由本機 AI 模型完成分析，不會上傳到 TruthLens 或任何第三方伺服器。';
+      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。TruthLens 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果與歷史紀錄僅儲存在您裝置本機的資料庫中；解除安裝 App 或清除歷史紀錄即會一併移除，TruthLens 不持有任何副本。';
+      '分析結果與歷史紀錄僅儲存在您裝置本機的資料庫中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。解除安裝 App 或清除歷史紀錄即會移除此本機副本，TruthLens 不持有任何副本。';
 
   @override
-  String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列三項功能需要連線：';
+  String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列支援或選用功能需要連線：';
 
   @override
   String get privacyNetwork1 =>
@@ -1653,7 +1656,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將文件中偵測到的網址或參考文獻文字，直接送往該網址本身或 Crossref 公開 API 查詢，僅傳送網址／DOI／書目文字本身，不含文件中的其他內容。';
+      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將文件中偵測到的網址、DOI 或參考文獻文字，直接送往目標網站及／或 Crossref、OpenAlex 等公開書目登記服務查詢，僅傳送網址／DOI／書目文字本身，不含文件中的其他內容。';
+
+  @override
+  String get privacyNetwork4 =>
+      '4. Web OCR 備援：僅 Web 版適用。圖片 OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片會由瀏覽器直接送往 Google Gemini API 進行 OCR，金鑰只儲存在該瀏覽器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可隨時於「歷史紀錄」清除本機分析紀錄，或於「設定」關閉超連結／文獻驗證功能，或直接';
@@ -3080,7 +3087,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款内核 AI 推论完全在设备端运行的跨平台内容检测应用程序（iOS / Android / macOS / Windows）。通过四个独立子模型——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写侦测——加权投票判定文本是否为 AI 生成，并提供逐句、可解释的分析理由：不是只给一个「像 AI」的百分比，而是说明「为什么」。';
+      'TruthLens 是一款内核 AI 推论完全在设备端运行的跨平台内容检测应用程序（iOS / Android / macOS / Windows）。通过四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写侦测——加权投票判定文本是否为 AI 生成。报告会显示逐句证据、各引擎贡献、本次使用的判定信心阈值，以及导入文档时的来源文件名。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -3166,7 +3173,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       'ESL（非母语写作者）偏差修正：自动侦测非母语写作特征并降低统计模型权重，避免将非母语人士的自然写作误判为 AI。';
 
   @override
-  String get helpAdvantage4 => '自订模型导入：高端用户可自行导入本机 ONNX 模型，取代或补充内置侦测引擎。';
+  String get helpAdvantage4 =>
+      '本机纪录与导出：报告可导出 PDF／CSV／JSON／PNG，历史纪录只保存在本机，并在有导入文件时保留来源文件名，方便重新分析或回顾。';
 
   @override
   String get helpWorkflowTitle => '完整操作流程';
@@ -3208,14 +3216,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「设置」个别激活／停用引擎、调整 AI 判定信心阈值（调高可降低误判人类文章为 AI 的几率）。';
+      '可在「设置」个别激活／停用引擎、调整引擎权重，并将 AI 判定信心阈值设为 20%–90%（调高可降低误判人类文章为 AI 的几率）。';
 
   @override
-  String get helpWorkflowStep3Title => '文档上传';
+  String get helpWorkflowStep3Title => '加入内容';
 
   @override
   String get helpWorkflowStep3Body =>
-      '三种输入方式：直接粘贴文本、图片辨识（OCR，各平台原生框架脱机辨识）、导入文档（txt / md / pdf / docx / doc）。文本需达 40 字符以上才能送出分析。';
+      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc）。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
 
   @override
   String get helpWorkflowStep4Title => '开始分析';
@@ -3229,7 +3237,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '报告页包含：整体 AI 几率环状图、逐句热力图、四引擎明细评分与理由、超链接真实性、文献参考真实性。可导出 PDF 完整报告、CSV 逐句数据、JSON（供系统集成）、PNG 摘要卡（社群分享用）。每次分析结果自动保存于「历史纪录」，可随时回顾。';
+      '报告页包含：整体判定、AI 几率、信心度标签、分析耗时、逐句热力图、四引擎贡献与理由、超链接验证、文献参考验证。可导出 PDF 完整报告、CSV 逐句数据、JSON（供系统集成）、PNG 摘要卡。每次分析结果会自动保存于本机「历史纪录」，有来源文件名时也会一并保存。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
@@ -3262,7 +3270,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get helpWorkflowStep3ChipImageOcr => '图片 OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '代码/公式隔离';
@@ -3295,7 +3304,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get helpTuningStep1Title => '打开模型管理画面';
 
   @override
-  String get helpTuningStep1Body => '从首页点齿轮图标进入「设置」，再点「AI 模型管理」旁的「打开」。';
+  String get helpTuningStep1Body =>
+      '可从完整「设置」页，或宽屏首页右侧设置面板，打开「AI 模型管理」来下载、更新、激活或移除本机模型。';
 
   @override
   String get helpTuningStep2Title => '依设备能力挑选模型';
@@ -3323,7 +3333,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。';
+      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。也可在设置中调整四引擎权重与 20%–90% 的 AI 判定阈值。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下载链接';
@@ -3393,14 +3403,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling2 =>
-      '您输入、粘贴或导入的文档内容，皆在您的设备上由本机 AI 模型完成分析，不会上传到 TruthLens 或任何第三方服务器。';
+      '您输入、粘贴或导入的文本内容，皆在您的设备上由本机 AI 模型完成分析。TruthLens 不会将文档文本上传到自有服务器或第三方 AI 检测服务。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析结果与历史纪录仅保存在您设备本机的数据库中；卸载 App 或清除历史纪录即会一并移除，TruthLens 不持有任何副本。';
+      '分析结果与历史纪录仅保存在您设备本机的数据库中；纪录包含分析文本、分数、时间，以及导入文档时的来源文件名。卸载 App 或清除历史纪录即会移除此本机副本，TruthLens 不持有任何副本。';
 
   @override
-  String get privacyNetworkIntro => '本 App 的内核 AI 侦测完全在设备端运行，但下列三项功能需要连接：';
+  String get privacyNetworkIntro => '本 App 的内核 AI 侦测完全在设备端运行，但下列支持或选用功能需要连接：';
 
   @override
   String get privacyNetwork1 =>
@@ -3411,7 +3421,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超链接与参考文献真实性验证：缺省打开，可在「设置」关闭。打开时，会将文档中侦测到的网址或参考文献文本，直接送往该网址本身或 Crossref 公开 API 查找，仅发送网址／DOI／书目文本本身，不含文档中的其他内容。';
+      '3. 超链接与参考文献真实性验证：缺省打开，可在「设置」关闭。打开时，会将文档中侦测到的网址、DOI 或参考文献文本，直接送往目标网站及／或 Crossref、OpenAlex 等公开书目登记服务查询，仅发送网址／DOI／书目文本本身，不含文档中的其他内容。';
+
+  @override
+  String get privacyNetwork4 =>
+      '4. Web OCR 备用：仅 Web 版适用。图片 OCR 会优先使用您设置的本地 OCR 服务器；若您选择输入 Gemini API 密钥，所选图片会由浏览器直接送往 Google Gemini API 进行 OCR，密钥只保存在该浏览器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可随时于「历史纪录」清除本机分析纪录，或于「设置」关闭超链接／文献验证功能，或直接';
@@ -4838,7 +4852,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立子模型——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，並提供逐句、可解釋的分析理由：不是只給一個「像 AI」的百分比，而是說明「為什麼」。';
+      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成。報告會顯示逐句證據、各引擎貢獻、本次使用的判定信心閾值，以及匯入文件時的來源檔名。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -4924,7 +4938,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       'ESL（非母語寫作者）偏差修正：自動偵測非母語寫作特徵並降低統計模型權重，避免將非母語人士的自然寫作誤判為 AI。';
 
   @override
-  String get helpAdvantage4 => '自訂模型匯入：進階使用者可自行匯入本機 ONNX 模型，取代或補充內建偵測引擎。';
+  String get helpAdvantage4 =>
+      '本機紀錄與匯出：報告可匯出 PDF／CSV／JSON／PNG，歷史紀錄只保存在本機，並在有匯入檔案時保留來源檔名，方便重新分析或回顧。';
 
   @override
   String get helpWorkflowTitle => '完整操作流程';
@@ -4966,14 +4981,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整 AI 判定信心閾值（調高可降低誤判人類文章為 AI 的機率）。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 判定信心閾值設為 20%–90%（調高可降低誤判人類文章為 AI 的機率）。';
 
   @override
-  String get helpWorkflowStep3Title => '文檔上傳';
+  String get helpWorkflowStep3Title => '加入內容';
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識（OCR，各平台原生框架離線辨識）、匯入文件（txt / md / pdf / docx / doc）。文字需達 40 字元以上才能送出分析。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -4987,7 +5002,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '報告頁包含：整體 AI 機率環狀圖、逐句熱力圖、四引擎明細評分與理由、超連結真實性、文獻參考真實性。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡（社群分享用）。每次分析結果自動保存於「歷史紀錄」，可隨時回顧。';
+      '報告頁包含：整體判定、AI 機率、信心度標籤、分析耗時、逐句熱力圖、四引擎貢獻與理由、超連結驗證、文獻參考驗證。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡。每次分析結果會自動保存於本機「歷史紀錄」，有來源檔名時也會一併保存。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -5020,7 +5035,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get helpWorkflowStep3ChipImageOcr => '圖片 OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';
@@ -5053,7 +5069,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get helpTuningStep1Title => '開啟模型管理畫面';
 
   @override
-  String get helpTuningStep1Body => '從首頁點齒輪圖示進入「設定」，再點「AI 模型管理」旁的「開啟」。';
+  String get helpTuningStep1Body =>
+      '可從完整「設定」頁，或寬螢幕首頁右側設定面板，開啟「AI 模型管理」來下載、更新、啟用或移除本機模型。';
 
   @override
   String get helpTuningStep2Title => '依裝置能力挑選模型';
@@ -5081,7 +5098,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 判定閾值。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';
@@ -5151,14 +5168,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling2 =>
-      '您輸入、貼上或匯入的文件內容，皆在您的裝置上由本機 AI 模型完成分析，不會上傳到 TruthLens 或任何第三方伺服器。';
+      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。TruthLens 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果與歷史紀錄僅儲存在您裝置本機的資料庫中；解除安裝 App 或清除歷史紀錄即會一併移除，TruthLens 不持有任何副本。';
+      '分析結果與歷史紀錄僅儲存在您裝置本機的資料庫中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。解除安裝 App 或清除歷史紀錄即會移除此本機副本，TruthLens 不持有任何副本。';
 
   @override
-  String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列三項功能需要連線：';
+  String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列支援或選用功能需要連線：';
 
   @override
   String get privacyNetwork1 =>
@@ -5169,7 +5186,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將文件中偵測到的網址或參考文獻文字，直接送往該網址本身或 Crossref 公開 API 查詢，僅傳送網址／DOI／書目文字本身，不含文件中的其他內容。';
+      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將文件中偵測到的網址、DOI 或參考文獻文字，直接送往目標網站及／或 Crossref、OpenAlex 等公開書目登記服務查詢，僅傳送網址／DOI／書目文字本身，不含文件中的其他內容。';
+
+  @override
+  String get privacyNetwork4 =>
+      '4. Web OCR 備援：僅 Web 版適用。圖片 OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片會由瀏覽器直接送往 Google Gemini API 進行 OCR，金鑰只儲存在該瀏覽器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可隨時於「歷史紀錄」清除本機分析紀錄，或於「設定」關閉超連結／文獻驗證功能，或直接';

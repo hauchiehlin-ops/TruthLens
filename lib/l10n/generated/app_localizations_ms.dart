@@ -1729,6 +1729,10 @@ class AppLocalizationsMs extends AppLocalizations {
       '3. Pengesahan ketulenan pautan hiper & petikan: dihidupkan secara lalai, boleh dimatikan dalam Tetapan. Apabila diaktifkan, URL atau teks bibliografi yang dikesan dalam dokumen dihantar terus ke URL itu sendiri, atau ke API awam Crossref, menghantar hanya teks URL/DOI/petikan itu sendiri — tidak pernah kandungan lain dokumen.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       'Anda boleh mengosongkan sejarah analisis tempatan bila-bila masa dalam \"Sejarah\", atau mematikan pengesahan pautan hiper/petikan dalam \"Tetapan\", atau membuang semua data tempatan dengan';
 

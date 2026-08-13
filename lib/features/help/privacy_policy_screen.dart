@@ -9,7 +9,7 @@ import '../../l10n/generated/app_localizations.dart';
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
-  static const _lastUpdated = '2026-07-05';
+  static const _lastUpdated = '2026-08-14';
 
   _PlatformPolicy _policyFor(TargetPlatform platform, AppLocalizations l10n) {
     switch (platform) {
@@ -41,17 +41,23 @@ class PrivacyPolicyScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(policy.icon,
-                      color: Theme.of(context).colorScheme.primary),
+                  Icon(
+                    policy.icon,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.privacyPlatformTitle(policy.platformName),
-                            style: textTheme.titleMedium),
-                        Text(l10n.privacyLastUpdated(_lastUpdated),
-                            style: textTheme.bodySmall),
+                        Text(
+                          l10n.privacyPlatformTitle(policy.platformName),
+                          style: textTheme.titleMedium,
+                        ),
+                        Text(
+                          l10n.privacyLastUpdated(_lastUpdated),
+                          style: textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),
@@ -84,8 +90,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               l10n.privacyDisclaimer,
-              style: textTheme.bodySmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.outline),
+              style: textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
             ),
           ),
         ],
@@ -124,6 +131,7 @@ _PolicySection _networkSection(AppLocalizations l10n) =>
       l10n.privacyNetwork1,
       l10n.privacyNetwork2,
       l10n.privacyNetwork3,
+      l10n.privacyNetwork4,
     ]);
 
 _PolicySection _rightsSection(AppLocalizations l10n, String removeAction) =>
@@ -132,63 +140,63 @@ _PolicySection _rightsSection(AppLocalizations l10n, String removeAction) =>
     ]);
 
 _PlatformPolicy _iosPolicy(AppLocalizations l10n) => _PlatformPolicy(
-      platformName: 'iOS',
-      icon: Icons.phone_iphone,
-      sections: [
-        _PolicySection(l10n.privacySectionOverviewIos, [
-          l10n.privacyIosOverview1,
-          l10n.privacyIosOverview2,
-        ]),
-        _dataSection(l10n),
-        _networkSection(l10n),
-        _rightsSection(l10n, l10n.privacyRemoveIos),
-      ],
-    );
+  platformName: 'iOS',
+  icon: Icons.phone_iphone,
+  sections: [
+    _PolicySection(l10n.privacySectionOverviewIos, [
+      l10n.privacyIosOverview1,
+      l10n.privacyIosOverview2,
+    ]),
+    _dataSection(l10n),
+    _networkSection(l10n),
+    _rightsSection(l10n, l10n.privacyRemoveIos),
+  ],
+);
 
 _PlatformPolicy _androidPolicy(AppLocalizations l10n) => _PlatformPolicy(
-      platformName: 'Android',
-      icon: Icons.android,
-      sections: [
-        _PolicySection(l10n.privacySectionOverviewAndroid, [
-          l10n.privacyAndroidOverview1,
-          l10n.privacyAndroidOverview2,
-        ]),
-        _dataSection(l10n),
-        _networkSection(l10n),
-        _rightsSection(l10n, l10n.privacyRemoveAndroid),
-      ],
-    );
+  platformName: 'Android',
+  icon: Icons.android,
+  sections: [
+    _PolicySection(l10n.privacySectionOverviewAndroid, [
+      l10n.privacyAndroidOverview1,
+      l10n.privacyAndroidOverview2,
+    ]),
+    _dataSection(l10n),
+    _networkSection(l10n),
+    _rightsSection(l10n, l10n.privacyRemoveAndroid),
+  ],
+);
 
 _PlatformPolicy _macosPolicy(AppLocalizations l10n) => _PlatformPolicy(
-      platformName: 'macOS',
-      icon: Icons.laptop_mac,
-      sections: [
-        _PolicySection(l10n.privacySectionOverviewMacos, [
-          l10n.privacyMacosOverview1,
-          l10n.privacyMacosOverview2,
-        ]),
-        _dataSection(l10n),
-        _networkSection(l10n),
-        _rightsSection(l10n, l10n.privacyRemoveMacos),
-      ],
-    );
+  platformName: 'macOS',
+  icon: Icons.laptop_mac,
+  sections: [
+    _PolicySection(l10n.privacySectionOverviewMacos, [
+      l10n.privacyMacosOverview1,
+      l10n.privacyMacosOverview2,
+    ]),
+    _dataSection(l10n),
+    _networkSection(l10n),
+    _rightsSection(l10n, l10n.privacyRemoveMacos),
+  ],
+);
 
 _PlatformPolicy _windowsPolicy(AppLocalizations l10n) => _PlatformPolicy(
-      platformName: 'Windows',
-      icon: Icons.desktop_windows,
-      sections: [
-        _PolicySection(l10n.privacySectionOverviewWindows, [
-          l10n.privacyWindowsOverview1,
-          l10n.privacyWindowsOverview2,
-        ]),
-        _dataSection(l10n),
-        _networkSection(l10n),
-        _rightsSection(l10n, l10n.privacyRemoveWindows),
-      ],
-    );
+  platformName: 'Windows',
+  icon: Icons.desktop_windows,
+  sections: [
+    _PolicySection(l10n.privacySectionOverviewWindows, [
+      l10n.privacyWindowsOverview1,
+      l10n.privacyWindowsOverview2,
+    ]),
+    _dataSection(l10n),
+    _networkSection(l10n),
+    _rightsSection(l10n, l10n.privacyRemoveWindows),
+  ],
+);
 
 _PlatformPolicy _genericPolicy(AppLocalizations l10n) => _PlatformPolicy(
-      platformName: l10n.privacyGenericPlatformName,
-      icon: Icons.devices_other,
-      sections: [_dataSection(l10n), _networkSection(l10n)],
-    );
+  platformName: l10n.privacyGenericPlatformName,
+  icon: Icons.devices_other,
+  sections: [_dataSection(l10n), _networkSection(l10n)],
+);

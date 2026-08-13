@@ -1690,6 +1690,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '3. 하이퍼링크 및 인용 문헌 실재성 검증: 기본적으로 켜져 있으며 \"설정\"에서 끌 수 있습니다. 켜져 있으면 문서에서 감지된 URL이나 참고 문헌 텍스트를 해당 URL 자체 또는 Crossref 공개 API로 직접 전송합니다. URL／DOI／서지 정보 텍스트만 전송하며 문서의 다른 내용은 포함하지 않습니다.';
 
   @override
+  String get privacyNetwork4 =>
+      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+
+  @override
   String get privacyRightsIntro =>
       '\"기록\"에서 언제든지 로컬 분석 기록을 지우거나 \"설정\"에서 하이퍼링크／문헌 검증 기능을 끌 수 있으며, 또는 직접';
 
