@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 /// 文件匯入：支援 txt, md, pdf, docx, doc 等格式的離線解析。
@@ -32,33 +32,43 @@ class DocumentImporter {
     if (bytes == null) return null;
 
     final extension = file.extension?.toLowerCase() ?? '';
-    String text = '';
-
-    try {
-      if (extension == 'pdf') {
-        // PDF 離線文字抽取
-        final PdfDocument document = PdfDocument(inputBytes: bytes);
-        text = PdfTextExtractor(document).extractText();
-        document.dispose();
-      } else if (extension == 'docx') {
-        // DOCX 離線解壓與 <w:t> 文字提取
-        text = _parseDocx(bytes);
-      } else if (extension == 'doc') {
-        // 舊版 OLE Binary DOC 格式寬字元與可讀區段提取 Heuristics
-        text = _parseLegacyDoc(bytes);
-      } else {
-        // 預設為純文字（txt, md 等）
-        text = utf8.decode(bytes, allowMalformed: true);
-      }
-    } catch (e) {
-      // 發生錯誤時以純文字作為防退方案
-      text = utf8.decode(bytes, allowMalformed: true);
-    }
+    final text = parseBytes(bytes, extension: extension);
 
     return ImportedDocument(
       fileName: file.name,
       text: _stripFormatting(text.trim()),
     );
+  }
+
+  @visibleForTesting
+  static String parseBytes(List<int> bytes, {required String extension}) {
+    final normalizedExtension = extension.toLowerCase();
+
+    try {
+      if (normalizedExtension == 'pdf') {
+        // PDF 離線文字抽取
+        final PdfDocument document = PdfDocument(inputBytes: bytes);
+        try {
+          final text = PdfTextExtractor(document).extractText();
+          return _isUsablePdfText(text) ? text : '';
+        } finally {
+          document.dispose();
+        }
+      } else if (normalizedExtension == 'docx') {
+        // DOCX 離線解壓與 <w:t> 文字提取
+        return _parseDocx(bytes);
+      } else if (normalizedExtension == 'doc') {
+        // 舊版 OLE Binary DOC 格式寬字元與可讀區段提取 Heuristics
+        return _parseLegacyDoc(bytes);
+      }
+    } catch (e) {
+      // PDF 是二進位容器，不能以純文字 fallback，否則會把 xref / obj /
+      // trailer 等內部結構誤當正文匯入。其他純文字類型仍可容錯解碼。
+      if (normalizedExtension == 'pdf') return '';
+    }
+
+    // 預設為純文字（txt, md 等）
+    return utf8.decode(bytes, allowMalformed: true);
   }
 
   /// 移除常見的 Markdown 格式符號、HTML 標籤、LaTeX 數學公式、頁首頁尾與頁碼噪音，純化文字供 AI 分析
@@ -144,6 +154,49 @@ class DocumentImporter {
     } catch (_) {
       return '';
     }
+  }
+
+  static bool _isUsablePdfText(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return false;
+    if (_looksLikeRawPdfStructure(trimmed)) return false;
+
+    final lettersAndDigits = RegExp(
+      r'[\p{L}\p{N}]',
+      unicode: true,
+    ).allMatches(trimmed).length;
+    final visible = RegExp(r'\S').allMatches(trimmed).length;
+    if (visible == 0) return false;
+
+    // 正常文章應有足夠可讀字元；若抽取結果主要是符號、控制字元或 PDF
+    // 物件編號，寧可提示無可讀文字，避免後續 AI 分析被垃圾內容污染。
+    return lettersAndDigits >= 20 && lettersAndDigits / visible >= 0.35;
+  }
+
+  static bool _looksLikeRawPdfStructure(String text) {
+    final lower = text.toLowerCase();
+    final structuralHits = <String>[
+      '%pdf',
+      'xref',
+      'startxref',
+      'trailer',
+      'endobj',
+      ' obj',
+      '/calrgb',
+      '/flatedecode',
+      '%%eof',
+    ].where(lower.contains).length;
+
+    if (structuralHits >= 3) return true;
+
+    final lines = text.split(RegExp(r'\r?\n'));
+    if (lines.length < 6) return false;
+    final xrefLikeLines = lines.where((line) {
+      final value = line.trim();
+      return RegExp(r'^\d{10}\s+\d{5}\s+[nf]\b').hasMatch(value) ||
+          RegExp(r'^\d+\s+\d+\s+obj\b', caseSensitive: false).hasMatch(value);
+    }).length;
+    return xrefLikeLines >= 4;
   }
 
   static String _parseLegacyDoc(List<int> bytes) {

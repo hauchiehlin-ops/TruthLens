@@ -1,5 +1,22 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-14（第四十九次更新）— 修復：Web PDF 匯入解析與受保護部署 Manifest
+
+**概述**
+回應 Web 版匯入 PDF 後出現 `xref` / `trailer` / `obj` 等 PDF 內部結構，以及 Vercel SSO 保護部署下 `manifest.json` 被 CORS 擋住的問題：
+1. PDF 匯入不再於解析失敗時回退成 UTF-8 原始位元組，避免把 PDF 二進位容器內容誤當正文
+2. 新增 PDF 抽取品質檢查，若結果像 PDF 結構表、xref 或可讀字元比例過低，會視為無可讀文字，輸入頁改顯示既有的「沒有可讀取的文字內容」提示
+3. 正常具有文字層的 PDF 仍會透過 Syncfusion `PdfTextExtractor` 離線抽取，保留原本本地優先流程
+4. Web `manifest.json` 連結改為 `crossorigin="use-credentials"`，讓受 Vercel SSO / protected deployment 保護的環境可帶登入 credential 請求 manifest，降低轉址到 `vercel.com/sso-api` 後被 CORS 擋住的機率
+5. 新增 PDF 文字層抽取與原始 PDF 結構噪音防回退測試，並完成 Web build 驗證
+
+**修復內容**：✅ **完成**
+
+- 匯入無法抽文字的 PDF 時不再污染輸入框與後續分析
+- Web app 在受保護部署環境下的 manifest 請求更符合 credential 流程
+
+---
+
 ## 2026-08-14（第四十八次更新）— 改進：Web OCR 本地伺服器自動設定精靈
 
 **概述**

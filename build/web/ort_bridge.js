@@ -13,6 +13,7 @@
     ortPromise: null,
     epKind: null, // 'webgpu' | 'wasm'
     sessions: new Map(),
+    runQueue: Promise.resolve(),
   };
 
   function loadScript(src) {
@@ -62,66 +63,169 @@
   }
 
   async function loadModel(modelId, modelBytes) {
-    const ort = await ensureOrt();
-    const bytes = modelBytes instanceof Uint8Array ? modelBytes : new Uint8Array(modelBytes);
+    return enqueueOrtWork(async () => {
+      const ort = await ensureOrt();
+      const bytes = modelBytes instanceof Uint8Array ? modelBytes : new Uint8Array(modelBytes);
 
-    const tryProviders = [];
-    if (state.epKind === 'webgpu') {
-      tryProviders.push(['webgpu', 'wasm']);
-    }
-    tryProviders.push(['wasm']);
+      releaseModel(modelId);
 
-    let session;
-    let usedEp = 'wasm';
-    let lastError;
-
-    for (const eps of tryProviders) {
-      try {
-        session = await ort.InferenceSession.create(bytes, { executionProviders: eps });
-        usedEp = eps[0];
-        break;
-      } catch (e) {
-        lastError = e;
-        console.warn('[truthlensOrt] ' + eps.join('/') + ' 建立 session 失敗，嘗試後續 provider：', e);
+      const tryProviders = [];
+      if (state.epKind === 'webgpu') {
+        tryProviders.push(['webgpu', 'wasm']);
       }
-    }
+      tryProviders.push(['wasm']);
 
-    if (!session) {
-      // 若因 wasm 尋徑或執行緒設定導致建立失敗，嘗試以 CDN wasmPaths 與單執行緒作為最後防線
-      try {
-        window.ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
-        window.ort.env.wasm.numThreads = 1;
-        session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] });
-        usedEp = 'wasm';
-      } catch (fallbackError) {
-        console.error('[truthlensOrt] 所有 ONNX Runtime session 建立方式皆失敗：', fallbackError);
-        throw lastError || fallbackError;
+      let session;
+      let usedEp = 'wasm';
+      let lastError;
+
+      for (const eps of tryProviders) {
+        try {
+          session = await ort.InferenceSession.create(bytes, { executionProviders: eps });
+          usedEp = eps[0];
+          break;
+        } catch (e) {
+          lastError = e;
+          console.warn('[truthlensOrt] ' + eps.join('/') + ' 建立 session 失敗，嘗試後續 provider：', e);
+        }
       }
-    }
 
-    state.sessions.set(modelId, session);
-    return usedEp;
+      if (!session) {
+        // 若因 wasm 尋徑或執行緒設定導致建立失敗，嘗試以 CDN wasmPaths 與單執行緒作為最後防線
+        try {
+          window.ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
+          window.ort.env.wasm.numThreads = 1;
+          session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] });
+          usedEp = 'wasm';
+        } catch (fallbackError) {
+          console.error('[truthlensOrt] 所有 ONNX Runtime session 建立方式皆失敗：', fallbackError);
+          throw lastError || fallbackError;
+        }
+      }
+
+      const inputTypes = resolveInputTypes(session);
+      state.sessions.set(modelId, { session, inputTypes });
+      return usedEp;
+    });
   }
 
   async function run(modelId, inputIds, attentionMask, seqLen) {
-    const ort = window.ort;
-    const session = state.sessions.get(modelId);
-    if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
-    const shape = [1, seqLen];
-    const ids = BigInt64Array.from(inputIds.map((v) => BigInt(v)));
-    const mask = BigInt64Array.from(attentionMask.map((v) => BigInt(v)));
-    const feeds = {
-      input_ids: new ort.Tensor('int64', ids, shape),
-      attention_mask: new ort.Tensor('int64', mask, shape),
+    return runBatch(modelId, inputIds, attentionMask, 1, seqLen);
+  }
+
+  async function runBatch(modelId, inputIds, attentionMask, batchSize, seqLen) {
+    return enqueueOrtWork(async () => {
+      const ort = window.ort;
+      const entry = state.sessions.get(modelId);
+      const session = entry && entry.session ? entry.session : entry;
+      if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
+      const shape = [batchSize, seqLen];
+      let results;
+
+      const inputTypes = (entry && entry.inputTypes) || {};
+      const firstType = inputTypes.input_ids || inputTypes.input || 'int64';
+      const typeOrder = firstType === 'int32' ? ['int32', 'int64'] : ['int64', 'int32'];
+      let lastError;
+
+      for (const tensorType of typeOrder) {
+        try {
+          results = await session.run(buildFeeds(ort, tensorType, inputIds, attentionMask, shape));
+          break;
+        } catch (e) {
+          lastError = e;
+          if (isDefinitiveTypeError(e, tensorType)) {
+            continue;
+          }
+          if (mentionsExpectedType(e, tensorType)) {
+            break;
+          }
+          console.warn('[truthlensOrt] ' + tensorType + ' 輸入推論失敗，嘗試其他型別：', e);
+        }
+      }
+
+      if (!results) {
+        throw lastError || new Error('ONNX 推論失敗');
+      }
+      const outputName = Object.keys(results)[0];
+      const output = results[outputName];
+      return {
+        data: Array.from(output.data, numberFromTensorValue),
+        dims: Array.from(output.dims, numberFromTensorValue),
+      };
+    });
+  }
+
+  function numberFromTensorValue(value) {
+    if (typeof value === 'bigint') return Number(value);
+    return Number(value);
+  }
+
+  function buildFeeds(ort, tensorType, inputIds, attentionMask, shape) {
+    if (tensorType === 'int32') {
+      return {
+        input_ids: new ort.Tensor('int32', Int32Array.from(inputIds), shape),
+        attention_mask: new ort.Tensor('int32', Int32Array.from(attentionMask), shape),
+      };
+    }
+    return {
+      input_ids: new ort.Tensor(
+        'int64',
+        BigInt64Array.from(Array.from(inputIds, (v) => BigInt(v))),
+        shape,
+      ),
+      attention_mask: new ort.Tensor(
+        'int64',
+        BigInt64Array.from(Array.from(attentionMask, (v) => BigInt(v))),
+        shape,
+      ),
     };
-    const results = await session.run(feeds);
-    const outputName = Object.keys(results)[0];
-    const output = results[outputName];
-    return { data: Array.from(output.data), dims: Array.from(output.dims) };
+  }
+
+  function resolveInputTypes(session) {
+    const out = {};
+    try {
+      const metadata = session.inputMetadata || {};
+      for (const name of Object.keys(metadata)) {
+        const meta = metadata[name];
+        if (meta && typeof meta.type === 'string') out[name] = meta.type;
+      }
+    } catch (_) {
+      /* metadata is best effort */
+    }
+    return out;
+  }
+
+  function errorText(e) {
+    return String((e && (e.message || e.toString && e.toString())) || e || '');
+  }
+
+  function isDefinitiveTypeError(e, tensorType) {
+    const text = errorText(e);
+    return (
+      text.includes('Unexpected input data type') &&
+      text.includes('Actual: (tensor(' + tensorType + '))')
+    );
+  }
+
+  function mentionsExpectedType(e, tensorType) {
+    const text = errorText(e);
+    return (
+      text.includes('Unexpected input data type') &&
+      text.includes('expected: (tensor(' + tensorType + '))')
+    );
+  }
+
+  function enqueueOrtWork(task) {
+    // onnxruntime-web 的部分 execution provider 不允許同一執行環境重入
+    // session.run；全域佇列能徹底避免 Session already started / Session mismatch。
+    const next = state.runQueue.then(task, task);
+    state.runQueue = next.catch(() => {});
+    return next;
   }
 
   function releaseModel(modelId) {
-    const session = state.sessions.get(modelId);
+    const entry = state.sessions.get(modelId);
+    const session = entry && entry.session ? entry.session : entry;
     if (session) {
       try {
         session.release();
@@ -136,5 +240,5 @@
     return state.epKind;
   }
 
-  window.truthlensOrt = { loadModel, run, releaseModel, epKind, ensureOrt };
+  window.truthlensOrt = { loadModel, run, runBatch, releaseModel, epKind, ensureOrt };
 })();

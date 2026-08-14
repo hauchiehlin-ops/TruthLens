@@ -37,6 +37,17 @@
     }
   }
 
+  async function size(fileName) {
+    try {
+      const dir = await root();
+      const handle = await dir.getFileHandle(fileName);
+      const file = await handle.getFile();
+      return file.size;
+    } catch (e) {
+      return -1;
+    }
+  }
+
   async function deleteFile(fileName) {
     try {
       const dir = await root();
@@ -56,5 +67,5 @@
     await writeBytes(fileName, new TextEncoder().encode(text));
   }
 
-  window.truthlensFs = { readBytes, writeBytes, exists, deleteFile, readText, writeText };
+  window.truthlensFs = { readBytes, writeBytes, exists, size, deleteFile, readText, writeText };
 })();
