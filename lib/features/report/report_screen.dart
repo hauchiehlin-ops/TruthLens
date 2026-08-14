@@ -12,6 +12,7 @@ import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/professional_report_header.dart';
 import '../../shared/widgets/suspicious_sentences_list.dart';
+import 'bibliography_presentation.dart';
 import 'report_document.dart';
 
 @visibleForTesting
@@ -157,7 +158,7 @@ class _ReportScreenState extends State<ReportScreen> {
         ).then((checks) {
           if (mounted) {
             setState(() {
-              _bibChecks = checks;
+              _bibChecks = orderBibliographyChecks(checks);
               _checkingBib = false;
               _bibCompleted = checks.length;
               _bibTotal = checks.length;
@@ -236,7 +237,7 @@ class _ReportScreenState extends State<ReportScreen> {
       for (var i = 0; i < updatedChecks.length; i += 1) {
         workingChecks[targetIndexes[i]] = updatedChecks[i];
       }
-      _bibChecks = workingChecks;
+      _bibChecks = orderBibliographyChecks(workingChecks);
       _checkingBib = false;
       _bibCompleted = updatedChecks.length;
       _bibTotal = updatedChecks.length;
@@ -687,41 +688,39 @@ class _ReportScreenState extends State<ReportScreen> {
                         ),
                         const SizedBox(height: 6),
                         for (final c in previewChecks)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  switch (c.confidence) {
-                                    CitationMatchConfidence.high =>
-                                      Icons.check_circle,
-                                    CitationMatchConfidence.notFound =>
-                                      Icons.link_off,
-                                    CitationMatchConfidence.uncertain =>
-                                      Icons.report_problem_outlined,
-                                  },
-                                  size: 16,
-                                  color: switch (c.confidence) {
-                                    CitationMatchConfidence.high =>
-                                      Colors.green,
-                                    CitationMatchConfidence.notFound =>
-                                      Colors.red,
-                                    CitationMatchConfidence.uncertain =>
-                                      Colors.orange,
-                                  },
+                          Builder(
+                            builder: (context) {
+                              final presentation = presentBibliographyCheck(
+                                c,
+                                l10n,
+                              );
+                              final statusColor = _bibStatusColor(
+                                presentation.tone,
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      _bibStatusIcon(c),
+                                      size: 16,
+                                      color: statusColor,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        _bibStatusLabel(c, l10n),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: statusColor),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    _bibStatusLabel(c, l10n),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                       ],
                     ],
@@ -776,63 +775,69 @@ class _ReportScreenState extends State<ReportScreen> {
             ],
             const SizedBox(height: 8),
             for (var i = 0; i < checks.length; i += 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      switch (checks[i].confidence) {
-                        CitationMatchConfidence.high => Icons.check_circle,
-                        CitationMatchConfidence.notFound => Icons.link_off,
-                        CitationMatchConfidence.uncertain =>
-                          Icons.report_problem_outlined,
-                      },
-                      size: 18,
-                      color: switch (checks[i].confidence) {
-                        CitationMatchConfidence.high => Colors.green,
-                        CitationMatchConfidence.notFound => Colors.red,
-                        CitationMatchConfidence.uncertain => Colors.orange,
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${checks[i].entry.rawText}\n${_bibStatusLabel(checks[i], l10n)}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          if (checks[i].journalNameMismatch) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              l10n.reportBibJournalMismatch(
-                                checks[i].entry.venueTitle ?? '',
-                                checks[i].matchedJournal ?? '',
+              Builder(
+                builder: (context) {
+                  final presentation = presentBibliographyCheck(
+                    checks[i],
+                    l10n,
+                  );
+                  final statusColor = _bibStatusColor(presentation.tone);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          _bibStatusIcon(checks[i]),
+                          size: 18,
+                          color: statusColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${i + 1}. ${checks[i].entry.rawText}',
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Colors.orange.shade800,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ],
+                              const SizedBox(height: 2),
+                              Text(
+                                presentation.status,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                              if (presentation.warning != null) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  presentation.warning!,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: statusColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        if (_isUnreliableBibliographyResult(checks[i])) ...[
+                          const SizedBox(width: 6),
+                          IconButton(
+                            tooltip: l10n.reportBibRecheckOneTooltip,
+                            onPressed: _checkingBib
+                                ? null
+                                : () => _recheckBibliographyEntries([i]),
+                            icon: const Icon(Icons.refresh),
+                          ),
                         ],
-                      ),
+                      ],
                     ),
-                    if (_isUnreliableBibliographyResult(checks[i])) ...[
-                      const SizedBox(width: 6),
-                      IconButton(
-                        tooltip: l10n.reportBibRecheckOneTooltip,
-                        onPressed: _checkingBib
-                            ? null
-                            : () => _recheckBibliographyEntries([i]),
-                        icon: const Icon(Icons.refresh),
-                      ),
-                    ],
-                  ],
-                ),
+                  );
+                },
               ),
           ],
         ),
@@ -841,16 +846,26 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   String _bibStatusLabel(BibliographyCheckResult c, AppLocalizations l10n) {
-    return switch (c.confidence) {
-      CitationMatchConfidence.high => l10n.reportBibHighConfidence(
-        c.matchedJournal != null
-            ? l10n.reportBibJournalSuffix(c.matchedJournal!)
-            : '',
-      ),
-      CitationMatchConfidence.notFound => l10n.reportBibNotFound,
-      CitationMatchConfidence.uncertain => _bibUnreliableLabel(c, l10n),
-    };
+    final presentation = presentBibliographyCheck(c, l10n);
+    return presentation.warning == null
+        ? presentation.status
+        : '${presentation.status}\n${presentation.warning}';
   }
+
+  Color _bibStatusColor(BibliographyDisplayTone tone) => switch (tone) {
+    BibliographyDisplayTone.success => Colors.green.shade700,
+    BibliographyDisplayTone.warning => Colors.orange.shade800,
+    BibliographyDisplayTone.error => Colors.red.shade700,
+  };
+
+  IconData _bibStatusIcon(BibliographyCheckResult check) =>
+      switch (check.confidence) {
+        CitationMatchConfidence.high when !check.journalNameMismatch =>
+          Icons.check_circle,
+        CitationMatchConfidence.notFound => Icons.link_off,
+        CitationMatchConfidence.high ||
+        CitationMatchConfidence.uncertain => Icons.report_problem_outlined,
+      };
 
   bool _isUnreliableBibliographyResult(BibliographyCheckResult c) =>
       c.confidence != CitationMatchConfidence.high;
@@ -859,17 +874,6 @@ class _ReportScreenState extends State<ReportScreen> {
     for (var i = 0; i < checks.length; i += 1)
       if (_isUnreliableBibliographyResult(checks[i])) i,
   ];
-
-  String _bibUnreliableLabel(BibliographyCheckResult c, AppLocalizations l10n) {
-    final matched = c.matchedTitle;
-    if (matched != null && matched.trim().isNotEmpty) {
-      return l10n.reportBibUncertainWithCandidate(
-        l10n.reportBibUncertain,
-        _shortBibText(matched),
-      );
-    }
-    return l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain);
-  }
 
   List<BibliographyCheckResult> _deduplicatedBibliographyPreview(
     List<BibliographyCheckResult>? checks,

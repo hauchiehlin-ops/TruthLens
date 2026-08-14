@@ -8,6 +8,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../features/report/report_composer.dart';
 import '../../features/report/report_document.dart';
+import '../../features/report/bibliography_presentation.dart';
 import '../../features/report/summary_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
@@ -63,6 +64,9 @@ class ReportExporter {
     List<BibliographyCheckResult>? bibliographyChecks,
   }) {
     final doc = reportDocument ?? _composer.compose(r, l10n);
+    final orderedBibliographyChecks = bibliographyChecks == null
+        ? null
+        : orderBibliographyChecks(bibliographyChecks);
     final map = {
       'version': 1,
       'analyzed_at': r.analyzedAt.toIso8601String(),
@@ -109,9 +113,9 @@ class ReportExporter {
             'patterns': s.patterns,
           },
       ],
-      if (bibliographyChecks != null)
+      if (orderedBibliographyChecks != null)
         'bibliography_verification': [
-          for (final check in bibliographyChecks)
+          for (final check in orderedBibliographyChecks)
             {
               'citation': check.entry.rawText,
               'status': check.confidence.name,
@@ -173,6 +177,9 @@ class ReportExporter {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
   }) async {
+    final orderedBibliographyChecks = bibliographyChecks == null
+        ? null
+        : orderBibliographyChecks(bibliographyChecks);
     final reportDoc = reportDocument ?? _composer.compose(r, l10n);
     final regular = pw.Font.ttf(regularFont);
     final bold = pw.Font.ttf(boldFont);
@@ -367,7 +374,7 @@ class ReportExporter {
             ),
           pw.SizedBox(height: 10),
 
-          if (bibliographyChecks != null) ...[
+          if (orderedBibliographyChecks != null) ...[
             pw.Text(
               l10n.reportBibAuthenticityTitle,
               style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
@@ -381,34 +388,35 @@ class ReportExporter {
               ),
             ),
             pw.SizedBox(height: 6),
-            if (bibliographyChecks.isEmpty)
+            if (orderedBibliographyChecks.isEmpty)
               pw.Text(
                 l10n.reportBibNoneDetected,
                 style: const pw.TextStyle(fontSize: 9),
               )
             else
-              for (var i = 0; i < bibliographyChecks.length; i++)
+              for (var i = 0; i < orderedBibliographyChecks.length; i++)
                 pw.Padding(
                   padding: const pw.EdgeInsets.only(bottom: 7),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        '${i + 1}. ${_truncateForPdf(bibliographyChecks[i].entry.rawText)}',
+                        '${i + 1}. ${_truncateForPdf(orderedBibliographyChecks[i].entry.rawText)}',
                         style: pw.TextStyle(
                           fontSize: 9.5,
                           fontWeight: pw.FontWeight.bold,
                         ),
                       ),
                       pw.Text(
-                        _bibliographyStatus(bibliographyChecks[i], l10n),
+                        _bibliographyStatus(orderedBibliographyChecks[i], l10n),
                         style: pw.TextStyle(
                           fontSize: 9,
-                          color:
-                              bibliographyChecks[i].confidence ==
-                                  CitationMatchConfidence.high
-                              ? PdfColors.green700
-                              : PdfColors.orange800,
+                          color: _bibliographyPdfColor(
+                            presentBibliographyCheck(
+                              orderedBibliographyChecks[i],
+                              l10n,
+                            ).tone,
+                          ),
                         ),
                       ),
                     ],
@@ -504,26 +512,18 @@ class ReportExporter {
     BibliographyCheckResult check,
     AppLocalizations l10n,
   ) {
-    if (check.confidence == CitationMatchConfidence.high) {
-      final journal = check.matchedJournal;
-      final status = l10n.reportBibHighConfidence(
-        journal == null ? '' : l10n.reportBibJournalSuffix(journal),
-      );
-      if (!check.journalNameMismatch) return status;
-      return '$status\n${l10n.reportBibJournalMismatch(check.entry.venueTitle ?? '', journal ?? '')}';
-    }
-    if (check.confidence == CitationMatchConfidence.notFound) {
-      return l10n.reportBibNotFound;
-    }
-    final candidate = check.matchedTitle;
-    if (candidate != null && candidate.trim().isNotEmpty) {
-      return l10n.reportBibUncertainWithCandidate(
-        l10n.reportBibUncertain,
-        candidate,
-      );
-    }
-    return l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain);
+    final presentation = presentBibliographyCheck(check, l10n);
+    return presentation.warning == null
+        ? presentation.status
+        : '${presentation.status}\n${presentation.warning}';
   }
+
+  static PdfColor _bibliographyPdfColor(BibliographyDisplayTone tone) =>
+      switch (tone) {
+        BibliographyDisplayTone.success => PdfColors.green700,
+        BibliographyDisplayTone.warning => PdfColors.orange800,
+        BibliographyDisplayTone.error => PdfColors.red700,
+      };
 
   // ---- 存檔（UI 層呼叫）----
 

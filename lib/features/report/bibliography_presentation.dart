@@ -1,0 +1,71 @@
+import '../../core/services/bibliography_verifier.dart';
+import '../../l10n/generated/app_localizations.dart';
+
+enum BibliographyDisplayTone { success, warning, error }
+
+class BibliographyPresentation {
+  final String status;
+  final String? warning;
+  final BibliographyDisplayTone tone;
+
+  const BibliographyPresentation({
+    required this.status,
+    required this.tone,
+    this.warning,
+  });
+}
+
+List<BibliographyCheckResult> orderBibliographyChecks(
+  Iterable<BibliographyCheckResult> checks,
+) {
+  final indexed = checks.indexed.toList();
+  indexed.sort((a, b) {
+    final aOffset = a.$2.entry.sourceOffset;
+    final bOffset = b.$2.entry.sourceOffset;
+    if (aOffset < 0 || bOffset < 0) return a.$1.compareTo(b.$1);
+    final bySource = aOffset.compareTo(bOffset);
+    return bySource != 0 ? bySource : a.$1.compareTo(b.$1);
+  });
+  return indexed.map((item) => item.$2).toList(growable: false);
+}
+
+BibliographyPresentation presentBibliographyCheck(
+  BibliographyCheckResult check,
+  AppLocalizations l10n,
+) {
+  if (check.confidence == CitationMatchConfidence.high) {
+    final journal = check.matchedJournal;
+    return BibliographyPresentation(
+      status: l10n.reportBibHighConfidence(
+        journal == null ? '' : l10n.reportBibJournalSuffix(journal),
+      ),
+      warning: check.journalNameMismatch
+          ? l10n.reportBibJournalMismatch(
+              check.entry.venueTitle ?? '',
+              journal ?? '',
+            )
+          : null,
+      tone: check.journalNameMismatch
+          ? BibliographyDisplayTone.warning
+          : BibliographyDisplayTone.success,
+    );
+  }
+
+  if (check.confidence == CitationMatchConfidence.notFound) {
+    return BibliographyPresentation(
+      status: l10n.reportBibNotFound,
+      tone: BibliographyDisplayTone.error,
+    );
+  }
+
+  final candidate = check.matchedTitle;
+  return BibliographyPresentation(
+    status: candidate != null && candidate.trim().isNotEmpty
+        ? l10n.reportBibUncertainWithCandidate(
+            l10n.reportBibUncertain,
+            candidate,
+          )
+        : l10n.reportBibUncertainNoReliableResponse(l10n.reportBibUncertain),
+    tone: BibliographyDisplayTone.warning,
+  );
+}
