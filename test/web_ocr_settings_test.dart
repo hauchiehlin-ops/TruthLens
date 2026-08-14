@@ -28,6 +28,14 @@ void main() {
       );
 
       expect(find.text('Web OCR settings'), findsOneWidget);
+      expect(find.text('Local OCR: endpoint not set'), findsOneWidget);
+      await tester.enterText(
+        find.byType(TextField).at(1),
+        'http://127.0.0.1:5001/ocr',
+      );
+      await tester.pump();
+      expect(find.text('Local OCR: endpoint set, not tested'), findsOneWidget);
+
       expect(find.text('Detect OS & download installer'), findsOneWidget);
       await tester.tap(find.text('Detect OS & download installer'));
       await tester.pumpAndSettle();

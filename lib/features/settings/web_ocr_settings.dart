@@ -37,6 +37,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   late final TextEditingController _apiKeyController;
   late final TextEditingController _serverUrlController;
   bool _testingServer = false;
+  _LocalOcrStatus _localOcrStatus = _LocalOcrStatus.notConfigured;
 
   @override
   void initState() {
@@ -51,9 +52,11 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     try {
       _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
       _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
+      _localOcrStatus = _statusForUrl(_serverUrlController.text);
     } catch (_) {
       _apiKeyController.clear();
       _serverUrlController.clear();
+      _localOcrStatus = _LocalOcrStatus.notConfigured;
     }
   }
 
@@ -161,6 +164,15 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                     ),
             ),
             onChanged: (_) => _saveSettings(),
+          ),
+          const SizedBox(height: 8),
+          _LocalOcrStatusLight(
+            status: _testingServer ? _LocalOcrStatus.checking : _localOcrStatus,
+            compact: widget.compact,
+            label: _localOcrStatusLabel(
+              l10n,
+              _testingServer ? _LocalOcrStatus.checking : _localOcrStatus,
+            ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -285,10 +297,18 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       return;
     }
     _saveSettings();
-    setState(() => _testingServer = true);
+    setState(() {
+      _testingServer = true;
+      _localOcrStatus = _LocalOcrStatus.checking;
+    });
     final connected = await OcrService.testLocalServer();
     if (!mounted) return;
-    setState(() => _testingServer = false);
+    setState(() {
+      _testingServer = false;
+      _localOcrStatus = connected
+          ? _LocalOcrStatus.ready
+          : _LocalOcrStatus.unavailable;
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -335,6 +355,27 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   bool _isZh(AppLocalizations l10n) =>
       l10n.localeName.toLowerCase().startsWith('zh');
 
+  _LocalOcrStatus _statusForUrl(String url) {
+    return url.trim().isEmpty
+        ? _LocalOcrStatus.notConfigured
+        : _LocalOcrStatus.needsTest;
+  }
+
+  String _localOcrStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
+    final zh = _isZh(l10n);
+    return switch (status) {
+      _LocalOcrStatus.notConfigured =>
+        zh ? '本地 OCR：尚未設定端點' : 'Local OCR: endpoint not set',
+      _LocalOcrStatus.needsTest =>
+        zh ? '本地 OCR：已填入端點，尚未測試' : 'Local OCR: endpoint set, not tested',
+      _LocalOcrStatus.checking =>
+        zh ? '本地 OCR：正在測試連線' : 'Local OCR: testing connection',
+      _LocalOcrStatus.ready => zh ? '本地 OCR：可運行' : 'Local OCR: ready',
+      _LocalOcrStatus.unavailable =>
+        zh ? '本地 OCR：無法連線' : 'Local OCR: unreachable',
+    };
+  }
+
   String _assistantButtonLabel(AppLocalizations l10n) =>
       _isZh(l10n) ? '偵測系統並下載安裝檔' : 'Detect OS & download installer';
 
@@ -359,11 +400,19 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   }
 
   void _saveSettings() {
+    final nextStatus = _statusForUrl(_serverUrlController.text);
+    final statusChanged =
+        _localOcrStatus != nextStatus &&
+        _localOcrStatus != _LocalOcrStatus.checking;
+    if (statusChanged) {
+      _localOcrStatus = nextStatus;
+      if (mounted) setState(() {});
+    }
     if (!kIsWeb) return;
     try {
       OcrService.setGeminiApiKey(_apiKeyController.text);
       OcrService.setLocalServerUrl(_serverUrlController.text);
-      setState(() {});
+      if (!statusChanged) setState(() {});
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -392,4 +441,69 @@ class _LocalOcrInstaller {
     required this.zhRunInstruction,
     required this.enRunInstruction,
   });
+}
+
+enum _LocalOcrStatus { notConfigured, needsTest, checking, ready, unavailable }
+
+class _LocalOcrStatusLight extends StatelessWidget {
+  final _LocalOcrStatus status;
+  final bool compact;
+  final String label;
+
+  const _LocalOcrStatusLight({
+    required this.status,
+    required this.compact,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _statusColor(theme.colorScheme);
+
+    return Semantics(
+      label: label,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 10 : 12,
+          vertical: compact ? 7 : 8,
+        ),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          border: Border.all(color: color.withValues(alpha: 0.45)),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 9,
+              height: 9,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _statusColor(ColorScheme scheme) {
+    return switch (status) {
+      _LocalOcrStatus.notConfigured => scheme.onSurfaceVariant,
+      _LocalOcrStatus.needsTest => Colors.amber.shade700,
+      _LocalOcrStatus.checking => scheme.primary,
+      _LocalOcrStatus.ready => Colors.green.shade700,
+      _LocalOcrStatus.unavailable => scheme.error,
+    };
+  }
 }

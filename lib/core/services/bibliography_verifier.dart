@@ -7,6 +7,7 @@ enum CitationMatchConfidence { high, uncertain, notFound }
 
 class BibliographyEntry {
   final String rawText;
+  final int sourceOffset;
   final String? firstAuthorSurname;
   final int? year;
   final String? title;
@@ -18,6 +19,7 @@ class BibliographyEntry {
 
   const BibliographyEntry({
     required this.rawText,
+    this.sourceOffset = -1,
     this.firstAuthorSurname,
     this.year,
     this.title,
@@ -35,6 +37,7 @@ class BibliographyCheckResult {
   final String? matchedTitle;
   final String? matchedJournal;
   final int? matchedYear;
+  final bool journalNameMismatch;
 
   const BibliographyCheckResult({
     required this.entry,
@@ -42,6 +45,7 @@ class BibliographyCheckResult {
     this.matchedTitle,
     this.matchedJournal,
     this.matchedYear,
+    this.journalNameMismatch = false,
   });
 }
 
@@ -146,8 +150,7 @@ class BibliographyVerifier {
   /// 偵測參考文獻條目的開頭特徵（支援 Surname, F. M. (1983) 及 Surname, F. M. [1983] 括號格式）。
   static final RegExp _entryStart = RegExp(
     r"(?:[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)"
-    r"(?:(?:\s*,\s*(?:and\s+)?|and\s+|&\s*)"
-    r"[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s*,\s*(?:[A-Z]\s*\.\s*)+)*"
+    r"(?:(?!\b(?:18|19|20)\d{2}\b)[\s\S]){0,180}?"
     r"(?:\s*,\s*)?(?:\(|\[)?\s*(\d{4})[a-z]?\s*(?:\)|\])?(?:[.,:])?\s*",
   );
 
@@ -458,6 +461,7 @@ class BibliographyVerifier {
             raw,
             start.end - start.start,
             int.tryParse(start.group(1) ?? ''),
+            sourceOffset: start.start,
           ),
         );
       }
@@ -529,7 +533,8 @@ class BibliographyVerifier {
 
     final candidates = <BibliographyEntry>[];
 
-    for (final block in groupedBlocks) {
+    for (var blockIndex = 0; blockIndex < groupedBlocks.length; blockIndex++) {
+      final block = groupedBlocks[blockIndex];
       // 參考文獻條目通常 50-400 字符；>400 字表示整段內文被誤判為條目
       final normalizedBlock = _normalizeBibliographyEntryText(block);
       if (normalizedBlock.length < 15 || normalizedBlock.length > 400) continue;
@@ -543,7 +548,14 @@ class BibliographyVerifier {
       // 強化門檻：有 References 標題時 0.50，無標題時 0.65（防止內文段落誤判）
       if (score >= (hasHeading ? 0.50 : 0.65)) {
         final cleaned = normalizedBlock.replaceAll(_bulletOrNumberPrefix, '');
-        candidates.add(_parseLineEntry(cleaned, normalizedBlock, year));
+        candidates.add(
+          _parseLineEntry(
+            cleaned,
+            normalizedBlock,
+            year,
+            sourceOffset: blockIndex,
+          ),
+        );
       }
     }
 
@@ -552,12 +564,14 @@ class BibliographyVerifier {
       if (!hasHeading && candidates.length < minEntriesWithoutHeading) {
         return [];
       }
-      return candidates;
+      return candidates
+        ..sort((a, b) => a.sourceOffset.compareTo(b.sourceOffset));
     } else {
       if (!hasHeading && path1Entries.length < minEntriesWithoutHeading) {
         return [];
       }
-      return path1Entries;
+      return path1Entries
+        ..sort((a, b) => a.sourceOffset.compareTo(b.sourceOffset));
     }
   }
 
@@ -632,8 +646,9 @@ class BibliographyVerifier {
   static BibliographyEntry _parseEntry(
     String raw,
     int prefixLength,
-    int? year,
-  ) {
+    int? year, {
+    int sourceOffset = -1,
+  }) {
     final normalizedRaw = _normalizeBibliographyEntryText(raw);
     final commaIdx = normalizedRaw.indexOf(',');
     final surname = commaIdx > 0
@@ -657,6 +672,7 @@ class BibliographyVerifier {
     final locator = _extractBibliographicLocator(normalizedRaw);
     return BibliographyEntry(
       rawText: normalizedRaw,
+      sourceOffset: sourceOffset,
       firstAuthorSurname: surname,
       year: year,
       title: title.isEmpty ? null : title,
@@ -671,8 +687,9 @@ class BibliographyVerifier {
   static BibliographyEntry _parseLineEntry(
     String cleaned,
     String rawText,
-    int? year,
-  ) {
+    int? year, {
+    int sourceOffset = -1,
+  }) {
     // 預先修復常見 OCR 小錯字 (如 "Couette Fow" -> "Couette Flow")
     var cleanedNoPrefix = _normalizeBibliographyEntryText(cleaned)
         .replaceAll(_bulletOrNumberPrefix, '')
@@ -763,6 +780,7 @@ class BibliographyVerifier {
     final locator = _extractBibliographicLocator(cleanedNoPrefix);
     return BibliographyEntry(
       rawText: _normalizeBibliographyEntryText(rawText),
+      sourceOffset: sourceOffset,
       firstAuthorSurname: surname,
       year: year,
       title: title == null || title.isEmpty ? null : title,
@@ -887,6 +905,35 @@ class BibliographyVerifier {
     ).hasMatch(value);
   }
 
+  static bool _journalNameMismatch(String? reported, String? registered) {
+    if (reported == null || registered == null) return false;
+    final reportedName = _normalizeJournalName(reported);
+    final registeredName = _normalizeJournalName(registered);
+    if (reportedName.isEmpty || registeredName.isEmpty) return false;
+    if (reportedName == registeredName) return false;
+    final reportedTokens = reportedName.split(' ').toSet();
+    final registeredTokens = registeredName.split(' ').toSet();
+    final shared = reportedTokens.intersection(registeredTokens).length;
+    final overlap =
+        shared / math.max(reportedTokens.length, registeredTokens.length);
+    return overlap < 0.75 ||
+        _titleSimilarity(reportedName, registeredName) < 0.82;
+  }
+
+  static String _normalizeJournalName(String value) => value
+      .toLowerCase()
+      .replaceAll('&', ' and ')
+      .replaceAll(RegExp(r'\bj\.?\b'), 'journal')
+      .replaceAll(RegExp(r'\bmech\.?\b'), 'mechanics')
+      .replaceAll(RegExp(r'\bsci\.?\b'), 'science')
+      .replaceAll(RegExp(r'\bint\.?\b'), 'international')
+      .replaceAll(RegExp(r'\brev\.?\b'), 'review')
+      .replaceAll(RegExp(r'\bres\.?\b'), 'research')
+      .replaceAll(RegExp(r'\b(?:the|of)\b'), ' ')
+      .replaceAll(RegExp(r'[^a-z0-9\p{L}]+', unicode: true), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+
   static String? _extractDoi(String raw) {
     final match = RegExp(
       r'\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b',
@@ -950,6 +997,9 @@ class BibliographyVerifier {
     try {
       final results = <BibliographyCheckResult>[];
       final targetEntries = entries.toList();
+      final inputOrder = <BibliographyEntry, int>{
+        for (var i = 0; i < targetEntries.length; i++) targetEntries[i]: i,
+      };
       onProgress?.call(
         BibliographyVerificationProgress(
           completed: 0,
@@ -984,6 +1034,9 @@ class BibliographyVerifier {
           ),
         );
       }
+      results.sort((a, b) {
+        return (inputOrder[a.entry] ?? 0).compareTo(inputOrder[b.entry] ?? 0);
+      });
       return results;
     } finally {
       if (owns) c.close();
@@ -1048,6 +1101,12 @@ class BibliographyVerifier {
                 ? containers.first.toString()
                 : 'Crossref DOI 登記',
             matchedYear: matchedYear,
+            journalNameMismatch: _journalNameMismatch(
+              entry.venueTitle,
+              containers != null && containers.isNotEmpty
+                  ? containers.first.toString()
+                  : null,
+            ),
           );
         }
         if (response != null && response.statusCode == 404) {
@@ -1248,6 +1307,10 @@ class BibliographyVerifier {
                 matchedTitle: matchedTitle,
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
+                journalNameMismatch: _journalNameMismatch(
+                  entry.venueTitle,
+                  matchedJournal,
+                ),
               );
             } else if (score >= 0.42 ||
                 titleSim >= 0.28 ||
@@ -1259,6 +1322,7 @@ class BibliographyVerifier {
                 matchedTitle: matchedTitle,
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
+                journalNameMismatch: false,
               );
             }
           }
@@ -1423,6 +1487,7 @@ class BibliographyVerifier {
       matchedTitle: best.title,
       matchedJournal: '${best.venue} (local classical-reference index)',
       matchedYear: best.year,
+      journalNameMismatch: _journalNameMismatch(entry.venueTitle, best.venue),
     );
   }
 
@@ -1561,6 +1626,9 @@ class BibliographyVerifier {
         matchedTitle: matchedTitle,
         matchedJournal: matchedJournal ?? defaultJournal,
         matchedYear: matchedYear,
+        journalNameMismatch:
+            highConfidence &&
+            _journalNameMismatch(entry.venueTitle, matchedJournal),
       );
 
       if (highConfidence || uncertain) {

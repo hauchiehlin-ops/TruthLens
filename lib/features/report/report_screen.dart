@@ -340,61 +340,63 @@ class _ReportScreenState extends State<ReportScreen> {
                 ],
               ),
             )
-          : Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 900),
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  children: [
-                    // 專業報告頂部：判定摘要 + 三列指標 + 引擎貢獻度
-                    ProfessionalReportHeader(
-                      result: result,
-                      onDownloadPdf: () => _export(ReportExporter.exportPdf),
-                    ),
+          : SelectionArea(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 900),
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    children: [
+                      // 專業報告頂部：判定摘要 + 三列指標 + 引擎貢獻度
+                      ProfessionalReportHeader(
+                        result: result,
+                        onDownloadPdf: () => _export(ReportExporter.exportPdf),
+                      ),
 
-                    // 可疑句子清單
-                    if (result.sentences.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: SuspiciousSentencesList(
-                          sentences: result.sentences,
-                          l10n: l10n,
+                      // 可疑句子清單
+                      if (result.sentences.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: SuspiciousSentencesList(
+                            sentences: result.sentences,
+                            l10n: l10n,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
 
-                    // 超連結驗證卡（可選）
-                    if (_detectedUrls.isNotEmpty) ...[
+                      // 超連結驗證卡（可選）
+                      if (_detectedUrls.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _linkVerificationCard(l10n),
+                        ),
+                      ],
+
+                      // 文獻參考驗證卡（可選）
+                      if (_bibEntries.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _bibliographyCard(l10n),
+                        ),
+                      ],
+
+                      // 網路狀態警告（若適用）
+                      if (_networkAvailable == false &&
+                          (_detectedUrls.isNotEmpty ||
+                              _bibEntries.isNotEmpty)) ...[
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _networkWarningCard(l10n),
+                        ),
+                      ],
+
                       const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _linkVerificationCard(l10n),
-                      ),
                     ],
-
-                    // 文獻參考驗證卡（可選）
-                    if (_bibEntries.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _bibliographyCard(l10n),
-                      ),
-                    ],
-
-                    // 網路狀態警告（若適用）
-                    if (_networkAvailable == false &&
-                        (_detectedUrls.isNotEmpty ||
-                            _bibEntries.isNotEmpty)) ...[
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _networkWarningCard(l10n),
-                      ),
-                    ],
-
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -795,9 +797,28 @@ class _ReportScreenState extends State<ReportScreen> {
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
-                        '${checks[i].entry.rawText}\n${_bibStatusLabel(checks[i], l10n)}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${checks[i].entry.rawText}\n${_bibStatusLabel(checks[i], l10n)}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          if (checks[i].journalNameMismatch) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              l10n.reportBibJournalMismatch(
+                                checks[i].entry.venueTitle ?? '',
+                                checks[i].matchedJournal ?? '',
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Colors.orange.shade800,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     if (_isUnreliableBibliographyResult(checks[i])) ...[

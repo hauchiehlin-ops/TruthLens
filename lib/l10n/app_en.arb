@@ -358,6 +358,8 @@
   "@reportBibHighConfidence": {"placeholders": {"journal": {"type": "String"}}},
   "reportBibJournalSuffix": " (registered with {journal})",
   "@reportBibJournalSuffix": {"placeholders": {"journal": {"type": "String"}}},
+  "reportBibJournalMismatch": "Journal name mismatch: the document says “{reported}”, while the verified registry says “{registered}”. Please review this citation.",
+  "@reportBibJournalMismatch": {"placeholders": {"reported": {"type": "String"}, "registered": {"type": "String"}}},
   "reportBibNotFound": "No close match found — possibly a fabricated reference",
   "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "All detected entries are verified with live progress (detected {count} total)",

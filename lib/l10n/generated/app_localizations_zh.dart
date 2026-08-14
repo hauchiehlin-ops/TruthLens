@@ -1029,6 +1029,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String reportBibJournalMismatch(String reported, String registered) {
+    return '期刊名稱不一致：文件載為《$reported》，查核登記為《$registered》，請核對此筆文獻。';
+  }
+
+  @override
   String get reportBibNotFound => '查無相近匹配，可能為虛構文獻';
 
   @override
@@ -2807,6 +2812,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String reportBibJournalMismatch(String reported, String registered) {
+    return '期刊名称不一致：文档载为《$reported》，查核登记为《$registered》，请核对此笔文献。';
+  }
+
+  @override
   String get reportBibNotFound => '查无相近匹配，可能为虚构文献';
 
   @override
@@ -4582,6 +4592,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String reportBibJournalSuffix(String journal) {
     return '（登記於《$journal》）';
+  }
+
+  @override
+  String reportBibJournalMismatch(String reported, String registered) {
+    return '期刊名稱不一致：文件載為《$reported》，查核登記為《$registered》，請核對此筆文獻。';
   }
 
   @override

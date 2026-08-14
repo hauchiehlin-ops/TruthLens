@@ -301,6 +301,7 @@
   "reportBibResultHint": "依作者、年份、篇名与期刊信息比对 Crossref、OpenAlex 与可识别的期刊／出版商目录页；TruthLens 会直接标示每笔文献是否通过核实，未达可靠匹配者视为未通过核实。",
   "reportBibHighConfidence": "高可信度：应存在{journal}",
   "reportBibJournalSuffix": "（登记于《{journal}》）",
+  "reportBibJournalMismatch": "期刊名称不一致：文档载为《{reported}》，查核登记为《{registered}》，请核对此笔文献。",
   "reportBibNotFound": "查无相近匹配，可能为虚构文献",
   "reportBibUncertain": "疑似不可靠，未通过登记数据核实",
   "reportBibTruncated": "将逐笔核实全部文献（共侦测到 {count} 笔）",

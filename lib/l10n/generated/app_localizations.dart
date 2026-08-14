@@ -1838,6 +1838,12 @@ abstract class AppLocalizations {
   /// **' (registered with {journal})'**
   String reportBibJournalSuffix(String journal);
 
+  /// No description provided for @reportBibJournalMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal name mismatch: the document says “{reported}”, while the verified registry says “{registered}”. Please review this citation.'**
+  String reportBibJournalMismatch(String reported, String registered);
+
   /// No description provided for @reportBibNotFound.
   ///
   /// In en, this message translates to:

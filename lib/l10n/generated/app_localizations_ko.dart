@@ -1049,6 +1049,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String reportBibJournalMismatch(String reported, String registered) {
+    return 'Journal name mismatch: the document says “$reported”, while the verified registry says “$registered”. Please review this citation.';
+  }
+
+  @override
   String get reportBibNotFound => '유사한 항목을 찾을 수 없습니다. 허위 참고 문헌일 가능성이 있습니다';
 
   @override

@@ -60,6 +60,26 @@ void main() {
       expect(entries, isNotEmpty);
     });
 
+    test('同一行連續的 APA 文獻可依 et al. 與 &, 作者年份邊界正確分筆並保留原順序', () {
+      const joinedReferences = '''
+References
+Gabay, I. (2025). Generative AI advertising and human-AI collaboration. Journal of Advertising, 54(1), 56-72. Heller, J., Chylinski, M., de Ruyter, K., et al. (2019). Let me imagine that for you. Journal of Retailing, 95(2), 94-114. Hoyer, W. D., Kroschke, M., Schmitt, B., et al. (2020). Transforming the customer experience through new technologies. Journal of Interactive Marketing, 51, 57-71. Liao, S. (2024). Traditional vs. AI-generated brand personalities. Journal of Product & Brand Management, 33(2), 234-250. Jarvenpaa, S. L., & Teigland, R. (2025). The impact of generative AI on content marketing agencies. MIS Quarterly Executive, 24(1), 35-50.
+''';
+
+      final entries = BibliographyVerifier.extractEntries(joinedReferences);
+
+      expect(entries, hasLength(5));
+      expect(entries.map((entry) => entry.firstAuthorSurname), [
+        'Gabay',
+        'Heller',
+        'Hoyer',
+        'Liao',
+        'Jarvenpaa',
+      ]);
+      final offsets = entries.map((entry) => entry.sourceOffset).toList();
+      expect(offsets, orderedEquals([...offsets]..sort()));
+    });
+
     test('沒有標題但條目數達門檻時仍主動偵測（文件未必會明確標示「這是文獻」）', () {
       // 取樣本文獻但移除「References」標題這一行
       final withoutHeading = _sampleReferences.replaceFirst('References\n', '');
@@ -408,7 +428,52 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Journal of Fluid Mechanics');
+      expect(results.single.journalNameMismatch, isFalse);
       expect(sawVenueScopedQuery, isTrue);
+    });
+
+    test('篇名核實成功但文件期刊名不同時標記期刊名稱不一致', () async {
+      final client = MockClient((req) async {
+        return http.Response(
+          jsonEncode({
+            'message': {
+              'items': [
+                {
+                  'title': [
+                    'A means-end chain model based on consumer categorization processes',
+                  ],
+                  'container-title': ['Journal of Marketing'],
+                  'published': {
+                    'date-parts': [
+                      [1982],
+                    ],
+                  },
+                  'author': [
+                    {'family': 'Gutman', 'given': 'J'},
+                  ],
+                },
+              ],
+            },
+          }),
+          200,
+        );
+      });
+
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Gutman, J. (1982). A means-end chain model based on consumer categorization processes. Journal of Marketing Research, 19(1), 60-72.',
+          firstAuthorSurname: 'Gutman',
+          year: 1982,
+          title:
+              'A means-end chain model based on consumer categorization processes',
+          venueTitle: 'Journal of Marketing Research',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Journal of Marketing');
+      expect(results.single.journalNameMismatch, isTrue);
     });
 
     test('Crossref 與 OpenAlex 皆成功查無相近結果 → notFound（可能為虛構文獻）', () async {

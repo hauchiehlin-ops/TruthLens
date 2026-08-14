@@ -1087,6 +1087,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String reportBibJournalMismatch(String reported, String registered) {
+    return 'Journal name mismatch: the document says “$reported”, while the verified registry says “$registered”. Please review this citation.';
+  }
+
+  @override
   String get reportBibNotFound =>
       'No se encontró ninguna coincidencia cercana; posible referencia inventada';
 

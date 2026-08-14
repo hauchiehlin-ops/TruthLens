@@ -138,6 +138,7 @@ void main() {
       expect(checks, hasLength(1));
       expect(checks.first['status'], 'high');
       expect(checks.first['matched_journal'], 'Journal of Verification');
+      expect(checks.first['journal_name_mismatch'], isFalse);
     });
 
     test('可匯出畫面上的 LLM ReportDocument，而非重新模板化', () {

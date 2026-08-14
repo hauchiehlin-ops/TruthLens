@@ -120,6 +120,12 @@ class ReportExporter {
                 'matched_title': check.matchedTitle,
               if (check.matchedJournal != null)
                 'matched_journal': check.matchedJournal,
+              'journal_name_mismatch': check.journalNameMismatch,
+              if (check.journalNameMismatch)
+                'journal_name_warning': l10n.reportBibJournalMismatch(
+                  check.entry.venueTitle ?? '',
+                  check.matchedJournal ?? '',
+                ),
               if (check.matchedYear != null) 'matched_year': check.matchedYear,
             },
         ],
@@ -500,9 +506,11 @@ class ReportExporter {
   ) {
     if (check.confidence == CitationMatchConfidence.high) {
       final journal = check.matchedJournal;
-      return l10n.reportBibHighConfidence(
+      final status = l10n.reportBibHighConfidence(
         journal == null ? '' : l10n.reportBibJournalSuffix(journal),
       );
+      if (!check.journalNameMismatch) return status;
+      return '$status\n${l10n.reportBibJournalMismatch(check.entry.venueTitle ?? '', journal ?? '')}';
     }
     if (check.confidence == CitationMatchConfidence.notFound) {
       return l10n.reportBibNotFound;
