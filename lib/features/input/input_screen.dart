@@ -14,6 +14,7 @@ import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../onboarding/model_prompt.dart';
+import '../settings/model_import_screen.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
 import '../settings/engine_weight_settings.dart';
 import '../settings/web_ocr_settings.dart';
@@ -45,6 +46,7 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
 ];
 
 class _InputScreenState extends State<InputScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
   double _rightPanelWidth = 400; // 右側面板預設寬度
   String _sourceFileName = '';
@@ -208,6 +210,8 @@ class _InputScreenState extends State<InputScreen> {
     final isWideScreen = screenWidth >= 1200;
 
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: isWideScreen ? null : const InputSettingsDrawer(),
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -235,7 +239,13 @@ class _InputScreenState extends State<InputScreen> {
           ],
         ),
         actions: [
-          _languageMenu(context),
+          if (isWideScreen) _languageMenu(context),
+          if (!isWideScreen)
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              tooltip: l10n.inputSettingsTooltip,
+              onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+            ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: l10n.inputHistoryTooltip,
@@ -799,6 +809,73 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
+          // 自訂模型匯入
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.file_upload_outlined),
+            title: Text(
+              l10n.settingsCustomImportTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsCustomImportSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
+              );
+            },
+          ),
+          const Divider(),
+
+          // 語言包
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.language),
+            title: Text(
+              l10n.settingsLanguagePackTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsLanguagePackSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Row(
+                    children: [
+                      const Icon(Icons.language),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(l10n.settingsLanguagePackTitle)),
+                    ],
+                  ),
+                  content: Text(l10n.settingsLanguagePackDialogBody),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: Text(l10n.commonClose),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ModelManagerScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(l10n.settingsOpenButton),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          const Divider(),
+
           // Web OCR 設定
           if (kIsWeb) ...[
             const WebOcrSettingsCard(compact: true),
@@ -835,14 +912,14 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
   }
 }
 
-class _SettingsPanel extends StatefulWidget {
-  const _SettingsPanel();
+class InputSettingsDrawer extends StatefulWidget {
+  const InputSettingsDrawer({super.key});
 
   @override
-  State<_SettingsPanel> createState() => _SettingsPanelState();
+  State<InputSettingsDrawer> createState() => _InputSettingsDrawerState();
 }
 
-class _SettingsPanelState extends State<_SettingsPanel> {
+class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -856,24 +933,122 @@ class _SettingsPanelState extends State<_SettingsPanel> {
         ? 320.0
         : (screenWidth < 900 ? 380.0 : 420.0);
 
-    return SizedBox(
+    return Drawer(
       width: drawerWidth,
-      child: Drawer(
+      child: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
           physics: const BouncingScrollPhysics(),
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: scheme.primary),
-              child: Text(
-                l10n.settingsAppBarTitle,
-                style: TextStyle(
-                  color: scheme.onPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.settingsAppBarTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: scheme.primary,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: l10n.commonClose,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
               ),
             ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.translate),
+              title: Text(l10n.settingsLanguageTitle),
+              subtitle: Text(l10n.settingsLanguageSubtitle),
+              trailing: DropdownButton<Locale?>(
+                value: prefs.locale,
+                items: [
+                  for (final option in kSupportedLanguageOptions)
+                    DropdownMenuItem(value: option.$1, child: Text(option.$2)),
+                ],
+                onChanged: (value) => prefs.setLocale(value),
+              ),
+            ),
+            const Divider(),
+            ListTile(
+              leading: Badge(
+                isLabelVisible: modelManager.hasAnyUpdate,
+                child: const Icon(Icons.download_outlined),
+              ),
+              title: Text(l10n.settingsModelManagementTitle),
+              subtitle: Text(
+                modelManager.hasAnyUpdate
+                    ? l10n.settingsModelManagementUpdateSubtitle
+                    : l10n.settingsModelManagementSubtitle,
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.file_upload_outlined),
+              title: Text(l10n.settingsCustomImportTitle),
+              subtitle: Text(l10n.settingsCustomImportSubtitle),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ModelImportScreen()),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(l10n.settingsLanguagePackTitle),
+              subtitle: Text(l10n.settingsLanguagePackSubtitle),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Row(
+                      children: [
+                        const Icon(Icons.language),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(l10n.settingsLanguagePackTitle)),
+                      ],
+                    ),
+                    content: Text(l10n.settingsLanguagePackDialogBody),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text(l10n.commonClose),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ModelManagerScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(l10n.settingsOpenButton),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const Divider(),
+            if (kIsWeb) ...[
+              const WebOcrSettingsCard(compact: true),
+              const Divider(),
+            ],
             ListTile(
               title: Text(l10n.settingsThresholdTitle),
               subtitle: Text(
@@ -966,40 +1141,6 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               ),
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.translate),
-              title: Text(l10n.settingsLanguageTitle),
-              subtitle: Text(l10n.settingsLanguageSubtitle),
-              trailing: DropdownButton<Locale?>(
-                value: prefs.locale,
-                items: [
-                  for (final option in kSupportedLanguageOptions)
-                    DropdownMenuItem(value: option.$1, child: Text(option.$2)),
-                ],
-                onChanged: (value) => prefs.setLocale(value),
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: Badge(
-                isLabelVisible: modelManager.hasAnyUpdate,
-                child: const Icon(Icons.download_outlined),
-              ),
-              title: Text(l10n.settingsModelManagementTitle),
-              subtitle: Text(
-                modelManager.hasAnyUpdate
-                    ? l10n.settingsModelManagementUpdateSubtitle
-                    : l10n.settingsModelManagementSubtitle,
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: const Text('TruthLens'),
