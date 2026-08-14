@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,11 +19,19 @@ class WebOcrSettingsCard extends StatefulWidget {
 }
 
 class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
+  static const String _defaultLocalOcrEndpoint = 'http://127.0.0.1:5001/ocr';
+
   static final Uri _geminiKeyUri = Uri.parse(
     'https://aistudio.google.com/app/apikey',
   );
   static final Uri _localOcrProjectUri = Uri.parse(
     'https://github.com/hauchiehlin-ops/ocr',
+  );
+  static final Uri _macInstallerUri = Uri.parse(
+    'https://github.com/hauchiehlin-ops/ocr/raw/refs/heads/main/setup_and_run_ocr.sh',
+  );
+  static final Uri _windowsInstallerUri = Uri.parse(
+    'https://github.com/hauchiehlin-ops/ocr/raw/refs/heads/main/setup_and_run_ocr.bat',
   );
 
   late final TextEditingController _apiKeyController;
@@ -122,8 +131,8 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
               ),
               IconButton(
                 icon: const Icon(Icons.help_outline),
-                tooltip: l10n.webOcrSetupGuideButton,
-                onPressed: _showSetupGuide,
+                tooltip: _assistantButtonLabel(l10n),
+                onPressed: _configureLocalOcrAssistant,
               ),
             ],
           ),
@@ -159,6 +168,11 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
             runSpacing: 8,
             children: [
               FilledButton.tonalIcon(
+                onPressed: _configureLocalOcrAssistant,
+                icon: const Icon(Icons.auto_fix_high_outlined),
+                label: Text(_assistantButtonLabel(l10n)),
+              ),
+              FilledButton.tonalIcon(
                 onPressed: _testingServer ? null : _testLocalServer,
                 icon: _testingServer
                     ? const SizedBox.square(
@@ -167,11 +181,6 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                       )
                     : const Icon(Icons.network_check),
                 label: Text(l10n.webOcrTestServerButton),
-              ),
-              OutlinedButton.icon(
-                onPressed: _showSetupGuide,
-                icon: const Icon(Icons.menu_book_outlined),
-                label: Text(l10n.webOcrSetupGuideButton),
               ),
             ],
           ),
@@ -205,30 +214,62 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     );
   }
 
-  Future<void> _showSetupGuide() async {
+  Future<void> _configureLocalOcrAssistant() async {
     final l10n = AppLocalizations.of(context);
+    final installer = _detectLocalOcrInstaller();
+
+    if (installer == null) {
+      await _showAssistantResultDialog(
+        title: _assistantUnsupportedTitle(l10n),
+        body: _assistantUnsupportedBody(l10n),
+        primaryLabel: l10n.webOcrOpenProjectButton,
+        onPrimary: () => _openUri(_localOcrProjectUri),
+      );
+      return;
+    }
+
+    _serverUrlController.text = _defaultLocalOcrEndpoint;
+    _saveSettings();
+    await _openUri(installer.downloadUri);
+
+    if (!mounted) return;
+    await _showAssistantResultDialog(
+      title: _assistantDownloadedTitle(l10n, installer.osName),
+      body: _assistantDownloadedBody(l10n, installer),
+      primaryLabel: l10n.webOcrTestServerButton,
+      onPrimary: _testLocalServer,
+    );
+  }
+
+  Future<void> _showAssistantResultDialog({
+    required String title,
+    required String body,
+    required String primaryLabel,
+    required Future<void> Function() onPrimary,
+  }) async {
+    if (!mounted) return;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.computer_outlined),
+            const Icon(Icons.auto_fix_high_outlined),
             const SizedBox(width: 8),
-            Expanded(child: Text(l10n.webOcrSetupGuideTitle)),
+            Expanded(child: Text(title)),
           ],
         ),
-        content: SingleChildScrollView(
-          child: SelectableText(l10n.webOcrSetupGuideBody),
-        ),
+        content: SingleChildScrollView(child: SelectableText(body)),
         actions: [
-          TextButton.icon(
-            onPressed: () => _openUri(_localOcrProjectUri),
-            icon: const Icon(Icons.open_in_new),
-            label: Text(l10n.webOcrOpenProjectButton),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(AppLocalizations.of(context).commonClose),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.commonClose),
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              await onPrimary();
+            },
+            child: Text(primaryLabel),
           ),
         ],
       ),
@@ -268,6 +309,55 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     }
   }
 
+  _LocalOcrInstaller? _detectLocalOcrInstaller() {
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.macOS => _LocalOcrInstaller(
+        osName: 'macOS',
+        fileName: 'setup_and_run_ocr.sh',
+        downloadUri: _macInstallerUri,
+        zhRunInstruction: 'bash ~/Downloads/setup_and_run_ocr.sh',
+        enRunInstruction: 'bash ~/Downloads/setup_and_run_ocr.sh',
+      ),
+      TargetPlatform.windows => _LocalOcrInstaller(
+        osName: 'Windows',
+        fileName: 'setup_and_run_ocr.bat',
+        downloadUri: _windowsInstallerUri,
+        zhRunInstruction: '按兩下 Downloads 資料夾中的 setup_and_run_ocr.bat',
+        enRunInstruction: 'double-click setup_and_run_ocr.bat in Downloads',
+      ),
+      TargetPlatform.android ||
+      TargetPlatform.iOS ||
+      TargetPlatform.linux ||
+      TargetPlatform.fuchsia => null,
+    };
+  }
+
+  bool _isZh(AppLocalizations l10n) =>
+      l10n.localeName.toLowerCase().startsWith('zh');
+
+  String _assistantButtonLabel(AppLocalizations l10n) =>
+      _isZh(l10n) ? '偵測系統並下載安裝檔' : 'Detect OS & download installer';
+
+  String _assistantUnsupportedTitle(AppLocalizations l10n) =>
+      _isZh(l10n) ? '此系統無法自動安裝' : 'Automatic install is not available';
+
+  String _assistantUnsupportedBody(AppLocalizations l10n) => _isZh(l10n)
+      ? '已偵測到目前平台不是支援的一鍵安裝桌面環境。Web 瀏覽器不能直接在 iOS、Android、Linux 或未知系統上安裝並啟動本機 OCR 服務。\n\n可用做法：\n1. 在 macOS 或 Windows 桌面瀏覽器使用此精靈。\n2. 或改用 Gemini API 金鑰作為 Web OCR 備援。\n3. 進階使用者可開啟 OCR 專案，自行部署相容的 /ocr 端點，再回到此處填入 URL 並測試連線。'
+      : 'The current platform is not a supported one-click desktop install target. A web browser cannot install and start a local OCR service on iOS, Android, Linux, or an unknown system.\n\nOptions:\n1. Use this assistant from a macOS or Windows desktop browser.\n2. Use a Gemini API key as the Web OCR fallback.\n3. Advanced users can open the OCR project, run a compatible /ocr endpoint manually, then enter the URL here and test the connection.';
+
+  String _assistantDownloadedTitle(AppLocalizations l10n, String osName) =>
+      _isZh(l10n) ? '已準備 $osName 安裝檔' : '$osName installer is ready';
+
+  String _assistantDownloadedBody(
+    AppLocalizations l10n,
+    _LocalOcrInstaller installer,
+  ) {
+    if (_isZh(l10n)) {
+      return '已偵測到 ${installer.osName}，並已自動填入本地端點：\n$_defaultLocalOcrEndpoint\n\n瀏覽器已開始下載 ${installer.fileName}。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：${installer.zhRunInstruction}\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「${l10n.webOcrTestServerButton}」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
+    }
+    return '${installer.osName} was detected, and the local endpoint has been filled in automatically:\n$_defaultLocalOcrEndpoint\n\nYour browser has started downloading ${installer.fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: ${installer.enRunInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “${l10n.webOcrTestServerButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.';
+  }
+
   void _saveSettings() {
     if (!kIsWeb) return;
     try {
@@ -286,4 +376,20 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       );
     }
   }
+}
+
+class _LocalOcrInstaller {
+  final String osName;
+  final String fileName;
+  final Uri downloadUri;
+  final String zhRunInstruction;
+  final String enRunInstruction;
+
+  const _LocalOcrInstaller({
+    required this.osName,
+    required this.fileName,
+    required this.downloadUri,
+    required this.zhRunInstruction,
+    required this.enRunInstruction,
+  });
 }
