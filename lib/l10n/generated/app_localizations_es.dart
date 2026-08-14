@@ -575,6 +575,64 @@ class AppLocalizationsEs extends AppLocalizations {
       'Verificación de hipervínculos y bibliografía';
 
   @override
+  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
+
+  @override
+  String get settingsBibliographyIndexesSubtitle =>
+      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
+
+  @override
+  String get settingsBibliographyCredentialsTitle =>
+      'Bibliography index sources';
+
+  @override
+  String get settingsBibliographyCredentialsDescription =>
+      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
+
+  @override
+  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
+
+  @override
+  String get settingsTaiwanIndexSubtitle =>
+      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
+
+  @override
+  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
+
+  @override
+  String get settingsWosApiKeyDescription =>
+      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
+
+  @override
+  String get settingsWosFreePlanButton => 'Get free 50/day plan';
+
+  @override
+  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
+
+  @override
+  String get settingsEiApiKeyDescription =>
+      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
+
+  @override
+  String get settingsEiInstitutionTokenLabel =>
+      'Elsevier institution token (optional)';
+
+  @override
+  String get settingsEiInstitutionTokenHelper =>
+      'Use only when supplied by your institution or Elsevier.';
+
+  @override
+  String get settingsGetApiKeyButton => 'Provider site';
+
+  @override
+  String get settingsSaveBibliographyCredentialsButton =>
+      'Save index credentials';
+
+  @override
+  String get settingsBibliographyCredentialsSaved =>
+      'Bibliography index credentials saved on this device';
+
+  @override
   String get settingsLinkVerificationSubtitle =>
       'El informe se conectará para comprobar si las URL y las entradas bibliográficas detectadas en el documento realmente existen (el contenido generado por IA suele incluir referencias que parecen plausibles pero son inventadas). Tanto los enlaces académicos con formato DOI como las referencias con formato \"autor-año\" sin enlace se verifican contra el registro público de Crossref. El modelo de detección de IA principal sigue funcionando completamente en el dispositivo y nunca envía el contenido del documento; la conexión solo se usa para esta verificación y para comprobar actualizaciones del modelo, y puede desactivarse aquí.';
 
@@ -1792,7 +1850,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. Verificación de autenticidad de hipervínculos y citas: activada por defecto, se puede desactivar en Ajustes. Cuando está activada, la URL o el texto bibliográfico detectados en el documento se envían directamente a esa URL, o a la API pública de Crossref, enviando solo el texto de la URL/DOI/cita en sí; nunca el resto del contenido del documento.';
+      '3. Verificación de hipervínculos y citas: activada por defecto y desactivable en Ajustes. Las URL, DOI o campos de una cita (autor, título, año y publicación) se envían al sitio de destino, servicios bibliográficos públicos, Taiwan NCL/TCI-HSS, catálogos editoriales y servicios SCI/SSCI/EI configurados. El resto del documento no se envía. Las credenciales opcionales se guardan solo en las preferencias de la aplicación de este dispositivo.';
 
   @override
   String get privacyNetwork4 =>

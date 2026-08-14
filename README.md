@@ -135,14 +135,14 @@ AI 句子比例：8/45 (18%)  | 分析耗時：2.3s  | 可信度：92%
 |------|------|------|
 | **模型管理** | 下載/移除 AI 檢測模型 | 自動 |
 | **超連結驗證** | 檢查文件中的連結是否真實存在 | 啟用 |
-| **文獻驗證** | 檢查 DOI 引用是否存在（Crossref API） | 啟用 |
+| **文獻驗證** | 以跨領域與專業書目資料庫交叉核實引用 | 啟用 |
 | **多語言模式** | 切換介面語言（14 種支援） | 自動檢測 |
 | **隱私政策** | 查看完整隱私說明 | — |
 
 ### 🛡️ 隱私保證
 
-✅ **「零上傳」承諾**：
-- 文件內容 **永遠不上傳**
+✅ **本地優先承諾**：
+- 核心 AI 推論不會上傳整份文件內容
 - 模型推論在您的瀏覽器運行
 - 本地 SQLite 儲存分析歷史（可刪除）
 
@@ -150,7 +150,7 @@ AI 句子比例：8/45 (18%)  | 分析耗時：2.3s  | 可信度：92%
 1. **模型下載**：初次使用時，自動下載 ~350MB 檢測模型
 2. **模型更新檢查**：每 7 天檢查新版本（僅發送版本號）
 3. **超連結驗證**：檢查 URL 真實性（僅發送 URL）
-4. **文獻驗證**（Crossref）：查證 DOI（僅發送 DOI）
+4. **文獻驗證**：查詢 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、臺灣國圖／TCI-HSS 與出版社目錄；設定授權憑證後可再查 Web of Science SCI／SSCI 及 Engineering Village EI Compendex（僅發送 DOI 或單筆書目的作者、篇名、年份及期刊欄位）
 
 所有網路功能 **可在設定中關閉**。
 
@@ -310,14 +310,14 @@ AI Sentence Ratio: 8/45 (18%)  | Analysis Time: 2.3s  | Confidence: 92%
 |------|----------|---------|
 | **Model Management** | Download/remove AI detection models | Auto |
 | **Link Verification** | Check if URLs in text exist | Enabled |
-| **Bibliography Verification** | Verify DOI citations (Crossref API) | Enabled |
+| **Bibliography Verification** | Cross-check citations with multidisciplinary and specialist registries | Enabled |
 | **Multilingual Mode** | Change UI language (14 supported) | Auto-detect |
 | **Privacy Policy** | View complete privacy details | — |
 
 ### 🛡️ Privacy Guarantee
 
-✅ **"Zero Upload" Commitment**:
-- Document content **never uploaded**
+✅ **Local-first commitment**:
+- Core AI inference never uploads the complete document
 - Model inference runs in your browser
 - Local SQLite stores analysis history (deletable)
 
@@ -325,7 +325,7 @@ AI Sentence Ratio: 8/45 (18%)  | Analysis Time: 2.3s  | Confidence: 92%
 1. **Model Download**: Auto-download ~350MB detection models on first use
 2. **Model Update Check**: Every 7 days, check for new versions (version number only)
 3. **Link Verification**: Check URL existence (URL only)
-4. **Bibliography Verification** (Crossref): Verify DOIs (DOI only)
+4. **Bibliography Verification**: Query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, Taiwan NCL/TCI-HSS, and publisher catalogs. Optional credentials add Web of Science SCI/SSCI and Engineering Village EI Compendex (DOI or individual author, title, year, and venue fields only)
 
 All network features **can be disabled in settings**.
 
@@ -485,14 +485,14 @@ AI 句子比例：8/45 (18%)  | 分析耗时：2.3s  | 可信度：92%
 |------|------|------|
 | **模型管理** | 下载/移除 AI 检测模型 | 自动 |
 | **超链接验证** | 检查文件中的链接是否真实存在 | 启用 |
-| **文献验证** | 检查 DOI 引用是否存在（Crossref API） | 启用 |
+| **文献验证** | 以跨领域与专业书目数据库交叉核实引用 | 启用 |
 | **多语言模式** | 切换界面语言（14 种支持） | 自动检测 |
 | **隐私政策** | 查看完整隐私说明 | — |
 
 ### 🛡️ 隐私保证
 
-✅ **「零上传」承诺**：
-- 文件内容 **永远不上传**
+✅ **本地优先承诺**：
+- 核心 AI 推论不会上传整份文档内容
 - 模型推论在您的浏览器运行
 - 本地 SQLite 储存分析历史（可删除）
 
@@ -500,7 +500,7 @@ AI 句子比例：8/45 (18%)  | 分析耗时：2.3s  | 可信度：92%
 1. **模型下载**：初次使用时，自动下载 ~350MB 检测模型
 2. **模型更新检查**：每 7 天检查新版本（仅发送版本号）
 3. **超链接验证**：检查 URL 真实性（仅发送 URL）
-4. **文献引用验证**（Crossref）：查证 DOI（仅发送 DOI）
+4. **文献引用验证**：查询 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、台湾国图／TCI-HSS 与出版社目录；设置授权凭证后可再查询 Web of Science SCI／SSCI 及 Engineering Village EI Compendex（仅发送 DOI 或单笔书目的作者、篇名、年份及期刊字段）
 
 所有网络功能 **可在设定中关闭**。
 

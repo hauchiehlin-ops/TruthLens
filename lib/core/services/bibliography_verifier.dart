@@ -5,6 +5,24 @@ import 'package:http/http.dart' as http;
 
 enum CitationMatchConfidence { high, uncertain, notFound }
 
+class BibliographyVerificationCredentials {
+  final String? webOfScienceApiKey;
+  final String? engineeringVillageApiKey;
+  final String? engineeringVillageInstitutionToken;
+
+  const BibliographyVerificationCredentials({
+    this.webOfScienceApiKey,
+    this.engineeringVillageApiKey,
+    this.engineeringVillageInstitutionToken,
+  });
+
+  bool get hasWebOfScienceKey =>
+      webOfScienceApiKey != null && webOfScienceApiKey!.trim().isNotEmpty;
+  bool get hasEngineeringVillageKey =>
+      engineeringVillageApiKey != null &&
+      engineeringVillageApiKey!.trim().isNotEmpty;
+}
+
 class BibliographyEntry {
   final String rawText;
   final int sourceOffset;
@@ -85,6 +103,22 @@ class _CrossrefCandidateScore {
   });
 }
 
+class _BibliographyCandidate {
+  final String? title;
+  final String? venue;
+  final int? year;
+  final String? firstAuthor;
+  final String sourceLabel;
+
+  const _BibliographyCandidate({
+    required this.sourceLabel,
+    this.title,
+    this.venue,
+    this.year,
+    this.firstAuthor,
+  });
+}
+
 class _KnownBibliographyRecord {
   final String title;
   final String venue;
@@ -115,6 +149,15 @@ class BibliographyVerifier {
     final targetHost = Uri.tryParse(targetUrl)?.host.toLowerCase();
     if (targetHost == 'api.crossref.org' || targetHost == 'api.openalex.org') {
       return targetUrl;
+    }
+
+    // `flutter run -d chrome` 沒有提供 Vercel Edge Function；本機 Web 開發時
+    // 改走正式代理，否則 DataCite、Semantic Scholar、Europe PMC 與 ERIC
+    // 都會請求到不存在的 localhost `/api/proxy`。
+    final appHost = Uri.base.host.toLowerCase();
+    if (appHost == 'localhost' || appHost == '127.0.0.1' || appHost == '::1') {
+      return 'https://truth-lens-band-b.vercel.app/api/proxy?url='
+          '${Uri.encodeComponent(targetUrl)}';
     }
 
     final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
@@ -951,6 +994,7 @@ class BibliographyVerifier {
     Uri uri,
     Duration timeout, {
     int maxRetries = 2,
+    Map<String, String> headers = const {},
   }) async {
     for (var attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -960,6 +1004,7 @@ class BibliographyVerifier {
               headers: {
                 'User-Agent':
                     'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+                ...headers,
               },
             )
             .timeout(timeout);
@@ -990,6 +1035,8 @@ class BibliographyVerifier {
     List<BibliographyEntry> entries, {
     http.Client? client,
     Duration timeout = const Duration(seconds: 5),
+    BibliographyVerificationCredentials credentials =
+        const BibliographyVerificationCredentials(),
     void Function(BibliographyVerificationProgress progress)? onProgress,
   }) async {
     final c = client ?? http.Client();
@@ -1021,7 +1068,7 @@ class BibliographyVerifier {
             currentEntry: entry,
           ),
         );
-        final result = await _verifyOne(c, entry, timeout);
+        final result = await _verifyOne(c, entry, timeout, credentials);
         results.add(result);
         onProgress?.call(
           BibliographyVerificationProgress(
@@ -1047,6 +1094,7 @@ class BibliographyVerifier {
     http.Client client,
     BibliographyEntry entry,
     Duration timeout,
+    BibliographyVerificationCredentials credentials,
   ) async {
     var crossrefSearchSucceeded = false;
     var openAlexSearchSucceeded = false;
@@ -1066,6 +1114,7 @@ class BibliographyVerifier {
     if (trustedLocalResult != null) return trustedLocalResult;
 
     if (entry.doi != null) {
+      var crossrefDoiNotFound = false;
       try {
         final baseUrl =
             'https://api.crossref.org/works/${Uri.encodeComponent(entry.doi!)}';
@@ -1081,6 +1130,7 @@ class BibliographyVerifier {
           final titles = (message?['title'] as List?)?.cast<dynamic>();
           final containers = (message?['container-title'] as List?)
               ?.cast<dynamic>();
+          final authors = (message?['author'] as List?)?.cast<dynamic>();
           final dateParts =
               ((message?['published'] as Map<String, dynamic>?)?['date-parts']
                       as List?)
@@ -1091,31 +1141,35 @@ class BibliographyVerifier {
                   (dateParts.first as List).isNotEmpty)
               ? (dateParts.first as List).first as int
               : null;
-          return BibliographyCheckResult(
-            entry: entry,
-            confidence: CitationMatchConfidence.high,
-            matchedTitle: titles != null && titles.isNotEmpty
-                ? titles.first.toString()
-                : null,
-            matchedJournal: containers != null && containers.isNotEmpty
-                ? containers.first.toString()
-                : 'Crossref DOI 登記',
-            matchedYear: matchedYear,
-            journalNameMismatch: _journalNameMismatch(
-              entry.venueTitle,
-              containers != null && containers.isNotEmpty
-                  ? containers.first.toString()
-                  : null,
+          final matchedTitle = titles != null && titles.isNotEmpty
+              ? titles.first.toString()
+              : null;
+          final matchedJournal = containers != null && containers.isNotEmpty
+              ? containers.first.toString()
+              : null;
+          final firstAuthorRecord = authors != null && authors.isNotEmpty
+              ? authors.first as Map<String, dynamic>?
+              : null;
+          final firstAuthor = firstAuthorRecord?['family']?.toString();
+          return _registeredDoiResult(
+            entry,
+            _BibliographyCandidate(
+              sourceLabel: 'Crossref DOI 登記',
+              title: matchedTitle,
+              venue: matchedJournal,
+              year: matchedYear,
+              firstAuthor: firstAuthor,
             ),
           );
         }
         if (response != null && response.statusCode == 404) {
-          return BibliographyCheckResult(
-            entry: entry,
-            confidence: CitationMatchConfidence.notFound,
-          );
+          crossrefDoiNotFound = true;
         }
       } catch (_) {}
+      if (crossrefDoiNotFound) {
+        final dataCiteResult = await _verifyDataCiteDoi(client, entry, timeout);
+        if (dataCiteResult != null) return dataCiteResult;
+      }
     }
 
     if (searchTitleVariants.isNotEmpty &&
@@ -1330,7 +1384,47 @@ class BibliographyVerifier {
       }
     } catch (_) {}
 
-    // 3) 策略三：直接查詢期刊／出版商目錄頁。Crossref/OpenAlex 是登記資料庫；
+    // 3) 互補專業索引：公開來源永遠查詢；Web of Science SCI/SSCI 與
+    // Engineering Village EI 僅在使用者提供官方授權金鑰時加入。
+    if (searchTitle != null) {
+      final supplementalChecks = <Future<BibliographyCheckResult?>>[
+        _verifySemanticScholar(client, entry, searchTitle, timeout),
+        _verifyEuropePmc(client, entry, searchTitle, timeout),
+        _verifyEric(client, entry, searchTitle, timeout),
+        _verifyTaiwanPeriodicalIndex(client, entry, searchTitle, timeout),
+      ];
+      if (credentials.hasWebOfScienceKey) {
+        supplementalChecks.add(
+          _verifyWebOfScience(
+            client,
+            entry,
+            searchTitle,
+            timeout,
+            credentials.webOfScienceApiKey!.trim(),
+          ),
+        );
+      }
+      if (credentials.hasEngineeringVillageKey) {
+        supplementalChecks.add(
+          _verifyEngineeringVillage(
+            client,
+            entry,
+            searchTitle,
+            timeout,
+            credentials.engineeringVillageApiKey!.trim(),
+            credentials.engineeringVillageInstitutionToken?.trim(),
+          ),
+        );
+      }
+      final supplementalResults = await Future.wait(supplementalChecks);
+      for (final result
+          in supplementalResults.whereType<BibliographyCheckResult>()) {
+        if (result.confidence == CitationMatchConfidence.high) return result;
+        bestUncertainCandidate ??= result;
+      }
+    }
+
+    // 4) 策略四：直接查詢期刊／出版商目錄頁。Crossref/OpenAlex 是登記資料庫；
     // 這裡再到期刊網站搜尋目錄頁，若頁面內容同時吻合篇名與年份/期刊，提升為高可信度。
     final journalCatalogResult = await _verifyJournalWebsiteCatalog(
       client,
@@ -1805,6 +1899,498 @@ class BibliographyVerifier {
       return false;
     }
     return math.max(aFirst, bFirst) <= math.min(aLast, bLast);
+  }
+
+  static Future<BibliographyCheckResult?> _verifyDataCiteDoi(
+    http.Client client,
+    BibliographyEntry entry,
+    Duration timeout,
+  ) async {
+    final doi = entry.doi;
+    if (doi == null) return null;
+    try {
+      final remoteUri = Uri.parse(
+        'https://api.datacite.org/dois/${Uri.encodeComponent(doi)}',
+      );
+      final response = await _httpGetWithRetry(
+        client,
+        Uri.parse(_getProxiedUrl(remoteUri.toString())),
+        timeout,
+      );
+      if (response == null) return null;
+      if (response.statusCode == 404) {
+        return BibliographyCheckResult(
+          entry: entry,
+          confidence: CitationMatchConfidence.notFound,
+        );
+      }
+      if (response.statusCode != 200) return null;
+
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = payload['data'] as Map<String, dynamic>?;
+      final attributes = data?['attributes'] as Map<String, dynamic>?;
+      if (attributes == null) return null;
+      final titles = (attributes['titles'] as List?)?.cast<dynamic>();
+      final firstTitleRecord = titles != null && titles.isNotEmpty
+          ? titles.first as Map<String, dynamic>?
+          : null;
+      final firstTitle = firstTitleRecord?['title']?.toString();
+      final container = attributes['container'] as Map<String, dynamic>?;
+      final venue =
+          container?['title']?.toString() ??
+          attributes['publisher']?.toString();
+      final year = _asInt(attributes['publicationYear']);
+      final creators = (attributes['creators'] as List?)?.cast<dynamic>();
+      final firstCreatorRecord = creators != null && creators.isNotEmpty
+          ? creators.first as Map<String, dynamic>?
+          : null;
+      final firstAuthor =
+          firstCreatorRecord?['familyName']?.toString() ??
+          firstCreatorRecord?['name']?.toString();
+      return _registeredDoiResult(
+        entry,
+        _BibliographyCandidate(
+          sourceLabel: 'DataCite DOI 登記',
+          title: firstTitle,
+          venue: venue,
+          year: year,
+          firstAuthor: firstAuthor,
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifySemanticScholar(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+  ) async {
+    try {
+      final remoteUri =
+          Uri.parse(
+            'https://api.semanticscholar.org/graph/v1/paper/search',
+          ).replace(
+            queryParameters: {
+              'query': searchTitle,
+              'limit': '5',
+              'fields': 'title,year,authors,venue,journal,externalIds',
+            },
+          );
+      final response = await _httpGetWithRetry(
+        client,
+        Uri.parse(_getProxiedUrl(remoteUri.toString())),
+        timeout,
+        maxRetries: 1,
+      );
+      if (response == null || response.statusCode != 200) return null;
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = (payload['data'] as List?)?.cast<dynamic>() ?? const [];
+      final candidates = data.map((item) {
+        final record = item as Map<String, dynamic>;
+        final authors = (record['authors'] as List?)?.cast<dynamic>();
+        final journal = record['journal'] as Map<String, dynamic>?;
+        final firstAuthorRecord = authors != null && authors.isNotEmpty
+            ? authors.first as Map<String, dynamic>?
+            : null;
+        return _BibliographyCandidate(
+          sourceLabel: 'Semantic Scholar 學術圖譜',
+          title: record['title']?.toString(),
+          venue: journal?['name']?.toString() ?? record['venue']?.toString(),
+          year: _asInt(record['year']),
+          firstAuthor: firstAuthorRecord?['name']?.toString(),
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifyEuropePmc(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+  ) async {
+    try {
+      final remoteUri =
+          Uri.parse(
+            'https://www.ebi.ac.uk/europepmc/webservices/rest/search',
+          ).replace(
+            queryParameters: {
+              'query': 'TITLE:"$searchTitle"',
+              'format': 'json',
+              'pageSize': '5',
+              'resultType': 'core',
+            },
+          );
+      final response = await _httpGetWithRetry(
+        client,
+        Uri.parse(_getProxiedUrl(remoteUri.toString())),
+        timeout,
+        maxRetries: 1,
+      );
+      if (response == null || response.statusCode != 200) return null;
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final resultList = payload['resultList'] as Map<String, dynamic>?;
+      final data =
+          (resultList?['result'] as List?)?.cast<dynamic>() ?? const [];
+      final candidates = data.map((item) {
+        final record = item as Map<String, dynamic>;
+        return _BibliographyCandidate(
+          sourceLabel: 'Europe PMC／PubMed／AGRICOLA',
+          title: record['title']?.toString(),
+          venue: record['journalTitle']?.toString(),
+          year: _asInt(record['pubYear']),
+          firstAuthor: record['authorString']?.toString(),
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifyEric(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+  ) async {
+    try {
+      final remoteUri = Uri.parse('https://api.ies.ed.gov/eric/').replace(
+        queryParameters: {
+          'search': 'title:"$searchTitle"',
+          'format': 'json',
+          'rows': '20',
+        },
+      );
+      final response = await _httpGetWithRetry(
+        client,
+        Uri.parse(_getProxiedUrl(remoteUri.toString())),
+        timeout,
+        maxRetries: 1,
+      );
+      if (response == null || response.statusCode != 200) return null;
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final ericResponse = payload['response'] as Map<String, dynamic>?;
+      final data =
+          (ericResponse?['docs'] as List?)?.cast<dynamic>() ?? const [];
+      final candidates = data.map((item) {
+        final record = item as Map<String, dynamic>;
+        final authors = (record['author'] as List?)?.cast<dynamic>();
+        return _BibliographyCandidate(
+          sourceLabel: 'ERIC 教育研究資料庫',
+          title: record['title']?.toString(),
+          venue:
+              record['source']?.toString() ?? record['publisher']?.toString(),
+          year: _asInt(record['publicationdateyear']),
+          firstAuthor: authors != null && authors.isNotEmpty
+              ? authors.first.toString()
+              : null,
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifyWebOfScience(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+    String apiKey,
+  ) async {
+    try {
+      final escapedTitle = searchTitle
+          .replaceAll(r'\', r'\\')
+          .replaceAll('"', r'\"');
+      final uri =
+          Uri.parse(
+            'https://api.clarivate.com/apis/wos-starter/v1/documents',
+          ).replace(
+            queryParameters: {
+              'db': 'WOS',
+              'q': 'TI=("$escapedTitle")',
+              'edition': 'WOS SCI,WOS SSCI',
+              'limit': '5',
+              'page': '1',
+              'detail': 'short',
+            },
+          );
+      final response = await _httpGetWithRetry(
+        client,
+        uri,
+        timeout,
+        maxRetries: 1,
+        headers: {'X-ApiKey': apiKey, 'Accept': 'application/json'},
+      );
+      if (response == null || response.statusCode != 200) return null;
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final hits = (payload['hits'] as List?)?.cast<dynamic>() ?? const [];
+      final candidates = hits.map((item) {
+        final record = item as Map<String, dynamic>;
+        final source = record['source'] as Map<String, dynamic>?;
+        final names = record['names'] as Map<String, dynamic>?;
+        final authors = (names?['authors'] as List?)?.cast<dynamic>();
+        final firstAuthor = authors != null && authors.isNotEmpty
+            ? (authors.first as Map<String, dynamic>?)
+            : null;
+        return _BibliographyCandidate(
+          sourceLabel: 'Web of Science SCI／SSCI',
+          title: record['title']?.toString(),
+          venue: source?['sourceTitle']?.toString(),
+          year: _asInt(source?['publishYear']),
+          firstAuthor:
+              firstAuthor?['wosStandard']?.toString() ??
+              firstAuthor?['displayName']?.toString(),
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifyEngineeringVillage(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+    String apiKey,
+    String? institutionToken,
+  ) async {
+    try {
+      final safeTitle = searchTitle.replaceAll(RegExp(r'[{}]'), ' ').trim();
+      final queryParameters = <String, String>{
+        'database': 'c',
+        'query': '{$safeTitle} wn TI',
+        'pageSize': '5',
+        'offset': '0',
+        'autoStemming': 'false',
+      };
+      if (entry.year != null) {
+        queryParameters['startYear'] = '${entry.year! - 1}';
+        queryParameters['endYear'] = '${entry.year! + 1}';
+      }
+      final headers = <String, String>{
+        'Accept': 'application/json',
+        'X-ELS-APIKey': apiKey,
+      };
+      if (institutionToken != null && institutionToken.isNotEmpty) {
+        headers['X-ELS-Insttoken'] = institutionToken;
+      }
+      final uri = Uri.parse(
+        'https://api.elsevier.com/content/ev/results',
+      ).replace(queryParameters: queryParameters);
+      final response = await _httpGetWithRetry(
+        client,
+        uri,
+        timeout,
+        maxRetries: 1,
+        headers: headers,
+      );
+      if (response == null || response.statusCode != 200) return null;
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final page = payload['PAGE'] as Map<String, dynamic>?;
+      final pageResults = page?['PAGE-RESULTS'] as Map<String, dynamic>?;
+      final rawEntries = pageResults?['PAGE-ENTRY'];
+      final records = rawEntries is List
+          ? rawEntries.cast<dynamic>()
+          : rawEntries is Map<String, dynamic>
+          ? <dynamic>[rawEntries]
+          : const <dynamic>[];
+      final candidates = records.map((item) {
+        final wrapper = item as Map<String, dynamic>;
+        final document = wrapper['EI-DOCUMENT'] as Map<String, dynamic>?;
+        final properties =
+            document?['DOCUMENTPROPERTIES'] as Map<String, dynamic>?;
+        final authors = document?['AUS'] as Map<String, dynamic>?;
+        final rawAuthors = authors?['AU'];
+        Map<String, dynamic>? firstAuthor;
+        if (rawAuthors is List && rawAuthors.isNotEmpty) {
+          firstAuthor = rawAuthors.first as Map<String, dynamic>?;
+        } else if (rawAuthors is Map<String, dynamic>) {
+          firstAuthor = rawAuthors;
+        }
+        return _BibliographyCandidate(
+          sourceLabel: 'Engineering Village EI Compendex',
+          title: properties?['TI']?.toString(),
+          venue: properties?['SO']?.toString(),
+          year: _asInt(properties?['YR']),
+          firstAuthor: firstAuthor?['NAME']?.toString(),
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<BibliographyCheckResult?> _verifyTaiwanPeriodicalIndex(
+    http.Client client,
+    BibliographyEntry entry,
+    String searchTitle,
+    Duration timeout,
+  ) async {
+    try {
+      final uri = Uri.parse('https://tpl.ncl.edu.tw/NclService/JournalContent')
+          .replace(
+            queryParameters: {
+              'directQuery': 'true',
+              'nestedSearch': 'false',
+              'queryType': 'normal',
+              'q[0].f': 'TI',
+              'q[0].i': searchTitle,
+              'pageSize': '10',
+            },
+          );
+      final response = await _httpGetWithRetry(
+        client,
+        Uri.parse(_getProxiedUrl(uri.toString())),
+        timeout,
+        maxRetries: 1,
+      );
+      if (response == null || response.statusCode != 200) return null;
+
+      final titlePattern = RegExp(
+        r'<a[^>]*class="articleTitle"[^>]*title="([^"]+)"',
+        caseSensitive: false,
+      );
+      final candidates = titlePattern.allMatches(response.body).take(10).map((
+        m,
+      ) {
+        return _BibliographyCandidate(
+          sourceLabel: '國家圖書館臺灣期刊／TCI-HSS',
+          title: _decodeHtmlText(m.group(1)),
+        );
+      });
+      return _bestSupplementalCandidate(entry, searchTitle, candidates);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String _decodeHtmlText(String? value) {
+    if (value == null) return '';
+    return value
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#34;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&apos;', "'")
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&nbsp;', ' ')
+        .trim();
+  }
+
+  static BibliographyCheckResult _registeredDoiResult(
+    BibliographyEntry entry,
+    _BibliographyCandidate candidate,
+  ) {
+    final entryTitle = entry.title?.trim();
+    if (entryTitle == null ||
+        entryTitle.length < 5 ||
+        candidate.title == null) {
+      return BibliographyCheckResult(
+        entry: entry,
+        confidence: CitationMatchConfidence.high,
+        matchedTitle: candidate.title,
+        matchedJournal: candidate.venue ?? candidate.sourceLabel,
+        matchedYear: candidate.year,
+        journalNameMismatch:
+            candidate.venue != null &&
+            _journalNameMismatch(entry.venueTitle, candidate.venue),
+      );
+    }
+
+    final scored = _bestSupplementalCandidate(entry, entryTitle, [candidate]);
+    if (scored?.confidence == CitationMatchConfidence.high) return scored!;
+    return BibliographyCheckResult(
+      entry: entry,
+      confidence: CitationMatchConfidence.uncertain,
+      matchedTitle: candidate.title,
+      matchedJournal: candidate.venue ?? candidate.sourceLabel,
+      matchedYear: candidate.year,
+      journalNameMismatch: false,
+    );
+  }
+
+  static BibliographyCheckResult? _bestSupplementalCandidate(
+    BibliographyEntry entry,
+    String searchTitle,
+    Iterable<_BibliographyCandidate> candidates,
+  ) {
+    BibliographyCheckResult? best;
+    var bestScore = 0.0;
+    for (final candidate in candidates) {
+      final titleSim = _titleSimilarity(searchTitle, candidate.title);
+      final yearMatches =
+          entry.year != null &&
+          candidate.year != null &&
+          (entry.year! - candidate.year!).abs() <= 1;
+      final authorMatches = _personNameMatches(
+        entry.firstAuthorSurname,
+        candidate.firstAuthor,
+      );
+      final venueMatches =
+          entry.venueTitle != null &&
+          candidate.venue != null &&
+          _titleSimilarity(entry.venueTitle, candidate.venue) >= 0.48;
+      final score =
+          titleSim * 0.68 +
+          (yearMatches ? 0.14 : 0) +
+          (authorMatches ? 0.10 : 0) +
+          (venueMatches ? 0.08 : 0);
+      final high =
+          titleSim >= 0.84 ||
+          (titleSim >= 0.62 &&
+              yearMatches &&
+              (authorMatches || venueMatches)) ||
+          (titleSim >= 0.54 && yearMatches && authorMatches && venueMatches) ||
+          score >= 0.80;
+      final uncertain =
+          !high &&
+          (titleSim >= 0.40 ||
+              (titleSim >= 0.30 &&
+                  (yearMatches || authorMatches || venueMatches)));
+      if ((!high && !uncertain) || score <= bestScore) continue;
+      bestScore = score;
+      best = BibliographyCheckResult(
+        entry: entry,
+        confidence: high
+            ? CitationMatchConfidence.high
+            : CitationMatchConfidence.uncertain,
+        matchedTitle: candidate.title,
+        matchedJournal: candidate.venue ?? candidate.sourceLabel,
+        matchedYear: candidate.year,
+        journalNameMismatch:
+            high &&
+            candidate.venue != null &&
+            _journalNameMismatch(entry.venueTitle, candidate.venue),
+      );
+    }
+    return best;
+  }
+
+  static bool _personNameMatches(String? expectedSurname, String? candidate) {
+    final expected = expectedSurname?.toLowerCase().trim();
+    final actual = candidate?.toLowerCase().trim();
+    if (expected == null || expected.length < 2 || actual == null) return false;
+    return actual.contains(expected) ||
+        _titleSimilarity(expected, actual) >= 0.72;
+  }
+
+  static int? _asInt(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
   }
 
   static Future<BibliographyCheckResult?> _verifyJournalWebsiteCatalog(

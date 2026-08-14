@@ -77,4 +77,25 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test(
+    'licensed bibliography API credentials persist locally and trim values',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = PreferencesService();
+      await preferences.load();
+
+      await preferences.setBibliographyApiCredentials(
+        webOfScienceKey: ' wos-key ',
+        engineeringVillageKey: ' ei-key ',
+        engineeringVillageInstitutionTokenValue: ' inst-token ',
+      );
+
+      final reloaded = PreferencesService();
+      await reloaded.load();
+      expect(reloaded.webOfScienceApiKey, 'wos-key');
+      expect(reloaded.engineeringVillageApiKey, 'ei-key');
+      expect(reloaded.engineeringVillageInstitutionToken, 'inst-token');
+    },
+  );
 }

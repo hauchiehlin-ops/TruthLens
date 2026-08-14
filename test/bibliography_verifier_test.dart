@@ -632,7 +632,11 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
 
     test('DOI 精確查詢 404 時可安全判定 notFound', () async {
       final client = MockClient((req) async {
-        expect(req.url.path, contains('/works/10.9999%2Fmissing-paper'));
+        expect(
+          req.url.host == 'api.crossref.org' ||
+              req.url.host == 'api.datacite.org',
+          isTrue,
+        );
         return http.Response('Not found', 404);
       });
       final entry = BibliographyEntry(
@@ -647,6 +651,262 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
         entry,
       ], client: client);
       expect(results.single.confidence, CitationMatchConfidence.notFound);
+    });
+
+    test('Crossref 查無 DOI 時改查 DataCite，避免誤判其他註冊機構 DOI', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response('Not found', 404);
+        }
+        expect(req.url.host, 'api.datacite.org');
+        return http.Response(
+          jsonEncode({
+            'data': {
+              'attributes': {
+                'titles': [
+                  {'title': 'Agricultural resilience data and analysis'},
+                ],
+                'publisher': 'International Agricultural Repository',
+                'publicationYear': 2024,
+              },
+            },
+          }),
+          200,
+        );
+      });
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Lin, H. (2024). Agricultural resilience data and analysis. DOI: 10.9999/agri.2024.1',
+          firstAuthorSurname: 'Lin',
+          year: 2024,
+          title: 'Agricultural resilience data and analysis',
+          doi: '10.9999/agri.2024.1',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, contains('Agricultural'));
+    });
+
+    test('DOI 存在但登記篇名與引用內容不符時不得直接判為高可信度', () async {
+      final client = MockClient((req) async {
+        expect(req.url.host, 'api.crossref.org');
+        return http.Response(
+          jsonEncode({
+            'message': {
+              'title': ['An unrelated registered article'],
+              'container-title': ['Journal of Unrelated Studies'],
+              'published': {
+                'date-parts': [
+                  [2018],
+                ],
+              },
+              'author': [
+                {'family': 'Other'},
+              ],
+            },
+          }),
+          200,
+        );
+      });
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Smith, J. (2024). A fabricated title using a real DOI. Journal of Fabricated Results. DOI: 10.1234/real-doi',
+          firstAuthorSurname: 'Smith',
+          year: 2024,
+          title: 'A fabricated title using a real DOI',
+          venueTitle: 'Journal of Fabricated Results',
+          doi: '10.1234/real-doi',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.uncertain);
+      expect(results.single.matchedTitle, 'An unrelated registered article');
+    });
+
+    test('商管與工程文獻可由 Semantic Scholar 互補索引核實', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (req.url.host == 'api.semanticscholar.org') {
+          return http.Response(
+            jsonEncode({
+              'data': [
+                {
+                  'title':
+                      'Digital transformation and firm performance in global markets',
+                  'year': 2022,
+                  'authors': [
+                    {'name': 'Mei Chen'},
+                  ],
+                  'venue': 'Journal of Business Research',
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'www.ebi.ac.uk') {
+          return http.Response(
+            jsonEncode({
+              'resultList': {'result': []},
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.ies.ed.gov') {
+          return http.Response(
+            jsonEncode({
+              'response': {'docs': []},
+            }),
+            200,
+          );
+        }
+        return http.Response('Not found', 404);
+      });
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Chen, M. (2022). Digital transformation and firm performance in global markets. Journal of Business Research.',
+          firstAuthorSurname: 'Chen',
+          year: 2022,
+          title:
+              'Digital transformation and firm performance in global markets',
+          venueTitle: 'Journal of Business Research',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Journal of Business Research');
+    });
+
+    test('醫學與農業文獻可由 Europe PMC／PubMed／AGRICOLA 索引核實', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (req.url.host == 'api.semanticscholar.org') {
+          return http.Response(jsonEncode({'data': []}), 200);
+        }
+        if (req.url.host == 'www.ebi.ac.uk') {
+          return http.Response(
+            jsonEncode({
+              'resultList': {
+                'result': [
+                  {
+                    'title':
+                        'Soil microbiome responses to sustainable crop management',
+                    'authorString': 'Garcia L, Wang P',
+                    'journalTitle': 'Agricultural Systems',
+                    'pubYear': '2021',
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.ies.ed.gov') {
+          return http.Response(
+            jsonEncode({
+              'response': {'docs': []},
+            }),
+            200,
+          );
+        }
+        return http.Response('Not found', 404);
+      });
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Garcia, L. (2021). Soil microbiome responses to sustainable crop management. Agricultural Systems.',
+          firstAuthorSurname: 'Garcia',
+          year: 2021,
+          title: 'Soil microbiome responses to sustainable crop management',
+          venueTitle: 'Agricultural Systems',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Agricultural Systems');
+    });
+
+    test('教育文獻可由美國教育部 ERIC 專業資料庫核實', () async {
+      final client = MockClient((req) async {
+        if (req.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (req.url.host == 'api.semanticscholar.org') {
+          return http.Response(jsonEncode({'data': []}), 200);
+        }
+        if (req.url.host == 'www.ebi.ac.uk') {
+          return http.Response(
+            jsonEncode({
+              'resultList': {'result': []},
+            }),
+            200,
+          );
+        }
+        if (req.url.host == 'api.ies.ed.gov') {
+          return http.Response(
+            jsonEncode({
+              'response': {
+                'docs': [
+                  {
+                    'title':
+                        'Teacher professional learning in digital classrooms',
+                    'author': ['Williams, Sara'],
+                    'publicationdateyear': 2020,
+                    'source': 'Teaching and Teacher Education',
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        }
+        return http.Response('Not found', 404);
+      });
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Williams, S. (2020). Teacher professional learning in digital classrooms. Teaching and Teacher Education.',
+          firstAuthorSurname: 'Williams',
+          year: 2020,
+          title: 'Teacher professional learning in digital classrooms',
+          venueTitle: 'Teaching and Teacher Education',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Teaching and Teacher Education');
     });
 
     test(
@@ -1139,6 +1399,179 @@ References
       expect(progressEvents.first.completed, 0);
       expect(progressEvents.first.total, 35);
       expect(progressEvents.last.completed, 35);
+    });
+
+    test('提供 Clarivate 金鑰時以 Web of Science SCI／SSCI 核實文獻', () async {
+      final client = MockClient((request) async {
+        if (request.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (request.url.host == 'api.clarivate.com') {
+          expect(request.headers['X-ApiKey'], 'wos-test-key');
+          expect(request.url.queryParameters['edition'], contains('SSCI'));
+          return http.Response(
+            jsonEncode({
+              'hits': [
+                {
+                  'title': 'Consumer Trust in Artificial Intelligence',
+                  'source': {
+                    'sourceTitle': 'Journal of Marketing Research',
+                    'publishYear': 2024,
+                  },
+                  'names': {
+                    'authors': [
+                      {'wosStandard': 'LIN, B'},
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('', 404);
+      });
+
+      final results = await BibliographyVerifier.verifyAll(
+        const [
+          BibliographyEntry(
+            rawText:
+                'Lin, B. (2024). Consumer Trust in Artificial Intelligence. Journal of Marketing Research.',
+            firstAuthorSurname: 'Lin',
+            year: 2024,
+            title: 'Consumer Trust in Artificial Intelligence',
+            venueTitle: 'Journal of Marketing Research',
+          ),
+        ],
+        client: client,
+        credentials: const BibliographyVerificationCredentials(
+          webOfScienceApiKey: 'wos-test-key',
+        ),
+      );
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Journal of Marketing Research');
+    });
+
+    test('提供 Elsevier 授權時以 Engineering Village EI Compendex 核實文獻', () async {
+      final client = MockClient((request) async {
+        if (request.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (request.url.host == 'api.elsevier.com') {
+          expect(request.url.queryParameters['database'], 'c');
+          expect(request.headers['X-ELS-APIKey'], 'ei-test-key');
+          expect(request.headers['X-ELS-Insttoken'], 'institution-test');
+          return http.Response(
+            jsonEncode({
+              'PAGE': {
+                'PAGE-RESULTS': {
+                  'PAGE-ENTRY': [
+                    {
+                      'EI-DOCUMENT': {
+                        'DOCUMENTPROPERTIES': {
+                          'TI': 'Damage Detection in Composite Bridges',
+                          'SO': 'Engineering Structures',
+                          'YR': '2023',
+                        },
+                        'AUS': {
+                          'AU': [
+                            {'NAME': 'Chen, Wei'},
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+            200,
+          );
+        }
+        return http.Response('', 404);
+      });
+
+      final results = await BibliographyVerifier.verifyAll(
+        const [
+          BibliographyEntry(
+            rawText:
+                'Chen, W. (2023). Damage Detection in Composite Bridges. Engineering Structures.',
+            firstAuthorSurname: 'Chen',
+            year: 2023,
+            title: 'Damage Detection in Composite Bridges',
+            venueTitle: 'Engineering Structures',
+          ),
+        ],
+        client: client,
+        credentials: const BibliographyVerificationCredentials(
+          engineeringVillageApiKey: 'ei-test-key',
+          engineeringVillageInstitutionToken: 'institution-test',
+        ),
+      );
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(results.single.matchedJournal, 'Engineering Structures');
+    });
+
+    test('臺灣中文期刊可由國家圖書館期刊／TCI-HSS 輔助來源核實', () async {
+      final requestedHosts = <String>[];
+      final client = MockClient((request) async {
+        requestedHosts.add(request.url.host);
+        if (request.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (request.url.host == 'tpl.ncl.edu.tw') {
+          return http.Response(
+            '<a class="articleTitle" title="數位學習環境中的教師專業發展&amp;實踐">文獻</a>',
+            200,
+            headers: {'content-type': 'text/html; charset=utf-8'},
+          );
+        }
+        return http.Response('', 404);
+      });
+
+      final results = await BibliographyVerifier.verifyAll(const [
+        BibliographyEntry(
+          rawText: '林小明（2022）。數位學習環境中的教師專業發展&實踐。教育研究集刊。',
+          firstAuthorSurname: '林',
+          year: 2022,
+          title: '數位學習環境中的教師專業發展&實踐',
+          venueTitle: '教育研究集刊',
+        ),
+      ], client: client);
+
+      expect(requestedHosts, contains('tpl.ncl.edu.tw'));
+      expect(
+        results.single.confidence,
+        CitationMatchConfidence.high,
+        reason:
+            'matchedTitle=${results.single.matchedTitle}, matchedJournal=${results.single.matchedJournal}',
+      );
+      expect(results.single.matchedJournal, contains('TCI-HSS'));
     });
 
     test('一般財經快訊、股票清單與非學術編號敘事不被誤判為參考文獻目錄', () {

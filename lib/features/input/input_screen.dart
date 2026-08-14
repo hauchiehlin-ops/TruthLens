@@ -17,6 +17,7 @@ import '../../shared/widgets/threshold_setting_title.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/model_import_screen.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
+import '../settings/bibliography_index_settings.dart';
 import '../settings/engine_weight_settings.dart';
 import '../settings/web_ocr_settings.dart';
 
@@ -740,6 +741,24 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
           ),
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.library_books_outlined, size: 20),
+            title: Text(
+              l10n.settingsBibliographyIndexesTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsBibliographyIndexesSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const BibliographyIndexSettingsScreen(),
+              ),
+            ),
+          ),
           const Divider(),
 
           // 主題
@@ -1141,6 +1160,17 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               subtitle: Text(l10n.settingsLinkVerificationSubtitle),
               value: prefs.linkVerificationEnabled,
               onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+            ),
+            ListTile(
+              leading: const Icon(Icons.library_books_outlined),
+              title: Text(l10n.settingsBibliographyIndexesTitle),
+              subtitle: Text(l10n.settingsBibliographyIndexesSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const BibliographyIndexSettingsScreen(),
+                ),
+              ),
             ),
             const Divider(),
             ListTile(

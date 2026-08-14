@@ -566,6 +566,64 @@ class AppLocalizationsTh extends AppLocalizations {
       'การตรวจสอบความถูกต้องของลิงก์และบรรณานุกรม';
 
   @override
+  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
+
+  @override
+  String get settingsBibliographyIndexesSubtitle =>
+      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
+
+  @override
+  String get settingsBibliographyCredentialsTitle =>
+      'Bibliography index sources';
+
+  @override
+  String get settingsBibliographyCredentialsDescription =>
+      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
+
+  @override
+  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
+
+  @override
+  String get settingsTaiwanIndexSubtitle =>
+      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
+
+  @override
+  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
+
+  @override
+  String get settingsWosApiKeyDescription =>
+      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
+
+  @override
+  String get settingsWosFreePlanButton => 'Get free 50/day plan';
+
+  @override
+  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
+
+  @override
+  String get settingsEiApiKeyDescription =>
+      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
+
+  @override
+  String get settingsEiInstitutionTokenLabel =>
+      'Elsevier institution token (optional)';
+
+  @override
+  String get settingsEiInstitutionTokenHelper =>
+      'Use only when supplied by your institution or Elsevier.';
+
+  @override
+  String get settingsGetApiKeyButton => 'Provider site';
+
+  @override
+  String get settingsSaveBibliographyCredentialsButton =>
+      'Save index credentials';
+
+  @override
+  String get settingsBibliographyCredentialsSaved =>
+      'Bibliography index credentials saved on this device';
+
+  @override
   String get settingsLinkVerificationSubtitle =>
       'รายงานจะเชื่อมต่อเพื่อตรวจสอบว่า URL และรายการบรรณานุกรมที่ตรวจพบในเอกสารมีอยู่จริงหรือไม่（เนื้อหาที่สร้างโดย AI มักมีการอ้างอิงที่ดูสมเหตุสมผลแต่ไม่มีอยู่จริง） ลิงก์วิชาการรูปแบบ DOI และบรรณานุกรมรูปแบบ \"ผู้แต่ง—ปี\" ที่ไม่มีลิงก์ จะถูกตรวจสอบกับข้อมูลทะเบียนสาธารณะของ Crossref ทั้งคู่ โมเดลตรวจจับ AI หลักยังคงทำงานบนอุปกรณ์ทั้งหมด และไม่ส่งเนื้อหาเอกสาร การเชื่อมต่อใช้เพียงเพื่อการตรวจสอบนี้และการตรวจสอบการอัปเดตโมเดลเท่านั้น และสามารถปิดได้ที่นี่';
 
@@ -1773,7 +1831,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. การตรวจสอบความถูกต้องของลิงก์และการอ้างอิง: เปิดใช้งานเป็นค่าเริ่มต้น สามารถปิดได้ใน \"การตั้งค่า\" เมื่อเปิดใช้งาน URL หรือข้อความบรรณานุกรมที่ตรวจพบในเอกสารจะถูกส่งไปยัง URL นั้นโดยตรงหรือ API สาธารณะของ Crossref โดยส่งเฉพาะข้อความ URL／DOI／บรรณานุกรมเท่านั้น ไม่รวมเนื้อหาอื่นในเอกสาร';
+      '3. การตรวจสอบลิงก์และการอ้างอิง: เปิดเป็นค่าเริ่มต้นและปิดได้ในการตั้งค่า URL, DOI หรือข้อมูลการอ้างอิงแต่ละรายการ (ผู้เขียน ชื่อเรื่อง ปี และแหล่งตีพิมพ์) จะถูกส่งไปยังเว็บไซต์เป้าหมาย บริการบรรณานุกรมสาธารณะ Taiwan NCL/TCI-HSS แค็ตตาล็อกสำนักพิมพ์ และบริการ SCI/SSCI/EI ที่ตั้งค่าไว้ เนื้อหาส่วนอื่นของเอกสารจะไม่ถูกส่ง ข้อมูลรับรองเสริมจะเก็บไว้เฉพาะในการตั้งค่าแอปของอุปกรณ์นี้';
 
   @override
   String get privacyNetwork4 =>

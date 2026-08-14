@@ -94,7 +94,7 @@ See [model_integration_testing.md](./model_integration_testing.md) for details.
 ## Privacy & Security
 
 ### Q: Is my document really never uploaded?
-**A:** Yes. 100% guaranteed. All analysis happens in your browser using JavaScript/WebAssembly. We never see your text.
+**A:** Core AI analysis happens locally in your browser using JavaScript/WebAssembly, and the complete document is not uploaded. If optional citation verification is enabled, only detected URLs, DOI values, or individual citation fields (author, title, year, and venue) are sent to public bibliographic services. Web OCR may also send selected images or PDF page images to Gemini only when you configure that fallback.
 
 ### Q: Do you store my analysis results?
 **A:** No. Results are stored only in your browser (SQLite). You can delete them anytime.
@@ -103,7 +103,7 @@ See [model_integration_testing.md](./model_integration_testing.md) for details.
 **A:** 
 - **Model updates**: We send only the version number (not your document)
 - **Link verification**: We check if URLs are reachable (URL only, not your content)
-- **DOI verification**: We query Crossref with just the DOI (no document)
+- **Citation verification**: We query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, Taiwan NCL/TCI-HSS, and publisher catalogs with a DOI or individual citation fields. If you configure provider-authorized credentials, Web of Science SCI/SSCI and Engineering Village EI Compendex are also queried (never the complete document)
 
 All can be disabled in settings.
 

@@ -22,6 +22,10 @@ class PreferencesService extends ChangeNotifier {
   static const _kModelPromptSuppressed = 'model_prompt_suppressed';
   static const _kDisabledEngines = 'disabled_engines';
   static const _kLinkVerificationEnabled = 'link_verification_enabled';
+  static const _kWebOfScienceApiKey = 'web_of_science_api_key';
+  static const _kEngineeringVillageApiKey = 'engineering_village_api_key';
+  static const _kEngineeringVillageInstitutionToken =
+      'engineering_village_institution_token';
   static const _kLocale = 'app_locale';
   static const _kEngineWeightPrefix = 'engine_weight_';
   static const minConfidenceThreshold = 0.2;
@@ -38,6 +42,9 @@ class PreferencesService extends ChangeNotifier {
   // 是否允許連線驗證文件中的超連結／期刊引用是否真實存在；核心 AI 推論仍完全
   // 在裝置端執行，但此為主動分析所需的必要連線功能，預設開啟，使用者可在設定關閉。
   bool linkVerificationEnabled = true;
+  String? webOfScienceApiKey;
+  String? engineeringVillageApiKey;
+  String? engineeringVillageInstitutionToken;
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
   Set<String> _disabledEngines = {};
@@ -61,6 +68,13 @@ class PreferencesService extends ChangeNotifier {
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
     linkVerificationEnabled =
         _prefs!.getBool(_kLinkVerificationEnabled) ?? true;
+    webOfScienceApiKey = _nonEmpty(_prefs!.getString(_kWebOfScienceApiKey));
+    engineeringVillageApiKey = _nonEmpty(
+      _prefs!.getString(_kEngineeringVillageApiKey),
+    );
+    engineeringVillageInstitutionToken = _nonEmpty(
+      _prefs!.getString(_kEngineeringVillageInstitutionToken),
+    );
     locale = _decodeLocale(_prefs!.getString(_kLocale));
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
     final loadedWeights = <String, double>{
@@ -125,6 +139,41 @@ class PreferencesService extends ChangeNotifier {
     linkVerificationEnabled = value;
     await _prefs?.setBool(_kLinkVerificationEnabled, value);
     notifyListeners();
+  }
+
+  Future<void> setBibliographyApiCredentials({
+    required String webOfScienceKey,
+    required String engineeringVillageKey,
+    required String engineeringVillageInstitutionTokenValue,
+  }) async {
+    webOfScienceApiKey = _nonEmpty(webOfScienceKey);
+    engineeringVillageApiKey = _nonEmpty(engineeringVillageKey);
+    engineeringVillageInstitutionToken = _nonEmpty(
+      engineeringVillageInstitutionTokenValue,
+    );
+    await _saveOptionalString(_kWebOfScienceApiKey, webOfScienceApiKey);
+    await _saveOptionalString(
+      _kEngineeringVillageApiKey,
+      engineeringVillageApiKey,
+    );
+    await _saveOptionalString(
+      _kEngineeringVillageInstitutionToken,
+      engineeringVillageInstitutionToken,
+    );
+    notifyListeners();
+  }
+
+  Future<void> _saveOptionalString(String key, String? value) async {
+    if (value == null) {
+      await _prefs?.remove(key);
+    } else {
+      await _prefs?.setString(key, value);
+    }
+  }
+
+  static String? _nonEmpty(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
   }
 
   bool isEngineEnabled(String engineId) => !_disabledEngines.contains(engineId);

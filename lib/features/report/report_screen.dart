@@ -139,6 +139,7 @@ class _ReportScreenState extends State<ReportScreen> {
       tasks.add(
         BibliographyVerifier.verifyAll(
           _bibEntries,
+          credentials: _bibliographyCredentials(),
           onProgress: (progress) {
             if (!mounted) return;
             setState(() {
@@ -216,6 +217,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
     final updatedChecks = await BibliographyVerifier.verifyAll(
       targetEntries,
+      credentials: _bibliographyCredentials(),
       onProgress: (progress) {
         if (!mounted) return;
         setState(() {
@@ -243,6 +245,16 @@ class _ReportScreenState extends State<ReportScreen> {
       _bibTotal = updatedChecks.length;
       _bibCurrentEntry = null;
     });
+  }
+
+  BibliographyVerificationCredentials _bibliographyCredentials() {
+    final prefs = context.read<PreferencesService>();
+    return BibliographyVerificationCredentials(
+      webOfScienceApiKey: prefs.webOfScienceApiKey,
+      engineeringVillageApiKey: prefs.engineeringVillageApiKey,
+      engineeringVillageInstitutionToken:
+          prefs.engineeringVillageInstitutionToken,
+    );
   }
 
   Future<void> _export(

@@ -431,7 +431,7 @@
   "privacyNetworkIntro": "Deteksi AI inti aplikasi ini berjalan sepenuhnya di perangkat, tetapi tiga fitur berikut memerlukan akses jaringan:",
   "privacyNetwork1": "1. Katalog & unduhan model: terhubung ke GitHub Releases/Hugging Face untuk mengunduh model deteksi yang Anda pilih — ini hanya mengunduh model dan tidak pernah mengunggah data pengguna apa pun.",
   "privacyNetwork2": "2. Pemeriksaan pembaruan model: saat peluncuran, aplikasi terhubung hanya untuk membandingkan nomor versi, digunakan untuk menunjukkan apakah versi baru tersedia.",
-  "privacyNetwork3": "3. Verifikasi keaslian hyperlink & kutipan: diaktifkan secara default, dapat dimatikan di Pengaturan. Saat diaktifkan, URL atau teks bibliografi yang terdeteksi dalam dokumen dikirim langsung ke URL itu sendiri, atau ke API publik Crossref, hanya mengirim teks URL/DOI/kutipan itu sendiri — tidak pernah konten dokumen lainnya.",
+  "privacyNetwork3": "3. Verifikasi hyperlink dan kutipan: aktif secara default dan dapat dimatikan di Pengaturan. URL, DOI, atau bidang satu kutipan (penulis, judul, tahun, dan publikasi) dikirim ke situs tujuan, layanan bibliografi publik, Taiwan NCL/TCI-HSS, katalog penerbit, dan layanan SCI/SSCI/EI yang dikonfigurasi. Bagian dokumen lainnya tidak dikirim. Kredensial penyedia opsional hanya disimpan di preferensi aplikasi perangkat ini.",
   "privacyRightsIntro": "Anda dapat membersihkan riwayat analisis lokal Anda kapan saja di \"Riwayat\", atau mematikan verifikasi hyperlink/kutipan di \"Pengaturan\", atau menghapus semua data lokal dengan",
   "privacyRemoveIos": "menghapus aplikasi",
   "privacyRemoveAndroid": "membongkar pemasangan aplikasi",
