@@ -774,13 +774,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsThresholdTitle.
   ///
   /// In en, this message translates to:
-  /// **'AI detection confidence threshold'**
+  /// **'AI flagging threshold'**
   String get settingsThresholdTitle;
 
   /// No description provided for @settingsThresholdSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Current: {percent}% — raising it lowers false positives (human text misjudged as AI)'**
+  /// **'Current: {percent}% — overall AI probability must reach this line before the report marks the text as AI'**
   String settingsThresholdSubtitle(int percent);
 
   /// No description provided for @settingsEslTitle.
@@ -2023,6 +2023,21 @@ abstract class AppLocalizations {
   /// **'The overall AI probability is below your {percent}% flagging threshold.'**
   String composerThresholdNotFlagged(int percent);
 
+  /// No description provided for @composerThresholdFlaggedDetailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall AI probability is {aiPercent}%, which reaches your {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.'**
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent);
+
+  /// No description provided for @composerThresholdNotFlaggedDetailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall AI probability is {aiPercent}%, below your {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.'**
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  );
+
   /// No description provided for @composerNarrativeTitle.
   ///
   /// In en, this message translates to:
@@ -2476,7 +2491,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet6.
   ///
   /// In en, this message translates to:
-  /// **'You can individually enable/disable engines, adjust engine weights, and set the AI-detection confidence threshold from 20% to 90% in Settings (raising it lowers the chance of misjudging human writing as AI).'**
+  /// **'You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.'**
   String get helpWorkflowStep2Bullet6;
 
   /// No description provided for @helpWorkflowStep3Title.
@@ -2692,7 +2707,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpTuningStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI verdict threshold from Settings.'**
+  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI flagging threshold from Settings.'**
   String get helpTuningStep5Body;
 
   /// No description provided for @helpOfficialLinksTitle.

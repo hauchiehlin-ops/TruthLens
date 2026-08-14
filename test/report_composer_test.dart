@@ -10,39 +10,38 @@ DetectionResult _result({
   bool esl = false,
   bool paraphrase = false,
   double threshold = 0.6,
-}) =>
-    DetectionResult(
-      id: 'x',
-      analyzedAt: DateTime(2026, 7, 3),
-      inputText: 'a',
-      aiProbability: ai,
-      verdict: Verdict.fromProbability(ai),
-      threshold: threshold,
-      eslAdjusted: esl,
-      engineScores: [
-        const EngineScore(
-          engineId: 'stylometry',
-          engineName: '風格特徵分析',
-          aiProbability: 0.7,
-          weight: 0.2,
-          reasons: ['高頻使用通用過渡詞'],
-        ),
-        EngineScore(
-          engineId: 'adversarial',
-          engineName: '對抗式防禦',
-          aiProbability: paraphrase ? 0.8 : 0.3,
-          weight: 0.15,
-          available: paraphrase,
-          reasons: const ['改寫偵測'],
-        ),
-      ],
-      sentences: const [
-        SentenceScore(index: 0, text: '句一。', aiProbability: 0.8),
-        SentenceScore(index: 1, text: '句二。', aiProbability: 0.2),
-        SentenceScore(index: 2, text: '句三。', aiProbability: 0.5),
-      ],
-      dominantPatterns: const ['高頻使用通用過渡詞'],
-    );
+}) => DetectionResult(
+  id: 'x',
+  analyzedAt: DateTime(2026, 7, 3),
+  inputText: 'a',
+  aiProbability: ai,
+  verdict: Verdict.fromProbability(ai),
+  threshold: threshold,
+  eslAdjusted: esl,
+  engineScores: [
+    const EngineScore(
+      engineId: 'stylometry',
+      engineName: '風格特徵分析',
+      aiProbability: 0.7,
+      weight: 0.2,
+      reasons: ['高頻使用通用過渡詞'],
+    ),
+    EngineScore(
+      engineId: 'adversarial',
+      engineName: '對抗式防禦',
+      aiProbability: paraphrase ? 0.8 : 0.3,
+      weight: 0.15,
+      available: paraphrase,
+      reasons: const ['改寫偵測'],
+    ),
+  ],
+  sentences: const [
+    SentenceScore(index: 0, text: '句一。', aiProbability: 0.8),
+    SentenceScore(index: 1, text: '句二。', aiProbability: 0.2),
+    SentenceScore(index: 2, text: '句三。', aiProbability: 0.5),
+  ],
+  dominantPatterns: const ['高頻使用通用過渡詞'],
+);
 
 void main() {
   final composer = ReportComposer();
@@ -70,7 +69,8 @@ void main() {
     expect(doc.templateId, 'paraphrase_alert');
     expect(
       doc.components.any(
-          (c) => c.type == ReportComponentType.paraphraseWarning),
+        (c) => c.type == ReportComponentType.paraphraseWarning,
+      ),
       isTrue,
     );
   });
@@ -89,23 +89,34 @@ void main() {
         .components
         .map((c) => c.type)
         .toSet();
-    expect(types, containsAll([
-      ReportComponentType.overallGauge,
-      ReportComponentType.thresholdBanner,
-      ReportComponentType.narrative,
-      ReportComponentType.engineBreakdown,
-    ]));
+    expect(
+      types,
+      containsAll([
+        ReportComponentType.overallGauge,
+        ReportComponentType.thresholdBanner,
+        ReportComponentType.narrative,
+        ReportComponentType.engineBreakdown,
+      ]),
+    );
   });
 
   test('閾值橫幅文字反映 flaggedAsAi', () {
     final flagged = composer.compose(_result(ai: 0.9, threshold: 0.6), l10n);
-    final notFlagged =
-        composer.compose(_result(ai: 0.5, threshold: 0.95), l10n);
-    final flaggedBanner = flagged.components
-        .firstWhere((c) => c.type == ReportComponentType.thresholdBanner);
-    final notBanner = notFlagged.components
-        .firstWhere((c) => c.type == ReportComponentType.thresholdBanner);
-    expect(flaggedBanner.body, contains('flagged as AI'));
+    final notFlagged = composer.compose(
+      _result(ai: 0.5, threshold: 0.95),
+      l10n,
+    );
+    final flaggedBanner = flagged.components.firstWhere(
+      (c) => c.type == ReportComponentType.thresholdBanner,
+    );
+    final notBanner = notFlagged.components.firstWhere(
+      (c) => c.type == ReportComponentType.thresholdBanner,
+    );
+    expect(flaggedBanner.body, contains('marks this text as AI'));
+    expect(flaggedBanner.body, contains('90%'));
+    expect(flaggedBanner.body, contains('60%'));
     expect(notBanner.body, contains('below'));
+    expect(notBanner.body, contains('50%'));
+    expect(notBanner.body, contains('95%'));
   });
 }

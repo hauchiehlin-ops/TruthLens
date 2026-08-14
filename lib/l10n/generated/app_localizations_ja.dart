@@ -1180,6 +1180,19 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
+    return 'Overall AI probability is $aiPercent%, which reaches your $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
+  }
+
+  @override
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return 'Overall AI probability is $aiPercent%, below your $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
+  }
+
+  @override
   String get composerNarrativeTitle => '分析の解釈';
 
   @override

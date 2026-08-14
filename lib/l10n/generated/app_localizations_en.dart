@@ -396,11 +396,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppBarTitle => 'Settings';
 
   @override
-  String get settingsThresholdTitle => 'AI detection confidence threshold';
+  String get settingsThresholdTitle => 'AI flagging threshold';
 
   @override
   String settingsThresholdSubtitle(int percent) {
-    return 'Current: $percent% — raising it lowers false positives (human text misjudged as AI)';
+    return 'Current: $percent% — overall AI probability must reach this line before the report marks the text as AI';
   }
 
   @override
@@ -1206,6 +1206,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
+    return 'Overall AI probability is $aiPercent%, which reaches your $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
+  }
+
+  @override
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return 'Overall AI probability is $aiPercent%, below your $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
+  }
+
+  @override
   String get composerNarrativeTitle => 'Analysis interpretation';
 
   @override
@@ -1505,7 +1518,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'You can individually enable/disable engines, adjust engine weights, and set the AI-detection confidence threshold from 20% to 90% in Settings (raising it lowers the chance of misjudging human writing as AI).';
+      'You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.';
 
   @override
   String get helpWorkflowStep3Title => 'Adding content';
@@ -1626,7 +1639,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI verdict threshold from Settings.';
+      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI flagging threshold from Settings.';
 
   @override
   String get helpOfficialLinksTitle => 'Official model download links';

@@ -382,11 +382,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAppBarTitle => '設定';
 
   @override
-  String get settingsThresholdTitle => 'AI 判定信心閾值';
+  String get settingsThresholdTitle => 'AI 標記門檻';
 
   @override
   String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 調高可降低偽陽性（誤判人類文章為 AI）';
+    return '目前：$percent% — 整體 AI 機率達到此門檻時，報告才會正式標記為 AI';
   }
 
   @override
@@ -1163,6 +1163,19 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
+    return '整體 AI 機率為 $aiPercent%，已達你設定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
+  }
+
+  @override
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '整體 AI 機率為 $aiPercent%，低於你設定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
+  }
+
+  @override
   String get composerNarrativeTitle => '分析解讀';
 
   @override
@@ -1451,7 +1464,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 判定信心閾值設為 20%–90%（調高可降低誤判人類文章為 AI 的機率）。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 標記門檻設為 20%–90%。這不會改變各引擎分數，而是改變報告正式標記為 AI 的決策線。';
 
   @override
   String get helpWorkflowStep3Title => '加入內容';
@@ -1568,7 +1581,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 判定閾值。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 標記門檻。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';
@@ -2147,11 +2160,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settingsAppBarTitle => '设置';
 
   @override
-  String get settingsThresholdTitle => 'AI 判定信心阈值';
+  String get settingsThresholdTitle => 'AI 标记门槛';
 
   @override
   String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 调高可降低伪阳性（误判人类文章为 AI）';
+    return '目前：$percent% — 整体 AI 几率达到此门槛时，报告才会正式标记为 AI';
   }
 
   @override
@@ -2928,6 +2941,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
+    return '整体 AI 几率为 $aiPercent%，已达你设置的 $thresholdPercent% AI 标记门槛，因此报告会标记为 AI。建议搭配句级证据与各引擎理由再做最终判断。';
+  }
+
+  @override
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '整体 AI 几率为 $aiPercent%，低于你设置的 $thresholdPercent% AI 标记门槛，因此报告不会正式标记为 AI；几率与证据仍会保留供你查看。';
+  }
+
+  @override
   String get composerNarrativeTitle => '分析解读';
 
   @override
@@ -3216,7 +3242,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「设置」个别激活／停用引擎、调整引擎权重，并将 AI 判定信心阈值设为 20%–90%（调高可降低误判人类文章为 AI 的几率）。';
+      '可在「设置」个别激活／停用引擎、调整引擎权重，并将 AI 标记门槛设为 20%–90%。这不会改变各引擎分数，而是改变报告正式标记为 AI 的决策线。';
 
   @override
   String get helpWorkflowStep3Title => '加入内容';
@@ -3333,7 +3359,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。也可在设置中调整四引擎权重与 20%–90% 的 AI 判定阈值。';
+      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。也可在设置中调整四引擎权重与 20%–90% 的 AI 标记门槛。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下载链接';
@@ -3912,11 +3938,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settingsAppBarTitle => '設定';
 
   @override
-  String get settingsThresholdTitle => 'AI 判定信心閾值';
+  String get settingsThresholdTitle => 'AI 標記門檻';
 
   @override
   String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 調高可降低偽陽性（誤判人類文章為 AI）';
+    return '目前：$percent% — 整體 AI 機率達到此門檻時，報告才會正式標記為 AI';
   }
 
   @override
@@ -4693,6 +4719,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
+    return '整體 AI 機率為 $aiPercent%，已達你設定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
+  }
+
+  @override
+  String composerThresholdNotFlaggedDetailed(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '整體 AI 機率為 $aiPercent%，低於你設定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
+  }
+
+  @override
   String get composerNarrativeTitle => '分析解讀';
 
   @override
@@ -4981,7 +5020,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 判定信心閾值設為 20%–90%（調高可降低誤判人類文章為 AI 的機率）。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 標記門檻設為 20%–90%。這不會改變各引擎分數，而是改變報告正式標記為 AI 的決策線。';
 
   @override
   String get helpWorkflowStep3Title => '加入內容';
@@ -5098,7 +5137,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 判定閾值。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 標記門檻。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';
