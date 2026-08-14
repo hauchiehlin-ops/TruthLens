@@ -93,6 +93,31 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String inputPdfOcrProgress(int page, int total) {
+    return 'PDF 文字層無法使用，正在以 OCR 辨識第 $page/$total 頁…';
+  }
+
+  @override
+  String inputPdfOcrSuccess(String fileName, int count) {
+    return '已透過 PDF OCR 匯入「$fileName」（$count 字元）';
+  }
+
+  @override
+  String inputPdfNeedsOcr(String fileName) {
+    return '「$fileName」沒有可靠的文字層。請先設定 Web OCR，或改用支援原生 OCR 的安裝版，再重新匯入。';
+  }
+
+  @override
+  String inputPdfTooManyPages(String fileName, int max) {
+    return '「$fileName」需要 OCR，但超過 $max 頁安全上限。請先分割 PDF 後分批匯入。';
+  }
+
+  @override
+  String inputPdfUnreadable(String fileName) {
+    return '無法可靠讀取「$fileName」。檔案可能已損壞、受密碼保護，或目前設定的 OCR 服務不支援。';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return '模型：$modelId';
   }
@@ -383,6 +408,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsThresholdTitle => 'AI 標記門檻';
+
+  @override
+  String get settingsThresholdInfoTooltip => '了解 AI 標記門檻如何影響結論';
+
+  @override
+  String get settingsThresholdInfoBody =>
+      '啟用的各分析引擎會先計算整體 AI 機率。此設定不會改變任何引擎分數或整體 AI 機率，而是改變該分數所適配的結論：門檻較低時，同一機率較容易被判定並標記為 AI；門檻較高時，必須有更強的 AI 機率才會標記，因此較容易適配為人類撰寫。報告仍會完整保留原始機率與佐證。';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -1476,7 +1508,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -1678,7 +1710,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR 備援：僅 Web 版適用。圖片 OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片會由瀏覽器直接送往 Google Gemini API 進行 OCR，金鑰只儲存在該瀏覽器的 localStorage。';
+      '4. Web OCR 備援：僅 Web 版適用。OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片及需要 OCR 的 PDF 頁面影像會由瀏覽器直接送往 Google Gemini API，金鑰只儲存在該瀏覽器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可隨時於「歷史紀錄」清除本機分析紀錄，或於「設定」關閉超連結／文獻驗證功能，或直接';
@@ -1873,6 +1905,31 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String inputImportSuccess(String fileName, int count) {
     return '已导入「$fileName」（$count 字符）';
+  }
+
+  @override
+  String inputPdfOcrProgress(int page, int total) {
+    return 'PDF 文本层无法使用，正在以 OCR 识别第 $page/$total 页…';
+  }
+
+  @override
+  String inputPdfOcrSuccess(String fileName, int count) {
+    return '已通过 PDF OCR 导入「$fileName」（$count 字符）';
+  }
+
+  @override
+  String inputPdfNeedsOcr(String fileName) {
+    return '「$fileName」没有可靠的文本层。请先设置 Web OCR，或改用支持原生 OCR 的安装版，再重新导入。';
+  }
+
+  @override
+  String inputPdfTooManyPages(String fileName, int max) {
+    return '「$fileName」需要 OCR，但超过 $max 页安全上限。请先拆分 PDF 后分批导入。';
+  }
+
+  @override
+  String inputPdfUnreadable(String fileName) {
+    return '无法可靠读取「$fileName」。文件可能已损坏、受密码保护，或当前设置的 OCR 服务不支持。';
   }
 
   @override
@@ -2166,6 +2223,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settingsThresholdTitle => 'AI 标记门槛';
+
+  @override
+  String get settingsThresholdInfoTooltip => '了解 AI 标记门槛如何影响结论';
+
+  @override
+  String get settingsThresholdInfoBody =>
+      '启用的各分析引擎会先计算整体 AI 几率。此设置不会改变任何引擎分数或整体 AI 几率，而是改变该分数所适配的结论：门槛较低时，同一几率更容易被判定并标记为 AI；门槛较高时，必须有更强的 AI 几率才会标记，因此更容易适配为人类撰写。报告仍会完整保留原始几率与佐证。';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -3259,7 +3323,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc）。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
+      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc）。PDF 导入会比较两套文本层解析结果并排除乱码；扫描型 PDF 在 OCR 可用时会自动逐页识别。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
 
   @override
   String get helpWorkflowStep4Title => '开始分析';
@@ -3461,7 +3525,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR 备用：仅 Web 版适用。图片 OCR 会优先使用您设置的本地 OCR 服务器；若您选择输入 Gemini API 密钥，所选图片会由浏览器直接送往 Google Gemini API 进行 OCR，密钥只保存在该浏览器的 localStorage。';
+      '4. Web OCR 备用：仅 Web 版适用。OCR 会优先使用您设置的本地 OCR 服务器；若您选择输入 Gemini API 密钥，所选图片及需要 OCR 的 PDF 页面图像会由浏览器直接送往 Google Gemini API，密钥只保存在该浏览器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可随时于「历史纪录」清除本机分析纪录，或于「设置」关闭超链接／文献验证功能，或直接';
@@ -3656,6 +3720,31 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String inputImportSuccess(String fileName, int count) {
     return '已匯入「$fileName」（$count 字元）';
+  }
+
+  @override
+  String inputPdfOcrProgress(int page, int total) {
+    return 'PDF 文字層無法使用，正在以 OCR 辨識第 $page/$total 頁…';
+  }
+
+  @override
+  String inputPdfOcrSuccess(String fileName, int count) {
+    return '已透過 PDF OCR 匯入「$fileName」（$count 字元）';
+  }
+
+  @override
+  String inputPdfNeedsOcr(String fileName) {
+    return '「$fileName」沒有可靠的文字層。請先設定 Web OCR，或改用支援原生 OCR 的安裝版，再重新匯入。';
+  }
+
+  @override
+  String inputPdfTooManyPages(String fileName, int max) {
+    return '「$fileName」需要 OCR，但超過 $max 頁安全上限。請先分割 PDF 後分批匯入。';
+  }
+
+  @override
+  String inputPdfUnreadable(String fileName) {
+    return '無法可靠讀取「$fileName」。檔案可能已損壞、受密碼保護，或目前設定的 OCR 服務不支援。';
   }
 
   @override
@@ -3949,6 +4038,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsThresholdTitle => 'AI 標記門檻';
+
+  @override
+  String get settingsThresholdInfoTooltip => '了解 AI 標記門檻如何影響結論';
+
+  @override
+  String get settingsThresholdInfoBody =>
+      '啟用的各分析引擎會先計算整體 AI 機率。此設定不會改變任何引擎分數或整體 AI 機率，而是改變該分數所適配的結論：門檻較低時，同一機率較容易被判定並標記為 AI；門檻較高時，必須有更強的 AI 機率才會標記，因此較容易適配為人類撰寫。報告仍會完整保留原始機率與佐證。';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -5042,7 +5138,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -5244,7 +5340,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR 備援：僅 Web 版適用。圖片 OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片會由瀏覽器直接送往 Google Gemini API 進行 OCR，金鑰只儲存在該瀏覽器的 localStorage。';
+      '4. Web OCR 備援：僅 Web 版適用。OCR 會優先使用您設定的本地 OCR 伺服器；若您選擇輸入 Gemini API 金鑰，所選圖片及需要 OCR 的 PDF 頁面影像會由瀏覽器直接送往 Google Gemini API，金鑰只儲存在該瀏覽器的 localStorage。';
 
   @override
   String get privacyRightsIntro => '您可隨時於「歷史紀錄」清除本機分析紀錄，或於「設定」關閉超連結／文獻驗證功能，或直接';

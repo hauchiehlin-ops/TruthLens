@@ -96,6 +96,31 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String inputPdfOcrProgress(int page, int total) {
+    return 'PDF text layer is unavailable; recognizing page $page of $total with OCR…';
+  }
+
+  @override
+  String inputPdfOcrSuccess(String fileName, int count) {
+    return 'Imported \"$fileName\" with PDF OCR ($count characters)';
+  }
+
+  @override
+  String inputPdfNeedsOcr(String fileName) {
+    return '\"$fileName\" has no reliable text layer. Configure Web OCR or use an installed app with native OCR, then import it again.';
+  }
+
+  @override
+  String inputPdfTooManyPages(String fileName, int max) {
+    return '\"$fileName\" needs OCR but exceeds the $max page safety limit. Split the PDF and import each part.';
+  }
+
+  @override
+  String inputPdfUnreadable(String fileName) {
+    return '\"$fileName\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'โมเดล: $modelId';
   }
@@ -397,6 +422,14 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settingsThresholdTitle => 'เกณฑ์ความเชื่อมั่นในการตัดสิน AI';
+
+  @override
+  String get settingsThresholdInfoTooltip =>
+      'How the AI flagging threshold affects the conclusion';
+
+  @override
+  String get settingsThresholdInfoBody =>
+      'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -1744,7 +1777,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.';
+      '4. Web OCR fallback: on the Web version only, OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, selected images and rendered pages from PDFs that require OCR are sent directly from your browser to Google\'s Gemini API; the key is stored only in that browser\'s local storage.';
 
   @override
   String get privacyRightsIntro =>

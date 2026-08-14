@@ -7,6 +7,7 @@ import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/threshold_setting_title.dart';
 import '../input/input_screen.dart' show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
 import 'model_import_screen.dart';
@@ -29,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
-            title: Text(l10n.settingsThresholdTitle),
+            title: const ThresholdSettingTitle(),
             subtitle: Text(
               l10n.settingsThresholdSubtitle(
                 (prefs.confidenceThreshold * 100).round(),

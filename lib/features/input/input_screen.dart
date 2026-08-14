@@ -13,6 +13,7 @@ import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/threshold_setting_title.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/model_import_screen.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
@@ -149,17 +150,41 @@ class _InputScreenState extends State<InputScreen> {
 
   Future<void> _importDocument() async {
     final l10n = AppLocalizations.of(context);
-    final doc = await DocumentImporter.pick();
+    final ocr = context.read<OcrService>();
+    final canUsePdfOcr = await ocr.isReadyForPdfOcr;
+    final doc = await DocumentImporter.pick(
+      pdfOcr: canUsePdfOcr
+          ? (imageBytes, pageNumber, pageCount) async {
+              if (mounted) {
+                _showFloatingSnackBar(
+                  l10n.inputPdfOcrProgress(pageNumber, pageCount),
+                );
+              }
+              return ocr.recognizeBytes(imageBytes);
+            }
+          : null,
+    );
     if (doc == null || !mounted) return;
     if (doc.text.isEmpty) {
-      _showFloatingSnackBar(l10n.inputImportNoText(doc.fileName));
+      final message = switch (doc.pdfImportIssue) {
+        PdfImportIssue.needsOcr => l10n.inputPdfNeedsOcr(doc.fileName),
+        PdfImportIssue.tooManyPages => l10n.inputPdfTooManyPages(
+          doc.fileName,
+          DocumentImporter.maxPdfOcrPages,
+        ),
+        PdfImportIssue.unreadable => l10n.inputPdfUnreadable(doc.fileName),
+        PdfImportIssue.none => l10n.inputImportNoText(doc.fileName),
+      };
+      _showFloatingSnackBar(message);
       return;
     }
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
     setState(() {});
     _showFloatingSnackBar(
-      l10n.inputImportSuccess(doc.fileName, doc.text.length),
+      doc.usedPdfOcr
+          ? l10n.inputPdfOcrSuccess(doc.fileName, doc.text.length)
+          : l10n.inputImportSuccess(doc.fileName, doc.text.length),
     );
   }
 
@@ -593,8 +618,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l10n.settingsThresholdTitle,
+                ThresholdSettingTitle(
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -1050,7 +1074,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               const Divider(),
             ],
             ListTile(
-              title: Text(l10n.settingsThresholdTitle),
+              title: const ThresholdSettingTitle(),
               subtitle: Text(
                 l10n.settingsThresholdSubtitle(
                   (prefs.confidenceThreshold * 100).round(),

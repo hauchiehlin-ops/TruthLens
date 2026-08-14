@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,6 +88,8 @@ class OcrService {
     }
   }
 
+  Future<bool> get isReadyForPdfOcr => isSupported;
+
   /// 辨識圖片檔中的文字。回傳 null 表示平台不支援或辨識失敗。
   /// [languages] 為 BCP-47 語言提示（如 ['zh-Hant','en-US']），部分平台會參考。
   Future<String?> recognize(String imagePath, {List<String>? languages}) async {
@@ -106,6 +110,25 @@ class OcrService {
       _lastErrorMessage =
           '原生 OCR 執行失敗：${e.code}${e.message == null ? '' : '，${e.message}'}';
       return null;
+    }
+  }
+
+  Future<String?> recognizeBytes(
+    Uint8List bytes, {
+    String mimeType = 'image/png',
+    List<String>? languages,
+  }) async {
+    final extension = mimeType == 'image/jpeg' ? 'jpg' : 'png';
+    final file = File(
+      '${Directory.systemTemp.path}/truthlens_pdf_ocr_${DateTime.now().microsecondsSinceEpoch}.$extension',
+    );
+    try {
+      await file.writeAsBytes(bytes, flush: true);
+      return await recognize(file.path, languages: languages);
+    } finally {
+      try {
+        if (await file.exists()) await file.delete();
+      } catch (_) {}
     }
   }
 }

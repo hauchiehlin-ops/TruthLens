@@ -128,6 +128,35 @@ startxref
 
         expect(text, isEmpty);
       });
+
+      test('正常中英文正文應通過 PDF 文字品質檢查', () {
+        const text = '''
+本研究探討人工智慧內容檢測的可靠度，並比較不同分析方法的結果。
+The analysis includes readable words, complete sentences, and meaningful context
+for validating an imported academic document before content detection begins.
+''';
+
+        expect(
+          DocumentImporter.pdfTextQuality(text),
+          greaterThanOrEqualTo(0.62),
+        );
+      });
+
+      test('常見 UTF-8 誤解碼亂碼應被 PDF 文字品質檢查拒絕', () {
+        const mojibake = '''
+Ã¤Â¸Â­Ã¦â€“â€¡ Ã¥â€¦Â§Ã¥Â®Â¹ Ã¦ÂªÂ¢Ã¦Â¸Â¬ Ã§ÂµÂÃ¦Å¾Å“
+â€œThis textâ€ contains repeated mojibake markers and broken punctuation.
+Ã©Â€™â„¢Ã¨ÂªÂ¤ Ã¥Â­â€”Ã¥Å¾â€¹ Ã¦ËœÂ Ã¥Â°â€ž Ã¨Â®Â“Ã¥â€¦Â§Ã¥Â®Â¹Ã§â€žÂ¡Ã¦Â³â€¢Ã©â€“Â±Ã¨Â®â‚¬Ã£â‚¬â€š
+''';
+
+        expect(DocumentImporter.pdfTextQuality(mojibake), lessThan(0.62));
+      });
+
+      test('大量私用字元與單字碎片應被視為不可靠文字層', () {
+        final fragmented = List.filled(24, '\uE001 x \uE002 y').join(' ');
+
+        expect(DocumentImporter.pdfTextQuality(fragmented), lessThan(0.62));
+      });
     },
   );
 }

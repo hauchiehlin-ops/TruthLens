@@ -31,6 +31,8 @@ class OcrService {
   /// 此平台是否支援 OCR（Web 版永遠回傳 true）
   Future<bool> get isSupported async => true;
 
+  Future<bool> get isReadyForPdfOcr async => hasAnyOcrConfigured();
+
   /// 嘗試從本地伺服器進行 OCR
   Future<String?> _recognizeFromLocalServer(
     String imageDataUrl, {
@@ -278,6 +280,15 @@ class OcrService {
     if (!hasApiKey) return null;
     return await _recognizeFromGemini(imageDataUrl, languages: languages);
   }
+
+  Future<String?> recognizeBytes(
+    Uint8List bytes, {
+    String mimeType = 'image/png',
+    List<String>? languages,
+  }) => recognize(
+    'data:$mimeType;base64,${base64Encode(bytes)}',
+    languages: languages,
+  );
 
   /// Web 版設定即時存取 localStorage，無需預先載入；提供空實作以對齊原生 API。
   static Future<void> hydrate() async {}

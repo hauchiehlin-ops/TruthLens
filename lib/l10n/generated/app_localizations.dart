@@ -276,6 +276,36 @@ abstract class AppLocalizations {
   /// **'Imported \"{fileName}\" ({count} characters)'**
   String inputImportSuccess(String fileName, int count);
 
+  /// No description provided for @inputPdfOcrProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF text layer is unavailable; recognizing page {page} of {total} with OCR…'**
+  String inputPdfOcrProgress(int page, int total);
+
+  /// No description provided for @inputPdfOcrSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported \"{fileName}\" with PDF OCR ({count} characters)'**
+  String inputPdfOcrSuccess(String fileName, int count);
+
+  /// No description provided for @inputPdfNeedsOcr.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{fileName}\" has no reliable text layer. Configure Web OCR or use an installed app with native OCR, then import it again.'**
+  String inputPdfNeedsOcr(String fileName);
+
+  /// No description provided for @inputPdfTooManyPages.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{fileName}\" needs OCR but exceeds the {max} page safety limit. Split the PDF and import each part.'**
+  String inputPdfTooManyPages(String fileName, int max);
+
+  /// No description provided for @inputPdfUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{fileName}\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.'**
+  String inputPdfUnreadable(String fileName);
+
   /// No description provided for @inputActiveModel.
   ///
   /// In en, this message translates to:
@@ -776,6 +806,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI flagging threshold'**
   String get settingsThresholdTitle;
+
+  /// No description provided for @settingsThresholdInfoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'How the AI flagging threshold affects the conclusion'**
+  String get settingsThresholdInfoTooltip;
+
+  /// No description provided for @settingsThresholdInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.'**
+  String get settingsThresholdInfoBody;
 
   /// No description provided for @settingsThresholdSubtitle.
   ///
@@ -2509,7 +2551,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep3Body.
   ///
   /// In en, this message translates to:
-  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. On installed apps, OCR uses platform-native recognition; on Web, OCR uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
+  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
   String get helpWorkflowStep3Body;
 
   /// No description provided for @helpWorkflowStep4Title.
@@ -2863,7 +2905,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyNetwork4.
   ///
   /// In en, this message translates to:
-  /// **'4. Web OCR fallback: on the Web version only, image OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, the selected image is sent directly from your browser to Google\'s Gemini API for OCR; the key is stored only in that browser\'s local storage.'**
+  /// **'4. Web OCR fallback: on the Web version only, OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, selected images and rendered pages from PDFs that require OCR are sent directly from your browser to Google\'s Gemini API; the key is stored only in that browser\'s local storage.'**
   String get privacyNetwork4;
 
   /// No description provided for @privacyRightsIntro.

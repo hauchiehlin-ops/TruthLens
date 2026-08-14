@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pdfrx/pdfrx.dart';
 import 'package:provider/provider.dart';
 
 import 'app/router.dart';
@@ -21,6 +22,7 @@ import 'core/detection/llama_ffi.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  pdfrxFlutterInitialize();
   AppLifecycleListener(
     onExitRequested: () async {
       try {
