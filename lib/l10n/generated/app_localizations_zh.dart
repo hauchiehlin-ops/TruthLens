@@ -539,61 +539,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
-  String get settingsBibliographyIndexesTitle => '文獻索引查核來源';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      '公開來源自動使用；可加入 Web of Science SCI／SSCI 或 Engineering Village EI 授權';
-
-  @override
-  String get settingsBibliographyCredentialsTitle => '文獻索引查核來源';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC、ERIC 與臺灣國圖等公開來源不需金鑰。SCI／SSCI 與 EI 只會在您提供來源商授權憑證時查詢；憑證缺少或遭拒絕絕不會作為文獻不存在的證據。';
-
-  @override
-  String get settingsTaiwanIndexTitle => '臺灣國圖／TCI-HSS 輔助查核';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      '自動查詢國家圖書館臺灣期刊篇目；原 TSSCI／THCI 資料已整併至 TCI-HSS。';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI／SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      '輸入 Clarivate Web of Science Starter API 金鑰。Clarivate 提供有限免費方案，較高額度依機構授權而定。';
-
-  @override
-  String get settingsWosFreePlanButton => '申請每日 50 次免費方案';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      '輸入已開通 Engineering Village 的 Elsevier API 金鑰；完整 EI 查詢需符合資格的機構訂閱。';
-
-  @override
-  String get settingsEiInstitutionTokenLabel => 'Elsevier 機構權杖（選填）';
-
-  @override
-  String get settingsEiInstitutionTokenHelper => '僅在您的機構或 Elsevier 提供時填寫。';
-
-  @override
-  String get settingsGetApiKeyButton => '來源商網站';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton => '儲存索引憑證';
-
-  @override
-  String get settingsBibliographyCredentialsSaved => '文獻索引憑證已儲存於此裝置';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
-      '分析報告會將偵測到的網址與參考文獻條目比對廣域、專業、區域、出版社及已設定的授權學術索引。查詢只會送出網址、DOI 或單筆書目的作者、篇名、年份及期刊欄位，不會傳送文件其餘內容。核心 AI 偵測仍在裝置端執行，此驗證可在此關閉。';
+      '分析報告會將偵測到的網址與參考文獻條目比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄。查詢只會送出網址、DOI 或單筆書目的作者、篇名、年份及期刊欄位，不會傳送文件其餘內容。核心 AI 偵測仍在裝置端執行，此驗證可在此關閉。';
 
   @override
   String get settingsThemeTitle => '外觀主題';
@@ -1101,7 +1048,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名與期刊資訊交叉比對公開來源、臺灣國圖／TCI-HSS、出版社目錄，以及已設定憑證時的 Web of Science SCI／SSCI 與 Engineering Village EI；高可信度結果必須有 DOI 登記或多個一致的書目欄位，未達可靠匹配者標示為未通過核實。';
+      '依作者、年份、篇名與期刊資訊交叉比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄；高可信度結果必須有 DOI 登記或多個一致的書目欄位，未達可靠匹配者標示為未通過核實。Google Scholar 因未提供自動查詢 API，僅供使用者主動人工複核。';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return '核實依據：$source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup => '前往 Google Scholar 人工複核';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1500,7 +1455,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAdvantage1 =>
-      '超連結與文獻真實性驗證：檢查網址是否可連線，並透過廣域、專業、臺灣國圖／TCI-HSS、出版社及選配授權的 SCI／SSCI／EI 來源交叉比對書目資料。';
+      '超連結與文獻真實性驗證：檢查網址是否可連線，以 Crossref／DataCite 核實 DOI 登記，並透過 OpenAlex、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與出版社目錄交叉比對書目資料；每筆通過核實的文獻會標示證據來源，Google Scholar 僅供人工複核。';
 
   @override
   String get helpAdvantage2 =>
@@ -1759,7 +1714,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將偵測到的網址、DOI 或單筆書目的作者、篇名、年份與期刊欄位送往目標網站、公開書目來源、臺灣國圖／TCI-HSS、出版社目錄，以及您已提供憑證的 SCI／SSCI／EI 服務查詢，不會傳送文件其餘內容。選填的來源商憑證只會儲存在此裝置的應用程式偏好設定。';
+      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將偵測到的網址、DOI 或單筆書目的作者、篇名、年份與期刊欄位送往目標網站及／或 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄查詢，不會傳送文件其餘內容。只有使用者按下人工複核按鈕時，才會將該筆查詢送往 Google Scholar。';
 
   @override
   String get privacyNetwork4 =>
@@ -2407,61 +2362,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settingsLinkVerificationTitle => '超链接与参考文献目录验证';
 
   @override
-  String get settingsBibliographyIndexesTitle => '文献索引核查来源';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      '公开来源自动使用；可加入 Web of Science SCI／SSCI 或 Engineering Village EI 授权';
-
-  @override
-  String get settingsBibliographyCredentialsTitle => '文献索引核查来源';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC、ERIC 与台湾国图等公开来源无需密钥。SCI／SSCI 与 EI 仅在您提供来源商授权凭证时查询；凭证缺失或被拒绝绝不会作为文献不存在的证据。';
-
-  @override
-  String get settingsTaiwanIndexTitle => '台湾国图／TCI-HSS 辅助核查';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      '自动查询台湾图书馆期刊篇目；原 TSSCI／THCI 数据已整合至 TCI-HSS。';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI／SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      '输入 Clarivate Web of Science Starter API 密钥。Clarivate 提供有限免费方案，较高额度取决于机构授权。';
-
-  @override
-  String get settingsWosFreePlanButton => '申请每日 50 次免费方案';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      '输入已开通 Engineering Village 的 Elsevier API 密钥；完整 EI 查询需要符合资格的机构订阅。';
-
-  @override
-  String get settingsEiInstitutionTokenLabel => 'Elsevier 机构令牌（选填）';
-
-  @override
-  String get settingsEiInstitutionTokenHelper => '仅在您的机构或 Elsevier 提供时填写。';
-
-  @override
-  String get settingsGetApiKeyButton => '来源商网站';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton => '保存索引凭证';
-
-  @override
-  String get settingsBibliographyCredentialsSaved => '文献索引凭证已保存于此设备';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
-      '分析报告会将侦测到的网址与参考文献条目比对广域、专业、区域、出版社及已设置的授权学术索引。查询只会发送网址、DOI 或单笔书目的作者、篇名、年份及期刊字段，不会发送文档其余内容。核心 AI 侦测仍在设备端运行，此验证可在此关闭。';
+      '分析报告会将侦测到的网址与参考文献条目比对 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 与可识别的出版社目录。查询只会发送网址、DOI 或单笔书目的作者、篇名、年份及期刊字段，不会发送文档其余内容。核心 AI 侦测仍在设备端运行，此验证可在此关闭。';
 
   @override
   String get settingsThemeTitle => '外观主题';
@@ -2969,7 +2871,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名与期刊信息交叉比对公开来源、台湾国图／TCI-HSS、出版社目录，以及已设置凭证时的 Web of Science SCI／SSCI 与 Engineering Village EI；高可信度结果必须有 DOI 登记或多个一致的书目字段，未达可靠匹配者标示为未通过核实。';
+      '依作者、年份、篇名与期刊信息交叉比对 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 与可识别的出版社目录；高可信度结果必须有 DOI 登记或多个一致的书目字段，未达可靠匹配者标示为未通过核实。Google Scholar 因未提供自动查询 API，仅供用户主动人工复核。';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return '核实依据：$source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup => '前往 Google Scholar 人工复核';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -3368,7 +3278,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAdvantage1 =>
-      '超链接与文献真实性验证：检查网址是否可连接，并通过广域、专业、台湾国图／TCI-HSS、出版社及选配授权的 SCI／SSCI／EI 来源交叉比对书目数据。';
+      '超链接与文献真实性验证：检查网址是否可连接，以 Crossref／DataCite 核实 DOI 登记，并通过 OpenAlex、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 与出版社目录交叉比对书目数据；每笔通过核实的文献会标示证据来源，Google Scholar 仅供人工复核。';
 
   @override
   String get helpAdvantage2 =>
@@ -3627,7 +3537,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超链接与参考文献真实性验证：默认打开，可在「设置」关闭。打开时，会将侦测到的网址、DOI 或单笔书目的作者、篇名、年份与期刊字段发送至目标网站、公开书目来源、台湾国图／TCI-HSS、出版社目录，以及您已提供凭证的 SCI／SSCI／EI 服务查询，不会发送文档其余内容。选填的来源商凭证仅保存在此设备的应用偏好设置中。';
+      '3. 超链接与参考文献真实性验证：默认打开，可在「设置」关闭。打开时，会将侦测到的网址、DOI 或单笔书目的作者、篇名、年份与期刊字段发送至目标网站及／或 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 与可识别的出版社目录查询，不会发送文档其余内容。只有用户按下人工复核按钮时，才会将该笔查询发送至 Google Scholar。';
 
   @override
   String get privacyNetwork4 =>
@@ -4275,61 +4185,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settingsLinkVerificationTitle => '超連結與參考文獻目錄驗證';
 
   @override
-  String get settingsBibliographyIndexesTitle => '文獻索引查核來源';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      '公開來源自動使用；可加入 Web of Science SCI／SSCI 或 Engineering Village EI 授權';
-
-  @override
-  String get settingsBibliographyCredentialsTitle => '文獻索引查核來源';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC、ERIC 與臺灣國圖等公開來源不需金鑰。SCI／SSCI 與 EI 只會在您提供來源商授權憑證時查詢；憑證缺少或遭拒絕絕不會作為文獻不存在的證據。';
-
-  @override
-  String get settingsTaiwanIndexTitle => '臺灣國圖／TCI-HSS 輔助查核';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      '自動查詢國家圖書館臺灣期刊篇目；原 TSSCI／THCI 資料已整併至 TCI-HSS。';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI／SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      '輸入 Clarivate Web of Science Starter API 金鑰。Clarivate 提供有限免費方案，較高額度依機構授權而定。';
-
-  @override
-  String get settingsWosFreePlanButton => '申請每日 50 次免費方案';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      '輸入已開通 Engineering Village 的 Elsevier API 金鑰；完整 EI 查詢需符合資格的機構訂閱。';
-
-  @override
-  String get settingsEiInstitutionTokenLabel => 'Elsevier 機構權杖（選填）';
-
-  @override
-  String get settingsEiInstitutionTokenHelper => '僅在您的機構或 Elsevier 提供時填寫。';
-
-  @override
-  String get settingsGetApiKeyButton => '來源商網站';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton => '儲存索引憑證';
-
-  @override
-  String get settingsBibliographyCredentialsSaved => '文獻索引憑證已儲存於此裝置';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
-      '分析報告會將偵測到的網址與參考文獻條目比對廣域、專業、區域、出版社及已設定的授權學術索引。查詢只會送出網址、DOI 或單筆書目的作者、篇名、年份及期刊欄位，不會傳送文件其餘內容。核心 AI 偵測仍在裝置端執行，此驗證可在此關閉。';
+      '分析報告會將偵測到的網址與參考文獻條目比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄。查詢只會送出網址、DOI 或單筆書目的作者、篇名、年份及期刊欄位，不會傳送文件其餘內容。核心 AI 偵測仍在裝置端執行，此驗證可在此關閉。';
 
   @override
   String get settingsThemeTitle => '外觀主題';
@@ -4837,7 +4694,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportBibResultHint =>
-      '依作者、年份、篇名與期刊資訊交叉比對公開來源、臺灣國圖／TCI-HSS、出版社目錄，以及已設定憑證時的 Web of Science SCI／SSCI 與 Engineering Village EI；高可信度結果必須有 DOI 登記或多個一致的書目欄位，未達可靠匹配者標示為未通過核實。';
+      '依作者、年份、篇名與期刊資訊交叉比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄；高可信度結果必須有 DOI 登記或多個一致的書目欄位，未達可靠匹配者標示為未通過核實。Google Scholar 因未提供自動查詢 API，僅供使用者主動人工複核。';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return '核實依據：$source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup => '前往 Google Scholar 人工複核';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -5236,7 +5101,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAdvantage1 =>
-      '超連結與文獻真實性驗證：檢查網址是否可連線，並透過廣域、專業、臺灣國圖／TCI-HSS、出版社及選配授權的 SCI／SSCI／EI 來源交叉比對書目資料。';
+      '超連結與文獻真實性驗證：檢查網址是否可連線，以 Crossref／DataCite 核實 DOI 登記，並透過 OpenAlex、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與出版社目錄交叉比對書目資料；每筆通過核實的文獻會標示證據來源，Google Scholar 僅供人工複核。';
 
   @override
   String get helpAdvantage2 =>
@@ -5495,7 +5360,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyNetwork3 =>
-      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將偵測到的網址、DOI 或單筆書目的作者、篇名、年份與期刊欄位送往目標網站、公開書目來源、臺灣國圖／TCI-HSS、出版社目錄，以及您已提供憑證的 SCI／SSCI／EI 服務查詢，不會傳送文件其餘內容。選填的來源商憑證只會儲存在此裝置的應用程式偏好設定。';
+      '3. 超連結與參考文獻真實性驗證：預設開啟，可在「設定」關閉。開啟時，會將偵測到的網址、DOI 或單筆書目的作者、篇名、年份與期刊欄位送往目標網站及／或 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄查詢，不會傳送文件其餘內容。只有使用者按下人工複核按鈕時，才會將該筆查詢送往 Google Scholar。';
 
   @override
   String get privacyNetwork4 =>

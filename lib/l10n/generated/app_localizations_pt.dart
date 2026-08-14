@@ -573,64 +573,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'Verificação de hiperlinks e bibliografia';
 
   @override
-  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
-
-  @override
-  String get settingsBibliographyCredentialsTitle =>
-      'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
-
-  @override
-  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
-
-  @override
-  String get settingsWosFreePlanButton => 'Get free 50/day plan';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
-
-  @override
-  String get settingsEiInstitutionTokenLabel =>
-      'Elsevier institution token (optional)';
-
-  @override
-  String get settingsEiInstitutionTokenHelper =>
-      'Use only when supplied by your institution or Elsevier.';
-
-  @override
-  String get settingsGetApiKeyButton => 'Provider site';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton =>
-      'Save index credentials';
-
-  @override
-  String get settingsBibliographyCredentialsSaved =>
-      'Bibliography index credentials saved on this device';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
       'O relatório se conectará para verificar se as URLs e entradas bibliográficas detectadas no documento realmente existem (conteúdo gerado por IA geralmente inclui referências plausíveis, mas fictícias). Links acadêmicos no formato DOI, e referências no formato \"autor-ano\" sem link, são ambos verificados no registro público da Crossref. O modelo de detecção de IA principal continua funcionando totalmente no dispositivo e nunca envia o conteúdo do documento; a conexão é usada apenas para essa verificação e verificações de atualização do modelo, e pode ser desativada aqui.';
 
@@ -1165,6 +1107,15 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get reportBibResultHint =>
       'Comparado com o registro público da Crossref por similaridade de autor, ano e título. Não é uma garantia absoluta — quando \"incerto\", verifique manualmente.';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return 'Verification source: $source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup =>
+      'Check manually in Google Scholar';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1847,7 +1798,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. Verificação de hiperlinks e citações: ativada por padrão e pode ser desativada nas Configurações. URLs, DOIs ou campos de uma citação (autor, título, ano e publicação) são enviados ao site de destino, serviços bibliográficos públicos, Taiwan NCL/TCI-HSS, catálogos de editoras e serviços SCI/SSCI/EI configurados. O restante do documento não é enviado. Credenciais opcionais são armazenadas somente nas preferências do aplicativo deste dispositivo.';
+      '3. Verificação de autenticidade de hiperlinks e citações: ativada por padrão, pode ser desativada nas Configurações. Quando ativada, a URL ou o texto bibliográfico detectado no documento é enviado diretamente para essa URL, ou para a API pública da Crossref, enviando apenas o texto da URL/DOI/citação em si — nunca o restante do conteúdo do documento.';
 
   @override
   String get privacyNetwork4 =>

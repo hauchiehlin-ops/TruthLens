@@ -12,7 +12,6 @@ import '../input/input_screen.dart' show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
 import 'model_import_screen.dart';
 import 'engine_weight_settings.dart';
-import 'bibliography_index_settings.dart';
 import 'web_ocr_settings.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -92,17 +91,6 @@ class SettingsScreen extends StatelessWidget {
             subtitle: Text(l10n.settingsLinkVerificationSubtitle),
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
-          ),
-          ListTile(
-            leading: const Icon(Icons.library_books_outlined),
-            title: Text(l10n.settingsBibliographyIndexesTitle),
-            subtitle: Text(l10n.settingsBibliographyIndexesSubtitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const BibliographyIndexSettingsScreen(),
-              ),
-            ),
           ),
           const Divider(),
           ListTile(

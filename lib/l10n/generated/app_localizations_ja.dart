@@ -545,64 +545,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsLinkVerificationTitle => 'ハイパーリンク・参考文献の実在性検証';
 
   @override
-  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
-
-  @override
-  String get settingsBibliographyCredentialsTitle =>
-      'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
-
-  @override
-  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
-
-  @override
-  String get settingsWosFreePlanButton => 'Get free 50/day plan';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
-
-  @override
-  String get settingsEiInstitutionTokenLabel =>
-      'Elsevier institution token (optional)';
-
-  @override
-  String get settingsEiInstitutionTokenHelper =>
-      'Use only when supplied by your institution or Elsevier.';
-
-  @override
-  String get settingsGetApiKeyButton => 'Provider site';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton =>
-      'Save index credentials';
-
-  @override
-  String get settingsBibliographyCredentialsSaved =>
-      'Bibliography index credentials saved on this device';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
       'レポートは、文書内で検出されたURLや参考文献が実在するかを確認するために接続します（AI生成コンテンツには、もっともらしいが実在しない引用がよく含まれます）。DOI形式の学術リンクと、リンクのない「著者名—年」形式の参考文献の両方が、Crossrefの公開登録データと照合されます。コア AI 検出モデルは引き続き完全にデバイス上で実行され、文書内容は送信されません。接続はこの検証とモデル更新確認にのみ使用され、ここでオフにできます。';
 
@@ -1125,6 +1067,15 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get reportBibResultHint =>
       '著者名、発行年、タイトルの類似度でCrossrefの公開登録データと照合します。絶対的な保証ではありません。「不確定」の場合は自分で確認することをお勧めします。';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return 'Verification source: $source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup =>
+      'Check manually in Google Scholar';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1791,7 +1742,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. ハイパーリンクと引用文献の検証：デフォルトで有効で、「設定」で無効にできます。検出されたURL、DOI、または個別の書誌項目（著者、題名、年、掲載誌）を、対象サイト、公開書誌サービス、台湾NCL／TCI-HSS、出版社カタログ、および設定済みのSCI／SSCI／EIサービスへ送信します。文書のその他の内容は送信しません。任意の認証情報は、この端末のアプリ設定にのみ保存されます。';
+      '3. ハイパーリンクと引用文献の実在性検証：デフォルトで有効になっており、「設定」でオフにできます。有効時、文書内で検出されたURLや参考文献のテキストを、そのURL自体またはCrossref公開APIに直接送信します。送信するのはURL／DOI／書誌情報のテキストのみで、文書内の他の内容は含まれません。';
 
   @override
   String get privacyNetwork4 =>

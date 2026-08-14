@@ -431,7 +431,7 @@
   "privacyNetworkIntro": "La detección de IA principal de esta aplicación se ejecuta completamente en el dispositivo, pero las siguientes tres funciones requieren acceso a la red:",
   "privacyNetwork1": "1. Catálogo y descarga de modelos: se conecta a GitHub Releases/Hugging Face para descargar el modelo de detección que elijas; esto solo descarga el modelo y nunca sube ningún dato de usuario.",
   "privacyNetwork2": "2. Comprobación de actualizaciones de modelos: al iniciarse, la aplicación se conecta solo para comparar números de versión, usados para mostrar si hay una nueva versión disponible.",
-  "privacyNetwork3": "3. Verificación de hipervínculos y citas: activada por defecto y desactivable en Ajustes. Las URL, DOI o campos de una cita (autor, título, año y publicación) se envían al sitio de destino, servicios bibliográficos públicos, Taiwan NCL/TCI-HSS, catálogos editoriales y servicios SCI/SSCI/EI configurados. El resto del documento no se envía. Las credenciales opcionales se guardan solo en las preferencias de la aplicación de este dispositivo.",
+  "privacyNetwork3": "3. Verificación de autenticidad de hipervínculos y citas: activada por defecto, se puede desactivar en Ajustes. Cuando está activada, la URL o el texto bibliográfico detectados en el documento se envían directamente a esa URL, o a la API pública de Crossref, enviando solo el texto de la URL/DOI/cita en sí; nunca el resto del contenido del documento.",
   "privacyRightsIntro": "Puedes borrar tu historial de análisis local en cualquier momento en \"Historial\", o desactivar la verificación de hipervínculos/citas en \"Ajustes\", o eliminar todos los datos locales",
   "privacyRemoveIos": "eliminando la aplicación",
   "privacyRemoveAndroid": "desinstalando la aplicación",

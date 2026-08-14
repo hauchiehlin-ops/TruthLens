@@ -78,24 +78,22 @@ void main() {
     );
   });
 
-  test(
-    'licensed bibliography API credentials persist locally and trim values',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final preferences = PreferencesService();
-      await preferences.load();
+  test('removed bibliography credentials are deleted during load', () async {
+    SharedPreferences.setMockInitialValues({
+      'web_of_science_api_key': 'wos-key',
+      'engineering_village_api_key': 'ei-key',
+      'engineering_village_institution_token': 'inst-token',
+    });
 
-      await preferences.setBibliographyApiCredentials(
-        webOfScienceKey: ' wos-key ',
-        engineeringVillageKey: ' ei-key ',
-        engineeringVillageInstitutionTokenValue: ' inst-token ',
-      );
+    final preferences = PreferencesService();
+    await preferences.load();
 
-      final reloaded = PreferencesService();
-      await reloaded.load();
-      expect(reloaded.webOfScienceApiKey, 'wos-key');
-      expect(reloaded.engineeringVillageApiKey, 'ei-key');
-      expect(reloaded.engineeringVillageInstitutionToken, 'inst-token');
-    },
-  );
+    final storage = await SharedPreferences.getInstance();
+    expect(storage.containsKey('web_of_science_api_key'), isFalse);
+    expect(storage.containsKey('engineering_village_api_key'), isFalse);
+    expect(
+      storage.containsKey('engineering_village_institution_token'),
+      isFalse,
+    );
+  });
 }

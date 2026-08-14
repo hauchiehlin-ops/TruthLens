@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
@@ -139,7 +140,6 @@ class _ReportScreenState extends State<ReportScreen> {
       tasks.add(
         BibliographyVerifier.verifyAll(
           _bibEntries,
-          credentials: _bibliographyCredentials(),
           onProgress: (progress) {
             if (!mounted) return;
             setState(() {
@@ -217,7 +217,6 @@ class _ReportScreenState extends State<ReportScreen> {
 
     final updatedChecks = await BibliographyVerifier.verifyAll(
       targetEntries,
-      credentials: _bibliographyCredentials(),
       onProgress: (progress) {
         if (!mounted) return;
         setState(() {
@@ -245,16 +244,6 @@ class _ReportScreenState extends State<ReportScreen> {
       _bibTotal = updatedChecks.length;
       _bibCurrentEntry = null;
     });
-  }
-
-  BibliographyVerificationCredentials _bibliographyCredentials() {
-    final prefs = context.read<PreferencesService>();
-    return BibliographyVerificationCredentials(
-      webOfScienceApiKey: prefs.webOfScienceApiKey,
-      engineeringVillageApiKey: prefs.engineeringVillageApiKey,
-      engineeringVillageInstitutionToken:
-          prefs.engineeringVillageInstitutionToken,
-    );
   }
 
   Future<void> _export(
@@ -822,6 +811,13 @@ class _ReportScreenState extends State<ReportScreen> {
                                       fontWeight: FontWeight.w600,
                                     ),
                               ),
+                              if (presentation.source != null) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  presentation.source!,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                               if (presentation.warning != null) ...[
                                 const SizedBox(height: 3),
                                 Text(
@@ -833,6 +829,14 @@ class _ReportScreenState extends State<ReportScreen> {
                                       ),
                                 ),
                               ],
+                              const SizedBox(height: 2),
+                              TextButton.icon(
+                                onPressed: () => _openGoogleScholar(checks[i]),
+                                icon: const Icon(Icons.open_in_new, size: 16),
+                                label: Text(
+                                  l10n.reportBibGoogleScholarManualLookup,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -862,6 +866,19 @@ class _ReportScreenState extends State<ReportScreen> {
     return presentation.warning == null
         ? presentation.status
         : '${presentation.status}\n${presentation.warning}';
+  }
+
+  Future<void> _openGoogleScholar(BibliographyCheckResult check) async {
+    final entry = check.entry;
+    final query = [
+      entry.title,
+      entry.firstAuthorSurname,
+      if (entry.year != null) entry.year.toString(),
+    ].whereType<String>().where((part) => part.trim().isNotEmpty).join(' ');
+    final uri = Uri.https('scholar.google.com', '/scholar', {
+      'q': query.isEmpty ? entry.rawText : query,
+    });
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   Color _bibStatusColor(BibliographyDisplayTone tone) => switch (tone) {

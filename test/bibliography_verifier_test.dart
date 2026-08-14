@@ -789,6 +789,7 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
 
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Journal of Business Research');
+      expect(results.single.verificationSource, 'Semantic Scholar');
     });
 
     test('醫學與農業文獻可由 Europe PMC／PubMed／AGRICOLA 索引核實', () async {
@@ -848,6 +849,10 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
 
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Agricultural Systems');
+      expect(
+        results.single.verificationSource,
+        'Europe PMC / PubMed / AGRICOLA',
+      );
     });
 
     test('教育文獻可由美國教育部 ERIC 專業資料庫核實', () async {
@@ -907,6 +912,82 @@ Yang, W.M. and Lin, H.C., 2009. Instability analysis of modulated Taylor vortice
 
       expect(results.single.confidence, CitationMatchConfidence.high);
       expect(results.single.matchedJournal, 'Teaching and Teacher Education');
+      expect(results.single.verificationSource, 'ERIC');
+    });
+
+    test('開放取用期刊文獻可由 DOAJ 公開文章索引核實並標示來源', () async {
+      final client = MockClient((request) async {
+        if (request.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {'items': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'api.openalex.org') {
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        if (request.url.host == 'api.semanticscholar.org') {
+          return http.Response(jsonEncode({'data': []}), 200);
+        }
+        if (request.url.host == 'www.ebi.ac.uk') {
+          return http.Response(
+            jsonEncode({
+              'resultList': {'result': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'api.ies.ed.gov') {
+          return http.Response(
+            jsonEncode({
+              'response': {'docs': []},
+            }),
+            200,
+          );
+        }
+        if (request.url.host == 'doaj.org') {
+          expect(request.url.path, contains('/api/search/articles/'));
+          return http.Response(
+            jsonEncode({
+              'results': [
+                {
+                  'bibjson': {
+                    'title':
+                        'Open science practices in interdisciplinary research',
+                    'year': '2023',
+                    'author': [
+                      {'name': 'Taylor, Morgan'},
+                    ],
+                    'journal': {'title': 'Journal of Open Research Practices'},
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('Not found', 404);
+      });
+
+      final results = await BibliographyVerifier.verifyAll([
+        const BibliographyEntry(
+          rawText:
+              'Taylor, M. (2023). Open science practices in interdisciplinary research. Journal of Open Research Practices.',
+          firstAuthorSurname: 'Taylor',
+          year: 2023,
+          title: 'Open science practices in interdisciplinary research',
+          venueTitle: 'Journal of Open Research Practices',
+        ),
+      ], client: client);
+
+      expect(results.single.confidence, CitationMatchConfidence.high);
+      expect(
+        results.single.matchedJournal,
+        'Journal of Open Research Practices',
+      );
+      expect(results.single.verificationSource, 'DOAJ');
     });
 
     test(
@@ -1399,179 +1480,6 @@ References
       expect(progressEvents.first.completed, 0);
       expect(progressEvents.first.total, 35);
       expect(progressEvents.last.completed, 35);
-    });
-
-    test('提供 Clarivate 金鑰時以 Web of Science SCI／SSCI 核實文獻', () async {
-      final client = MockClient((request) async {
-        if (request.url.host == 'api.crossref.org') {
-          return http.Response(
-            jsonEncode({
-              'message': {'items': []},
-            }),
-            200,
-          );
-        }
-        if (request.url.host == 'api.openalex.org') {
-          return http.Response(jsonEncode({'results': []}), 200);
-        }
-        if (request.url.host == 'api.clarivate.com') {
-          expect(request.headers['X-ApiKey'], 'wos-test-key');
-          expect(request.url.queryParameters['edition'], contains('SSCI'));
-          return http.Response(
-            jsonEncode({
-              'hits': [
-                {
-                  'title': 'Consumer Trust in Artificial Intelligence',
-                  'source': {
-                    'sourceTitle': 'Journal of Marketing Research',
-                    'publishYear': 2024,
-                  },
-                  'names': {
-                    'authors': [
-                      {'wosStandard': 'LIN, B'},
-                    ],
-                  },
-                },
-              ],
-            }),
-            200,
-          );
-        }
-        return http.Response('', 404);
-      });
-
-      final results = await BibliographyVerifier.verifyAll(
-        const [
-          BibliographyEntry(
-            rawText:
-                'Lin, B. (2024). Consumer Trust in Artificial Intelligence. Journal of Marketing Research.',
-            firstAuthorSurname: 'Lin',
-            year: 2024,
-            title: 'Consumer Trust in Artificial Intelligence',
-            venueTitle: 'Journal of Marketing Research',
-          ),
-        ],
-        client: client,
-        credentials: const BibliographyVerificationCredentials(
-          webOfScienceApiKey: 'wos-test-key',
-        ),
-      );
-
-      expect(results.single.confidence, CitationMatchConfidence.high);
-      expect(results.single.matchedJournal, 'Journal of Marketing Research');
-    });
-
-    test('提供 Elsevier 授權時以 Engineering Village EI Compendex 核實文獻', () async {
-      final client = MockClient((request) async {
-        if (request.url.host == 'api.crossref.org') {
-          return http.Response(
-            jsonEncode({
-              'message': {'items': []},
-            }),
-            200,
-          );
-        }
-        if (request.url.host == 'api.openalex.org') {
-          return http.Response(jsonEncode({'results': []}), 200);
-        }
-        if (request.url.host == 'api.elsevier.com') {
-          expect(request.url.queryParameters['database'], 'c');
-          expect(request.headers['X-ELS-APIKey'], 'ei-test-key');
-          expect(request.headers['X-ELS-Insttoken'], 'institution-test');
-          return http.Response(
-            jsonEncode({
-              'PAGE': {
-                'PAGE-RESULTS': {
-                  'PAGE-ENTRY': [
-                    {
-                      'EI-DOCUMENT': {
-                        'DOCUMENTPROPERTIES': {
-                          'TI': 'Damage Detection in Composite Bridges',
-                          'SO': 'Engineering Structures',
-                          'YR': '2023',
-                        },
-                        'AUS': {
-                          'AU': [
-                            {'NAME': 'Chen, Wei'},
-                          ],
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            }),
-            200,
-          );
-        }
-        return http.Response('', 404);
-      });
-
-      final results = await BibliographyVerifier.verifyAll(
-        const [
-          BibliographyEntry(
-            rawText:
-                'Chen, W. (2023). Damage Detection in Composite Bridges. Engineering Structures.',
-            firstAuthorSurname: 'Chen',
-            year: 2023,
-            title: 'Damage Detection in Composite Bridges',
-            venueTitle: 'Engineering Structures',
-          ),
-        ],
-        client: client,
-        credentials: const BibliographyVerificationCredentials(
-          engineeringVillageApiKey: 'ei-test-key',
-          engineeringVillageInstitutionToken: 'institution-test',
-        ),
-      );
-
-      expect(results.single.confidence, CitationMatchConfidence.high);
-      expect(results.single.matchedJournal, 'Engineering Structures');
-    });
-
-    test('臺灣中文期刊可由國家圖書館期刊／TCI-HSS 輔助來源核實', () async {
-      final requestedHosts = <String>[];
-      final client = MockClient((request) async {
-        requestedHosts.add(request.url.host);
-        if (request.url.host == 'api.crossref.org') {
-          return http.Response(
-            jsonEncode({
-              'message': {'items': []},
-            }),
-            200,
-          );
-        }
-        if (request.url.host == 'api.openalex.org') {
-          return http.Response(jsonEncode({'results': []}), 200);
-        }
-        if (request.url.host == 'tpl.ncl.edu.tw') {
-          return http.Response(
-            '<a class="articleTitle" title="數位學習環境中的教師專業發展&amp;實踐">文獻</a>',
-            200,
-            headers: {'content-type': 'text/html; charset=utf-8'},
-          );
-        }
-        return http.Response('', 404);
-      });
-
-      final results = await BibliographyVerifier.verifyAll(const [
-        BibliographyEntry(
-          rawText: '林小明（2022）。數位學習環境中的教師專業發展&實踐。教育研究集刊。',
-          firstAuthorSurname: '林',
-          year: 2022,
-          title: '數位學習環境中的教師專業發展&實踐',
-          venueTitle: '教育研究集刊',
-        ),
-      ], client: client);
-
-      expect(requestedHosts, contains('tpl.ncl.edu.tw'));
-      expect(
-        results.single.confidence,
-        CitationMatchConfidence.high,
-        reason:
-            'matchedTitle=${results.single.matchedTitle}, matchedJournal=${results.single.matchedJournal}',
-      );
-      expect(results.single.matchedJournal, contains('TCI-HSS'));
     });
 
     test('一般財經快訊、股票清單與非學術編號敘事不被誤判為參考文獻目錄', () {

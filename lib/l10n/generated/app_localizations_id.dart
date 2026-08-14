@@ -570,64 +570,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Verifikasi hyperlink & bibliografi';
 
   @override
-  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
-
-  @override
-  String get settingsBibliographyCredentialsTitle =>
-      'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
-
-  @override
-  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
-
-  @override
-  String get settingsWosFreePlanButton => 'Get free 50/day plan';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
-
-  @override
-  String get settingsEiInstitutionTokenLabel =>
-      'Elsevier institution token (optional)';
-
-  @override
-  String get settingsEiInstitutionTokenHelper =>
-      'Use only when supplied by your institution or Elsevier.';
-
-  @override
-  String get settingsGetApiKeyButton => 'Provider site';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton =>
-      'Save index credentials';
-
-  @override
-  String get settingsBibliographyCredentialsSaved =>
-      'Bibliography index credentials saved on this device';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
       'Laporan akan terhubung untuk memeriksa apakah URL dan entri bibliografi yang terdeteksi dalam dokumen benar-benar ada (konten yang dihasilkan AI sering menyertakan referensi yang tampak masuk akal tetapi fiktif). Tautan akademis berformat DOI, dan referensi berformat \"penulis-tahun\" tanpa tautan, keduanya diperiksa terhadap registri publik Crossref. Model deteksi AI inti tetap berjalan sepenuhnya di perangkat dan tidak pernah mengirim konten dokumen; koneksi hanya digunakan untuk verifikasi ini dan pemeriksaan pembaruan model, dan dapat dimatikan di sini.';
 
@@ -1159,6 +1101,15 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get reportBibResultHint =>
       'Dicocokkan dengan registri publik Crossref berdasarkan kemiripan penulis, tahun, dan judul. Bukan jaminan mutlak — saat \"tidak pasti\", harap verifikasi secara manual.';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return 'Verification source: $source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup =>
+      'Check manually in Google Scholar';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1838,7 +1789,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. Verifikasi hyperlink dan kutipan: aktif secara default dan dapat dimatikan di Pengaturan. URL, DOI, atau bidang satu kutipan (penulis, judul, tahun, dan publikasi) dikirim ke situs tujuan, layanan bibliografi publik, Taiwan NCL/TCI-HSS, katalog penerbit, dan layanan SCI/SSCI/EI yang dikonfigurasi. Bagian dokumen lainnya tidak dikirim. Kredensial penyedia opsional hanya disimpan di preferensi aplikasi perangkat ini.';
+      '3. Verifikasi keaslian hyperlink & kutipan: diaktifkan secara default, dapat dimatikan di Pengaturan. Saat diaktifkan, URL atau teks bibliografi yang terdeteksi dalam dokumen dikirim langsung ke URL itu sendiri, atau ke API publik Crossref, hanya mengirim teks URL/DOI/kutipan itu sendiri — tidak pernah konten dokumen lainnya.';
 
   @override
   String get privacyNetwork4 =>

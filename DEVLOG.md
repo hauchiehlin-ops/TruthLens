@@ -1,22 +1,38 @@
 # TruthLens 開發日誌（DEVLOG）
 
-## 2026-08-14（第五十六次更新）— 強化：SCI／SSCI、EI 與臺灣期刊索引查核
+## 2026-08-15（第五十七次更新）— 強化：DOAJ 查核、證據來源與 Google Scholar 人工複核
 
 **概述**
-在既有公開跨領域資料源上新增授權型與臺灣區域索引：
-1. 新增 Clarivate Web of Science Starter API 查核，限定 SCI／SSCI edition；由使用者提供官方 API Key 後啟用
-2. 新增 Elsevier Engineering Village API 查核，限定 EI Compendex；支援 API Key 與選填機構權杖，憑證透過 HTTP 標頭傳送、不放入網址
-3. 新增國家圖書館臺灣期刊篇目公開查詢，補強臺灣期刊與 TCI-HSS（含原 TSSCI／THCI）文獻
-4. 設定頁新增「文獻索引查核來源」，可在裝置端保存或清除 SCI／SSCI、EI 授權憑證，並連往官方申請頁
-5. SCI／SSCI、EI 未設定憑證、授權遭拒或服務無回應時只略過該來源，不得據此判定文獻不存在
-6. 更新操作說明、報告提示與隱私權政策，說明單筆書目欄位與選填憑證的用途及儲存位置
-7. 新增 Web of Science、Engineering Village、臺灣國圖來源解析及憑證本機保存測試
-8. Web of Science 設定區新增「申請每日 50 次免費方案」一鍵入口，直接開啟 Clarivate Starter API 官方申請頁
+在保留無憑證公開資料源的前提下，提高文獻查核透明度與開放取用期刊覆蓋：
+1. 新增 DOAJ 公開文章 API，使用篇名、年份、作者與期刊欄位交叉比對開放取用期刊文獻
+2. 每筆高可信度文獻新增獨立的核實依據欄位，明確標示 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ、出版社官方目錄或本機經典文獻索引
+3. Web 報告、PDF 與 JSON 共用相同來源資訊；JSON 新增 `verification_source` 欄位
+4. 每筆文獻提供 Google Scholar 人工複核按鈕；因 Google Scholar 不提供自動 API 且限制自動存取，不將其搜尋頁爬取結果納入自動判定
+5. 只有使用者主動點擊人工複核時，才會將該筆文獻的篇名、作者與年份查詢送往 Google Scholar
+6. 更新操作說明、報告提示與隱私權政策，說明 DOAJ 與 Google Scholar 的不同角色
+7. 新增 DOAJ 查核、來源呈現及匯出欄位測試
 
-**修復內容**：✅ **完成**
+**強化內容**：✅ **完成**
 
-- 公開來源仍可直接使用；有合格機構或個人 API 權限時，可增加 SCI／SSCI 與 EI 的文章級證據
-- 索引收錄只是交叉證據，仍需篇名、作者、年份與期刊等欄位一致，避免把「期刊被收錄」誤當成「引用的文章一定存在」
+- 高可信度不再只顯示「應存在」，使用者可直接看到判定所依據的資料庫
+- Google Scholar 保留為可控的人工第二意見，不以未授權爬蟲影響應用穩定性或判定可信度
+
+---
+
+## 2026-08-15（第五十六次更新）— 調整：移除文獻索引查核來源
+
+**概述**
+依需求撤除獨立的文獻索引查核來源：
+1. 移除 Web of Science SCI／SSCI、Engineering Village EI 與臺灣國圖／TCI-HSS 查核介接
+2. 移除「文獻索引查核來源」設定頁、入口、官方申請連結與 API 憑證欄位
+3. App 下次載入偏好設定時會刪除先前可能保存的 Web of Science／Engineering Village 憑證
+4. 保留 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC 與出版社目錄等既有公開書目查核
+5. 同步修正操作說明、報告提示與隱私權政策，不再宣稱會連線至已取消的索引來源
+
+**調整內容**：✅ **完成**
+
+- 使用者不再需要設定或維護授權型文獻索引憑證
+- 文獻真實性核實仍使用無需使用者憑證的跨領域與專業公開來源
 
 ---
 
@@ -37,7 +53,7 @@
 **修復內容**：✅ **完成**
 
 - 文獻核實不再只依賴兩個廣域來源，對不同學科與非 Crossref DOI 有更完整的交叉驗證
-- Web of Science 與 EI 僅在使用者提供有效授權憑證時加入；仍無法取代 Scopus、ProQuest 等其他需訂閱服務，未可靠命中時維持保守提示，不宣稱文獻必定不存在
+- 仍無法取代需訂閱的 Web of Science、Scopus 或 ProQuest，未可靠命中時維持保守提示，不宣稱文獻必定不存在
 
 ---
 

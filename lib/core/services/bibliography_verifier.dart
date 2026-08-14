@@ -5,24 +5,6 @@ import 'package:http/http.dart' as http;
 
 enum CitationMatchConfidence { high, uncertain, notFound }
 
-class BibliographyVerificationCredentials {
-  final String? webOfScienceApiKey;
-  final String? engineeringVillageApiKey;
-  final String? engineeringVillageInstitutionToken;
-
-  const BibliographyVerificationCredentials({
-    this.webOfScienceApiKey,
-    this.engineeringVillageApiKey,
-    this.engineeringVillageInstitutionToken,
-  });
-
-  bool get hasWebOfScienceKey =>
-      webOfScienceApiKey != null && webOfScienceApiKey!.trim().isNotEmpty;
-  bool get hasEngineeringVillageKey =>
-      engineeringVillageApiKey != null &&
-      engineeringVillageApiKey!.trim().isNotEmpty;
-}
-
 class BibliographyEntry {
   final String rawText;
   final int sourceOffset;
@@ -55,6 +37,7 @@ class BibliographyCheckResult {
   final String? matchedTitle;
   final String? matchedJournal;
   final int? matchedYear;
+  final String? verificationSource;
   final bool journalNameMismatch;
 
   const BibliographyCheckResult({
@@ -63,6 +46,7 @@ class BibliographyCheckResult {
     this.matchedTitle,
     this.matchedJournal,
     this.matchedYear,
+    this.verificationSource,
     this.journalNameMismatch = false,
   });
 }
@@ -994,7 +978,6 @@ class BibliographyVerifier {
     Uri uri,
     Duration timeout, {
     int maxRetries = 2,
-    Map<String, String> headers = const {},
   }) async {
     for (var attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -1004,7 +987,6 @@ class BibliographyVerifier {
               headers: {
                 'User-Agent':
                     'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
-                ...headers,
               },
             )
             .timeout(timeout);
@@ -1035,8 +1017,6 @@ class BibliographyVerifier {
     List<BibliographyEntry> entries, {
     http.Client? client,
     Duration timeout = const Duration(seconds: 5),
-    BibliographyVerificationCredentials credentials =
-        const BibliographyVerificationCredentials(),
     void Function(BibliographyVerificationProgress progress)? onProgress,
   }) async {
     final c = client ?? http.Client();
@@ -1068,7 +1048,7 @@ class BibliographyVerifier {
             currentEntry: entry,
           ),
         );
-        final result = await _verifyOne(c, entry, timeout, credentials);
+        final result = await _verifyOne(c, entry, timeout);
         results.add(result);
         onProgress?.call(
           BibliographyVerificationProgress(
@@ -1094,7 +1074,6 @@ class BibliographyVerifier {
     http.Client client,
     BibliographyEntry entry,
     Duration timeout,
-    BibliographyVerificationCredentials credentials,
   ) async {
     var crossrefSearchSucceeded = false;
     var openAlexSearchSucceeded = false;
@@ -1154,7 +1133,7 @@ class BibliographyVerifier {
           return _registeredDoiResult(
             entry,
             _BibliographyCandidate(
-              sourceLabel: 'Crossref DOI 登記',
+              sourceLabel: 'Crossref',
               title: matchedTitle,
               venue: matchedJournal,
               year: matchedYear,
@@ -1361,6 +1340,7 @@ class BibliographyVerifier {
                 matchedTitle: matchedTitle,
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
+                verificationSource: 'OpenAlex',
                 journalNameMismatch: _journalNameMismatch(
                   entry.venueTitle,
                   matchedJournal,
@@ -1376,6 +1356,7 @@ class BibliographyVerifier {
                 matchedTitle: matchedTitle,
                 matchedJournal: matchedJournal ?? 'OpenAlex 收錄學術期刊',
                 matchedYear: matchedYear,
+                verificationSource: 'OpenAlex',
                 journalNameMismatch: false,
               );
             }
@@ -1384,39 +1365,14 @@ class BibliographyVerifier {
       }
     } catch (_) {}
 
-    // 3) 互補專業索引：公開來源永遠查詢；Web of Science SCI/SSCI 與
-    // Engineering Village EI 僅在使用者提供官方授權金鑰時加入。
+    // 3) 互補專業公開來源。
     if (searchTitle != null) {
-      final supplementalChecks = <Future<BibliographyCheckResult?>>[
+      final supplementalResults = await Future.wait([
         _verifySemanticScholar(client, entry, searchTitle, timeout),
         _verifyEuropePmc(client, entry, searchTitle, timeout),
         _verifyEric(client, entry, searchTitle, timeout),
-        _verifyTaiwanPeriodicalIndex(client, entry, searchTitle, timeout),
-      ];
-      if (credentials.hasWebOfScienceKey) {
-        supplementalChecks.add(
-          _verifyWebOfScience(
-            client,
-            entry,
-            searchTitle,
-            timeout,
-            credentials.webOfScienceApiKey!.trim(),
-          ),
-        );
-      }
-      if (credentials.hasEngineeringVillageKey) {
-        supplementalChecks.add(
-          _verifyEngineeringVillage(
-            client,
-            entry,
-            searchTitle,
-            timeout,
-            credentials.engineeringVillageApiKey!.trim(),
-            credentials.engineeringVillageInstitutionToken?.trim(),
-          ),
-        );
-      }
-      final supplementalResults = await Future.wait(supplementalChecks);
+        _verifyDoaj(client, entry, searchTitle, timeout),
+      ]);
       for (final result
           in supplementalResults.whereType<BibliographyCheckResult>()) {
         if (result.confidence == CitationMatchConfidence.high) return result;
@@ -1581,6 +1537,7 @@ class BibliographyVerifier {
       matchedTitle: best.title,
       matchedJournal: '${best.venue} (local classical-reference index)',
       matchedYear: best.year,
+      verificationSource: 'TruthLens built-in classical-reference index',
       journalNameMismatch: _journalNameMismatch(entry.venueTitle, best.venue),
     );
   }
@@ -1720,6 +1677,7 @@ class BibliographyVerifier {
         matchedTitle: matchedTitle,
         matchedJournal: matchedJournal ?? defaultJournal,
         matchedYear: matchedYear,
+        verificationSource: 'Crossref',
         journalNameMismatch:
             highConfidence &&
             _journalNameMismatch(entry.venueTitle, matchedJournal),
@@ -1950,7 +1908,7 @@ class BibliographyVerifier {
       return _registeredDoiResult(
         entry,
         _BibliographyCandidate(
-          sourceLabel: 'DataCite DOI 登記',
+          sourceLabel: 'DataCite',
           title: firstTitle,
           venue: venue,
           year: year,
@@ -1996,7 +1954,7 @@ class BibliographyVerifier {
             ? authors.first as Map<String, dynamic>?
             : null;
         return _BibliographyCandidate(
-          sourceLabel: 'Semantic Scholar 學術圖譜',
+          sourceLabel: 'Semantic Scholar',
           title: record['title']?.toString(),
           venue: journal?['name']?.toString() ?? record['venue']?.toString(),
           year: _asInt(record['year']),
@@ -2041,7 +1999,7 @@ class BibliographyVerifier {
       final candidates = data.map((item) {
         final record = item as Map<String, dynamic>;
         return _BibliographyCandidate(
-          sourceLabel: 'Europe PMC／PubMed／AGRICOLA',
+          sourceLabel: 'Europe PMC / PubMed / AGRICOLA',
           title: record['title']?.toString(),
           venue: record['journalTitle']?.toString(),
           year: _asInt(record['pubYear']),
@@ -2083,7 +2041,7 @@ class BibliographyVerifier {
         final record = item as Map<String, dynamic>;
         final authors = (record['author'] as List?)?.cast<dynamic>();
         return _BibliographyCandidate(
-          sourceLabel: 'ERIC 教育研究資料庫',
+          sourceLabel: 'ERIC',
           title: record['title']?.toString(),
           venue:
               record['source']?.toString() ?? record['publisher']?.toString(),
@@ -2099,195 +2057,47 @@ class BibliographyVerifier {
     }
   }
 
-  static Future<BibliographyCheckResult?> _verifyWebOfScience(
+  static Future<BibliographyCheckResult?> _verifyDoaj(
     http.Client client,
     BibliographyEntry entry,
     String searchTitle,
     Duration timeout,
-    String apiKey,
   ) async {
     try {
-      final escapedTitle = searchTitle
-          .replaceAll(r'\', r'\\')
-          .replaceAll('"', r'\"');
-      final uri =
-          Uri.parse(
-            'https://api.clarivate.com/apis/wos-starter/v1/documents',
-          ).replace(
-            queryParameters: {
-              'db': 'WOS',
-              'q': 'TI=("$escapedTitle")',
-              'edition': 'WOS SCI,WOS SSCI',
-              'limit': '5',
-              'page': '1',
-              'detail': 'short',
-            },
-          );
+      final query = 'bibjson.title:"${searchTitle.replaceAll('"', ' ')}"';
+      final remoteUri = Uri.parse(
+        'https://doaj.org/api/search/articles/${Uri.encodeComponent(query)}',
+      ).replace(queryParameters: {'pageSize': '5'});
       final response = await _httpGetWithRetry(
         client,
-        uri,
+        Uri.parse(_getProxiedUrl(remoteUri.toString())),
         timeout,
         maxRetries: 1,
-        headers: {'X-ApiKey': apiKey, 'Accept': 'application/json'},
       );
       if (response == null || response.statusCode != 200) return null;
       final payload = jsonDecode(response.body) as Map<String, dynamic>;
-      final hits = (payload['hits'] as List?)?.cast<dynamic>() ?? const [];
-      final candidates = hits.map((item) {
+      final results =
+          (payload['results'] as List?)?.cast<dynamic>() ?? const [];
+      final candidates = results.map((item) {
         final record = item as Map<String, dynamic>;
-        final source = record['source'] as Map<String, dynamic>?;
-        final names = record['names'] as Map<String, dynamic>?;
-        final authors = (names?['authors'] as List?)?.cast<dynamic>();
+        final bibjson = record['bibjson'] as Map<String, dynamic>?;
+        final journal = bibjson?['journal'] as Map<String, dynamic>?;
+        final authors = (bibjson?['author'] as List?)?.cast<dynamic>();
         final firstAuthor = authors != null && authors.isNotEmpty
-            ? (authors.first as Map<String, dynamic>?)
+            ? authors.first as Map<String, dynamic>?
             : null;
         return _BibliographyCandidate(
-          sourceLabel: 'Web of Science SCI／SSCI',
-          title: record['title']?.toString(),
-          venue: source?['sourceTitle']?.toString(),
-          year: _asInt(source?['publishYear']),
-          firstAuthor:
-              firstAuthor?['wosStandard']?.toString() ??
-              firstAuthor?['displayName']?.toString(),
+          sourceLabel: 'DOAJ',
+          title: bibjson?['title']?.toString(),
+          venue: journal?['title']?.toString(),
+          year: _asInt(bibjson?['year']),
+          firstAuthor: firstAuthor?['name']?.toString(),
         );
       });
       return _bestSupplementalCandidate(entry, searchTitle, candidates);
     } catch (_) {
       return null;
     }
-  }
-
-  static Future<BibliographyCheckResult?> _verifyEngineeringVillage(
-    http.Client client,
-    BibliographyEntry entry,
-    String searchTitle,
-    Duration timeout,
-    String apiKey,
-    String? institutionToken,
-  ) async {
-    try {
-      final safeTitle = searchTitle.replaceAll(RegExp(r'[{}]'), ' ').trim();
-      final queryParameters = <String, String>{
-        'database': 'c',
-        'query': '{$safeTitle} wn TI',
-        'pageSize': '5',
-        'offset': '0',
-        'autoStemming': 'false',
-      };
-      if (entry.year != null) {
-        queryParameters['startYear'] = '${entry.year! - 1}';
-        queryParameters['endYear'] = '${entry.year! + 1}';
-      }
-      final headers = <String, String>{
-        'Accept': 'application/json',
-        'X-ELS-APIKey': apiKey,
-      };
-      if (institutionToken != null && institutionToken.isNotEmpty) {
-        headers['X-ELS-Insttoken'] = institutionToken;
-      }
-      final uri = Uri.parse(
-        'https://api.elsevier.com/content/ev/results',
-      ).replace(queryParameters: queryParameters);
-      final response = await _httpGetWithRetry(
-        client,
-        uri,
-        timeout,
-        maxRetries: 1,
-        headers: headers,
-      );
-      if (response == null || response.statusCode != 200) return null;
-      final payload = jsonDecode(response.body) as Map<String, dynamic>;
-      final page = payload['PAGE'] as Map<String, dynamic>?;
-      final pageResults = page?['PAGE-RESULTS'] as Map<String, dynamic>?;
-      final rawEntries = pageResults?['PAGE-ENTRY'];
-      final records = rawEntries is List
-          ? rawEntries.cast<dynamic>()
-          : rawEntries is Map<String, dynamic>
-          ? <dynamic>[rawEntries]
-          : const <dynamic>[];
-      final candidates = records.map((item) {
-        final wrapper = item as Map<String, dynamic>;
-        final document = wrapper['EI-DOCUMENT'] as Map<String, dynamic>?;
-        final properties =
-            document?['DOCUMENTPROPERTIES'] as Map<String, dynamic>?;
-        final authors = document?['AUS'] as Map<String, dynamic>?;
-        final rawAuthors = authors?['AU'];
-        Map<String, dynamic>? firstAuthor;
-        if (rawAuthors is List && rawAuthors.isNotEmpty) {
-          firstAuthor = rawAuthors.first as Map<String, dynamic>?;
-        } else if (rawAuthors is Map<String, dynamic>) {
-          firstAuthor = rawAuthors;
-        }
-        return _BibliographyCandidate(
-          sourceLabel: 'Engineering Village EI Compendex',
-          title: properties?['TI']?.toString(),
-          venue: properties?['SO']?.toString(),
-          year: _asInt(properties?['YR']),
-          firstAuthor: firstAuthor?['NAME']?.toString(),
-        );
-      });
-      return _bestSupplementalCandidate(entry, searchTitle, candidates);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static Future<BibliographyCheckResult?> _verifyTaiwanPeriodicalIndex(
-    http.Client client,
-    BibliographyEntry entry,
-    String searchTitle,
-    Duration timeout,
-  ) async {
-    try {
-      final uri = Uri.parse('https://tpl.ncl.edu.tw/NclService/JournalContent')
-          .replace(
-            queryParameters: {
-              'directQuery': 'true',
-              'nestedSearch': 'false',
-              'queryType': 'normal',
-              'q[0].f': 'TI',
-              'q[0].i': searchTitle,
-              'pageSize': '10',
-            },
-          );
-      final response = await _httpGetWithRetry(
-        client,
-        Uri.parse(_getProxiedUrl(uri.toString())),
-        timeout,
-        maxRetries: 1,
-      );
-      if (response == null || response.statusCode != 200) return null;
-
-      final titlePattern = RegExp(
-        r'<a[^>]*class="articleTitle"[^>]*title="([^"]+)"',
-        caseSensitive: false,
-      );
-      final candidates = titlePattern.allMatches(response.body).take(10).map((
-        m,
-      ) {
-        return _BibliographyCandidate(
-          sourceLabel: '國家圖書館臺灣期刊／TCI-HSS',
-          title: _decodeHtmlText(m.group(1)),
-        );
-      });
-      return _bestSupplementalCandidate(entry, searchTitle, candidates);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static String _decodeHtmlText(String? value) {
-    if (value == null) return '';
-    return value
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#34;', '"')
-        .replaceAll('&#39;', "'")
-        .replaceAll('&apos;', "'")
-        .replaceAll('&amp;', '&')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&nbsp;', ' ')
-        .trim();
   }
 
   static BibliographyCheckResult _registeredDoiResult(
@@ -2304,6 +2114,7 @@ class BibliographyVerifier {
         matchedTitle: candidate.title,
         matchedJournal: candidate.venue ?? candidate.sourceLabel,
         matchedYear: candidate.year,
+        verificationSource: candidate.sourceLabel,
         journalNameMismatch:
             candidate.venue != null &&
             _journalNameMismatch(entry.venueTitle, candidate.venue),
@@ -2318,6 +2129,7 @@ class BibliographyVerifier {
       matchedTitle: candidate.title,
       matchedJournal: candidate.venue ?? candidate.sourceLabel,
       matchedYear: candidate.year,
+      verificationSource: candidate.sourceLabel,
       journalNameMismatch: false,
     );
   }
@@ -2370,6 +2182,7 @@ class BibliographyVerifier {
         matchedTitle: candidate.title,
         matchedJournal: candidate.venue ?? candidate.sourceLabel,
         matchedYear: candidate.year,
+        verificationSource: candidate.sourceLabel,
         journalNameMismatch:
             high &&
             candidate.venue != null &&
@@ -2434,6 +2247,7 @@ class BibliographyVerifier {
             matchedTitle: title,
             matchedJournal: '期刊官網目錄頁：$venue',
             matchedYear: entry.year,
+            verificationSource: 'Journal / publisher official catalog',
           );
         }
         if (titleMatches) {
@@ -2443,6 +2257,7 @@ class BibliographyVerifier {
             matchedTitle: title,
             matchedJournal: '期刊官網目錄頁：$venue',
             matchedYear: entry.year,
+            verificationSource: 'Journal / publisher official catalog',
           );
         }
       } catch (_) {}

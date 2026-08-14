@@ -6,12 +6,14 @@ enum BibliographyDisplayTone { success, warning, error }
 class BibliographyPresentation {
   final String status;
   final String? warning;
+  final String? source;
   final BibliographyDisplayTone tone;
 
   const BibliographyPresentation({
     required this.status,
     required this.tone,
     this.warning,
+    this.source,
   });
 }
 
@@ -45,6 +47,9 @@ BibliographyPresentation presentBibliographyCheck(
               journal ?? '',
             )
           : null,
+      source: check.verificationSource == null
+          ? null
+          : l10n.reportBibVerificationSource(check.verificationSource!),
       tone: check.journalNameMismatch
           ? BibliographyDisplayTone.warning
           : BibliographyDisplayTone.success,

@@ -103,7 +103,7 @@ See [model_integration_testing.md](./model_integration_testing.md) for details.
 **A:** 
 - **Model updates**: We send only the version number (not your document)
 - **Link verification**: We check if URLs are reachable (URL only, not your content)
-- **Citation verification**: We query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, Taiwan NCL/TCI-HSS, and publisher catalogs with a DOI or individual citation fields. If you configure provider-authorized credentials, Web of Science SCI/SSCI and Engineering Village EI Compendex are also queried (never the complete document)
+- **Citation verification**: We query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and publisher catalogs with a DOI or individual citation fields (not the complete document). Google Scholar is provided only as a user-initiated manual lookup because it does not offer automated API access
 
 All can be disabled in settings.
 

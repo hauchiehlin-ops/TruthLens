@@ -1013,106 +1013,10 @@ abstract class AppLocalizations {
   /// **'Hyperlink & bibliography verification'**
   String get settingsLinkVerificationTitle;
 
-  /// No description provided for @settingsBibliographyIndexesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Bibliography index sources'**
-  String get settingsBibliographyIndexesTitle;
-
-  /// No description provided for @settingsBibliographyIndexesSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access'**
-  String get settingsBibliographyIndexesSubtitle;
-
-  /// No description provided for @settingsBibliographyCredentialsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Bibliography index sources'**
-  String get settingsBibliographyCredentialsTitle;
-
-  /// No description provided for @settingsBibliographyCredentialsDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.'**
-  String get settingsBibliographyCredentialsDescription;
-
-  /// No description provided for @settingsTaiwanIndexTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Taiwan NCL / TCI-HSS assistance'**
-  String get settingsTaiwanIndexTitle;
-
-  /// No description provided for @settingsTaiwanIndexSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.'**
-  String get settingsTaiwanIndexSubtitle;
-
-  /// No description provided for @settingsWosApiKeyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Web of Science SCI / SSCI'**
-  String get settingsWosApiKeyTitle;
-
-  /// No description provided for @settingsWosApiKeyDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.'**
-  String get settingsWosApiKeyDescription;
-
-  /// No description provided for @settingsWosFreePlanButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Get free 50/day plan'**
-  String get settingsWosFreePlanButton;
-
-  /// No description provided for @settingsEiApiKeyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Engineering Village EI Compendex'**
-  String get settingsEiApiKeyTitle;
-
-  /// No description provided for @settingsEiApiKeyDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.'**
-  String get settingsEiApiKeyDescription;
-
-  /// No description provided for @settingsEiInstitutionTokenLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Elsevier institution token (optional)'**
-  String get settingsEiInstitutionTokenLabel;
-
-  /// No description provided for @settingsEiInstitutionTokenHelper.
-  ///
-  /// In en, this message translates to:
-  /// **'Use only when supplied by your institution or Elsevier.'**
-  String get settingsEiInstitutionTokenHelper;
-
-  /// No description provided for @settingsGetApiKeyButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Provider site'**
-  String get settingsGetApiKeyButton;
-
-  /// No description provided for @settingsSaveBibliographyCredentialsButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Save index credentials'**
-  String get settingsSaveBibliographyCredentialsButton;
-
-  /// No description provided for @settingsBibliographyCredentialsSaved.
-  ///
-  /// In en, this message translates to:
-  /// **'Bibliography index credentials saved on this device'**
-  String get settingsBibliographyCredentialsSaved;
-
   /// No description provided for @settingsLinkVerificationSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'The report checks detected URLs and bibliography entries against broad, specialist, regional, publisher, and configured licensed scholarly indexes. Only the URL, DOI, or individual citation fields (author, title, year, and venue) are queried; the rest of the document is not sent. Core AI detection remains on-device, and this verification can be turned off here.'**
+  /// **'The report checks detected URLs and bibliography entries against Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. Only the URL, DOI, or individual citation fields (author, title, year, and venue) are queried; the rest of the document is not sent. Core AI detection remains on-device, and this verification can be turned off here.'**
   String get settingsLinkVerificationSubtitle;
 
   /// No description provided for @settingsThemeTitle.
@@ -1961,8 +1865,20 @@ abstract class AppLocalizations {
   /// No description provided for @reportBibResultHint.
   ///
   /// In en, this message translates to:
-  /// **'Matched by author, year, title, and venue across public sources, Taiwan NCL/TCI-HSS, publisher catalogs, and—when credentials are configured—Web of Science SCI/SSCI and Engineering Village EI. A high-confidence result requires a DOI registration or multiple consistent metadata fields; entries without a reliable match are marked as not verified.'**
+  /// **'Matched by author, year, title, and venue across Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. A high-confidence result requires a DOI registration or multiple consistent metadata fields; entries without a reliable match are marked as not verified. Google Scholar is available only as a user-initiated manual lookup because it does not provide automated API access.'**
   String get reportBibResultHint;
+
+  /// No description provided for @reportBibVerificationSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification source: {source}'**
+  String reportBibVerificationSource(String source);
+
+  /// No description provided for @reportBibGoogleScholarManualLookup.
+  ///
+  /// In en, this message translates to:
+  /// **'Check manually in Google Scholar'**
+  String get reportBibGoogleScholarManualLookup;
 
   /// No description provided for @reportBibHighConfidence.
   ///
@@ -2551,7 +2467,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAdvantage1.
   ///
   /// In en, this message translates to:
-  /// **'Hyperlink and citation authenticity verification: checks reachable URLs and cross-checks citation metadata with broad, specialist, Taiwan NCL/TCI-HSS, publisher, and optionally licensed SCI/SSCI/EI sources.'**
+  /// **'Hyperlink and citation authenticity verification: checks reachable URLs, validates DOI registration through Crossref and DataCite, and cross-checks citation metadata with OpenAlex, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and publisher catalogs. Each verified citation identifies its evidence source; Google Scholar is offered as a manual lookup only.'**
   String get helpAdvantage1;
 
   /// No description provided for @helpAdvantage2.
@@ -2995,7 +2911,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyNetwork3.
   ///
   /// In en, this message translates to:
-  /// **'3. Hyperlink & citation authenticity verification: on by default and can be turned off in Settings. When enabled, detected URLs, DOI values, or individual citation fields (author, title, year, and venue) are sent to the target website, public bibliographic sources, Taiwan NCL/TCI-HSS, publisher catalogs, and any SCI/SSCI/EI service for which you supplied credentials. The rest of the document is not sent. Optional provider credentials are stored only in this device\'s app preferences.'**
+  /// **'3. Hyperlink & citation authenticity verification: on by default and can be turned off in Settings. When enabled, detected URLs, DOI values, or individual citation fields (author, title, year, and venue) are sent to the target website and/or Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. The rest of the document is not sent. Google Scholar receives a citation query only when you press its manual lookup button.'**
   String get privacyNetwork3;
 
   /// No description provided for @privacyNetwork4.

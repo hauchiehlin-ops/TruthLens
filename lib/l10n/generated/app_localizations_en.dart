@@ -563,66 +563,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hyperlink & bibliography verification';
 
   @override
-  String get settingsBibliographyIndexesTitle => 'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyIndexesSubtitle =>
-      'Public sources are automatic; add licensed Web of Science SCI/SSCI or Engineering Village EI access';
-
-  @override
-  String get settingsBibliographyCredentialsTitle =>
-      'Bibliography index sources';
-
-  @override
-  String get settingsBibliographyCredentialsDescription =>
-      'Public Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC, ERIC, and Taiwan NCL sources require no key. SCI/SSCI and EI searches run only when you provide credentials authorized by their providers. Missing or rejected credentials are never treated as evidence that a citation does not exist.';
-
-  @override
-  String get settingsTaiwanIndexTitle => 'Taiwan NCL / TCI-HSS assistance';
-
-  @override
-  String get settingsTaiwanIndexSubtitle =>
-      'Automatically searches the National Central Library Taiwan Periodical Literature source; former TSSCI/THCI records are consolidated in TCI-HSS.';
-
-  @override
-  String get settingsWosApiKeyTitle => 'Web of Science SCI / SSCI';
-
-  @override
-  String get settingsWosApiKeyDescription =>
-      'Enter a Clarivate Web of Science Starter API key. Clarivate offers a limited free plan; higher quotas depend on institutional access.';
-
-  @override
-  String get settingsWosFreePlanButton => 'Get free 50/day plan';
-
-  @override
-  String get settingsEiApiKeyTitle => 'Engineering Village EI Compendex';
-
-  @override
-  String get settingsEiApiKeyDescription =>
-      'Enter an Elsevier API key enabled for Engineering Village. Full EI access requires an eligible institutional subscription.';
-
-  @override
-  String get settingsEiInstitutionTokenLabel =>
-      'Elsevier institution token (optional)';
-
-  @override
-  String get settingsEiInstitutionTokenHelper =>
-      'Use only when supplied by your institution or Elsevier.';
-
-  @override
-  String get settingsGetApiKeyButton => 'Provider site';
-
-  @override
-  String get settingsSaveBibliographyCredentialsButton =>
-      'Save index credentials';
-
-  @override
-  String get settingsBibliographyCredentialsSaved =>
-      'Bibliography index credentials saved on this device';
-
-  @override
   String get settingsLinkVerificationSubtitle =>
-      'The report checks detected URLs and bibliography entries against broad, specialist, regional, publisher, and configured licensed scholarly indexes. Only the URL, DOI, or individual citation fields (author, title, year, and venue) are queried; the rest of the document is not sent. Core AI detection remains on-device, and this verification can be turned off here.';
+      'The report checks detected URLs and bibliography entries against Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. Only the URL, DOI, or individual citation fields (author, title, year, and venue) are queried; the rest of the document is not sent. Core AI detection remains on-device, and this verification can be turned off here.';
 
   @override
   String get settingsThemeTitle => 'Appearance';
@@ -1149,7 +1091,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportBibResultHint =>
-      'Matched by author, year, title, and venue across public sources, Taiwan NCL/TCI-HSS, publisher catalogs, and—when credentials are configured—Web of Science SCI/SSCI and Engineering Village EI. A high-confidence result requires a DOI registration or multiple consistent metadata fields; entries without a reliable match are marked as not verified.';
+      'Matched by author, year, title, and venue across Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. A high-confidence result requires a DOI registration or multiple consistent metadata fields; entries without a reliable match are marked as not verified. Google Scholar is available only as a user-initiated manual lookup because it does not provide automated API access.';
+
+  @override
+  String reportBibVerificationSource(String source) {
+    return 'Verification source: $source';
+  }
+
+  @override
+  String get reportBibGoogleScholarManualLookup =>
+      'Check manually in Google Scholar';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1560,7 +1511,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAdvantage1 =>
-      'Hyperlink and citation authenticity verification: checks reachable URLs and cross-checks citation metadata with broad, specialist, Taiwan NCL/TCI-HSS, publisher, and optionally licensed SCI/SSCI/EI sources.';
+      'Hyperlink and citation authenticity verification: checks reachable URLs, validates DOI registration through Crossref and DataCite, and cross-checks citation metadata with OpenAlex, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and publisher catalogs. Each verified citation identifies its evidence source; Google Scholar is offered as a manual lookup only.';
 
   @override
   String get helpAdvantage2 =>
@@ -1830,7 +1781,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyNetwork3 =>
-      '3. Hyperlink & citation authenticity verification: on by default and can be turned off in Settings. When enabled, detected URLs, DOI values, or individual citation fields (author, title, year, and venue) are sent to the target website, public bibliographic sources, Taiwan NCL/TCI-HSS, publisher catalogs, and any SCI/SSCI/EI service for which you supplied credentials. The rest of the document is not sent. Optional provider credentials are stored only in this device\'s app preferences.';
+      '3. Hyperlink & citation authenticity verification: on by default and can be turned off in Settings. When enabled, detected URLs, DOI values, or individual citation fields (author, title, year, and venue) are sent to the target website and/or Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. The rest of the document is not sent. Google Scholar receives a citation query only when you press its manual lookup button.';
 
   @override
   String get privacyNetwork4 =>

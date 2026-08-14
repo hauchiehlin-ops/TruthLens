@@ -77,6 +77,7 @@ final _bibliographyChecks = [
     matchedTitle: 'Verified research article',
     matchedJournal: 'Journal of Verification',
     matchedYear: 2024,
+    verificationSource: 'Crossref',
   ),
 ];
 
@@ -138,6 +139,7 @@ void main() {
       expect(checks, hasLength(1));
       expect(checks.first['status'], 'high');
       expect(checks.first['matched_journal'], 'Journal of Verification');
+      expect(checks.first['verification_source'], 'Crossref');
       expect(checks.first['journal_name_mismatch'], isFalse);
     });
 
@@ -219,6 +221,7 @@ void main() {
       expect(text, contains(_l10n.reportBibAuthenticityTitle));
       expect(text, contains('Verified research article'));
       expect(text, contains('Journal of Verification'));
+      expect(text, contains(_l10n.reportBibVerificationSource('Crossref')));
     });
 
     test('超長單句（如誤貼入的原始文件標記）不應丟出 PdfTooBigPageException', () async {

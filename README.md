@@ -150,7 +150,7 @@ AI 句子比例：8/45 (18%)  | 分析耗時：2.3s  | 可信度：92%
 1. **模型下載**：初次使用時，自動下載 ~350MB 檢測模型
 2. **模型更新檢查**：每 7 天檢查新版本（僅發送版本號）
 3. **超連結驗證**：檢查 URL 真實性（僅發送 URL）
-4. **文獻驗證**：查詢 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、臺灣國圖／TCI-HSS 與出版社目錄；設定授權憑證後可再查 Web of Science SCI／SSCI 及 Engineering Village EI Compendex（僅發送 DOI 或單筆書目的作者、篇名、年份及期刊欄位）
+4. **文獻驗證**：查詢 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與出版社目錄（僅發送 DOI 或單筆書目的作者、篇名、年份及期刊欄位）；Google Scholar 僅供使用者點擊後人工複核
 
 所有網路功能 **可在設定中關閉**。
 
@@ -325,7 +325,7 @@ AI Sentence Ratio: 8/45 (18%)  | Analysis Time: 2.3s  | Confidence: 92%
 1. **Model Download**: Auto-download ~350MB detection models on first use
 2. **Model Update Check**: Every 7 days, check for new versions (version number only)
 3. **Link Verification**: Check URL existence (URL only)
-4. **Bibliography Verification**: Query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, Taiwan NCL/TCI-HSS, and publisher catalogs. Optional credentials add Web of Science SCI/SSCI and Engineering Village EI Compendex (DOI or individual author, title, year, and venue fields only)
+4. **Bibliography Verification**: Query Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and publisher catalogs (DOI or individual author, title, year, and venue fields only); Google Scholar is available only as a user-initiated manual lookup
 
 All network features **can be disabled in settings**.
 
@@ -500,7 +500,7 @@ AI 句子比例：8/45 (18%)  | 分析耗时：2.3s  | 可信度：92%
 1. **模型下载**：初次使用时，自动下载 ~350MB 检测模型
 2. **模型更新检查**：每 7 天检查新版本（仅发送版本号）
 3. **超链接验证**：检查 URL 真实性（仅发送 URL）
-4. **文献引用验证**：查询 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、台湾国图／TCI-HSS 与出版社目录；设置授权凭证后可再查询 Web of Science SCI／SSCI 及 Engineering Village EI Compendex（仅发送 DOI 或单笔书目的作者、篇名、年份及期刊字段）
+4. **文献引用验证**：查询 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 与出版社目录（仅发送 DOI 或单笔书目的作者、篇名、年份及期刊字段）；Google Scholar 仅供用户点击后人工复核
 
 所有网络功能 **可在设定中关闭**。
 

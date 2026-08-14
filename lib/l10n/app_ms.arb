@@ -431,7 +431,7 @@
   "privacyNetworkIntro": "Pengesanan AI teras apl ini berjalan sepenuhnya pada peranti, tetapi tiga ciri berikut memerlukan akses rangkaian:",
   "privacyNetwork1": "1. Katalog & muat turun model: menyambung ke GitHub Releases/Hugging Face untuk memuat turun model pengesanan yang anda pilih — ini hanya memuat turun model dan tidak pernah memuat naik sebarang data pengguna.",
   "privacyNetwork2": "2. Semakan kemas kini model: semasa pelancaran, apl menyambung untuk membandingkan nombor versi sahaja, digunakan untuk menunjukkan sama ada versi baharu tersedia.",
-  "privacyNetwork3": "3. Pengesahan pautan hiper dan petikan: dihidupkan secara lalai dan boleh dimatikan dalam Tetapan. URL, DOI atau medan petikan individu (pengarang, tajuk, tahun dan penerbitan) dihantar ke laman sasaran, perkhidmatan bibliografi awam, Taiwan NCL/TCI-HSS, katalog penerbit dan perkhidmatan SCI/SSCI/EI yang dikonfigurasi. Kandungan dokumen selebihnya tidak dihantar. Bukti kelayakan pilihan hanya disimpan dalam keutamaan aplikasi peranti ini.",
+  "privacyNetwork3": "3. Pengesahan ketulenan pautan hiper & petikan: dihidupkan secara lalai, boleh dimatikan dalam Tetapan. Apabila diaktifkan, URL atau teks bibliografi yang dikesan dalam dokumen dihantar terus ke URL itu sendiri, atau ke API awam Crossref, menghantar hanya teks URL/DOI/petikan itu sendiri — tidak pernah kandungan lain dokumen.",
   "privacyRightsIntro": "Anda boleh mengosongkan sejarah analisis tempatan bila-bila masa dalam \"Sejarah\", atau mematikan pengesahan pautan hiper/petikan dalam \"Tetapan\", atau membuang semua data tempatan dengan",
   "privacyRemoveIos": "memadam apl",
   "privacyRemoveAndroid": "menyahpasang apl",

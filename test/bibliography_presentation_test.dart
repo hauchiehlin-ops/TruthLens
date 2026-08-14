@@ -38,6 +38,7 @@ void main() {
           entry: BibliographyEntry(rawText: 'Verified citation'),
           confidence: CitationMatchConfidence.high,
           matchedJournal: 'Journal of Verification',
+          verificationSource: 'Crossref',
         ),
         l10n,
       );
@@ -63,6 +64,7 @@ void main() {
 
       expect(success.tone, BibliographyDisplayTone.success);
       expect(success.warning, isNull);
+      expect(success.source, contains('Crossref'));
       expect(mismatch.tone, BibliographyDisplayTone.warning);
       expect(mismatch.warning, contains('Incorrect Journal'));
       expect(notFound.tone, BibliographyDisplayTone.error);

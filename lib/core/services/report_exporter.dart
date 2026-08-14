@@ -124,6 +124,8 @@ class ReportExporter {
                 'matched_title': check.matchedTitle,
               if (check.matchedJournal != null)
                 'matched_journal': check.matchedJournal,
+              if (check.verificationSource != null)
+                'verification_source': check.verificationSource,
               'journal_name_mismatch': check.journalNameMismatch,
               if (check.journalNameMismatch)
                 'journal_name_warning': l10n.reportBibJournalMismatch(
@@ -513,9 +515,11 @@ class ReportExporter {
     AppLocalizations l10n,
   ) {
     final presentation = presentBibliographyCheck(check, l10n);
-    return presentation.warning == null
-        ? presentation.status
-        : '${presentation.status}\n${presentation.warning}';
+    return [
+      presentation.status,
+      if (presentation.source != null) presentation.source!,
+      if (presentation.warning != null) presentation.warning!,
+    ].join('\n');
   }
 
   static PdfColor _bibliographyPdfColor(BibliographyDisplayTone tone) =>
