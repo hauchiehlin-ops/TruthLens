@@ -1648,7 +1648,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母語寫作校正';
 
   @override
-  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
+  String get helpWorkflowStep4ChipStoppable => '隨時可中止';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI 總覽儀表';
@@ -1733,18 +1733,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+      'TruthLens 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
 
   @override
   String get privacyWebOverview2 =>
-      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+      '只有在您主動選擇匯入、掃描或貼上時，本頁才會讀取對應的檔案、圖片或剪貼簿內容；不會讀取其他分頁、其他網站的資料，或您未選擇的檔案。';
 
   @override
-  String get privacySectionOverviewWeb => 'Overview';
+  String get privacySectionOverviewWeb => '概要';
 
   @override
-  String get privacyRemoveWeb =>
-      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
+  String get privacyRemoveWeb => '在瀏覽器設定中清除本網站的資料（或直接關閉分頁即可，因為沒有任何內容儲存在伺服器上）';
 
   @override
   String get privacyIosOverview1 =>
@@ -1931,19 +1930,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
-  String get workspaceModeCosmicFuture => 'Cosmic Future';
+  String get workspaceModeCosmicFuture => '宇宙未來風';
 
   @override
-  String get workspaceModeSoftEducation => 'Soft Education';
+  String get workspaceModeSoftEducation => '教育文柔風';
 
   @override
   String get workspaceModeTooltip => '切換工作台模式';
 
   @override
-  String get workspaceMoreMenuTooltip => 'More options';
+  String get workspaceMoreMenuTooltip => '更多功能';
 
   @override
-  String get workspaceLanguageMenuTitle => 'Language';
+  String get workspaceLanguageMenuTitle => '語言';
 
   @override
   String get workspaceStageImport => '匯入';
@@ -2036,13 +2035,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+      '此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。';
 
   @override
-  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+  String get workspaceSentenceSignalHeader => '逐句 AI 訊號';
 
   @override
-  String get workspaceSentenceColumnHeader => 'Sentence';
+  String get workspaceSentenceColumnHeader => '句子內容';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

@@ -102,27 +102,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String inputPdfOcrProgress(int page, int total) {
-    return 'PDF text layer is unavailable; recognizing page $page of $total with OCR…';
+    return 'Текстовый слой PDF недоступен; распознаётся страница $page из $total с помощью OCR…';
   }
 
   @override
   String inputPdfOcrSuccess(String fileName, int count) {
-    return 'Imported \"$fileName\" with PDF OCR ($count characters)';
+    return 'Файл «$fileName» импортирован с помощью OCR PDF ($count символов)';
   }
 
   @override
   String inputPdfNeedsOcr(String fileName) {
-    return '\"$fileName\" has no reliable text layer. Configure Web OCR or use an installed app with native OCR, then import it again.';
+    return 'В файле «$fileName» нет надёжного текстового слоя. Настройте веб-OCR или используйте установленное приложение с нативным OCR, затем импортируйте файл повторно.';
   }
 
   @override
   String inputPdfTooManyPages(String fileName, int max) {
-    return '\"$fileName\" needs OCR but exceeds the $max page safety limit. Split the PDF and import each part.';
+    return 'Файлу «$fileName» требуется OCR, но он превышает лимит безопасности в $max страниц. Разделите PDF и импортируйте каждую часть.';
   }
 
   @override
   String inputPdfUnreadable(String fileName) {
-    return '\"$fileName\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.';
+    return 'Не удалось надёжно прочитать файл «$fileName». Возможно, он повреждён, защищён паролем или не поддерживается настроенной службой OCR.';
   }
 
   @override
@@ -434,11 +434,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsThresholdInfoTooltip =>
-      'How the AI flagging threshold affects the conclusion';
+      'Как порог маркировки ИИ влияет на вывод';
 
   @override
   String get settingsThresholdInfoBody =>
-      'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.';
+      'Включённые движки сначала вычисляют общую вероятность ИИ. Эта настройка не изменяет ни один показатель движка, ни общую вероятность; она изменяет, какой вывод применяется к показателю. Более низкий порог делает более вероятным, что та же вероятность будет признана и помечена как ИИ, тогда как более высокий порог требует более сильной вероятности ИИ и с большей вероятностью приводит к выводу о человеческом письме. Отчёт всегда сохраняет исходную вероятность и подтверждающие доказательства.';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -739,13 +739,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportEngineLoadFailedBadge => 'Ошибка загрузки';
 
   @override
-  String get reportEngineAnalysisLevelTitle => 'Engine analysis layers';
+  String get reportEngineAnalysisLevelTitle => 'Уровни анализа движков';
 
   @override
-  String get reportVerdictAiLikelihood => 'AI Leaning';
+  String get reportVerdictAiLikelihood => 'Склонность к ИИ';
 
   @override
-  String get reportVerdictHumanLikelihood => 'Human Writing';
+  String get reportVerdictHumanLikelihood => 'Человеческое письмо';
 
   @override
   String get reportRadarRoleTransformer => 'Классификатор Transformer';
@@ -875,54 +875,54 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reportDetailAnalysisTitle => 'Detailed analysis';
+  String get reportDetailAnalysisTitle => 'Подробный анализ';
 
   @override
-  String get reportNoEngineData => 'No engine analysis data yet';
+  String get reportNoEngineData => 'Данных анализа движков пока нет';
 
   @override
-  String get reportEngineNotParticipated => 'Not involved';
+  String get reportEngineNotParticipated => 'Не участвовал';
 
   @override
-  String get reportAiContentReportTitle => 'AI Content Detection Report';
+  String get reportAiContentReportTitle => 'Отчёт об обнаружении ИИ-контента';
 
   @override
   String reportAnalysisTimeLabel(String time) {
-    return 'Analysis time: $time';
+    return 'Время анализа: $time';
   }
 
   @override
-  String get reportDownloadPdfButton => 'Download PDF';
+  String get reportDownloadPdfButton => 'Скачать PDF';
 
   @override
-  String get reportSuspiciousLocationsTitle => 'Suspicious content locations';
+  String get reportSuspiciousLocationsTitle => 'Места подозрительного контента';
 
   @override
   String reportSentenceCount(int count) {
-    return '$count sentences';
+    return '$count предложений';
   }
 
   @override
-  String get reportAiProbabilityPrefix => 'AI probability: ';
+  String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
-    return 'Low confidence: available model weight is below 60% ($threshold% threshold). $available/$total engines participated. Review detailed engine analysis.';
+    return 'Низкая достоверность: доступный вес модели ниже 60% (порог $threshold%). Участвовало $available/$total движков. Ознакомьтесь с подробным анализом движков.';
   }
 
   @override
   String reportConfidenceHighTooltip(int available, int total, int threshold) {
-    return 'High confidence: $available/$total detection models reached consensus ($threshold% or more weight agrees with this verdict).';
+    return 'Высокая достоверность: $available/$total моделей обнаружения достигли консенсуса ($threshold% или больше веса согласны с этим вердиктом).';
   }
 
   @override
   String reportConfidenceLowBadge(int available, int total) {
-    return 'Low confidence ($available/$total)';
+    return 'Низкая достоверность ($available/$total)';
   }
 
   @override
   String reportConfidenceHighBadge(int available, int total) {
-    return 'High confidence ($available/$total)';
+    return 'Высокая достоверность ($available/$total)';
   }
 
   @override
@@ -935,81 +935,81 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reportMetricElapsed => 'Analysis time';
+  String get reportMetricElapsed => 'Время анализа';
 
   @override
-  String get reportMetricElapsedNormal => '0.5-5s normal';
+  String get reportMetricElapsedNormal => '0,5-5 с — норма';
 
   @override
-  String get reportMetricReliability => 'Reliability';
+  String get reportMetricReliability => 'Надёжность';
 
   @override
-  String get reportReliabilityLow => 'Low';
+  String get reportReliabilityLow => 'Низкая';
 
   @override
-  String get reportReliabilityHigh => 'High';
+  String get reportReliabilityHigh => 'Высокая';
 
   @override
-  String get reportReliabilityNeedsReview => 'Needs review';
+  String get reportReliabilityNeedsReview => 'Требуется проверка';
 
   @override
-  String get reportReliabilityHighTrust => 'Highly reliable';
+  String get reportReliabilityHighTrust => 'Очень надёжно';
 
   @override
   String get reportSentenceAnalysisTitle => 'Анализ на уровне предложений';
 
   @override
-  String get suspiciousFilterAll => 'Suspicious';
+  String get suspiciousFilterAll => 'Подозрительно';
 
   @override
-  String get suspiciousFilterHigh => 'High';
+  String get suspiciousFilterHigh => 'Высокий';
 
   @override
-  String get suspiciousFilterMedium => 'Medium';
+  String get suspiciousFilterMedium => 'Средний';
 
   @override
   String get suspiciousExcludedTooltip =>
-      'Single letters, page numbers, section numbers, and overly short OCR/PDF fragments have been excluded.';
+      'Отдельные буквы, номера страниц, номера разделов и слишком короткие фрагменты OCR/PDF были исключены.';
 
   @override
   String suspiciousCount(int count) {
-    return '$count items';
+    return '$count элементов';
   }
 
   @override
-  String get suspiciousEmpty => 'No suspicious content';
+  String get suspiciousEmpty => 'Подозрительный контент отсутствует';
 
   @override
-  String get suspiciousRiskHigh => 'High';
+  String get suspiciousRiskHigh => 'Высокий';
 
   @override
-  String get suspiciousRiskMedium => 'Medium';
+  String get suspiciousRiskMedium => 'Средний';
 
   @override
   String get suspiciousReasonHighModelSignals =>
-      'Multiple model signals strongly lean AI';
+      'Несколько сигналов моделей сильно склоняются к ИИ';
 
   @override
   String get suspiciousReasonSentenceSignal =>
-      'Sentence-level model signal is elevated';
+      'Сигнал модели на уровне предложения повышен';
 
   @override
   String suspiciousOriginalLocation(String location) {
-    return 'Original location $location';
+    return 'Исходное расположение $location';
   }
 
   @override
   String suspiciousOriginalLocationWithReason(String location, String reason) {
-    return 'Original location $location · $reason';
+    return 'Исходное расположение $location · $reason';
   }
 
   @override
   String suspiciousSentenceNumber(int number) {
-    return 'Sentence #$number';
+    return 'Предложение №$number';
   }
 
   @override
-  String get suspiciousEvidenceLabel => 'Evidence:';
+  String get suspiciousEvidenceLabel => 'Доказательство:';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -1102,12 +1102,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String reportBibVerificationSource(String source) {
-    return 'Verification source: $source';
+    return 'Источник проверки: $source';
   }
 
   @override
   String get reportBibGoogleScholarManualLookup =>
-      'Check manually in Google Scholar';
+      'Проверить вручную в Google Scholar';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1121,7 +1121,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String reportBibJournalMismatch(String reported, String registered) {
-    return 'Journal name mismatch: the document says “$reported”, while the verified registry says “$registered”. Please review this citation.';
+    return 'Несоответствие названия журнала: в документе указано «$reported», а в проверенном реестре — «$registered». Пожалуйста, проверьте эту цитату.';
   }
 
   @override
@@ -1139,30 +1139,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String reportBibCompletedPreview(int count) {
-    return '$count completed; results will keep updating.';
+    return 'Завершено $count; результаты будут продолжать обновляться.';
   }
 
   @override
   String reportBibProgress(int completed, int total, String current) {
-    return 'Progress $completed/$total, $current';
+    return 'Прогресс $completed/$total, $current';
   }
 
   @override
   String reportBibProgressCurrent(String text) {
-    return 'Current: $text';
+    return 'Текущий: $text';
   }
 
   @override
-  String get reportBibProgressFinalizing => 'Finalizing results';
+  String get reportBibProgressFinalizing => 'Завершение результатов';
 
   @override
   String reportBibUncertainWithCandidate(String base, String candidate) {
-    return '$base: similar candidate found “$candidate”, but author, year, or title did not meet the reliable-match threshold.';
+    return '$base: найден похожий кандидат «$candidate», но автор, год или название не достигли порога надёжного совпадения.';
   }
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.';
+    return '$base: источники проверки не дали надёжного ответа, или записи недостаточно информации; TruthLens не считает эту цитату подтверждённой.';
   }
 
   @override
@@ -1264,7 +1264,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Overall AI probability is $aiPercent%, which reaches your $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
+    return 'Общая вероятность ИИ составляет $aiPercent%, что достигает установленного вами порога маркировки ИИ $thresholdPercent%, поэтому отчёт помечает этот текст как ИИ. Перед принятием окончательного решения ознакомьтесь с доказательствами на уровне предложений и обоснованиями движков.';
   }
 
   @override
@@ -1272,7 +1272,7 @@ class AppLocalizationsRu extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Overall AI probability is $aiPercent%, below your $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
+    return 'Общая вероятность ИИ составляет $aiPercent%, что ниже установленного вами порога маркировки ИИ $thresholdPercent%, поэтому отчёт официально не помечает этот текст как ИИ. Вероятность и доказательства по-прежнему отображаются для проверки.';
   }
 
   @override
@@ -1349,39 +1349,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String engineReasonStatisticalSummaryAi(String percent) {
-    return 'Overall statistical summary: Leans towards AI-generated characteristics ($percent% AI probability)';
+    return 'Общая статистическая сводка: склоняется к признакам, сгенерированным ИИ (вероятность ИИ $percent%)';
   }
 
   @override
   String engineReasonStatisticalSummaryHuman(String percent) {
-    return 'Overall statistical summary: Leans towards human natural writing ($percent% AI probability)';
+    return 'Общая статистическая сводка: склоняется к естественному человеческому письму (вероятность ИИ $percent%)';
   }
 
   @override
   String engineReasonStatisticalSummaryNeutral(String percent) {
-    return 'Overall statistical summary: Indicators balance out, showing neutral characteristics ($percent% AI probability)';
+    return 'Общая статистическая сводка: показатели уравновешивают друг друга, демонстрируя нейтральные признаки (вероятность ИИ $percent%)';
   }
 
   @override
   String get reportFormulaTitle =>
-      'Weighted Calculation Transparency & Parameter Breakdown';
+      'Прозрачность взвешенного расчёта и разбивка параметров';
 
   @override
   String get reportFormulaExplanation =>
-      'The overall AI probability is computed as a weighted average of probabilities from all active engines:';
+      'Общая вероятность ИИ рассчитывается как взвешенное среднее вероятностей всех активных движков:';
 
   @override
-  String get reportFormulaActiveEngines => 'Active Engines & Assigned Weights';
+  String get reportFormulaActiveEngines => 'Активные движки и назначенные веса';
 
   @override
-  String get reportFormulaCalculation => 'Weighted Formula Calculation';
+  String get reportFormulaCalculation => 'Расчёт взвешенной формулы';
 
   @override
-  String get reportFormulaFinalResult => 'Final Weighted AI Probability';
+  String get reportFormulaFinalResult => 'Итоговая взвешенная вероятность ИИ';
 
   @override
   String get reportFormulaEslApplied =>
-      'ESL non-native writing adjustment applied (statistical model weight halved)';
+      'Применена корректировка для неносителей языка ESL (вес статистической модели уменьшен вдвое)';
 
   @override
   String get engineReasonNeutral =>
@@ -1719,7 +1719,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpWorkflowStep4ChipEslCorrection => 'Коррекция ESL';
 
   @override
-  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
+  String get helpWorkflowStep4ChipStoppable =>
+      'Можно остановить в любой момент';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'Общий индикатор ИИ';
@@ -1813,18 +1814,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+      'TruthLens полностью работает как веб-приложение во вкладке вашего браузера. Ничего не нужно устанавливать; текст документа и результаты анализа никогда не покидают ваше устройство, а загруженные модели обнаружения кэшируются только в собственном изолированном хранилище браузера (OPFS), а не на сервере.';
 
   @override
   String get privacyWebOverview2 =>
-      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+      'Страница читает файл, изображение или содержимое буфера обмена только тогда, когда вы активно выбираете импорт, сканирование или вставку; она никогда не читает другие вкладки, данные других сайтов или невыбранные файлы.';
 
   @override
-  String get privacySectionOverviewWeb => 'Overview';
+  String get privacySectionOverviewWeb => 'Обзор';
 
   @override
   String get privacyRemoveWeb =>
-      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
+      'очистив данные этого сайта в настройках браузера (или просто закрыв вкладку, поскольку на сервере ничего не хранится)';
 
   @override
   String get privacyIosOverview1 =>
@@ -1888,7 +1889,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR fallback: on the Web version only, OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, selected images and rendered pages from PDFs that require OCR are sent directly from your browser to Google\'s Gemini API; the key is stored only in that browser\'s local storage.';
+      '4. Резервный веб-OCR: только в веб-версии OCR сначала использует локальный сервер OCR, если он настроен. Если вы решите ввести ключ API Gemini, выбранные изображения и отрисованные страницы PDF, требующие OCR, отправляются напрямую из вашего браузера в API Gemini Google; ключ хранится только в локальном хранилище этого браузера.';
 
   @override
   String get privacyRightsIntro =>
@@ -2022,19 +2023,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get workspaceModeEvidence => 'Полотно доказательств';
 
   @override
-  String get workspaceModeCosmicFuture => 'Cosmic Future';
+  String get workspaceModeCosmicFuture => 'Космическое будущее';
 
   @override
-  String get workspaceModeSoftEducation => 'Soft Education';
+  String get workspaceModeSoftEducation => 'Мягкое образование';
 
   @override
   String get workspaceModeTooltip => 'Сменить режим рабочего пространства';
 
   @override
-  String get workspaceMoreMenuTooltip => 'More options';
+  String get workspaceMoreMenuTooltip => 'Дополнительные параметры';
 
   @override
-  String get workspaceLanguageMenuTitle => 'Language';
+  String get workspaceLanguageMenuTitle => 'Язык';
 
   @override
   String get workspaceStageImport => 'Импорт';
@@ -2131,11 +2132,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+      'Этот процент — собственный сигнал ИИ данного предложения, а не общий вердикт по документу. Чем выше значение, тем больше формулировка похожа на сгенерированную ИИ; чем ниже — тем больше она напоминает типичное человеческое письмо. Итоговый отчёт объединяет все предложения с учётом весов движков.';
 
   @override
-  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+  String get workspaceSentenceSignalHeader => 'Сигнал ИИ по предложению';
 
   @override
-  String get workspaceSentenceColumnHeader => 'Sentence';
+  String get workspaceSentenceColumnHeader => 'Предложение';
 }

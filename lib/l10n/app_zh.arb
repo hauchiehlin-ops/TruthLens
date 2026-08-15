@@ -136,22 +136,73 @@
   "settingsEngineStylometryHelp": "檢查重複開頭、公式化轉折與過度條列等可解釋風格特徵；未命中特徵時訊號為 0%。",
   "settingsEngineAdversarialHelp": "偵測可能經改寫或去除 AI 痕跡的文字。低分僅代表微弱殘餘訊號，不代表偵測成立。",
   "settingsEngineWeightsTotalValid": "合計：{total}% — 可以儲存",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "合計：{total}% — 請調整為正好 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "儲存權重",
   "settingsEngineWeightsSaved": "AI 模型權重已儲存於此裝置",
   "settingsEngineWeightsRestoreDefaults": "恢復預設值",
-  "engineReasonDisabledByUser": "已在設定中停用，本引擎未參與本次投票",
+  "engineReasonDisabledByUser": "使用者在設定中關閉此引擎",
   "engineReasonTransformerNoStrongSentence": "{model}：{total} 句均未跨越強 AI 閾值；校準後的微弱訊號為 {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "AI 訊號 {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。",
   "engineReasonAdversarialNoStrongSentence": "{total} 句均未跨越強改寫訊號閾值；校準後的微弱訊號為 {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{total} 句中有 {count} 句跨越強改寫訊號閾值；校準後的文件訊號為 {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "超連結與參考文獻目錄驗證",
   "settingsLinkVerificationSubtitle": "分析報告會將偵測到的網址與參考文獻條目比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄。查詢只會送出網址、DOI 或單筆書目的作者、篇名、年份及期刊欄位，不會傳送文件其餘內容。核心 AI 偵測仍在裝置端執行，此驗證可在此關閉。",
   "settingsThemeTitle": "外觀主題",
@@ -193,10 +244,6 @@
   "reportExported": "已匯出：{path}",
   "reportExportFailed": "匯出失敗：{error}",
   "reportEngineWeightLabel": "權重",
-  "privacySealNoticeText": "TruthLens 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。",
-  "reportModelCalibrationTitle": "模型基準自動校準",
-  "reportCommunityDiscoveredTag": "社群探尋 (HuggingFace)",
-  "reportEngineWeightLabel": "權重",
   "privacySealNoticeText": "TruthLens 零上傳離線隱私認證：內容 100% 於裝置端完成運算，無雲端資料庫儲存。",
   "reportModelCalibrationTitle": "模型基準自動校準",
   "reportCommunityDiscoveredTag": "社群模型 (HuggingFace)",
@@ -216,38 +263,128 @@
   "reportRadarAxisAdversarial": "改寫防禦",
   "reportVerdictBadgeTitle": "綜合判定",
   "reportVerdictBadgeProbability": "整體 AI 機率 {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportVerdictHintHuman": "多數引擎訊號偏向自然人類寫作。",
   "reportVerdictHintLikelyHuman": "整體偏人類，但仍保留少量模型不確定性。",
   "reportVerdictHintMixed": "不同引擎訊號分歧，需搭配詳細分析判讀。",
   "reportVerdictHintLikelyAi": "多個指標偏向 AI，建議檢查高分片段。",
   "reportVerdictHintAi": "整體訊號高度偏向 AI 生成或改寫。",
   "reportSynthesisOverall": "綜合判定：{verdict}，整體 AI 機率 {percent}%。",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStrongestSignal": "最高單項訊號是 {label}（{percent}%），但最終結果會依各引擎權重合併，不等於單一引擎結論。",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStrongestContribution": "目前最大加權貢獻來自 {label}（約 {points} 個百分點）。",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStyleCaveat": "「未偵測到明顯 AI 寫作風格」只代表風格引擎沒有抓到固定句式或過渡詞模式；其他模型仍可能因語言規律、句級分類或改寫特徵把整體分數拉高。",
   "reportSynthesisModelGap": "有引擎未參與時，請先到模型管理使用「補齊推薦分析模型」；若仍失敗，詳細分析會列出是模型缺失、tokenizer 不支援、檔案遺失或 Web/ONNX Runtime 相容性限制。",
   "reportEngineRelationshipUnavailable": "{label} 未參與本次加權投票，該面向暫以 0% 顯示。{hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineRelationshipAvailable": "角色權重 {weight}%，對整體分數貢獻約 {points} 個百分點{variantText}。",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineVariantMerged": "（已合併 {count} 個模型變體）",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineFallbackUnavailable": "{label} 未參與本次投票。",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineFallbackAvailable": "{label} 未回傳額外文字說明。",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineResolutionTransformer": "解法：在模型管理下載並啟用多語言 Transformer；若已下載，重新下載模型與 tokenizer。",
   "reportEngineResolutionAdversarial": "解法：在模型管理重新下載改寫偵測模型與 tokenizer；Web 端請更新到已修補 BigInt 相容性的版本後重新分析。",
   "reportEngineReasonBigInt": "{reason}。原因：Web 端 ONNX Runtime 回傳 BigInt 張量，舊版橋接無法轉換；已修補為 JS 端先轉 Number，請更新後重新分析。",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineReasonTokenizer": "{reason}。解法：切換到 catalog 內建模型，或重新下載模型與 tokenizer。",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineReasonNoActiveTransformer": "{reason}。解法：到模型管理點「補齊推薦分析模型」，並確認多語言 Transformer 標示為使用中。",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportDetailAnalysisTitle": "詳細分析",
   "reportNoEngineData": "尚無引擎分析數據",
   "reportEngineNotParticipated": "未參與",
@@ -263,7 +400,16 @@
   "reportConfidenceHighBadge": "信心度高（{available}/{total}）",
   "reportMetricAiSentenceRatio": "強 AI 訊號句比例",
   "reportStrongAiSentenceCount": "{total} 句中有 {count} 句跨越 60% 強訊號閾值",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "reportMetricElapsed": "分析耗時",
   "reportMetricElapsedNormal": "0.5-5s 正常",
   "reportMetricReliability": "可信度",
@@ -310,7 +456,13 @@
   "reportBibRecheckOneTooltip": "重新查核此筆文獻",
   "reportBibResultHint": "依作者、年份、篇名與期刊資訊交叉比對 Crossref、OpenAlex、DataCite、Semantic Scholar、Europe PMC／PubMed／AGRICOLA、ERIC、DOAJ 與可辨識的出版社目錄；高可信度結果必須有 DOI 登記或多個一致的書目欄位，未達可靠匹配者標示為未通過核實。Google Scholar 因未提供自動查詢 API，僅供使用者主動人工複核。",
   "reportBibVerificationSource": "核實依據：{source}",
-  "@reportBibVerificationSource": {"placeholders": {"source": {"type": "String"}}},
+  "@reportBibVerificationSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibGoogleScholarManualLookup": "前往 Google Scholar 人工複核",
   "reportBibHighConfidence": "高可信度：應存在{journal}",
   "reportBibJournalSuffix": "（登記於《{journal}》）",
@@ -373,8 +525,6 @@
   "reportFormulaCalculation": "加權計算公式",
   "reportFormulaFinalResult": "最終加權 AI 機率",
   "reportFormulaEslApplied": "已套用 ESL 非母語寫作偏差修正（統計模型權重已減半）",
-  "reportVerdictAiLikelihood": "AI 傾向",
-  "reportVerdictHumanLikelihood": "人類自然寫作",
   "engineReasonNeutral": "統計指標未呈現顯著傾向，維持中性判定",
   "engineReasonTransitionWords": "高頻使用通用過渡詞（{words}），每句平均 {density} 次，人類寫作極少如此密集",
   "engineReasonRepeatedOpeners": "多個相鄰句子以相同詞語開頭（{count} 處），句式重複",
@@ -402,7 +552,6 @@
   "engineReasonTransformerResult": "{model} 判定 {total} 句中有 {aiCount} 句呈現 AI 特徵",
   "engineReasonAdversarialDetected": "對抗模型偵測到疑似經改寫工具（如 QuillBot / Undetectable.ai）洗過的 AI 特徵",
   "engineReasonAdversarialClean": "未偵測到明顯的改寫規避特徵",
-  "engineReasonDisabledByUser": "使用者在設定中關閉此引擎",
   "engineReasonGenericNotInstalled": "模型尚未安裝，未參與本次投票",
   "patternGenericTransition": "通用過渡詞「{word}」",
   "helpAppBarTitle": "操作說明",
@@ -434,7 +583,13 @@
   "helpAdvantage4": "本機紀錄與匯出：報告可匯出 PDF／CSV／JSON／PNG，歷史紀錄只保存在本機，並在有匯入檔案時保留來源檔名，方便重新分析或回顧。",
   "helpWorkflowTitle": "完整操作流程",
   "helpWorkflowStepLabel": "第 {step} 步",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "模型下載與更新",
   "helpWorkflowStep1Body": "首次啟動會引導安裝核心偵測模型；之後可隨時至「設定 → AI 模型管理」查看、下載、更新或移除。App 會在啟動時主動比對最新版本，若有更新，設定齒輪圖示與「AI 模型管理」項目會出現紅點提示。",
   "helpWorkflowStep2Title": "如何選用模型（目的與效果）",
@@ -569,5 +724,23 @@
   "workspaceSelectedEvidence": "選取證據",
   "workspaceNoEvidence": "各引擎完成後，句子證據會依序顯示於此。",
   "workspacePreliminaryVerdict": "初步 AI 機率：{percent}%",
-  "@workspacePreliminaryVerdict": {"placeholders": {"percent": {"type": "int"}}}
+  "@workspacePreliminaryVerdict": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "helpWorkflowStep4ChipStoppable": "隨時可中止",
+  "privacyRemoveWeb": "在瀏覽器設定中清除本網站的資料（或直接關閉分頁即可，因為沒有任何內容儲存在伺服器上）",
+  "privacySectionOverviewWeb": "概要",
+  "privacyWebOverview1": "TruthLens 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。",
+  "privacyWebOverview2": "只有在您主動選擇匯入、掃描或貼上時，本頁才會讀取對應的檔案、圖片或剪貼簿內容；不會讀取其他分頁、其他網站的資料，或您未選擇的檔案。",
+  "workspaceLanguageMenuTitle": "語言",
+  "workspaceModeCosmicFuture": "宇宙未來風",
+  "workspaceModeSoftEducation": "教育文柔風",
+  "workspaceMoreMenuTooltip": "更多功能",
+  "workspaceSentenceColumnHeader": "句子內容",
+  "workspaceSentenceSignalHeader": "逐句 AI 訊號",
+  "workspaceSentenceSignalTooltip": "此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。"
 }

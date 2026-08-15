@@ -1,5 +1,22 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-15（第六十九次更新）— 修正：報告頁／可疑句清單 77 個 l10n 鍵在 10 語系中完全缺失
+
+**概述**
+使用者再次回報泰文介面下報告頁大量文字仍是英文（標題「AI Content Detection Report」、「Download PDF」、信心徽章、可疑內容清單的篩選標籤等）。深入排查後發現這與前一次修正是「同一類但不同原因」的問題：
+
+1. 逐一檢查 `professional_report_header.dart`、`suspicious_sentences_list.dart` 原始碼，確認元件本身完全正確地呼叫 `l10n.xxx`，沒有寫死字串——問題不在程式碼
+2. 真正原因：`reportAiContentReportTitle`／`reportDownloadPdfButton`／`reportConfidenceHighBadge`／`suspiciousFilterAll`／`engineReasonStatisticalSummaryHuman` 等 77 個鍵，在 `de/es/fr/id/ja/ko/ms/pt/ru/th` 十個語系檔案中**完全不存在該鍵**（不是值抄自英文，而是鍵本身缺失）。Flutter 對缺鍵的語系會自動退回英文版 getter，因此畫面顯示英文，且與元件邏輯無關，純粹是語系資料缺漏
+3. 這正是整個作業過程中 `flutter gen-l10n` 持續回報「XX untranslated message(s)」的真正原因——上次修正的是「值抄自英文」的另一批 41 個鍵，這批 77 個是完全不同、更早被遺漏的鍵，兩者互不重疊
+4. 已為十個語系全數補上這 77 個鍵的正式翻譯，涵蓋報告標題／信心徽章／可疑句清單篩選與計數／加權公式說明／PDF OCR 提示／隱私權頁面 Web 版說明等
+
+**修正內容**：✅ **完成**（`flutter analyze`、`flutter test` 243 項全數通過）
+
+- 修正後所有 10 語系「缺鍵」數為 0；`flutter gen-l10n` 首次不再印出任何「untranslated message(s)」警告
+- 各語系剩餘與英文相同的鍵僅 4–12 個，逐一核對皆為刻意保留的專有名詞（品牌名、技術詞彙），非翻譯遺漏
+
+---
+
 ## 2026-08-15（第六十八次更新）— 修正：引擎錯誤/修復訊息未走 l10n、補齊 10 語系翻譯缺口
 
 **概述**

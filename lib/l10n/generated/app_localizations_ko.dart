@@ -99,27 +99,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String inputPdfOcrProgress(int page, int total) {
-    return 'PDF text layer is unavailable; recognizing page $page of $total with OCR…';
+    return 'PDF 텍스트 레이어를 사용할 수 없습니다. OCR로 $total페이지 중 $page페이지를 인식하는 중…';
   }
 
   @override
   String inputPdfOcrSuccess(String fileName, int count) {
-    return 'Imported \"$fileName\" with PDF OCR ($count characters)';
+    return 'PDF OCR로 \"$fileName\"을(를) 가져왔습니다（$count자）';
   }
 
   @override
   String inputPdfNeedsOcr(String fileName) {
-    return '\"$fileName\" has no reliable text layer. Configure Web OCR or use an installed app with native OCR, then import it again.';
+    return '\"$fileName\"에 신뢰할 수 있는 텍스트 레이어가 없습니다. 웹 OCR을 설정하거나 네이티브 OCR을 지원하는 설치된 앱을 사용한 후 다시 가져오세요.';
   }
 
   @override
   String inputPdfTooManyPages(String fileName, int max) {
-    return '\"$fileName\" needs OCR but exceeds the $max page safety limit. Split the PDF and import each part.';
+    return '\"$fileName\"에 OCR이 필요하지만 $max페이지 안전 제한을 초과합니다. PDF를 분할한 후 각 부분을 가져오세요.';
   }
 
   @override
   String inputPdfUnreadable(String fileName) {
-    return '\"$fileName\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.';
+    return '\"$fileName\"을(를) 안정적으로 읽을 수 없습니다. 손상되었거나 비밀번호로 보호되어 있거나 구성된 OCR 서비스에서 지원되지 않을 수 있습니다.';
   }
 
   @override
@@ -418,12 +418,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsThresholdTitle => 'AI 판정 신뢰도 임계값';
 
   @override
-  String get settingsThresholdInfoTooltip =>
-      'How the AI flagging threshold affects the conclusion';
+  String get settingsThresholdInfoTooltip => 'AI 표시 임계값이 결론에 미치는 영향';
 
   @override
   String get settingsThresholdInfoBody =>
-      'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.';
+      '활성화된 엔진은 먼저 전체 AI 확률을 계산합니다. 이 설정은 엔진 점수나 전체 확률을 변경하지 않으며, 점수에 적용되는 결론을 변경합니다. 임계값이 낮을수록 동일한 확률이 AI로 결론지어져 표시될 가능성이 높아지고, 임계값이 높을수록 더 강한 AI 확률이 필요하여 인간의 글쓰기로 결론지어질 가능성이 높아집니다. 보고서는 항상 원래 확률과 근거를 유지합니다.';
 
   @override
   String settingsThresholdSubtitle(int percent) {
@@ -714,13 +713,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportEngineLoadFailedBadge => '로드 실패';
 
   @override
-  String get reportEngineAnalysisLevelTitle => 'Engine analysis layers';
+  String get reportEngineAnalysisLevelTitle => '엔진 분석 레이어';
 
   @override
-  String get reportVerdictAiLikelihood => 'AI Leaning';
+  String get reportVerdictAiLikelihood => 'AI 경향';
 
   @override
-  String get reportVerdictHumanLikelihood => 'Human Writing';
+  String get reportVerdictHumanLikelihood => '인간 글쓰기';
 
   @override
   String get reportRadarRoleTransformer => 'Transformer 분류기';
@@ -848,54 +847,54 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get reportDetailAnalysisTitle => 'Detailed analysis';
+  String get reportDetailAnalysisTitle => '상세 분석';
 
   @override
-  String get reportNoEngineData => 'No engine analysis data yet';
+  String get reportNoEngineData => '아직 엔진 분석 데이터가 없습니다';
 
   @override
-  String get reportEngineNotParticipated => 'Not involved';
+  String get reportEngineNotParticipated => '참여하지 않음';
 
   @override
-  String get reportAiContentReportTitle => 'AI Content Detection Report';
+  String get reportAiContentReportTitle => 'AI 콘텐츠 감지 보고서';
 
   @override
   String reportAnalysisTimeLabel(String time) {
-    return 'Analysis time: $time';
+    return '분석 시간: $time';
   }
 
   @override
-  String get reportDownloadPdfButton => 'Download PDF';
+  String get reportDownloadPdfButton => 'PDF 다운로드';
 
   @override
-  String get reportSuspiciousLocationsTitle => 'Suspicious content locations';
+  String get reportSuspiciousLocationsTitle => '의심스러운 콘텐츠 위치';
 
   @override
   String reportSentenceCount(int count) {
-    return '$count sentences';
+    return '$count개 문장';
   }
 
   @override
-  String get reportAiProbabilityPrefix => 'AI probability: ';
+  String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
-    return 'Low confidence: available model weight is below 60% ($threshold% threshold). $available/$total engines participated. Review detailed engine analysis.';
+    return '낮은 신뢰도: 사용 가능한 모델 가중치가 60% 미만입니다（임계값 $threshold%）. $available/$total개 엔진이 참여했습니다. 상세 엔진 분석을 검토하세요.';
   }
 
   @override
   String reportConfidenceHighTooltip(int available, int total, int threshold) {
-    return 'High confidence: $available/$total detection models reached consensus ($threshold% or more weight agrees with this verdict).';
+    return '높은 신뢰도: $available/$total개 감지 모델이 합의에 도달했습니다（$threshold% 이상의 가중치가 이 판정에 동의）.';
   }
 
   @override
   String reportConfidenceLowBadge(int available, int total) {
-    return 'Low confidence ($available/$total)';
+    return '낮은 신뢰도（$available/$total）';
   }
 
   @override
   String reportConfidenceHighBadge(int available, int total) {
-    return 'High confidence ($available/$total)';
+    return '높은 신뢰도（$available/$total）';
   }
 
   @override
@@ -907,81 +906,79 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get reportMetricElapsed => 'Analysis time';
+  String get reportMetricElapsed => '분석 시간';
 
   @override
-  String get reportMetricElapsedNormal => '0.5-5s normal';
+  String get reportMetricElapsedNormal => '0.5-5초 정상';
 
   @override
-  String get reportMetricReliability => 'Reliability';
+  String get reportMetricReliability => '신뢰도';
 
   @override
-  String get reportReliabilityLow => 'Low';
+  String get reportReliabilityLow => '낮음';
 
   @override
-  String get reportReliabilityHigh => 'High';
+  String get reportReliabilityHigh => '높음';
 
   @override
-  String get reportReliabilityNeedsReview => 'Needs review';
+  String get reportReliabilityNeedsReview => '검토 필요';
 
   @override
-  String get reportReliabilityHighTrust => 'Highly reliable';
+  String get reportReliabilityHighTrust => '매우 신뢰할 수 있음';
 
   @override
   String get reportSentenceAnalysisTitle => '문장 단위 분석';
 
   @override
-  String get suspiciousFilterAll => 'Suspicious';
+  String get suspiciousFilterAll => '의심스러움';
 
   @override
-  String get suspiciousFilterHigh => 'High';
+  String get suspiciousFilterHigh => '높음';
 
   @override
-  String get suspiciousFilterMedium => 'Medium';
+  String get suspiciousFilterMedium => '중간';
 
   @override
   String get suspiciousExcludedTooltip =>
-      'Single letters, page numbers, section numbers, and overly short OCR/PDF fragments have been excluded.';
+      '단일 문자, 페이지 번호, 섹션 번호, 너무 짧은 OCR/PDF 조각은 제외되었습니다.';
 
   @override
   String suspiciousCount(int count) {
-    return '$count items';
+    return '$count개 항목';
   }
 
   @override
-  String get suspiciousEmpty => 'No suspicious content';
+  String get suspiciousEmpty => '의심스러운 콘텐츠 없음';
 
   @override
-  String get suspiciousRiskHigh => 'High';
+  String get suspiciousRiskHigh => '높음';
 
   @override
-  String get suspiciousRiskMedium => 'Medium';
+  String get suspiciousRiskMedium => '중간';
 
   @override
-  String get suspiciousReasonHighModelSignals =>
-      'Multiple model signals strongly lean AI';
+  String get suspiciousReasonHighModelSignals => '여러 모델 신호가 AI 쪽으로 강하게 기울어짐';
 
   @override
-  String get suspiciousReasonSentenceSignal =>
-      'Sentence-level model signal is elevated';
+  String get suspiciousReasonSentenceSignal => '문장 단위 모델 신호가 높음';
 
   @override
   String suspiciousOriginalLocation(String location) {
-    return 'Original location $location';
+    return '원본 위치 $location';
   }
 
   @override
   String suspiciousOriginalLocationWithReason(String location, String reason) {
-    return 'Original location $location · $reason';
+    return '원본 위치 $location · $reason';
   }
 
   @override
   String suspiciousSentenceNumber(int number) {
-    return 'Sentence #$number';
+    return '문장 #$number';
   }
 
   @override
-  String get suspiciousEvidenceLabel => 'Evidence:';
+  String get suspiciousEvidenceLabel => '근거:';
 
   @override
   String reportSentenceTooltip(String text, int percent, String patterns) {
@@ -1069,12 +1066,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String reportBibVerificationSource(String source) {
-    return 'Verification source: $source';
+    return '검증 출처: $source';
   }
 
   @override
-  String get reportBibGoogleScholarManualLookup =>
-      'Check manually in Google Scholar';
+  String get reportBibGoogleScholarManualLookup => 'Google Scholar에서 수동으로 확인';
 
   @override
   String reportBibHighConfidence(String journal) {
@@ -1088,7 +1084,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String reportBibJournalMismatch(String reported, String registered) {
-    return 'Journal name mismatch: the document says “$reported”, while the verified registry says “$registered”. Please review this citation.';
+    return '저널명 불일치: 문서에는 \"$reported\"라고 되어 있지만, 검증된 등록 정보에는 \"$registered\"라고 되어 있습니다. 이 인용을 검토하세요.';
   }
 
   @override
@@ -1104,30 +1100,30 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String reportBibCompletedPreview(int count) {
-    return '$count completed; results will keep updating.';
+    return '$count개 완료됨. 결과는 계속 업데이트됩니다.';
   }
 
   @override
   String reportBibProgress(int completed, int total, String current) {
-    return 'Progress $completed/$total, $current';
+    return '진행률 $completed/$total, $current';
   }
 
   @override
   String reportBibProgressCurrent(String text) {
-    return 'Current: $text';
+    return '현재: $text';
   }
 
   @override
-  String get reportBibProgressFinalizing => 'Finalizing results';
+  String get reportBibProgressFinalizing => '결과 마무리 중';
 
   @override
   String reportBibUncertainWithCandidate(String base, String candidate) {
-    return '$base: similar candidate found “$candidate”, but author, year, or title did not meet the reliable-match threshold.';
+    return '$base: 유사한 후보 \"$candidate\"을(를) 찾았지만, 저자, 연도 또는 제목이 신뢰할 수 있는 일치 임계값을 충족하지 않았습니다.';
   }
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.';
+    return '$base: 검증 소스가 신뢰할 수 있는 응답을 반환하지 않았거나 항목 정보가 부족합니다. TruthLens는 이 인용을 검증된 것으로 간주하지 않습니다.';
   }
 
   @override
@@ -1227,7 +1223,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Overall AI probability is $aiPercent%, which reaches your $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
+    return '전체 AI 확률은 $aiPercent%로, 설정한 AI 표시 임계값 $thresholdPercent%에 도달하여 보고서가 이 텍스트를 AI로 표시합니다. 최종 결정을 내리기 전에 문장 단위 증거와 엔진 이유를 검토하세요.';
   }
 
   @override
@@ -1235,7 +1231,7 @@ class AppLocalizationsKo extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Overall AI probability is $aiPercent%, below your $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
+    return '전체 AI 확률은 $aiPercent%로, 설정한 AI 표시 임계값 $thresholdPercent%보다 낮아 보고서가 이 텍스트를 공식적으로 AI로 표시하지 않습니다. 확률과 증거는 검토를 위해 계속 표시됩니다.';
   }
 
   @override
@@ -1312,39 +1308,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String engineReasonStatisticalSummaryAi(String percent) {
-    return 'Overall statistical summary: Leans towards AI-generated characteristics ($percent% AI probability)';
+    return '전체 통계 요약: AI 생성 특성 쪽으로 기울어짐（AI 확률 $percent%）';
   }
 
   @override
   String engineReasonStatisticalSummaryHuman(String percent) {
-    return 'Overall statistical summary: Leans towards human natural writing ($percent% AI probability)';
+    return '전체 통계 요약: 자연스러운 인간 글쓰기 쪽으로 기울어짐（AI 확률 $percent%）';
   }
 
   @override
   String engineReasonStatisticalSummaryNeutral(String percent) {
-    return 'Overall statistical summary: Indicators balance out, showing neutral characteristics ($percent% AI probability)';
+    return '전체 통계 요약: 지표가 균형을 이루어 중립적 특성을 보임（AI 확률 $percent%）';
   }
 
   @override
-  String get reportFormulaTitle =>
-      'Weighted Calculation Transparency & Parameter Breakdown';
+  String get reportFormulaTitle => '가중치 계산 투명성 및 매개변수 분석';
 
   @override
   String get reportFormulaExplanation =>
-      'The overall AI probability is computed as a weighted average of probabilities from all active engines:';
+      '전체 AI 확률은 모든 활성 엔진의 확률을 가중 평균하여 계산됩니다:';
 
   @override
-  String get reportFormulaActiveEngines => 'Active Engines & Assigned Weights';
+  String get reportFormulaActiveEngines => '활성 엔진 및 할당된 가중치';
 
   @override
-  String get reportFormulaCalculation => 'Weighted Formula Calculation';
+  String get reportFormulaCalculation => '가중치 공식 계산';
 
   @override
-  String get reportFormulaFinalResult => 'Final Weighted AI Probability';
+  String get reportFormulaFinalResult => '최종 가중 AI 확률';
 
   @override
-  String get reportFormulaEslApplied =>
-      'ESL non-native writing adjustment applied (statistical model weight halved)';
+  String get reportFormulaEslApplied => 'ESL 비원어민 작문 보정 적용됨（통계 모델 가중치 절반으로 감소）';
 
   @override
   String get engineReasonNeutral => '통계적 지표에서 뚜렷한 경향이 나타나지 않아 중립적인 판정을 유지합니다';
@@ -1676,7 +1670,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get helpWorkflowStep4ChipEslCorrection => 'ESL 작문 보정';
 
   @override
-  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
+  String get helpWorkflowStep4ChipStoppable => '언제든지 중지 가능';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI 개요 게이지';
@@ -1763,18 +1757,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+      'TruthLens는 브라우저 탭에서 완전히 웹 앱으로 실행됩니다. 설치할 필요가 없으며, 문서 텍스트와 분석 결과는 기기를 벗어나지 않고, 다운로드된 감지 모델은 서버가 아닌 브라우저 자체의 샌드박스 저장소（OPFS）에만 캐시됩니다.';
 
   @override
   String get privacyWebOverview2 =>
-      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+      '이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.';
 
   @override
-  String get privacySectionOverviewWeb => 'Overview';
+  String get privacySectionOverviewWeb => '개요';
 
   @override
   String get privacyRemoveWeb =>
-      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
+      '브라우저 설정에서 이 사이트의 데이터를 지우기（또는 서버에 저장된 것이 없으므로 탭을 닫기만 해도 됩니다）';
 
   @override
   String get privacyIosOverview1 =>
@@ -1838,7 +1832,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyNetwork4 =>
-      '4. Web OCR fallback: on the Web version only, OCR first uses a local OCR server if configured. If you choose to enter a Gemini API key, selected images and rendered pages from PDFs that require OCR are sent directly from your browser to Google\'s Gemini API; the key is stored only in that browser\'s local storage.';
+      '4. 웹 OCR 대체: 웹 버전에서만 OCR은 구성된 경우 로컬 OCR 서버를 먼저 사용합니다. Gemini API 키를 입력하도록 선택한 경우, 선택한 이미지와 OCR이 필요한 PDF 렌더링 페이지가 브라우저에서 Google의 Gemini API로 직접 전송됩니다. 키는 해당 브라우저의 로컬 저장소에만 저장됩니다.';
 
   @override
   String get privacyRightsIntro =>
@@ -1969,19 +1963,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get workspaceModeEvidence => '근거 캔버스';
 
   @override
-  String get workspaceModeCosmicFuture => 'Cosmic Future';
+  String get workspaceModeCosmicFuture => '코스믹 퓨처';
 
   @override
-  String get workspaceModeSoftEducation => 'Soft Education';
+  String get workspaceModeSoftEducation => '소프트 에듀케이션';
 
   @override
   String get workspaceModeTooltip => '작업 공간 모드 전환';
 
   @override
-  String get workspaceMoreMenuTooltip => 'More options';
+  String get workspaceMoreMenuTooltip => '추가 옵션';
 
   @override
-  String get workspaceLanguageMenuTitle => 'Language';
+  String get workspaceLanguageMenuTitle => '언어';
 
   @override
   String get workspaceStageImport => '가져오기';
@@ -2076,11 +2070,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+      '이 백분율은 이 문장 자체의 AI 신호이며 문서 전체의 판정이 아닙니다. 값이 높을수록 문구 패턴이 AI가 생성한 것처럼 보이고, 낮을수록 일반적인 인간의 글쓰기처럼 읽힙니다. 최종 보고서는 모든 문장을 엔진 가중치와 결합합니다.';
 
   @override
-  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+  String get workspaceSentenceSignalHeader => '문장별 AI 신호';
 
   @override
-  String get workspaceSentenceColumnHeader => 'Sentence';
+  String get workspaceSentenceColumnHeader => '문장';
 }
