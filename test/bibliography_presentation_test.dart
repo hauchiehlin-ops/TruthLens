@@ -65,7 +65,8 @@ void main() {
       expect(success.tone, BibliographyDisplayTone.success);
       expect(success.warning, isNull);
       expect(success.source, contains('Crossref'));
-      expect(mismatch.tone, BibliographyDisplayTone.warning);
+      expect(mismatch.tone, BibliographyDisplayTone.success);
+      expect(mismatch.warningTone, BibliographyDisplayTone.mismatch);
       expect(mismatch.warning, contains('Incorrect Journal'));
       expect(notFound.tone, BibliographyDisplayTone.error);
     },

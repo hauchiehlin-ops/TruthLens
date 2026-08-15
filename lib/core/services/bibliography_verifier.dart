@@ -567,10 +567,7 @@ class BibliographyVerifier {
       if (normalizedBlock.length < 15 || normalizedBlock.length > 400) continue;
 
       final score = _calculateCitationScore(normalizedBlock, hasHeading);
-      final yearMatch = _yearRegex.firstMatch(normalizedBlock);
-      final year = yearMatch != null
-          ? int.tryParse(yearMatch.group(1) ?? '')
-          : null;
+      final year = _extractLikelyCitationYear(normalizedBlock);
 
       // 強化門檻：有 References 標題時 0.50，無標題時 0.65（防止內文段落誤判）
       if (score >= (hasHeading ? 0.50 : 0.65)) {
@@ -670,6 +667,17 @@ class BibliographyVerifier {
     return score;
   }
 
+  static int? _extractLikelyCitationYear(String raw) {
+    final matches = _yearRegex.allMatches(raw).toList();
+    if (matches.isEmpty) return null;
+    final trailing = matches.last;
+    final remainder = raw.substring(trailing.end).trim();
+    if (remainder.isEmpty || RegExp(r'^[).,;:]+$').hasMatch(remainder)) {
+      return int.tryParse(trailing.group(1) ?? '');
+    }
+    return int.tryParse(matches.first.group(1) ?? '');
+  }
+
   static BibliographyEntry _parseEntry(
     String raw,
     int prefixLength,
@@ -726,6 +734,12 @@ class BibliographyVerifier {
           'Couette Flow',
         )
         .trim();
+    final compactVenue = _extractCompactCitationVenue(cleanedNoPrefix);
+    final isTitlelessCompactCitation = _isTitlelessCompactCitation(
+      cleanedNoPrefix,
+      year,
+      compactVenue,
+    );
 
     // 優先抽取篇名引號或書名號（如 "..." 或 “...” 或 「...」 或 〈...〉 或 《...》）
     final quoteMatch = RegExp(
@@ -734,7 +748,7 @@ class BibliographyVerifier {
     final rawTitle = quoteMatch?.group(1);
     String? title = _normalizeBibliographyTitle(rawTitle);
 
-    if (title == null || title.isEmpty) {
+    if (!isTitlelessCompactCitation && (title == null || title.isEmpty)) {
       // 若有西元年 (例如 1983. 或 1986. 或 (1983))，年份後第一個以句號分割的段落即為真正的論文篇名
       if (year != null) {
         final yearPattern = RegExp('\\b$year[a-z]?\\b[\\.\\,:]?\\s*');
@@ -811,7 +825,7 @@ class BibliographyVerifier {
       firstAuthorSurname: surname,
       year: year,
       title: title == null || title.isEmpty ? null : title,
-      venueTitle: _extractVenueTitle(cleanedNoPrefix, title),
+      venueTitle: compactVenue ?? _extractVenueTitle(cleanedNoPrefix, title),
       doi: _extractDoi(cleanedNoPrefix),
       volume: locator?.volume,
       firstPage: locator?.firstPage,
@@ -827,7 +841,10 @@ class BibliographyVerifier {
         )
         .replaceAll(RegExp(r'\s+'), ' ');
     final patterns = [
-      RegExp(r'\b([A-Z]?\d{1,4})\s*[:;,]\s*(\d{1,5})\s*[-–—]\s*(\d{1,5})\b'),
+      RegExp(
+        r'\b([A-Z]?\d{1,4})\s*[:;,]\s*(?:pp?\.?\s*)?(\d{1,5})\s*[-–—]\s*(\d{1,5})\b',
+        caseSensitive: false,
+      ),
       RegExp(
         r'\b(?:vol\.?|volume)\s*([A-Z]?\d{1,4})\D{0,20}(?:pp?\.?|pages?)?\s*(\d{1,5})\s*[-–—]\s*(\d{1,5})\b',
         caseSensitive: false,
@@ -843,6 +860,40 @@ class BibliographyVerifier {
       );
     }
     return null;
+  }
+
+  /// 舊式工程／自然科學書目常省略篇名，只保留「作者，期刊，卷：頁，年」。
+  /// 這類格式若把期刊誤當篇名，遠端搜尋會回傳完全無關的熱門候選。
+  static bool _isTitlelessCompactCitation(
+    String raw,
+    int? year,
+    String? compactVenue,
+  ) {
+    if (year == null || compactVenue == null) return false;
+    if (RegExp(r'["“「〈《]').hasMatch(raw)) return false;
+    final locator = RegExp(
+      r'\b[A-Z]?\d{1,4}\s*[:;,]\s*(?:pp?\.?\s*)?\d{1,5}\s*[-–—]\s*\d{1,5}\b',
+      caseSensitive: false,
+    ).firstMatch(raw);
+    if (locator == null) return false;
+    final yearMatches = RegExp('\\b$year\\b').allMatches(raw).toList();
+    final yearMatch = yearMatches.isEmpty ? null : yearMatches.last;
+    return yearMatch != null && yearMatch.start > locator.end;
+  }
+
+  static String? _extractCompactCitationVenue(String raw) {
+    if (RegExp(r'["“「〈《]').hasMatch(raw)) return null;
+    final locator = RegExp(
+      r'\b[A-Z]?\d{1,4}\s*[:;,]\s*(?:pp?\.?\s*)?\d{1,5}\s*[-–—]\s*\d{1,5}\b',
+      caseSensitive: false,
+    ).firstMatch(raw);
+    if (locator == null) return null;
+    final prefix = raw
+        .substring(0, locator.start)
+        .replaceAll(RegExp(r'[,.;:\s]+$'), '');
+    final lastComma = prefix.lastIndexOf(',');
+    if (lastComma < 0 || lastComma + 1 >= prefix.length) return null;
+    return _cleanVenueCandidate(prefix.substring(lastComma + 1));
   }
 
   static String? _normalizeLocatorNumber(String? value) {
@@ -927,7 +978,7 @@ class BibliographyVerifier {
 
   static bool _looksLikeVenue(String value) {
     return RegExp(
-      r'(?:annales|journal|proceedings|transactions|philosophical transactions|physical review|phys\. rev\.|physical fluids|phys\. fluids|fluid dynamics research|computational fluid dynamics|physics letters|z\.?\s*flugwiss|j\.|proc\.|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
+      r'(?:annales|journal|proceedings|transactions|trans\.|philos\.|philosophical transactions|physical review|phys?\. rev\.|physical fluids|physics of fluids|phys?\. fluids|fluid dynamics research|computational fluid dynamics|physics letters|z\.?\s*flugwiss|j\.|proc\.|a\.?\s*i\.?\s*ch\.?\s*e\.?|conference|symposium|acm|ieee|aiche|nature|science|springer|wiley|elsevier|press|學報|期刊|論文集|研討會)',
       caseSensitive: false,
     ).hasMatch(value);
   }
@@ -949,6 +1000,8 @@ class BibliographyVerifier {
 
   static String _normalizeJournalName(String value) => value
       .toLowerCase()
+      .replaceAll(RegExp(r'a\.?\s*i\.?\s*ch\.?\s*e\.?'), 'aiche')
+      .replaceAll(RegExp(r'\br\.?\s*(?:sec|soc)\.?\b'), 'royal society')
       .replaceAll('&', ' and ')
       .replaceAll(RegExp(r'\bj\.?\b'), 'journal')
       .replaceAll(RegExp(r'\bmech\.?\b'), 'mechanics')
@@ -956,6 +1009,14 @@ class BibliographyVerifier {
       .replaceAll(RegExp(r'\bint\.?\b'), 'international')
       .replaceAll(RegExp(r'\brev\.?\b'), 'review')
       .replaceAll(RegExp(r'\bres\.?\b'), 'research')
+      .replaceAll(RegExp(r'\bproc\.?\b'), 'proceedings')
+      .replaceAll(RegExp(r'\btrans\.?\b'), 'transactions')
+      .replaceAll(RegExp(r'\bphilos\.?\b'), 'philosophical')
+      .replaceAll(RegExp(r'\broy\.?\b'), 'royal')
+      .replaceAll(RegExp(r'\bsoc\.?\b'), 'society')
+      .replaceAll(RegExp(r'\bphys?\.?\b'), 'physical')
+      .replaceAll(RegExp(r'\blett\.?\b'), 'letters')
+      .replaceAll(RegExp(r'\bfluids\b'), 'fluid')
       .replaceAll(RegExp(r'\b(?:the|of)\b'), ' ')
       .replaceAll(RegExp(r'[^a-z0-9\p{L}]+', unicode: true), ' ')
       .replaceAll(RegExp(r'\s+'), ' ')
@@ -1313,9 +1374,18 @@ class BibliographyVerifier {
                 (entry.year! - matchedYear).abs() <= 5;
             final venueMatches =
                 entry.venueTitle != null &&
-                _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
+                _journalNameSimilarity(entry.venueTitle, matchedJournal) >=
+                    0.72;
             final locatorMatches = _openAlexLocatorMatches(entry, top);
             final authorMatches = _openAlexAuthorMatches(entry, top);
+            final hasReliableTitle =
+                entry.title != null && entry.title!.trim().length >= 8;
+            final structuredHighConfidence =
+                !hasReliableTitle &&
+                yearMatches &&
+                venueMatches &&
+                authorMatches &&
+                locatorMatches;
 
             final score =
                 titleSim * 0.62 +
@@ -1328,12 +1398,17 @@ class BibliographyVerifier {
                 (authorMatches ? 0.08 : 0.0) +
                 (locatorMatches ? 0.16 : 0.0);
 
-            if (score >= 0.74 ||
-                titleSim >= 0.72 ||
-                (titleSim >= 0.50 &&
+            if (structuredHighConfidence ||
+                (hasReliableTitle && score >= 0.74) ||
+                (hasReliableTitle && titleSim >= 0.72) ||
+                (hasReliableTitle &&
+                    titleSim >= 0.50 &&
                     (yearMatches || looseYearMatches) &&
                     (venueMatches || authorMatches || locatorMatches)) ||
-                (titleSim >= 0.42 && venueMatches && locatorMatches)) {
+                (hasReliableTitle &&
+                    titleSim >= 0.42 &&
+                    venueMatches &&
+                    locatorMatches)) {
               return BibliographyCheckResult(
                 entry: entry,
                 confidence: CitationMatchConfidence.high,
@@ -1489,33 +1564,65 @@ class BibliographyVerifier {
   static BibliographyCheckResult? _verifyKnownClassicalReference(
     BibliographyEntry entry,
   ) {
-    final entryTitle = entry.title;
-    if (entryTitle == null || entryTitle.length < 8) return null;
+    final entryTitle = entry.title?.trim();
+    final hasReliableTitle = entryTitle != null && entryTitle.length >= 8;
     _KnownBibliographyRecord? best;
     var bestScore = 0.0;
+    var bestIsHighConfidence = false;
 
     for (final record in _knownClassicalFluidReferences) {
-      final titleSim = _bestKnownRecordTitleSimilarity(entryTitle, record);
+      final titleSim = hasReliableTitle
+          ? _bestKnownRecordTitleSimilarity(entryTitle, record)
+          : 0.0;
       final locatorMatches = _entryLocatorMatchesRecord(entry, record);
-      if (titleSim < 0.46 && !locatorMatches) continue;
-
-      final entryAuthor = entry.firstAuthorSurname?.toLowerCase();
-      final recordAuthor = record.firstAuthorSurname?.toLowerCase();
-      if (entryAuthor != null &&
+      final entryAuthor = entry.firstAuthorSurname?.trim().toLowerCase();
+      final recordAuthor = record.firstAuthorSurname?.trim().toLowerCase();
+      final authorMatches =
+          entryAuthor != null &&
           recordAuthor != null &&
-          entryAuthor != recordAuthor &&
-          _titleSimilarity(entryAuthor, recordAuthor) < 0.78) {
+          (entryAuthor == recordAuthor ||
+              _titleSimilarity(entryAuthor, recordAuthor) >= 0.78);
+      final authorConflicts = entryAuthor != null && !authorMatches;
+      final venueSim = _journalNameSimilarity(entry.venueTitle, record.venue);
+      final yearDifference = entry.year == null
+          ? null
+          : (entry.year! - record.year).abs();
+      final yearMatches = yearDifference != null && yearDifference <= 3;
+      final firstPageMatches =
+          entry.firstPage != null && entry.firstPage == record.firstPage;
+      final volumePlausiblyMatches = _volumePlausiblyMatches(
+        entry.volume,
+        record.volume,
+      );
+
+      // 無篇名的舊式引用，必須由作者、期刊、年份、卷與起始頁共同確認。
+      // 容許單一卷號 OCR 錯字及三年內年份誤植，但不因「搜尋第一名」而放寬作者。
+      final structuredHighConfidence =
+          !hasReliableTitle &&
+          authorMatches &&
+          venueSim >= 0.72 &&
+          yearMatches &&
+          firstPageMatches &&
+          volumePlausiblyMatches;
+
+      final structuredCandidate =
+          !hasReliableTitle &&
+          venueSim >= 0.72 &&
+          firstPageMatches &&
+          volumePlausiblyMatches;
+
+      if (!hasReliableTitle && !structuredCandidate) continue;
+      if (hasReliableTitle && titleSim < 0.46 && !locatorMatches) continue;
+      final titledMetadataMismatchCandidate =
+          hasReliableTitle &&
+          titleSim >= 0.80 &&
+          locatorMatches &&
+          venueSim >= 0.72;
+      if (hasReliableTitle &&
+          authorConflicts &&
+          !titledMetadataMismatchCandidate) {
         continue;
       }
-
-      final venueSim = _titleSimilarity(entry.venueTitle, record.venue);
-      final authorMatches =
-          entry.firstAuthorSurname == null ||
-          record.firstAuthorSurname == null ||
-          entry.firstAuthorSurname!.toLowerCase() ==
-              record.firstAuthorSurname!.toLowerCase();
-      final yearMatches =
-          entry.year == null || (entry.year! - record.year).abs() <= 3;
 
       var score = titleSim * 0.62;
       if (venueSim >= 0.42) score += 0.18;
@@ -1523,23 +1630,58 @@ class BibliographyVerifier {
       if (authorMatches) score += 0.06;
       if (locatorMatches) score += 0.12;
       if (titleSim >= 0.50 && locatorMatches && yearMatches) score += 0.08;
+      if (structuredCandidate) {
+        score =
+            0.56 +
+            (authorMatches ? 0.18 : 0.0) +
+            (yearMatches ? 0.10 : 0.0) +
+            (volumePlausiblyMatches ? 0.08 : 0.0) +
+            (venueSim >= 0.90 ? 0.08 : 0.0);
+      }
 
       if (score > bestScore) {
         bestScore = score;
         best = record;
+        bestIsHighConfidence = hasReliableTitle
+            ? score >= 0.72 && !authorConflicts
+            : structuredHighConfidence;
       }
     }
 
-    if (best == null || bestScore < 0.72) return null;
+    if (best == null || bestScore < 0.56) return null;
     return BibliographyCheckResult(
       entry: entry,
-      confidence: CitationMatchConfidence.high,
+      confidence: bestIsHighConfidence
+          ? CitationMatchConfidence.high
+          : CitationMatchConfidence.uncertain,
       matchedTitle: best.title,
       matchedJournal: '${best.venue} (local classical-reference index)',
       matchedYear: best.year,
       verificationSource: 'TruthLens built-in classical-reference index',
-      journalNameMismatch: _journalNameMismatch(entry.venueTitle, best.venue),
+      journalNameMismatch:
+          bestIsHighConfidence &&
+          _journalNameMismatch(entry.venueTitle, best.venue),
     );
+  }
+
+  static double _journalNameSimilarity(String? a, String? b) {
+    if (a == null || b == null) return 0;
+    final normalizedA = _normalizeJournalName(a);
+    final normalizedB = _normalizeJournalName(b);
+    if (normalizedA.isEmpty || normalizedB.isEmpty) return 0;
+    if (normalizedA == normalizedB) return 1;
+    return _titleSimilarity(normalizedA, normalizedB);
+  }
+
+  static bool _volumePlausiblyMatches(String? entry, String? candidate) {
+    if (entry == null || candidate == null) return false;
+    if (entry == candidate) return true;
+    if (entry.length != candidate.length) return false;
+    var differences = 0;
+    for (var i = 0; i < entry.length; i++) {
+      if (entry.codeUnitAt(i) != candidate.codeUnitAt(i)) differences += 1;
+    }
+    return differences == 1;
   }
 
   static double _bestKnownRecordTitleSimilarity(
@@ -1643,9 +1785,17 @@ class BibliographyVerifier {
           (entry.year! - matchedYear).abs() <= 5;
       final venueMatches =
           entry.venueTitle != null &&
-          _titleSimilarity(entry.venueTitle, matchedJournal) >= 0.45;
+          _journalNameSimilarity(entry.venueTitle, matchedJournal) >= 0.72;
       final authorMatches = _crossrefAuthorMatches(entry, top);
       final locatorMatches = _crossrefLocatorMatches(entry, top);
+      final hasReliableTitle =
+          entry.title != null && entry.title!.trim().length >= 8;
+      final structuredHighConfidence =
+          !hasReliableTitle &&
+          yearMatches &&
+          venueMatches &&
+          authorMatches &&
+          locatorMatches;
 
       var score = titleSim * 0.62;
       if (yearMatches) {
@@ -1658,12 +1808,17 @@ class BibliographyVerifier {
       if (locatorMatches) score += 0.16;
 
       final highConfidence =
-          score >= 0.74 ||
-          titleSim >= 0.72 ||
-          (titleSim >= 0.50 &&
+          structuredHighConfidence ||
+          (hasReliableTitle && score >= 0.74) ||
+          (hasReliableTitle && titleSim >= 0.72) ||
+          (hasReliableTitle &&
+              titleSim >= 0.50 &&
               (yearMatches || looseYearMatches) &&
               (venueMatches || authorMatches || locatorMatches)) ||
-          (titleSim >= 0.42 && venueMatches && locatorMatches);
+          (hasReliableTitle &&
+              titleSim >= 0.42 &&
+              venueMatches &&
+              locatorMatches);
       final uncertain =
           score >= 0.42 ||
           titleSim >= 0.28 ||
@@ -2427,13 +2582,13 @@ class BibliographyVerifier {
       lastPage: '418',
     ),
     _KnownBibliographyRecord(
-      firstAuthorSurname: 'Coles',
+      firstAuthorSurname: 'Davey',
       title: 'On the Instability of Taylor Vortices',
       venue: 'Journal of Fluid Mechanics',
-      year: 1965,
+      year: 1968,
       volume: '31',
       firstPage: '17',
-      lastPage: '62',
+      lastPage: '52',
     ),
     _KnownBibliographyRecord(
       firstAuthorSurname: 'Schwarz',
@@ -2614,7 +2769,7 @@ class BibliographyVerifier {
     _KnownBibliographyRecord(
       firstAuthorSurname: 'Antonijoan',
       title: 'On stable Taylor vortices above the transition to wavy vortices',
-      venue: 'Physical Fluids',
+      venue: 'Physics of Fluids',
       year: 2002,
       volume: '14',
       firstPage: '1661',
@@ -2632,7 +2787,7 @@ class BibliographyVerifier {
     _KnownBibliographyRecord(
       firstAuthorSurname: 'Burkhalter',
       title: 'Steady supercritical Taylor vortices after sudden starts',
-      venue: 'Physical Fluids',
+      venue: 'The Physics of Fluids',
       year: 1974,
       volume: '17',
       firstPage: '1929',
@@ -2739,6 +2894,16 @@ class BibliographyVerifier {
       volume: '4',
       firstPage: '1',
       lastPage: '21',
+    ),
+    _KnownBibliographyRecord(
+      firstAuthorSurname: 'Snyder',
+      title:
+          'Wave-number selection at finite amplitude in rotating Couette flow',
+      venue: 'Journal of Fluid Mechanics',
+      year: 1969,
+      volume: '35',
+      firstPage: '273',
+      lastPage: '298',
     ),
     _KnownBibliographyRecord(
       firstAuthorSurname: 'Yang',

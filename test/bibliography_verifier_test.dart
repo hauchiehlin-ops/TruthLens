@@ -16,8 +16,137 @@ Nissan, A.H., Nardacci, J.L., and Ho, C.Y., 1963. The onset of different modes o
 Schultz-Grunow, F. and Hein, H., 1956. Beitrag zur Couettestromung. Z. Flugwiss, 4, 28–30.
 ''';
 
+const _abbreviatedTitlelessReferences = '''
+References
+[1] Coles, D., J. Fluid Mech., 31: p. 17-52, 1965.
+[2] Taylor, G. I., Philos Trans. R. Sec. London, A233: p. 289-343, 1923.
+[3] Lewis, J. W., Proc. Roy. Soc. London, A117: p. 388-406, 1928.
+[4] Schultz-Grunow, F. and H. Hein, Z. Flugwiss, 4: p. 28-30, 1956.
+[5] Nissan, A. H., J. L. Nardacci, and C. Y. Ho, A. I. Ch. E. J., 9: p. 620-624, 1963.
+[6] Schwarz, K. W., B. E. Springett, and R. J. Donnelly, J. Fluid Mech., 20: p. 281-289, 1964.
+[7] Burkhalter, J. E. and E. L. Koschmieder, The Physics of Fluids, 17: p. 1929-1935, 1974.
+[8] Jones, C. A., J. Fluid Mech., 157: p. 135-162, 1985.
+[9] Stuart, J. T., J. Fluid Mech., 4: p. 1-21, 1958.
+[10] Ahlers, G., D. S. Cannell, and M. A. D. Lerma, Physical Review A, 27: p. 1225-1227, 1982.
+[11] Andereck, C., S. S. Liu, and H. L. Swinney, J. Fluid Mech., 164: p. 155-183, 1986.
+[12] Coles, D., J. Fluid Mech., 21: p. 385-425, 1965.
+[13] Park, K., L. Gerald, and R. J. Donnelly, Phy. Rev. Lett., 47: p. 1448-1450, 1981.
+[14] Burkhalter, J. E. and E. L. Koschmieder, J. Fluid Mech., 58: p. 547-560, 1973.
+[15] Antonijoan, J. and J. Sanchez, Physics of Fluids, 14: p. 1661-1665, 2002.
+[16] Snyder, H. A., J. Fluid Mech., 35: p. 273-298, 1969.
+[17] King, G. P. and H. L. Swinney, Physical Review A, 27: p. 1240-1243, 1982.
+''';
+
 void main() {
   group('BibliographyVerifier.extractEntries', () {
+    test('無篇名縮寫文獻不把期刊誤當篇名，並正確抽取卷頁', () {
+      final entries = BibliographyVerifier.extractEntries(
+        _abbreviatedTitlelessReferences,
+      );
+
+      expect(entries, hasLength(17));
+      expect(entries.map((entry) => entry.title), everyElement(isNull));
+      expect(entries[0].venueTitle, 'J. Fluid Mech');
+      expect(entries[0].volume, '31');
+      expect(entries[0].firstPage, '17');
+      expect(entries[4].venueTitle, 'A. I. Ch. E. J');
+      expect(entries[12].venueTitle, 'Phy. Rev. Lett');
+    });
+
+    test('無篇名縮寫文獻以作者、期刊、年份與卷頁核實，不採無關搜尋候選', () async {
+      final entries = BibliographyVerifier.extractEntries(
+        _abbreviatedTitlelessReferences,
+      );
+      final client = MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'message': {'items': []},
+          }),
+          200,
+        ),
+      );
+
+      final results = await BibliographyVerifier.verifyAll(
+        entries,
+        client: client,
+      );
+
+      expect(
+        results.where(
+          (result) => result.confidence == CitationMatchConfidence.high,
+        ),
+        hasLength(16),
+      );
+      expect(results.first.confidence, CitationMatchConfidence.uncertain);
+      expect(
+        results.first.matchedTitle,
+        'On the Instability of Taylor Vortices',
+      );
+      expect(
+        results[1].matchedTitle,
+        startsWith('Stability of a viscous liquid'),
+      );
+      expect(results[15].matchedTitle, startsWith('Wave-number selection'));
+      expect(results[16].matchedTitle, startsWith('Limits of stability'));
+      expect(
+        results
+            .skip(1)
+            .every(
+              (result) =>
+                  result.verificationSource ==
+                  'TruthLens built-in classical-reference index',
+            ),
+        isTrue,
+      );
+    });
+
+    test('非內建文獻缺少篇名時，Crossref 結構欄位全數吻合仍可核實', () async {
+      final client = MockClient((request) async {
+        if (request.url.host == 'api.crossref.org') {
+          return http.Response(
+            jsonEncode({
+              'message': {
+                'items': [
+                  {
+                    'title': ['A remotely indexed article'],
+                    'container-title': ['Journal of Remote Verification'],
+                    'published': {
+                      'date-parts': [
+                        [1978],
+                      ],
+                    },
+                    'author': [
+                      {'family': 'Example'},
+                    ],
+                    'volume': '12',
+                    'page': '345-359',
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        }
+        return http.Response(jsonEncode({'results': []}), 200);
+      });
+
+      final result = await BibliographyVerifier.verifyAll(const [
+        BibliographyEntry(
+          rawText: 'Example, A., J. Remote Verification, 12: p. 345-359, 1978.',
+          firstAuthorSurname: 'Example',
+          year: 1978,
+          venueTitle: 'Journal of Remote Verification',
+          volume: '12',
+          firstPage: '345',
+          lastPage: '359',
+        ),
+      ], client: client);
+
+      expect(result.single.confidence, CitationMatchConfidence.high);
+      expect(result.single.matchedTitle, 'A remotely indexed article');
+      expect(result.single.verificationSource, 'Crossref');
+    });
+
     test('偵測到 References 標題後依條目切分（含多作者、and 連接）', () {
       final entries = BibliographyVerifier.extractEntries(_sampleReferences);
       expect(entries.length, 6);
@@ -1193,7 +1322,7 @@ References
       expect(results.single.matchedYear, 1968);
     });
 
-    test('截圖中的 22 筆 Taylor-Couette 經典文獻即使公共資料庫空回應也不被誤判不存在', () async {
+    test('截圖中的 22 筆 Taylor-Couette 文獻可核實，混合錯誤欄位者保留人工確認', () async {
       final client = MockClient((req) async {
         if (req.url.host == 'api.openalex.org') {
           return http.Response(jsonEncode({'results': []}), 200);
@@ -1246,12 +1375,15 @@ References
         client: client,
       );
       expect(results, hasLength(22));
-      final notHigh = <String>[
-        for (var i = 0; i < results.length; i++)
-          if (results[i].confidence != CitationMatchConfidence.high)
-            '${i + 1}: ${results[i].entry.title}',
-      ];
-      expect(notHigh, isEmpty);
+      expect(
+        results.where(
+          (result) => result.confidence == CitationMatchConfidence.high,
+        ),
+        hasLength(21),
+      );
+      expect(results[4].confidence, CitationMatchConfidence.uncertain);
+      expect(results[4].matchedTitle, 'On the Instability of Taylor Vortices');
+      expect(results[4].matchedYear, 1968);
     });
 
     test('IJCFD/World Scientific 截圖式 OCR 連寫標題即使公共資料庫空回應也能以卷頁年份核實', () async {

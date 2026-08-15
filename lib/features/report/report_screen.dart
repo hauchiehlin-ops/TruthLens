@@ -783,6 +783,9 @@ class _ReportScreenState extends State<ReportScreen> {
                     l10n,
                   );
                   final statusColor = _bibStatusColor(presentation.tone);
+                  final warningColor = _bibStatusColor(
+                    presentation.warningTone ?? presentation.tone,
+                  );
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
@@ -791,7 +794,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         Icon(
                           _bibStatusIcon(checks[i]),
                           size: 18,
-                          color: statusColor,
+                          color: presentation.warning == null
+                              ? statusColor
+                              : warningColor,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -824,7 +829,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                   presentation.warning!,
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
-                                        color: statusColor,
+                                        color: warningColor,
                                         fontWeight: FontWeight.w600,
                                       ),
                                 ),
@@ -884,6 +889,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Color _bibStatusColor(BibliographyDisplayTone tone) => switch (tone) {
     BibliographyDisplayTone.success => Colors.green.shade700,
     BibliographyDisplayTone.warning => Colors.orange.shade800,
+    BibliographyDisplayTone.mismatch => Colors.blue.shade700,
     BibliographyDisplayTone.error => Colors.red.shade700,
   };
 

@@ -1,19 +1,21 @@
 import '../../core/services/bibliography_verifier.dart';
 import '../../l10n/generated/app_localizations.dart';
 
-enum BibliographyDisplayTone { success, warning, error }
+enum BibliographyDisplayTone { success, warning, mismatch, error }
 
 class BibliographyPresentation {
   final String status;
   final String? warning;
   final String? source;
   final BibliographyDisplayTone tone;
+  final BibliographyDisplayTone? warningTone;
 
   const BibliographyPresentation({
     required this.status,
     required this.tone,
     this.warning,
     this.source,
+    this.warningTone,
   });
 }
 
@@ -50,9 +52,10 @@ BibliographyPresentation presentBibliographyCheck(
       source: check.verificationSource == null
           ? null
           : l10n.reportBibVerificationSource(check.verificationSource!),
-      tone: check.journalNameMismatch
-          ? BibliographyDisplayTone.warning
-          : BibliographyDisplayTone.success,
+      tone: BibliographyDisplayTone.success,
+      warningTone: check.journalNameMismatch
+          ? BibliographyDisplayTone.mismatch
+          : null,
     );
   }
 

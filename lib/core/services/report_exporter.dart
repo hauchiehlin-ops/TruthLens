@@ -409,17 +409,9 @@ class ReportExporter {
                           fontWeight: pw.FontWeight.bold,
                         ),
                       ),
-                      pw.Text(
-                        _bibliographyStatus(orderedBibliographyChecks[i], l10n),
-                        style: pw.TextStyle(
-                          fontSize: 9,
-                          color: _bibliographyPdfColor(
-                            presentBibliographyCheck(
-                              orderedBibliographyChecks[i],
-                              l10n,
-                            ).tone,
-                          ),
-                        ),
+                      ..._bibliographyStatusWidgets(
+                        orderedBibliographyChecks[i],
+                        l10n,
                       ),
                     ],
                   ),
@@ -522,10 +514,33 @@ class ReportExporter {
     ].join('\n');
   }
 
+  static List<pw.Widget> _bibliographyStatusWidgets(
+    BibliographyCheckResult check,
+    AppLocalizations l10n,
+  ) {
+    final presentation = presentBibliographyCheck(check, l10n);
+    pw.Widget line(String value, BibliographyDisplayTone tone) => pw.Text(
+      value,
+      style: pw.TextStyle(fontSize: 9, color: _bibliographyPdfColor(tone)),
+    );
+
+    return [
+      line(presentation.status, presentation.tone),
+      if (presentation.source != null)
+        pw.Text(presentation.source!, style: const pw.TextStyle(fontSize: 9)),
+      if (presentation.warning != null)
+        line(
+          presentation.warning!,
+          presentation.warningTone ?? BibliographyDisplayTone.mismatch,
+        ),
+    ];
+  }
+
   static PdfColor _bibliographyPdfColor(BibliographyDisplayTone tone) =>
       switch (tone) {
         BibliographyDisplayTone.success => PdfColors.green700,
         BibliographyDisplayTone.warning => PdfColors.orange800,
+        BibliographyDisplayTone.mismatch => PdfColors.blue700,
         BibliographyDisplayTone.error => PdfColors.red700,
       };
 
