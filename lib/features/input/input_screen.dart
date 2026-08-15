@@ -206,7 +206,7 @@ class _InputScreenState extends State<InputScreen> {
     return Row(
       children: [
         Icon(
-          active != null ? Icons.memory : Icons.info_outline,
+          active != null ? Icons.check_circle_outline : Icons.info_outline,
           size: 14,
           color: scheme.onSurfaceVariant,
         ),

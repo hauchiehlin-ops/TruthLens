@@ -19,6 +19,7 @@ import '../../core/services/preferences_service.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/professional_report_header.dart' show EngineGroup;
 import '../../shared/widgets/workspace_navigation.dart';
 import '../input/input_screen.dart'
     show InputSettingsDrawer, kSupportedLanguageOptions;
@@ -817,6 +818,21 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
+  /// 取得指定引擎角色的詳細說明（權重貢獻 + 判定理由），僅完整結果可用時有值
+  EngineGroup? _engineGroupFor(String role, AppLocalizations l10n) {
+    final result = _result;
+    if (result == null) return null;
+    for (final group in EngineGroup.fromScores(
+      result.engineScores,
+      l10n,
+      eslAdjusted: result.eslAdjusted,
+      contributionPointsByEngineId: result.roundedEngineContributionPoints,
+    )) {
+      if (group.role == role) return group;
+    }
+    return null;
+  }
+
   Widget _telemetryPanel({bool showTimeline = false}) {
     final l10n = AppLocalizations.of(context);
     final labels = _engineLabels(l10n);
@@ -936,12 +952,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             const Divider(height: 1),
                         itemBuilder: (context, index) {
                           final entry = labels.entries.elementAt(index);
+                          final group = _engineGroupFor(entry.key, l10n);
                           return _EngineTelemetryRow(
                             role: entry.key,
                             label: entry.value,
                             active: _activeEngines.contains(entry.key),
                             done: _done.contains(entry.key),
                             score: _scores[entry.key]?.aiProbability,
+                            relationshipText: group?.relationshipText,
+                            reasons: group?.reasons,
                           );
                         },
                       ),
@@ -1471,6 +1490,8 @@ class _EngineTelemetryRow extends StatelessWidget {
   final bool active;
   final bool done;
   final double? score;
+  final String? relationshipText;
+  final List<String>? reasons;
 
   const _EngineTelemetryRow({
     required this.role,
@@ -1478,6 +1499,8 @@ class _EngineTelemetryRow extends StatelessWidget {
     required this.active,
     required this.done,
     required this.score,
+    this.relationshipText,
+    this.reasons,
   });
 
   @override
@@ -1485,9 +1508,55 @@ class _EngineTelemetryRow extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final color = _engineColor(context, role);
     final icon = _engineIcon(role);
-    return SizedBox(
-      height: 58,
-      child: Row(
+    final showDetail =
+        done && (relationshipText != null || (reasons?.isNotEmpty ?? false));
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 42, child: _buildRow(context, scheme, color, icon)),
+          if (showDetail)
+            Padding(
+              padding: const EdgeInsets.only(left: 54, top: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (relationshipText != null)
+                    Text(
+                      relationshipText!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.25,
+                      ),
+                    ),
+                  for (final reason in (reasons ?? const []).take(2))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        reason,
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                              height: 1.25,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(
+    BuildContext context,
+    ColorScheme scheme,
+    Color color,
+    IconData icon,
+  ) {
+    return Row(
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 240),
@@ -1558,8 +1627,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                 : Icon(Icons.more_horiz, color: scheme.onSurfaceVariant),
           ),
         ],
-      ),
-    );
+      );
   }
 }
 

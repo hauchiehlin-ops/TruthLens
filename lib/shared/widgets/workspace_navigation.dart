@@ -79,7 +79,7 @@ class WorkspaceModeMenuButton extends StatelessWidget {
 
   static IconData _modeIcon(WorkspaceMode mode) => switch (mode) {
     WorkspaceMode.original => Icons.view_agenda_outlined,
-    WorkspaceMode.automatic => Icons.auto_awesome_mosaic_outlined,
+    WorkspaceMode.automatic => Icons.bolt_outlined,
     WorkspaceMode.commandGrid => Icons.grid_view_outlined,
     WorkspaceMode.missionTimeline => Icons.route_outlined,
     WorkspaceMode.evidenceCanvas => Icons.fact_check_outlined,

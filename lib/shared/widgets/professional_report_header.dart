@@ -176,7 +176,7 @@ class _VerdictSummaryCard extends StatelessWidget {
             child: Center(
               child: isAI
                   ? const Icon(
-                      Icons.smart_toy_outlined,
+                      Icons.description_outlined,
                       size: 40,
                       color: Colors.white,
                     )
@@ -403,7 +403,7 @@ class _EngineContributionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final engineGroups = _EngineGroup.fromScores(
+    final engineGroups = EngineGroup.fromScores(
       result.engineScores,
       l10n,
       eslAdjusted: result.eslAdjusted,
@@ -577,30 +577,6 @@ class _EngineContributionCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            group.relationshipText,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.grey[600],
-                                  height: 1.25,
-                                ),
-                          ),
-                          if (group.reasons.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            for (final reason in group.reasons.take(2))
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  reason,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: Colors.grey[600],
-                                        height: 1.25,
-                                      ),
-                                ),
-                              ),
-                          ],
                         ],
                       ),
                     ),
@@ -614,7 +590,7 @@ class _EngineContributionCard extends StatelessWidget {
 }
 
 class _RadarWithVerdict extends StatelessWidget {
-  final List<_EngineGroup> engineGroups;
+  final List<EngineGroup> engineGroups;
   final DetectionResult result;
   final AppLocalizations l10n;
 
@@ -786,7 +762,7 @@ class _VerdictMeta {
 
 /// 引擎 AI 概率雷達圖
 class _EngineRadarChart extends StatelessWidget {
-  final List<_EngineGroup> engineGroups;
+  final List<EngineGroup> engineGroups;
 
   const _EngineRadarChart({required this.engineGroups});
 
@@ -822,7 +798,7 @@ class _EngineRadarChart extends StatelessWidget {
 }
 
 class _ReportRadarPainter extends CustomPainter {
-  final List<_EngineGroup> groups;
+  final List<EngineGroup> groups;
 
   const _ReportRadarPainter({required this.groups});
 
@@ -943,7 +919,7 @@ class _ReportRadarPainter extends CustomPainter {
 }
 
 class _EngineSynthesisSummary extends StatelessWidget {
-  final List<_EngineGroup> groups;
+  final List<EngineGroup> groups;
   final double overallProbability;
   final String verdictLabel;
   final AppLocalizations l10n;
@@ -966,7 +942,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
         : available.reduce(
             (a, b) => a.contributionPoints >= b.contributionPoints ? a : b,
           );
-    _EngineGroup? style;
+    EngineGroup? style;
     for (final group in groups) {
       if (group.role == 'stylometry') {
         style = group;
@@ -1026,7 +1002,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
   }
 }
 
-class _EngineGroup {
+class EngineGroup {
   final String role;
   final String label;
   final String axisLabel;
@@ -1039,7 +1015,7 @@ class _EngineGroup {
   final List<String> reasons;
   final AppLocalizations l10n;
 
-  const _EngineGroup({
+  const EngineGroup({
     required this.role,
     required this.label,
     required this.axisLabel,
@@ -1071,7 +1047,7 @@ class _EngineGroup {
     );
   }
 
-  static List<_EngineGroup> fromScores(
+  static List<EngineGroup> fromScores(
     List<EngineScore> scores,
     AppLocalizations l10n, {
     bool eslAdjusted = false,
@@ -1117,7 +1093,7 @@ class _EngineGroup {
     ];
   }
 
-  static _EngineGroup _fromRole(
+  static EngineGroup _fromRole(
     String role,
     List<EngineScore> scores, {
     required double availableWeight,
@@ -1143,7 +1119,7 @@ class _EngineGroup {
       for (final reason in reasons.toSet()) _explainReason(role, reason, l10n),
     ];
 
-    return _EngineGroup(
+    return EngineGroup(
       role: role,
       label: _roleLabel(role, l10n),
       axisLabel: _axisLabel(role, l10n),

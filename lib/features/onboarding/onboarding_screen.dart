@@ -95,7 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (device != null)
                       Card(
                         child: ListTile(
-                          leading: const Icon(Icons.memory),
+                          leading: const Icon(Icons.devices_outlined),
                           title: Text(l10n.onboardingDetectedDevice),
                           subtitle: Text(device.summary),
                         ),
