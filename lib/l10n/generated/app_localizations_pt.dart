@@ -2003,6 +2003,20 @@ class AppLocalizationsPt extends AppLocalizations {
   String get workspaceNewAnalysis => 'Nova análise';
 
   @override
+  String get workspaceStopAnalysis => 'Parar análise';
+
+  @override
+  String get workspaceStopAnalysisTitle => 'Parar a análise atual?';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      'A análise ainda está em execução. O texto do documento será mantido, mas os resultados incompletos não serão salvos.';
+
+  @override
+  String get workspaceAnalysisStopped =>
+      'Análise interrompida. O texto do documento permanece no espaço de trabalho.';
+
+  @override
   String get workspaceSelectedEvidence => 'Evidência selecionada';
 
   @override

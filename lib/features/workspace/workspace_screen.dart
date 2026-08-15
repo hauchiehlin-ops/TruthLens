@@ -147,6 +147,42 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _analysisTicker = null;
   }
 
+  Future<void> _confirmStopAnalysis() async {
+    if (!_isAnalyzing) return;
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.workspaceStopAnalysisTitle),
+        content: Text(l10n.workspaceStopAnalysisBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.workspaceStopAnalysis),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted || !_isAnalyzing) return;
+
+    _analysisRun++;
+    _stopAnalysisTicker();
+    setState(() {
+      _phase = _WorkspacePhase.ready;
+      _result = null;
+      _done.clear();
+      _activeEngines.clear();
+      _scores.clear();
+      _selectedEvidence = 0;
+      _elapsedSeconds = 0;
+    });
+    _showMessage(l10n.workspaceAnalysisStopped);
+  }
+
   void _showMessage(String text) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
@@ -309,8 +345,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           }
         },
       );
+      if (run != _analysisRun) return;
       await history.save(result);
-      if (!mounted || run != _analysisRun) return;
+      if (run != _analysisRun) {
+        await history.delete(result.id);
+        return;
+      }
+      if (!mounted) return;
       setState(() {
         _result = result;
         _phase = _WorkspacePhase.complete;
@@ -605,13 +646,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 ),
                 Expanded(
                   child: IconButton(
-                    onPressed: _result != null
-                        ? _newAnalysis
-                        : (_isAnalyzing ? null : _startAnalysis),
-                    icon: Icon(_result != null ? Icons.add : Icons.play_arrow),
-                    tooltip: _result != null
-                        ? l10n.workspaceNewAnalysis
-                        : l10n.inputStartButton,
+                    onPressed: _isAnalyzing
+                        ? _confirmStopAnalysis
+                        : (_result != null ? _newAnalysis : _startAnalysis),
+                    icon: Icon(
+                      _isAnalyzing
+                          ? Icons.stop_circle_outlined
+                          : (_result != null ? Icons.add : Icons.play_arrow),
+                    ),
+                    tooltip: _isAnalyzing
+                        ? l10n.workspaceStopAnalysis
+                        : (_result != null
+                              ? l10n.workspaceNewAnalysis
+                              : l10n.inputStartButton),
                   ),
                 ),
               ],
@@ -659,7 +706,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const Spacer(),
-          if (_result != null)
+          if (_isAnalyzing)
+            FilledButton.tonalIcon(
+              onPressed: _confirmStopAnalysis,
+              icon: const Icon(Icons.stop_circle_outlined),
+              label: Text(l10n.workspaceStopAnalysis),
+            )
+          else if (_result != null)
             OutlinedButton.icon(
               onPressed: _newAnalysis,
               icon: const Icon(Icons.add),
@@ -667,7 +720,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             )
           else
             FilledButton.icon(
-              onPressed: _isAnalyzing ? null : _startAnalysis,
+              onPressed: _startAnalysis,
               icon: const Icon(Icons.play_arrow),
               label: Text(l10n.inputStartButton),
             ),
@@ -739,22 +792,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           const SizedBox(height: 6),
           SizedBox(
             width: double.infinity,
-            child: _result != null
+            child: _isAnalyzing
+                ? FilledButton.tonalIcon(
+                    onPressed: _confirmStopAnalysis,
+                    icon: const Icon(Icons.stop_circle_outlined),
+                    label: Text(l10n.workspaceStopAnalysis),
+                  )
+                : _result != null
                 ? OutlinedButton.icon(
                     onPressed: _newAnalysis,
                     icon: const Icon(Icons.add),
                     label: Text(l10n.workspaceNewAnalysis),
                   )
                 : FilledButton.icon(
-                    onPressed: _isAnalyzing || _controller.text.trim().isEmpty
+                    onPressed: _controller.text.trim().isEmpty
                         ? null
                         : _startAnalysis,
                     icon: const Icon(Icons.play_arrow),
-                    label: Text(
-                      _isAnalyzing
-                          ? l10n.workspaceAnalyzing
-                          : l10n.inputStartButton,
-                    ),
+                    label: Text(l10n.inputStartButton),
                   ),
           ),
         ],

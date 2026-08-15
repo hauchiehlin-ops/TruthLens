@@ -489,6 +489,10 @@
   "workspaceAnalysisSlow": "분석이 계속 진행 중이며 화면은 응답하고 있습니다. 지난 {seconds}초 동안 완료된 모듈이 없습니다. 큰 문서나 로컬 모델은 시간이 더 걸릴 수 있습니다.",
   "workspaceAnalysisFailed": "분석이 예기치 않게 중지되었습니다. 다시 시도하거나 모델 설정을 확인하세요.",
   "workspaceNewAnalysis": "새 분석",
+  "workspaceStopAnalysis": "분석 중지",
+  "workspaceStopAnalysisTitle": "현재 분석을 중지할까요?",
+  "workspaceStopAnalysisBody": "분석이 아직 진행 중입니다. 문서 텍스트는 유지되지만 완료되지 않은 결과는 저장되지 않습니다.",
+  "workspaceAnalysisStopped": "분석이 중지되었습니다. 문서 텍스트는 작업 공간에 유지됩니다.",
   "workspaceSelectedEvidence": "선택한 근거",
   "workspaceNoEvidence": "각 엔진이 완료되면 문장 근거가 여기에 표시됩니다.",
   "workspacePreliminaryVerdict": "예비 AI 확률: {percent}%"

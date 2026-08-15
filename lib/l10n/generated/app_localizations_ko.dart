@@ -1947,6 +1947,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get workspaceNewAnalysis => '새 분석';
 
   @override
+  String get workspaceStopAnalysis => '분석 중지';
+
+  @override
+  String get workspaceStopAnalysisTitle => '현재 분석을 중지할까요?';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      '분석이 아직 진행 중입니다. 문서 텍스트는 유지되지만 완료되지 않은 결과는 저장되지 않습니다.';
+
+  @override
+  String get workspaceAnalysisStopped => '분석이 중지되었습니다. 문서 텍스트는 작업 공간에 유지됩니다.';
+
+  @override
   String get workspaceSelectedEvidence => '선택한 근거';
 
   @override

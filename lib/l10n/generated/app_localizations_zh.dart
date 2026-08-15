@@ -1908,6 +1908,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceNewAnalysis => '新的分析';
 
   @override
+  String get workspaceStopAnalysis => '停止分析';
+
+  @override
+  String get workspaceStopAnalysisTitle => '停止目前的分析？';
+
+  @override
+  String get workspaceStopAnalysisBody => '目前的分析仍在進行。停止後會保留文件文字，但未完成的結果不會儲存。';
+
+  @override
+  String get workspaceAnalysisStopped => '分析已停止，文件文字仍保留在工作台。';
+
+  @override
   String get workspaceSelectedEvidence => '選取證據';
 
   @override
@@ -3823,6 +3835,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceNewAnalysis => '新的分析';
 
   @override
+  String get workspaceStopAnalysis => '停止分析';
+
+  @override
+  String get workspaceStopAnalysisTitle => '停止当前分析？';
+
+  @override
+  String get workspaceStopAnalysisBody => '当前分析仍在进行。停止后会保留文档文字，但未完成的结果不会保存。';
+
+  @override
+  String get workspaceAnalysisStopped => '分析已停止，文档文字仍保留在工作台。';
+
+  @override
   String get workspaceSelectedEvidence => '选取证据';
 
   @override
@@ -5736,6 +5760,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceNewAnalysis => '新的分析';
+
+  @override
+  String get workspaceStopAnalysis => '停止分析';
+
+  @override
+  String get workspaceStopAnalysisTitle => '停止目前的分析？';
+
+  @override
+  String get workspaceStopAnalysisBody => '目前的分析仍在進行。停止後會保留文件文字，但未完成的結果不會儲存。';
+
+  @override
+  String get workspaceAnalysisStopped => '分析已停止，文件文字仍保留在工作台。';
 
   @override
   String get workspaceSelectedEvidence => '選取證據';

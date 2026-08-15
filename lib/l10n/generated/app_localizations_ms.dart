@@ -1991,6 +1991,20 @@ class AppLocalizationsMs extends AppLocalizations {
   String get workspaceNewAnalysis => 'Analisis baharu';
 
   @override
+  String get workspaceStopAnalysis => 'Hentikan analisis';
+
+  @override
+  String get workspaceStopAnalysisTitle => 'Hentikan analisis semasa?';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      'Analisis masih berjalan. Teks dokumen akan dikekalkan, tetapi hasil yang belum selesai tidak akan disimpan.';
+
+  @override
+  String get workspaceAnalysisStopped =>
+      'Analisis dihentikan. Teks dokumen kekal dalam ruang kerja.';
+
+  @override
   String get workspaceSelectedEvidence => 'Bukti dipilih';
 
   @override

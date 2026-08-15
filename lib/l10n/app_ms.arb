@@ -489,6 +489,10 @@
   "workspaceAnalysisSlow": "Analisis masih berjalan dan antara muka kekal responsif. Tiada modul selesai dalam {seconds}s terakhir; dokumen besar atau model setempat mungkin mengambil masa lebih lama.",
   "workspaceAnalysisFailed": "Analisis terhenti tanpa dijangka. Cuba lagi atau semak tetapan model.",
   "workspaceNewAnalysis": "Analisis baharu",
+  "workspaceStopAnalysis": "Hentikan analisis",
+  "workspaceStopAnalysisTitle": "Hentikan analisis semasa?",
+  "workspaceStopAnalysisBody": "Analisis masih berjalan. Teks dokumen akan dikekalkan, tetapi hasil yang belum selesai tidak akan disimpan.",
+  "workspaceAnalysisStopped": "Analisis dihentikan. Teks dokumen kekal dalam ruang kerja.",
   "workspaceSelectedEvidence": "Bukti dipilih",
   "workspaceNoEvidence": "Bukti ayat muncul apabila setiap enjin selesai.",
   "workspacePreliminaryVerdict": "Kebarangkalian AI awal: {percent}%"

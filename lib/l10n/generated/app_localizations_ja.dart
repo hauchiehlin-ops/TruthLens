@@ -1940,6 +1940,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceNewAnalysis => '新しい分析';
 
   @override
+  String get workspaceStopAnalysis => '分析を停止';
+
+  @override
+  String get workspaceStopAnalysisTitle => '現在の分析を停止しますか？';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      '分析はまだ実行中です。文書テキストは保持されますが、未完了の結果は保存されません。';
+
+  @override
+  String get workspaceAnalysisStopped => '分析を停止しました。文書テキストはワークスペースに保持されています。';
+
+  @override
   String get workspaceSelectedEvidence => '選択した証拠';
 
   @override

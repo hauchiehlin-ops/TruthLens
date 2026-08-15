@@ -489,6 +489,10 @@
   "workspaceAnalysisSlow": "分析は継続中で、画面は応答しています。{seconds} 秒間モジュールの完了がありません。大きな文書やローカルモデルには時間がかかる場合があります。",
   "workspaceAnalysisFailed": "分析が予期せず停止しました。再試行するかモデル設定を確認してください。",
   "workspaceNewAnalysis": "新しい分析",
+  "workspaceStopAnalysis": "分析を停止",
+  "workspaceStopAnalysisTitle": "現在の分析を停止しますか？",
+  "workspaceStopAnalysisBody": "分析はまだ実行中です。文書テキストは保持されますが、未完了の結果は保存されません。",
+  "workspaceAnalysisStopped": "分析を停止しました。文書テキストはワークスペースに保持されています。",
   "workspaceSelectedEvidence": "選択した証拠",
   "workspaceNoEvidence": "各エンジンの完了後、文ごとの証拠がここに表示されます。",
   "workspacePreliminaryVerdict": "暫定AI確率：{percent}%"

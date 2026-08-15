@@ -489,6 +489,10 @@
   "workspaceAnalysisSlow": "Die Analyse läuft weiter und die Oberfläche reagiert. Seit {seconds}s wurde kein Modul abgeschlossen; große Dokumente oder lokale Modelle können länger dauern.",
   "workspaceAnalysisFailed": "Die Analyse wurde unerwartet beendet. Bitte erneut versuchen oder die Modelleinstellungen prüfen.",
   "workspaceNewAnalysis": "Neue Analyse",
+  "workspaceStopAnalysis": "Analyse stoppen",
+  "workspaceStopAnalysisTitle": "Aktuelle Analyse stoppen?",
+  "workspaceStopAnalysisBody": "Die Analyse läuft noch. Der Dokumenttext bleibt erhalten, unvollständige Ergebnisse werden jedoch nicht gespeichert.",
+  "workspaceAnalysisStopped": "Analyse gestoppt. Der Dokumenttext bleibt im Arbeitsbereich erhalten.",
   "workspaceSelectedEvidence": "Ausgewählter Beleg",
   "workspaceNoEvidence": "Satzbelege erscheinen hier, sobald die Engines fertig sind.",
   "workspacePreliminaryVerdict": "Vorläufige KI-Wahrscheinlichkeit: {percent}%"

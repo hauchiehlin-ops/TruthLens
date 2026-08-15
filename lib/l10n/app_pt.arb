@@ -489,6 +489,10 @@
   "workspaceAnalysisSlow": "A análise continua e a interface está responsiva. Nenhum módulo terminou nos últimos {seconds}s; documentos grandes ou modelos locais podem demorar mais.",
   "workspaceAnalysisFailed": "A análise parou inesperadamente. Tente novamente ou verifique as configurações do modelo.",
   "workspaceNewAnalysis": "Nova análise",
+  "workspaceStopAnalysis": "Parar análise",
+  "workspaceStopAnalysisTitle": "Parar a análise atual?",
+  "workspaceStopAnalysisBody": "A análise ainda está em execução. O texto do documento será mantido, mas os resultados incompletos não serão salvos.",
+  "workspaceAnalysisStopped": "Análise interrompida. O texto do documento permanece no espaço de trabalho.",
   "workspaceSelectedEvidence": "Evidência selecionada",
   "workspaceNoEvidence": "As evidências por frase aparecem quando cada mecanismo termina.",
   "workspacePreliminaryVerdict": "Probabilidade preliminar de IA: {percent}%"

@@ -132,9 +132,28 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Evidence canvas').last);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Evidence canvas'), findsWidgets);
     expect(find.textContaining('0/4 ·'), findsWidgets);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      source,
+    );
+
+    expect(find.text('Stop analysis'), findsOneWidget);
+    await tester.tap(find.text('Stop analysis'));
+    await tester.pump();
+    expect(find.text('Stop the current analysis?'), findsOneWidget);
+    expect(
+      find.textContaining('unfinished results will not be saved'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Stop analysis').last);
+    await tester.pump();
+
+    expect(find.text('Start Detection'), findsOneWidget);
+    expect(find.textContaining('Analysis stopped.'), findsOneWidget);
     expect(
       tester.widget<TextField>(find.byType(TextField).first).controller!.text,
       source,

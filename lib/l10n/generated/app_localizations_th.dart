@@ -1987,6 +1987,20 @@ class AppLocalizationsTh extends AppLocalizations {
   String get workspaceNewAnalysis => 'การวิเคราะห์ใหม่';
 
   @override
+  String get workspaceStopAnalysis => 'หยุดการวิเคราะห์';
+
+  @override
+  String get workspaceStopAnalysisTitle => 'หยุดการวิเคราะห์ปัจจุบันหรือไม่';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      'การวิเคราะห์ยังดำเนินอยู่ ระบบจะเก็บข้อความเอกสารไว้ แต่จะไม่บันทึกผลลัพธ์ที่ยังไม่เสร็จ';
+
+  @override
+  String get workspaceAnalysisStopped =>
+      'หยุดการวิเคราะห์แล้ว ข้อความเอกสารยังคงอยู่ในพื้นที่ทำงาน';
+
+  @override
   String get workspaceSelectedEvidence => 'หลักฐานที่เลือก';
 
   @override

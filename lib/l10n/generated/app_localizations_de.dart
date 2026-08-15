@@ -2004,6 +2004,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workspaceNewAnalysis => 'Neue Analyse';
 
   @override
+  String get workspaceStopAnalysis => 'Analyse stoppen';
+
+  @override
+  String get workspaceStopAnalysisTitle => 'Aktuelle Analyse stoppen?';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      'Die Analyse läuft noch. Der Dokumenttext bleibt erhalten, unvollständige Ergebnisse werden jedoch nicht gespeichert.';
+
+  @override
+  String get workspaceAnalysisStopped =>
+      'Analyse gestoppt. Der Dokumenttext bleibt im Arbeitsbereich erhalten.';
+
+  @override
   String get workspaceSelectedEvidence => 'Ausgewählter Beleg';
 
   @override

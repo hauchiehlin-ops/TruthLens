@@ -1996,6 +1996,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get workspaceNewAnalysis => 'Новый анализ';
 
   @override
+  String get workspaceStopAnalysis => 'Остановить анализ';
+
+  @override
+  String get workspaceStopAnalysisTitle => 'Остановить текущий анализ?';
+
+  @override
+  String get workspaceStopAnalysisBody =>
+      'Анализ всё ещё выполняется. Текст документа сохранится, но незавершённые результаты не будут записаны.';
+
+  @override
+  String get workspaceAnalysisStopped =>
+      'Анализ остановлен. Текст документа остался в рабочем пространстве.';
+
+  @override
   String get workspaceSelectedEvidence => 'Выбранное доказательство';
 
   @override

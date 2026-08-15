@@ -3267,6 +3267,30 @@ abstract class AppLocalizations {
   /// **'New analysis'**
   String get workspaceNewAnalysis;
 
+  /// No description provided for @workspaceStopAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop analysis'**
+  String get workspaceStopAnalysis;
+
+  /// No description provided for @workspaceStopAnalysisTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop the current analysis?'**
+  String get workspaceStopAnalysisTitle;
+
+  /// No description provided for @workspaceStopAnalysisBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The analysis is still running. The document text will be kept, but unfinished results will not be saved.'**
+  String get workspaceStopAnalysisBody;
+
+  /// No description provided for @workspaceAnalysisStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis stopped. The document text remains in the workspace.'**
+  String get workspaceAnalysisStopped;
+
   /// No description provided for @workspaceSelectedEvidence.
   ///
   /// In en, this message translates to:
