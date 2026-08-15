@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
@@ -34,7 +35,7 @@ class ThresholdSettingTitle extends StatelessWidget {
               ],
             ),
           ),
-          icon: const Icon(Icons.info_outline),
+          icon: Icon(LucideIcons.info),
         ),
       ],
     );

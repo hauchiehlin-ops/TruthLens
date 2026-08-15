@@ -27,6 +27,30 @@
     await writable.close();
   }
 
+  // 串流寫入：供大型模型檔案下載時逐塊直接落地 OPFS，避免整份先在記憶體堆積
+  // （模型檔常達數十~百餘 MB，疊加 CanvasKit／ONNX WASM 堆在行動裝置上容易見底）。
+  async function openWritable(fileName) {
+    const dir = await root();
+    const handle = await dir.getFileHandle(fileName, { create: true });
+    return handle.createWritable();
+  }
+
+  async function writeChunk(writable, bytes) {
+    await writable.write(bytes);
+  }
+
+  async function closeWritable(writable) {
+    await writable.close();
+  }
+
+  async function abortWritable(writable) {
+    try {
+      await writable.abort();
+    } catch (e) {
+      // 已關閉或已中止，忽略
+    }
+  }
+
   async function exists(fileName) {
     try {
       const dir = await root();
@@ -67,5 +91,17 @@
     await writeBytes(fileName, new TextEncoder().encode(text));
   }
 
-  window.truthlensFs = { readBytes, writeBytes, exists, size, deleteFile, readText, writeText };
+  window.truthlensFs = {
+    readBytes,
+    writeBytes,
+    exists,
+    size,
+    deleteFile,
+    readText,
+    writeText,
+    openWritable,
+    writeChunk,
+    closeWritable,
+    abortWritable,
+  };
 })();

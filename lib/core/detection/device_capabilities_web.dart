@@ -36,8 +36,9 @@ class DeviceCapabilities {
     final hasGpu = _navigatorGpu != null;
 
     return DeviceCapabilities(
-      totalRamMb:
-          memGb != null ? (memGb * 1024).round() : _estimateRamMb(processors),
+      totalRamMb: memGb != null
+          ? (memGb * 1024).round()
+          : _estimateRamMb(processors),
       processors: processors,
       platform: 'web',
       ramMeasured: memGb != null,

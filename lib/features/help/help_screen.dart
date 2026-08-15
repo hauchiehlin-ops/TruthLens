@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -157,7 +158,7 @@ class HelpScreen extends StatelessWidget {
               children: [
                 for (var i = 0; i < _officialLinkUrls.length; i++)
                   ListTile(
-                    leading: const Icon(Icons.open_in_new),
+                    leading: Icon(LucideIcons.externalLink),
                     title: Text(officialLinkRoles[i]),
                     subtitle: Text(_officialLinkNames[i]),
                     onTap: () => _openLink(_officialLinkUrls[i]),
@@ -298,7 +299,7 @@ class _WorkflowInfographicWidgetState
       _WorkflowStepData(
         step: 1,
         title: widget.l10n.helpWorkflowStep1Title,
-        icon: Icons.cloud_download_rounded,
+        icon: LucideIcons.cloudDownload,
         accentColor: Colors.blue,
         chips: [
           widget.l10n.helpWorkflowStep1ChipOnboarding,
@@ -310,7 +311,7 @@ class _WorkflowInfographicWidgetState
       _WorkflowStepData(
         step: 2,
         title: widget.l10n.helpWorkflowStep2Title,
-        icon: Icons.tune_rounded,
+        icon: LucideIcons.sliders,
         accentColor: Colors.purple,
         chips: [
           widget.l10n.helpWorkflowStep2ChipTransformer,
@@ -331,7 +332,7 @@ class _WorkflowInfographicWidgetState
       _WorkflowStepData(
         step: 3,
         title: widget.l10n.helpWorkflowStep3Title,
-        icon: Icons.upload_file_rounded,
+        icon: LucideIcons.upload,
         accentColor: Colors.teal,
         chips: [
           widget.l10n.helpWorkflowStep3ChipPaste,
@@ -344,19 +345,20 @@ class _WorkflowInfographicWidgetState
       _WorkflowStepData(
         step: 4,
         title: widget.l10n.helpWorkflowStep4Title,
-        icon: Icons.analytics_rounded,
+        icon: LucideIcons.trendingUp,
         accentColor: Colors.amber,
         chips: [
           widget.l10n.helpWorkflowStep4ChipEnsemble,
           widget.l10n.helpWorkflowStep4ChipLiveProgress,
           widget.l10n.helpWorkflowStep4ChipEslCorrection,
+          widget.l10n.helpWorkflowStep4ChipStoppable,
         ],
         body: widget.l10n.helpWorkflowStep4Body,
       ),
       _WorkflowStepData(
         step: 5,
         title: widget.l10n.helpWorkflowStep5Title,
-        icon: Icons.assessment_rounded,
+        icon: LucideIcons.barChart,
         accentColor: Colors.green,
         chips: [
           widget.l10n.helpWorkflowStep5ChipOverviewGauge,
@@ -388,7 +390,7 @@ class _WorkflowInfographicWidgetState
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Icon(
-                          Icons.arrow_forward_rounded,
+                          LucideIcons.arrowRight,
                           size: 16,
                           color: scheme.outline.withAlpha(140),
                         ),

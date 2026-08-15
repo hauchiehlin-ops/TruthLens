@@ -10,8 +10,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../detection/device_capabilities.dart';
 import '../detection/model_catalog.dart' show PerformanceTier;
-import 'web_file_picker.dart'
-    if (dart.library.io) 'web_file_picker_stub.dart';
+import 'web_file_picker.dart' if (dart.library.io) 'web_file_picker_stub.dart';
 
 typedef PdfOcrRecognizer =
     Future<String?> Function(

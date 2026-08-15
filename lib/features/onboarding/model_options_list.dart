@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -162,7 +163,7 @@ class _VariantTile extends StatelessWidget {
                   ),
                   if (isActive)
                     Chip(
-                      avatar: const Icon(Icons.check_circle, size: 16),
+                      avatar: Icon(LucideIcons.checkCircle, size: 16),
                       label: Text(l10n.modelListActiveChip),
                       visualDensity: VisualDensity.compact,
                     )
@@ -253,7 +254,7 @@ class _VariantTile extends StatelessWidget {
         if (!installed && variant.isDownloadable)
           FilledButton.tonalIcon(
             onPressed: () => provisioner.downloadVariant(plan.role, variant),
-            icon: const Icon(Icons.download, size: 18),
+            icon: Icon(LucideIcons.download, size: 18),
             label: Text(
               l10n.modelListDownloadButton(
                 ModelOptionsList.sizeLabel(variant.sizeBytes),
@@ -265,25 +266,25 @@ class _VariantTile extends StatelessWidget {
         if (installed && !isActive)
           OutlinedButton.icon(
             onPressed: () => manager.setActive(plan.role, variant.id),
-            icon: const Icon(Icons.swap_horiz, size: 18),
+            icon: Icon(LucideIcons.arrowLeftRight, size: 18),
             label: Text(l10n.modelListSetActiveButton),
           ),
         if (hasUpdate)
           FilledButton.tonalIcon(
             onPressed: () => provisioner.downloadVariant(plan.role, variant),
-            icon: const Icon(Icons.system_update_alt, size: 18),
+            icon: Icon(LucideIcons.download, size: 18),
             label: Text(l10n.modelListUpdateButton),
           ),
         if (installed)
           IconButton(
-            icon: const Icon(Icons.delete_outline),
+            icon: Icon(LucideIcons.trash),
             tooltip: l10n.modelListDeleteTooltip,
             onPressed: () => _confirmDelete(context, manager, l10n),
           ),
         if (variant.pageUrl != null)
           TextButton.icon(
             onPressed: _openPage,
-            icon: const Icon(Icons.open_in_new, size: 16),
+            icon: Icon(LucideIcons.externalLink, size: 16),
             label: Text(l10n.modelListPageButton),
           ),
         if (!fits && !installed)
@@ -370,7 +371,7 @@ class _CustomModelTile extends StatelessWidget {
               Row(
                 children: [
                   Chip(
-                    avatar: const Icon(Icons.star, size: 16),
+                    avatar: Icon(LucideIcons.star, size: 16),
                     label: Text(l10n.modelListCustomChip),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -383,7 +384,7 @@ class _CustomModelTile extends StatelessWidget {
                   ),
                   if (isActive)
                     Chip(
-                      avatar: const Icon(Icons.check_circle, size: 16),
+                      avatar: Icon(LucideIcons.checkCircle, size: 16),
                       label: Text(l10n.modelListActiveChip),
                       visualDensity: VisualDensity.compact,
                     ),
@@ -406,11 +407,11 @@ class _CustomModelTile extends StatelessWidget {
                   if (!isActive)
                     OutlinedButton.icon(
                       onPressed: () => manager.setActive(role, model.variantId),
-                      icon: const Icon(Icons.swap_horiz, size: 18),
+                      icon: Icon(LucideIcons.arrowLeftRight, size: 18),
                       label: Text(l10n.modelListSetActiveButton),
                     ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline),
+                    icon: Icon(LucideIcons.trash),
                     tooltip: l10n.modelListDeleteTooltip,
                     onPressed: () async {
                       final confirmed = await showDialog<bool>(

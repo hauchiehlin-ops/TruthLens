@@ -63,9 +63,7 @@ class LinkVerifier {
     }
   }
 
-  static final RegExp _urlPattern = RegExp(
-    r'''https?://[^\s<>"'`　-￿]+''',
-  );
+  static final RegExp _urlPattern = RegExp(r'''https?://[^\s<>"'`　-￿]+''');
 
   /// DOI 格式（依 Crossref 規範：字首 `10.` + 4-9 碼註冊者代碼 + `/` + 任意後綴）。
   static final RegExp _doiSuffixPattern = RegExp(r'^10\.\d{4,9}/\S+$');
@@ -108,9 +106,11 @@ class LinkVerifier {
     try {
       final results = <LinkCheckResult>[];
       for (final url in urls.take(maxLinksPerCheck)) {
-        results.add(isDoiUrl(url)
-            ? await _verifyDoiCitation(c, url, timeout)
-            : await _verifyOne(c, url, timeout));
+        results.add(
+          isDoiUrl(url)
+              ? await _verifyDoiCitation(c, url, timeout)
+              : await _verifyOne(c, url, timeout),
+        );
       }
       return results;
     } finally {
@@ -137,7 +137,8 @@ class LinkVerifier {
             (jsonDecode(response.body) as Map<String, dynamic>)['message']
                 as Map<String, dynamic>?;
         final titles = (message?['title'] as List?)?.cast<dynamic>();
-        final containers = (message?['container-title'] as List?)?.cast<dynamic>();
+        final containers = (message?['container-title'] as List?)
+            ?.cast<dynamic>();
         return LinkCheckResult(
           url: url,
           status: LinkStatus.reachable,

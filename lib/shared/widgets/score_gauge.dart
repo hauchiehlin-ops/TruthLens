@@ -22,7 +22,8 @@ class ScoreGauge extends StatelessWidget {
     return Semantics(
       container: true,
       label: l10n.reportOverallVerdictLabel(
-          '$label，${l10n.reportAiProbabilityLabel} ${(aiProbability * 100).round()}%'),
+        '$label，${l10n.reportAiProbabilityLabel} ${(aiProbability * 100).round()}%',
+      ),
       child: ExcludeSemantics(
         child: Column(
           children: [
@@ -45,14 +46,16 @@ class ScoreGauge extends StatelessWidget {
                       children: [
                         Text(
                           '${(aiProbability * 100).round()}%',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
+                          style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
-                                  color: color, fontWeight: FontWeight.bold),
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
-                        Text(l10n.reportAiProbabilityLabel,
-                            style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          l10n.reportAiProbabilityLabel,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),

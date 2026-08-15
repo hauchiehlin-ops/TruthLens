@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -82,7 +83,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: Text(l10n.historyAppBarTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_sweep_outlined),
+            icon: Icon(LucideIcons.trash),
             tooltip: l10n.historyClearAllTooltip,
             onPressed: _entries.isEmpty ? null : _confirmClearAll,
           ),
@@ -94,7 +95,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(LucideIcons.search),
                 hintText: l10n.historySearchHint,
               ),
               onChanged: (v) {
@@ -126,7 +127,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           padding: const EdgeInsets.only(right: 20),
                           color: Theme.of(context).colorScheme.errorContainer,
                           child: Icon(
-                            Icons.delete_outline,
+                            LucideIcons.trash,
                             color: Theme.of(
                               context,
                             ).colorScheme.onErrorContainer,
@@ -181,7 +182,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                             subtitle: Text('$verdictLabel · $time'),
                             trailing: IconButton(
-                              icon: const Icon(Icons.refresh),
+                              icon: Icon(LucideIcons.refreshCw),
                               tooltip: l10n.historyReanalyzeTooltip,
                               onPressed: () => context.push(
                                 '/analysis',
@@ -207,7 +208,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
-          Icons.history,
+          LucideIcons.history,
           size: 48,
           color: Theme.of(context).colorScheme.outline,
         ),

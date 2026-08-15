@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -210,7 +211,7 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
                         Padding(
                           padding: const EdgeInsets.only(left: 4),
                           child: Icon(
-                            Icons.info_outline,
+                            LucideIcons.info,
                             size: 12,
                             color: scheme.outlineVariant,
                           ),

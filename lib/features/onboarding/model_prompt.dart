@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/services/preferences_service.dart';
@@ -23,7 +24,7 @@ Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
           children: [
             Expanded(child: Text(l10n.modelPromptTitle)),
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(LucideIcons.x),
               tooltip: l10n.commonClose,
               onPressed: () =>
                   Navigator.of(context).pop(ModelPromptResult.dismissed),
@@ -47,8 +48,7 @@ Future<ModelPromptResult> showModelDownloadPrompt(BuildContext context) async {
         ),
         actions: [
           TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(ModelPromptResult.skip),
+            onPressed: () => Navigator.of(context).pop(ModelPromptResult.skip),
             child: Text(l10n.modelPromptSkip),
           ),
           FilledButton(

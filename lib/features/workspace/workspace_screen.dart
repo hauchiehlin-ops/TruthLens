@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +24,7 @@ import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/professional_report_header.dart' show EngineGroup;
 import '../../shared/widgets/workspace_navigation.dart';
-import '../input/input_screen.dart'
-    show InputSettingsDrawer, kSupportedLanguageOptions;
+import '../input/input_screen.dart' show InputSettingsDrawer;
 import '../onboarding/model_prompt.dart';
 import '../report/report_screen.dart';
 
@@ -50,9 +52,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
 
-  // 指令面板三欄可拖曳調整寬度（使用者手動調整後的期望寬度，未調整則為 null 走預設比例）
+  // 各工作台模式下的面板可拖曳調整大小（使用者手動調整後的期望尺寸，
+  // 未調整則為 null，走各自的預設比例／尺寸）。
   double? _commandGridSourceWidth;
   double? _commandGridTelemetryWidth;
+  double? _compactGridSourceHeight;
+  double? _compactGridTelemetryHeight;
+  double? _compactGridFindingsHeight;
+  double? _timelineNarrowMainHeight;
+  double? _timelineWideMainWidth;
+  double? _evidenceRailWidth;
+  double? _evidenceTelemetryWidth;
+  double? _evidenceDocumentHeight;
+  double? _compactEvidenceDocumentHeight;
 
   String _sourceFileName = '';
   _WorkspacePhase _phase = _WorkspacePhase.idle;
@@ -392,7 +404,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final prefs = context.watch<PreferencesService>();
     final width = MediaQuery.sizeOf(context).width;
     final compact = width < 760;
@@ -405,29 +416,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         titleSpacing: 16,
         title: const AppIdentityTitle(),
         actions: [
-          WorkspaceModeMenuButton(
+          AppOverflowMenu(
             activeMode: prefs.workspaceMode,
             analysisActive: _isAnalyzing,
-          ),
-          if (!compact) _languageMenu(),
-          IconButton(
-            icon: const Icon(Icons.history_outlined),
-            tooltip: l10n.inputHistoryTooltip,
-            onPressed: () => context.push('/history'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: l10n.inputSettingsTooltip,
-            onPressed: compact
+            onSettings: compact
                 ? () => _scaffoldKey.currentState?.openEndDrawer()
                 : () => context.push('/settings'),
+            onHistory: () => context.push('/history'),
+            onHelp: () => context.push('/help'),
           ),
-          if (!compact)
-            IconButton(
-              icon: const Icon(Icons.help_outline),
-              tooltip: l10n.inputHelpTooltip,
-              onPressed: () => context.push('/help'),
-            ),
         ],
       ),
       body: LayoutBuilder(
@@ -451,25 +448,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 WorkspaceMode.evidenceCanvas => _evidenceCanvas(),
                 WorkspaceMode.original => _commandGrid(),
                 WorkspaceMode.automatic => _commandGrid(),
+                WorkspaceMode.cosmicFuture => _cosmicFutureLayout(),
+                WorkspaceMode.softEducation => _softEducationLayout(),
               },
             ),
           );
         },
       ),
-    );
-  }
-
-  Widget _languageMenu() {
-    final prefs = context.watch<PreferencesService>();
-    return PopupMenuButton<Locale?>(
-      icon: const Icon(Icons.translate),
-      tooltip: 'Language',
-      initialValue: prefs.locale,
-      onSelected: prefs.setLocale,
-      itemBuilder: (context) => [
-        for (final option in kSupportedLanguageOptions)
-          PopupMenuItem(value: option.$1, child: Text(option.$2)),
-      ],
     );
   }
 
@@ -481,7 +466,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         const dividerWidth = 14.0;
         const minPanelWidth = 220.0;
         final available = constraints.maxWidth - dividerWidth * 2 - 20;
-        final maxSource = math.max(minPanelWidth, available - minPanelWidth * 2);
+        final maxSource = math.max(
+          minPanelWidth,
+          available - minPanelWidth * 2,
+        );
         final sourceWidth = (_commandGridSourceWidth ?? 330).clamp(
           minPanelWidth,
           maxSource,
@@ -522,10 +510,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             .clamp(minPanelWidth, maxTelemetry);
                       }),
                     ),
-                    SizedBox(
-                      width: findingsWidth,
-                      child: _liveFindingsPanel(),
-                    ),
+                    SizedBox(width: findingsWidth, child: _liveFindingsPanel()),
                   ],
                 ),
               ),
@@ -541,17 +526,55 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _compactCommandGrid() {
+    const minSectionHeight = 160.0;
+    const maxSectionHeight = 640.0;
+    final sourceHeight = (_compactGridSourceHeight ?? 390).clamp(
+      minSectionHeight,
+      maxSectionHeight,
+    );
+    final telemetryHeight = (_compactGridTelemetryHeight ?? 300).clamp(
+      minSectionHeight,
+      maxSectionHeight,
+    );
+    final findingsHeight = (_compactGridFindingsHeight ?? 230).clamp(
+      minSectionHeight,
+      maxSectionHeight,
+    );
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListView(
         children: [
-          SizedBox(height: 390, child: _sourcePanel(compact: false)),
-          const SizedBox(height: 10),
-          SizedBox(height: 300, child: _telemetryPanel(showTimeline: true)),
-          const SizedBox(height: 10),
-          SizedBox(height: 230, child: _liveFindingsPanel()),
+          SizedBox(height: sourceHeight, child: _sourcePanel(compact: false)),
+          _PanelDragHandleVertical(
+            onDrag: (dy) => setState(() {
+              _compactGridSourceHeight = (sourceHeight + dy).clamp(
+                minSectionHeight,
+                maxSectionHeight,
+              );
+            }),
+          ),
+          SizedBox(
+            height: telemetryHeight,
+            child: _telemetryPanel(showTimeline: true),
+          ),
+          _PanelDragHandleVertical(
+            onDrag: (dy) => setState(() {
+              _compactGridTelemetryHeight = (telemetryHeight + dy).clamp(
+                minSectionHeight,
+                maxSectionHeight,
+              );
+            }),
+          ),
+          SizedBox(height: findingsHeight, child: _liveFindingsPanel()),
           if (_result != null) ...[
-            const SizedBox(height: 10),
+            _PanelDragHandleVertical(
+              onDrag: (dy) => setState(() {
+                _compactGridFindingsHeight = (findingsHeight + dy).clamp(
+                  minSectionHeight,
+                  maxSectionHeight,
+                );
+              }),
+            ),
             SizedBox(height: 720, child: _reportPanel()),
           ],
         ],
@@ -560,48 +583,108 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _missionTimeline() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
+    return Padding(padding: const EdgeInsets.all(10), child: _timelineBody());
+  }
+
+  /// 宇宙未來風：純黑背景、青紫霓虹發光懸浮面板，內容與任務時間軸模式相同，
+  /// 只是外觀套上 [_WorkspaceVisualTheme.cosmic]。
+  Widget _cosmicFutureLayout() {
+    return _WorkspaceThemeScope(
+      theme: _WorkspaceVisualTheme.cosmic,
+      child: Stack(
         children: [
-          _timelineStrip(),
-          const SizedBox(height: 10),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final narrow = constraints.maxWidth < 760;
-                if (narrow) {
-                  return Column(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: _result == null
-                            ? _sourcePanel(compact: false)
-                            : _reportPanel(),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(height: 270, child: _telemetryPanel()),
-                    ],
-                  );
-                }
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          const Positioned.fill(child: _CosmicBackground()),
+          Padding(padding: const EdgeInsets.all(10), child: _timelineBody()),
+        ],
+      ),
+    );
+  }
+
+  /// 教育文柔風：深色毛玻璃卡片 + 動態流體漸層背景，內容配置與任務時間軸
+  /// 模式相同，只是外觀套上 [_WorkspaceVisualTheme.soft]。
+  Widget _softEducationLayout() {
+    return _WorkspaceThemeScope(
+      theme: _WorkspaceVisualTheme.soft,
+      child: Stack(
+        children: [
+          const Positioned.fill(child: _FluidBackground()),
+          Padding(padding: const EdgeInsets.all(10), child: _timelineBody()),
+        ],
+      ),
+    );
+  }
+
+  Widget _timelineBody() {
+    return Column(
+      children: [
+        _timelineStrip(),
+        const SizedBox(height: 10),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final narrow = constraints.maxWidth < 760;
+              if (narrow) {
+                const minMain = 160.0;
+                const minTelemetry = 160.0;
+                final available = constraints.maxHeight - 14;
+                final maxMain = math.max(minMain, available - minTelemetry);
+                final mainHeight =
+                    (_timelineNarrowMainHeight ?? available * 0.65).clamp(
+                      minMain,
+                      maxMain,
+                    );
+                final telemetryHeight = available - mainHeight;
+                return Column(
                   children: [
-                    Expanded(
-                      flex: 7,
+                    SizedBox(
+                      height: mainHeight,
                       child: _result == null
                           ? _sourcePanel(compact: false)
                           : _reportPanel(),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(flex: 3, child: _telemetryPanel()),
+                    _PanelDragHandleVertical(
+                      onDrag: (dy) => setState(() {
+                        _timelineNarrowMainHeight = (mainHeight + dy).clamp(
+                          minMain,
+                          maxMain,
+                        );
+                      }),
+                    ),
+                    SizedBox(height: telemetryHeight, child: _telemetryPanel()),
                   ],
                 );
-              },
-            ),
+              }
+              const minMain = 300.0;
+              const minTelemetry = 220.0;
+              final available = constraints.maxWidth - 14;
+              final maxMain = math.max(minMain, available - minTelemetry);
+              final mainWidth = (_timelineWideMainWidth ?? available * 0.7)
+                  .clamp(minMain, maxMain);
+              final telemetryWidth = available - mainWidth;
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    width: mainWidth,
+                    child: _result == null
+                        ? _sourcePanel(compact: false)
+                        : _reportPanel(),
+                  ),
+                  _PanelDragHandle(
+                    onDrag: (dx) => setState(() {
+                      _timelineWideMainWidth = (mainWidth + dx).clamp(
+                        minMain,
+                        maxMain,
+                      );
+                    }),
+                  ),
+                  SizedBox(width: telemetryWidth, child: _telemetryPanel()),
+                ],
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -611,6 +694,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 820) return _compactEvidenceCanvas();
+
+          const minRail = 200.0;
+          const minCenter = 320.0;
+          const minTelemetry = 220.0;
+          final availableW = constraints.maxWidth - 14 * 2;
+          final maxRail = math.max(
+            minRail,
+            availableW - minCenter - minTelemetry,
+          );
+          final railWidth = (_evidenceRailWidth ?? 240).clamp(minRail, maxRail);
+          final remainingW = availableW - railWidth;
+          final maxTelemetry = math.max(minTelemetry, remainingW - minCenter);
+          final telemetryWidth = (_evidenceTelemetryWidth ?? 290).clamp(
+            minTelemetry,
+            maxTelemetry,
+          );
+          final centerWidth = remainingW - telemetryWidth;
+
           return Column(
             children: [
               _timelineStrip(),
@@ -619,22 +720,67 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(width: 240, child: _sourceActionsRail()),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 6,
-                      child: Column(
-                        children: [
-                          Expanded(flex: 5, child: _evidenceDocument()),
-                          if (_result != null) ...[
-                            const SizedBox(height: 10),
-                            Expanded(flex: 4, child: _reportPanel()),
-                          ],
-                        ],
-                      ),
+                    SizedBox(width: railWidth, child: _sourceActionsRail()),
+                    _PanelDragHandle(
+                      onDrag: (dx) => setState(() {
+                        _evidenceRailWidth = (railWidth + dx).clamp(
+                          minRail,
+                          maxRail,
+                        );
+                      }),
                     ),
-                    const SizedBox(width: 10),
-                    SizedBox(width: 290, child: _telemetryPanel()),
+                    SizedBox(
+                      width: centerWidth,
+                      child: _result == null
+                          ? _evidenceDocument()
+                          : LayoutBuilder(
+                              builder: (context, centerConstraints) {
+                                const minDoc = 160.0;
+                                const minReport = 160.0;
+                                final availableH =
+                                    centerConstraints.maxHeight - 14;
+                                final maxDoc = math.max(
+                                  minDoc,
+                                  availableH - minReport,
+                                );
+                                final docHeight =
+                                    (_evidenceDocumentHeight ??
+                                            availableH * 0.55)
+                                        .clamp(minDoc, maxDoc);
+                                final reportHeight = availableH - docHeight;
+                                return Column(
+                                  children: [
+                                    SizedBox(
+                                      height: docHeight,
+                                      child: _evidenceDocument(),
+                                    ),
+                                    _PanelDragHandleVertical(
+                                      onDrag: (dy) => setState(() {
+                                        _evidenceDocumentHeight =
+                                            (docHeight + dy).clamp(
+                                              minDoc,
+                                              maxDoc,
+                                            );
+                                      }),
+                                    ),
+                                    SizedBox(
+                                      height: reportHeight,
+                                      child: _reportPanel(),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                    ),
+                    _PanelDragHandle(
+                      onDrag: (dx) => setState(() {
+                        _evidenceTelemetryWidth = (telemetryWidth - dx).clamp(
+                          minTelemetry,
+                          maxTelemetry,
+                        );
+                      }),
+                    ),
+                    SizedBox(width: telemetryWidth, child: _telemetryPanel()),
                   ],
                 ),
               ),
@@ -647,6 +793,40 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   Widget _compactEvidenceCanvas() {
     final l10n = AppLocalizations.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const minDoc = 160.0;
+        const minTelemetry = 160.0;
+        const fixedHeaderHeight = 112 + 10 + 96 + 10 + 14; // 時間軸 + 動作列 + 拖曳把手
+        final available = math.max(
+          minDoc + minTelemetry,
+          constraints.maxHeight - fixedHeaderHeight,
+        );
+        final maxDoc = math.max(minDoc, available - minTelemetry);
+        final docHeight = (_compactEvidenceDocumentHeight ?? available - 270)
+            .clamp(minDoc, maxDoc);
+        final telemetryHeight = available - docHeight;
+        return _compactEvidenceCanvasBody(
+          l10n: l10n,
+          docHeight: docHeight,
+          telemetryHeight: telemetryHeight,
+          onDrag: (dy) => setState(() {
+            _compactEvidenceDocumentHeight = (docHeight + dy).clamp(
+              minDoc,
+              maxDoc,
+            );
+          }),
+        );
+      },
+    );
+  }
+
+  Widget _compactEvidenceCanvasBody({
+    required AppLocalizations l10n,
+    required double docHeight,
+    required double telemetryHeight,
+    required ValueChanged<double> onDrag,
+  }) {
     return Column(
       children: [
         _timelineStrip(),
@@ -655,28 +835,28 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           height: 96,
           child: _Panel(
             title: l10n.workspaceModeEvidence,
-            icon: Icons.fact_check_outlined,
+            icon: LucideIcons.checkSquare,
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
               children: [
                 Expanded(
                   child: IconButton.filledTonal(
                     onPressed: _isAnalyzing ? null : _importDocument,
-                    icon: const Icon(Icons.folder_open_outlined),
+                    icon: Icon(LucideIcons.folderOpen),
                     tooltip: l10n.inputImportButton,
                   ),
                 ),
                 Expanded(
                   child: IconButton(
                     onPressed: _isAnalyzing ? null : _pasteFromClipboard,
-                    icon: const Icon(Icons.content_paste_outlined),
+                    icon: Icon(LucideIcons.clipboard),
                     tooltip: l10n.inputPasteButton,
                   ),
                 ),
                 Expanded(
                   child: IconButton(
                     onPressed: _isAnalyzing ? null : _scanImage,
-                    icon: const Icon(Icons.document_scanner_outlined),
+                    icon: Icon(LucideIcons.scanLine),
                     tooltip: l10n.inputOcrButton,
                   ),
                 ),
@@ -687,8 +867,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                         : (_result != null ? _newAnalysis : _startAnalysis),
                     icon: Icon(
                       _isAnalyzing
-                          ? Icons.stop_circle_outlined
-                          : (_result != null ? Icons.add : Icons.play_arrow),
+                          ? LucideIcons.stopCircle
+                          : (_result != null
+                                ? LucideIcons.plus
+                                : LucideIcons.play),
                     ),
                     tooltip: _isAnalyzing
                         ? l10n.workspaceStopAnalysis
@@ -702,9 +884,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        Expanded(child: _evidenceDocument()),
-        const SizedBox(height: 10),
-        SizedBox(height: 270, child: _telemetryPanel()),
+        SizedBox(height: docHeight, child: _evidenceDocument()),
+        _PanelDragHandleVertical(onDrag: onDrag),
+        SizedBox(height: telemetryHeight, child: _telemetryPanel()),
       ],
     );
   }
@@ -713,25 +895,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final l10n = AppLocalizations.of(context);
     return _Panel(
       title: l10n.workspaceModeEvidence,
-      icon: Icons.fact_check_outlined,
+      icon: LucideIcons.checkSquare,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           FilledButton.icon(
             onPressed: _isAnalyzing ? null : _importDocument,
-            icon: const Icon(Icons.folder_open_outlined),
+            icon: Icon(LucideIcons.folderOpen),
             label: Text(l10n.inputImportButton),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _isAnalyzing ? null : _pasteFromClipboard,
-            icon: const Icon(Icons.content_paste_outlined),
+            icon: Icon(LucideIcons.clipboard),
             label: Text(l10n.inputPasteButton),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _isAnalyzing ? null : _scanImage,
-            icon: const Icon(Icons.document_scanner_outlined),
+            icon: Icon(LucideIcons.scanLine),
             label: Text(l10n.inputOcrButton),
           ),
           const Divider(height: 28),
@@ -745,19 +927,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           if (_isAnalyzing)
             FilledButton.tonalIcon(
               onPressed: _confirmStopAnalysis,
-              icon: const Icon(Icons.stop_circle_outlined),
+              icon: Icon(LucideIcons.stopCircle),
               label: Text(l10n.workspaceStopAnalysis),
             )
           else if (_result != null)
             OutlinedButton.icon(
               onPressed: _newAnalysis,
-              icon: const Icon(Icons.add),
+              icon: Icon(LucideIcons.plus),
               label: Text(l10n.workspaceNewAnalysis),
             )
           else
             FilledButton.icon(
               onPressed: _startAnalysis,
-              icon: const Icon(Icons.play_arrow),
+              icon: Icon(LucideIcons.play),
               label: Text(l10n.inputStartButton),
             ),
         ],
@@ -769,7 +951,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final l10n = AppLocalizations.of(context);
     return _Panel(
       title: l10n.workspaceDocument,
-      icon: Icons.description_outlined,
+      icon: LucideIcons.fileText,
       trailing: _sourceFileName.isEmpty
           ? null
           : Tooltip(
@@ -810,17 +992,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               const Spacer(),
               IconButton(
                 onPressed: _isAnalyzing ? null : _pasteFromClipboard,
-                icon: const Icon(Icons.content_paste_outlined),
+                icon: Icon(LucideIcons.clipboard),
                 tooltip: l10n.inputPasteButton,
               ),
               IconButton(
                 onPressed: _isAnalyzing ? null : _scanImage,
-                icon: const Icon(Icons.document_scanner_outlined),
+                icon: Icon(LucideIcons.scanLine),
                 tooltip: l10n.inputOcrButton,
               ),
               IconButton(
                 onPressed: _isAnalyzing ? null : _importDocument,
-                icon: const Icon(Icons.folder_open_outlined),
+                icon: Icon(LucideIcons.folderOpen),
                 tooltip: l10n.inputImportButton,
               ),
             ],
@@ -831,20 +1013,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             child: _isAnalyzing
                 ? FilledButton.tonalIcon(
                     onPressed: _confirmStopAnalysis,
-                    icon: const Icon(Icons.stop_circle_outlined),
+                    icon: Icon(LucideIcons.stopCircle),
                     label: Text(l10n.workspaceStopAnalysis),
                   )
                 : _result != null
                 ? OutlinedButton.icon(
                     onPressed: _newAnalysis,
-                    icon: const Icon(Icons.add),
+                    icon: Icon(LucideIcons.plus),
                     label: Text(l10n.workspaceNewAnalysis),
                   )
                 : FilledButton.icon(
                     onPressed: _controller.text.trim().isEmpty
                         ? null
                         : _startAnalysis,
-                    icon: const Icon(Icons.play_arrow),
+                    icon: Icon(LucideIcons.play),
                     label: Text(l10n.inputStartButton),
                   ),
           ),
@@ -879,7 +1061,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final waitingTooLong = _isAnalyzing && _secondsSinceProgress >= 20;
     return _Panel(
       title: l10n.workspaceTelemetry,
-      icon: Icons.monitor_heart_outlined,
+      icon: LucideIcons.activity,
       trailing: Text(
         _isAnalyzing
             ? '${_done.length}/4 · ${_elapsedSeconds}s'
@@ -937,8 +1119,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                   children: [
                     Icon(
                       waitingTooLong
-                          ? Icons.hourglass_top_outlined
-                          : Icons.monitor_heart_outlined,
+                          ? LucideIcons.hourglass
+                          : LucideIcons.activity,
                       size: 16,
                       color: waitingTooLong
                           ? Theme.of(context).colorScheme.tertiary
@@ -1049,7 +1231,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       height: 112,
       child: _Panel(
         title: l10n.workspaceOverallProgress,
-        icon: Icons.route_outlined,
+        icon: LucideIcons.map,
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -1064,7 +1246,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final evidence = _evidenceRows();
     return _Panel(
       title: l10n.workspaceLiveFindings,
-      icon: Icons.radar_outlined,
+      icon: LucideIcons.target,
+      infoTooltip: evidence.isEmpty
+          ? null
+          : l10n.workspaceSentenceSignalTooltip,
       child: evidence.isEmpty
           ? Center(
               child: Text(
@@ -1135,7 +1320,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final evidence = _evidenceRows();
     return _Panel(
       title: l10n.workspaceDocument,
-      icon: Icons.article_outlined,
+      icon: LucideIcons.fileText,
+      infoTooltip: evidence.isEmpty
+          ? null
+          : l10n.workspaceSentenceSignalTooltip,
       trailing: _runningProbability == null
           ? null
           : Text(
@@ -1156,6 +1344,33 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             )
           : Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 28),
+                      Expanded(
+                        child: Text(
+                          l10n.workspaceSentenceColumnHeader,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.workspaceSentenceSignalHeader,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: SelectionArea(
                     child: ListView.separated(
@@ -1223,10 +1438,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     if (result == null) return const SizedBox.shrink();
     return _Panel(
       title: AppLocalizations.of(context).workspaceAnalysisComplete,
-      icon: Icons.assessment_outlined,
+      icon: LucideIcons.barChart,
       trailing: IconButton(
         onPressed: _newAnalysis,
-        icon: const Icon(Icons.add),
+        icon: Icon(LucideIcons.plus),
         tooltip: AppLocalizations.of(context).workspaceNewAnalysis,
       ),
       padding: EdgeInsets.zero,
@@ -1271,12 +1486,72 @@ class _PanelDragHandle extends StatelessWidget {
   }
 }
 
+/// 面板之間的可拖曳分隔線（垂直排列版，用於調整相鄰列高）
+class _PanelDragHandleVertical extends StatelessWidget {
+  final ValueChanged<double> onDrag;
+
+  const _PanelDragHandleVertical({required this.onDrag});
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeRow,
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
+        child: SizedBox(
+          height: 14,
+          child: Center(
+            child: Container(
+              height: 3,
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).dividerColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 工作台視覺主題：標準（沿用 Material 配色）、宇宙未來風（純黑 + 青紫霓虹發光）、
+/// 教育文柔風（深色毛玻璃 + 柔霓虹）。透過 InheritedWidget 往下傳遞，讓
+/// [_Panel] 等既有內容元件不必改動呼叫方式即可套用截然不同的外觀。
+enum _WorkspaceVisualTheme { standard, cosmic, soft }
+
+class _WorkspaceThemeScope extends InheritedWidget {
+  final _WorkspaceVisualTheme theme;
+
+  const _WorkspaceThemeScope({required this.theme, required super.child});
+
+  static _WorkspaceVisualTheme of(BuildContext context) {
+    return context
+            .dependOnInheritedWidgetOfExactType<_WorkspaceThemeScope>()
+            ?.theme ??
+        _WorkspaceVisualTheme.standard;
+  }
+
+  @override
+  bool updateShouldNotify(_WorkspaceThemeScope oldWidget) =>
+      theme != oldWidget.theme;
+}
+
+const _cosmicCyan = Color(0xFF00F0FF);
+const _cosmicMagenta = Color(0xFFFF2FE0);
+const _softTeal = Color(0xFF5EEAD4);
+const _softViolet = Color(0xFFC084FC);
+
 class _Panel extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
   final Widget? trailing;
   final EdgeInsets padding;
+  final String? infoTooltip;
 
   const _Panel({
     required this.title,
@@ -1284,10 +1559,19 @@ class _Panel extends StatelessWidget {
     required this.child,
     this.trailing,
     this.padding = const EdgeInsets.all(12),
+    this.infoTooltip,
   });
 
   @override
   Widget build(BuildContext context) {
+    return switch (_WorkspaceThemeScope.of(context)) {
+      _WorkspaceVisualTheme.cosmic => _buildCosmic(context),
+      _WorkspaceVisualTheme.soft => _buildSoft(context),
+      _WorkspaceVisualTheme.standard => _buildStandard(context),
+    };
+  }
+
+  Widget _buildStandard(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1314,6 +1598,19 @@ class _Panel extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
+                  if (infoTooltip != null)
+                    Tooltip(
+                      message: infoTooltip!,
+                      triggerMode: TooltipTriggerMode.tap,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(
+                          LucideIcons.helpCircle,
+                          size: 15,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                   if (trailing != null)
                     Flexible(child: trailing!)
                   else
@@ -1330,6 +1627,435 @@ class _Panel extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildCosmic(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
+        boxShadow: [
+          BoxShadow(
+            color: _cosmicCyan.withValues(alpha: 0.22),
+            blurRadius: 18,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: _cosmicMagenta.withValues(alpha: 0.14),
+            blurRadius: 28,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 44,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    children: [
+                      Icon(icon, size: 17, color: _cosmicCyan),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          title.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.orbitron(
+                            fontSize: 12,
+                            letterSpacing: 1.4,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      if (infoTooltip != null)
+                        Tooltip(
+                          message: infoTooltip!,
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(
+                              LucideIcons.helpCircle,
+                              size: 15,
+                              color: _cosmicCyan.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ),
+                      if (trailing != null)
+                        Flexible(
+                          child: DefaultTextStyle.merge(
+                            style: const TextStyle(color: Colors.white70),
+                            child: IconTheme.merge(
+                              data: const IconThemeData(color: _cosmicCyan),
+                              child: trailing!,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      _cosmicCyan.withValues(alpha: 0.6),
+                      _cosmicMagenta.withValues(alpha: 0.6),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: padding,
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(color: Colors.white),
+                    child: child,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSoft(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+            boxShadow: [
+              BoxShadow(
+                color: _softTeal.withValues(alpha: 0.12),
+                blurRadius: 24,
+                spreadRadius: -6,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 46,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              _softTeal.withValues(alpha: 0.35),
+                              _softViolet.withValues(alpha: 0.35),
+                            ],
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(icon, size: 15, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.quicksand(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      if (infoTooltip != null)
+                        Tooltip(
+                          message: infoTooltip!,
+                          triggerMode: TooltipTriggerMode.tap,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(
+                              LucideIcons.helpCircle,
+                              size: 15,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      if (trailing != null)
+                        Flexible(
+                          child: DefaultTextStyle.merge(
+                            style: const TextStyle(color: Colors.white70),
+                            child: IconTheme.merge(
+                              data: const IconThemeData(color: _softTeal),
+                              child: trailing!,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.14)),
+              Expanded(
+                child: Padding(
+                  padding: padding,
+                  child: DefaultTextStyle.merge(
+                    style: GoogleFonts.quicksand(color: Colors.white),
+                    child: child,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 宇宙未來風背景：純黑底 + 緩慢漂移的青紫霓虹光暈、透視格線與閃爍星點。
+class _CosmicBackground extends StatefulWidget {
+  const _CosmicBackground();
+
+  @override
+  State<_CosmicBackground> createState() => _CosmicBackgroundState();
+}
+
+class _CosmicBackgroundState extends State<_CosmicBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final List<_CosmicStar> _stars;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 48),
+    )..repeat();
+    final rng = math.Random(7);
+    _stars = List.generate(
+      90,
+      (_) => _CosmicStar(
+        dx: rng.nextDouble(),
+        dy: rng.nextDouble(),
+        radius: rng.nextDouble() * 1.6 + 0.4,
+        phase: rng.nextDouble() * math.pi * 2,
+        speed: rng.nextDouble() * 0.6 + 0.4,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.of(context).disableAnimations) {
+      return CustomPaint(
+        painter: _CosmicPainter(t: 0, stars: _stars),
+        size: Size.infinite,
+      );
+    }
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) => CustomPaint(
+        painter: _CosmicPainter(t: _controller.value, stars: _stars),
+        size: Size.infinite,
+      ),
+    );
+  }
+}
+
+class _CosmicStar {
+  final double dx;
+  final double dy;
+  final double radius;
+  final double phase;
+  final double speed;
+
+  const _CosmicStar({
+    required this.dx,
+    required this.dy,
+    required this.radius,
+    required this.phase,
+    required this.speed,
+  });
+}
+
+class _CosmicPainter extends CustomPainter {
+  final double t;
+  final List<_CosmicStar> stars;
+
+  const _CosmicPainter({required this.t, required this.stars});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bounds = Offset.zero & size;
+    canvas.drawRect(bounds, Paint()..color = const Color(0xFF020006));
+
+    final angle = t * 2 * math.pi;
+    final glow1 = Offset(
+      size.width * (0.22 + 0.08 * math.sin(angle)),
+      size.height * (0.28 + 0.06 * math.cos(angle)),
+    );
+    final glow2 = Offset(
+      size.width * (0.8 + 0.07 * math.cos(angle * 0.7)),
+      size.height * (0.72 + 0.07 * math.sin(angle * 0.7)),
+    );
+    final glowRadius = size.shortestSide * 0.38;
+    canvas.drawCircle(
+      glow1,
+      glowRadius,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [_cosmicCyan.withValues(alpha: 0.18), Colors.transparent],
+        ).createShader(Rect.fromCircle(center: glow1, radius: glowRadius)),
+    );
+    canvas.drawCircle(
+      glow2,
+      glowRadius * 0.9,
+      Paint()
+        ..shader =
+            RadialGradient(
+              colors: [
+                _cosmicMagenta.withValues(alpha: 0.15),
+                Colors.transparent,
+              ],
+            ).createShader(
+              Rect.fromCircle(center: glow2, radius: glowRadius * 0.9),
+            ),
+    );
+
+    final gridPaint = Paint()
+      ..color = _cosmicCyan.withValues(alpha: 0.05)
+      ..strokeWidth = 1;
+    const lines = 10;
+    for (var i = 0; i <= lines; i++) {
+      final y = size.height * (i / lines);
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
+    for (final star in stars) {
+      final twinkle =
+          0.35 + 0.65 * (0.5 + 0.5 * math.sin(angle * star.speed + star.phase));
+      canvas.drawCircle(
+        Offset(size.width * star.dx, size.height * star.dy),
+        star.radius,
+        Paint()..color = Colors.white.withValues(alpha: twinkle * 0.85),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _CosmicPainter oldDelegate) =>
+      oldDelegate.t != t;
+}
+
+/// 教育文柔風背景：深色底 + 數個緩慢漂移、模糊柔化的漸層光斑，
+/// 以 2D 動畫近似「流體動力學」流動質感，搭配前景毛玻璃卡片使用。
+class _FluidBackground extends StatefulWidget {
+  const _FluidBackground();
+
+  @override
+  State<_FluidBackground> createState() => _FluidBackgroundState();
+}
+
+class _FluidBackgroundState extends State<_FluidBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 34),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.of(context).disableAnimations) {
+      return CustomPaint(painter: _FluidPainter(t: 0), size: Size.infinite);
+    }
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) => CustomPaint(
+        painter: _FluidPainter(t: _controller.value),
+        size: Size.infinite,
+      ),
+    );
+  }
+}
+
+class _FluidPainter extends CustomPainter {
+  final double t;
+
+  const _FluidPainter({required this.t});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0B0F1A),
+    );
+
+    final angle = t * 2 * math.pi;
+    final blobs = <(Color, double, double, double, double)>[
+      (_softTeal, 0.25, 0.3, 1.0, 0.0),
+      (_softViolet, 0.75, 0.25, 0.85, 1.4),
+      (const Color(0xFFF472B6), 0.35, 0.75, 0.9, 2.6),
+      (_softTeal, 0.72, 0.72, 0.7, 4.1),
+    ];
+    for (final (color, bx, by, scale, phase) in blobs) {
+      final dx = bx + 0.07 * math.sin(angle + phase);
+      final dy = by + 0.07 * math.cos(angle * 0.8 + phase);
+      final center = Offset(size.width * dx, size.height * dy);
+      final radius = size.shortestSide * 0.32 * scale;
+      canvas.drawCircle(
+        center,
+        radius,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [color.withValues(alpha: 0.32), color.withValues(alpha: 0)],
+          ).createShader(Rect.fromCircle(center: center, radius: radius))
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 40),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FluidPainter oldDelegate) => oldDelegate.t != t;
 }
 
 class _ProbabilityGauge extends StatelessWidget {
@@ -1357,7 +2083,6 @@ class _ProbabilityGauge extends StatelessWidget {
             brightness: Theme.of(context).brightness,
           )
         : scheme.primary;
-    final displayedValue = complete ? probability : progress;
     final segmentColors = [
       for (final role in PreferencesService.engineRoles)
         _engineColor(context, role),
@@ -1397,17 +2122,32 @@ class _ProbabilityGauge extends StatelessWidget {
                 child: SizedBox.square(
                   dimension: compact ? 50 : 66,
                   child: Center(
-                    child: Text(
-                      '${(displayedValue * 100).round()}%',
-                      style:
-                          (compact
-                                  ? Theme.of(context).textTheme.titleMedium
-                                  : Theme.of(context).textTheme.titleLarge)
-                              ?.copyWith(
-                                color: color,
-                                fontWeight: FontWeight.w800,
-                              ),
-                    ),
+                    // 完成前不顯示百分比數字：與最終 AI 機率同樣的粗體樣式容易讓使用者
+                    // 誤以為「解析/分析中」階段的工作流程進度就是 AI 機率（曾造成混淆）。
+                    // 完成前改以圖示表示狀態，機率數字只在真正判定完成後才出現。
+                    child: complete
+                        ? Text(
+                            '${(probability * 100).round()}%',
+                            style:
+                                (compact
+                                        ? Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium
+                                        : Theme.of(
+                                            context,
+                                          ).textTheme.titleLarge)
+                                    ?.copyWith(
+                                      color: color,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                          )
+                        : Icon(
+                            analyzing
+                                ? LucideIcons.hourglass
+                                : LucideIcons.hourglass,
+                            size: compact ? 24 : 30,
+                            color: color,
+                          ),
                   ),
                 ),
               ),
@@ -1431,10 +2171,10 @@ Color _engineColor(BuildContext context, String role) {
 }
 
 IconData _engineIcon(String role) => switch (role) {
-  'transformer' => Icons.hub_outlined,
-  'statistical' => Icons.query_stats_outlined,
-  'stylometry' => Icons.fingerprint_outlined,
-  _ => Icons.security_outlined,
+  'transformer' => LucideIcons.network,
+  'statistical' => LucideIcons.chartLine,
+  'stylometry' => LucideIcons.fingerprint,
+  _ => LucideIcons.shield,
 };
 
 class _SegmentedEngineRingPainter extends CustomPainter {
@@ -1532,7 +2272,11 @@ class _EngineTelemetryPulse extends StatelessWidget {
                   if (done)
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: Icon(Icons.check_circle, size: 13, color: color),
+                      child: Icon(
+                        LucideIcons.checkCircle,
+                        size: 13,
+                        color: color,
+                      ),
                     ),
                 ],
               ),
@@ -1603,11 +2347,10 @@ class _EngineTelemetryRow extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         reason,
-                        style: Theme.of(context).textTheme.bodySmall
-                            ?.copyWith(
-                              color: scheme.onSurfaceVariant,
-                              height: 1.25,
-                            ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          height: 1.25,
+                        ),
                       ),
                     ),
                 ],
@@ -1625,77 +2368,80 @@ class _EngineTelemetryRow extends StatelessWidget {
     IconData icon,
   ) {
     return Row(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 240),
-            width: 4,
-            height: active ? 42 : 30,
-            decoration: BoxDecoration(
-              color: done || active ? color : scheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
-            ),
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          width: 4,
+          height: active ? 42 : 30,
+          decoration: BoxDecoration(
+            color: done || active ? color : scheme.outlineVariant,
+            borderRadius: BorderRadius.circular(2),
           ),
-          const SizedBox(width: 8),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withValues(alpha: active ? 0.2 : 0.1),
-            ),
-            child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: active ? 0.2 : 0.1),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: active ? null : (done ? 1 : 0),
-                    minHeight: 4,
-                    color: color,
-                    backgroundColor: scheme.surfaceContainerHighest,
-                  ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: active ? null : (done ? 1 : 0),
+                  minHeight: 4,
+                  color: color,
+                  backgroundColor: scheme.surfaceContainerHighest,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
-          SizedBox(
-            width: 46,
-            child: done
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Icon(Icons.check_circle, size: 17, color: color),
-                      if (score != null)
-                        Text(
-                          '${(score! * 100).round()}%',
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                    ],
-                  )
-                : active
-                ? Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: color,
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 46,
+          child: done
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Icon(LucideIcons.checkCircle, size: 17, color: color),
+                    if (score != null)
+                      Text(
+                        '${(score! * 100).round()}%',
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
+                  ],
+                )
+              : active
+              ? Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: color,
                     ),
-                  )
-                : Icon(Icons.more_horiz, color: scheme.onSurfaceVariant),
-          ),
-        ],
-      );
+                  ),
+                )
+              : Icon(
+                  LucideIcons.moreHorizontal,
+                  color: scheme.onSurfaceVariant,
+                ),
+        ),
+      ],
+    );
   }
 }
 
@@ -1735,7 +2481,7 @@ class _StageNode extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: complete
-                ? Icon(Icons.check, size: 15, color: scheme.onPrimary)
+                ? Icon(LucideIcons.check, size: 15, color: scheme.onPrimary)
                 : Text(
                     '${index + 1}',
                     style: TextStyle(

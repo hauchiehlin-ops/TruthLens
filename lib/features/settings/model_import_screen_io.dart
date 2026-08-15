@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,8 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _testController = TextEditingController(
-    text: 'This is a sample text to test the imported model classification accuracy.',
+    text:
+        'This is a sample text to test the imported model classification accuracy.',
   );
 
   File? _modelFile;
@@ -58,8 +60,9 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
   /// 擲出 `Operation not permitted`（errno=1）。因此必須帶 `withData: true`
   /// 讓 plugin 在選檔當下、授權仍有效時把 bytes 讀出，並立刻寫進 App 自己
   /// 沙盒內可寫的暫存目錄，之後一律對著這個副本操作。回傳的 name 供預填欄位用。
-  Future<(File, String)?> _pickIntoSandbox(
-      {required List<String> extensions}) async {
+  Future<(File, String)?> _pickIntoSandbox({
+    required List<String> extensions,
+  }) async {
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: extensions,
@@ -69,10 +72,12 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
     if (picked?.bytes == null) return null;
 
     final tmpDir = await getTemporaryDirectory();
-    final dest = File(p.join(
-      tmpDir.path,
-      '${DateTime.now().microsecondsSinceEpoch}_${picked!.name}',
-    ));
+    final dest = File(
+      p.join(
+        tmpDir.path,
+        '${DateTime.now().microsecondsSinceEpoch}_${picked!.name}',
+      ),
+    );
     await dest.writeAsBytes(picked.bytes!);
     return (dest, picked.name);
   }
@@ -165,9 +170,9 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
     final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate() || _modelFile == null) return;
     if (_tokenizerType != 'none' && _tokenizerFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.modelImportSelectTokenizer)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.modelImportSelectTokenizer)));
       return;
     }
 
@@ -186,14 +191,14 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.modelImportSuccessSnackbar)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.modelImportSuccessSnackbar)));
       Navigator.of(context).pop(true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.modelImportFailedSnackbar)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.modelImportFailedSnackbar)));
     }
   }
 
@@ -216,8 +221,10 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.modelImportStep1Title,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.modelImportStep1Title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
@@ -228,16 +235,19 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                                     _modelFileDisplayName ??
                                         _modelFile!.path
                                             .split(Platform.pathSeparator)
-                                            .last)
+                                            .last,
+                                  )
                                 : l10n.modelImportNoFileSelected,
                             style: TextStyle(
-                              color: _modelFile != null ? cs.primary : cs.outline,
+                              color: _modelFile != null
+                                  ? cs.primary
+                                  : cs.outline,
                             ),
                           ),
                         ),
                         ElevatedButton.icon(
                           onPressed: _pickModel,
-                          icon: const Icon(Icons.file_open),
+                          icon: Icon(LucideIcons.folderOpen),
                           label: Text(l10n.modelImportBrowseButton),
                         ),
                       ],
@@ -252,8 +262,10 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                           const SizedBox(width: 8),
-                          Text(l10n.modelImportCheckingDuplicate,
-                              style: const TextStyle(fontSize: 12)),
+                          Text(
+                            l10n.modelImportCheckingDuplicate,
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ],
                       ),
                     ],
@@ -270,18 +282,24 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, color: cs.tertiary),
+                      Icon(LucideIcons.info, color: cs.tertiary),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l10n.modelImportDuplicateTitle,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              l10n.modelImportDuplicateTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               l10n.modelImportDuplicateBody(
-                                  _duplicate!.displayName, _duplicate!.role),
+                                _duplicate!.displayName,
+                                _duplicate!.role,
+                              ),
                             ),
                           ],
                         ),
@@ -300,8 +318,10 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.modelImportStep2Title,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.modelImportStep2Title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameController,
@@ -321,11 +341,15 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         border: const OutlineInputBorder(),
                       ),
                       items: kModelRegistry
-                          .where((m) => m.backend == InferenceBackend.transformer)
-                          .map((m) => DropdownMenuItem(
-                                value: m.id,
-                                child: Text(m.name),
-                              ))
+                          .where(
+                            (m) => m.backend == InferenceBackend.transformer,
+                          )
+                          .map(
+                            (m) => DropdownMenuItem(
+                              value: m.id,
+                              child: Text(m.name),
+                            ),
+                          )
                           .toList(),
                       onChanged: (v) {
                         if (v != null) setState(() => _targetRole = v);
@@ -340,14 +364,17 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                       ),
                       items: [
                         DropdownMenuItem(
-                            value: 'bert-wordpiece',
-                            child: Text(l10n.modelImportTokenizerBert)),
+                          value: 'bert-wordpiece',
+                          child: Text(l10n.modelImportTokenizerBert),
+                        ),
                         DropdownMenuItem(
-                            value: 'roberta-bpe',
-                            child: Text(l10n.modelImportTokenizerRoberta)),
+                          value: 'roberta-bpe',
+                          child: Text(l10n.modelImportTokenizerRoberta),
+                        ),
                         DropdownMenuItem(
-                            value: 'none',
-                            child: Text(l10n.modelImportTokenizerNone)),
+                          value: 'none',
+                          child: Text(l10n.modelImportTokenizerNone),
+                        ),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -371,7 +398,8 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                                       _tokenizerFileDisplayName ??
                                           _tokenizerFile!.path
                                               .split(Platform.pathSeparator)
-                                              .last)
+                                              .last,
+                                    )
                                   : l10n.modelImportNoTokenizerSelected,
                               style: TextStyle(
                                 color: _tokenizerFile != null
@@ -382,7 +410,7 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                           ),
                           ElevatedButton.icon(
                             onPressed: _pickTokenizer,
-                            icon: const Icon(Icons.code),
+                            icon: Icon(LucideIcons.code),
                             label: Text(l10n.modelImportBrowseButton),
                           ),
                         ],
@@ -397,9 +425,13 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                       ),
                       items: [
                         DropdownMenuItem(
-                            value: 0, child: Text(l10n.modelImportIndex0)),
+                          value: 0,
+                          child: Text(l10n.modelImportIndex0),
+                        ),
                         DropdownMenuItem(
-                            value: 1, child: Text(l10n.modelImportIndex1)),
+                          value: 1,
+                          child: Text(l10n.modelImportIndex1),
+                        ),
                       ],
                       onChanged: (v) {
                         if (v != null) {
@@ -424,8 +456,10 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.modelImportStep3Title,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.modelImportStep3Title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _testController,
@@ -440,13 +474,18 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _modelFile == null || _testing ? null : _runTest,
+                            onPressed: _modelFile == null || _testing
+                                ? null
+                                : _runTest,
                             icon: _testing
                                 ? const SizedBox(
                                     width: 18,
                                     height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2))
-                                : const Icon(Icons.play_arrow),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Icon(LucideIcons.play),
                             label: Text(l10n.modelImportRunTestButton),
                           ),
                         ),
@@ -463,14 +502,20 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(l10n.modelImportResultLabel,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              l10n.modelImportResultLabel,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             Text(
                               '${(_testResult! * 100).toStringAsFixed(1)}%',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: _testResult! > 0.6 ? cs.error : cs.primary,
+                                color: _testResult! > 0.6
+                                    ? cs.error
+                                    : cs.primary,
                               ),
                             ),
                           ],
@@ -507,10 +552,16 @@ class _ModelImportScreenState extends State<ModelImportScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.download_done),
-              label: Text(l10n.modelImportConfirmButton,
-                  style: const TextStyle(fontSize: 16)),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Icon(LucideIcons.checkCircle),
+              label: Text(
+                l10n.modelImportConfirmButton,
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),

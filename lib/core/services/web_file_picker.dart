@@ -76,7 +76,9 @@ Future<PickedWebFile?> pickWebFile({required List<String> extensions}) async {
     }
     try {
       final buffer = await file.arrayBuffer().toDart;
-      finish(PickedWebFile(name: file.name, bytes: buffer.toDart.asUint8List()));
+      finish(
+        PickedWebFile(name: file.name, bytes: buffer.toDart.asUint8List()),
+      );
     } catch (_) {
       finish(null);
     }

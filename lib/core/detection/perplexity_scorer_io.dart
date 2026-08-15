@@ -32,10 +32,10 @@ class PerplexityScorer {
               '@rpath/onnxruntime.framework/onnxruntime',
             ]
           : Platform.isAndroid || Platform.isLinux
-              ? ['libonnxruntime.so']
-              : Platform.isWindows
-                  ? ['onnxruntime.dll']
-                  : <String>[];
+          ? ['libonnxruntime.so']
+          : Platform.isWindows
+          ? ['onnxruntime.dll']
+          : <String>[];
       for (final candidate in candidates) {
         try {
           DynamicLibrary.open(candidate);
@@ -57,7 +57,8 @@ class PerplexityScorer {
     _initOrtEnv();
     final session = OrtSession.fromFile(File(modelPath), OrtSessionOptions());
     final tokenizer = BpeTokenizer.fromTokenizerJson(
-        await File(tokenizerJsonPath).readAsString());
+      await File(tokenizerJsonPath).readAsString(),
+    );
     return PerplexityScorer._(session, tokenizer, maxLen);
   }
 
@@ -68,12 +69,15 @@ class PerplexityScorer {
 
     final shape = [1, ids.length];
     final inputIds = OrtValueTensor.createTensorWithDataList([ids], shape);
-    final mask = OrtValueTensor.createTensorWithDataList(
-        [List.filled(ids.length, 1)], shape);
+    final mask = OrtValueTensor.createTensorWithDataList([
+      List.filled(ids.length, 1),
+    ], shape);
     final runOptions = OrtRunOptions();
     try {
-      final outputs = _session
-          .run(runOptions, {'input_ids': inputIds, 'attention_mask': mask});
+      final outputs = _session.run(runOptions, {
+        'input_ids': inputIds,
+        'attention_mask': mask,
+      });
       // logits 形狀 [1, seq, vocab]
       final rows = (outputs.first?.value as List).first as List;
       var nll = 0.0;

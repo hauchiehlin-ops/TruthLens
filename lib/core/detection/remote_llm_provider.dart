@@ -25,19 +25,18 @@ class OllamaProvider implements RemoteLlmProvider {
   @override
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/api/generate'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'model': model,
-          'prompt': prompt,
-          'stream': false,
-          'options': {
-            'temperature': 0.7,
-            'top_p': 0.9,
-          }
-        }),
-      ).timeout(Duration(seconds: 60));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/generate'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'model': model,
+              'prompt': prompt,
+              'stream': false,
+              'options': {'temperature': 0.7, 'top_p': 0.9},
+            }),
+          )
+          .timeout(Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -53,9 +52,9 @@ class OllamaProvider implements RemoteLlmProvider {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/tags'),
-      ).timeout(Duration(seconds: 5));
+      final response = await http
+          .get(Uri.parse('$baseUrl/api/tags'))
+          .timeout(Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (_) {
       return false;
@@ -70,29 +69,28 @@ class GroqProvider implements RemoteLlmProvider {
   final String model;
   static const String baseUrl = 'https://api.groq.com/openai/v1';
 
-  GroqProvider({
-    required this.apiKey,
-    this.model = 'gemma-7b-it',
-  });
+  GroqProvider({required this.apiKey, this.model = 'gemma-7b-it'});
 
   @override
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/chat/completions'),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': model,
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
-          'max_tokens': maxTokens,
-          'temperature': 0.7,
-        }),
-      ).timeout(Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/chat/completions'),
+            headers: {
+              'Authorization': 'Bearer $apiKey',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'model': model,
+              'messages': [
+                {'role': 'user', 'content': prompt},
+              ],
+              'max_tokens': maxTokens,
+              'temperature': 0.7,
+            }),
+          )
+          .timeout(Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -111,10 +109,12 @@ class GroqProvider implements RemoteLlmProvider {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/models'),
-        headers: {'Authorization': 'Bearer $apiKey'},
-      ).timeout(Duration(seconds: 5));
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/models'),
+            headers: {'Authorization': 'Bearer $apiKey'},
+          )
+          .timeout(Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (_) {
       return false;
@@ -137,21 +137,23 @@ class TogetherAiProvider implements RemoteLlmProvider {
   @override
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/chat/completions'),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': model,
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
-          'max_tokens': maxTokens,
-          'temperature': 0.7,
-        }),
-      ).timeout(Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/chat/completions'),
+            headers: {
+              'Authorization': 'Bearer $apiKey',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'model': model,
+              'messages': [
+                {'role': 'user', 'content': prompt},
+              ],
+              'max_tokens': maxTokens,
+              'temperature': 0.7,
+            }),
+          )
+          .timeout(Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -170,10 +172,12 @@ class TogetherAiProvider implements RemoteLlmProvider {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/models'),
-        headers: {'Authorization': 'Bearer $apiKey'},
-      ).timeout(Duration(seconds: 5));
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/models'),
+            headers: {'Authorization': 'Bearer $apiKey'},
+          )
+          .timeout(Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (_) {
       return false;
@@ -196,21 +200,23 @@ class AnthropicProvider implements RemoteLlmProvider {
   @override
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/messages'),
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': model,
-          'max_tokens': maxTokens,
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
-        }),
-      ).timeout(Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/messages'),
+            headers: {
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'content-type': 'application/json',
+            },
+            body: jsonEncode({
+              'model': model,
+              'max_tokens': maxTokens,
+              'messages': [
+                {'role': 'user', 'content': prompt},
+              ],
+            }),
+          )
+          .timeout(Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -229,19 +235,23 @@ class AnthropicProvider implements RemoteLlmProvider {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/messages'),
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': model,
-          'max_tokens': 1,
-          'messages': [{'role': 'user', 'content': 'ping'}]
-        }),
-      ).timeout(Duration(seconds: 5));
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/messages'),
+            headers: {
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'content-type': 'application/json',
+            },
+            body: jsonEncode({
+              'model': model,
+              'max_tokens': 1,
+              'messages': [
+                {'role': 'user', 'content': 'ping'},
+              ],
+            }),
+          )
+          .timeout(Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (_) {
       return false;

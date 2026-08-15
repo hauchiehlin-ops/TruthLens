@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -359,7 +360,7 @@ class _ReportScreenState extends State<ReportScreen> {
         title: Text(l10n.reportAppBarTitle),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.ios_share),
+            icon: Icon(LucideIcons.share2),
             tooltip: l10n.reportExportTooltip,
             onSelected: (v) => _export(switch (v) {
               'pdf' => ReportExporter.exportPdf,
@@ -371,35 +372,35 @@ class _ReportScreenState extends State<ReportScreen> {
               PopupMenuItem(
                 value: 'pdf',
                 child: ListTile(
-                  leading: const Icon(Icons.picture_as_pdf_outlined),
+                  leading: Icon(LucideIcons.fileType2),
                   title: Text(l10n.reportExportPdf),
                 ),
               ),
               PopupMenuItem(
                 value: 'csv',
                 child: ListTile(
-                  leading: const Icon(Icons.table_chart_outlined),
+                  leading: Icon(LucideIcons.table),
                   title: Text(l10n.reportExportCsv),
                 ),
               ),
               PopupMenuItem(
                 value: 'json',
                 child: ListTile(
-                  leading: const Icon(Icons.data_object),
+                  leading: Icon(LucideIcons.braces),
                   title: Text(l10n.reportExportJson),
                 ),
               ),
               PopupMenuItem(
                 value: 'png',
                 child: ListTile(
-                  leading: const Icon(Icons.image_outlined),
+                  leading: Icon(LucideIcons.image),
                   title: Text(l10n.reportExportPng),
                 ),
               ),
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.home_outlined),
+            icon: Icon(LucideIcons.house),
             tooltip: l10n.reportHomeTooltip,
             onPressed: () => context.go('/'),
           ),
@@ -418,7 +419,7 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.wifi_off, color: scheme.error),
+            Icon(LucideIcons.wifiOff, color: scheme.error),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -433,7 +434,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: () => _runVerification(forceRecheck: true),
-                    icon: const Icon(Icons.refresh),
+                    icon: Icon(LucideIcons.refreshCw),
                     label: Text(l10n.reportRetryConnectionButton),
                   ),
                 ],
@@ -456,7 +457,7 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.link, color: scheme.onSurfaceVariant),
+              Icon(LucideIcons.link, color: scheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -491,7 +492,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Icon(Icons.link, color: scheme.onSurfaceVariant),
+                  : Icon(LucideIcons.link, color: scheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -516,7 +517,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () => _runVerification(forceRecheck: true),
-                        icon: const Icon(Icons.wifi_outlined),
+                        icon: Icon(LucideIcons.wifi),
                         label: Text(l10n.reportVerifyNowButton),
                       ),
                     ],
@@ -548,9 +549,9 @@ class _ReportScreenState extends State<ReportScreen> {
                   children: [
                     Icon(
                       switch (c.status) {
-                        LinkStatus.reachable => Icons.check_circle,
-                        LinkStatus.notFound => Icons.link_off,
-                        LinkStatus.unreachable => Icons.help_outline,
+                        LinkStatus.reachable => LucideIcons.checkCircle,
+                        LinkStatus.notFound => LucideIcons.unlink,
+                        LinkStatus.unreachable => LucideIcons.helpCircle,
                       },
                       size: 18,
                       color: switch (c.status) {
@@ -626,7 +627,7 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.menu_book_outlined, color: scheme.onSurfaceVariant),
+              Icon(LucideIcons.bookOpen, color: scheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -660,10 +661,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Icon(
-                      Icons.menu_book_outlined,
-                      color: scheme.onSurfaceVariant,
-                    ),
+                  : Icon(LucideIcons.bookOpen, color: scheme.onSurfaceVariant),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -745,7 +743,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () => _runVerification(forceRecheck: true),
-                        icon: const Icon(Icons.wifi_outlined),
+                        icon: Icon(LucideIcons.wifi),
                         label: Text(l10n.reportVerifyNowBibButton),
                       ),
                     ],
@@ -783,7 +781,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       : () => _recheckBibliographyEntries(
                           _unreliableBibIndexes(checks),
                         ),
-                  icon: const Icon(Icons.refresh),
+                  icon: Icon(LucideIcons.refreshCw),
                   label: Text(l10n.reportBibRecheckAllUnreliableButton),
                 ),
               ),
@@ -855,7 +853,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               const SizedBox(height: 2),
                               TextButton.icon(
                                 onPressed: () => _openGoogleScholar(checks[i]),
-                                icon: const Icon(Icons.open_in_new, size: 16),
+                                icon: Icon(LucideIcons.externalLink, size: 16),
                                 label: Text(
                                   l10n.reportBibGoogleScholarManualLookup,
                                 ),
@@ -870,7 +868,7 @@ class _ReportScreenState extends State<ReportScreen> {
                             onPressed: _checkingBib
                                 ? null
                                 : () => _recheckBibliographyEntries([i]),
-                            icon: const Icon(Icons.refresh),
+                            icon: Icon(LucideIcons.refreshCw),
                           ),
                         ],
                       ],
@@ -926,10 +924,10 @@ class _ReportScreenState extends State<ReportScreen> {
   IconData _bibStatusIcon(BibliographyCheckResult check) =>
       switch (check.confidence) {
         CitationMatchConfidence.high when !check.journalNameMismatch =>
-          Icons.check_circle,
-        CitationMatchConfidence.notFound => Icons.link_off,
+          LucideIcons.checkCircle,
+        CitationMatchConfidence.notFound => LucideIcons.unlink,
         CitationMatchConfidence.high ||
-        CitationMatchConfidence.uncertain => Icons.report_problem_outlined,
+        CitationMatchConfidence.uncertain => LucideIcons.alertTriangle,
       };
 
   bool _isUnreliableBibliographyResult(BibliographyCheckResult c) =>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -120,7 +121,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 ListTile(
                   leading: _done.contains(entry.key)
                       ? Icon(
-                          Icons.check_circle,
+                          LucideIcons.checkCircle,
                           color: Colors.green,
                           semanticLabel: l10n.analysisDoneSemantics,
                         )
@@ -176,7 +177,7 @@ class _PreliminaryResultCard extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              Icon(Icons.check_circle_outline, size: 18, color: cs.primary),
+              Icon(LucideIcons.checkCircle, size: 18, color: cs.primary),
             const SizedBox(width: 10),
             Text(
               refining

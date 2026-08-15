@@ -40,7 +40,10 @@ void main() {
         findsOneWidget,
       );
       expect(find.text(AppVersion.displayVersion), findsOneWidget);
-      expect(find.byTooltip('Switch workspace mode'), findsOneWidget);
+      expect(find.byTooltip('More options'), findsOneWidget);
+      await tester.tap(find.byTooltip('More options'));
+      await tester.pumpAndSettle();
+      expect(find.text('Switch workspace mode'), findsOneWidget);
       expect(find.text('Analysis telemetry'), findsNothing);
     },
   );

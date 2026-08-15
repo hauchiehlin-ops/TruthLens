@@ -31,10 +31,7 @@ class ModelProvisioner {
   final ModelCatalogService catalogService;
   final ModelManager modelManager;
 
-  ModelProvisioner({
-    required this.catalogService,
-    required this.modelManager,
-  });
+  ModelProvisioner({required this.catalogService, required this.modelManager});
 
   Future<List<ProvisionPlan>> plan(DeviceCapabilities device) async {
     final catalog = await catalogService.load();

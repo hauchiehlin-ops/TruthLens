@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/ocr_service.dart';
@@ -116,7 +117,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
               suffixIcon: _apiKeyController.text.isEmpty
                   ? null
                   : IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(LucideIcons.x),
                       tooltip: l10n.commonDelete,
                       onPressed: () {
                         _apiKeyController.clear();
@@ -133,7 +134,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                 child: Text(l10n.webOcrLocalServerTitle, style: titleStyle),
               ),
               IconButton(
-                icon: const Icon(Icons.help_outline),
+                icon: Icon(LucideIcons.helpCircle),
                 tooltip: _assistantButtonLabel(l10n),
                 onPressed: _configureLocalOcrAssistant,
               ),
@@ -155,7 +156,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
               suffixIcon: _serverUrlController.text.isEmpty
                   ? null
                   : IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(LucideIcons.x),
                       tooltip: l10n.commonDelete,
                       onPressed: () {
                         _serverUrlController.clear();
@@ -181,7 +182,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
             children: [
               FilledButton.tonalIcon(
                 onPressed: _configureLocalOcrAssistant,
-                icon: const Icon(Icons.auto_fix_high_outlined),
+                icon: Icon(LucideIcons.wand),
                 label: Text(_assistantButtonLabel(l10n)),
               ),
               FilledButton.tonalIcon(
@@ -191,7 +192,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                         dimension: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.network_check),
+                    : Icon(LucideIcons.wifi),
                 label: Text(l10n.webOcrTestServerButton),
               ),
             ],
@@ -265,7 +266,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.auto_fix_high_outlined),
+            Icon(LucideIcons.wand),
             const SizedBox(width: 8),
             Expanded(child: Text(title)),
           ],

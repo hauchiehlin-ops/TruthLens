@@ -37,18 +37,18 @@ class InstalledModel {
   String get displayName => name ?? variantId;
 
   Map<String, dynamic> toJson() => {
-        'role': role,
-        'variant_id': variantId,
-        'file_name': fileName,
-        'tokenizer_file_name': tokenizerFileName,
-        'tokenizer': tokenizer,
-        'ai_label_index': aiLabelIndex,
-        'version': version,
-        'size_bytes': sizeBytes,
-        'name': name,
-        'imported': imported,
-        'sha256': sha256,
-      };
+    'role': role,
+    'variant_id': variantId,
+    'file_name': fileName,
+    'tokenizer_file_name': tokenizerFileName,
+    'tokenizer': tokenizer,
+    'ai_label_index': aiLabelIndex,
+    'version': version,
+    'size_bytes': sizeBytes,
+    'name': name,
+    'imported': imported,
+    'sha256': sha256,
+  };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) {
     try {
@@ -130,14 +130,13 @@ class RoleState {
     String? downloadingVariantId,
     double? progress,
     String? error,
-  }) =>
-      RoleState(
-        role: role,
-        installed: installed ?? this.installed,
-        activeVariantId: activeVariantId ?? this.activeVariantId,
-        transientState: transientState ?? this.transientState,
-        downloadingVariantId: downloadingVariantId,
-        progress: progress ?? this.progress,
-        error: error,
-      );
+  }) => RoleState(
+    role: role,
+    installed: installed ?? this.installed,
+    activeVariantId: activeVariantId ?? this.activeVariantId,
+    transientState: transientState ?? this.transientState,
+    downloadingVariantId: downloadingVariantId,
+    progress: progress ?? this.progress,
+    error: error,
+  );
 }

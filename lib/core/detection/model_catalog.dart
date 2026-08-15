@@ -56,25 +56,25 @@ class ModelVariant {
   String _ext() => backend == 'languageModel' ? 'gguf' : 'onnx';
 
   factory ModelVariant.fromJson(Map<String, dynamic> j) => ModelVariant(
-        id: j['id'] as String,
-        name: j['name'] as String,
-        backend: j['backend'] as String,
-        languages: (j['languages'] as List).cast<String>(),
-        quant: j['quant'] as String? ?? '',
-        sizeBytes: (j['size_bytes'] as num).toInt(),
-        minRamMb: (j['min_ram_mb'] as num).toInt(),
-        tier: PerformanceTier.values.byName(j['tier'] as String),
-        url: j['url'] as String?,
-        tokenizerUrl: j['tokenizer_url'] as String?,
-        sha256: j['sha256'] as String?,
-        version: j['version'] as String? ?? '0',
-        source: j['source'] as String? ?? '',
-        license: j['license'] as String? ?? '',
-        note: j['note'] as String? ?? '',
-        pageUrl: j['page_url'] as String?,
-        tokenizer: j['tokenizer'] as String? ?? 'none',
-        aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
-      );
+    id: j['id'] as String,
+    name: j['name'] as String,
+    backend: j['backend'] as String,
+    languages: (j['languages'] as List).cast<String>(),
+    quant: j['quant'] as String? ?? '',
+    sizeBytes: (j['size_bytes'] as num).toInt(),
+    minRamMb: (j['min_ram_mb'] as num).toInt(),
+    tier: PerformanceTier.values.byName(j['tier'] as String),
+    url: j['url'] as String?,
+    tokenizerUrl: j['tokenizer_url'] as String?,
+    sha256: j['sha256'] as String?,
+    version: j['version'] as String? ?? '0',
+    source: j['source'] as String? ?? '',
+    license: j['license'] as String? ?? '',
+    note: j['note'] as String? ?? '',
+    pageUrl: j['page_url'] as String?,
+    tokenizer: j['tokenizer'] as String? ?? 'none',
+    aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
+  );
 }
 
 class CatalogModel {
@@ -89,12 +89,12 @@ class CatalogModel {
   });
 
   factory CatalogModel.fromJson(Map<String, dynamic> j) => CatalogModel(
-        role: j['role'] as String,
-        name: j['name'] as String,
-        variants: (j['variants'] as List)
-            .map((v) => ModelVariant.fromJson(v as Map<String, dynamic>))
-            .toList(),
-      );
+    role: j['role'] as String,
+    name: j['name'] as String,
+    variants: (j['variants'] as List)
+        .map((v) => ModelVariant.fromJson(v as Map<String, dynamic>))
+        .toList(),
+  );
 
   /// 依裝置能力挑選最適變體：在可下載且 RAM 足夠的前提下取品質最高者；
   /// 若無可下載者，回退為最小可執行變體（讓 UI 顯示「即將推出」）。
@@ -126,7 +126,9 @@ class ModelCatalog {
     final updatedModels = models.map((m) {
       if (m.role == 'transformer') {
         final existingIds = m.variants.map((v) => v.id).toSet();
-        final newVariants = extraVariants.where((v) => !existingIds.contains(v.id)).toList();
+        final newVariants = extraVariants
+            .where((v) => !existingIds.contains(v.id))
+            .toList();
         if (newVariants.isEmpty) return m;
         return CatalogModel(
           role: m.role,
@@ -140,9 +142,9 @@ class ModelCatalog {
   }
 
   factory ModelCatalog.fromJson(Map<String, dynamic> j) => ModelCatalog(
-        catalogVersion: j['catalog_version'] as String? ?? 'unknown',
-        models: (j['models'] as List)
-            .map((m) => CatalogModel.fromJson(m as Map<String, dynamic>))
-            .toList(),
-      );
+    catalogVersion: j['catalog_version'] as String? ?? 'unknown',
+    models: (j['models'] as List)
+        .map((m) => CatalogModel.fromJson(m as Map<String, dynamic>))
+        .toList(),
+  );
 }

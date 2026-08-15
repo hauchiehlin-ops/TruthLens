@@ -21,8 +21,8 @@ class ModelCatalogService {
   final HuggingFaceHubExplorer _explorer;
 
   ModelCatalogService({http.Client? client, HuggingFaceHubExplorer? explorer})
-      : _client = client ?? http.Client(),
-        _explorer = explorer ?? HuggingFaceHubExplorer(client: client);
+    : _client = client ?? http.Client(),
+      _explorer = explorer ?? HuggingFaceHubExplorer(client: client);
 
   ModelCatalog? _cached;
 
@@ -52,11 +52,13 @@ class ModelCatalogService {
 
   Future<ModelCatalog?> _tryRemote() async {
     try {
-      final resp =
-          await _client.get(Uri.parse(remoteUrl)).timeout(const Duration(seconds: 8));
+      final resp = await _client
+          .get(Uri.parse(remoteUrl))
+          .timeout(const Duration(seconds: 8));
       if (resp.statusCode != 200) return null;
       return ModelCatalog.fromJson(
-          jsonDecode(resp.body) as Map<String, dynamic>);
+        jsonDecode(resp.body) as Map<String, dynamic>,
+      );
     } catch (_) {
       return null; // 離線 / 尚未 host → 回退本地
     }

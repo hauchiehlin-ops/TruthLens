@@ -24,11 +24,11 @@ class BenchmarkReport {
   });
 
   Map<String, dynamic> toJson() => {
-        'engine_id': engineId,
-        'accuracy': accuracy,
-        'avg_latency_ms': avgLatencyMs,
-        'recommended_weight': recommendedWeight,
-      };
+    'engine_id': engineId,
+    'accuracy': accuracy,
+    'avg_latency_ms': avgLatencyMs,
+    'recommended_weight': recommendedWeight,
+  };
 }
 
 /// 自動校準與基準評測服務 (Option C)
@@ -51,10 +51,7 @@ class ModelBenchmarkService {
       'It is worth noting that installation costs have declined rapidly.',
       true,
     ),
-    BenchmarkSample(
-      '首先，我們需要了解其原理。其次，我們必須評估其影響。綜上所述，未來的可能性無窮。',
-      true,
-    ),
+    BenchmarkSample('首先，我們需要了解其原理。其次，我們必須評估其影響。綜上所述，未來的可能性無窮。', true),
     BenchmarkSample(
       'In summary, quantum computing promises unprecedented processing capabilities across cryptography.',
       true,
@@ -65,19 +62,13 @@ class ModelBenchmarkService {
       'The rain was pouring hard against my bedroom window as I looked for my keys.',
       false,
     ),
-    BenchmarkSample(
-      '今天早上我起床晚了，隨手拿了一杯溫咖啡就準備出門。雨打在窗戶上啪嗒作響，我找鑰匙找了好久。',
-      false,
-    ),
+    BenchmarkSample('今天早上我起床晚了，隨手拿了一杯溫咖啡就準備出門。雨打在窗戶上啪嗒作響，我找鑰匙找了好久。', false),
     BenchmarkSample(
       'My grandmother used to make the best apple pie with a secret touch of cinnamon. '
       'We spent whole afternoons sitting on her porch talking about old family photos.',
       false,
     ),
-    BenchmarkSample(
-      '小時候阿嬤總是煮最香濃的牛肉麵，湯頭熬了一整天。我們坐在小木椅上聊著小時候的故事。',
-      false,
-    ),
+    BenchmarkSample('小時候阿嬤總是煮最香濃的牛肉麵，湯頭熬了一整天。我們坐在小木椅上聊著小時候的故事。', false),
     BenchmarkSample(
       'Honestly, I never expected the movie to end like that. The plot twist caught me completely off guard!',
       false,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/services/preferences_service.dart';
@@ -38,7 +39,7 @@ void main() {
       expect(find.byType(Slider), findsNothing);
       expect(find.byType(TextField), findsNWidgets(4));
       expect(find.text('Total: 100% — ready to save'), findsOneWidget);
-      expect(find.byIcon(Icons.info_outline), findsNWidgets(4));
+      expect(find.byIcon(LucideIcons.info), findsNWidgets(4));
 
       final fields = find.byType(TextField);
       await tester.enterText(fields.at(0), '10');
@@ -55,7 +56,7 @@ void main() {
       expect(prefs.engineWeight('transformer'), 0.10);
       expect(prefs.engineWeight('adversarial'), 0.40);
 
-      await tester.tap(find.byIcon(Icons.info_outline).first);
+      await tester.tap(find.byIcon(LucideIcons.info).first);
       await tester.pumpAndSettle();
       expect(
         find.textContaining('context-preserving paragraph blocks'),

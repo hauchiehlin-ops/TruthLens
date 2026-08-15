@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -29,24 +30,6 @@ class InputScreen extends StatefulWidget {
   State<InputScreen> createState() => _InputScreenState();
 }
 
-/// 語言切換下拉選單的選項清單：null 代表「跟隨系統語言」。
-const List<(Locale?, String)> kSupportedLanguageOptions = [
-  (null, 'System default'),
-  (Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'), '繁體中文'),
-  (Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'), '简体中文'),
-  (Locale('en'), 'English'),
-  (Locale('ja'), '日本語'),
-  (Locale('ko'), '한국어'),
-  (Locale('th'), 'ไทย'),
-  (Locale('ms'), 'Bahasa Melayu'),
-  (Locale('es'), 'Español'),
-  (Locale('id'), 'Bahasa Indonesia'),
-  (Locale('ru'), 'Русский'),
-  (Locale('de'), 'Deutsch'),
-  (Locale('fr'), 'Français'),
-  (Locale('pt'), 'Português'),
-];
-
 String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
     switch (mode) {
       WorkspaceMode.original => l10n.workspaceModeOriginal,
@@ -54,6 +37,8 @@ String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
       WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
       WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
       WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
+      WorkspaceMode.cosmicFuture => l10n.workspaceModeCosmicFuture,
+      WorkspaceMode.softEducation => l10n.workspaceModeSoftEducation,
     };
 
 class _InputScreenState extends State<InputScreen> {
@@ -206,7 +191,7 @@ class _InputScreenState extends State<InputScreen> {
     return Row(
       children: [
         Icon(
-          active != null ? Icons.check_circle_outline : Icons.info_outline,
+          active != null ? LucideIcons.checkCircle : LucideIcons.info,
           size: 14,
           color: scheme.onSurfaceVariant,
         ),
@@ -225,27 +210,13 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
-  Widget _languageMenu(BuildContext context) {
-    final prefs = context.watch<PreferencesService>();
-    return PopupMenuButton<Locale?>(
-      icon: const Icon(Icons.translate),
-      tooltip: 'Language',
-      initialValue: prefs.locale,
-      onSelected: (value) =>
-          context.read<PreferencesService>().setLocale(value),
-      itemBuilder: (context) => [
-        for (final option in kSupportedLanguageOptions)
-          PopupMenuItem(value: option.$1, child: Text(option.$2)),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth >= 1200;
+    final workspaceMode = context.watch<PreferencesService>().workspaceMode;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -253,28 +224,14 @@ class _InputScreenState extends State<InputScreen> {
       appBar: AppBar(
         title: const AppIdentityTitle(),
         actions: [
-          const WorkspaceModeMenuButton(activeMode: WorkspaceMode.original),
-          if (isWideScreen) _languageMenu(context),
-          if (!isWideScreen)
-            IconButton(
-              icon: const Icon(Icons.settings_outlined),
-              tooltip: l10n.inputSettingsTooltip,
-              onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            ),
-          IconButton(
-            icon: const Icon(Icons.history),
-            tooltip: l10n.inputHistoryTooltip,
-            onPressed: () => context.push('/history'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: l10n.inputHelpTooltip,
-            onPressed: () => context.push('/help'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.privacy_tip_outlined),
-            tooltip: l10n.inputPrivacyTooltip,
-            onPressed: () => context.push('/privacy'),
+          AppOverflowMenu(
+            activeMode: workspaceMode,
+            onSettings: isWideScreen
+                ? () => context.push('/settings')
+                : () => _scaffoldKey.currentState?.openEndDrawer(),
+            onHistory: () => context.push('/history'),
+            onHelp: () => context.push('/help'),
+            onPrivacy: () => context.push('/privacy'),
           ),
         ],
       ),
@@ -332,7 +289,7 @@ class _InputScreenState extends State<InputScreen> {
                                       top: 4,
                                       right: 4,
                                       child: IconButton(
-                                        icon: const Icon(Icons.clear),
+                                        icon: Icon(LucideIcons.x),
                                         tooltip: l10n.inputClearTooltip,
                                         onPressed: _clearInput,
                                       ),
@@ -363,19 +320,19 @@ class _InputScreenState extends State<InputScreen> {
                               children: [
                                 OutlinedButton.icon(
                                   onPressed: _pasteFromClipboard,
-                                  icon: const Icon(Icons.content_paste),
+                                  icon: Icon(LucideIcons.clipboard),
                                   label: Text(l10n.inputPasteButton),
                                 ),
                                 const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _scanImage,
-                                  icon: const Icon(Icons.photo_camera_outlined),
+                                  icon: Icon(LucideIcons.camera),
                                   label: Text(l10n.inputOcrButton),
                                 ),
                                 const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _importDocument,
-                                  icon: const Icon(Icons.folder_open_outlined),
+                                  icon: Icon(LucideIcons.folderOpen),
                                   label: Text(l10n.inputImportButton),
                                 ),
                               ],
@@ -385,7 +342,7 @@ class _InputScreenState extends State<InputScreen> {
                               onPressed: _controller.text.trim().isEmpty
                                   ? null
                                   : _startAnalysis,
-                              icon: const Icon(Icons.search),
+                              icon: Icon(LucideIcons.search),
                               label: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
@@ -499,7 +456,7 @@ class _InputScreenState extends State<InputScreen> {
                                 top: 4,
                                 right: 4,
                                 child: IconButton(
-                                  icon: const Icon(Icons.clear),
+                                  icon: Icon(LucideIcons.x),
                                   tooltip: l10n.inputClearTooltip,
                                   onPressed: _clearInput,
                                 ),
@@ -528,19 +485,19 @@ class _InputScreenState extends State<InputScreen> {
                         children: [
                           OutlinedButton.icon(
                             onPressed: _pasteFromClipboard,
-                            icon: const Icon(Icons.content_paste),
+                            icon: Icon(LucideIcons.clipboard),
                             label: Text(l10n.inputPasteButton),
                           ),
                           const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: _scanImage,
-                            icon: const Icon(Icons.photo_camera_outlined),
+                            icon: Icon(LucideIcons.camera),
                             label: Text(l10n.inputOcrButton),
                           ),
                           const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: _importDocument,
-                            icon: const Icon(Icons.folder_open_outlined),
+                            icon: Icon(LucideIcons.folderOpen),
                             label: Text(l10n.inputImportButton),
                           ),
                         ],
@@ -550,7 +507,7 @@ class _InputScreenState extends State<InputScreen> {
                         onPressed: _controller.text.trim().isEmpty
                             ? null
                             : _startAnalysis,
-                        icon: const Icon(Icons.search),
+                        icon: Icon(LucideIcons.search),
                         label: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Text(
@@ -605,7 +562,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.dashboard_customize_outlined),
+            leading: Icon(LucideIcons.layoutGrid),
             title: Text(l10n.workspaceModeSectionTitle),
             subtitle: Text(l10n.workspaceModeSectionSubtitle),
             trailing: DropdownButton<WorkspaceMode>(
@@ -768,18 +725,18 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 ),
                 const SizedBox(height: 8),
                 SegmentedButton<ThemeMode>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: ThemeMode.system,
-                      icon: Icon(Icons.brightness_auto_outlined),
+                      icon: Icon(LucideIcons.sunMoon),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
-                      icon: Icon(Icons.light_mode_outlined),
+                      icon: Icon(LucideIcons.sun),
                     ),
                     ButtonSegment(
                       value: ThemeMode.dark,
-                      icon: Icon(Icons.dark_mode_outlined),
+                      icon: Icon(LucideIcons.moon),
                     ),
                   ],
                   selected: {prefs.themeMode},
@@ -825,7 +782,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             dense: true,
             leading: Badge(
               isLabelVisible: modelManager.hasAnyUpdate,
-              child: const Icon(Icons.download_outlined),
+              child: Icon(LucideIcons.download),
             ),
             title: Text(
               l10n.settingsModelManagementTitle,
@@ -848,7 +805,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           // 自訂模型匯入
           ListTile(
             dense: true,
-            leading: const Icon(Icons.file_upload_outlined),
+            leading: Icon(LucideIcons.upload),
             title: Text(
               l10n.settingsCustomImportTitle,
               style: Theme.of(context).textTheme.labelSmall,
@@ -868,7 +825,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           // 語言包
           ListTile(
             dense: true,
-            leading: const Icon(Icons.language),
+            leading: Icon(LucideIcons.globe),
             title: Text(
               l10n.settingsLanguagePackTitle,
               style: Theme.of(context).textTheme.labelSmall,
@@ -883,7 +840,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 builder: (ctx) => AlertDialog(
                   title: Row(
                     children: [
-                      const Icon(Icons.language),
+                      Icon(LucideIcons.globe),
                       const SizedBox(width: 8),
                       Expanded(child: Text(l10n.settingsLanguagePackTitle)),
                     ],
@@ -924,7 +881,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 18),
+                  Icon(LucideIcons.info, size: 18),
                   const SizedBox(width: 8),
                   const Text('TruthLens'),
                 ],
@@ -990,7 +947,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: Icon(LucideIcons.x),
                     tooltip: l10n.commonClose,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -999,7 +956,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(height: 1),
             ListTile(
-              leading: const Icon(Icons.dashboard_customize_outlined),
+              leading: Icon(LucideIcons.layoutGrid),
               title: Text(l10n.workspaceModeSectionTitle),
               subtitle: Text(l10n.workspaceModeSectionSubtitle),
               trailing: DropdownButton<WorkspaceMode>(
@@ -1018,7 +975,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.translate),
+              leading: Icon(LucideIcons.languages),
               title: Text(l10n.settingsLanguageTitle),
               subtitle: Text(l10n.settingsLanguageSubtitle),
               trailing: DropdownButton<Locale?>(
@@ -1034,7 +991,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ListTile(
               leading: Badge(
                 isLabelVisible: modelManager.hasAnyUpdate,
-                child: const Icon(Icons.download_outlined),
+                child: Icon(LucideIcons.download),
               ),
               title: Text(l10n.settingsModelManagementTitle),
               subtitle: Text(
@@ -1042,7 +999,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
                     ? l10n.settingsModelManagementUpdateSubtitle
                     : l10n.settingsModelManagementSubtitle,
               ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              trailing: Icon(LucideIcons.chevronRight, size: 16),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
@@ -1051,10 +1008,10 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.file_upload_outlined),
+              leading: Icon(LucideIcons.upload),
               title: Text(l10n.settingsCustomImportTitle),
               subtitle: Text(l10n.settingsCustomImportSubtitle),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              trailing: Icon(LucideIcons.chevronRight, size: 16),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ModelImportScreen()),
@@ -1063,7 +1020,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.language),
+              leading: Icon(LucideIcons.globe),
               title: Text(l10n.settingsLanguagePackTitle),
               subtitle: Text(l10n.settingsLanguagePackSubtitle),
               onTap: () {
@@ -1072,7 +1029,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
                   builder: (ctx) => AlertDialog(
                     title: Row(
                       children: [
-                        const Icon(Icons.language),
+                        Icon(LucideIcons.globe),
                         const SizedBox(width: 8),
                         Expanded(child: Text(l10n.settingsLanguagePackTitle)),
                       ],
@@ -1177,18 +1134,18 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ListTile(
               title: Text(l10n.settingsThemeTitle),
               trailing: SegmentedButton<ThemeMode>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: ThemeMode.system,
-                    icon: Icon(Icons.brightness_auto_outlined),
+                    icon: Icon(LucideIcons.sunMoon),
                   ),
                   ButtonSegment(
                     value: ThemeMode.light,
-                    icon: Icon(Icons.light_mode_outlined),
+                    icon: Icon(LucideIcons.sun),
                   ),
                   ButtonSegment(
                     value: ThemeMode.dark,
-                    icon: Icon(Icons.dark_mode_outlined),
+                    icon: Icon(LucideIcons.moon),
                   ),
                 ],
                 selected: {prefs.themeMode},
@@ -1197,7 +1154,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.info_outline),
+              leading: Icon(LucideIcons.info),
               title: const Text('TruthLens'),
               subtitle: Text(
                 l10n.settingsVersionSubtitle(

@@ -1579,7 +1579,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep4Body =>
-      'Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings).';
+      'Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.';
 
   @override
   String get helpWorkflowStep5Title => 'Viewing & exporting results';
@@ -1634,6 +1634,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep4ChipEslCorrection => 'ESL writing correction';
+
+  @override
+  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI overview gauge';
@@ -1724,6 +1727,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get privacyWebOverview1 =>
+      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+
+  @override
+  String get privacyWebOverview2 =>
+      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+
+  @override
+  String get privacySectionOverviewWeb => 'Overview';
+
+  @override
+  String get privacyRemoveWeb =>
+      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
+
+  @override
   String get privacyIosOverview1 =>
       'TruthLens does not collect any data linked to your identity, and does not use any data for tracking, so it does not require App Tracking Transparency (ATT) permission.';
 
@@ -1765,7 +1783,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyDataHandling3 =>
-      'Analysis results and history are stored only in a local database on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; uninstalling the app or clearing history removes this local copy — TruthLens keeps no copy anywhere.';
+      'Analysis results and history are stored only in your browser\'s local storage on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; clearing History in the app, or clearing this site\'s data in your browser, removes this local copy — TruthLens keeps no copy anywhere.';
 
   @override
   String get privacyNetworkIntro =>
@@ -1925,7 +1943,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workspaceModeEvidence => 'Evidence canvas';
 
   @override
+  String get workspaceModeCosmicFuture => 'Cosmic Future';
+
+  @override
+  String get workspaceModeSoftEducation => 'Soft Education';
+
+  @override
   String get workspaceModeTooltip => 'Switch workspace mode';
+
+  @override
+  String get workspaceMoreMenuTooltip => 'More options';
+
+  @override
+  String get workspaceLanguageMenuTitle => 'Language';
 
   @override
   String get workspaceStageImport => 'Import';
@@ -2010,4 +2040,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String workspacePreliminaryVerdict(int percent) {
     return 'Preliminary AI probability: $percent%';
   }
+
+  @override
+  String get workspaceSentenceSignalTooltip =>
+      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+
+  @override
+  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+
+  @override
+  String get workspaceSentenceColumnHeader => 'Sentence';
 }

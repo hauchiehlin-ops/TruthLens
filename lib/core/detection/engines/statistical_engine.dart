@@ -27,7 +27,10 @@ class StatisticalEngine implements DetectionEngine {
   Future<bool> isAvailable() async => true; // 啟發式回退，恆可用
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async {
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n,
+  ) async {
     final burstiness = text.burstiness;
     final ttr = text.typeTokenRatio;
     final entropy = text.entropy;
@@ -60,10 +63,14 @@ class StatisticalEngine implements DetectionEngine {
     if (text.sentences.length >= 4) {
       if (burstiness < 0.30) {
         score += 0.20;
-        reasons.add(l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)));
+        reasons.add(
+          l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)),
+        );
       } else if (burstiness > 0.55) {
         score -= 0.20;
-        reasons.add(l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)));
+        reasons.add(
+          l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)),
+        );
       }
     }
 

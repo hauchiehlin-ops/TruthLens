@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -74,7 +75,7 @@ class _EngineWeightSettingsCardState extends State<EngineWeightSettingsCard> {
           Row(
             children: [
               Icon(
-                valid ? Icons.check_circle_outline : Icons.error_outline,
+                valid ? LucideIcons.checkCircle : LucideIcons.alertCircle,
                 size: 18,
                 color: valid ? scheme.primary : scheme.error,
               ),
@@ -113,7 +114,7 @@ class _EngineWeightSettingsCardState extends State<EngineWeightSettingsCard> {
                         );
                       }
                     : null,
-                icon: const Icon(Icons.save_outlined, size: 18),
+                icon: Icon(LucideIcons.save, size: 18),
                 label: Text(l10n.settingsEngineWeightsSave),
               ),
               OutlinedButton.icon(
@@ -127,7 +128,7 @@ class _EngineWeightSettingsCardState extends State<EngineWeightSettingsCard> {
                     _dirty = true;
                   });
                 },
-                icon: const Icon(Icons.restart_alt, size: 18),
+                icon: Icon(LucideIcons.rotateCcw, size: 18),
                 label: Text(l10n.settingsEngineWeightsRestoreDefaults),
               ),
             ],
@@ -233,7 +234,7 @@ class _WeightRowState extends State<_WeightRow> {
                 ],
               ),
             ),
-            icon: const Icon(Icons.info_outline),
+            icon: Icon(LucideIcons.info),
           ),
           SizedBox(
             width: 88,

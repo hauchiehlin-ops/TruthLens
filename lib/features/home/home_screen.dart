@@ -17,7 +17,9 @@ class HomeScreen extends StatelessWidget {
       WorkspaceMode.automatic ||
       WorkspaceMode.commandGrid ||
       WorkspaceMode.missionTimeline ||
-      WorkspaceMode.evidenceCanvas => const WorkspaceScreen(),
+      WorkspaceMode.evidenceCanvas ||
+      WorkspaceMode.cosmicFuture ||
+      WorkspaceMode.softEducation => const WorkspaceScreen(),
     };
   }
 }

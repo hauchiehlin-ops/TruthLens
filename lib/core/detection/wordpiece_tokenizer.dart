@@ -24,12 +24,15 @@ class WordPieceTokenizer implements TextTokenizer {
     this.padId = 0,
   });
 
-  factory WordPieceTokenizer.fromTokenizerJson(String jsonStr,
-      {bool? lowercase}) {
+  factory WordPieceTokenizer.fromTokenizerJson(
+    String jsonStr, {
+    bool? lowercase,
+  }) {
     final d = jsonDecode(jsonStr) as Map<String, dynamic>;
     final rawVocab = (d['model'] as Map<String, dynamic>)['vocab'] as Map;
     final vocab = <String, int>{
-      for (final e in rawVocab.entries) e.key as String: (e.value as num).toInt()
+      for (final e in rawVocab.entries)
+        e.key as String: (e.value as num).toInt(),
     };
     // 由 normalizer 推斷是否轉小寫（cased 模型為 false）
     final norm = d['normalizer'] as Map<String, dynamic>?;
@@ -135,7 +138,11 @@ class WordPieceTokenizer implements TextTokenizer {
   // ---- 字元判定 ----
 
   bool _isWhitespace(int cp) =>
-      cp == 0x20 || cp == 0x09 || cp == 0x0A || cp == 0x0D || _wsRe.hasMatch(String.fromCharCode(cp));
+      cp == 0x20 ||
+      cp == 0x09 ||
+      cp == 0x0A ||
+      cp == 0x0D ||
+      _wsRe.hasMatch(String.fromCharCode(cp));
   static final _wsRe = RegExp(r'\s', unicode: true);
 
   bool _isControl(int cp) {

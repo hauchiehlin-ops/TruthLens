@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -56,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: Icon(LucideIcons.settings),
             tooltip: l10n.inputSettingsTooltip,
             onPressed: () => context.push('/settings'),
           ),
@@ -70,21 +71,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(24),
                   children: [
-                    Text(l10n.onboardingHeadline,
-                        style: Theme.of(context).textTheme.headlineSmall),
+                    Text(
+                      l10n.onboardingHeadline,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                     const SizedBox(height: 12),
                     // 必要性說明
                     Card(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primaryContainer
-                          .withValues(alpha: 0.4),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer.withValues(alpha: 0.4),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.lightbulb_outline, size: 20),
+                            Icon(LucideIcons.lightbulb, size: 20),
                             const SizedBox(width: 12),
                             Expanded(child: Text(l10n.modelNecessityText)),
                           ],
@@ -95,17 +97,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (device != null)
                       Card(
                         child: ListTile(
-                          leading: const Icon(Icons.devices_outlined),
+                          leading: Icon(LucideIcons.tabletSmartphone),
                           title: Text(l10n.onboardingDetectedDevice),
                           subtitle: Text(device.summary),
                         ),
                       ),
                     const SizedBox(height: 8),
-                    Text(l10n.onboardingChooseModel,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.onboardingChooseModel,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
-                    Text(l10n.onboardingRecommendHint,
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      l10n.onboardingRecommendHint,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                     const SizedBox(height: 8),
                     ModelOptionsList(plans: _plans),
                     const SizedBox(height: 16),

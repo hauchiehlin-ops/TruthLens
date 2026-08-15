@@ -18,10 +18,8 @@ class _AnalysisWaveState extends State<AnalysisWave>
   @override
   void initState() {
     super.initState();
-    _c = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
+    _c = AnimationController(vsync: this, duration: const Duration(seconds: 2))
+      ..repeat();
   }
 
   @override
@@ -38,9 +36,8 @@ class _AnalysisWaveState extends State<AnalysisWave>
       height: widget.size,
       child: AnimatedBuilder(
         animation: _c,
-        builder: (context, _) => CustomPaint(
-          painter: _WavePainter(_c.value, color),
-        ),
+        builder: (context, _) =>
+            CustomPaint(painter: _WavePainter(_c.value, color)),
       ),
     );
   }
@@ -84,8 +81,8 @@ class _WavePainter extends CustomPainter {
         final nx = x / size.width; // 0..1
         // 中央強、邊緣弱的包絡
         final envelope = math.sin(nx * math.pi);
-        final y = center.dy +
-            amp * envelope * math.sin(nx * 4 * math.pi + phase);
+        final y =
+            center.dy + amp * envelope * math.sin(nx * 4 * math.pi + phase);
         if (x == 0) {
           path.moveTo(x.toDouble(), y);
         } else {
@@ -93,7 +90,9 @@ class _WavePainter extends CustomPainter {
         }
       }
       canvas.drawPath(
-          path, wave..color = color.withValues(alpha: 0.9 - line * 0.25));
+        path,
+        wave..color = color.withValues(alpha: 0.9 - line * 0.25),
+      );
     }
   }
 

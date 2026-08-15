@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -61,7 +62,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 // 下載按鈕（簡約樣式）
                 FilledButton.icon(
                   onPressed: onDownloadPdf,
-                  icon: const Icon(Icons.file_download_outlined),
+                  icon: Icon(LucideIcons.download),
                   label: Text(l10n.reportDownloadPdfButton),
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF6B5B95), // 紫
@@ -97,8 +98,8 @@ class ProfessionalReportHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                const Icon(
-                  Icons.warning_rounded,
+                Icon(
+                  LucideIcons.alertTriangle,
                   color: Color(0xFFD4AF37), // 金
                   size: 24,
                 ),
@@ -175,16 +176,8 @@ class _VerdictSummaryCard extends StatelessWidget {
             ),
             child: Center(
               child: isAI
-                  ? const Icon(
-                      Icons.description_outlined,
-                      size: 40,
-                      color: Colors.white,
-                    )
-                  : const Icon(
-                      Icons.edit_outlined,
-                      size: 40,
-                      color: Colors.white,
-                    ),
+                  ? Icon(LucideIcons.fileText, size: 40, color: Colors.white)
+                  : Icon(LucideIcons.pencil, size: 40, color: Colors.white),
             ),
           ),
           const SizedBox(width: 20),
@@ -286,7 +279,7 @@ class _MetricsRow extends StatelessWidget {
         // 卡 1：AI 判定比例
         Expanded(
           child: _MetricCard(
-            icon: Icons.assessment_outlined,
+            icon: LucideIcons.barChart,
             iconColor: const Color(0xFF6B5B95),
             title: l10n.reportMetricAiSentenceRatio,
             value: '${(aiSentenceRatio * 100).toStringAsFixed(1)}%',
@@ -301,7 +294,7 @@ class _MetricsRow extends StatelessWidget {
         // 卡 2：分析耗時
         Expanded(
           child: _MetricCard(
-            icon: Icons.schedule_outlined,
+            icon: LucideIcons.clock,
             iconColor: const Color(0xFF1E3A5F),
             title: l10n.reportMetricElapsed,
             value:
@@ -314,7 +307,7 @@ class _MetricsRow extends StatelessWidget {
         // 卡 3：可信度
         Expanded(
           child: _MetricCard(
-            icon: Icons.verified_user_outlined,
+            icon: LucideIcons.shieldCheck,
             iconColor: const Color(0xFFD4AF37),
             title: l10n.reportMetricReliability,
             value: result.isLowConfidence
@@ -422,11 +415,7 @@ class _EngineContributionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.layers_outlined,
-                color: Color(0xFF6B5B95),
-                size: 20,
-              ),
+              Icon(LucideIcons.layers, color: Color(0xFF6B5B95), size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.reportEngineAnalysisLevelTitle,
@@ -721,24 +710,24 @@ class _VerdictSignalBadge extends StatelessWidget {
   }
 
   static _VerdictMeta _meta(Verdict verdict) => switch (verdict) {
-    Verdict.human => const _VerdictMeta(
-      icon: Icons.verified_user_outlined,
+    Verdict.human => _VerdictMeta(
+      icon: LucideIcons.shieldCheck,
       color: Color(0xFF2E7D32),
     ),
-    Verdict.likelyHuman => const _VerdictMeta(
-      icon: Icons.check_circle_outline,
+    Verdict.likelyHuman => _VerdictMeta(
+      icon: LucideIcons.checkCircle,
       color: Color(0xFF558B2F),
     ),
-    Verdict.mixed => const _VerdictMeta(
-      icon: Icons.balance_outlined,
+    Verdict.mixed => _VerdictMeta(
+      icon: LucideIcons.scale,
       color: Color(0xFF6B5B95),
     ),
-    Verdict.likelyAi => const _VerdictMeta(
-      icon: Icons.warning_amber_rounded,
+    Verdict.likelyAi => _VerdictMeta(
+      icon: LucideIcons.alertTriangle,
       color: Color(0xFFC47F17),
     ),
-    Verdict.ai => const _VerdictMeta(
-      icon: Icons.report_gmailerrorred_outlined,
+    Verdict.ai => _VerdictMeta(
+      icon: LucideIcons.alertTriangle,
       color: Color(0xFFC62828),
     ),
   };
@@ -757,7 +746,7 @@ class _VerdictMeta {
   final IconData icon;
   final Color color;
 
-  const _VerdictMeta({required this.icon, required this.color});
+  _VerdictMeta({required this.icon, required this.color});
 }
 
 /// 引擎 AI 概率雷達圖

@@ -5,19 +5,19 @@ import 'package:flutter/foundation.dart';
 
 /// 硬體性能等級
 enum DeviceTier {
-  low,    // <= 4GB RAM、單核 CPU（手機）
-  mid,    // 4-8GB RAM、中階 CPU（標準筆電）
-  high,   // 8-16GB RAM、多核 CPU（高階筆電）
-  ultra,  // > 16GB RAM、高性能 GPU（桌機）
+  low, // <= 4GB RAM、單核 CPU（手機）
+  mid, // 4-8GB RAM、中階 CPU（標準筆電）
+  high, // 8-16GB RAM、多核 CPU（高階筆電）
+  ultra, // > 16GB RAM、高性能 GPU（桌機）
 }
 
 /// 硬體性能診斷結果
 class DevicePerformance {
   final DeviceTier tier;
-  final int ramMb;         // RAM (MB)
-  final int cpuCores;      // CPU 邏輯核心數
-  final bool hasGpu;       // 是否有 GPU（WebGL 支援）
-  final double bandwidth;  // 網路頻寬估計 (Mbps)
+  final int ramMb; // RAM (MB)
+  final int cpuCores; // CPU 邏輯核心數
+  final bool hasGpu; // 是否有 GPU（WebGL 支援）
+  final double bandwidth; // 網路頻寬估計 (Mbps)
   final DateTime detectedAt;
 
   DevicePerformance({
@@ -45,7 +45,8 @@ class DevicePerformance {
 
 /// 硬體性能偵測服務（Web 版）
 class DevicePerformanceService {
-  static final DevicePerformanceService _instance = DevicePerformanceService._();
+  static final DevicePerformanceService _instance =
+      DevicePerformanceService._();
 
   DevicePerformance? _cached;
   DateTime? _cachedAt;
@@ -207,7 +208,8 @@ abstract class _JSBridge {
 
   static int getHardwareConcurrency() {
     try {
-      if (identical(1, 1)) { // 運行時檢查
+      if (identical(1, 1)) {
+        // 運行時檢查
         return 4;
       }
       return 4;

@@ -15,6 +15,7 @@ class NetworkStatus {
       return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
+
   static Future<bool> isOnline({
     http.Client? client,
     Duration timeout = const Duration(seconds: 5),
@@ -25,14 +26,18 @@ class NetworkStatus {
       // 1) 首選探測端點：直接 GET 請求 Crossref API (rows=0 傳回輕量 200 OK)。
       // 避免使用 HEAD 請求，因為 Crossref API 會回傳 HTTP 405 (Method Not Allowed)
       // 導致被誤判為連線失敗。帶上標準 User-Agent 防範 Cloudflare / WAF 阻擋。
-      final uri = Uri.parse(_getProxiedUrl('https://api.crossref.org/works?rows=0'));
-      final response = await c.get(
-        uri,
-        headers: {
-          'User-Agent':
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
-        },
-      ).timeout(timeout);
+      final uri = Uri.parse(
+        _getProxiedUrl('https://api.crossref.org/works?rows=0'),
+      );
+      final response = await c
+          .get(
+            uri,
+            headers: {
+              'User-Agent':
+                  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
+            },
+          )
+          .timeout(timeout);
 
       if (response.statusCode < 500) {
         return true;
@@ -40,10 +45,12 @@ class NetworkStatus {
     } catch (_) {
       // 2) 備援探測端點：若 Crossref API 服務維護中，備援探測輕量標準 204 端點
       try {
-        final fallbackUri =
-            Uri.parse('https://clients3.google.com/generate_204');
-        final response =
-            await c.get(fallbackUri).timeout(const Duration(seconds: 3));
+        final fallbackUri = Uri.parse(
+          'https://clients3.google.com/generate_204',
+        );
+        final response = await c
+            .get(fallbackUri)
+            .timeout(const Duration(seconds: 3));
         return response.statusCode == 204 || response.statusCode == 200;
       } catch (_) {}
     } finally {

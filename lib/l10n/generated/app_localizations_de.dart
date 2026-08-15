@@ -1654,6 +1654,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get helpWorkflowStep4ChipEslCorrection => 'ESL-Korrektur';
 
   @override
+  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
+
+  @override
   String get helpWorkflowStep5ChipOverviewGauge => 'KI-Übersichtsanzeige';
 
   @override
@@ -1740,6 +1743,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String privacyLastUpdated(String date) {
     return 'Zuletzt aktualisiert: $date';
   }
+
+  @override
+  String get privacyWebOverview1 =>
+      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+
+  @override
+  String get privacyWebOverview2 =>
+      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+
+  @override
+  String get privacySectionOverviewWeb => 'Overview';
+
+  @override
+  String get privacyRemoveWeb =>
+      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
 
   @override
   String get privacyIosOverview1 =>
@@ -1943,7 +1961,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workspaceModeEvidence => 'Beweisfläche';
 
   @override
+  String get workspaceModeCosmicFuture => 'Cosmic Future';
+
+  @override
+  String get workspaceModeSoftEducation => 'Soft Education';
+
+  @override
   String get workspaceModeTooltip => 'Arbeitsbereichsmodus wechseln';
+
+  @override
+  String get workspaceMoreMenuTooltip => 'More options';
+
+  @override
+  String get workspaceLanguageMenuTitle => 'Language';
 
   @override
   String get workspaceStageImport => 'Import';
@@ -2028,4 +2058,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String workspacePreliminaryVerdict(int percent) {
     return 'Vorläufige KI-Wahrscheinlichkeit: $percent%';
   }
+
+  @override
+  String get workspaceSentenceSignalTooltip =>
+      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+
+  @override
+  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+
+  @override
+  String get workspaceSentenceColumnHeader => 'Sentence';
 }

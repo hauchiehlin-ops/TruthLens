@@ -1579,6 +1579,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母語寫作校正';
 
   @override
+  String get helpWorkflowStep4ChipStoppable => 'Stop anytime';
+
+  @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI 總覽儀表';
 
   @override
@@ -1658,6 +1661,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String privacyLastUpdated(String date) {
     return '最後更新：$date';
   }
+
+  @override
+  String get privacyWebOverview1 =>
+      'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.';
+
+  @override
+  String get privacyWebOverview2 =>
+      'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.';
+
+  @override
+  String get privacySectionOverviewWeb => 'Overview';
+
+  @override
+  String get privacyRemoveWeb =>
+      'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)';
 
   @override
   String get privacyIosOverview1 =>
@@ -1848,7 +1866,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
+  String get workspaceModeCosmicFuture => 'Cosmic Future';
+
+  @override
+  String get workspaceModeSoftEducation => 'Soft Education';
+
+  @override
   String get workspaceModeTooltip => '切換工作台模式';
+
+  @override
+  String get workspaceMoreMenuTooltip => 'More options';
+
+  @override
+  String get workspaceLanguageMenuTitle => 'Language';
 
   @override
   String get workspaceStageImport => '匯入';
@@ -1929,6 +1959,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String workspacePreliminaryVerdict(int percent) {
     return '初步 AI 機率：$percent%';
   }
+
+  @override
+  String get workspaceSentenceSignalTooltip =>
+      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+
+  @override
+  String get workspaceSentenceSignalHeader => 'AI signal per sentence';
+
+  @override
+  String get workspaceSentenceColumnHeader => 'Sentence';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3450,7 +3490,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4Body =>
-      '点击「开始检测」，四个引擎并行运行，画面即时显示各引擎完成进度。若侦测到非母语写作特征，会自动套用 ESL 偏差修正（可在设置关闭）。';
+      '点击「开始检测」，四个引擎并行运行，画面即时显示各引擎完成进度。若侦测到非母语写作特征，会自动套用 ESL 偏差修正（可在设置关闭）。分析进行中可随时从工具栏中止；文档文本会保留，但未完成的结果不会被保存。';
 
   @override
   String get helpWorkflowStep5Title => '查看与导出结果';
@@ -3504,6 +3544,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母语写作校正';
+
+  @override
+  String get helpWorkflowStep4ChipStoppable => '随时可中止';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI 总览仪表';
@@ -3587,6 +3630,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String get privacyWebOverview1 =>
+      'TruthLens 完全以网页应用程序的形式在您的浏览器标签页中运行，不需要安装；文档文本与分析结果不会离开您的设备，下载的检测模型也只缓存在浏览器自身的沙盒存储空间（OPFS）中，不在任何服务器上。';
+
+  @override
+  String get privacyWebOverview2 =>
+      '只有在您主动选择导入、扫描或粘贴时，本页才会读取对应的文件、图片或剪贴板内容；不会读取其他标签页、其他网站的数据，或您未选择的文件。';
+
+  @override
+  String get privacySectionOverviewWeb => '概要';
+
+  @override
+  String get privacyRemoveWeb => '在浏览器设置中清除本网站的数据（或直接关闭标签页即可，因为没有任何内容存储在服务器上）';
+
+  @override
   String get privacyIosOverview1 =>
       'TruthLens 不收集任何与您的身分链接的数据，也不将任何数据用于追踪，因此不需要 App 追踪透明度（ATT）权限。';
 
@@ -3627,7 +3684,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling3 =>
-      '分析结果与历史纪录仅保存在您设备本机的数据库中；纪录包含分析文本、分数、时间，以及导入文档时的来源文件名。卸载 App 或清除历史纪录即会移除此本机副本，TruthLens 不持有任何副本。';
+      '分析结果与历史纪录仅保存在您浏览器设备本机的存储空间中；纪录包含分析文本、分数、时间，以及导入文档时的来源文件名。在 App 内清除历史纪录，或在浏览器中清除本网站数据，即会移除此本机副本，TruthLens 不持有任何副本。';
 
   @override
   String get privacyNetworkIntro => '本 App 的内核 AI 侦测完全在设备端运行，但下列支持或选用功能需要连接：';
@@ -3775,7 +3832,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceModeEvidence => '证据画布';
 
   @override
+  String get workspaceModeCosmicFuture => '宇宙未来风';
+
+  @override
+  String get workspaceModeSoftEducation => '教育文柔风';
+
+  @override
   String get workspaceModeTooltip => '切换工作台模式';
+
+  @override
+  String get workspaceMoreMenuTooltip => '更多功能';
+
+  @override
+  String get workspaceLanguageMenuTitle => '语言';
 
   @override
   String get workspaceStageImport => '导入';
@@ -3856,6 +3925,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String workspacePreliminaryVerdict(int percent) {
     return '初步 AI 概率：$percent%';
   }
+
+  @override
+  String get workspaceSentenceSignalTooltip =>
+      '此百分比是「这一句」自己的 AI 信号强度，不是整份文件的最终判定。数字越高代表这句的用字模式越接近 AI 生成；越低则越接近一般人类写作习惯。最终报告会依各引擎权重综合所有句子后得出。';
+
+  @override
+  String get workspaceSentenceSignalHeader => '逐句 AI 信号';
+
+  @override
+  String get workspaceSentenceColumnHeader => '句子内容';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5377,7 +5456,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4Body =>
-      '點擊「開始檢測」，四個引擎並行執行，畫面即時顯示各引擎完成進度。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。';
+      '點擊「開始檢測」，四個引擎並行執行，畫面即時顯示各引擎完成進度。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。分析進行中可隨時從工具列中止；文件文字會保留，但未完成的結果不會被儲存。';
 
   @override
   String get helpWorkflowStep5Title => '查看與匯出結果';
@@ -5431,6 +5510,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4ChipEslCorrection => 'ESL 非母語寫作校正';
+
+  @override
+  String get helpWorkflowStep4ChipStoppable => '隨時可中止';
 
   @override
   String get helpWorkflowStep5ChipOverviewGauge => 'AI 總覽儀表';
@@ -5514,6 +5596,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String get privacyWebOverview1 =>
+      'TruthLens 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
+
+  @override
+  String get privacyWebOverview2 =>
+      '只有在您主動選擇匯入、掃描或貼上時，本頁才會讀取對應的檔案、圖片或剪貼簿內容；不會讀取其他分頁、其他網站的資料，或您未選擇的檔案。';
+
+  @override
+  String get privacySectionOverviewWeb => '概要';
+
+  @override
+  String get privacyRemoveWeb => '在瀏覽器設定中清除本網站的資料（或直接關閉分頁即可，因為沒有任何內容儲存在伺服器上）';
+
+  @override
   String get privacyIosOverview1 =>
       'TruthLens 不收集任何與您的身分連結的資料，也不將任何資料用於追蹤，因此不需要 App 追蹤透明度（ATT）權限。';
 
@@ -5554,7 +5650,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果與歷史紀錄僅儲存在您裝置本機的資料庫中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。解除安裝 App 或清除歷史紀錄即會移除此本機副本，TruthLens 不持有任何副本。';
+      '分析結果與歷史紀錄僅儲存在您瀏覽器裝置本機的儲存空間中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。在 App 內清除歷史紀錄，或在瀏覽器中清除本網站資料，即會移除此本機副本，TruthLens 不持有任何副本。';
 
   @override
   String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列支援或選用功能需要連線：';
@@ -5702,7 +5798,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
+  String get workspaceModeCosmicFuture => '宇宙未來風';
+
+  @override
+  String get workspaceModeSoftEducation => '教育文柔風';
+
+  @override
   String get workspaceModeTooltip => '切換工作台模式';
+
+  @override
+  String get workspaceMoreMenuTooltip => '更多功能';
+
+  @override
+  String get workspaceLanguageMenuTitle => '語言';
 
   @override
   String get workspaceStageImport => '匯入';
@@ -5783,4 +5891,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String workspacePreliminaryVerdict(int percent) {
     return '初步 AI 機率：$percent%';
   }
+
+  @override
+  String get workspaceSentenceSignalTooltip =>
+      '此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。';
+
+  @override
+  String get workspaceSentenceSignalHeader => '逐句 AI 訊號';
+
+  @override
+  String get workspaceSentenceColumnHeader => '句子內容';
 }

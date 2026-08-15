@@ -2575,7 +2575,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep4Body.
   ///
   /// In en, this message translates to:
-  /// **'Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings).'**
+  /// **'Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.'**
   String get helpWorkflowStep4Body;
 
   /// No description provided for @helpWorkflowStep5Title.
@@ -2679,6 +2679,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ESL writing correction'**
   String get helpWorkflowStep4ChipEslCorrection;
+
+  /// No description provided for @helpWorkflowStep4ChipStoppable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop anytime'**
+  String get helpWorkflowStep4ChipStoppable;
 
   /// No description provided for @helpWorkflowStep5ChipOverviewGauge.
   ///
@@ -2824,6 +2830,30 @@ abstract class AppLocalizations {
   /// **'Last updated: {date}'**
   String privacyLastUpdated(String date);
 
+  /// No description provided for @privacyWebOverview1.
+  ///
+  /// In en, this message translates to:
+  /// **'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.'**
+  String get privacyWebOverview1;
+
+  /// No description provided for @privacyWebOverview2.
+  ///
+  /// In en, this message translates to:
+  /// **'The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites\' data, or files you have not selected.'**
+  String get privacyWebOverview2;
+
+  /// No description provided for @privacySectionOverviewWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get privacySectionOverviewWeb;
+
+  /// No description provided for @privacyRemoveWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'clearing this site\'s data in your browser settings (or simply closing the tab, since nothing is stored on any server)'**
+  String get privacyRemoveWeb;
+
   /// No description provided for @privacyIosOverview1.
   ///
   /// In en, this message translates to:
@@ -2887,7 +2917,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataHandling3.
   ///
   /// In en, this message translates to:
-  /// **'Analysis results and history are stored only in a local database on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; uninstalling the app or clearing history removes this local copy — TruthLens keeps no copy anywhere.'**
+  /// **'Analysis results and history are stored only in your browser\'s local storage on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; clearing History in the app, or clearing this site\'s data in your browser, removes this local copy — TruthLens keeps no copy anywhere.'**
   String get privacyDataHandling3;
 
   /// No description provided for @privacyNetworkIntro.
@@ -3160,11 +3190,35 @@ abstract class AppLocalizations {
   /// **'Evidence canvas'**
   String get workspaceModeEvidence;
 
+  /// No description provided for @workspaceModeCosmicFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Cosmic Future'**
+  String get workspaceModeCosmicFuture;
+
+  /// No description provided for @workspaceModeSoftEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft Education'**
+  String get workspaceModeSoftEducation;
+
   /// No description provided for @workspaceModeTooltip.
   ///
   /// In en, this message translates to:
   /// **'Switch workspace mode'**
   String get workspaceModeTooltip;
+
+  /// No description provided for @workspaceMoreMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get workspaceMoreMenuTooltip;
+
+  /// No description provided for @workspaceLanguageMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get workspaceLanguageMenuTitle;
 
   /// No description provided for @workspaceStageImport.
   ///
@@ -3308,6 +3362,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preliminary AI probability: {percent}%'**
   String workspacePreliminaryVerdict(int percent);
+
+  /// No description provided for @workspaceSentenceSignalTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.'**
+  String get workspaceSentenceSignalTooltip;
+
+  /// No description provided for @workspaceSentenceSignalHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'AI signal per sentence'**
+  String get workspaceSentenceSignalHeader;
+
+  /// No description provided for @workspaceSentenceColumnHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence'**
+  String get workspaceSentenceColumnHeader;
 }
 
 class _AppLocalizationsDelegate

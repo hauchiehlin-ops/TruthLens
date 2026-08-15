@@ -69,12 +69,14 @@ class ModelDiagnosticService {
       final isActive = variant.variantId == active?.variantId;
       final statusLabel = isActive ? '✓ 已安裝（使用中）' : '✓ 已安裝';
 
-      statuses.add(ModelStatus(
-        variantId: variant.variantId,
-        displayName: variant.displayName,
-        statusLabel: statusLabel,
-        canRepair: false,
-      ));
+      statuses.add(
+        ModelStatus(
+          variantId: variant.variantId,
+          displayName: variant.displayName,
+          statusLabel: statusLabel,
+          canRepair: false,
+        ),
+      );
     }
 
     // 統計信息

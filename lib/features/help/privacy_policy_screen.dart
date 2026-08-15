@@ -1,35 +1,19 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
-/// 隱私權政策頁：依實際執行的作業系統顯示對應平台的政策內容。
-/// 各平台內容描述的是同一套實際行為（見程式碼中列出的四項連線行為），
-/// 只是依各平台商店／發行慣例調整措辭與揭露格式，並非分別實作不同的隱私作法。
+/// 隱私權政策頁：TruthLens 為 Web-only 應用程式（Phase 6 起原生平台已完全
+/// 移除），因此政策內容不再依作業系統分支，統一描述瀏覽器端執行的實際行為。
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
-  static const _lastUpdated = '2026-08-14';
-
-  _PlatformPolicy _policyFor(TargetPlatform platform, AppLocalizations l10n) {
-    switch (platform) {
-      case TargetPlatform.iOS:
-        return _iosPolicy(l10n);
-      case TargetPlatform.android:
-        return _androidPolicy(l10n);
-      case TargetPlatform.macOS:
-        return _macosPolicy(l10n);
-      case TargetPlatform.windows:
-        return _windowsPolicy(l10n);
-      default:
-        return _genericPolicy(l10n);
-    }
-  }
+  static const _lastUpdated = '2026-08-15';
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final policy = _policyFor(defaultTargetPlatform, l10n);
+    final policy = _webPolicy(l10n);
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.privacyAppBarTitle)),
@@ -42,7 +26,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    policy.icon,
+                    LucideIcons.globe,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(width: 12),
@@ -51,7 +35,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.privacyPlatformTitle(policy.platformName),
+                          l10n.privacyAppBarTitle,
                           style: textTheme.titleMedium,
                         ),
                         Text(
@@ -66,7 +50,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          for (final section in policy.sections) ...[
+          for (final section in policy) ...[
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -107,96 +91,24 @@ class _PolicySection {
   const _PolicySection(this.title, this.paragraphs);
 }
 
-class _PlatformPolicy {
-  final String platformName;
-  final IconData icon;
-  final List<_PolicySection> sections;
-  const _PlatformPolicy({
-    required this.platformName,
-    required this.icon,
-    required this.sections,
-  });
-}
-
-_PolicySection _dataSection(AppLocalizations l10n) =>
-    _PolicySection(l10n.privacySectionDataHandling, [
-      l10n.privacyDataHandling1,
-      l10n.privacyDataHandling2,
-      l10n.privacyDataHandling3,
-    ]);
-
-_PolicySection _networkSection(AppLocalizations l10n) =>
-    _PolicySection(l10n.privacySectionNetwork, [
-      l10n.privacyNetworkIntro,
-      l10n.privacyNetwork1,
-      l10n.privacyNetwork2,
-      l10n.privacyNetwork3,
-      l10n.privacyNetwork4,
-    ]);
-
-_PolicySection _rightsSection(AppLocalizations l10n, String removeAction) =>
-    _PolicySection(l10n.privacySectionRights, [
-      '${l10n.privacyRightsIntro} $removeAction',
-    ]);
-
-_PlatformPolicy _iosPolicy(AppLocalizations l10n) => _PlatformPolicy(
-  platformName: 'iOS',
-  icon: Icons.phone_iphone,
-  sections: [
-    _PolicySection(l10n.privacySectionOverviewIos, [
-      l10n.privacyIosOverview1,
-      l10n.privacyIosOverview2,
-    ]),
-    _dataSection(l10n),
-    _networkSection(l10n),
-    _rightsSection(l10n, l10n.privacyRemoveIos),
-  ],
-);
-
-_PlatformPolicy _androidPolicy(AppLocalizations l10n) => _PlatformPolicy(
-  platformName: 'Android',
-  icon: Icons.android,
-  sections: [
-    _PolicySection(l10n.privacySectionOverviewAndroid, [
-      l10n.privacyAndroidOverview1,
-      l10n.privacyAndroidOverview2,
-    ]),
-    _dataSection(l10n),
-    _networkSection(l10n),
-    _rightsSection(l10n, l10n.privacyRemoveAndroid),
-  ],
-);
-
-_PlatformPolicy _macosPolicy(AppLocalizations l10n) => _PlatformPolicy(
-  platformName: 'macOS',
-  icon: Icons.laptop_mac,
-  sections: [
-    _PolicySection(l10n.privacySectionOverviewMacos, [
-      l10n.privacyMacosOverview1,
-      l10n.privacyMacosOverview2,
-    ]),
-    _dataSection(l10n),
-    _networkSection(l10n),
-    _rightsSection(l10n, l10n.privacyRemoveMacos),
-  ],
-);
-
-_PlatformPolicy _windowsPolicy(AppLocalizations l10n) => _PlatformPolicy(
-  platformName: 'Windows',
-  icon: Icons.desktop_windows,
-  sections: [
-    _PolicySection(l10n.privacySectionOverviewWindows, [
-      l10n.privacyWindowsOverview1,
-      l10n.privacyWindowsOverview2,
-    ]),
-    _dataSection(l10n),
-    _networkSection(l10n),
-    _rightsSection(l10n, l10n.privacyRemoveWindows),
-  ],
-);
-
-_PlatformPolicy _genericPolicy(AppLocalizations l10n) => _PlatformPolicy(
-  platformName: l10n.privacyGenericPlatformName,
-  icon: Icons.devices_other,
-  sections: [_dataSection(l10n), _networkSection(l10n)],
-);
+List<_PolicySection> _webPolicy(AppLocalizations l10n) => [
+  _PolicySection(l10n.privacySectionOverviewWeb, [
+    l10n.privacyWebOverview1,
+    l10n.privacyWebOverview2,
+  ]),
+  _PolicySection(l10n.privacySectionDataHandling, [
+    l10n.privacyDataHandling1,
+    l10n.privacyDataHandling2,
+    l10n.privacyDataHandling3,
+  ]),
+  _PolicySection(l10n.privacySectionNetwork, [
+    l10n.privacyNetworkIntro,
+    l10n.privacyNetwork1,
+    l10n.privacyNetwork2,
+    l10n.privacyNetwork3,
+    l10n.privacyNetwork4,
+  ]),
+  _PolicySection(l10n.privacySectionRights, [
+    '${l10n.privacyRightsIntro} ${l10n.privacyRemoveWeb}',
+  ]),
+];

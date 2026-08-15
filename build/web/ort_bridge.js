@@ -16,6 +16,27 @@
     runQueue: Promise.resolve(),
   };
 
+  // iOS（含偽裝成桌面 UA 的 iPadOS 13+）：WebGPU 目前不夠穩定，一旦底層在
+  // WebKit render process 內直接崩潰，不會拋出可被 catch 的 JS 例外，
+  // 現有的 webgpu→wasm 復原機制完全接不到，等於直接讓分頁當機。因此在
+  // iOS 上一律強制走 wasm，即使 navigator.gpu 存在也不使用。
+  //
+  // 這裡是以「裝置是否為 iOS」而非「瀏覽器品牌是否為 Safari」判斷——Apple
+  // App Store 政策強制所有 iOS 上的瀏覽器（Chrome/Firefox/Edge 等）底層都
+  // 必須使用 WebKit（WKWebView），實際上跑的是同一套 WebGPU 實作、有一樣
+  // 的崩潰風險。isIOS() 用 UA 內的裝置字串（iPad/iPhone/iPod）判斷，
+  // iOS 版 Chrome 的 UA 仍會帶 "iPhone"（如 CriOS/... Mobile/... 前綴），
+  // 因此本判斷本來就會涵蓋 iOS 上的 Chrome，不只 Safari。
+  function isIOS() {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const isAppleMobileUa = /iPad|iPhone|iPod/.test(ua);
+    // iPadOS 13+ 預設把 UA 偽裝成 Mac，只能用觸控點數判斷
+    const isIPadOSDesktopUa =
+      navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+    return isAppleMobileUa || isIPadOSDesktopUa;
+  }
+
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const el = document.createElement('script');
@@ -31,8 +52,9 @@
     state.ortPromise = (async () => {
       const ortBase = getOrtBase();
       const hasGpu = typeof navigator !== 'undefined' && !!navigator.gpu;
-      state.epKind = hasGpu ? 'webgpu' : 'wasm';
-      const script = hasGpu ? ortBase + 'ort.webgpu.min.js' : ortBase + 'ort.wasm.min.js';
+      const useGpu = hasGpu && !isIOS();
+      state.epKind = useGpu ? 'webgpu' : 'wasm';
+      const script = useGpu ? ortBase + 'ort.webgpu.min.js' : ortBase + 'ort.wasm.min.js';
 
       try {
         await loadScript(script);

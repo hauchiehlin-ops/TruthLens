@@ -85,7 +85,9 @@ void main() {
     const source =
         'This document remains available while the situation center layout changes.';
     await tester.enterText(find.byType(TextField).first, source);
-    await tester.tap(find.byTooltip('Switch workspace mode'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Switch workspace mode'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Evidence canvas').last);
     await tester.pumpAndSettle();
@@ -127,11 +129,15 @@ void main() {
     expect(find.textContaining('0/4 ·'), findsOneWidget);
     expect(find.textContaining('Running:'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Switch workspace mode'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Switch workspace mode'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Evidence canvas').last);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Evidence canvas'), findsWidgets);

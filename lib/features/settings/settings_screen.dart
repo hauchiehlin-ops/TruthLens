@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/device_capabilities.dart';
@@ -8,7 +9,8 @@ import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/threshold_setting_title.dart';
-import '../input/input_screen.dart' show kSupportedLanguageOptions;
+import '../../shared/widgets/workspace_navigation.dart'
+    show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
 import 'model_import_screen.dart';
 import 'engine_weight_settings.dart';
@@ -30,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
-            leading: const Icon(Icons.dashboard_customize_outlined),
+            leading: Icon(LucideIcons.layoutGrid),
             title: Text(l10n.workspaceModeSectionTitle),
             subtitle: Text(l10n.workspaceModeSectionSubtitle),
             trailing: DropdownButton<WorkspaceMode>(
@@ -115,18 +117,18 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             title: Text(l10n.settingsThemeTitle),
             trailing: SegmentedButton<ThemeMode>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: ThemeMode.system,
-                  icon: Icon(Icons.brightness_auto_outlined),
+                  icon: Icon(LucideIcons.sunMoon),
                 ),
                 ButtonSegment(
                   value: ThemeMode.light,
-                  icon: Icon(Icons.light_mode_outlined),
+                  icon: Icon(LucideIcons.sun),
                 ),
                 ButtonSegment(
                   value: ThemeMode.dark,
-                  icon: Icon(Icons.dark_mode_outlined),
+                  icon: Icon(LucideIcons.moon),
                 ),
               ],
               selected: {prefs.themeMode},
@@ -135,7 +137,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.translate),
+            leading: Icon(LucideIcons.languages),
             title: Text(l10n.settingsLanguageTitle),
             subtitle: Text(l10n.settingsLanguageSubtitle),
             trailing: DropdownButton<Locale?>(
@@ -151,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: Badge(
               isLabelVisible: modelManager.hasAnyUpdate,
-              child: const Icon(Icons.download_outlined),
+              child: Icon(LucideIcons.download),
             ),
             title: Text(l10n.settingsModelManagementTitle),
             subtitle: Text(
@@ -168,7 +170,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.file_upload_outlined),
+            leading: Icon(LucideIcons.upload),
             title: Text(l10n.settingsCustomImportTitle),
             subtitle: Text(l10n.settingsCustomImportSubtitle),
             trailing: TextButton(
@@ -181,7 +183,7 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
           ListTile(
-            leading: const Icon(Icons.language),
+            leading: Icon(LucideIcons.globe),
             title: Text(l10n.settingsLanguagePackTitle),
             subtitle: Text(l10n.settingsLanguagePackSubtitle),
             trailing: TextButton(
@@ -191,7 +193,7 @@ class SettingsScreen extends StatelessWidget {
                   builder: (ctx) => AlertDialog(
                     title: Row(
                       children: [
-                        const Icon(Icons.language),
+                        Icon(LucideIcons.globe),
                         const SizedBox(width: 8),
                         Text(l10n.settingsLanguagePackTitle),
                       ],
@@ -222,7 +224,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.info_outline),
+            leading: Icon(LucideIcons.info),
             title: const Text('TruthLens'),
             subtitle: Text(
               l10n.settingsVersionSubtitle(
@@ -243,6 +245,8 @@ class SettingsScreen extends StatelessWidget {
         WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
         WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
         WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
+        WorkspaceMode.cosmicFuture => l10n.workspaceModeCosmicFuture,
+        WorkspaceMode.softEducation => l10n.workspaceModeSoftEducation,
       };
 }
 
@@ -286,7 +290,7 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
         title: Text(l10n.settingsModelManagerAppBarTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.file_upload_outlined),
+            icon: Icon(LucideIcons.upload),
             tooltip: l10n.settingsImportTooltip,
             onPressed: () async {
               final imported = await Navigator.of(context).push<bool>(
