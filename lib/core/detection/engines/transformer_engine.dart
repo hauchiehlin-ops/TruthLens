@@ -50,16 +50,18 @@ class TransformerEngine implements DetectionEngine {
     return modelManager.activeVariant('transformer');
   }
 
-  /// 依變體檔解析模型與 tokenizer 檔案路徑
-  Future<(String, String)?> _resolvePaths() async {
+  /// 依變體檔解析模型與 tokenizer 檔案路徑；[l10n] 提供時才會在失敗原因寫入
+  /// 本地化錯誤訊息（[isAvailable] 只需布林結果，不必也不應觸發翻譯查找）。
+  Future<(String, String)?> _resolvePaths([AppLocalizations? l10n]) async {
     final active = _resolveVariant();
     if (active == null) {
-      _loadError = '未找到使用中的 Transformer 模型；請到模型管理下載或設為使用中';
+      _loadError = l10n?.engineTransformerNoActiveVariant;
       return null;
     }
     if (!_supported(active.tokenizer)) {
-      _loadError =
-          '使用中模型的 tokenizer 類型不支援（${active.tokenizer}）；請切換到支援 bert-wordpiece 或 roberta-bpe 的模型';
+      _loadError = l10n?.engineTransformerUnsupportedTokenizer(
+        active.tokenizer,
+      );
       return null;
     }
     final modelPath = await modelManager.variantModelPath(
@@ -71,11 +73,11 @@ class TransformerEngine implements DetectionEngine {
       active.variantId,
     );
     if (modelPath == null || tokPath == null) {
-      _loadError = 'Transformer 模型或 tokenizer 路徑缺失；請在模型管理重新下載';
+      _loadError = l10n?.engineTransformerMissingPaths;
       return null;
     }
     if (!await modelFileExists(modelPath) || !await modelFileExists(tokPath)) {
-      _loadError = 'Transformer 模型或 tokenizer 檔案不存在；請在模型管理重新下載';
+      _loadError = l10n?.engineTransformerMissingFiles;
       return null;
     }
     return (modelPath, tokPath);
@@ -86,8 +88,8 @@ class TransformerEngine implements DetectionEngine {
 
   String? _loadError;
 
-  Future<OnnxDetector?> _ensureLoaded() async {
-    final paths = await _resolvePaths();
+  Future<OnnxDetector?> _ensureLoaded(AppLocalizations l10n) async {
+    final paths = await _resolvePaths(l10n);
     if (paths == null) return null;
     final (modelPath, tokPath) = paths;
     final active = _resolveVariant()!;
@@ -112,9 +114,9 @@ class TransformerEngine implements DetectionEngine {
       if (errorMsg.contains('opset') ||
           errorMsg.contains('Opset') ||
           errorMsg.contains('ValidateOpsetForDomain')) {
-        _loadError = 'ONNX opset 版本不支援（該模型版本太新，需更新應用）: ${active.variantId}';
+        _loadError = l10n.engineTransformerOpsetUnsupported(active.variantId);
       } else if (e is FormatException) {
-        _loadError = 'Tokenizer 格式損毀: ${e.message}';
+        _loadError = l10n.engineTransformerTokenizerCorrupt(e.message);
         // 嘗試刪除損毀的 tokenizer，下次會提示用戶重新下載
         try {
           final tokFile = File(tokPath);
@@ -123,9 +125,7 @@ class TransformerEngine implements DetectionEngine {
         } catch (_) {}
       } else {
         debugPrint('[TransformerEngine] 模型載入失敗，啟動自動修復: $errorMsg');
-        _repairMessage = await _repairActiveVariant(
-          reason: 'Transformer 模型載入失敗',
-        );
+        _repairMessage = await _repairActiveVariant(l10n);
         _loadError = _repairMessage;
       }
       return null;
@@ -139,13 +139,13 @@ class TransformerEngine implements DetectionEngine {
   ) async {
     OnnxDetector? detector;
     try {
-      detector = await _ensureLoaded();
+      detector = await _ensureLoaded(l10n);
       if (detector == null || text.analysisChunks.isEmpty) {
         return _unavailable(l10n);
       }
     } catch (e) {
       debugPrint('[TransformerEngine] 模型載入例外，啟動自動修復: $e');
-      _repairMessage = await _repairActiveVariant(reason: 'Transformer 模型載入失敗');
+      _repairMessage = await _repairActiveVariant(l10n);
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
@@ -158,7 +158,7 @@ class TransformerEngine implements DetectionEngine {
       detector.dispose();
       _detector = null;
       _loadedModelPath = null;
-      _repairMessage = await _repairActiveVariant(reason: 'Transformer 模型推論失敗');
+      _repairMessage = await _repairActiveVariant(l10n);
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
@@ -229,18 +229,15 @@ class TransformerEngine implements DetectionEngine {
     reasons: [
       _loadError == null
           ? l10n.engineReasonTransformerNotInstalled
-          : '模型未參與本次投票。$_loadError',
+          : l10n.engineReasonNotParticipatedWithError(_loadError!),
     ],
   );
 
-  Future<String> _repairActiveVariant({required String reason}) async {
+  Future<String> _repairActiveVariant(AppLocalizations l10n) async {
     try {
-      return await modelManager.repairActiveVariant(
-        'transformer',
-        reason: reason,
-      );
+      return await modelManager.repairActiveVariant('transformer', l10n);
     } catch (_) {
-      return '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載使用中的 Transformer 模型與 tokenizer。';
+      return l10n.engineTransformerRepairFailed;
     }
   }
 }

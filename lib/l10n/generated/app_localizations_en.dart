@@ -1398,6 +1398,80 @@ class AppLocalizationsEn extends AppLocalizations {
       'No model is installed or the active model is unsupported; it did not take part in this vote';
 
   @override
+  String get modelRepairNoActiveVariant =>
+      'No active model found; download a recommended model in Model Management.';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      'Removed the custom model that failed to load. Custom models cannot be re-downloaded automatically; please re-import the model and tokenizer.';
+
+  @override
+  String get modelRepairNoSource =>
+      'Removed the model file that failed to load, but no catalog source is currently available to re-download it; please re-download a recommended model in Model Management.';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return 'Detected that the model file may be corrupted or incompatible; automatically re-downloaded $name. Please run the analysis again.';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return 'Removed the model file that failed to load, but the automatic re-download did not complete; please check your network connection and re-download $name in Model Management.';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      'No active Transformer model found; download one or set it active in Model Management';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return 'The active model\'s tokenizer type is not supported ($tokenizer); switch to a model that supports bert-wordpiece or roberta-bpe';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Transformer model or tokenizer path is missing; re-download in Model Management';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Transformer model or tokenizer file does not exist; re-download in Model Management';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'ONNX opset version is not supported (this model version is too new; update the app): $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Tokenizer format is corrupted: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      'Model loading or inference failed, and automatic repair did not complete; re-download the active Transformer model and tokenizer in Model Management.';
+
+  @override
+  String get engineAdversarialNoActiveVariant =>
+      'No active rewrite-detection model found';
+
+  @override
+  String get engineAdversarialMissingFiles =>
+      'Model or tokenizer file does not exist; re-download in Model Management';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      'Model loading or inference failed, and automatic repair did not complete; re-download the rewrite-detection model and tokenizer in Model Management.';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return 'Model did not participate in this vote. $error';
+  }
+
+  @override
+  String get patternNotAnalyzable =>
+      'Segment too short or suspected PDF/OCR noise; no sentence-level AI judgment made';
+
+  @override
   String engineReasonTransformerLoadFailed(String error) {
     return 'The model failed to load and did not take part in this vote ($error)';
   }

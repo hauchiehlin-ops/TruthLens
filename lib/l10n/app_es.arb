@@ -1,17 +1,14 @@
 {
   "@@locale": "es",
-
   "commonCancel": "Cancelar",
   "commonDelete": "Eliminar",
   "commonClose": "Cerrar",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Escrito por humano",
   "verdictLikelyHuman": "Probablemente humano",
   "verdictMixed": "Contenido mixto",
   "verdictLikelyAi": "Probablemente IA",
   "verdictAi": "Generado por IA",
-
   "inputSubtitle": "Pega o escribe texto para detectar contenido generado por IA",
   "inputHint": "Escribe o pega el texto a analizar…",
   "inputHistoryTooltip": "Historial",
@@ -33,7 +30,6 @@
   "inputActiveModel": "Modelo: {modelId}",
   "inputNoModel": "No hay modelo instalado (solo análisis estadístico/estilométrico)",
   "inputCharCount": "{count} caracteres",
-
   "analysisAppBarTitle": "Analizando",
   "analysisEngineTransformer": "Clasificador Transformer",
   "analysisEngineStatistical": "Análisis estadístico",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "Defensa adversarial",
   "analysisProgressSemantics": "Análisis en curso, {done} de {total} motores completados",
   "analysisDoneSemantics": "Completado",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "Resultado preliminar: probabilidad de IA {percent}%",
+  "analysisPreliminaryResultRefining": "Resultado preliminar: probabilidad de IA {percent}% (refinando…)",
   "engineNameAdversarialFull": "Defensa adversarial (detección de paráfrasis)",
-
   "modelNecessityText": "Sin descargar el modelo de detección de red neuronal, TruthLens sigue funcionando, pero solo con análisis estadístico y estilométrico, con precisión y soporte multilingüe limitados. Tras descargar el modelo, el clasificador Transformer multilingüe se sumará a la votación conjunta, mejorando notablemente la precisión y la fiabilidad. El modelo se ejecuta en el dispositivo; una vez descargado, no sube ningún contenido.",
   "modelPromptTitle": "Se recomienda descargar el modelo de detección para un análisis completo",
   "modelPromptDontRemind": "No recordar de nuevo",
   "modelPromptSkip": "Omitir por ahora",
   "modelPromptDownload": "Ir a descargar",
-
   "onboardingWelcomeTitle": "Bienvenido a TruthLens",
   "onboardingHeadline": "Detección de contenido de IA en el dispositivo",
   "onboardingDetectedDevice": "Dispositivo detectado",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "\"Recomendado\" se marca según tu hardware; también puedes elegir otra opción.",
   "onboardingSkipButton": "Decidir más tarde (usar análisis estadístico/estilométrico sin modelo)",
   "onboardingSkipHint": "Puedes descargar en cualquier momento desde \"Ajustes → Gestión de modelos de IA\"; se te recordará de nuevo al usar análisis que requieran el modelo.",
-
   "modelListCustomImportedLabel": "Modelo personalizado importado:",
   "modelListActiveChip": "En uso",
   "modelListRecommendedChip": "Recomendado",
@@ -74,16 +67,15 @@
   "modelListPageButton": "Página del modelo",
   "modelListMayExceedMemory": "Puede exceder la memoria del dispositivo",
   "modelListFailedPrefix": "Error: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "No se pudo cargar el catálogo de modelos",
+  "modelCatalogEmpty": "No hay modelos disponibles",
+  "modelDownloadPathChip": "Ruta de descarga de {label}",
+  "modelDownloadPathModelFile": "Archivo del modelo",
+  "modelDownloadPathCopied": "Ruta de descarga copiada",
+  "settingsSaveFailed": "No se pudo guardar la configuración: {error}",
   "modelListDeleteConfirmTitle": "¿Eliminar el modelo?",
   "modelListDeleteConfirmBody": "Esto eliminará \"{name}\" ({size}). Deberás volver a descargarlo para usarlo de nuevo.",
   "modelListDeleteCustomConfirmBody": "Esto eliminará el modelo personalizado importado \"{name}\" ({size}). Deberás volver a importarlo para usarlo de nuevo.",
-
   "modelImportAppBarTitle": "Importar modelo ONNX personalizado",
   "modelImportStep1Title": "1. Selecciona el archivo del modelo ONNX",
   "modelImportSelectedFile": "Seleccionado: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Selecciona un archivo de tokenizador",
   "modelImportSuccessSnackbar": "¡Modelo importado correctamente! Se ha establecido automáticamente como modelo activo.",
   "modelImportFailedSnackbar": "Error al importar el modelo. Verifica los permisos o los registros",
-
   "settingsAppBarTitle": "Ajustes",
   "settingsThresholdTitle": "Umbral de confianza para determinar IA",
   "settingsThresholdSubtitle": "Actual: {percent}% — aumentarlo reduce los falsos positivos (texto humano clasificado erróneamente como IA)",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "Busca rasgos explicables como inicios repetidos, transiciones formularias y exceso de listas. Sin coincidencias, la señal es 0 %.",
   "settingsEngineAdversarialHelp": "Busca texto de IA parafraseado o procesado para ocultar rastros. Una puntuación baja es evidencia residual débil, no una detección positiva.",
   "settingsEngineWeightsTotalValid": "Total: {total} % — listo para guardar",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Total: {total} % — ajústalo exactamente a 100 %",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Guardar pesos",
   "settingsEngineWeightsSaved": "Pesos guardados en este dispositivo",
   "settingsEngineWeightsRestoreDefaults": "Restaurar valores",
-  "engineReasonDisabledByUser": "Desactivado en ajustes; este motor no participó en la votación",
+  "engineReasonDisabledByUser": "El usuario ha desactivado este motor en Ajustes",
   "engineReasonTransformerNoStrongSentence": "{model}: ninguna de {total} oraciones superó el umbral fuerte de IA; la señal débil calibrada es {percent} %",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "Señal de IA {percent} %",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "La señal de IA es la probabilidad asignada por el motor a este documento. El peso configurado controla su influencia y los puntos de contribución se distribuyen para que la suma mostrada coincida exactamente con la probabilidad global de IA. «No detectado» significa que está por debajo del umbral de señal fuerte del 60 %, no que el valor sea necesariamente cero.",
   "reportMetricAiSentenceRatio": "Proporción de oraciones con señal fuerte de IA",
   "reportStrongAiSentenceCount": "{count} de {total} superaron el umbral de señal fuerte del 60 %",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "Ninguna de las {total} oraciones superó el umbral fuerte de paráfrasis; la señal débil calibrada es del {percent} %",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} de {total} oraciones superaron el umbral fuerte de paráfrasis; la señal calibrada del documento es del {percent} %",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Verificación de hipervínculos y bibliografía",
   "settingsLinkVerificationSubtitle": "El informe se conectará para comprobar si las URL y las entradas bibliográficas detectadas en el documento realmente existen (el contenido generado por IA suele incluir referencias que parecen plausibles pero son inventadas). Tanto los enlaces académicos con formato DOI como las referencias con formato \"autor-año\" sin enlace se verifican contra el registro público de Crossref. El modelo de detección de IA principal sigue funcionando completamente en el dispositivo y nunca envía el contenido del documento; la conexión solo se usa para esta verificación y para comprobar actualizaciones del modelo, y puede desactivarse aquí.",
   "settingsThemeTitle": "Tema de visualización",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "Abrir",
   "settingsCustomImportTitle": "Importar y probar modelo ONNX personalizado",
   "settingsCustomImportSubtitle": "Importa un modelo ONNX personalizado local, configura el tokenizador y ejecuta una prueba de inferencia",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "La importación de modelos personalizados aún no es compatible con la versión web. Utilice la versión de la aplicación.",
   "settingsModelManagerAppBarTitle": "Gestión de modelos de IA",
   "settingsImportTooltip": "Importar modelo ONNX local",
   "settingsDeviceLabel": "Dispositivo: {summary}",
-
   "historyAppBarTitle": "Historial",
   "historyClearAllTooltip": "Borrar todo",
   "historySearchHint": "Buscar en el historial…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "Aún no hay historial de detección",
   "historyEmptySearch": "No hay entradas que coincidan con \"{query}\"",
   "historyEntrySemantics": "{verdict}, probabilidad de IA {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "Informe de detección",
   "reportExportTooltip": "Exportar informe",
   "reportHomeTooltip": "Volver al inicio",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "Autocalibración de referencia de modelos",
   "reportCommunityDiscoveredTag": "Comunidad (HuggingFace)",
   "reportEngineBreakdownTitle": "Desglose por motores",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Clasificador Transformer",
+  "reportRadarRoleStatistical": "Análisis estadístico",
+  "reportRadarRoleStylometry": "Análisis de estilometría",
+  "reportRadarRoleAdversarial": "Defensa adversarial",
+  "reportRadarAxisTransformer": "Clasificador de oraciones",
+  "reportRadarAxisStatistical": "Regularidad del lenguaje",
+  "reportRadarAxisStylometry": "Estilo de escritura",
+  "reportRadarAxisAdversarial": "Defensa de reescritura",
+  "reportVerdictBadgeTitle": "Veredicto general",
+  "reportVerdictBadgeProbability": "Probabilidad de IA global {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "La mayoría de las señales de los motores apuntan a una escritura humana natural.",
+  "reportVerdictHintLikelyHuman": "En general tiende a humano, con una pequeña incertidumbre del modelo restante.",
+  "reportVerdictHintMixed": "Las señales de los motores son mixtas; lea el análisis detallado junto con este resultado.",
+  "reportVerdictHintLikelyAi": "Varios indicadores apuntan a IA; revise los pasajes con puntuación alta.",
+  "reportVerdictHintAi": "Las señales generales apuntan fuertemente a contenido generado o reescrito por IA.",
+  "reportSynthesisOverall": "Veredicto general: {verdict}; probabilidad de IA global {percent}%.",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "Señal individual más fuerte: {label} ({percent}%), pero el resultado final combina los pesos de los motores y no es la conclusión de un solo motor.",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "La mayor contribución ponderada actualmente proviene de {label} (aproximadamente {points} puntos porcentuales).",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "«No se detectó un estilo de escritura de IA evidente» solo significa que el motor de estilo no encontró patrones fijos de oraciones o palabras de transición; otros modelos aún pueden aumentar la puntuación global mediante la regularidad del lenguaje, la clasificación de oraciones o señales de reescritura.",
+  "reportSynthesisModelGap": "Cuando algunos motores no participaron, use primero «Completar modelos de análisis recomendados» en Gestión de modelos; si sigue fallando, el análisis detallado indicará si la causa es un modelo faltante, un tokenizador no compatible, un archivo faltante o un límite de compatibilidad de Web/ONNX Runtime.",
+  "reportEngineRelationshipUnavailable": "{label} no participó en esta votación ponderada, por lo que esta dimensión se muestra como 0%. {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "Peso del rol {weight}%, contribuye aproximadamente {points} puntos porcentuales a la puntuación global{variantText}.",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": " (se combinaron {count} variantes de modelo)",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} no participó en esta votación.",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} no devolvió ninguna explicación de texto adicional.",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "Solución: descargue y active el Transformer multilingüe en Gestión de modelos; si ya está descargado, vuelva a descargar el modelo y el tokenizador.",
+  "reportEngineResolutionAdversarial": "Solución: vuelva a descargar el modelo de detección de reescritura y el tokenizador en Gestión de modelos; en la web, actualice a una versión con la corrección de compatibilidad de BigInt y analice de nuevo.",
+  "reportEngineReasonBigInt": "{reason}. Causa: el ONNX Runtime web devolvió un tensor BigInt que el puente anterior no pudo convertir; actualice a la versión corregida y analice de nuevo.",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}. Solución: cambie a un modelo del catálogo o vuelva a descargar el modelo y el tokenizador.",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}. Solución: abra Gestión de modelos, toque «Completar modelos de análisis recomendados» y confirme que el Transformer multilingüe está marcado como activo.",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "No instalado",
   "reportEngineLoadFailedBadge": "Error de carga",
   "reportSentenceAnalysisTitle": "Análisis a nivel de oración",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "Bibliografía detectada ({count} entradas); aún no verificada",
   "reportBibDisabledHint": "El contenido generado por IA suele incluir referencias que parecen plausibles pero son inventadas. Has desactivado la verificación de hipervínculos en Ajustes; puedes volver a activarla para la verificación automática, o tocar abajo para una comprobación única.",
   "reportVerifyNowBibButton": "Verificar ahora (requiere red)",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "Volver a verificar todas las citas no verificadas",
+  "reportBibRecheckOneTooltip": "Volver a verificar esta cita",
   "reportBibResultHint": "Comparado con el registro público de Crossref por similitud de autor, año y título. No es una garantía absoluta; cuando se indique \"incierto\", verifica manualmente.",
   "reportBibHighConfidence": "Alta confianza: probablemente existe{journal}",
   "reportBibJournalSuffix": " (registrado con {journal})",
   "reportBibNotFound": "No se encontró ninguna coincidencia cercana; posible referencia inventada",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "Sospechoso: no verificado por coincidencia de registro",
   "reportBibTruncated": "Solo se verificaron las primeras {max} entradas (se detectaron {count} en total)",
   "reportNetworkWarningTitle": "Conexión de red débil",
   "reportNetworkWarningBody": "Esta aplicación asume por defecto que hay conexión de red disponible; tanto el análisis de autenticidad de hipervínculos como el de citas requieren acceso a la red para producir resultados. No se pudo establecer conexión; verifica tu red e inténtalo de nuevo.",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "{total} oraciones · {ai} probablemente IA · {human} probablemente humano",
   "pdfTruncationNotice": "Para mantener la legibilidad del PDF, solo se muestran las primeras {max} oraciones (de un total de {count}); para los datos completos de cada oración, usa \"{csvLabel}\" o \"{jsonLabel}\" en su lugar.",
   "pdfSentenceColumnHeader": "Oración (con patrones coincidentes)",
-
   "composerHeadlineAi": "Este texto probablemente fue generado por IA (probabilidad de IA {percent}%)",
   "composerHeadlineLikelyAi": "Este texto tiende a ser generado por IA; se recomienda una revisión adicional (probabilidad de IA {percent}%)",
   "composerHeadlineMixed": "Este texto muestra características mixtas de humano e IA (probabilidad de IA {percent}%)",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "La mayoría de las oraciones son muy regulares en ritmo, elección de palabras y uso de conectores; una huella común del texto generado por IA.",
   "composerNarrativeMixedPattern": "El texto contiene partes tanto regulares como naturalmente variadas, lo que sugiere un borrador humano pulido por IA, o una colaboración humano-IA.",
   "composerNarrativeHumanPattern": "La longitud de las oraciones y la elección de palabras muestran variación natural y estilo personal, sin señales claras de regularidad de IA.",
-
   "engineReasonPplLow": "Perplejidad del modelo de lenguaje baja ({ppl}); el texto es muy predecible, un indicador de generación por IA",
   "engineReasonPplHigh": "Perplejidad del modelo de lenguaje alta ({ppl}), acorde con la naturaleza impredecible de la escritura humana",
   "engineReasonPplMid": "Perplejidad del modelo de lenguaje moderada ({ppl})",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "No se detectaron patrones notables de escritura de IA",
   "engineReasonAdversarialNotInstalled": "El modelo de detección de paráfrasis no está instalado; no participó en esta votación",
   "engineReasonTransformerNotInstalled": "No hay modelo instalado o el modelo activo no es compatible; no participó en esta votación",
+  "modelRepairNoActiveVariant": "No se encontró ningún modelo activo; descargue un modelo recomendado en Gestión de modelos.",
+  "modelRepairCustomRemoved": "Se eliminó el modelo personalizado que no se pudo cargar. Los modelos personalizados no se pueden volver a descargar automáticamente; vuelva a importar el modelo y el tokenizador.",
+  "modelRepairNoSource": "Se eliminó el archivo del modelo que no se pudo cargar, pero actualmente no hay ninguna fuente de catálogo disponible para volver a descargarlo; vuelva a descargar un modelo recomendado en Gestión de modelos.",
+  "modelRepairRedownloaded": "Se detectó que el archivo del modelo podría estar dañado o ser incompatible; se volvió a descargar {name} automáticamente. Vuelva a ejecutar el análisis.",
+  "modelRepairRedownloadFailed": "Se eliminó el archivo del modelo que no se pudo cargar, pero la descarga automática no se completó; compruebe su conexión de red y vuelva a descargar {name} en Gestión de modelos.",
+  "engineTransformerNoActiveVariant": "No se encontró ningún modelo Transformer activo; descárguelo o actívelo en Gestión de modelos",
+  "engineTransformerUnsupportedTokenizer": "El tipo de tokenizador del modelo activo no es compatible ({tokenizer}); cambie a un modelo compatible con bert-wordpiece o roberta-bpe",
+  "engineTransformerMissingPaths": "Falta la ruta del modelo Transformer o del tokenizador; vuelva a descargarlo en Gestión de modelos",
+  "engineTransformerMissingFiles": "El archivo del modelo Transformer o del tokenizador no existe; vuelva a descargarlo en Gestión de modelos",
+  "engineTransformerOpsetUnsupported": "Versión de opset de ONNX no compatible (esta versión del modelo es demasiado reciente; actualice la aplicación): {variantId}",
+  "engineTransformerTokenizerCorrupt": "Formato del tokenizador dañado: {message}",
+  "engineTransformerRepairFailed": "No se pudo cargar o ejecutar el modelo, y la reparación automática no se completó; vuelva a descargar el modelo Transformer activo y el tokenizador en Gestión de modelos.",
+  "engineAdversarialNoActiveVariant": "No se encontró ningún modelo de detección de reescritura activo",
+  "engineAdversarialMissingFiles": "El archivo del modelo o del tokenizador no existe; vuelva a descargarlo en Gestión de modelos",
+  "engineAdversarialRepairFailed": "No se pudo cargar o ejecutar el modelo, y la reparación automática no se completó; vuelva a descargar el modelo de detección de reescritura y el tokenizador en Gestión de modelos.",
+  "engineReasonNotParticipatedWithError": "El modelo no participó en esta votación. {error}",
+  "patternNotAnalyzable": "Fragmento demasiado corto o posible ruido de PDF/OCR; no se realizó una evaluación de IA a nivel de oración",
   "engineReasonTransformerLoadFailed": "El modelo no se pudo cargar y no participó en esta votación ({error})",
   "engineReasonTransformerResult": "{model} evaluó que {aiCount} de {total} oraciones muestran características de IA",
   "engineReasonAdversarialDetected": "El modelo adversarial detectó posibles rastros de IA eliminados por una herramienta de paráfrasis (p. ej. QuillBot / Undetectable.ai)",
   "engineReasonAdversarialClean": "No se detectaron rastros claros de evasión mediante paráfrasis",
-  "engineReasonDisabledByUser": "El usuario ha desactivado este motor en Ajustes",
   "engineReasonGenericNotInstalled": "Modelo no instalado; no participó en esta votación",
   "patternGenericTransition": "conector genérico \"{word}\"",
-
   "helpAppBarTitle": "Guía del usuario",
   "helpAboutTitle": "Acerca de TruthLens",
   "helpAboutBody": "TruthLens es una aplicación de detección de contenido multiplataforma (iOS / Android / macOS / Windows) cuya inferencia de IA principal se ejecuta completamente en el dispositivo. Cuatro submodelos independientes —el clasificador neuronal Transformer, el análisis estadístico, el análisis estilométrico y la detección de paráfrasis adversarial— votan juntos para determinar si el texto fue generado por IA, con razones explicables oración por oración: no solo un porcentaje de \"parece IA\", sino una explicación del \"por qué\".",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "Importación de modelos personalizados: los usuarios avanzados pueden importar sus propios modelos ONNX locales para reemplazar o complementar los motores de detección integrados.",
   "helpWorkflowTitle": "Flujo de trabajo operativo completo",
   "helpWorkflowStepLabel": "Paso {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Descargar y actualizar modelos",
   "helpWorkflowStep1Body": "El primer inicio te guía para instalar el modelo de detección principal; después, siempre puedes revisar, descargar, actualizar o eliminar modelos desde \"Ajustes → Gestión de modelos de IA\". La aplicación comprueba proactivamente las últimas versiones al iniciarse, y muestra una insignia en el icono de ajustes y en la entrada de \"Gestión de modelos de IA\" si hay una actualización disponible.",
   "helpWorkflowStep2Title": "Elegir modelos (propósito e impacto)",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "Modelo estadístico de perplejidad (Statistical, peso 25%)",
   "helpLinkRoleAdversarial": "Modelo de detección de paráfrasis adversarial (Adversarial, peso 15%)",
   "helpLinkRoleLlm": "LLM de redacción de informes (opcional)",
-
   "privacyAppBarTitle": "Política de privacidad",
   "privacyPlatformTitle": "Política de privacidad de {platform}",
   "privacyLastUpdated": "Última actualización: {date}",

@@ -67,13 +67,13 @@ class AdversarialEngine implements DetectionEngine {
   @override
   Future<bool> isAvailable() async => (await _resolvePaths()) != null;
 
-  Future<OnnxDetector?> _ensureLoaded() async {
+  Future<OnnxDetector?> _ensureLoaded(AppLocalizations l10n) async {
     final paths = await _resolvePaths();
     if (paths == null) {
       final active = _resolveVariant();
       _loadError = active == null
-          ? '未找到使用中的改寫偵測模型'
-          : '模型或 tokenizer 檔案不存在，請在模型管理重新下載';
+          ? l10n.engineAdversarialNoActiveVariant
+          : l10n.engineAdversarialMissingFiles;
       return null;
     }
     final (modelPath, tokPath) = paths;
@@ -106,7 +106,7 @@ class AdversarialEngine implements DetectionEngine {
     }
 
     debugPrint('[AdversarialEngine] 所有 tokenizer 備援皆失敗，啟動自動修復: $lastError');
-    _repairMessage = await _repairActiveVariant(reason: '改寫偵測模型載入失敗');
+    _repairMessage = await _repairActiveVariant(l10n);
     _loadError = _repairMessage;
     return null;
   }
@@ -120,7 +120,7 @@ class AdversarialEngine implements DetectionEngine {
     reasons: [
       _loadError == null
           ? l10n.engineReasonAdversarialNotInstalled
-          : '改寫偵測模型未參與本次投票。$_loadError',
+          : l10n.engineReasonNotParticipatedWithError(_loadError!),
     ],
   );
 
@@ -131,7 +131,7 @@ class AdversarialEngine implements DetectionEngine {
   ) async {
     OnnxDetector? detector;
     try {
-      detector = await _ensureLoaded();
+      detector = await _ensureLoaded(l10n);
     } catch (_) {
       detector = null;
     }
@@ -147,7 +147,7 @@ class AdversarialEngine implements DetectionEngine {
       detector.dispose();
       _detector = null;
       _loadedModelPath = null;
-      _repairMessage = await _repairActiveVariant(reason: '改寫偵測模型推論失敗');
+      _repairMessage = await _repairActiveVariant(l10n);
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
@@ -201,14 +201,11 @@ class AdversarialEngine implements DetectionEngine {
     );
   }
 
-  Future<String> _repairActiveVariant({required String reason}) async {
+  Future<String> _repairActiveVariant(AppLocalizations l10n) async {
     try {
-      return await modelManager.repairActiveVariant(
-        'adversarial',
-        reason: reason,
-      );
+      return await modelManager.repairActiveVariant('adversarial', l10n);
     } catch (_) {
-      return '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載改寫偵測模型與 tokenizer。';
+      return l10n.engineAdversarialRepairFailed;
     }
   }
 }

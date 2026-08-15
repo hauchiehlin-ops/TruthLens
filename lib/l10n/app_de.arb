@@ -1,17 +1,14 @@
 {
   "@@locale": "de",
-
   "commonCancel": "Abbrechen",
   "commonDelete": "Löschen",
   "commonClose": "Schließen",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Von Mensch geschrieben",
   "verdictLikelyHuman": "Wahrscheinlich Mensch",
   "verdictMixed": "Gemischter Inhalt",
   "verdictLikelyAi": "Wahrscheinlich KI",
   "verdictAi": "KI-generiert",
-
   "inputSubtitle": "Text einfügen oder eingeben, um KI-generierte Inhalte zu erkennen",
   "inputHint": "Zu analysierenden Text eingeben oder einfügen…",
   "inputHistoryTooltip": "Verlauf",
@@ -33,7 +30,6 @@
   "inputActiveModel": "Modell: {modelId}",
   "inputNoModel": "Kein Modell installiert (nur statistische/stilistische Analyse)",
   "inputCharCount": "{count} Zeichen",
-
   "analysisAppBarTitle": "Analysiere",
   "analysisEngineTransformer": "Transformer-Klassifikator",
   "analysisEngineStatistical": "Statistische Analyse",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "Adversariale Abwehr",
   "analysisProgressSemantics": "Analyse läuft, {done} von {total} Engines abgeschlossen",
   "analysisDoneSemantics": "Abgeschlossen",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "Vorläufiges Ergebnis: KI-Wahrscheinlichkeit {percent}%",
+  "analysisPreliminaryResultRefining": "Vorläufiges Ergebnis: KI-Wahrscheinlichkeit {percent}% (wird verfeinert…)",
   "engineNameAdversarialFull": "Adversariale Abwehr (Paraphrasierungserkennung)",
-
   "modelNecessityText": "Ohne das Herunterladen des neuronalen Erkennungsmodells funktioniert TruthLens weiterhin, verwendet jedoch nur statistische und stilistische Analyse mit eingeschränkter Genauigkeit und mehrsprachiger Unterstützung. Nach dem Herunterladen des Modells nimmt der mehrsprachige Transformer-Klassifikator an der Ensemble-Abstimmung teil und verbessert Genauigkeit und Zuverlässigkeit erheblich. Das Modell läuft auf dem Gerät; nach dem Herunterladen lädt es keine Inhalte hoch.",
   "modelPromptTitle": "Es wird empfohlen, das Erkennungsmodell für eine vollständige Analyse herunterzuladen",
   "modelPromptDontRemind": "Nicht mehr erinnern",
   "modelPromptSkip": "Vorerst überspringen",
   "modelPromptDownload": "Jetzt herunterladen",
-
   "onboardingWelcomeTitle": "Willkommen bei TruthLens",
   "onboardingHeadline": "KI-Inhaltserkennung auf dem Gerät",
   "onboardingDetectedDevice": "Gerät erkannt",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "\"Empfohlen\" wird basierend auf Ihrer Hardware markiert; Sie können auch eine andere Option wählen.",
   "onboardingSkipButton": "Später entscheiden (statistische/stilistische Analyse ohne Modell verwenden)",
   "onboardingSkipHint": "Sie können jederzeit unter \"Einstellungen → KI-Modellverwaltung\" herunterladen; Sie werden bei der Verwendung von Analysen, die ein Modell erfordern, erneut erinnert.",
-
   "modelListCustomImportedLabel": "Importiertes benutzerdefiniertes Modell:",
   "modelListActiveChip": "In Verwendung",
   "modelListRecommendedChip": "Empfohlen",
@@ -74,16 +67,15 @@
   "modelListPageButton": "Modellseite",
   "modelListMayExceedMemory": "Kann den Gerätespeicher überschreiten",
   "modelListFailedPrefix": "Fehlgeschlagen: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "Modellkatalog konnte nicht geladen werden",
+  "modelCatalogEmpty": "Keine Modelle verfügbar",
+  "modelDownloadPathChip": "{label} Download-Pfad",
+  "modelDownloadPathModelFile": "Modelldatei",
+  "modelDownloadPathCopied": "Download-Pfad kopiert",
+  "settingsSaveFailed": "Einstellungen konnten nicht gespeichert werden: {error}",
   "modelListDeleteConfirmTitle": "Modell löschen?",
   "modelListDeleteConfirmBody": "Dadurch wird \"{name}\" ({size}) gelöscht. Sie müssen es erneut herunterladen, um es wieder zu verwenden.",
   "modelListDeleteCustomConfirmBody": "Dadurch wird das importierte benutzerdefinierte Modell \"{name}\" ({size}) gelöscht. Sie müssen es erneut importieren, um es wieder zu verwenden.",
-
   "modelImportAppBarTitle": "Benutzerdefiniertes ONNX-Modell importieren",
   "modelImportStep1Title": "1. ONNX-Modelldatei auswählen",
   "modelImportSelectedFile": "Ausgewählt: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Bitte eine Tokenizer-Datei auswählen",
   "modelImportSuccessSnackbar": "Modell erfolgreich importiert! Wurde automatisch als aktives Modell festgelegt.",
   "modelImportFailedSnackbar": "Modellimport fehlgeschlagen. Bitte Berechtigungen oder Protokolle prüfen",
-
   "settingsAppBarTitle": "Einstellungen",
   "settingsThresholdTitle": "Vertrauensschwelle für KI-Bestimmung",
   "settingsThresholdSubtitle": "Aktuell: {percent}% — eine Erhöhung reduziert Falschmeldungen (menschlicher Text fälschlich als KI eingestuft)",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "Prüft erklärbare Stilmerkmale wie wiederholte Satzanfänge, formelhafte Übergänge und übermäßige Listen. Ohne Treffer beträgt das Signal 0 %.",
   "settingsEngineAdversarialHelp": "Sucht nach paraphrasiertem KI-Text oder entfernten KI-Spuren. Ein niedriger Wert bedeutet nur schwache Restsignale, keinen positiven Nachweis.",
   "settingsEngineWeightsTotalValid": "Summe: {total} % — bereit zum Speichern",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Summe: {total} % — genau auf 100 % einstellen",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Gewichtungen speichern",
   "settingsEngineWeightsSaved": "KI-Modellgewichtungen wurden auf diesem Gerät gespeichert",
   "settingsEngineWeightsRestoreDefaults": "Standardwerte",
-  "engineReasonDisabledByUser": "In den Einstellungen deaktiviert; diese Engine nahm nicht an der Abstimmung teil",
+  "engineReasonDisabledByUser": "Benutzer hat diese Engine in den Einstellungen deaktiviert",
   "engineReasonTransformerNoStrongSentence": "{model}: Keiner von {total} Sätzen überschritt den starken KI-Schwellenwert; das kalibrierte schwache Signal beträgt {percent} %",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "KI-Signal {percent} %",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "Das KI-Signal ist die Wahrscheinlichkeit dieses Moduls für das Dokument. Das eingestellte Gewicht bestimmt seinen Einfluss; die Beitragspunkte werden so verteilt, dass ihre angezeigte Summe genau der gesamten KI-Wahrscheinlichkeit entspricht. „Nicht erkannt“ bedeutet unterhalb der starken Signalschwelle von 60 %, nicht zwingend den Wert null.",
   "reportMetricAiSentenceRatio": "Anteil der Sätze mit starkem KI-Signal",
   "reportStrongAiSentenceCount": "{count} von {total} überschritten die starke Signalschwelle von 60 %",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "Keiner von {total} Sätzen überschritt die Schwelle für ein starkes Umschreibungssignal; das kalibrierte schwache Signal beträgt {percent} %",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} von {total} Sätzen überschritten die Schwelle für ein starkes Umschreibungssignal; das kalibrierte Dokumentsignal beträgt {percent} %",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Verifizierung von Hyperlinks und Bibliografie",
   "settingsLinkVerificationSubtitle": "Der Bericht stellt eine Verbindung her, um zu prüfen, ob die im Dokument erkannten URLs und Bibliografieeinträge tatsächlich existieren (KI-generierte Inhalte enthalten oft plausibel klingende, aber erfundene Referenzen). Sowohl akademische Links im DOI-Format als auch Referenzen im \"Autor-Jahr\"-Format ohne Link werden gegen das öffentliche Crossref-Register geprüft. Das Kern-KI-Erkennungsmodell läuft weiterhin vollständig auf dem Gerät und sendet niemals Dokumentinhalte; die Verbindung wird nur für diese Verifizierung und Modell-Updateprüfungen verwendet und kann hier deaktiviert werden.",
   "settingsThemeTitle": "Anzeigethema",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "Öffnen",
   "settingsCustomImportTitle": "Benutzerdefiniertes ONNX-Modell importieren & testen",
   "settingsCustomImportSubtitle": "Lokales benutzerdefiniertes ONNX-Modell importieren, Tokenizer konfigurieren und Test-Inferenz ausführen",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "Der Import benutzerdefinierter Modelle wird in der Web-Version noch nicht unterstützt. Bitte verwenden Sie die App-Version.",
   "settingsModelManagerAppBarTitle": "KI-Modellverwaltung",
   "settingsImportTooltip": "Lokales ONNX-Modell importieren",
   "settingsDeviceLabel": "Gerät: {summary}",
-
   "historyAppBarTitle": "Verlauf",
   "historyClearAllTooltip": "Alles löschen",
   "historySearchHint": "Verlauf durchsuchen…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "Noch kein Erkennungsverlauf vorhanden",
   "historyEmptySearch": "Keine Einträge gefunden, die \"{query}\" entsprechen",
   "historyEntrySemantics": "{verdict}, KI-Wahrscheinlichkeit {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "Erkennungsbericht",
   "reportExportTooltip": "Bericht exportieren",
   "reportHomeTooltip": "Zurück zur Startseite",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "Automatische Modell-Benchmark-Kalibrierung",
   "reportCommunityDiscoveredTag": "Community (HuggingFace)",
   "reportEngineBreakdownTitle": "Aufschlüsselung nach Engines",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Transformer-Klassifikator",
+  "reportRadarRoleStatistical": "Statistische Analyse",
+  "reportRadarRoleStylometry": "Stilometrie-Analyse",
+  "reportRadarRoleAdversarial": "Gegnerische Abwehr",
+  "reportRadarAxisTransformer": "Satzklassifikation",
+  "reportRadarAxisStatistical": "Sprachliche Regelmäßigkeit",
+  "reportRadarAxisStylometry": "Schreibstil",
+  "reportRadarAxisAdversarial": "Umschreibungsabwehr",
+  "reportVerdictBadgeTitle": "Gesamturteil",
+  "reportVerdictBadgeProbability": "Gesamt-KI-Wahrscheinlichkeit {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "Die meisten Engine-Signale deuten auf natürliches menschliches Schreiben hin.",
+  "reportVerdictHintLikelyHuman": "Insgesamt eher menschlich, mit etwas verbleibender Modellunsicherheit.",
+  "reportVerdictHintMixed": "Die Engine-Signale sind gemischt; lesen Sie die detaillierte Analyse zusammen mit diesem Ergebnis.",
+  "reportVerdictHintLikelyAi": "Mehrere Indikatoren deuten auf KI hin; überprüfen Sie die hoch bewerteten Abschnitte.",
+  "reportVerdictHintAi": "Die Gesamtsignale deuten stark auf KI-generierten oder umgeschriebenen Text hin.",
+  "reportSynthesisOverall": "Gesamturteil: {verdict}; Gesamt-KI-Wahrscheinlichkeit {percent}%.",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "Stärkstes Einzelsignal: {label} ({percent}%), aber das Endergebnis vereint die Gewichtungen aller Engines und ist nicht die Schlussfolgerung einer einzelnen Engine.",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "Der derzeit größte gewichtete Beitrag stammt von {label} (etwa {points} Prozentpunkte).",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "„Kein offensichtlicher KI-Schreibstil erkannt“ bedeutet nur, dass die Stil-Engine keine festen Satzmuster oder Übergangswortmuster gefunden hat; andere Modelle können die Gesamtpunktzahl dennoch durch sprachliche Regelmäßigkeit, Satzklassifikation oder Umschreibungssignale erhöhen.",
+  "reportSynthesisModelGap": "Wenn einige Engines nicht teilgenommen haben, verwenden Sie zuerst „Empfohlene Analysemodelle vervollständigen“ in der Modellverwaltung; schlägt es weiterhin fehl, gibt die detaillierte Analyse an, ob die Ursache ein fehlendes Modell, ein nicht unterstützter Tokenizer, eine fehlende Datei oder eine Web-/ONNX-Runtime-Kompatibilitätsgrenze ist.",
+  "reportEngineRelationshipUnavailable": "{label} war an dieser gewichteten Abstimmung nicht beteiligt, daher wird diese Dimension als 0% angezeigt. {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "Rollengewicht {weight}%, trägt etwa {points} Prozentpunkte zur Gesamtpunktzahl bei{variantText}.",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": " (verschmolzen aus {count} Modellvarianten)",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} war an dieser Abstimmung nicht beteiligt.",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} lieferte keine zusätzliche Texterklärung.",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "Lösung: Laden Sie den mehrsprachigen Transformer in der Modellverwaltung herunter und aktivieren Sie ihn; falls bereits heruntergeladen, laden Sie Modell und Tokenizer erneut herunter.",
+  "reportEngineResolutionAdversarial": "Lösung: Laden Sie das Umschreibungserkennungsmodell und den Tokenizer in der Modellverwaltung erneut herunter; aktualisieren Sie im Web auf eine Version mit dem BigInt-Kompatibilitäts-Fix und analysieren Sie erneut.",
+  "reportEngineReasonBigInt": "{reason}. Ursache: Die Web-ONNX-Runtime lieferte einen BigInt-Tensor, den die ältere Brücke nicht konvertieren konnte; aktualisieren Sie auf die korrigierte Version und analysieren Sie erneut.",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}. Lösung: Wechseln Sie zu einem Katalogmodell oder laden Sie Modell und Tokenizer erneut herunter.",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}. Lösung: Öffnen Sie die Modellverwaltung, tippen Sie auf „Empfohlene Analysemodelle vervollständigen“ und bestätigen Sie, dass der mehrsprachige Transformer als aktiv markiert ist.",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "Nicht installiert",
   "reportEngineLoadFailedBadge": "Laden fehlgeschlagen",
   "reportSentenceAnalysisTitle": "Analyse auf Satzebene",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "Bibliografie erkannt ({count} Einträge); noch nicht verifiziert",
   "reportBibDisabledHint": "KI-generierte Inhalte enthalten oft plausibel klingende, aber erfundene Referenzen. Sie haben die Hyperlink-Verifizierung in den Einstellungen deaktiviert; Sie können sie für die automatische Verifizierung wieder aktivieren oder unten für eine einmalige Prüfung antippen.",
   "reportVerifyNowBibButton": "Jetzt verifizieren (Netzwerk erforderlich)",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "Alle nicht verifizierten Zitate erneut prüfen",
+  "reportBibRecheckOneTooltip": "Dieses Zitat erneut prüfen",
   "reportBibResultHint": "Abgeglichen mit dem öffentlichen Crossref-Register nach Ähnlichkeit von Autor, Jahr und Titel. Keine absolute Garantie — bei \"unsicher\" bitte manuell verifizieren.",
   "reportBibHighConfidence": "Hohe Zuverlässigkeit: existiert wahrscheinlich{journal}",
   "reportBibJournalSuffix": " (registriert bei {journal})",
   "reportBibNotFound": "Keine nahe Übereinstimmung gefunden — möglicherweise erfundene Referenz",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "Verdächtig: nicht durch Registerabgleich verifiziert",
   "reportBibTruncated": "Nur die ersten {max} Einträge wurden verifiziert (insgesamt {count} erkannt)",
   "reportNetworkWarningTitle": "Schwache Netzwerkverbindung",
   "reportNetworkWarningBody": "Diese App geht standardmäßig davon aus, dass eine Netzwerkverbindung verfügbar ist; sowohl die Analyse der Hyperlink-Authentizität als auch der Zitat-Authentizität erfordert Netzwerkzugriff, um Ergebnisse zu liefern. Es konnte keine Verbindung hergestellt werden — bitte Netzwerk prüfen und erneut versuchen.",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "{total} Sätze · {ai} wahrscheinlich KI · {human} wahrscheinlich Mensch",
   "pdfTruncationNotice": "Um die PDF-Lesbarkeit zu erhalten, werden nur die ersten {max} Sätze angezeigt (von insgesamt {count}); verwenden Sie für vollständige Daten pro Satz stattdessen \"{csvLabel}\" oder \"{jsonLabel}\".",
   "pdfSentenceColumnHeader": "Satz (mit übereinstimmenden Mustern)",
-
   "composerHeadlineAi": "Dieser Text wurde höchstwahrscheinlich von KI generiert (KI-Wahrscheinlichkeit {percent}%)",
   "composerHeadlineLikelyAi": "Dieser Text tendiert zu KI-Generierung; weitere Überprüfung wird empfohlen (KI-Wahrscheinlichkeit {percent}%)",
   "composerHeadlineMixed": "Dieser Text zeigt gemischte Merkmale von Mensch und KI (KI-Wahrscheinlichkeit {percent}%)",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "Die meisten Sätze sind in Rhythmus, Wortwahl und Verwendung von Übergangswörtern sehr regelmäßig — ein häufiger Fingerabdruck von KI-generiertem Text.",
   "composerNarrativeMixedPattern": "Der Text enthält sowohl regelmäßige als auch natürlich variierende Teile, was auf einen von KI aufpolierten menschlichen Entwurf oder eine Mensch-KI-Zusammenarbeit hindeutet.",
   "composerNarrativeHumanPattern": "Satzlänge und Wortwahl zeigen natürliche Variation und persönlichen Stil ohne klare Anzeichen von KI-Regelmäßigkeit.",
-
   "engineReasonPplLow": "Niedrige Sprachmodell-Perplexität ({ppl}) — Text ist sehr vorhersehbar, ein Indikator für KI-Generierung",
   "engineReasonPplHigh": "Hohe Sprachmodell-Perplexität ({ppl}), im Einklang mit der unvorhersehbaren Natur menschlichen Schreibens",
   "engineReasonPplMid": "Moderate Sprachmodell-Perplexität ({ppl})",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "Keine auffälligen KI-Schreibmuster erkannt",
   "engineReasonAdversarialNotInstalled": "Paraphrasierungserkennungsmodell nicht installiert; nahm nicht an dieser Abstimmung teil",
   "engineReasonTransformerNotInstalled": "Kein Modell installiert oder aktives Modell wird nicht unterstützt; nahm nicht an dieser Abstimmung teil",
+  "modelRepairNoActiveVariant": "Kein aktives Modell gefunden; laden Sie ein empfohlenes Modell in der Modellverwaltung herunter.",
+  "modelRepairCustomRemoved": "Das fehlerhafte benutzerdefinierte Modell wurde entfernt. Benutzerdefinierte Modelle können nicht automatisch erneut heruntergeladen werden; bitte importieren Sie Modell und Tokenizer erneut.",
+  "modelRepairNoSource": "Die fehlerhafte Modelldatei wurde entfernt, aber derzeit ist keine Katalogquelle zum erneuten Herunterladen verfügbar; bitte laden Sie ein empfohlenes Modell in der Modellverwaltung erneut herunter.",
+  "modelRepairRedownloaded": "Es wurde erkannt, dass die Modelldatei möglicherweise beschädigt oder inkompatibel ist; {name} wurde automatisch erneut heruntergeladen. Bitte führen Sie die Analyse erneut aus.",
+  "modelRepairRedownloadFailed": "Die fehlerhafte Modelldatei wurde entfernt, aber der automatische erneute Download wurde nicht abgeschlossen; bitte überprüfen Sie Ihre Netzwerkverbindung und laden Sie {name} in der Modellverwaltung erneut herunter.",
+  "engineTransformerNoActiveVariant": "Kein aktives Transformer-Modell gefunden; laden Sie eines in der Modellverwaltung herunter oder aktivieren Sie es",
+  "engineTransformerUnsupportedTokenizer": "Der Tokenizer-Typ des aktiven Modells wird nicht unterstützt ({tokenizer}); wechseln Sie zu einem Modell, das bert-wordpiece oder roberta-bpe unterstützt",
+  "engineTransformerMissingPaths": "Transformer-Modell- oder Tokenizer-Pfad fehlt; erneut in der Modellverwaltung herunterladen",
+  "engineTransformerMissingFiles": "Transformer-Modell- oder Tokenizer-Datei existiert nicht; erneut in der Modellverwaltung herunterladen",
+  "engineTransformerOpsetUnsupported": "ONNX-Opset-Version wird nicht unterstützt (diese Modellversion ist zu neu; App aktualisieren): {variantId}",
+  "engineTransformerTokenizerCorrupt": "Tokenizer-Format beschädigt: {message}",
+  "engineTransformerRepairFailed": "Modell konnte nicht geladen oder ausgeführt werden, und die automatische Reparatur wurde nicht abgeschlossen; laden Sie das aktive Transformer-Modell und den Tokenizer in der Modellverwaltung erneut herunter.",
+  "engineAdversarialNoActiveVariant": "Kein aktives Umschreibungserkennungsmodell gefunden",
+  "engineAdversarialMissingFiles": "Modell- oder Tokenizer-Datei existiert nicht; erneut in der Modellverwaltung herunterladen",
+  "engineAdversarialRepairFailed": "Modell konnte nicht geladen oder ausgeführt werden, und die automatische Reparatur wurde nicht abgeschlossen; laden Sie das Umschreibungserkennungsmodell und den Tokenizer in der Modellverwaltung erneut herunter.",
+  "engineReasonNotParticipatedWithError": "Das Modell hat an dieser Abstimmung nicht teilgenommen. {error}",
+  "patternNotAnalyzable": "Segment zu kurz oder vermutlich PDF/OCR-Rauschen; keine satzweise KI-Bewertung durchgeführt",
   "engineReasonTransformerLoadFailed": "Modell konnte nicht geladen werden und nahm nicht an dieser Abstimmung teil ({error})",
   "engineReasonTransformerResult": "{model} bewertete, dass {aiCount} von {total} Sätzen KI-Merkmale zeigen",
   "engineReasonAdversarialDetected": "Das adversariale Modell erkannte mögliche KI-Spuren, die durch ein Paraphrasierungstool (z. B. QuillBot / Undetectable.ai) entfernt wurden",
   "engineReasonAdversarialClean": "Keine klaren Spuren einer Paraphrasierungs-Umgehung erkannt",
-  "engineReasonDisabledByUser": "Benutzer hat diese Engine in den Einstellungen deaktiviert",
   "engineReasonGenericNotInstalled": "Modell nicht installiert; nahm nicht an dieser Abstimmung teil",
   "patternGenericTransition": "allgemeines Übergangswort \"{word}\"",
-
   "helpAppBarTitle": "Benutzerhandbuch",
   "helpAboutTitle": "Über TruthLens",
   "helpAboutBody": "TruthLens ist eine plattformübergreifende Inhaltserkennungsanwendung (iOS / Android / macOS / Windows), deren Kern-KI-Inferenz vollständig auf dem Gerät läuft. Vier unabhängige Untermodelle — der neuronale Transformer-Klassifikator, die statistische Analyse, die stilometrische Analyse und die adversariale Paraphrasierungserkennung — stimmen gemeinsam ab, um zu bestimmen, ob der Text von KI generiert wurde, mit erklärbaren Gründen Satz für Satz: nicht nur ein \"sieht nach KI aus\"-Prozentsatz, sondern eine Erklärung des \"Warum\".",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "Import benutzerdefinierter Modelle: fortgeschrittene Benutzer können ihre eigenen lokalen ONNX-Modelle importieren, um integrierte Erkennungs-Engines zu ersetzen oder zu ergänzen.",
   "helpWorkflowTitle": "Vollständiger Betriebsablauf",
   "helpWorkflowStepLabel": "Schritt {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Modelle herunterladen & aktualisieren",
   "helpWorkflowStep1Body": "Beim ersten Start werden Sie durch die Installation des Kern-Erkennungsmodells geführt; danach können Sie jederzeit Modelle unter \"Einstellungen → KI-Modellverwaltung\" prüfen, herunterladen, aktualisieren oder entfernen. Die App prüft beim Start proaktiv auf die neuesten Versionen und zeigt ein Abzeichen auf dem Einstellungssymbol und dem Eintrag \"KI-Modellverwaltung\" an, wenn ein Update verfügbar ist.",
   "helpWorkflowStep2Title": "Modelle auswählen (Zweck & Auswirkung)",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "Statistisches Perplexitätsmodell (Statistical, Gewicht 25%)",
   "helpLinkRoleAdversarial": "Modell zur Erkennung adversarialer Paraphrasierung (Adversarial, Gewicht 15%)",
   "helpLinkRoleLlm": "Bericht-LLM (optional)",
-
   "privacyAppBarTitle": "Datenschutzrichtlinie",
   "privacyPlatformTitle": "Datenschutzrichtlinie für {platform}",
   "privacyLastUpdated": "Zuletzt aktualisiert: {date}",

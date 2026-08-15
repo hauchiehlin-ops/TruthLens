@@ -1,17 +1,14 @@
 {
   "@@locale": "th",
-
   "commonCancel": "ยกเลิก",
   "commonDelete": "ลบ",
   "commonClose": "ปิด",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "มนุษย์เขียน",
   "verdictLikelyHuman": "น่าจะเป็นมนุษย์",
   "verdictMixed": "เนื้อหาผสม",
   "verdictLikelyAi": "น่าจะเป็น AI",
   "verdictAi": "AI สร้างขึ้น",
-
   "inputSubtitle": "วางหรือพิมพ์ข้อความเพื่อตรวจจับเนื้อหาที่สร้างโดย AI",
   "inputHint": "พิมพ์หรือวางข้อความที่ต้องการวิเคราะห์…",
   "inputHistoryTooltip": "ประวัติ",
@@ -33,7 +30,6 @@
   "inputActiveModel": "โมเดล: {modelId}",
   "inputNoModel": "ไม่ได้ติดตั้งโมเดล（ใช้เฉพาะการวิเคราะห์เชิงสถิติ/รูปแบบการเขียน）",
   "inputCharCount": "{count} ตัวอักษร",
-
   "analysisAppBarTitle": "กำลังวิเคราะห์",
   "analysisEngineTransformer": "ตัวจำแนก Transformer",
   "analysisEngineStatistical": "การวิเคราะห์เชิงสถิติ",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "การป้องกันเชิงต่อต้าน",
   "analysisProgressSemantics": "กำลังวิเคราะห์ เสร็จแล้ว {done} จาก {total} เอนจิน",
   "analysisDoneSemantics": "เสร็จสิ้น",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "ผลเบื้องต้น: ความน่าจะเป็น AI {percent}%",
+  "analysisPreliminaryResultRefining": "ผลเบื้องต้น: ความน่าจะเป็น AI {percent}%（กำลังปรับแต่ง…）",
   "engineNameAdversarialFull": "การป้องกันเชิงต่อต้าน（ตรวจจับการเขียนใหม่）",
-
   "modelNecessityText": "หากไม่ได้ดาวน์โหลดโมเดลตรวจจับแบบโครงข่ายประสาทเทียม TruthLens ยังคงทำงานได้ แต่จะใช้เพียงการวิเคราะห์เชิงสถิติและรูปแบบการเขียนเท่านั้น ซึ่งมีความแม่นยำและการรองรับหลายภาษาที่จำกัด หลังจากดาวน์โหลดโมเดลแล้ว ตัวจำแนก Transformer หลายภาษาจะเข้าร่วมการโหวตแบบรวมกลุ่ม ซึ่งจะเพิ่มความแม่นยำและความน่าเชื่อถือของการตัดสินอย่างมาก โมเดลทำงานบนอุปกรณ์ของคุณ และหลังจากดาวน์โหลดแล้วจะไม่มีการอัปโหลดเนื้อหาใดๆ",
   "modelPromptTitle": "แนะนำให้ดาวน์โหลดโมเดลตรวจจับเพื่อการวิเคราะห์ที่สมบูรณ์",
   "modelPromptDontRemind": "ไม่ต้องเตือนอีก",
   "modelPromptSkip": "ข้ามไปก่อน",
   "modelPromptDownload": "ไปที่การดาวน์โหลด",
-
   "onboardingWelcomeTitle": "ยินดีต้อนรับสู่ TruthLens",
   "onboardingHeadline": "การตรวจจับเนื้อหา AI บนอุปกรณ์",
   "onboardingDetectedDevice": "อุปกรณ์ที่ตรวจพบ",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "ระบบได้ทำเครื่องหมาย \"แนะนำ\" ตามฮาร์ดแวร์ของคุณแล้ว คุณสามารถเลือกตัวเลือกอื่นได้เช่นกัน",
   "onboardingSkipButton": "ไว้ทีหลัง（ใช้การวิเคราะห์เชิงสถิติ/รูปแบบการเขียนโดยไม่ใช้โมเดล）",
   "onboardingSkipHint": "แม้จะข้ามไปแล้ว คุณยังสามารถดาวน์โหลดได้ทุกเมื่อจาก \"การตั้งค่า → การจัดการโมเดล AI\" และจะมีการแจ้งเตือนอีกครั้งเมื่อใช้การวิเคราะห์ที่ต้องใช้โมเดล",
-
   "modelListCustomImportedLabel": "โมเดลที่นำเข้าแบบกำหนดเอง:",
   "modelListActiveChip": "กำลังใช้งาน",
   "modelListRecommendedChip": "แนะนำ",
@@ -74,16 +67,15 @@
   "modelListPageButton": "หน้าโมเดล",
   "modelListMayExceedMemory": "อาจเกินหน่วยความจำของอุปกรณ์",
   "modelListFailedPrefix": "ล้มเหลว: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "ไม่สามารถโหลดแคตตาล็อกโมเดลได้",
+  "modelCatalogEmpty": "ไม่มีโมเดลที่ใช้งานได้",
+  "modelDownloadPathChip": "เส้นทางดาวน์โหลด {label}",
+  "modelDownloadPathModelFile": "ไฟล์โมเดล",
+  "modelDownloadPathCopied": "คัดลอกเส้นทางดาวน์โหลดแล้ว",
+  "settingsSaveFailed": "บันทึกการตั้งค่าไม่สำเร็จ: {error}",
   "modelListDeleteConfirmTitle": "ลบโมเดลหรือไม่?",
   "modelListDeleteConfirmBody": "จะลบ \"{name}\"（{size}）คุณต้องดาวน์โหลดใหม่เพื่อใช้งานอีกครั้ง",
   "modelListDeleteCustomConfirmBody": "จะลบ \"{name}\" ที่นำเข้าแบบกำหนดเอง（{size}）คุณต้องนำเข้าใหม่เพื่อใช้งานอีกครั้ง",
-
   "modelImportAppBarTitle": "นำเข้าโมเดล ONNX แบบกำหนดเอง",
   "modelImportStep1Title": "1. เลือกไฟล์โมเดล ONNX",
   "modelImportSelectedFile": "เลือกแล้ว: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "กรุณาเลือกไฟล์ Tokenizer",
   "modelImportSuccessSnackbar": "นำเข้าโมเดลสำเร็จแล้ว! ตั้งเป็นโมเดลที่ใช้งานโดยอัตโนมัติ",
   "modelImportFailedSnackbar": "นำเข้าโมเดลล้มเหลว กรุณาตรวจสอบสิทธิ์หรือบันทึกการทำงาน",
-
   "settingsAppBarTitle": "การตั้งค่า",
   "settingsThresholdTitle": "เกณฑ์ความเชื่อมั่นในการตัดสิน AI",
   "settingsThresholdSubtitle": "ปัจจุบัน: {percent}% — เพิ่มค่านี้เพื่อลดผลบวกลวง（การตัดสินบทความมนุษย์ผิดว่าเป็น AI）",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "ตรวจลักษณะสำนวนที่อธิบายได้ เช่น การขึ้นต้นซ้ำ คำเชื่อมแบบสูตร และรายการมากเกินไป หากไม่พบ สัญญาณเป็น 0%",
   "settingsEngineAdversarialHelp": "ค้นหาข้อความ AI ที่ถูกเขียนใหม่หรือลบร่องรอย คะแนนต่ำหมายถึงหลักฐานตกค้างที่อ่อน ไม่ใช่ผลตรวจเชิงบวก",
   "settingsEngineWeightsTotalValid": "รวม: {total}% — พร้อมบันทึก",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "รวม: {total}% — ปรับให้เท่ากับ 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "บันทึกน้ำหนัก",
   "settingsEngineWeightsSaved": "บันทึกน้ำหนักโมเดล AI บนอุปกรณ์นี้แล้ว",
   "settingsEngineWeightsRestoreDefaults": "คืนค่าเริ่มต้น",
-  "engineReasonDisabledByUser": "ปิดใช้งานในการตั้งค่า เอนจินนี้ไม่ได้ร่วมลงคะแนน",
+  "engineReasonDisabledByUser": "ผู้ใช้ปิดเอนจินนี้ในการตั้งค่า",
   "engineReasonTransformerNoStrongSentence": "{model}: ไม่มีประโยคใดจาก {total} ประโยคผ่านเกณฑ์ AI ระดับสูง สัญญาณอ่อนหลังปรับเทียบคือ {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "สัญญาณ AI {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "สัญญาณ AI คือความน่าจะเป็นที่แต่ละเอนจินประเมินให้เอกสารนี้ น้ำหนักที่ตั้งไว้กำหนดอิทธิพล และคะแนนการมีส่วนร่วมจะถูกจัดสรรให้ผลรวมที่แสดงตรงกับความน่าจะเป็น AI โดยรวมพอดี ‘ไม่พบ’ หมายถึงต่ำกว่าเกณฑ์สัญญาณชัดเจน 60% ไม่ได้หมายความว่าค่าต้องเป็นศูนย์",
   "reportMetricAiSentenceRatio": "สัดส่วนประโยคที่มีสัญญาณ AI ชัดเจน",
   "reportStrongAiSentenceCount": "{count} จาก {total} ประโยคเกินเกณฑ์สัญญาณชัดเจน 60%",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "ไม่มีประโยคใดจาก {total} ประโยคเกินเกณฑ์สัญญาณการถอดความที่ชัดเจน สัญญาณอ่อนหลังการปรับเทียบคือ {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} จาก {total} ประโยคเกินเกณฑ์สัญญาณการถอดความที่ชัดเจน สัญญาณเอกสารหลังการปรับเทียบคือ {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "การตรวจสอบความถูกต้องของลิงก์และบรรณานุกรม",
   "settingsLinkVerificationSubtitle": "รายงานจะเชื่อมต่อเพื่อตรวจสอบว่า URL และรายการบรรณานุกรมที่ตรวจพบในเอกสารมีอยู่จริงหรือไม่（เนื้อหาที่สร้างโดย AI มักมีการอ้างอิงที่ดูสมเหตุสมผลแต่ไม่มีอยู่จริง） ลิงก์วิชาการรูปแบบ DOI และบรรณานุกรมรูปแบบ \"ผู้แต่ง—ปี\" ที่ไม่มีลิงก์ จะถูกตรวจสอบกับข้อมูลทะเบียนสาธารณะของ Crossref ทั้งคู่ โมเดลตรวจจับ AI หลักยังคงทำงานบนอุปกรณ์ทั้งหมด และไม่ส่งเนื้อหาเอกสาร การเชื่อมต่อใช้เพียงเพื่อการตรวจสอบนี้และการตรวจสอบการอัปเดตโมเดลเท่านั้น และสามารถปิดได้ที่นี่",
   "settingsThemeTitle": "ธีมการแสดงผล",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "เปิด",
   "settingsCustomImportTitle": "นำเข้าและทดสอบโมเดล ONNX แบบกำหนดเอง",
   "settingsCustomImportSubtitle": "นำเข้าโมเดล ONNX และการตั้งค่า Tokenizer แบบกำหนดเองในเครื่อง แล้วทำการทดสอบการอนุมาน",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "การนำเข้าโมเดลกำหนดเองยังไม่รองรับในเวอร์ชันเว็บ กรุณาใช้เวอร์ชันแอป",
   "settingsModelManagerAppBarTitle": "การจัดการโมเดล AI",
   "settingsImportTooltip": "นำเข้าโมเดล ONNX ในเครื่อง",
   "settingsDeviceLabel": "อุปกรณ์: {summary}",
-
   "historyAppBarTitle": "ประวัติ",
   "historyClearAllTooltip": "ล้างทั้งหมด",
   "historySearchHint": "ค้นหาประวัติ…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "ยังไม่มีประวัติการตรวจจับ",
   "historyEmptySearch": "ไม่พบรายการที่ตรงกับ \"{query}\"",
   "historyEntrySemantics": "{verdict}, ความน่าจะเป็น AI {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "รายงานการตรวจจับ",
   "reportExportTooltip": "ส่งออกรายงาน",
   "reportHomeTooltip": "กลับหน้าหลัก",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "การปรับเกณฑ์มาตรฐานโมเดลอัตโนมัติ",
   "reportCommunityDiscoveredTag": "โมเดลชุมชน (HuggingFace)",
   "reportEngineBreakdownTitle": "รายละเอียดเครื่องมือ",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "ตัวจำแนก Transformer",
+  "reportRadarRoleStatistical": "การวิเคราะห์ทางสถิติ",
+  "reportRadarRoleStylometry": "การวิเคราะห์โวหาร",
+  "reportRadarRoleAdversarial": "การป้องกันเชิงปรปักษ์",
+  "reportRadarAxisTransformer": "ตัวจำแนกประโยค",
+  "reportRadarAxisStatistical": "ความสม่ำเสมอของภาษา",
+  "reportRadarAxisStylometry": "รูปแบบการเขียน",
+  "reportRadarAxisAdversarial": "การป้องกันการเขียนใหม่",
+  "reportVerdictBadgeTitle": "คำตัดสินโดยรวม",
+  "reportVerdictBadgeProbability": "ความน่าจะเป็น AI โดยรวม {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "สัญญาณจากเอนจินส่วนใหญ่โน้มเอียงไปทางการเขียนของมนุษย์ตามธรรมชาติ",
+  "reportVerdictHintLikelyHuman": "โดยรวมโน้มเอียงไปทางมนุษย์ โดยยังมีความไม่แน่นอนของโมเดลเหลืออยู่เล็กน้อย",
+  "reportVerdictHintMixed": "สัญญาณจากเอนจินมีความหลากหลาย ควรอ่านการวิเคราะห์โดยละเอียดควบคู่กับผลลัพธ์นี้",
+  "reportVerdictHintLikelyAi": "ตัวชี้วัดหลายตัวโน้มเอียงไปทาง AI แนะนำให้ตรวจสอบส่วนที่มีคะแนนสูง",
+  "reportVerdictHintAi": "สัญญาณโดยรวมโน้มเอียงไปทาง AI สร้างขึ้นหรือเขียนใหม่อย่างมาก",
+  "reportSynthesisOverall": "คำตัดสินโดยรวม: {verdict} ความน่าจะเป็น AI โดยรวม {percent}%",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "สัญญาณเดี่ยวที่แข็งแกร่งที่สุด: {label}（{percent}%）แต่ผลลัพธ์สุดท้ายรวมน้ำหนักของทุกเอนจินเข้าด้วยกัน ไม่ใช่ข้อสรุปจากเอนจินเดียว",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "การมีส่วนร่วมแบบถ่วงน้ำหนักสูงสุดในขณะนี้มาจาก {label}（ประมาณ {points} จุดเปอร์เซ็นต์）",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "\"ไม่พบรูปแบบการเขียนของ AI ที่ชัดเจน\" หมายความเพียงว่าเอนจินด้านรูปแบบไม่พบรูปแบบประโยคตายตัวหรือคำเชื่อมที่ตายตัว โมเดลอื่นยังอาจเพิ่มคะแนนโดยรวมผ่านความสม่ำเสมอของภาษา การจำแนกประโยค หรือสัญญาณการเขียนใหม่",
+  "reportSynthesisModelGap": "เมื่อบางเอนจินไม่ได้เข้าร่วม ให้ใช้ \"เติมโมเดลวิเคราะห์ที่แนะนำให้ครบ\" ในการจัดการโมเดลก่อน หากยังล้มเหลว การวิเคราะห์โดยละเอียดจะระบุว่าสาเหตุคือโมเดลขาดหาย tokenizer ที่ไม่รองรับ ไฟล์ขาดหาย หรือข้อจำกัดความเข้ากันได้ของ Web/ONNX Runtime",
+  "reportEngineRelationshipUnavailable": "{label} ไม่ได้เข้าร่วมการโหวตแบบถ่วงน้ำหนักนี้ จึงแสดงมิตินี้เป็น 0% {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "น้ำหนักบทบาท {weight}% มีส่วนสนับสนุนคะแนนโดยรวมประมาณ {points} จุดเปอร์เซ็นต์{variantText}",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": "（รวม {count} รูปแบบโมเดล）",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} ไม่ได้เข้าร่วมการโหวตนี้",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} ไม่ได้ส่งคืนคำอธิบายข้อความเพิ่มเติม",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "วิธีแก้ไข: ดาวน์โหลดและเปิดใช้งาน Transformer หลายภาษาในการจัดการโมเดล หากดาวน์โหลดแล้ว กรุณาดาวน์โหลดโมเดลและ tokenizer ใหม่",
+  "reportEngineResolutionAdversarial": "วิธีแก้ไข: ดาวน์โหลดโมเดลตรวจจับการเขียนใหม่และ tokenizer ใหม่ในการจัดการโมเดล ในเว็บกรุณาอัปเดตเป็นเวอร์ชันที่แก้ไขความเข้ากันได้ของ BigInt แล้ววิเคราะห์อีกครั้ง",
+  "reportEngineReasonBigInt": "{reason} สาเหตุ: ONNX Runtime บนเว็บส่งคืนเทนเซอร์ BigInt ที่บริดจ์รุ่นเก่าไม่สามารถแปลงได้ กรุณาอัปเดตเป็นเวอร์ชันที่แก้ไขแล้วและวิเคราะห์อีกครั้ง",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason} วิธีแก้ไข: เปลี่ยนไปใช้โมเดลจากแคตตาล็อก หรือดาวน์โหลดโมเดลและ tokenizer ใหม่",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason} วิธีแก้ไข: เปิดการจัดการโมเดล แตะ \"เติมโมเดลวิเคราะห์ที่แนะนำให้ครบ\" และยืนยันว่า Transformer หลายภาษาถูกทำเครื่องหมายว่าใช้งานอยู่",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "ยังไม่ได้ติดตั้ง",
   "reportEngineLoadFailedBadge": "โหลดล้มเหลว",
   "reportSentenceAnalysisTitle": "การวิเคราะห์ระดับประโยค",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "ตรวจพบบรรณานุกรม（{count} รายการ）ยังไม่ได้ตรวจสอบว่ามีอยู่จริงหรือไม่",
   "reportBibDisabledHint": "เนื้อหาที่สร้างโดย AI มักมีการอ้างอิงที่ดูสมเหตุสมผลแต่ไม่มีอยู่จริง คุณได้ปิดการตรวจสอบลิงก์ใน \"การตั้งค่า\" แล้ว สามารถเปิดอีกครั้งเพื่อตรวจสอบอัตโนมัติ หรือแตะปุ่มด้านล่างเพื่อตรวจสอบเพียงครั้งเดียว",
   "reportVerifyNowBibButton": "ตรวจสอบตอนนี้（ต้องใช้เครือข่าย）",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "ตรวจสอบการอ้างอิงที่ยังไม่ได้ยืนยันทั้งหมดอีกครั้ง",
+  "reportBibRecheckOneTooltip": "ตรวจสอบการอ้างอิงนี้อีกครั้ง",
   "reportBibResultHint": "จับคู่กับข้อมูลทะเบียนสาธารณะของ Crossref โดยใช้ความคล้ายคลึงของผู้แต่ง ปี และชื่อเรื่อง ไม่ใช่การรับประกันที่แน่นอน หากผลลัพธ์ \"ไม่แน่ใจ\" แนะนำให้ตรวจสอบด้วยตนเอง",
   "reportBibHighConfidence": "ความเชื่อมั่นสูง: น่าจะมีอยู่จริง{journal}",
   "reportBibJournalSuffix": "（ลงทะเบียนกับ {journal}）",
   "reportBibNotFound": "ไม่พบรายการที่ใกล้เคียง อาจเป็นบรรณานุกรมที่ปลอมแปลง",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "น่าสงสัย: ยังไม่ได้รับการยืนยันจากการจับคู่ทะเบียน",
   "reportBibTruncated": "ตรวจสอบเฉพาะ {max} รายการแรก（ตรวจพบทั้งหมด {count} รายการ）",
   "reportNetworkWarningTitle": "การเชื่อมต่อเครือข่ายไม่ดี",
   "reportNetworkWarningBody": "แอปนี้ถือว่ามีการเชื่อมต่อเครือข่ายเป็นค่าเริ่มต้นเมื่อทำงาน การวิเคราะห์ความถูกต้องของลิงก์และการอ้างอิงต้องใช้การเชื่อมต่อเครือข่ายเพื่อให้ได้ผลลัพธ์ ขณะนี้ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบสถานะเครือข่ายแล้วลองใหม่อีกครั้ง",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "รวม {total} ประโยค · น่าจะเป็น AI {ai} ประโยค · น่าจะเป็นมนุษย์ {human} ประโยค",
   "pdfTruncationNotice": "เพื่อรักษาความสามารถในการอ่าน PDF จะแสดงเฉพาะ {max} ประโยคแรก（จากทั้งหมด {count} ประโยค）หากต้องการข้อมูลครบถ้วน กรุณาใช้ \"{csvLabel}\" หรือ \"{jsonLabel}\" แทน",
   "pdfSentenceColumnHeader": "ประโยค（พร้อมรูปแบบที่ตรงกัน）",
-
   "composerHeadlineAi": "ข้อความนี้มีแนวโน้มสูงมากว่าถูกสร้างโดย AI（ความน่าจะเป็น AI {percent}%）",
   "composerHeadlineLikelyAi": "ข้อความนี้มีแนวโน้มว่าสร้างโดย AI แนะนำให้ตรวจสอบเพิ่มเติม（ความน่าจะเป็น AI {percent}%）",
   "composerHeadlineMixed": "ข้อความนี้แสดงลักษณะผสมระหว่างมนุษย์และ AI（ความน่าจะเป็น AI {percent}%）",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "ประโยคส่วนใหญ่มีความสม่ำเสมอสูงในจังหวะความยาวประโยค การเลือกใช้คำ และการใช้คำเชื่อม ซึ่งเป็นลักษณะทั่วไปของข้อความที่สร้างโดย AI",
   "composerNarrativeMixedPattern": "เนื้อหามีทั้งส่วนที่สม่ำเสมอและส่วนที่มีความหลากหลายตามธรรมชาติปะปนกัน แสดงให้เห็นว่าอาจเป็นร่างต้นฉบับของมนุษย์ที่ผ่านการปรับแต่งโดย AI หรือเป็นการทำงานร่วมกันระหว่างมนุษย์กับ AI",
   "composerNarrativeHumanPattern": "ความยาวประโยคและการเลือกใช้คำแสดงความหลากหลายตามธรรมชาติและสไตล์ส่วนตัว ไม่พบร่องรอยความสม่ำเสมอของ AI ที่ชัดเจน",
-
   "engineReasonPplLow": "ความสับสนของโมเดลภาษาต่ำ（{ppl}）ข้อความมีความสามารถในการคาดเดาได้สูง ซึ่งเป็นตัวบ่งชี้การสร้างโดย AI",
   "engineReasonPplHigh": "ความสับสนของโมเดลภาษาสูง（{ppl}）สอดคล้องกับความไม่สามารถคาดเดาได้ของงานเขียนมนุษย์",
   "engineReasonPplMid": "ความสับสนของโมเดลภาษาอยู่ในระดับปานกลาง（{ppl}）",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "ไม่พบรูปแบบการเขียนแบบ AI ที่ชัดเจน",
   "engineReasonAdversarialNotInstalled": "ยังไม่ได้ติดตั้งโมเดลตรวจจับการเขียนใหม่ จึงไม่ได้เข้าร่วมการโหวตครั้งนี้",
   "engineReasonTransformerNotInstalled": "ยังไม่ได้ติดตั้งโมเดล หรือโมเดลที่ใช้งานไม่รองรับ จึงไม่ได้เข้าร่วมการโหวตครั้งนี้",
+  "modelRepairNoActiveVariant": "ไม่พบโมเดลที่ใช้งานอยู่ กรุณาดาวน์โหลดโมเดลที่แนะนำในการจัดการโมเดล",
+  "modelRepairCustomRemoved": "ลบโมเดลกำหนดเองที่โหลดล้มเหลวแล้ว โมเดลกำหนดเองไม่สามารถดาวน์โหลดซ้ำโดยอัตโนมัติได้ กรุณานำเข้าโมเดลและ tokenizer ใหม่",
+  "modelRepairNoSource": "ลบไฟล์โมเดลที่โหลดล้มเหลวแล้ว แต่ขณะนี้ไม่พบแหล่งแคตตาล็อกสำหรับดาวน์โหลดซ้ำ กรุณาดาวน์โหลดโมเดลที่แนะนำใหม่ในการจัดการโมเดล",
+  "modelRepairRedownloaded": "ตรวจพบว่าไฟล์โมเดลอาจเสียหายหรือไม่เข้ากัน จึงดาวน์โหลด {name} ซ้ำโดยอัตโนมัติแล้ว กรุณาวิเคราะห์อีกครั้ง",
+  "modelRepairRedownloadFailed": "ลบไฟล์โมเดลที่โหลดล้มเหลวแล้ว แต่การดาวน์โหลดซ้ำอัตโนมัติไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วดาวน์โหลด {name} ใหม่ในการจัดการโมเดล",
+  "engineTransformerNoActiveVariant": "ไม่พบโมเดล Transformer ที่ใช้งานอยู่ กรุณาดาวน์โหลดหรือตั้งค่าให้ใช้งานในการจัดการโมเดล",
+  "engineTransformerUnsupportedTokenizer": "ประเภท tokenizer ของโมเดลที่ใช้งานอยู่ไม่รองรับ（{tokenizer}）กรุณาเปลี่ยนไปใช้โมเดลที่รองรับ bert-wordpiece หรือ roberta-bpe",
+  "engineTransformerMissingPaths": "ไม่พบเส้นทางโมเดล Transformer หรือ tokenizer กรุณาดาวน์โหลดใหม่ในการจัดการโมเดล",
+  "engineTransformerMissingFiles": "ไม่พบไฟล์โมเดล Transformer หรือ tokenizer กรุณาดาวน์โหลดใหม่ในการจัดการโมเดล",
+  "engineTransformerOpsetUnsupported": "เวอร์ชัน ONNX opset ไม่รองรับ（โมเดลเวอร์ชันนี้ใหม่เกินไป กรุณาอัปเดตแอป）: {variantId}",
+  "engineTransformerTokenizerCorrupt": "รูปแบบ tokenizer เสียหาย: {message}",
+  "engineTransformerRepairFailed": "โหลดหรือประมวลผลโมเดลล้มเหลว และการซ่อมแซมอัตโนมัติไม่สำเร็จ กรุณาดาวน์โหลดโมเดล Transformer ที่ใช้งานอยู่และ tokenizer ใหม่ในการจัดการโมเดล",
+  "engineAdversarialNoActiveVariant": "ไม่พบโมเดลตรวจจับการเขียนใหม่ที่ใช้งานอยู่",
+  "engineAdversarialMissingFiles": "ไม่พบไฟล์โมเดลหรือ tokenizer กรุณาดาวน์โหลดใหม่ในการจัดการโมเดล",
+  "engineAdversarialRepairFailed": "โหลดหรือประมวลผลโมเดลล้มเหลว และการซ่อมแซมอัตโนมัติไม่สำเร็จ กรุณาดาวน์โหลดโมเดลตรวจจับการเขียนใหม่และ tokenizer ใหม่ในการจัดการโมเดล",
+  "engineReasonNotParticipatedWithError": "โมเดลไม่ได้เข้าร่วมการโหวตนี้ {error}",
+  "patternNotAnalyzable": "ส่วนนี้สั้นเกินไปหรือสงสัยว่าเป็นสัญญาณรบกวนจาก PDF/OCR จึงไม่ได้ประเมิน AI ระดับประโยค",
   "engineReasonTransformerLoadFailed": "โหลดโมเดลล้มเหลว จึงไม่ได้เข้าร่วมการโหวตครั้งนี้（{error}）",
   "engineReasonTransformerResult": "{model} ตัดสินว่า {aiCount} จาก {total} ประโยคแสดงลักษณะ AI",
   "engineReasonAdversarialDetected": "โมเดลต่อต้านตรวจพบร่องรอย AI ที่น่าสงสัยว่าผ่านการประมวลผลด้วยเครื่องมือเขียนใหม่（เช่น QuillBot / Undetectable.ai）",
   "engineReasonAdversarialClean": "ไม่พบร่องรอยการหลบเลี่ยงด้วยการเขียนใหม่ที่ชัดเจน",
-  "engineReasonDisabledByUser": "ผู้ใช้ปิดเอนจินนี้ในการตั้งค่า",
   "engineReasonGenericNotInstalled": "ยังไม่ได้ติดตั้งโมเดล จึงไม่ได้เข้าร่วมการโหวตครั้งนี้",
   "patternGenericTransition": "คำเชื่อมทั่วไป \"{word}\"",
-
   "helpAppBarTitle": "คู่มือการใช้งาน",
   "helpAboutTitle": "เกี่ยวกับ TruthLens",
   "helpAboutBody": "TruthLens เป็นแอปตรวจจับเนื้อหาข้ามแพลตฟอร์มที่การอนุมาน AI หลักทำงานบนอุปกรณ์ทั้งหมด（iOS / Android / macOS / Windows） โดยใช้โมเดลย่อยอิสระสี่ตัว ได้แก่ ตัวจำแนกโครงข่ายประสาทเทียม Transformer, การวิเคราะห์เชิงสถิติ, การวิเคราะห์รูปแบบการเขียน และการตรวจจับการเขียนใหม่เชิงต่อต้าน ร่วมกันโหวตแบบถ่วงน้ำหนักเพื่อตัดสินว่าข้อความสร้างโดย AI หรือไม่ พร้อมให้เหตุผลการวิเคราะห์ที่อธิบายได้ทีละประโยค ไม่ใช่แค่แสดงเปอร์เซ็นต์ว่า \"ดูเหมือน AI\" แต่อธิบายว่า \"ทำไม\"",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "การนำเข้าโมเดลแบบกำหนดเอง: ผู้ใช้ขั้นสูงสามารถนำเข้าโมเดล ONNX ในเครื่องของตนเองเพื่อแทนที่หรือเสริมเอนจินตรวจจับในตัว",
   "helpWorkflowTitle": "ขั้นตอนการทำงานแบบสมบูรณ์",
   "helpWorkflowStepLabel": "ขั้นตอน {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "การดาวน์โหลดและอัปเดตโมเดล",
   "helpWorkflowStep1Body": "การเปิดใช้งานครั้งแรกจะแนะนำการติดตั้งโมเดลตรวจจับหลัก หลังจากนั้นสามารถตรวจสอบ ดาวน์โหลด อัปเดต หรือลบได้ทุกเมื่อจาก \"การตั้งค่า → การจัดการโมเดล AI\" แอปจะตรวจสอบเวอร์ชันล่าสุดโดยอัตโนมัติเมื่อเปิดใช้งาน หากมีการอัปเดต จะมีแบดจ์แจ้งเตือนปรากฏที่ไอคอนฟันเฟืองการตั้งค่าและรายการ \"การจัดการโมเดล AI\"",
   "helpWorkflowStep2Title": "วิธีเลือกโมเดล（วัตถุประสงค์และผล）",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "โมเดลสถิติความสับสน（Statistical, น้ำหนัก 25%）",
   "helpLinkRoleAdversarial": "โมเดลตรวจจับการเขียนใหม่เชิงต่อต้าน（Adversarial, น้ำหนัก 15%）",
   "helpLinkRoleLlm": "LLM สำหรับสร้างรายงาน（ทางเลือก）",
-
   "privacyAppBarTitle": "นโยบายความเป็นส่วนตัว",
   "privacyPlatformTitle": "นโยบายความเป็นส่วนตัวสำหรับ {platform}",
   "privacyLastUpdated": "อัปเดตล่าสุด: {date}",

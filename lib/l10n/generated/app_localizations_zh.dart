@@ -1347,6 +1347,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get engineReasonTransformerNotInstalled => '模型尚未安裝或使用中模型未支援，未參與本次投票';
 
   @override
+  String get modelRepairNoActiveVariant => '未找到使用中的模型；請在模型管理下載推薦模型。';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      '已移除載入失敗的自訂模型。自訂模型無法自動重新下載，請重新匯入模型與 tokenizer。';
+
+  @override
+  String get modelRepairNoSource =>
+      '已移除載入失敗的模型檔，但目前找不到可重新下載的 catalog 來源；請到模型管理重新下載推薦模型。';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return '偵測到模型檔可能損毀或不相容，已自動重新下載 $name；請重新執行分析。';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return '已移除載入失敗的模型檔，但自動重新下載未完成；請確認網路後在模型管理重新下載 $name。';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      '未找到使用中的 Transformer 模型；請到模型管理下載或設為使用中';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return '使用中模型的 tokenizer 類型不支援（$tokenizer）；請切換到支援 bert-wordpiece 或 roberta-bpe 的模型';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Transformer 模型或 tokenizer 路徑缺失；請在模型管理重新下載';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Transformer 模型或 tokenizer 檔案不存在；請在模型管理重新下載';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'ONNX opset 版本不支援（該模型版本太新，需更新應用）: $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Tokenizer 格式損毀: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載使用中的 Transformer 模型與 tokenizer。';
+
+  @override
+  String get engineAdversarialNoActiveVariant => '未找到使用中的改寫偵測模型';
+
+  @override
+  String get engineAdversarialMissingFiles => '模型或 tokenizer 檔案不存在，請在模型管理重新下載';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載改寫偵測模型與 tokenizer。';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return '模型未參與本次投票。$error';
+  }
+
+  @override
+  String get patternNotAnalyzable => '片段過短或疑似 PDF/OCR 噪音，未作 AI 句級判讀';
+
+  @override
   String engineReasonTransformerLoadFailed(String error) {
     return '模型載入失敗，未參與本次投票（$error）';
   }
@@ -3318,6 +3388,76 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get engineReasonTransformerNotInstalled => '模型尚未安装或使用中模型未支持，未参与本次投票';
 
   @override
+  String get modelRepairNoActiveVariant => '未找到使用中的模型；请在模型管理下载推荐模型。';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      '已移除载入失败的自定义模型。自定义模型无法自动重新下载，请重新汇入模型与 tokenizer。';
+
+  @override
+  String get modelRepairNoSource =>
+      '已移除载入失败的模型档，但目前找不到可重新下载的 catalog 来源；请到模型管理重新下载推荐模型。';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return '侦测到模型档可能损毁或不相容，已自动重新下载 $name；请重新执行分析。';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return '已移除载入失败的模型档，但自动重新下载未完成；请确认网路后在模型管理重新下载 $name。';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      '未找到使用中的 Transformer 模型；请到模型管理下载或设为使用中';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return '使用中模型的 tokenizer 类型不支持（$tokenizer）；请切换到支持 bert-wordpiece 或 roberta-bpe 的模型';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Transformer 模型或 tokenizer 路径缺失；请在模型管理重新下载';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Transformer 模型或 tokenizer 档案不存在；请在模型管理重新下载';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'ONNX opset 版本不支持（该模型版本太新，需更新应用）: $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Tokenizer 格式损毁: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      '模型载入或推论失败，且自动修复未完成；请到模型管理重新下载使用中的 Transformer 模型与 tokenizer。';
+
+  @override
+  String get engineAdversarialNoActiveVariant => '未找到使用中的改写侦测模型';
+
+  @override
+  String get engineAdversarialMissingFiles => '模型或 tokenizer 档案不存在，请在模型管理重新下载';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      '模型载入或推论失败，且自动修复未完成；请到模型管理重新下载改写侦测模型与 tokenizer。';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return '模型未参与本次投票。$error';
+  }
+
+  @override
+  String get patternNotAnalyzable => '片段过短或疑似 PDF/OCR 噪音，未作 AI 句级判读';
+
+  @override
   String engineReasonTransformerLoadFailed(String error) {
     return '模型加载失败，未参与本次投票（$error）';
   }
@@ -5286,6 +5426,76 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get engineReasonTransformerNotInstalled => '模型尚未安裝或使用中模型未支援，未參與本次投票';
+
+  @override
+  String get modelRepairNoActiveVariant => '未找到使用中的模型；請在模型管理下載推薦模型。';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      '已移除載入失敗的自訂模型。自訂模型無法自動重新下載，請重新匯入模型與 tokenizer。';
+
+  @override
+  String get modelRepairNoSource =>
+      '已移除載入失敗的模型檔，但目前找不到可重新下載的 catalog 來源；請到模型管理重新下載推薦模型。';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return '偵測到模型檔可能損毀或不相容，已自動重新下載 $name；請重新執行分析。';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return '已移除載入失敗的模型檔，但自動重新下載未完成；請確認網路後在模型管理重新下載 $name。';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      '未找到使用中的 Transformer 模型；請到模型管理下載或設為使用中';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return '使用中模型的 tokenizer 類型不支援（$tokenizer）；請切換到支援 bert-wordpiece 或 roberta-bpe 的模型';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Transformer 模型或 tokenizer 路徑缺失；請在模型管理重新下載';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Transformer 模型或 tokenizer 檔案不存在；請在模型管理重新下載';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'ONNX opset 版本不支援（該模型版本太新，需更新應用）: $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Tokenizer 格式損毀: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載使用中的 Transformer 模型與 tokenizer。';
+
+  @override
+  String get engineAdversarialNoActiveVariant => '未找到使用中的改寫偵測模型';
+
+  @override
+  String get engineAdversarialMissingFiles => '模型或 tokenizer 檔案不存在，請在模型管理重新下載';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      '模型載入或推論失敗，且自動修復未完成；請到模型管理重新下載改寫偵測模型與 tokenizer。';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return '模型未參與本次投票。$error';
+  }
+
+  @override
+  String get patternNotAnalyzable => '片段過短或疑似 PDF/OCR 噪音，未作 AI 句級判讀';
 
   @override
   String engineReasonTransformerLoadFailed(String error) {

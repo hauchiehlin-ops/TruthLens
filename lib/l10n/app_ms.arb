@@ -1,17 +1,14 @@
 {
   "@@locale": "ms",
-
   "commonCancel": "Batal",
   "commonDelete": "Padam",
   "commonClose": "Tutup",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Ditulis oleh manusia",
   "verdictLikelyHuman": "Kemungkinan manusia",
   "verdictMixed": "Kandungan campuran",
   "verdictLikelyAi": "Kemungkinan AI",
   "verdictAi": "Dijana AI",
-
   "inputSubtitle": "Tampal atau taip teks untuk mengesan kandungan yang dijana AI",
   "inputHint": "Taip atau tampal teks untuk dianalisis…",
   "inputHistoryTooltip": "Sejarah",
@@ -33,7 +30,6 @@
   "inputActiveModel": "Model: {modelId}",
   "inputNoModel": "Tiada model dipasang（hanya analisis statistik/gaya）",
   "inputCharCount": "{count} aksara",
-
   "analysisAppBarTitle": "Menganalisis",
   "analysisEngineTransformer": "Pengelas Transformer",
   "analysisEngineStatistical": "Analisis Statistik",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "Pertahanan Adversarial",
   "analysisProgressSemantics": "Analisis sedang berjalan, {done} daripada {total} enjin selesai",
   "analysisDoneSemantics": "Selesai",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "Keputusan awal: kebarangkalian AI {percent}%",
+  "analysisPreliminaryResultRefining": "Keputusan awal: kebarangkalian AI {percent}% (memperhalusi…)",
   "engineNameAdversarialFull": "Pertahanan Adversarial（Pengesanan Parafrasa）",
-
   "modelNecessityText": "Tanpa memuat turun model pengesanan rangkaian neural, TruthLens masih berfungsi tetapi hanya menggunakan analisis statistik dan gaya penulisan, dengan ketepatan dan sokongan berbilang bahasa yang terhad. Selepas memuat turun model, pengelas Transformer berbilang bahasa akan menyertai undian ensemble, meningkatkan ketepatan dan kebolehpercayaan dengan ketara. Model dijalankan pada peranti; selepas dimuat turun, ia tidak memuat naik sebarang kandungan.",
   "modelPromptTitle": "Disyorkan memuat turun model pengesanan untuk analisis lengkap",
   "modelPromptDontRemind": "Jangan ingatkan saya lagi",
   "modelPromptSkip": "Langkau buat masa ini",
   "modelPromptDownload": "Pergi memuat turun",
-
   "onboardingWelcomeTitle": "Selamat datang ke TruthLens",
   "onboardingHeadline": "Pengesanan kandungan AI pada peranti",
   "onboardingDetectedDevice": "Peranti dikesan",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "\"Disyorkan\" ditanda berdasarkan perkakasan anda; anda juga boleh memilih pilihan lain.",
   "onboardingSkipButton": "Putuskan kemudian（guna analisis statistik/gaya tanpa model）",
   "onboardingSkipHint": "Anda masih boleh memuat turun bila-bila masa dari \"Tetapan → Pengurusan Model AI\"; anda akan diingatkan semula apabila menggunakan analisis yang memerlukan model.",
-
   "modelListCustomImportedLabel": "Model diimport tersuai:",
   "modelListActiveChip": "Digunakan",
   "modelListRecommendedChip": "Disyorkan",
@@ -74,16 +67,15 @@
   "modelListPageButton": "Halaman model",
   "modelListMayExceedMemory": "Mungkin melebihi memori peranti",
   "modelListFailedPrefix": "Gagal: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "Tidak dapat memuatkan katalog model",
+  "modelCatalogEmpty": "Tiada model tersedia",
+  "modelDownloadPathChip": "Laluan muat turun {label}",
+  "modelDownloadPathModelFile": "Fail model",
+  "modelDownloadPathCopied": "Laluan muat turun disalin",
+  "settingsSaveFailed": "Gagal menyimpan tetapan: {error}",
   "modelListDeleteConfirmTitle": "Padam model?",
   "modelListDeleteConfirmBody": "Ini akan memadam \"{name}\"（{size}）. Anda perlu memuat turun semula untuk menggunakannya lagi.",
   "modelListDeleteCustomConfirmBody": "Ini akan memadam \"{name}\" yang diimport tersuai（{size}）. Anda perlu mengimport semula untuk menggunakannya lagi.",
-
   "modelImportAppBarTitle": "Import Model ONNX Tersuai",
   "modelImportStep1Title": "1. Pilih fail model ONNX",
   "modelImportSelectedFile": "Dipilih: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Sila pilih fail Tokenizer",
   "modelImportSuccessSnackbar": "Model berjaya diimport! Ditetapkan secara automatik sebagai model aktif.",
   "modelImportFailedSnackbar": "Import model gagal. Sila semak kebenaran atau log",
-
   "settingsAppBarTitle": "Tetapan",
   "settingsThresholdTitle": "Ambang keyakinan penentuan AI",
   "settingsThresholdSubtitle": "Semasa: {percent}% — meningkatkannya mengurangkan positif palsu (teks manusia disalah anggap sebagai AI)",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "Memeriksa penanda gaya seperti pembukaan berulang, peralihan berformula dan senarai berlebihan. Tanpa padanan, isyarat ialah 0%.",
   "settingsEngineAdversarialHelp": "Mencari teks AI yang diparafrasa atau dibuang jejaknya. Skor rendah hanya bukti baki yang lemah, bukan pengesanan positif.",
   "settingsEngineWeightsTotalValid": "Jumlah: {total}% — sedia disimpan",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Jumlah: {total}% — laraskan tepat kepada 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Simpan pemberat",
   "settingsEngineWeightsSaved": "Pemberat model AI disimpan pada peranti ini",
   "settingsEngineWeightsRestoreDefaults": "Pulihkan lalai",
-  "engineReasonDisabledByUser": "Dilumpuhkan dalam tetapan; enjin ini tidak menyertai undian",
+  "engineReasonDisabledByUser": "Pengguna telah mematikan enjin ini dalam Tetapan",
   "engineReasonTransformerNoStrongSentence": "{model}: tiada daripada {total} ayat melepasi ambang AI kuat; isyarat lemah yang ditentukur ialah {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "Isyarat AI {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "Isyarat AI ialah kebarangkalian enjin untuk dokumen ini. Berat yang ditetapkan mengawal pengaruhnya dan mata sumbangan diagihkan supaya jumlah yang dipaparkan sepadan tepat dengan kebarangkalian AI keseluruhan. ‘Tidak dikesan’ bermaksud di bawah ambang isyarat kuat 60%, bukan semestinya bernilai sifar.",
   "reportMetricAiSentenceRatio": "Nisbah ayat dengan isyarat AI kuat",
   "reportStrongAiSentenceCount": "{count} daripada {total} melepasi ambang isyarat kuat 60%",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "Tiada satu pun daripada {total} ayat melepasi ambang parafrasa kuat; isyarat lemah yang ditentukur ialah {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} daripada {total} ayat melepasi ambang parafrasa kuat; isyarat dokumen yang ditentukur ialah {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Pengesahan pautan hiper & bibliografi",
   "settingsLinkVerificationSubtitle": "Laporan akan menyambung untuk menyemak sama ada URL dan entri bibliografi yang dikesan dalam dokumen benar-benar wujud (kandungan yang dijana AI sering menyertakan rujukan yang kelihatan munasabah tetapi rekaan). Pautan akademik format DOI, dan rujukan format \"pengarang—tahun\" tanpa pautan, kedua-duanya disemak terhadap daftar awam Crossref. Model pengesanan AI teras masih berjalan sepenuhnya pada peranti dan tidak pernah menghantar kandungan dokumen; sambungan hanya digunakan untuk pengesahan ini dan semakan kemas kini model, dan boleh dimatikan di sini.",
   "settingsThemeTitle": "Tema paparan",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "Buka",
   "settingsCustomImportTitle": "Import & uji model ONNX tersuai",
   "settingsCustomImportSubtitle": "Import model ONNX tersuai tempatan dan konfigurasi Tokenizer serta jalankan ujian inferens",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "Import model tersuai belum disokong dalam versi web. Sila gunakan versi aplikasi.",
   "settingsModelManagerAppBarTitle": "Pengurusan Model AI",
   "settingsImportTooltip": "Import model ONNX tempatan",
   "settingsDeviceLabel": "Peranti: {summary}",
-
   "historyAppBarTitle": "Sejarah",
   "historyClearAllTooltip": "Kosongkan semua",
   "historySearchHint": "Cari sejarah…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "Belum ada sejarah pengesanan",
   "historyEmptySearch": "Tiada entri sepadan dengan \"{query}\"",
   "historyEntrySemantics": "{verdict}, kebarangkalian AI {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "Laporan Pengesanan",
   "reportExportTooltip": "Eksport laporan",
   "reportHomeTooltip": "Kembali ke utama",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "Penyelarasan Automatik Penanda Aras Model",
   "reportCommunityDiscoveredTag": "Komuniti (HuggingFace)",
   "reportEngineBreakdownTitle": "Pecahan enjin",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Pengelas Transformer",
+  "reportRadarRoleStatistical": "Analisis statistik",
+  "reportRadarRoleStylometry": "Analisis stilometri",
+  "reportRadarRoleAdversarial": "Pertahanan adversarial",
+  "reportRadarAxisTransformer": "Pengelas ayat",
+  "reportRadarAxisStatistical": "Keteraturan bahasa",
+  "reportRadarAxisStylometry": "Gaya penulisan",
+  "reportRadarAxisAdversarial": "Pertahanan penulisan semula",
+  "reportVerdictBadgeTitle": "Keputusan keseluruhan",
+  "reportVerdictBadgeProbability": "Kebarangkalian AI keseluruhan {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "Kebanyakan isyarat enjin condong kepada penulisan manusia yang semula jadi.",
+  "reportVerdictHintLikelyHuman": "Secara keseluruhan condong kepada manusia, dengan sedikit ketidakpastian model yang tinggal.",
+  "reportVerdictHintMixed": "Isyarat enjin bercampur; baca analisis terperinci bersama keputusan ini.",
+  "reportVerdictHintLikelyAi": "Beberapa penunjuk condong kepada AI; semak semula bahagian berskor tinggi.",
+  "reportVerdictHintAi": "Isyarat keseluruhan sangat condong kepada kandungan yang dijana atau ditulis semula oleh AI.",
+  "reportSynthesisOverall": "Keputusan keseluruhan: {verdict}; kebarangkalian AI keseluruhan {percent}%.",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "Isyarat tunggal terkuat: {label} ({percent}%), tetapi keputusan akhir menggabungkan wajaran enjin dan bukan kesimpulan satu enjin sahaja.",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "Sumbangan berwajaran terbesar buat masa ini datang daripada {label} (kira-kira {points} mata peratusan).",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "\"Tiada gaya penulisan AI yang jelas dikesan\" hanya bermaksud enjin gaya tidak menemui corak ayat tetap atau corak perkataan peralihan; model lain masih boleh meningkatkan skor keseluruhan melalui keteraturan bahasa, pengelasan ayat, atau isyarat penulisan semula.",
+  "reportSynthesisModelGap": "Apabila sesetengah enjin tidak mengambil bahagian, gunakan dahulu \"Lengkapkan model analisis yang disyorkan\" dalam Pengurusan Model; jika masih gagal, analisis terperinci akan menyatakan sama ada puncanya model hilang, tokenizer tidak disokong, fail hilang, atau had keserasian Web/ONNX Runtime.",
+  "reportEngineRelationshipUnavailable": "{label} tidak mengambil bahagian dalam undian berwajaran ini, jadi dimensi ini dipaparkan sebagai 0%. {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "Berat peranan {weight}%, menyumbang kira-kira {points} mata peratusan kepada skor keseluruhan{variantText}.",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": " (menggabungkan {count} varian model)",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} tidak mengambil bahagian dalam undian ini.",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} tidak mengembalikan sebarang penjelasan teks tambahan.",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "Penyelesaian: muat turun dan aktifkan Transformer berbilang bahasa dalam Pengurusan Model; jika telah dimuat turun, muat turun semula model dan tokenizer.",
+  "reportEngineResolutionAdversarial": "Penyelesaian: muat turun semula model pengesanan penulisan semula dan tokenizer dalam Pengurusan Model; pada web, kemas kini kepada versi dengan pembaikan keserasian BigInt dan analisis semula.",
+  "reportEngineReasonBigInt": "{reason}. Punca: Web ONNX Runtime mengembalikan tensor BigInt yang tidak dapat ditukar oleh jambatan lama; kemas kini kepada versi yang telah dibaiki dan analisis semula.",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}. Penyelesaian: tukar kepada model katalog, atau muat turun semula model dan tokenizer.",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}. Penyelesaian: buka Pengurusan Model, ketik \"Lengkapkan model analisis yang disyorkan\", dan sahkan Transformer berbilang bahasa ditandakan aktif.",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "Tidak dipasang",
   "reportEngineLoadFailedBadge": "Gagal memuatkan",
   "reportSentenceAnalysisTitle": "Analisis peringkat ayat",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "Bibliografi dikesan ({count} entri); belum disahkan",
   "reportBibDisabledHint": "Kandungan yang dijana AI sering menyertakan rujukan yang kelihatan munasabah tetapi rekaan. Anda telah mematikan pengesahan pautan hiper dalam Tetapan; anda boleh menghidupkannya semula untuk pengesahan automatik, atau ketik di bawah untuk semakan sekali sahaja.",
   "reportVerifyNowBibButton": "Sahkan sekarang (perlu rangkaian)",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "Semak semula semua petikan yang belum disahkan",
+  "reportBibRecheckOneTooltip": "Semak semula petikan ini",
   "reportBibResultHint": "Dipadankan terhadap daftar awam Crossref mengikut persamaan pengarang, tahun dan tajuk. Bukan jaminan mutlak — apabila \"tidak pasti\", sila sahkan secara manual.",
   "reportBibHighConfidence": "Keyakinan tinggi: kemungkinan wujud{journal}",
   "reportBibJournalSuffix": " (berdaftar dengan {journal})",
   "reportBibNotFound": "Tiada padanan hampir ditemui — mungkin rujukan rekaan",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "Disyaki: tidak disahkan melalui padanan pendaftaran",
   "reportBibTruncated": "Hanya {max} entri pertama disahkan (jumlah {count} dikesan)",
   "reportNetworkWarningTitle": "Sambungan rangkaian lemah",
   "reportNetworkWarningBody": "Apl ini mengandaikan sambungan rangkaian tersedia secara lalai; analisis ketulenan pautan hiper dan petikan kedua-duanya memerlukan akses rangkaian untuk menghasilkan keputusan. Sambungan tidak dapat diwujudkan — sila semak rangkaian anda dan cuba lagi.",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "{total} ayat · {ai} kemungkinan AI · {human} kemungkinan manusia",
   "pdfTruncationNotice": "Untuk mengekalkan kebolehbacaan PDF, hanya {max} ayat pertama dipaparkan (daripada jumlah {count}); untuk data penuh setiap ayat, gunakan \"{csvLabel}\" atau \"{jsonLabel}\" sebagai gantinya.",
   "pdfSentenceColumnHeader": "Ayat (dengan corak sepadan)",
-
   "composerHeadlineAi": "Teks ini berkemungkinan besar dijana AI (kebarangkalian AI {percent}%)",
   "composerHeadlineLikelyAi": "Teks ini cenderung dijana AI; disyorkan semakan lanjut (kebarangkalian AI {percent}%)",
   "composerHeadlineMixed": "Teks ini menunjukkan ciri campuran manusia dan AI (kebarangkalian AI {percent}%)",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "Kebanyakan ayat sangat teratur dari segi rentak, pilihan perkataan dan penggunaan kata hubung — cap jari biasa teks yang dijana AI.",
   "composerNarrativeMixedPattern": "Teks mengandungi kedua-dua bahagian yang teratur dan berubah-ubah secara semula jadi, menunjukkan draf manusia yang digilap AI, atau kerjasama manusia-AI.",
   "composerNarrativeHumanPattern": "Panjang ayat dan pilihan perkataan menunjukkan variasi semula jadi dan gaya peribadi, tanpa tanda keteraturan AI yang jelas.",
-
   "engineReasonPplLow": "Kekeliruan model bahasa rendah ({ppl}) — teks sangat boleh diramal, penunjuk penjanaan AI",
   "engineReasonPplHigh": "Kekeliruan model bahasa tinggi ({ppl}), selaras dengan sifat tidak boleh diramal penulisan manusia",
   "engineReasonPplMid": "Kekeliruan model bahasa sederhana ({ppl})",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "Tiada corak penulisan AI yang ketara dikesan",
   "engineReasonAdversarialNotInstalled": "Model pengesanan parafrasa tidak dipasang; ia tidak mengambil bahagian dalam undian ini",
   "engineReasonTransformerNotInstalled": "Tiada model dipasang atau model aktif tidak disokong; ia tidak mengambil bahagian dalam undian ini",
+  "modelRepairNoActiveVariant": "Tiada model aktif ditemui; muat turun model yang disyorkan dalam Pengurusan Model.",
+  "modelRepairCustomRemoved": "Model tersuai yang gagal dimuatkan telah dialih keluar. Model tersuai tidak boleh dimuat turun semula secara automatik; sila import semula model dan tokenizer.",
+  "modelRepairNoSource": "Fail model yang gagal dimuatkan telah dialih keluar, tetapi tiada sumber katalog tersedia buat masa ini untuk dimuat turun semula; sila muat turun semula model yang disyorkan dalam Pengurusan Model.",
+  "modelRepairRedownloaded": "Dikesan bahawa fail model mungkin rosak atau tidak serasi; {name} telah dimuat turun semula secara automatik. Sila jalankan analisis semula.",
+  "modelRepairRedownloadFailed": "Fail model yang gagal dimuatkan telah dialih keluar, tetapi muat turun semula automatik tidak selesai; sila semak sambungan rangkaian anda dan muat turun semula {name} dalam Pengurusan Model.",
+  "engineTransformerNoActiveVariant": "Tiada model Transformer aktif ditemui; muat turun atau aktifkan dalam Pengurusan Model",
+  "engineTransformerUnsupportedTokenizer": "Jenis tokenizer model aktif tidak disokong ({tokenizer}); tukar kepada model yang menyokong bert-wordpiece atau roberta-bpe",
+  "engineTransformerMissingPaths": "Laluan model Transformer atau tokenizer tiada; muat turun semula dalam Pengurusan Model",
+  "engineTransformerMissingFiles": "Fail model Transformer atau tokenizer tidak wujud; muat turun semula dalam Pengurusan Model",
+  "engineTransformerOpsetUnsupported": "Versi opset ONNX tidak disokong (versi model ini terlalu baharu; kemas kini aplikasi): {variantId}",
+  "engineTransformerTokenizerCorrupt": "Format tokenizer rosak: {message}",
+  "engineTransformerRepairFailed": "Model gagal dimuatkan atau inferens gagal, dan pembaikan automatik tidak selesai; muat turun semula model Transformer aktif dan tokenizer dalam Pengurusan Model.",
+  "engineAdversarialNoActiveVariant": "Tiada model pengesanan penulisan semula aktif ditemui",
+  "engineAdversarialMissingFiles": "Fail model atau tokenizer tidak wujud; muat turun semula dalam Pengurusan Model",
+  "engineAdversarialRepairFailed": "Model gagal dimuatkan atau inferens gagal, dan pembaikan automatik tidak selesai; muat turun semula model pengesanan penulisan semula dan tokenizer dalam Pengurusan Model.",
+  "engineReasonNotParticipatedWithError": "Model tidak mengambil bahagian dalam undian ini. {error}",
+  "patternNotAnalyzable": "Segmen terlalu pendek atau disyaki hingar PDF/OCR; penilaian AI peringkat ayat tidak dilakukan",
   "engineReasonTransformerLoadFailed": "Model gagal dimuatkan dan tidak mengambil bahagian dalam undian ini ({error})",
   "engineReasonTransformerResult": "{model} menilai {aiCount} daripada {total} ayat menunjukkan ciri AI",
   "engineReasonAdversarialDetected": "Model adversarial mengesan kesan AI yang mungkin dihapuskan oleh alat parafrasa (cth. QuillBot / Undetectable.ai)",
   "engineReasonAdversarialClean": "Tiada kesan pengelakan parafrasa yang jelas dikesan",
-  "engineReasonDisabledByUser": "Pengguna telah mematikan enjin ini dalam Tetapan",
   "engineReasonGenericNotInstalled": "Model tidak dipasang; tidak mengambil bahagian dalam undian ini",
   "patternGenericTransition": "kata hubung generik \"{word}\"",
-
   "helpAppBarTitle": "Panduan Pengguna",
   "helpAboutTitle": "Mengenai TruthLens",
   "helpAboutBody": "TruthLens ialah aplikasi pengesanan kandungan merentas platform (iOS / Android / macOS / Windows) yang mana inferens AI terasnya berjalan sepenuhnya pada peranti. Empat sub-model bebas — pengelas neural Transformer, analisis statistik, analisis stilometrik, dan pengesanan parafrasa adversarial — mengundi bersama untuk menentukan sama ada teks dijana AI, dengan sebab yang boleh dijelaskan ayat demi ayat: bukan sekadar peratusan \"kelihatan seperti AI\", tetapi penjelasan \"mengapa\".",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "Import model tersuai: pengguna lanjutan boleh mengimport model ONNX tempatan mereka sendiri untuk menggantikan atau menambah enjin pengesanan terbina dalam.",
   "helpWorkflowTitle": "Aliran kerja operasi penuh",
   "helpWorkflowStepLabel": "Langkah {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Muat turun & kemas kini model",
   "helpWorkflowStep1Body": "Pelancaran pertama membimbing anda memasang model pengesanan teras; selepas itu anda boleh sentiasa menyemak, memuat turun, mengemas kini, atau membuang model dari \"Tetapan → Pengurusan Model AI\". Apl secara proaktif menyemak versi terkini semasa pelancaran, dan menunjukkan lencana pada ikon tetapan serta entri \"Pengurusan Model AI\" jika kemas kini tersedia.",
   "helpWorkflowStep2Title": "Memilih model (tujuan & kesan)",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "Model statistik kekeliruan (Statistical, pemberat 25%)",
   "helpLinkRoleAdversarial": "Model pengesanan parafrasa adversarial (Adversarial, pemberat 15%)",
   "helpLinkRoleLlm": "LLM penulisan laporan (pilihan)",
-
   "privacyAppBarTitle": "Dasar Privasi",
   "privacyPlatformTitle": "Dasar Privasi {platform}",
   "privacyLastUpdated": "Kemas kini terakhir: {date}",

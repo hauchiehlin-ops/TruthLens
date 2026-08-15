@@ -2284,6 +2284,108 @@ abstract class AppLocalizations {
   /// **'No model is installed or the active model is unsupported; it did not take part in this vote'**
   String get engineReasonTransformerNotInstalled;
 
+  /// No description provided for @modelRepairNoActiveVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'No active model found; download a recommended model in Model Management.'**
+  String get modelRepairNoActiveVariant;
+
+  /// No description provided for @modelRepairCustomRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed the custom model that failed to load. Custom models cannot be re-downloaded automatically; please re-import the model and tokenizer.'**
+  String get modelRepairCustomRemoved;
+
+  /// No description provided for @modelRepairNoSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed the model file that failed to load, but no catalog source is currently available to re-download it; please re-download a recommended model in Model Management.'**
+  String get modelRepairNoSource;
+
+  /// No description provided for @modelRepairRedownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected that the model file may be corrupted or incompatible; automatically re-downloaded {name}. Please run the analysis again.'**
+  String modelRepairRedownloaded(Object name);
+
+  /// No description provided for @modelRepairRedownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed the model file that failed to load, but the automatic re-download did not complete; please check your network connection and re-download {name} in Model Management.'**
+  String modelRepairRedownloadFailed(Object name);
+
+  /// No description provided for @engineTransformerNoActiveVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'No active Transformer model found; download one or set it active in Model Management'**
+  String get engineTransformerNoActiveVariant;
+
+  /// No description provided for @engineTransformerUnsupportedTokenizer.
+  ///
+  /// In en, this message translates to:
+  /// **'The active model\'s tokenizer type is not supported ({tokenizer}); switch to a model that supports bert-wordpiece or roberta-bpe'**
+  String engineTransformerUnsupportedTokenizer(Object tokenizer);
+
+  /// No description provided for @engineTransformerMissingPaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformer model or tokenizer path is missing; re-download in Model Management'**
+  String get engineTransformerMissingPaths;
+
+  /// No description provided for @engineTransformerMissingFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformer model or tokenizer file does not exist; re-download in Model Management'**
+  String get engineTransformerMissingFiles;
+
+  /// No description provided for @engineTransformerOpsetUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'ONNX opset version is not supported (this model version is too new; update the app): {variantId}'**
+  String engineTransformerOpsetUnsupported(Object variantId);
+
+  /// No description provided for @engineTransformerTokenizerCorrupt.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokenizer format is corrupted: {message}'**
+  String engineTransformerTokenizerCorrupt(Object message);
+
+  /// No description provided for @engineTransformerRepairFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Model loading or inference failed, and automatic repair did not complete; re-download the active Transformer model and tokenizer in Model Management.'**
+  String get engineTransformerRepairFailed;
+
+  /// No description provided for @engineAdversarialNoActiveVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'No active rewrite-detection model found'**
+  String get engineAdversarialNoActiveVariant;
+
+  /// No description provided for @engineAdversarialMissingFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Model or tokenizer file does not exist; re-download in Model Management'**
+  String get engineAdversarialMissingFiles;
+
+  /// No description provided for @engineAdversarialRepairFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Model loading or inference failed, and automatic repair did not complete; re-download the rewrite-detection model and tokenizer in Model Management.'**
+  String get engineAdversarialRepairFailed;
+
+  /// No description provided for @engineReasonNotParticipatedWithError.
+  ///
+  /// In en, this message translates to:
+  /// **'Model did not participate in this vote. {error}'**
+  String engineReasonNotParticipatedWithError(Object error);
+
+  /// No description provided for @patternNotAnalyzable.
+  ///
+  /// In en, this message translates to:
+  /// **'Segment too short or suspected PDF/OCR noise; no sentence-level AI judgment made'**
+  String get patternNotAnalyzable;
+
   /// No description provided for @engineReasonTransformerLoadFailed.
   ///
   /// In en, this message translates to:

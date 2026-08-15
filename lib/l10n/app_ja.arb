@@ -1,17 +1,14 @@
 {
   "@@locale": "ja",
-
   "commonCancel": "キャンセル",
   "commonDelete": "削除",
   "commonClose": "閉じる",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "人間が執筆",
   "verdictLikelyHuman": "人間の可能性が高い",
   "verdictMixed": "混合コンテンツ",
   "verdictLikelyAi": "AIの可能性が高い",
   "verdictAi": "AI生成",
-
   "inputSubtitle": "テキストを貼り付けるか入力して、AI生成コンテンツを検出",
   "inputHint": "検出したいテキストを入力または貼り付けてください…",
   "inputHistoryTooltip": "履歴",
@@ -33,7 +30,6 @@
   "inputActiveModel": "モデル：{modelId}",
   "inputNoModel": "モデル未インストール（統計・スタイル分析のみ）",
   "inputCharCount": "{count} 文字",
-
   "analysisAppBarTitle": "分析中",
   "analysisEngineTransformer": "Transformer分類器",
   "analysisEngineStatistical": "統計特徴分析",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "敵対的防御",
   "analysisProgressSemantics": "分析実行中、{total} 個中 {done} 個のエンジンが完了",
   "analysisDoneSemantics": "完了",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "初期結果：AI確率 {percent}%",
+  "analysisPreliminaryResultRefining": "初期結果：AI確率 {percent}%（精査中…）",
   "engineNameAdversarialFull": "敵対的防御（言い換え検出）",
-
   "modelNecessityText": "ニューラルネットワーク検出モデルをダウンロードしていない場合でも、TruthLensは動作しますが、統計分析とスタイル分析のみとなり、精度と多言語対応が限定されます。モデルをダウンロードすると、多言語Transformer分類器がアンサンブル投票に加わり、判定精度と信頼性が大幅に向上します。モデルはデバイス上で実行され、ダウンロード後は一切のコンテンツをアップロードしません。",
   "modelPromptTitle": "完全な分析のために検出モデルのダウンロードをお勧めします",
   "modelPromptDontRemind": "今後表示しない",
   "modelPromptSkip": "後でスキップ",
   "modelPromptDownload": "ダウンロードへ",
-
   "onboardingWelcomeTitle": "TruthLensへようこそ",
   "onboardingHeadline": "デバイス上でのAIコンテンツ検出",
   "onboardingDetectedDevice": "検出されたデバイス",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "お使いのハードウェアに基づいて「推奨」マークが表示されています。他のオプションも選択できます。",
   "onboardingSkipButton": "後で決める（モデルなしで統計・スタイル分析のみ使用）",
   "onboardingSkipHint": "スキップしても「設定 → AIモデル管理」からいつでもダウンロードできます。モデルが必要な分析を使う際にも再度お知らせします。",
-
   "modelListCustomImportedLabel": "カスタムインポートされたモデル：",
   "modelListActiveChip": "使用中",
   "modelListRecommendedChip": "推奨",
@@ -74,16 +67,15 @@
   "modelListPageButton": "モデルページ",
   "modelListMayExceedMemory": "デバイスのメモリを超える可能性があります",
   "modelListFailedPrefix": "失敗：{error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "モデルカタログを読み込めませんでした",
+  "modelCatalogEmpty": "利用可能なモデルがありません",
+  "modelDownloadPathChip": "{label} のダウンロードパス",
+  "modelDownloadPathModelFile": "モデルファイル",
+  "modelDownloadPathCopied": "ダウンロードパスをコピーしました",
+  "settingsSaveFailed": "設定の保存に失敗しました：{error}",
   "modelListDeleteConfirmTitle": "モデルを削除しますか？",
   "modelListDeleteConfirmBody": "「{name}」（{size}）を削除します。再度使用するには再ダウンロードが必要です。",
   "modelListDeleteCustomConfirmBody": "カスタムインポートされた「{name}」（{size}）を削除します。再度使用するには再インポートが必要です。",
-
   "modelImportAppBarTitle": "カスタムONNXモデルのインポート",
   "modelImportStep1Title": "1. ONNXモデルファイルを選択",
   "modelImportSelectedFile": "選択済み: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Tokenizerファイルを選択してください",
   "modelImportSuccessSnackbar": "モデルのインポートに成功し、使用中モデルとして自動設定されました！",
   "modelImportFailedSnackbar": "モデルのインポートに失敗しました。権限またはログを確認してください",
-
   "settingsAppBarTitle": "設定",
   "settingsThresholdTitle": "AI判定の信頼度しきい値",
   "settingsThresholdSubtitle": "現在：{percent}% — 上げると誤検知（人間の文章をAIと誤判定）を減らせます",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "書き出しの反復、定型的な接続表現、過剰な箇条書きなど説明可能な文体特徴を確認します。特徴がなければ信号は0%です。",
   "settingsEngineAdversarialHelp": "言い換えやAI痕跡除去が行われた文章を検出します。低い値は弱い残留証拠であり、陽性判定ではありません。",
   "settingsEngineWeightsTotalValid": "合計：{total}% — 保存できます",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "合計：{total}% — 100%に調整してください",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "重みを保存",
   "settingsEngineWeightsSaved": "AIモデルの重みをこの端末に保存しました",
   "settingsEngineWeightsRestoreDefaults": "初期値に戻す",
-  "engineReasonDisabledByUser": "設定で無効化されているため、このエンジンは投票に参加していません",
+  "engineReasonDisabledByUser": "ユーザーが設定でこのエンジンを無効にしています",
   "engineReasonTransformerNoStrongSentence": "{model}：{total}文のうち強いAI閾値を超えた文はありません。校正後の弱い信号は{percent}%です",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "AI信号 {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "AI信号は、この文書に対する各エンジンの確率です。設定した重みが影響度を決め、表示される寄与ポイントの合計が総合AI確率と正確に一致するよう配分されます。「未検出」は強い信号のしきい値60%未満を意味し、必ずしも数値が0という意味ではありません。",
   "reportMetricAiSentenceRatio": "強いAI信号を示す文の割合",
   "reportStrongAiSentenceCount": "{total}文中{count}文が60%の強い信号しきい値を超えました",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "{total}文のいずれも強い言い換え信号のしきい値を超えませんでした。校正後の弱い信号は{percent}%です",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{total}文中{count}文が強い言い換え信号のしきい値を超えました。校正後の文書信号は{percent}%です",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "ハイパーリンク・参考文献の実在性検証",
   "settingsLinkVerificationSubtitle": "レポートは、文書内で検出されたURLや参考文献が実在するかを確認するために接続します（AI生成コンテンツには、もっともらしいが実在しない引用がよく含まれます）。DOI形式の学術リンクと、リンクのない「著者名—年」形式の参考文献の両方が、Crossrefの公開登録データと照合されます。コア AI 検出モデルは引き続き完全にデバイス上で実行され、文書内容は送信されません。接続はこの検証とモデル更新確認にのみ使用され、ここでオフにできます。",
   "settingsThemeTitle": "外観テーマ",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "開く",
   "settingsCustomImportTitle": "カスタムONNXモデルのインポートとテスト",
   "settingsCustomImportSubtitle": "ローカルのカスタムONNXモデルとTokenizer設定をインポートして推論テストを実行",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "カスタムモデルのインポートはWeb版ではまだサポートされていません。アプリ版をご利用ください。",
   "settingsModelManagerAppBarTitle": "AIモデル管理",
   "settingsImportTooltip": "ローカルのONNXモデルをインポート",
   "settingsDeviceLabel": "デバイス：{summary}",
-
   "historyAppBarTitle": "履歴",
   "historyClearAllTooltip": "すべてクリア",
   "historySearchHint": "履歴を検索…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "検出履歴はまだありません",
   "historyEmptySearch": "「{query}」に一致する記録が見つかりません",
   "historyEntrySemantics": "{verdict}、AI確率 {percent}%、{time}。{text}",
-
   "reportAppBarTitle": "検出レポート",
   "reportExportTooltip": "レポートをエクスポート",
   "reportHomeTooltip": "ホームに戻る",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "モデルベンチマーク自動キャリブレーション",
   "reportCommunityDiscoveredTag": "コミュニティモデル (HuggingFace)",
   "reportEngineBreakdownTitle": "エンジン内訳",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Transformer 分類器",
+  "reportRadarRoleStatistical": "統計分析",
+  "reportRadarRoleStylometry": "文体分析",
+  "reportRadarRoleAdversarial": "敵対的防御",
+  "reportRadarAxisTransformer": "文分類",
+  "reportRadarAxisStatistical": "言語の規則性",
+  "reportRadarAxisStylometry": "文体",
+  "reportRadarAxisAdversarial": "書き換え防御",
+  "reportVerdictBadgeTitle": "総合判定",
+  "reportVerdictBadgeProbability": "全体AI確率 {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "ほとんどのエンジン信号は自然な人間の文章に偏っています。",
+  "reportVerdictHintLikelyHuman": "全体的に人間寄りですが、わずかにモデルの不確実性が残っています。",
+  "reportVerdictHintMixed": "エンジンの信号が分かれています。詳細分析と併せてご確認ください。",
+  "reportVerdictHintLikelyAi": "複数の指標がAIに偏っています。スコアの高い箇所を確認してください。",
+  "reportVerdictHintAi": "全体的な信号はAI生成または書き換えに強く偏っています。",
+  "reportSynthesisOverall": "総合判定：{verdict}、全体AI確率 {percent}%。",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "最も強い単一シグナル：{label}（{percent}%）。ただし最終結果は各エンジンの重みを統合したものであり、単一エンジンの結論ではありません。",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "現在最大の加重寄与は {label}（約 {points} パーセントポイント）によるものです。",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "「明確なAI文体は検出されませんでした」は、文体エンジンが固定的な文型や接続語パターンを見つけなかったことのみを意味します。他のモデルは言語の規則性、文分類、書き換えシグナルによって全体スコアを引き上げる可能性があります。",
+  "reportSynthesisModelGap": "一部のエンジンが参加しなかった場合は、まずモデル管理で「推奨分析モデルを補完」を使用してください。それでも失敗する場合、詳細分析でモデル欠落、非対応トークナイザー、ファイル欠落、Web/ONNX Runtimeの互換性制限のいずれが原因かが示されます。",
+  "reportEngineRelationshipUnavailable": "{label} はこの加重投票に参加しなかったため、この項目は0%と表示されます。{hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "役割の重み {weight}%、全体スコアへの寄与は約 {points} パーセントポイント{variantText}。",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": "（{count} 個のモデルバリアントを統合）",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} はこの投票に参加しませんでした。",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} は追加のテキスト説明を返しませんでした。",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "解決策：モデル管理で多言語Transformerをダウンロードして有効化してください。すでにダウンロード済みの場合は、モデルとトークナイザーを再ダウンロードしてください。",
+  "reportEngineResolutionAdversarial": "解決策：モデル管理で言い換え検出モデルとトークナイザーを再ダウンロードしてください。Web版ではBigInt互換性修正版に更新してから再度分析してください。",
+  "reportEngineReasonBigInt": "{reason}。原因：Web版のONNX Runtimeが返したBigIntテンソルを旧ブリッジが変換できませんでした。修正版に更新して再度分析してください。",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}。解決策：カタログ内のモデルに切り替えるか、モデルとトークナイザーを再ダウンロードしてください。",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}。解決策：モデル管理を開き、「推奨分析モデルを補完」をタップして、多言語Transformerがアクティブとしてマークされていることを確認してください。",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "未インストール",
   "reportEngineLoadFailedBadge": "読み込み失敗",
   "reportSentenceAnalysisTitle": "文単位の分析",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "参考文献目録（{count} 件）を検出しました。まだ検証されていません",
   "reportBibDisabledHint": "AI生成コンテンツには、もっともらしいが実在しない参考文献がよく含まれます。「設定」でハイパーリンク検証をオフにしています。再度オンにすると自動検証されます。下のボタンで一回限りの検証も可能です。",
   "reportVerifyNowBibButton": "今すぐ検証（要ネットワーク接続）",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "未検証の引用をすべて再確認",
+  "reportBibRecheckOneTooltip": "この引用を再確認",
   "reportBibResultHint": "著者名、発行年、タイトルの類似度でCrossrefの公開登録データと照合します。絶対的な保証ではありません。「不確定」の場合は自分で確認することをお勧めします。",
   "reportBibHighConfidence": "高信頼度：実在する可能性が高い{journal}",
   "reportBibJournalSuffix": "（{journal}に登録済み）",
   "reportBibNotFound": "近い一致が見つかりません。虚偽の参考文献の可能性があります",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "疑わしい：登録データとの照合による検証はされていません",
   "reportBibTruncated": "最初の {max} 件のみ検証しました（検出総数 {count} 件）",
   "reportNetworkWarningTitle": "ネットワーク接続が不安定です",
   "reportNetworkWarningBody": "本アプリは実行時にネットワーク接続があることを前提としています。ハイパーリンクと引用文献の実在性分析には、結果を判定するためにネットワーク接続が必要です。現在接続できません。ネットワーク状態を確認して再試行してください。",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "合計 {total} 文 · AIの疑い {ai} 文 · 人間 {human} 文",
   "pdfTruncationNotice": "PDFの可読性を保つため、最初の {max} 文のみ表示しています（全 {count} 文）。完全なデータが必要な場合は「{csvLabel}」または「{jsonLabel}」をご利用ください。",
   "pdfSentenceColumnHeader": "文（一致したパターン付き）",
-
   "composerHeadlineAi": "この文章はAIによって生成された可能性が非常に高いです（AI確率 {percent}%）",
   "composerHeadlineLikelyAi": "この文章はAI生成の傾向があり、さらなる確認をお勧めします（AI確率 {percent}%）",
   "composerHeadlineMixed": "この文章は人間とAIの混合的な特徴を示しています（AI確率 {percent}%）",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "ほとんどの文が、文の長さのリズム、語彙選択、接続詞の使用において高度に規則的であり、これはAI生成文章の典型的な特徴です。",
   "composerNarrativeMixedPattern": "文章には規則的な部分と自然な変化のある部分が混在しており、人間の下書きをAIが推敲したか、人間とAIの共同作業である可能性を示しています。",
   "composerNarrativeHumanPattern": "文の長さと語彙選択には自然な変化と個性が見られ、明らかなAIの規則性は見られません。",
-
   "engineReasonPplLow": "言語モデルの困惑度が低く（{ppl}）、文章の予測可能性が高いことはAI生成の指標です",
   "engineReasonPplHigh": "言語モデルの困惑度が高く（{ppl}）、人間の文章の予測不可能性と一致します",
   "engineReasonPplMid": "言語モデルの困惑度は中程度です（{ppl}）",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "顕著なAI文体パターンは検出されませんでした",
   "engineReasonAdversarialNotInstalled": "言い換え検出モデルが未インストールのため、今回の投票に参加していません",
   "engineReasonTransformerNotInstalled": "モデルが未インストール、または使用中のモデルがサポートされていないため、今回の投票に参加していません",
+  "modelRepairNoActiveVariant": "アクティブなモデルが見つかりません。モデル管理で推奨モデルをダウンロードしてください。",
+  "modelRepairCustomRemoved": "読み込みに失敗したカスタムモデルを削除しました。カスタムモデルは自動的に再ダウンロードできないため、モデルとトークナイザーを再インポートしてください。",
+  "modelRepairNoSource": "読み込みに失敗したモデルファイルを削除しましたが、再ダウンロード可能なカタログソースが見つかりません。モデル管理で推奨モデルを再ダウンロードしてください。",
+  "modelRepairRedownloaded": "モデルファイルが破損または非互換の可能性を検出したため、{name} を自動的に再ダウンロードしました。もう一度分析を実行してください。",
+  "modelRepairRedownloadFailed": "読み込みに失敗したモデルファイルを削除しましたが、自動再ダウンロードが完了しませんでした。ネットワーク接続を確認し、モデル管理で {name} を再ダウンロードしてください。",
+  "engineTransformerNoActiveVariant": "アクティブな Transformer モデルが見つかりません。モデル管理でダウンロードするか、使用中に設定してください",
+  "engineTransformerUnsupportedTokenizer": "使用中モデルの tokenizer 形式がサポートされていません（{tokenizer}）。bert-wordpiece または roberta-bpe に対応したモデルに切り替えてください",
+  "engineTransformerMissingPaths": "Transformer モデルまたは tokenizer のパスが見つかりません。モデル管理で再ダウンロードしてください",
+  "engineTransformerMissingFiles": "Transformer モデルまたは tokenizer のファイルが存在しません。モデル管理で再ダウンロードしてください",
+  "engineTransformerOpsetUnsupported": "ONNX opset バージョンがサポートされていません（このモデルは新しすぎます。アプリを更新してください）: {variantId}",
+  "engineTransformerTokenizerCorrupt": "Tokenizer 形式が破損しています: {message}",
+  "engineTransformerRepairFailed": "モデルの読み込みまたは推論に失敗し、自動修復も完了しませんでした。モデル管理で使用中の Transformer モデルと tokenizer を再ダウンロードしてください。",
+  "engineAdversarialNoActiveVariant": "アクティブな言い換え検出モデルが見つかりません",
+  "engineAdversarialMissingFiles": "モデルまたは tokenizer のファイルが存在しません。モデル管理で再ダウンロードしてください",
+  "engineAdversarialRepairFailed": "モデルの読み込みまたは推論に失敗し、自動修復も完了しませんでした。モデル管理で言い換え検出モデルと tokenizer を再ダウンロードしてください。",
+  "engineReasonNotParticipatedWithError": "このモデルは今回の投票に参加していません。{error}",
+  "patternNotAnalyzable": "セグメントが短すぎるか、PDF/OCR ノイズの疑いがあるため、文単位の AI 判定を行いませんでした",
   "engineReasonTransformerLoadFailed": "モデルの読み込みに失敗し、今回の投票に参加していません（{error}）",
   "engineReasonTransformerResult": "{model} は {total} 文中 {aiCount} 文にAIの特徴があると判定しました",
   "engineReasonAdversarialDetected": "敵対的モデルが、言い換えツール（QuillBot / Undetectable.aiなど）で処理された可能性のあるAIの痕跡を検出しました",
   "engineReasonAdversarialClean": "明らかな言い換え回避の痕跡は検出されませんでした",
-  "engineReasonDisabledByUser": "ユーザーが設定でこのエンジンを無効にしています",
   "engineReasonGenericNotInstalled": "モデルが未インストールのため、今回の投票に参加していません",
   "patternGenericTransition": "汎用的な接続詞「{word}」",
-
   "helpAppBarTitle": "使い方ガイド",
   "helpAboutTitle": "TruthLensについて",
   "helpAboutBody": "TruthLensは、コアAI推論を完全にデバイス上で実行するクロスプラットフォームのコンテンツ検出アプリです（iOS / Android / macOS / Windows）。Transformerニューラルネットワーク分類器、統計分析、文体分析、敵対的言い換え検出という4つの独立したサブモデルが加重投票を行い、テキストがAI生成かどうかを判定し、文単位で説明可能な分析理由を提供します。「AIらしい」というパーセンテージを示すだけでなく、「なぜ」なのかを説明します。",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "カスタムモデルのインポート：上級ユーザーは独自のローカルONNXモデルをインポートして、組み込みの検出エンジンを置き換えたり補完したりできます。",
   "helpWorkflowTitle": "完全な操作フロー",
   "helpWorkflowStepLabel": "ステップ {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "モデルのダウンロードと更新",
   "helpWorkflowStep1Body": "初回起動時にコア検出モデルのインストールが案内されます。その後はいつでも「設定 → AIモデル管理」から確認、ダウンロード、更新、削除ができます。アプリは起動時に最新バージョンを自動的に確認し、更新がある場合は設定の歯車アイコンと「AIモデル管理」項目に通知バッジが表示されます。",
   "helpWorkflowStep2Title": "モデルの選び方（目的と効果）",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "困惑度統計モデル（Statistical、重み25%）",
   "helpLinkRoleAdversarial": "敵対的言い換え検出モデル（Adversarial、重み15%）",
   "helpLinkRoleLlm": "レポート生成LLM（任意）",
-
   "privacyAppBarTitle": "プライバシーポリシー",
   "privacyPlatformTitle": "{platform}版プライバシーポリシー",
   "privacyLastUpdated": "最終更新：{date}",

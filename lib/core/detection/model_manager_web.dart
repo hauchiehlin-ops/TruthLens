@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../../l10n/generated/app_localizations.dart';
 import 'model_catalog.dart';
 import 'model_catalog_service.dart';
 import 'model_manager_types.dart';
@@ -171,16 +172,16 @@ class ModelManager extends ChangeNotifier {
   }
 
   Future<String> repairActiveVariant(
-    String role, {
-    String reason = '模型載入或推論失敗',
-  }) async {
+    String role,
+    AppLocalizations l10n,
+  ) async {
     final active = activeVariant(role);
     if (active == null) {
-      return '未找到使用中的模型；請在模型管理下載推薦模型。';
+      return l10n.modelRepairNoActiveVariant;
     }
     if (active.imported) {
       await removeVariant(role, active.variantId);
-      return '已移除載入失敗的自訂模型。自訂模型無法自動重新下載，請重新匯入模型與 tokenizer。';
+      return l10n.modelRepairCustomRemoved;
     }
 
     ModelVariant? catalogVariant;
@@ -201,13 +202,13 @@ class ModelManager extends ChangeNotifier {
     await removeVariant(role, active.variantId);
 
     if (catalogVariant == null || !catalogVariant.isDownloadable) {
-      return '已移除載入失敗的模型檔，但目前找不到可重新下載的 catalog 來源；請到模型管理重新下載推薦模型。';
+      return l10n.modelRepairNoSource;
     }
 
     final ok = await downloadVariant(role, catalogVariant);
     return ok
-        ? '偵測到模型檔可能損毀或不相容，已自動重新下載 ${catalogVariant.name}；請重新執行分析。'
-        : '已移除載入失敗的模型檔，但自動重新下載未完成；請確認網路後在模型管理重新下載 ${catalogVariant.name}。';
+        ? l10n.modelRepairRedownloaded(catalogVariant.name)
+        : l10n.modelRepairRedownloadFailed(catalogVariant.name);
   }
 
   bool hasUpdate(String role, ModelVariant catalogVariant) {

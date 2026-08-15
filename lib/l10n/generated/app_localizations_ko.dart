@@ -160,12 +160,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String analysisPreliminaryResult(int percent) {
-    return 'Preliminary result: AI probability $percent%';
+    return '예비 결과: AI 확률 $percent%';
   }
 
   @override
   String analysisPreliminaryResultRefining(int percent) {
-    return 'Preliminary result: AI probability $percent% (refining…)';
+    return '예비 결과: AI 확률 $percent%（정밀 분석 중…）';
   }
 
   @override
@@ -275,25 +275,25 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get modelCatalogLoadFailed => 'Could not load model catalog';
+  String get modelCatalogLoadFailed => '모델 카탈로그를 불러올 수 없습니다';
 
   @override
-  String get modelCatalogEmpty => 'No models available';
+  String get modelCatalogEmpty => '사용 가능한 모델이 없습니다';
 
   @override
   String modelDownloadPathChip(String label) {
-    return '$label download path';
+    return '$label 다운로드 경로';
   }
 
   @override
-  String get modelDownloadPathModelFile => 'Model file';
+  String get modelDownloadPathModelFile => '모델 파일';
 
   @override
-  String get modelDownloadPathCopied => 'Download path copied';
+  String get modelDownloadPathCopied => '다운로드 경로가 복사되었습니다';
 
   @override
   String settingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return '설정을 저장하지 못했습니다: $error';
   }
 
   @override
@@ -586,7 +586,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get modelImportWebUnsupported =>
-      'Custom model import is not supported on the web version yet. Please use the app version.';
+      '사용자 지정 모델 가져오기는 웹 버전에서 아직 지원되지 않습니다. 앱 버전을 사용해 주세요.';
 
   @override
   String get settingsModelManagerAppBarTitle => 'AI 모델 관리';
@@ -723,83 +723,81 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportVerdictHumanLikelihood => 'Human Writing';
 
   @override
-  String get reportRadarRoleTransformer => 'Transformer classifier';
+  String get reportRadarRoleTransformer => 'Transformer 분류기';
 
   @override
-  String get reportRadarRoleStatistical => 'Statistical analysis';
+  String get reportRadarRoleStatistical => '통계 분석';
 
   @override
-  String get reportRadarRoleStylometry => 'Stylometry analysis';
+  String get reportRadarRoleStylometry => '문체 분석';
 
   @override
-  String get reportRadarRoleAdversarial => 'Adversarial defense';
+  String get reportRadarRoleAdversarial => '적대적 방어';
 
   @override
-  String get reportRadarAxisTransformer => 'Sentence classifier';
+  String get reportRadarAxisTransformer => '문장 분류';
 
   @override
-  String get reportRadarAxisStatistical => 'Language regularity';
+  String get reportRadarAxisStatistical => '언어 규칙성';
 
   @override
-  String get reportRadarAxisStylometry => 'Writing style';
+  String get reportRadarAxisStylometry => '문체';
 
   @override
-  String get reportRadarAxisAdversarial => 'Rewrite defense';
+  String get reportRadarAxisAdversarial => '재작성 방어';
 
   @override
-  String get reportVerdictBadgeTitle => 'Overall verdict';
+  String get reportVerdictBadgeTitle => '종합 판정';
 
   @override
   String reportVerdictBadgeProbability(int percent) {
-    return 'Overall AI probability $percent%';
+    return '전체 AI 확률 $percent%';
   }
 
   @override
   String get reportVerdictHintHuman =>
-      'Most engine signals lean toward natural human writing.';
+      '대부분의 엔진 신호가 자연스러운 인간의 글쓰기 쪽으로 기울어져 있습니다.';
 
   @override
   String get reportVerdictHintLikelyHuman =>
-      'Overall leans human, with a small amount of model uncertainty retained.';
+      '전반적으로 인간에 가까우며, 약간의 모델 불확실성이 남아 있습니다.';
 
   @override
   String get reportVerdictHintMixed =>
-      'Engine signals are mixed; read the detailed analysis together with this result.';
+      '엔진 신호가 혼재되어 있습니다. 이 결과와 함께 상세 분석을 참고하세요.';
 
   @override
-  String get reportVerdictHintLikelyAi =>
-      'Multiple indicators lean AI; review the high-scoring passages.';
+  String get reportVerdictHintLikelyAi => '여러 지표가 AI를 가리킵니다. 점수가 높은 부분을 검토하세요.';
 
   @override
-  String get reportVerdictHintAi =>
-      'Overall signals strongly lean AI-generated or rewritten.';
+  String get reportVerdictHintAi => '전반적인 신호가 AI 생성 또는 재작성 쪽으로 강하게 기울어져 있습니다.';
 
   @override
   String reportSynthesisOverall(String verdict, int percent) {
-    return 'Overall verdict: $verdict; overall AI probability $percent%.';
+    return '종합 판정: $verdict; 전체 AI 확률 $percent%.';
   }
 
   @override
   String reportSynthesisStrongestSignal(String label, int percent) {
-    return 'Strongest single signal: $label ($percent%), but the final result merges engine weights and is not the conclusion of one engine alone.';
+    return '가장 강한 단일 신호: $label（$percent%）. 그러나 최종 결과는 각 엔진의 가중치를 결합한 것이며 단일 엔진의 결론이 아닙니다.';
   }
 
   @override
   String reportSynthesisStrongestContribution(String label, int points) {
-    return 'Largest weighted contribution currently comes from $label (about $points percentage points).';
+    return '현재 가장 큰 가중 기여는 $label에서 나옵니다（약 $points 퍼센트포인트）.';
   }
 
   @override
   String get reportSynthesisStyleCaveat =>
-      '“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.';
+      '\"명확한 AI 문체가 감지되지 않음\"은 문체 엔진이 고정된 문장 패턴이나 전환어 패턴을 찾지 못했다는 의미일 뿐이며, 다른 모델은 언어 규칙성, 문장 분류, 재작성 신호를 통해 여전히 전체 점수를 높일 수 있습니다.';
 
   @override
   String get reportSynthesisModelGap =>
-      'When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.';
+      '일부 엔진이 참여하지 않은 경우, 먼저 모델 관리에서 \"추천 분석 모델 완성\"을 사용하세요. 그래도 실패하면 상세 분석에서 원인이 모델 누락, 지원되지 않는 tokenizer, 파일 누락, Web/ONNX Runtime 호환성 제한 중 무엇인지 알려줍니다.';
 
   @override
   String reportEngineRelationshipUnavailable(String label, String hint) {
-    return '$label did not participate in this weighted vote, so this dimension is shown as 0%. $hint';
+    return '$label은(는) 이 가중 투표에 참여하지 않아 이 항목은 0%로 표시됩니다. $hint';
   }
 
   @override
@@ -808,45 +806,45 @@ class AppLocalizationsKo extends AppLocalizations {
     int points,
     String variantText,
   ) {
-    return 'Role weight $weight%, contributing about $points percentage points to the overall score$variantText.';
+    return '역할 가중치 $weight%, 전체 점수에 약 $points 퍼센트포인트 기여$variantText.';
   }
 
   @override
   String reportEngineVariantMerged(int count) {
-    return ' (merged $count model variants)';
+    return '（모델 변형 $count개 병합됨）';
   }
 
   @override
   String reportEngineFallbackUnavailable(String label) {
-    return '$label did not participate in this vote.';
+    return '$label은(는) 이번 투표에 참여하지 않았습니다.';
   }
 
   @override
   String reportEngineFallbackAvailable(String label) {
-    return '$label returned no additional text explanation.';
+    return '$label은(는) 추가 텍스트 설명을 반환하지 않았습니다.';
   }
 
   @override
   String get reportEngineResolutionTransformer =>
-      'Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.';
+      '해결 방법: 모델 관리에서 다국어 Transformer를 다운로드하고 활성화하세요. 이미 다운로드된 경우 모델과 tokenizer를 다시 다운로드하세요.';
 
   @override
   String get reportEngineResolutionAdversarial =>
-      'Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.';
+      '해결 방법: 모델 관리에서 재작성 감지 모델과 tokenizer를 다시 다운로드하세요. 웹에서는 BigInt 호환성 수정이 적용된 버전으로 업데이트한 후 다시 분석하세요.';
 
   @override
   String reportEngineReasonBigInt(String reason) {
-    return '$reason. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.';
+    return '$reason. 원인: 웹 ONNX Runtime이 반환한 BigInt 텐서를 이전 브리지가 변환할 수 없습니다. 수정된 빌드로 업데이트한 후 다시 분석하세요.';
   }
 
   @override
   String reportEngineReasonTokenizer(String reason) {
-    return '$reason. Fix: switch to a catalog model, or re-download the model and tokenizer.';
+    return '$reason. 해결 방법: 카탈로그 모델로 전환하거나 모델과 tokenizer를 다시 다운로드하세요.';
   }
 
   @override
   String reportEngineReasonNoActiveTransformer(String reason) {
-    return '$reason. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.';
+    return '$reason. 해결 방법: 모델 관리를 열고 \"추천 분석 모델 완성\"을 탭한 후 다국어 Transformer가 활성으로 표시되어 있는지 확인하세요.';
   }
 
   @override
@@ -1060,11 +1058,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportVerifyNowBibButton => '지금 검증（네트워크 필요）';
 
   @override
-  String get reportBibRecheckAllUnreliableButton =>
-      'Recheck all unverified citations';
+  String get reportBibRecheckAllUnreliableButton => '검증되지 않은 모든 인용을 다시 확인';
 
   @override
-  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+  String get reportBibRecheckOneTooltip => '이 인용을 다시 확인';
 
   @override
   String get reportBibResultHint =>
@@ -1098,7 +1095,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportBibNotFound => '유사한 항목을 찾을 수 없습니다. 허위 참고 문헌일 가능성이 있습니다';
 
   @override
-  String get reportBibUncertain => 'Suspect: not verified by registry match';
+  String get reportBibUncertain => '의심됨: 등록 데이터 대조로 검증되지 않음';
 
   @override
   String reportBibTruncated(int max, int count) {
@@ -1372,6 +1369,79 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get engineReasonTransformerNotInstalled =>
       '모델이 설치되지 않았거나 사용 중인 모델이 지원되지 않아 이번 투표에 참여하지 않았습니다';
+
+  @override
+  String get modelRepairNoActiveVariant =>
+      '활성화된 모델을 찾을 수 없습니다. 모델 관리에서 추천 모델을 다운로드하세요.';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      '로드에 실패한 사용자 지정 모델을 제거했습니다. 사용자 지정 모델은 자동으로 다시 다운로드할 수 없으므로 모델과 토크나이저를 다시 가져오세요.';
+
+  @override
+  String get modelRepairNoSource =>
+      '로드에 실패한 모델 파일을 제거했지만 다시 다운로드할 수 있는 카탈로그 소스를 찾을 수 없습니다. 모델 관리에서 추천 모델을 다시 다운로드하세요.';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return '모델 파일이 손상되었거나 호환되지 않을 수 있음을 감지하여 $name을(를) 자동으로 다시 다운로드했습니다. 분석을 다시 실행하세요.';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return '로드에 실패한 모델 파일을 제거했지만 자동 재다운로드가 완료되지 않았습니다. 네트워크 연결을 확인한 후 모델 관리에서 $name을(를) 다시 다운로드하세요.';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      '활성화된 Transformer 모델을 찾을 수 없습니다. 모델 관리에서 다운로드하거나 활성으로 설정하세요';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return '사용 중인 모델의 tokenizer 유형이 지원되지 않습니다（$tokenizer）. bert-wordpiece 또는 roberta-bpe를 지원하는 모델로 전환하세요';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Transformer 모델 또는 tokenizer 경로가 없습니다. 모델 관리에서 다시 다운로드하세요';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Transformer 모델 또는 tokenizer 파일이 존재하지 않습니다. 모델 관리에서 다시 다운로드하세요';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'ONNX opset 버전이 지원되지 않습니다（이 모델 버전이 너무 최신입니다. 앱을 업데이트하세요）: $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Tokenizer 형식이 손상되었습니다: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      '모델 로드 또는 추론에 실패했으며 자동 복구도 완료되지 않았습니다. 모델 관리에서 활성 Transformer 모델과 tokenizer를 다시 다운로드하세요.';
+
+  @override
+  String get engineAdversarialNoActiveVariant => '활성화된 재작성 감지 모델을 찾을 수 없습니다';
+
+  @override
+  String get engineAdversarialMissingFiles =>
+      '모델 또는 tokenizer 파일이 존재하지 않습니다. 모델 관리에서 다시 다운로드하세요';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      '모델 로드 또는 추론에 실패했으며 자동 복구도 완료되지 않았습니다. 모델 관리에서 재작성 감지 모델과 tokenizer를 다시 다운로드하세요.';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return '이 모델은 이번 투표에 참여하지 않았습니다. $error';
+  }
+
+  @override
+  String get patternNotAnalyzable =>
+      '구간이 너무 짧거나 PDF/OCR 노이즈로 의심되어 문장 단위 AI 판정을 수행하지 않았습니다';
 
   @override
   String engineReasonTransformerLoadFailed(String error) {

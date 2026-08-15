@@ -1,5 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-15（第六十八次更新）— 修正：引擎錯誤/修復訊息未走 l10n、補齊 10 語系翻譯缺口
+
+**概述**
+使用者回報即使切到英文／日文介面，「分析遙測」面板每個引擎下方的判讀說明仍會顯示中文或日文混雜文字，要求全面深度掃描所有文字標籤：
+
+1. 根因：`ModelManager.repairActiveVariant()`（`model_manager_io.dart`／`model_manager_web.dart`）與 `TransformerEngine`／`AdversarialEngine` 的模型載入失敗、tokenizer 不支援、opset 版本不符等錯誤/自動修復訊息全部是寫死的繁體中文字串，完全不吃 `AppLocalizations`；這些字串會被塞進 `EngineScore.reasons`，經過完整的 l10n 管線後最終仍顯示中文，跟畫面其他部分的語系脫節。已改為兩個引擎與 `ModelManager.repairActiveVariant` 都接收 `AppLocalizations l10n` 並輸出對應語系文字，新增 17 個 l10n 鍵（`modelRepair*`、`engineTransformer*`、`engineAdversarial*`、`engineReasonNotParticipatedWithError`、`patternNotAnalyzable`），14 語系全數補齊
+2. 另外發現 `app_ja.arb` 等 10 個非中文語系檔案中，`reportRadarRole*`／`reportRadarAxis*`／`reportVerdict*`／`reportSynthesis*`／`reportEngine*` 等 41 個報告頁關鍵字串的值與英文版逐字相同（等同從未翻譯），這正是使用者日文介面截圖中「Transformer」等標籤未翻譯、報告頁大段文字维持英文的直接原因；已為 `de/es/fr/id/ja/ko/ms/pt/ru/th` 十個語系全部補上正式翻譯
+3. 掃描確認：`stylometry_engine.dart` 的過渡詞比對清單（`此外`、`furthermore`…）與其比對到的原句片段本就是在引用「文件內容」而非 UI 標籤，維持現狀合理；`report_llm_service.dart` 等其餘產生說明文字的路徑本來就正確地把 `l10n` 一路往下傳遞
+
+**修正內容**：✅ **完成**（`flutter analyze`、`flutter test` 243 項全數通過）
+
+- 修正前後逐語系比對：各非中文語系「與英文逐字相同」的鍵從 46–53 個降到個位數（4–11 個），且剩餘全部是刻意保持原文的專有名詞／競品品牌名（如「vs GPTZero」「BERT (WordPiece)」），非翻譯遺漏
+- `flutter gen-l10n` 輸出的「XX untranslated message(s)」數字在整個過程中未變動（每次都是同一組數字），經逐鍵比對確認該計數與實際翻譯缺口無關，屬於此工具在本環境下的既有顯示異常，不影響實際內容正確性
+
+---
+
 ## 2026-08-15（第六十七次更新）— 改善：整體進度條重新設計、即時發現移除筆數上限、版權宣告、文獻重新查核不跳頁
 
 **概述**

@@ -253,7 +253,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
         p = 0.5;
         patterns
           ..clear()
-          ..add('片段過短或疑似 PDF/OCR 噪音，未作 AI 句級判讀');
+          ..add(l10n.patternNotAnalyzable);
       }
       result.add(
         SentenceScore(

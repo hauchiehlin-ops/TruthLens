@@ -164,12 +164,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String analysisPreliminaryResult(int percent) {
-    return 'Preliminary result: AI probability $percent%';
+    return 'Предварительный результат: вероятность ИИ $percent%';
   }
 
   @override
   String analysisPreliminaryResultRefining(int percent) {
-    return 'Preliminary result: AI probability $percent% (refining…)';
+    return 'Предварительный результат: вероятность ИИ $percent% (уточняется…)';
   }
 
   @override
@@ -284,25 +284,25 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get modelCatalogLoadFailed => 'Could not load model catalog';
+  String get modelCatalogLoadFailed => 'Не удалось загрузить каталог моделей';
 
   @override
-  String get modelCatalogEmpty => 'No models available';
+  String get modelCatalogEmpty => 'Нет доступных моделей';
 
   @override
   String modelDownloadPathChip(String label) {
-    return '$label download path';
+    return 'Путь загрузки $label';
   }
 
   @override
-  String get modelDownloadPathModelFile => 'Model file';
+  String get modelDownloadPathModelFile => 'Файл модели';
 
   @override
-  String get modelDownloadPathCopied => 'Download path copied';
+  String get modelDownloadPathCopied => 'Путь загрузки скопирован';
 
   @override
   String settingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Не удалось сохранить настройки: $error';
   }
 
   @override
@@ -611,7 +611,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get modelImportWebUnsupported =>
-      'Custom model import is not supported on the web version yet. Please use the app version.';
+      'Импорт пользовательских моделей пока не поддерживается в веб-версии. Используйте версию приложения.';
 
   @override
   String get settingsModelManagerAppBarTitle => 'Управление моделями ИИ';
@@ -748,83 +748,83 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportVerdictHumanLikelihood => 'Human Writing';
 
   @override
-  String get reportRadarRoleTransformer => 'Transformer classifier';
+  String get reportRadarRoleTransformer => 'Классификатор Transformer';
 
   @override
-  String get reportRadarRoleStatistical => 'Statistical analysis';
+  String get reportRadarRoleStatistical => 'Статистический анализ';
 
   @override
-  String get reportRadarRoleStylometry => 'Stylometry analysis';
+  String get reportRadarRoleStylometry => 'Стилометрический анализ';
 
   @override
-  String get reportRadarRoleAdversarial => 'Adversarial defense';
+  String get reportRadarRoleAdversarial => 'Состязательная защита';
 
   @override
-  String get reportRadarAxisTransformer => 'Sentence classifier';
+  String get reportRadarAxisTransformer => 'Классификатор предложений';
 
   @override
-  String get reportRadarAxisStatistical => 'Language regularity';
+  String get reportRadarAxisStatistical => 'Языковая регулярность';
 
   @override
-  String get reportRadarAxisStylometry => 'Writing style';
+  String get reportRadarAxisStylometry => 'Стиль письма';
 
   @override
-  String get reportRadarAxisAdversarial => 'Rewrite defense';
+  String get reportRadarAxisAdversarial => 'Защита от перефразирования';
 
   @override
-  String get reportVerdictBadgeTitle => 'Overall verdict';
+  String get reportVerdictBadgeTitle => 'Общий вердикт';
 
   @override
   String reportVerdictBadgeProbability(int percent) {
-    return 'Overall AI probability $percent%';
+    return 'Общая вероятность ИИ $percent%';
   }
 
   @override
   String get reportVerdictHintHuman =>
-      'Most engine signals lean toward natural human writing.';
+      'Большинство сигналов движков указывают на естественное человеческое письмо.';
 
   @override
   String get reportVerdictHintLikelyHuman =>
-      'Overall leans human, with a small amount of model uncertainty retained.';
+      'В целом текст ближе к человеческому, с небольшой остаточной неопределённостью модели.';
 
   @override
   String get reportVerdictHintMixed =>
-      'Engine signals are mixed; read the detailed analysis together with this result.';
+      'Сигналы движков неоднозначны; ознакомьтесь с подробным анализом вместе с этим результатом.';
 
   @override
   String get reportVerdictHintLikelyAi =>
-      'Multiple indicators lean AI; review the high-scoring passages.';
+      'Несколько показателей указывают на ИИ; проверьте фрагменты с высокой оценкой.';
 
   @override
   String get reportVerdictHintAi =>
-      'Overall signals strongly lean AI-generated or rewritten.';
+      'Общие сигналы сильно указывают на текст, сгенерированный или переписанный ИИ.';
 
   @override
   String reportSynthesisOverall(String verdict, int percent) {
-    return 'Overall verdict: $verdict; overall AI probability $percent%.';
+    return 'Общий вердикт: $verdict; общая вероятность ИИ $percent%.';
   }
 
   @override
   String reportSynthesisStrongestSignal(String label, int percent) {
-    return 'Strongest single signal: $label ($percent%), but the final result merges engine weights and is not the conclusion of one engine alone.';
+    return 'Самый сильный отдельный сигнал: $label ($percent%), но итоговый результат объединяет веса всех движков и не является заключением одного движка.';
   }
 
   @override
   String reportSynthesisStrongestContribution(String label, int points) {
-    return 'Largest weighted contribution currently comes from $label (about $points percentage points).';
+    return 'Наибольший взвешенный вклад в настоящее время вносит $label (около $points процентных пунктов).';
   }
 
   @override
   String get reportSynthesisStyleCaveat =>
-      '“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.';
+      '«Явный стиль письма ИИ не обнаружен» означает лишь то, что стилевой движок не нашёл фиксированных структур предложений или переходных слов; другие модели всё же могут повысить общий балл за счёт языковой регулярности, классификации предложений или сигналов перефразирования.';
 
   @override
   String get reportSynthesisModelGap =>
-      'When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.';
+      'Если некоторые движки не участвовали, сначала используйте «Дополнить рекомендуемые модели анализа» в «Управление моделями»; если проблема сохраняется, подробный анализ укажет, вызвана ли она отсутствующей моделью, неподдерживаемым токенизатором, отсутствующим файлом или ограничением совместимости Web/ONNX Runtime.';
 
   @override
   String reportEngineRelationshipUnavailable(String label, String hint) {
-    return '$label did not participate in this weighted vote, so this dimension is shown as 0%. $hint';
+    return '$label не участвовал в этом взвешенном голосовании, поэтому данный показатель отображается как 0%. $hint';
   }
 
   @override
@@ -833,45 +833,45 @@ class AppLocalizationsRu extends AppLocalizations {
     int points,
     String variantText,
   ) {
-    return 'Role weight $weight%, contributing about $points percentage points to the overall score$variantText.';
+    return 'Вес роли $weight%, вклад в общий балл — около $points процентных пунктов$variantText.';
   }
 
   @override
   String reportEngineVariantMerged(int count) {
-    return ' (merged $count model variants)';
+    return ' (объединено вариантов модели: $count)';
   }
 
   @override
   String reportEngineFallbackUnavailable(String label) {
-    return '$label did not participate in this vote.';
+    return '$label не участвовал в этом голосовании.';
   }
 
   @override
   String reportEngineFallbackAvailable(String label) {
-    return '$label returned no additional text explanation.';
+    return '$label не вернул дополнительного текстового объяснения.';
   }
 
   @override
   String get reportEngineResolutionTransformer =>
-      'Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.';
+      'Решение: загрузите и активируйте многоязычный Transformer в «Управление моделями»; если он уже загружен, загрузите модель и токенизатор повторно.';
 
   @override
   String get reportEngineResolutionAdversarial =>
-      'Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.';
+      'Решение: повторно загрузите модель обнаружения перефразирования и токенизатор в «Управление моделями»; в веб-версии обновитесь до версии с исправлением совместимости BigInt и проанализируйте снова.';
 
   @override
   String reportEngineReasonBigInt(String reason) {
-    return '$reason. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.';
+    return '$reason. Причина: веб-ONNX Runtime вернул тензор BigInt, который старый мост не смог преобразовать; обновитесь до исправленной версии и проанализируйте снова.';
   }
 
   @override
   String reportEngineReasonTokenizer(String reason) {
-    return '$reason. Fix: switch to a catalog model, or re-download the model and tokenizer.';
+    return '$reason. Решение: переключитесь на модель из каталога или загрузите модель и токенизатор повторно.';
   }
 
   @override
   String reportEngineReasonNoActiveTransformer(String reason) {
-    return '$reason. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.';
+    return '$reason. Решение: откройте «Управление моделями», нажмите «Дополнить рекомендуемые модели анализа» и убедитесь, что многоязычный Transformer отмечен как активный.';
   }
 
   @override
@@ -1091,10 +1091,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reportBibRecheckAllUnreliableButton =>
-      'Recheck all unverified citations';
+      'Перепроверить все неподтверждённые цитаты';
 
   @override
-  String get reportBibRecheckOneTooltip => 'Recheck this citation';
+  String get reportBibRecheckOneTooltip => 'Перепроверить эту цитату';
 
   @override
   String get reportBibResultHint =>
@@ -1129,7 +1129,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Близкое совпадение не найдено — возможно, вымышленная ссылка';
 
   @override
-  String get reportBibUncertain => 'Suspect: not verified by registry match';
+  String get reportBibUncertain =>
+      'Подозрительно: не подтверждено сопоставлением с реестром';
 
   @override
   String reportBibTruncated(int max, int count) {
@@ -1407,6 +1408,80 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get engineReasonTransformerNotInstalled =>
       'Модель не установлена или активная модель не поддерживается; не участвовала в этом голосовании';
+
+  @override
+  String get modelRepairNoActiveVariant =>
+      'Активная модель не найдена; загрузите рекомендуемую модель в разделе «Управление моделями».';
+
+  @override
+  String get modelRepairCustomRemoved =>
+      'Пользовательская модель, которую не удалось загрузить, была удалена. Пользовательские модели нельзя автоматически загрузить повторно; повторно импортируйте модель и токенизатор.';
+
+  @override
+  String get modelRepairNoSource =>
+      'Файл модели, который не удалось загрузить, был удалён, но источник каталога для повторной загрузки в данный момент недоступен; повторно загрузите рекомендуемую модель в разделе «Управление моделями».';
+
+  @override
+  String modelRepairRedownloaded(Object name) {
+    return 'Обнаружено, что файл модели может быть повреждён или несовместим; $name был автоматически загружен повторно. Пожалуйста, запустите анализ снова.';
+  }
+
+  @override
+  String modelRepairRedownloadFailed(Object name) {
+    return 'Файл модели, который не удалось загрузить, был удалён, но автоматическая повторная загрузка не завершилась; проверьте подключение к сети и повторно загрузите $name в разделе «Управление моделями».';
+  }
+
+  @override
+  String get engineTransformerNoActiveVariant =>
+      'Активная модель Transformer не найдена; загрузите или активируйте её в разделе «Управление моделями»';
+
+  @override
+  String engineTransformerUnsupportedTokenizer(Object tokenizer) {
+    return 'Тип токенизатора активной модели не поддерживается ($tokenizer); переключитесь на модель с поддержкой bert-wordpiece или roberta-bpe';
+  }
+
+  @override
+  String get engineTransformerMissingPaths =>
+      'Путь к модели Transformer или токенизатору отсутствует; загрузите повторно в разделе «Управление моделями»';
+
+  @override
+  String get engineTransformerMissingFiles =>
+      'Файл модели Transformer или токенизатора не существует; загрузите повторно в разделе «Управление моделями»';
+
+  @override
+  String engineTransformerOpsetUnsupported(Object variantId) {
+    return 'Версия ONNX opset не поддерживается (эта версия модели слишком новая; обновите приложение): $variantId';
+  }
+
+  @override
+  String engineTransformerTokenizerCorrupt(Object message) {
+    return 'Формат токенизатора повреждён: $message';
+  }
+
+  @override
+  String get engineTransformerRepairFailed =>
+      'Не удалось загрузить модель или выполнить вывод, автоматическое восстановление не завершилось; повторно загрузите активную модель Transformer и токенизатор в разделе «Управление моделями».';
+
+  @override
+  String get engineAdversarialNoActiveVariant =>
+      'Активная модель обнаружения перефразирования не найдена';
+
+  @override
+  String get engineAdversarialMissingFiles =>
+      'Файл модели или токенизатора не существует; загрузите повторно в разделе «Управление моделями»';
+
+  @override
+  String get engineAdversarialRepairFailed =>
+      'Не удалось загрузить модель или выполнить вывод, автоматическое восстановление не завершилось; повторно загрузите модель обнаружения перефразирования и токенизатор в разделе «Управление моделями».';
+
+  @override
+  String engineReasonNotParticipatedWithError(Object error) {
+    return 'Модель не участвовала в этом голосовании. $error';
+  }
+
+  @override
+  String get patternNotAnalyzable =>
+      'Фрагмент слишком короткий или похож на шум PDF/OCR; оценка ИИ на уровне предложения не выполнялась';
 
   @override
   String engineReasonTransformerLoadFailed(String error) {

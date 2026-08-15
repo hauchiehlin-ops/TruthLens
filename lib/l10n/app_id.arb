@@ -1,17 +1,14 @@
 {
   "@@locale": "id",
-
   "commonCancel": "Batal",
   "commonDelete": "Hapus",
   "commonClose": "Tutup",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Ditulis manusia",
   "verdictLikelyHuman": "Kemungkinan manusia",
   "verdictMixed": "Konten campuran",
   "verdictLikelyAi": "Kemungkinan AI",
   "verdictAi": "Dihasilkan AI",
-
   "inputSubtitle": "Tempel atau ketik teks untuk mendeteksi konten yang dihasilkan AI",
   "inputHint": "Ketik atau tempel teks untuk dianalisis…",
   "inputHistoryTooltip": "Riwayat",
@@ -33,7 +30,6 @@
   "inputActiveModel": "Model: {modelId}",
   "inputNoModel": "Tidak ada model terpasang (hanya analisis statistik/gaya)",
   "inputCharCount": "{count} karakter",
-
   "analysisAppBarTitle": "Menganalisis",
   "analysisEngineTransformer": "Pengklasifikasi Transformer",
   "analysisEngineStatistical": "Analisis Statistik",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "Pertahanan Adversarial",
   "analysisProgressSemantics": "Analisis sedang berjalan, {done} dari {total} mesin selesai",
   "analysisDoneSemantics": "Selesai",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "Hasil awal: probabilitas AI {percent}%",
+  "analysisPreliminaryResultRefining": "Hasil awal: probabilitas AI {percent}% (menyempurnakan…)",
   "engineNameAdversarialFull": "Pertahanan Adversarial (Deteksi Parafrasa)",
-
   "modelNecessityText": "Tanpa mengunduh model deteksi jaringan saraf, TruthLens tetap berfungsi tetapi hanya menggunakan analisis statistik dan gaya penulisan, dengan akurasi dan dukungan multibahasa yang terbatas. Setelah model diunduh, pengklasifikasi Transformer multibahasa akan ikut serta dalam pemungutan suara ensemble, secara signifikan meningkatkan akurasi dan keandalan. Model berjalan di perangkat; setelah diunduh, model tidak mengunggah konten apa pun.",
   "modelPromptTitle": "Disarankan mengunduh model deteksi untuk analisis lengkap",
   "modelPromptDontRemind": "Jangan ingatkan lagi",
   "modelPromptSkip": "Lewati untuk saat ini",
   "modelPromptDownload": "Unduh sekarang",
-
   "onboardingWelcomeTitle": "Selamat datang di TruthLens",
   "onboardingHeadline": "Deteksi konten AI di perangkat",
   "onboardingDetectedDevice": "Perangkat terdeteksi",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "\"Direkomendasikan\" ditandai berdasarkan perangkat keras Anda; Anda juga dapat memilih opsi lain.",
   "onboardingSkipButton": "Putuskan nanti (gunakan analisis statistik/gaya tanpa model)",
   "onboardingSkipHint": "Anda tetap dapat mengunduh kapan saja dari \"Pengaturan → Manajemen Model AI\"; Anda akan diingatkan kembali saat menggunakan analisis yang memerlukan model.",
-
   "modelListCustomImportedLabel": "Model impor kustom:",
   "modelListActiveChip": "Digunakan",
   "modelListRecommendedChip": "Direkomendasikan",
@@ -74,16 +67,15 @@
   "modelListPageButton": "Halaman model",
   "modelListMayExceedMemory": "Mungkin melebihi memori perangkat",
   "modelListFailedPrefix": "Gagal: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "Tidak dapat memuat katalog model",
+  "modelCatalogEmpty": "Tidak ada model yang tersedia",
+  "modelDownloadPathChip": "Jalur unduhan {label}",
+  "modelDownloadPathModelFile": "File model",
+  "modelDownloadPathCopied": "Jalur unduhan disalin",
+  "settingsSaveFailed": "Gagal menyimpan pengaturan: {error}",
   "modelListDeleteConfirmTitle": "Hapus model?",
   "modelListDeleteConfirmBody": "Ini akan menghapus \"{name}\" ({size}). Anda perlu mengunduh ulang untuk menggunakannya lagi.",
   "modelListDeleteCustomConfirmBody": "Ini akan menghapus model impor kustom \"{name}\" ({size}). Anda perlu mengimpor ulang untuk menggunakannya lagi.",
-
   "modelImportAppBarTitle": "Impor Model ONNX Kustom",
   "modelImportStep1Title": "1. Pilih berkas model ONNX",
   "modelImportSelectedFile": "Dipilih: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Silakan pilih berkas Tokenizer",
   "modelImportSuccessSnackbar": "Model berhasil diimpor! Otomatis diatur sebagai model aktif.",
   "modelImportFailedSnackbar": "Impor model gagal. Periksa izin atau log",
-
   "settingsAppBarTitle": "Pengaturan",
   "settingsThresholdTitle": "Ambang kepercayaan penentuan AI",
   "settingsThresholdSubtitle": "Saat ini: {percent}% — meningkatkannya mengurangi positif palsu (teks manusia salah dinilai sebagai AI)",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "Memeriksa penanda gaya yang dapat dijelaskan seperti pembuka berulang, transisi formulaik, dan daftar berlebihan. Tanpa penanda, sinyalnya 0%.",
   "settingsEngineAdversarialHelp": "Mencari teks AI yang diparafrase atau dibersihkan jejaknya. Skor rendah hanya berarti bukti sisa yang lemah, bukan deteksi positif.",
   "settingsEngineWeightsTotalValid": "Total: {total}% — siap disimpan",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Total: {total}% — sesuaikan tepat menjadi 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Simpan bobot",
   "settingsEngineWeightsSaved": "Bobot model AI disimpan di perangkat ini",
   "settingsEngineWeightsRestoreDefaults": "Pulihkan default",
-  "engineReasonDisabledByUser": "Dinonaktifkan di pengaturan; mesin ini tidak ikut pemungutan suara",
+  "engineReasonDisabledByUser": "Pengguna telah mematikan mesin ini di Pengaturan",
   "engineReasonTransformerNoStrongSentence": "{model}: tidak ada dari {total} kalimat yang melewati ambang AI kuat; sinyal lemah terkalibrasi adalah {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "Sinyal AI {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "Sinyal AI adalah probabilitas mesin untuk dokumen ini. Bobot yang diatur mengendalikan pengaruhnya, dan poin kontribusi dialokasikan agar jumlah yang ditampilkan sama persis dengan probabilitas AI keseluruhan. ‘Tidak terdeteksi’ berarti di bawah ambang sinyal kuat 60%, bukan berarti nilainya harus nol.",
   "reportMetricAiSentenceRatio": "Rasio kalimat dengan sinyal AI kuat",
   "reportStrongAiSentenceCount": "{count} dari {total} melewati ambang sinyal kuat 60%",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "Tidak satu pun dari {total} kalimat melewati ambang parafrasa kuat; sinyal lemah yang dikalibrasi adalah {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} dari {total} kalimat melewati ambang parafrasa kuat; sinyal dokumen yang dikalibrasi adalah {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Verifikasi hyperlink & bibliografi",
   "settingsLinkVerificationSubtitle": "Laporan akan terhubung untuk memeriksa apakah URL dan entri bibliografi yang terdeteksi dalam dokumen benar-benar ada (konten yang dihasilkan AI sering menyertakan referensi yang tampak masuk akal tetapi fiktif). Tautan akademis berformat DOI, dan referensi berformat \"penulis-tahun\" tanpa tautan, keduanya diperiksa terhadap registri publik Crossref. Model deteksi AI inti tetap berjalan sepenuhnya di perangkat dan tidak pernah mengirim konten dokumen; koneksi hanya digunakan untuk verifikasi ini dan pemeriksaan pembaruan model, dan dapat dimatikan di sini.",
   "settingsThemeTitle": "Tema tampilan",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "Buka",
   "settingsCustomImportTitle": "Impor & uji model ONNX kustom",
   "settingsCustomImportSubtitle": "Impor model ONNX kustom lokal dan konfigurasikan Tokenizer serta jalankan uji inferensi",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "Impor model kustom belum didukung di versi web. Silakan gunakan versi aplikasi.",
   "settingsModelManagerAppBarTitle": "Manajemen Model AI",
   "settingsImportTooltip": "Impor model ONNX lokal",
   "settingsDeviceLabel": "Perangkat: {summary}",
-
   "historyAppBarTitle": "Riwayat",
   "historyClearAllTooltip": "Bersihkan semua",
   "historySearchHint": "Cari riwayat…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "Belum ada riwayat deteksi",
   "historyEmptySearch": "Tidak ada entri yang cocok dengan \"{query}\"",
   "historyEntrySemantics": "{verdict}, probabilitas AI {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "Laporan Deteksi",
   "reportExportTooltip": "Ekspor laporan",
   "reportHomeTooltip": "Kembali ke beranda",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "Kalibrasi Otomatis Benchmark Model",
   "reportCommunityDiscoveredTag": "Komunitas (HuggingFace)",
   "reportEngineBreakdownTitle": "Rincian mesin",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Pengklasifikasi Transformer",
+  "reportRadarRoleStatistical": "Analisis statistik",
+  "reportRadarRoleStylometry": "Analisis stilometri",
+  "reportRadarRoleAdversarial": "Pertahanan adversarial",
+  "reportRadarAxisTransformer": "Pengklasifikasi kalimat",
+  "reportRadarAxisStatistical": "Keteraturan bahasa",
+  "reportRadarAxisStylometry": "Gaya penulisan",
+  "reportRadarAxisAdversarial": "Pertahanan penulisan ulang",
+  "reportVerdictBadgeTitle": "Putusan keseluruhan",
+  "reportVerdictBadgeProbability": "Probabilitas AI keseluruhan {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "Sebagian besar sinyal mesin condong ke tulisan manusia alami.",
+  "reportVerdictHintLikelyHuman": "Secara keseluruhan condong ke manusia, dengan sedikit ketidakpastian model yang tersisa.",
+  "reportVerdictHintMixed": "Sinyal mesin beragam; baca analisis terperinci bersama hasil ini.",
+  "reportVerdictHintLikelyAi": "Beberapa indikator condong ke AI; tinjau bagian dengan skor tinggi.",
+  "reportVerdictHintAi": "Sinyal keseluruhan sangat condong ke konten yang dihasilkan atau ditulis ulang oleh AI.",
+  "reportSynthesisOverall": "Putusan keseluruhan: {verdict}; probabilitas AI keseluruhan {percent}%.",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "Sinyal tunggal terkuat: {label} ({percent}%), tetapi hasil akhir menggabungkan bobot mesin dan bukan kesimpulan dari satu mesin saja.",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "Kontribusi berbobot terbesar saat ini berasal dari {label} (sekitar {points} poin persentase).",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "\"Tidak ada gaya penulisan AI yang jelas terdeteksi\" hanya berarti mesin gaya tidak menemukan pola kalimat tetap atau pola kata transisi; model lain masih dapat meningkatkan skor keseluruhan melalui keteraturan bahasa, klasifikasi kalimat, atau sinyal penulisan ulang.",
+  "reportSynthesisModelGap": "Jika beberapa mesin tidak berpartisipasi, gunakan dahulu \"Lengkapi model analisis yang direkomendasikan\" di Manajemen Model; jika masih gagal, analisis terperinci akan menyatakan apakah penyebabnya adalah model yang hilang, tokenizer yang tidak didukung, file yang hilang, atau batasan kompatibilitas Web/ONNX Runtime.",
+  "reportEngineRelationshipUnavailable": "{label} tidak berpartisipasi dalam voting berbobot ini, sehingga dimensi ini ditampilkan sebagai 0%. {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "Bobot peran {weight}%, berkontribusi sekitar {points} poin persentase pada skor keseluruhan{variantText}.",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": " (menggabungkan {count} varian model)",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} tidak berpartisipasi dalam voting ini.",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} tidak mengembalikan penjelasan teks tambahan.",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "Solusi: unduh dan aktifkan Transformer multibahasa di Manajemen Model; jika sudah diunduh, unduh ulang model dan tokenizer.",
+  "reportEngineResolutionAdversarial": "Solusi: unduh ulang model deteksi penulisan ulang dan tokenizer di Manajemen Model; di web, perbarui ke versi dengan perbaikan kompatibilitas BigInt dan analisis lagi.",
+  "reportEngineReasonBigInt": "{reason}. Penyebab: ONNX Runtime web mengembalikan tensor BigInt yang tidak dapat dikonversi oleh jembatan versi lama; perbarui ke build yang telah diperbaiki dan analisis lagi.",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}. Solusi: beralih ke model katalog, atau unduh ulang model dan tokenizer.",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}. Solusi: buka Manajemen Model, ketuk \"Lengkapi model analisis yang direkomendasikan\", dan pastikan Transformer multibahasa ditandai aktif.",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "Belum terpasang",
   "reportEngineLoadFailedBadge": "Gagal memuat",
   "reportSentenceAnalysisTitle": "Analisis tingkat kalimat",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "Bibliografi terdeteksi ({count} entri); belum diverifikasi",
   "reportBibDisabledHint": "Konten yang dihasilkan AI sering menyertakan referensi yang tampak masuk akal tetapi fiktif. Anda telah mematikan verifikasi hyperlink di Pengaturan; Anda dapat mengaktifkannya kembali untuk verifikasi otomatis, atau ketuk di bawah untuk pemeriksaan sekali.",
   "reportVerifyNowBibButton": "Verifikasi sekarang (perlu jaringan)",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "Periksa ulang semua kutipan yang belum diverifikasi",
+  "reportBibRecheckOneTooltip": "Periksa ulang kutipan ini",
   "reportBibResultHint": "Dicocokkan dengan registri publik Crossref berdasarkan kemiripan penulis, tahun, dan judul. Bukan jaminan mutlak — saat \"tidak pasti\", harap verifikasi secara manual.",
   "reportBibHighConfidence": "Kepercayaan tinggi: kemungkinan ada{journal}",
   "reportBibJournalSuffix": " (terdaftar dengan {journal})",
   "reportBibNotFound": "Tidak ditemukan kecocokan dekat — mungkin referensi fiktif",
-  "reportBibUncertain": "Kemiripan sedang atau koneksi gagal — tidak pasti, harap verifikasi secara manual",
+  "reportBibUncertain": "Dicurigai: tidak diverifikasi melalui pencocokan registri",
   "reportBibTruncated": "Hanya {max} entri pertama yang diverifikasi (total {count} terdeteksi)",
   "reportNetworkWarningTitle": "Koneksi jaringan lemah",
   "reportNetworkWarningBody": "Aplikasi ini secara default mengasumsikan koneksi jaringan tersedia; analisis keaslian hyperlink dan kutipan keduanya memerlukan akses jaringan untuk menghasilkan hasil. Koneksi tidak dapat dibuat — periksa jaringan Anda dan coba lagi.",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "{total} kalimat · {ai} kemungkinan AI · {human} kemungkinan manusia",
   "pdfTruncationNotice": "Untuk menjaga keterbacaan PDF, hanya {max} kalimat pertama yang ditampilkan (dari total {count}); untuk data lengkap tiap kalimat, gunakan \"{csvLabel}\" atau \"{jsonLabel}\" sebagai gantinya.",
   "pdfSentenceColumnHeader": "Kalimat (dengan pola yang cocok)",
-
   "composerHeadlineAi": "Teks ini kemungkinan besar dihasilkan AI (probabilitas AI {percent}%)",
   "composerHeadlineLikelyAi": "Teks ini cenderung dihasilkan AI; disarankan tinjauan lebih lanjut (probabilitas AI {percent}%)",
   "composerHeadlineMixed": "Teks ini menunjukkan karakteristik campuran manusia dan AI (probabilitas AI {percent}%)",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "Sebagian besar kalimat sangat teratur dalam ritme, pilihan kata, dan penggunaan kata penghubung — jejak umum teks yang dihasilkan AI.",
   "composerNarrativeMixedPattern": "Teks mengandung bagian yang teratur dan yang bervariasi secara alami, menunjukkan draf manusia yang dipoles AI, atau kolaborasi manusia-AI.",
   "composerNarrativeHumanPattern": "Panjang kalimat dan pilihan kata menunjukkan variasi alami dan gaya pribadi, tanpa tanda keteraturan AI yang jelas.",
-
   "engineReasonPplLow": "Perplexity model bahasa rendah ({ppl}) — teks sangat dapat diprediksi, indikator hasil AI",
   "engineReasonPplHigh": "Perplexity model bahasa tinggi ({ppl}), sesuai dengan sifat tak terduga tulisan manusia",
   "engineReasonPplMid": "Perplexity model bahasa sedang ({ppl})",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "Tidak ada pola penulisan AI yang mencolok terdeteksi",
   "engineReasonAdversarialNotInstalled": "Model deteksi parafrasa belum terpasang; tidak ikut serta dalam pemungutan suara ini",
   "engineReasonTransformerNotInstalled": "Tidak ada model terpasang atau model aktif tidak didukung; tidak ikut serta dalam pemungutan suara ini",
+  "modelRepairNoActiveVariant": "Tidak ditemukan model aktif; unduh model yang direkomendasikan di Manajemen Model.",
+  "modelRepairCustomRemoved": "Model kustom yang gagal dimuat telah dihapus. Model kustom tidak dapat diunduh ulang secara otomatis; silakan impor ulang model dan tokenizer.",
+  "modelRepairNoSource": "File model yang gagal dimuat telah dihapus, tetapi saat ini tidak ada sumber katalog yang tersedia untuk mengunduh ulang; silakan unduh ulang model yang direkomendasikan di Manajemen Model.",
+  "modelRepairRedownloaded": "Terdeteksi bahwa file model mungkin rusak atau tidak kompatibel; {name} telah diunduh ulang secara otomatis. Silakan jalankan analisis lagi.",
+  "modelRepairRedownloadFailed": "File model yang gagal dimuat telah dihapus, tetapi pengunduhan ulang otomatis tidak selesai; periksa koneksi jaringan Anda dan unduh ulang {name} di Manajemen Model.",
+  "engineTransformerNoActiveVariant": "Tidak ditemukan model Transformer aktif; unduh atau aktifkan di Manajemen Model",
+  "engineTransformerUnsupportedTokenizer": "Jenis tokenizer model aktif tidak didukung ({tokenizer}); beralihlah ke model yang mendukung bert-wordpiece atau roberta-bpe",
+  "engineTransformerMissingPaths": "Jalur model Transformer atau tokenizer tidak ada; unduh ulang di Manajemen Model",
+  "engineTransformerMissingFiles": "File model Transformer atau tokenizer tidak ada; unduh ulang di Manajemen Model",
+  "engineTransformerOpsetUnsupported": "Versi opset ONNX tidak didukung (versi model ini terlalu baru; perbarui aplikasi): {variantId}",
+  "engineTransformerTokenizerCorrupt": "Format tokenizer rusak: {message}",
+  "engineTransformerRepairFailed": "Pemuatan atau inferensi model gagal, dan perbaikan otomatis tidak selesai; unduh ulang model Transformer aktif dan tokenizer di Manajemen Model.",
+  "engineAdversarialNoActiveVariant": "Tidak ditemukan model deteksi penulisan ulang yang aktif",
+  "engineAdversarialMissingFiles": "File model atau tokenizer tidak ada; unduh ulang di Manajemen Model",
+  "engineAdversarialRepairFailed": "Pemuatan atau inferensi model gagal, dan perbaikan otomatis tidak selesai; unduh ulang model deteksi penulisan ulang dan tokenizer di Manajemen Model.",
+  "engineReasonNotParticipatedWithError": "Model tidak berpartisipasi dalam voting ini. {error}",
+  "patternNotAnalyzable": "Segmen terlalu pendek atau diduga noise PDF/OCR; penilaian AI tingkat kalimat tidak dilakukan",
   "engineReasonTransformerLoadFailed": "Model gagal dimuat dan tidak ikut serta dalam pemungutan suara ini ({error})",
   "engineReasonTransformerResult": "{model} menilai {aiCount} dari {total} kalimat menunjukkan karakteristik AI",
   "engineReasonAdversarialDetected": "Model adversarial mendeteksi kemungkinan jejak AI yang dihilangkan oleh alat parafrasa (mis. QuillBot / Undetectable.ai)",
   "engineReasonAdversarialClean": "Tidak ada jejak penghindaran parafrasa yang jelas terdeteksi",
-  "engineReasonDisabledByUser": "Pengguna telah mematikan mesin ini di Pengaturan",
   "engineReasonGenericNotInstalled": "Model belum terpasang; tidak ikut serta dalam pemungutan suara ini",
   "patternGenericTransition": "kata penghubung generik \"{word}\"",
-
   "helpAppBarTitle": "Panduan Pengguna",
   "helpAboutTitle": "Tentang TruthLens",
   "helpAboutBody": "TruthLens adalah aplikasi deteksi konten lintas platform (iOS / Android / macOS / Windows) yang inferensi AI intinya berjalan sepenuhnya di perangkat. Empat sub-model independen — pengklasifikasi saraf Transformer, analisis statistik, analisis stilometri, dan deteksi parafrasa adversarial — melakukan pemungutan suara bersama untuk menentukan apakah teks dihasilkan AI, dengan alasan yang dapat dijelaskan kalimat demi kalimat: bukan sekadar persentase \"terlihat seperti AI\", tetapi penjelasan \"mengapa\".",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "Impor model kustom: pengguna tingkat lanjut dapat mengimpor model ONNX lokal mereka sendiri untuk menggantikan atau melengkapi mesin deteksi bawaan.",
   "helpWorkflowTitle": "Alur kerja operasional lengkap",
   "helpWorkflowStepLabel": "Langkah {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Unduh & perbarui model",
   "helpWorkflowStep1Body": "Peluncuran pertama memandu Anda memasang model deteksi inti; setelah itu Anda selalu dapat memeriksa, mengunduh, memperbarui, atau menghapus model dari \"Pengaturan → Manajemen Model AI\". Aplikasi secara proaktif memeriksa versi terbaru saat peluncuran, dan menunjukkan lencana pada ikon pengaturan serta entri \"Manajemen Model AI\" jika pembaruan tersedia.",
   "helpWorkflowStep2Title": "Memilih model (tujuan & dampak)",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "Model statistik perplexity (Statistical, bobot 25%)",
   "helpLinkRoleAdversarial": "Model deteksi parafrasa adversarial (Adversarial, bobot 15%)",
   "helpLinkRoleLlm": "LLM penulisan laporan (opsional)",
-
   "privacyAppBarTitle": "Kebijakan Privasi",
   "privacyPlatformTitle": "Kebijakan Privasi {platform}",
   "privacyLastUpdated": "Terakhir diperbarui: {date}",

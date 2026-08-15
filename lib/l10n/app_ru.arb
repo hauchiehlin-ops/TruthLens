@@ -1,17 +1,14 @@
 {
   "@@locale": "ru",
-
   "commonCancel": "Отмена",
   "commonDelete": "Удалить",
   "commonClose": "Закрыть",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Написано человеком",
   "verdictLikelyHuman": "Вероятно, человеком",
   "verdictMixed": "Смешанный контент",
   "verdictLikelyAi": "Вероятно, ИИ",
   "verdictAi": "Сгенерировано ИИ",
-
   "inputSubtitle": "Вставьте или введите текст для обнаружения контента, созданного ИИ",
   "inputHint": "Введите или вставьте текст для анализа…",
   "inputHistoryTooltip": "История",
@@ -33,7 +30,6 @@
   "inputActiveModel": "Модель: {modelId}",
   "inputNoModel": "Модель не установлена (только статистический/стилометрический анализ)",
   "inputCharCount": "{count} символов",
-
   "analysisAppBarTitle": "Анализ",
   "analysisEngineTransformer": "Классификатор Transformer",
   "analysisEngineStatistical": "Статистический анализ",
@@ -41,16 +37,14 @@
   "analysisEngineAdversarial": "Состязательная защита",
   "analysisProgressSemantics": "Анализ выполняется, завершено {done} из {total} модулей",
   "analysisDoneSemantics": "Готово",
-  "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
+  "analysisPreliminaryResult": "Предварительный результат: вероятность ИИ {percent}%",
+  "analysisPreliminaryResultRefining": "Предварительный результат: вероятность ИИ {percent}% (уточняется…)",
   "engineNameAdversarialFull": "Состязательная защита (обнаружение перефразирования)",
-
   "modelNecessityText": "Без загрузки модели обнаружения на основе нейронной сети TruthLens по-прежнему работает, но использует только статистический и стилометрический анализ с ограниченной точностью и поддержкой языков. После загрузки модели многоязычный классификатор Transformer присоединится к ансамблевому голосованию, значительно повышая точность и надёжность. Модель работает на устройстве; после загрузки она не отправляет никакого контента.",
   "modelPromptTitle": "Рекомендуется загрузить модель обнаружения для полного анализа",
   "modelPromptDontRemind": "Больше не напоминать",
   "modelPromptSkip": "Пропустить пока",
   "modelPromptDownload": "Загрузить",
-
   "onboardingWelcomeTitle": "Добро пожаловать в TruthLens",
   "onboardingHeadline": "Обнаружение контента ИИ на устройстве",
   "onboardingDetectedDevice": "Обнаружено устройство",
@@ -58,7 +52,6 @@
   "onboardingRecommendHint": "Отметка «Рекомендуется» основана на вашем оборудовании; вы также можете выбрать другой вариант.",
   "onboardingSkipButton": "Решить позже (использовать статистический/стилометрический анализ без модели)",
   "onboardingSkipHint": "Вы всегда можете загрузить модель позже в разделе «Настройки → Управление моделями ИИ»; вам напомнят снова при использовании анализа, требующего модель.",
-
   "modelListCustomImportedLabel": "Импортированная пользовательская модель:",
   "modelListActiveChip": "Используется",
   "modelListRecommendedChip": "Рекомендуется",
@@ -74,16 +67,15 @@
   "modelListPageButton": "Страница модели",
   "modelListMayExceedMemory": "Может превысить объём памяти устройства",
   "modelListFailedPrefix": "Ошибка: {error}",
-  "modelCatalogLoadFailed": "Could not load model catalog",
-  "modelCatalogEmpty": "No models available",
-  "modelDownloadPathChip": "{label} download path",
-  "modelDownloadPathModelFile": "Model file",
-  "modelDownloadPathCopied": "Download path copied",
-  "settingsSaveFailed": "Failed to save settings: {error}",
+  "modelCatalogLoadFailed": "Не удалось загрузить каталог моделей",
+  "modelCatalogEmpty": "Нет доступных моделей",
+  "modelDownloadPathChip": "Путь загрузки {label}",
+  "modelDownloadPathModelFile": "Файл модели",
+  "modelDownloadPathCopied": "Путь загрузки скопирован",
+  "settingsSaveFailed": "Не удалось сохранить настройки: {error}",
   "modelListDeleteConfirmTitle": "Удалить модель?",
   "modelListDeleteConfirmBody": "Это удалит \"{name}\" ({size}). Вам придётся скачать её снова, чтобы использовать.",
   "modelListDeleteCustomConfirmBody": "Это удалит импортированную пользовательскую модель \"{name}\" ({size}). Вам придётся импортировать её снова, чтобы использовать.",
-
   "modelImportAppBarTitle": "Импорт пользовательской модели ONNX",
   "modelImportStep1Title": "1. Выберите файл модели ONNX",
   "modelImportSelectedFile": "Выбрано: {name}",
@@ -115,7 +107,6 @@
   "modelImportSelectTokenizer": "Выберите файл токенизатора",
   "modelImportSuccessSnackbar": "Модель успешно импортирована! Автоматически установлена как активная.",
   "modelImportFailedSnackbar": "Не удалось импортировать модель. Проверьте разрешения или журналы",
-
   "settingsAppBarTitle": "Настройки",
   "settingsThresholdTitle": "Порог уверенности определения ИИ",
   "settingsThresholdSubtitle": "Текущий: {percent}% — увеличение снижает число ложных срабатываний (текст человека ошибочно принят за ИИ)",
@@ -138,25 +129,85 @@
   "settingsEngineStylometryHelp": "Проверяет объяснимые признаки стиля: повторяющиеся начала, шаблонные переходы и избыток списков. Без признаков сигнал равен 0%.",
   "settingsEngineAdversarialHelp": "Ищет перефразированный текст ИИ или удалённые следы ИИ. Низкий балл означает лишь слабый остаточный сигнал, а не положительное обнаружение.",
   "settingsEngineWeightsTotalValid": "Сумма: {total}% — можно сохранить",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Сумма: {total}% — установите ровно 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Сохранить веса",
   "settingsEngineWeightsSaved": "Веса моделей ИИ сохранены на устройстве",
   "settingsEngineWeightsRestoreDefaults": "Вернуть значения",
-  "engineReasonDisabledByUser": "Отключено в настройках; этот движок не участвовал в голосовании",
+  "engineReasonDisabledByUser": "Пользователь отключил этот модуль в Настройках",
   "engineReasonTransformerNoStrongSentence": "{model}: ни одно из {total} предложений не превысило строгий порог ИИ; откалиброванный слабый сигнал — {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "Сигнал ИИ {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "Сигнал ИИ — это вероятность, назначенная модулем этому документу. Заданный вес определяет его влияние, а баллы вклада распределяются так, чтобы их отображаемая сумма точно совпадала с общей вероятностью ИИ. «Не обнаружено» означает значение ниже порога сильного сигнала 60%, а не обязательно ноль.",
   "reportMetricAiSentenceRatio": "Доля предложений с сильным сигналом ИИ",
   "reportStrongAiSentenceCount": "{count} из {total} превысили порог сильного сигнала 60%",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNoStrongSentence": "Ни одно из {total} предложений не превысило порог сильного сигнала перефразирования; откалиброванный слабый сигнал составляет {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} из {total} предложений превысили порог сильного сигнала перефразирования; откалиброванный сигнал документа составляет {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Проверка гиперссылок и библиографии",
   "settingsLinkVerificationSubtitle": "Отчёт подключится для проверки, действительно ли существуют URL-адреса и библиографические записи, обнаруженные в документе (контент, созданный ИИ, часто содержит правдоподобные, но вымышленные ссылки). Академические ссылки в формате DOI и ссылки в формате «автор—год» без гиперссылки проверяются по публичному реестру Crossref. Основная модель обнаружения ИИ по-прежнему работает полностью на устройстве и никогда не отправляет содержимое документа; подключение используется только для этой проверки и проверки обновлений модели, и его можно отключить здесь.",
   "settingsThemeTitle": "Тема оформления",
@@ -168,11 +219,10 @@
   "settingsOpenButton": "Открыть",
   "settingsCustomImportTitle": "Импорт и тестирование пользовательской модели ONNX",
   "settingsCustomImportSubtitle": "Импортируйте локальную пользовательскую модель ONNX, настройте токенизатор и запустите тестовый вывод",
-  "modelImportWebUnsupported": "Custom model import is not supported on the web version yet. Please use the app version.",
+  "modelImportWebUnsupported": "Импорт пользовательских моделей пока не поддерживается в веб-версии. Используйте версию приложения.",
   "settingsModelManagerAppBarTitle": "Управление моделями ИИ",
   "settingsImportTooltip": "Импортировать локальную модель ONNX",
   "settingsDeviceLabel": "Устройство: {summary}",
-
   "historyAppBarTitle": "История",
   "historyClearAllTooltip": "Очистить всё",
   "historySearchHint": "Поиск по истории…",
@@ -185,7 +235,6 @@
   "historyEmptyDefault": "Пока нет истории обнаружения",
   "historyEmptySearch": "Нет записей, соответствующих \"{query}\"",
   "historyEntrySemantics": "{verdict}, вероятность ИИ {percent}%, {time}. {text}",
-
   "reportAppBarTitle": "Отчёт обнаружения",
   "reportExportTooltip": "Экспортировать отчёт",
   "reportHomeTooltip": "Вернуться на главную",
@@ -204,48 +253,138 @@
   "reportModelCalibrationTitle": "Автокалибровка бенчмарка моделей",
   "reportCommunityDiscoveredTag": "Сообщество (HuggingFace)",
   "reportEngineBreakdownTitle": "Детализация движков",
-  "reportRadarRoleTransformer": "Transformer classifier",
-  "reportRadarRoleStatistical": "Statistical analysis",
-  "reportRadarRoleStylometry": "Stylometry analysis",
-  "reportRadarRoleAdversarial": "Adversarial defense",
-  "reportRadarAxisTransformer": "Sentence classifier",
-  "reportRadarAxisStatistical": "Language regularity",
-  "reportRadarAxisStylometry": "Writing style",
-  "reportRadarAxisAdversarial": "Rewrite defense",
-  "reportVerdictBadgeTitle": "Overall verdict",
-  "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
-  "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
-  "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
-  "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
-  "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
-  "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
-  "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
-  "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
-  "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
-  "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
-  "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
-  "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
-  "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
-  "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
-  "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
-  "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
-  "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
-  "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "reportRadarRoleTransformer": "Классификатор Transformer",
+  "reportRadarRoleStatistical": "Статистический анализ",
+  "reportRadarRoleStylometry": "Стилометрический анализ",
+  "reportRadarRoleAdversarial": "Состязательная защита",
+  "reportRadarAxisTransformer": "Классификатор предложений",
+  "reportRadarAxisStatistical": "Языковая регулярность",
+  "reportRadarAxisStylometry": "Стиль письма",
+  "reportRadarAxisAdversarial": "Защита от перефразирования",
+  "reportVerdictBadgeTitle": "Общий вердикт",
+  "reportVerdictBadgeProbability": "Общая вероятность ИИ {percent}%",
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictHintHuman": "Большинство сигналов движков указывают на естественное человеческое письмо.",
+  "reportVerdictHintLikelyHuman": "В целом текст ближе к человеческому, с небольшой остаточной неопределённостью модели.",
+  "reportVerdictHintMixed": "Сигналы движков неоднозначны; ознакомьтесь с подробным анализом вместе с этим результатом.",
+  "reportVerdictHintLikelyAi": "Несколько показателей указывают на ИИ; проверьте фрагменты с высокой оценкой.",
+  "reportVerdictHintAi": "Общие сигналы сильно указывают на текст, сгенерированный или переписанный ИИ.",
+  "reportSynthesisOverall": "Общий вердикт: {verdict}; общая вероятность ИИ {percent}%.",
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestSignal": "Самый сильный отдельный сигнал: {label} ({percent}%), но итоговый результат объединяет веса всех движков и не является заключением одного движка.",
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStrongestContribution": "Наибольший взвешенный вклад в настоящее время вносит {label} (около {points} процентных пунктов).",
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "reportSynthesisStyleCaveat": "«Явный стиль письма ИИ не обнаружен» означает лишь то, что стилевой движок не нашёл фиксированных структур предложений или переходных слов; другие модели всё же могут повысить общий балл за счёт языковой регулярности, классификации предложений или сигналов перефразирования.",
+  "reportSynthesisModelGap": "Если некоторые движки не участвовали, сначала используйте «Дополнить рекомендуемые модели анализа» в «Управление моделями»; если проблема сохраняется, подробный анализ укажет, вызвана ли она отсутствующей моделью, неподдерживаемым токенизатором, отсутствующим файлом или ограничением совместимости Web/ONNX Runtime.",
+  "reportEngineRelationshipUnavailable": "{label} не участвовал в этом взвешенном голосовании, поэтому данный показатель отображается как 0%. {hint}",
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineRelationshipAvailable": "Вес роли {weight}%, вклад в общий балл — около {points} процентных пунктов{variantText}.",
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineVariantMerged": " (объединено вариантов модели: {count})",
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEngineFallbackUnavailable": "{label} не участвовал в этом голосовании.",
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineFallbackAvailable": "{label} не вернул дополнительного текстового объяснения.",
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineResolutionTransformer": "Решение: загрузите и активируйте многоязычный Transformer в «Управление моделями»; если он уже загружен, загрузите модель и токенизатор повторно.",
+  "reportEngineResolutionAdversarial": "Решение: повторно загрузите модель обнаружения перефразирования и токенизатор в «Управление моделями»; в веб-версии обновитесь до версии с исправлением совместимости BigInt и проанализируйте снова.",
+  "reportEngineReasonBigInt": "{reason}. Причина: веб-ONNX Runtime вернул тензор BigInt, который старый мост не смог преобразовать; обновитесь до исправленной версии и проанализируйте снова.",
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonTokenizer": "{reason}. Решение: переключитесь на модель из каталога или загрузите модель и токенизатор повторно.",
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "reportEngineReasonNoActiveTransformer": "{reason}. Решение: откройте «Управление моделями», нажмите «Дополнить рекомендуемые модели анализа» и убедитесь, что многоязычный Transformer отмечен как активный.",
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotInstalled": "Не установлено",
   "reportEngineLoadFailedBadge": "Ошибка загрузки",
   "reportSentenceAnalysisTitle": "Анализ на уровне предложений",
@@ -269,13 +408,13 @@
   "reportBibDetectedPending": "Обнаружена библиография ({count} записей); ещё не проверено",
   "reportBibDisabledHint": "Контент, созданный ИИ, часто содержит правдоподобные, но вымышленные ссылки. Вы отключили проверку гиперссылок в Настройках; вы можете снова включить её для автоматической проверки или нажать ниже для однократной проверки.",
   "reportVerifyNowBibButton": "Проверить сейчас (требуется сеть)",
-  "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
-  "reportBibRecheckOneTooltip": "Recheck this citation",
+  "reportBibRecheckAllUnreliableButton": "Перепроверить все неподтверждённые цитаты",
+  "reportBibRecheckOneTooltip": "Перепроверить эту цитату",
   "reportBibResultHint": "Сопоставлено с публичным реестром Crossref по сходству автора, года и названия. Не является абсолютной гарантией — при статусе «неопределённо» проверьте вручную.",
   "reportBibHighConfidence": "Высокая уверенность: вероятно, существует{journal}",
   "reportBibJournalSuffix": " (зарегистрировано в {journal})",
   "reportBibNotFound": "Близкое совпадение не найдено — возможно, вымышленная ссылка",
-  "reportBibUncertain": "Suspect: not verified by registry match",
+  "reportBibUncertain": "Подозрительно: не подтверждено сопоставлением с реестром",
   "reportBibTruncated": "Проверены только первые {max} записей (всего обнаружено {count})",
   "reportNetworkWarningTitle": "Слабое сетевое соединение",
   "reportNetworkWarningBody": "Это приложение по умолчанию предполагает наличие сетевого соединения; для анализа подлинности гиперссылок и цитирования требуется доступ к сети, чтобы получить результаты. Не удалось установить соединение — проверьте вашу сеть и попробуйте снова.",
@@ -291,7 +430,6 @@
   "pdfSentenceCounts": "{total} предложений · {ai} вероятно ИИ · {human} вероятно человек",
   "pdfTruncationNotice": "Для сохранения читаемости PDF отображаются только первые {max} предложений (из {count} всего); для полных данных по каждому предложению используйте вместо этого \"{csvLabel}\" или \"{jsonLabel}\".",
   "pdfSentenceColumnHeader": "Предложение (с совпадающими шаблонами)",
-
   "composerHeadlineAi": "Этот текст, скорее всего, создан ИИ (вероятность ИИ {percent}%)",
   "composerHeadlineLikelyAi": "Этот текст, вероятно, создан ИИ; рекомендуется дополнительная проверка (вероятность ИИ {percent}%)",
   "composerHeadlineMixed": "Этот текст демонстрирует смешанные характеристики человека и ИИ (вероятность ИИ {percent}%)",
@@ -309,7 +447,6 @@
   "composerNarrativeAiPattern": "Большинство предложений очень регулярны по ритму, выбору слов и использованию связок — обычный след текста, созданного ИИ.",
   "composerNarrativeMixedPattern": "Текст содержит как регулярные, так и естественно вариативные части, что указывает на человеческий черновик, отшлифованный ИИ, или на сотрудничество человека с ИИ.",
   "composerNarrativeHumanPattern": "Длина предложений и выбор слов демонстрируют естественную вариативность и личный стиль, без явных признаков регулярности ИИ.",
-
   "engineReasonPplLow": "Низкая перплексия языковой модели ({ppl}) — текст очень предсказуем, индикатор генерации ИИ",
   "engineReasonPplHigh": "Высокая перплексия языковой модели ({ppl}), что соответствует непредсказуемой природе человеческого письма",
   "engineReasonPplMid": "Умеренная перплексия языковой модели ({ppl})",
@@ -323,14 +460,29 @@
   "engineReasonNoStyleMarkers": "Заметных шаблонов письма ИИ не обнаружено",
   "engineReasonAdversarialNotInstalled": "Модель обнаружения перефразирования не установлена; не участвовала в этом голосовании",
   "engineReasonTransformerNotInstalled": "Модель не установлена или активная модель не поддерживается; не участвовала в этом голосовании",
+  "modelRepairNoActiveVariant": "Активная модель не найдена; загрузите рекомендуемую модель в разделе «Управление моделями».",
+  "modelRepairCustomRemoved": "Пользовательская модель, которую не удалось загрузить, была удалена. Пользовательские модели нельзя автоматически загрузить повторно; повторно импортируйте модель и токенизатор.",
+  "modelRepairNoSource": "Файл модели, который не удалось загрузить, был удалён, но источник каталога для повторной загрузки в данный момент недоступен; повторно загрузите рекомендуемую модель в разделе «Управление моделями».",
+  "modelRepairRedownloaded": "Обнаружено, что файл модели может быть повреждён или несовместим; {name} был автоматически загружен повторно. Пожалуйста, запустите анализ снова.",
+  "modelRepairRedownloadFailed": "Файл модели, который не удалось загрузить, был удалён, но автоматическая повторная загрузка не завершилась; проверьте подключение к сети и повторно загрузите {name} в разделе «Управление моделями».",
+  "engineTransformerNoActiveVariant": "Активная модель Transformer не найдена; загрузите или активируйте её в разделе «Управление моделями»",
+  "engineTransformerUnsupportedTokenizer": "Тип токенизатора активной модели не поддерживается ({tokenizer}); переключитесь на модель с поддержкой bert-wordpiece или roberta-bpe",
+  "engineTransformerMissingPaths": "Путь к модели Transformer или токенизатору отсутствует; загрузите повторно в разделе «Управление моделями»",
+  "engineTransformerMissingFiles": "Файл модели Transformer или токенизатора не существует; загрузите повторно в разделе «Управление моделями»",
+  "engineTransformerOpsetUnsupported": "Версия ONNX opset не поддерживается (эта версия модели слишком новая; обновите приложение): {variantId}",
+  "engineTransformerTokenizerCorrupt": "Формат токенизатора повреждён: {message}",
+  "engineTransformerRepairFailed": "Не удалось загрузить модель или выполнить вывод, автоматическое восстановление не завершилось; повторно загрузите активную модель Transformer и токенизатор в разделе «Управление моделями».",
+  "engineAdversarialNoActiveVariant": "Активная модель обнаружения перефразирования не найдена",
+  "engineAdversarialMissingFiles": "Файл модели или токенизатора не существует; загрузите повторно в разделе «Управление моделями»",
+  "engineAdversarialRepairFailed": "Не удалось загрузить модель или выполнить вывод, автоматическое восстановление не завершилось; повторно загрузите модель обнаружения перефразирования и токенизатор в разделе «Управление моделями».",
+  "engineReasonNotParticipatedWithError": "Модель не участвовала в этом голосовании. {error}",
+  "patternNotAnalyzable": "Фрагмент слишком короткий или похож на шум PDF/OCR; оценка ИИ на уровне предложения не выполнялась",
   "engineReasonTransformerLoadFailed": "Не удалось загрузить модель, она не участвовала в этом голосовании ({error})",
   "engineReasonTransformerResult": "{model} оценила, что {aiCount} из {total} предложений демонстрируют характеристики ИИ",
   "engineReasonAdversarialDetected": "Состязательная модель обнаружила возможные следы ИИ, удалённые с помощью инструмента перефразирования (например, QuillBot / Undetectable.ai)",
   "engineReasonAdversarialClean": "Явных следов обхода через перефразирование не обнаружено",
-  "engineReasonDisabledByUser": "Пользователь отключил этот модуль в Настройках",
   "engineReasonGenericNotInstalled": "Модель не установлена; не участвовала в этом голосовании",
   "patternGenericTransition": "общая связка «{word}»",
-
   "helpAppBarTitle": "Руководство пользователя",
   "helpAboutTitle": "О TruthLens",
   "helpAboutBody": "TruthLens — это кроссплатформенное приложение (iOS / Android / macOS / Windows) для обнаружения контента, основной вывод ИИ которого полностью выполняется на устройстве. Четыре независимых подмодели — нейронный классификатор Transformer, статистический анализ, стилометрический анализ и обнаружение состязательного перефразирования — совместно голосуют, чтобы определить, создан ли текст ИИ, с объяснимыми причинами для каждого предложения: не просто процент «похоже на ИИ», а объяснение «почему».",
@@ -360,7 +512,13 @@
   "helpAdvantage4": "Импорт пользовательских моделей: продвинутые пользователи могут импортировать собственные локальные модели ONNX для замены или дополнения встроенных модулей обнаружения.",
   "helpWorkflowTitle": "Полный рабочий процесс",
   "helpWorkflowStepLabel": "Шаг {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Загрузка и обновление моделей",
   "helpWorkflowStep1Body": "При первом запуске вам предлагается установить основную модель обнаружения; после этого вы всегда можете проверить, загрузить, обновить или удалить модели в разделе «Настройки → Управление моделями ИИ». Приложение проактивно проверяет наличие последних версий при запуске и показывает значок на значке настроек и пункте «Управление моделями ИИ», если доступно обновление.",
   "helpWorkflowStep2Title": "Выбор моделей (назначение и влияние)",
@@ -412,7 +570,6 @@
   "helpLinkRoleStatistical": "Статистическая модель перплексии (Statistical, вес 25%)",
   "helpLinkRoleAdversarial": "Модель обнаружения состязательного перефразирования (Adversarial, вес 15%)",
   "helpLinkRoleLlm": "LLM для составления отчётов (опционально)",
-
   "privacyAppBarTitle": "Политика конфиденциальности",
   "privacyPlatformTitle": "Политика конфиденциальности {platform}",
   "privacyLastUpdated": "Последнее обновление: {date}",
