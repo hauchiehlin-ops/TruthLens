@@ -14,6 +14,7 @@ import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/threshold_setting_title.dart';
+import '../../shared/widgets/workspace_navigation.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/model_import_screen.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
@@ -250,32 +251,9 @@ class _InputScreenState extends State<InputScreen> {
       key: _scaffoldKey,
       endDrawer: isWideScreen ? null : const InputSettingsDrawer(),
       appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('TruthLens'),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: scheme.primary.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Text(
-                AppVersion.displayVersion,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: scheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-          ],
-        ),
+        title: const AppIdentityTitle(),
         actions: [
+          const WorkspaceModeMenuButton(activeMode: WorkspaceMode.original),
           if (isWideScreen) _languageMenu(context),
           if (!isWideScreen)
             IconButton(
@@ -624,6 +602,28 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
+          ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.dashboard_customize_outlined),
+            title: Text(l10n.workspaceModeSectionTitle),
+            subtitle: Text(l10n.workspaceModeSectionSubtitle),
+            trailing: DropdownButton<WorkspaceMode>(
+              value: prefs.workspaceMode,
+              items: [
+                for (final mode in WorkspaceMode.values)
+                  DropdownMenuItem(
+                    value: mode,
+                    child: Text(workspaceModeLabel(mode, l10n)),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) prefs.setWorkspaceMode(value);
+              },
+            ),
+          ),
+          const Divider(),
+
           // 信心度閾值
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -820,28 +820,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
-          ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.dashboard_customize_outlined),
-            title: Text(l10n.workspaceModeSectionTitle),
-            subtitle: Text(l10n.workspaceModeSectionSubtitle),
-            trailing: DropdownButton<WorkspaceMode>(
-              value: prefs.workspaceMode,
-              items: [
-                for (final mode in WorkspaceMode.values)
-                  DropdownMenuItem(
-                    value: mode,
-                    child: Text(workspaceModeLabel(mode, l10n)),
-                  ),
-              ],
-              onChanged: (value) {
-                if (value != null) prefs.setWorkspaceMode(value);
-              },
-            ),
-          ),
-          const Divider(),
-
           // 模型管理
           ListTile(
             dense: true,
@@ -1021,6 +999,25 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(height: 1),
             ListTile(
+              leading: const Icon(Icons.dashboard_customize_outlined),
+              title: Text(l10n.workspaceModeSectionTitle),
+              subtitle: Text(l10n.workspaceModeSectionSubtitle),
+              trailing: DropdownButton<WorkspaceMode>(
+                value: prefs.workspaceMode,
+                items: [
+                  for (final mode in WorkspaceMode.values)
+                    DropdownMenuItem(
+                      value: mode,
+                      child: Text(workspaceModeLabel(mode, l10n)),
+                    ),
+                ],
+                onChanged: (value) {
+                  if (value != null) prefs.setWorkspaceMode(value);
+                },
+              ),
+            ),
+            const Divider(),
+            ListTile(
               leading: const Icon(Icons.translate),
               title: Text(l10n.settingsLanguageTitle),
               subtitle: Text(l10n.settingsLanguageSubtitle),
@@ -1051,25 +1048,6 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
                   MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
                 );
               },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.dashboard_customize_outlined),
-              title: Text(l10n.workspaceModeSectionTitle),
-              subtitle: Text(l10n.workspaceModeSectionSubtitle),
-              trailing: DropdownButton<WorkspaceMode>(
-                value: prefs.workspaceMode,
-                items: [
-                  for (final mode in WorkspaceMode.values)
-                    DropdownMenuItem(
-                      value: mode,
-                      child: Text(workspaceModeLabel(mode, l10n)),
-                    ),
-                ],
-                onChanged: (value) {
-                  if (value != null) prefs.setWorkspaceMode(value);
-                },
-              ),
             ),
             const Divider(),
             ListTile(

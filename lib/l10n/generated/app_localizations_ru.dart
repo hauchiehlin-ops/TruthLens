@@ -1913,7 +1913,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось подключиться к локальному OCR-серверу. Проверьте руководство, брандмауэр и URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Макет ситуационного центра';
+  String get workspaceModeSectionTitle => 'Режим рабочего пространства';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1935,7 +1935,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get workspaceModeEvidence => 'Полотно доказательств';
 
   @override
-  String get workspaceModeTooltip => 'Сменить макет ситуационного центра';
+  String get workspaceModeTooltip => 'Сменить режим рабочего пространства';
 
   @override
   String get workspaceStageImport => 'Импорт';
@@ -1972,6 +1972,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Анализ завершён';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return 'Завершено модулей: $done/$total · Прошло $seconds с · Выполняется: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'Анализ продолжается, интерфейс отвечает. За последние $seconds с ни один модуль не завершился; большим документам или локальным моделям может требоваться больше времени.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'Анализ неожиданно остановился. Повторите попытку или проверьте настройки модели.';
 
   @override
   String get workspaceNewAnalysis => 'Новый анализ';

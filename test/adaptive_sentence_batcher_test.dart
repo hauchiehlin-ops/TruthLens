@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/detection/adaptive_sentence_batcher.dart';
 
@@ -80,5 +82,16 @@ void main() {
 
     expect(calls, 1);
     expect(scores, [0.04, 0.05]);
+  });
+
+  test('yields to the event loop before native inference', () async {
+    final batcher = AdaptiveSentenceBatcher(initialBatchSize: 1);
+    var eventLoopAdvanced = false;
+    Timer.run(() => eventLoopAdvanced = true);
+
+    await batcher.classify(const ['sentence'], (batch) async {
+      expect(eventLoopAdvanced, isTrue);
+      return const [0.5];
+    });
   });
 }

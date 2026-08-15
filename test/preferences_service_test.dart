@@ -113,12 +113,12 @@ void main() {
     );
   });
 
-  test('workspace mode defaults to original and persists locally', () async {
+  test('workspace mode defaults to automatic and persists locally', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = PreferencesService();
     await preferences.load();
 
-    expect(preferences.workspaceMode, WorkspaceMode.original);
+    expect(preferences.workspaceMode, WorkspaceMode.automatic);
     await preferences.setWorkspaceMode(WorkspaceMode.evidenceCanvas);
 
     final reloaded = PreferencesService();
@@ -126,12 +126,26 @@ void main() {
     expect(reloaded.workspaceMode, WorkspaceMode.evidenceCanvas);
   });
 
-  test('unknown saved workspace mode falls back to original', () async {
+  test('unknown saved workspace mode falls back to automatic', () async {
     SharedPreferences.setMockInitialValues({'workspace_mode': 'retiredMode'});
     final preferences = PreferencesService();
 
     await preferences.load();
 
-    expect(preferences.workspaceMode, WorkspaceMode.original);
+    expect(preferences.workspaceMode, WorkspaceMode.automatic);
+  });
+
+  test('workspace mode notifies the UI before persistence completes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = PreferencesService();
+    await preferences.load();
+    var notifications = 0;
+    preferences.addListener(() => notifications++);
+
+    final persistence = preferences.setWorkspaceMode(WorkspaceMode.commandGrid);
+
+    expect(preferences.workspaceMode, WorkspaceMode.commandGrid);
+    expect(notifications, 1);
+    await persistence;
   });
 }

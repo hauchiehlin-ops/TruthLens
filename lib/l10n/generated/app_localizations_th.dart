@@ -1904,7 +1904,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ OCR ในเครื่อง โปรดตรวจสอบคู่มือ ไฟร์วอลล์ และ URL';
 
   @override
-  String get workspaceModeSectionTitle => 'รูปแบบศูนย์สถานการณ์';
+  String get workspaceModeSectionTitle => 'โหมดพื้นที่ทำงาน';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1926,7 +1926,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get workspaceModeEvidence => 'ผืนผ้าใบหลักฐาน';
 
   @override
-  String get workspaceModeTooltip => 'สลับรูปแบบศูนย์สถานการณ์';
+  String get workspaceModeTooltip => 'สลับโหมดพื้นที่ทำงาน';
 
   @override
   String get workspaceStageImport => 'นำเข้า';
@@ -1963,6 +1963,25 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'วิเคราะห์เสร็จแล้ว';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return 'เสร็จแล้ว $done/$total โมดูล · ผ่านไป $seconds วินาที · กำลังทำงาน: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'การวิเคราะห์ยังดำเนินอยู่และหน้าจอยังตอบสนอง ไม่มีโมดูลเสร็จในช่วง $seconds วินาทีที่ผ่านมา เอกสารขนาดใหญ่หรือโมเดลภายในเครื่องอาจใช้เวลานานขึ้น';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'การวิเคราะห์หยุดโดยไม่คาดคิด โปรดลองอีกครั้งหรือตรวจสอบการตั้งค่าโมเดล';
 
   @override
   String get workspaceNewAnalysis => 'การวิเคราะห์ใหม่';

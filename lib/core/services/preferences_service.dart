@@ -49,7 +49,7 @@ class PreferencesService extends ChangeNotifier {
   bool linkVerificationEnabled = true;
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
-  WorkspaceMode workspaceMode = WorkspaceMode.original;
+  WorkspaceMode workspaceMode = WorkspaceMode.automatic;
   Set<String> _disabledEngines = {};
   Map<String, double> _engineWeights = Map.of(defaultEngineWeights);
 
@@ -80,7 +80,7 @@ class PreferencesService extends ChangeNotifier {
     locale = _decodeLocale(_prefs!.getString(_kLocale));
     workspaceMode = WorkspaceMode.values.firstWhere(
       (mode) => mode.name == _prefs!.getString(_kWorkspaceMode),
-      orElse: () => WorkspaceMode.original,
+      orElse: () => WorkspaceMode.automatic,
     );
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
     final loadedWeights = <String, double>{
@@ -142,9 +142,10 @@ class PreferencesService extends ChangeNotifier {
   }
 
   Future<void> setWorkspaceMode(WorkspaceMode value) async {
+    if (workspaceMode == value) return;
     workspaceMode = value;
-    await _prefs?.setString(_kWorkspaceMode, value.name);
     notifyListeners();
+    await _prefs?.setString(_kWorkspaceMode, value.name);
   }
 
   Future<void> setLinkVerificationEnabled(bool value) async {

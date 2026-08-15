@@ -47,9 +47,17 @@ void main() {
     await tester.pump();
 
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('AI Model Management'), findsOneWidget);
+    expect(find.text('Workspace mode'), findsOneWidget);
+    expect(find.text('Automatic'), findsOneWidget);
 
     final scrollable = find.byType(Scrollable).first;
+    await tester.dragUntilVisible(
+      find.text('AI Model Management'),
+      scrollable,
+      const Offset(0, -300),
+    );
+    expect(find.text('AI Model Management'), findsOneWidget);
+
     await tester.dragUntilVisible(
       find.text('Custom ONNX model import & test'),
       scrollable,

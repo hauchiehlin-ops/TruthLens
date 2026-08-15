@@ -1923,7 +1923,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo acceder al servidor OCR local. Revisa la guía, el cortafuegos y la URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Diseño del centro de situación';
+  String get workspaceModeSectionTitle => 'Modo de espacio de trabajo';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1945,7 +1945,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get workspaceModeEvidence => 'Lienzo de evidencia';
 
   @override
-  String get workspaceModeTooltip => 'Cambiar diseño del centro de situación';
+  String get workspaceModeTooltip => 'Cambiar modo de espacio de trabajo';
 
   @override
   String get workspaceStageImport => 'Importar';
@@ -1982,6 +1982,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Análisis completado';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total módulos completados · ${seconds}s transcurridos · En ejecución: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'El análisis continúa y la interfaz responde. Ningún módulo terminó en los últimos ${seconds}s; los documentos grandes o modelos locales pueden tardar más.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'El análisis se detuvo inesperadamente. Inténtalo de nuevo o revisa la configuración del modelo.';
 
   @override
   String get workspaceNewAnalysis => 'Nuevo análisis';

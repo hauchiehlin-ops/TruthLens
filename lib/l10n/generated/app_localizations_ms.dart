@@ -1908,7 +1908,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Pelayan OCR setempat tidak dapat dicapai. Semak panduan, tembok api dan URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Susun atur pusat situasi';
+  String get workspaceModeSectionTitle => 'Mod ruang kerja';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1930,7 +1930,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get workspaceModeEvidence => 'Kanvas bukti';
 
   @override
-  String get workspaceModeTooltip => 'Tukar susun atur pusat situasi';
+  String get workspaceModeTooltip => 'Tukar mod ruang kerja';
 
   @override
   String get workspaceStageImport => 'Import';
@@ -1967,6 +1967,25 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Analisis selesai';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total modul selesai · ${seconds}s berlalu · Sedang berjalan: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'Analisis masih berjalan dan antara muka kekal responsif. Tiada modul selesai dalam ${seconds}s terakhir; dokumen besar atau model setempat mungkin mengambil masa lebih lama.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'Analisis terhenti tanpa dijangka. Cuba lagi atau semak tetapan model.';
 
   @override
   String get workspaceNewAnalysis => 'Analisis baharu';

@@ -1909,7 +1909,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Server OCR lokal tidak dapat dijangkau. Periksa panduan, firewall, dan URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Tata letak pusat situasi';
+  String get workspaceModeSectionTitle => 'Mode ruang kerja';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1931,7 +1931,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get workspaceModeEvidence => 'Kanvas bukti';
 
   @override
-  String get workspaceModeTooltip => 'Ganti tata letak pusat situasi';
+  String get workspaceModeTooltip => 'Ganti mode ruang kerja';
 
   @override
   String get workspaceStageImport => 'Impor';
@@ -1968,6 +1968,25 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Analisis selesai';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total modul selesai · $seconds dtk berlalu · Berjalan: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'Analisis masih berjalan dan antarmuka tetap responsif. Belum ada modul selesai selama $seconds dtk; dokumen besar atau model lokal dapat memerlukan waktu lebih lama.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'Analisis berhenti secara tak terduga. Coba lagi atau periksa pengaturan model.';
 
   @override
   String get workspaceNewAnalysis => 'Analisis baru';

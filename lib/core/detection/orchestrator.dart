@@ -78,6 +78,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     double threshold = 0.6,
     PreferencesService? prefs,
     AppLocalizations? l10n,
+    void Function(String engineId)? onEngineStarted,
     void Function(String engineId)? onEngineDone,
     void Function(EngineScore score)? onEngineScore,
   }) async {
@@ -87,6 +88,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
 
     final futures = engines.map((engine) async {
       final role = _roleOf(engine.id);
+      onEngineStarted?.call(role);
+      await Future<void>.delayed(Duration.zero);
       final enabled = prefs?.isEngineEnabled(role) ?? true;
       final configuredWeight =
           prefs?.engineWeight(role) ?? engine.defaultWeight;

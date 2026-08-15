@@ -3121,7 +3121,7 @@ abstract class AppLocalizations {
   /// No description provided for @workspaceModeSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Situation center layout'**
+  /// **'Workspace mode'**
   String get workspaceModeSectionTitle;
 
   /// No description provided for @workspaceModeSectionSubtitle.
@@ -3163,7 +3163,7 @@ abstract class AppLocalizations {
   /// No description provided for @workspaceModeTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Switch situation center layout'**
+  /// **'Switch workspace mode'**
   String get workspaceModeTooltip;
 
   /// No description provided for @workspaceStageImport.
@@ -3237,6 +3237,29 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Analysis complete'**
   String get workspaceAnalysisComplete;
+
+  /// No description provided for @workspaceAnalysisActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{total} modules complete · {seconds}s elapsed · Running: {engines}'**
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  );
+
+  /// No description provided for @workspaceAnalysisSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis is still running and the interface is responsive. No module completed in the last {seconds}s; large documents or local models may take longer.'**
+  String workspaceAnalysisSlow(Object seconds);
+
+  /// No description provided for @workspaceAnalysisFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis stopped unexpectedly. Please retry or check the model settings.'**
+  String get workspaceAnalysisFailed;
 
   /// No description provided for @workspaceNewAnalysis.
   ///

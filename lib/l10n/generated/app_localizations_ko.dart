@@ -1864,7 +1864,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '로컬 OCR 서버에 연결할 수 없습니다. 안내, 방화벽, URL을 확인하세요.';
 
   @override
-  String get workspaceModeSectionTitle => '상황 센터 레이아웃';
+  String get workspaceModeSectionTitle => '작업 공간 모드';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1886,7 +1886,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get workspaceModeEvidence => '근거 캔버스';
 
   @override
-  String get workspaceModeTooltip => '상황 센터 레이아웃 전환';
+  String get workspaceModeTooltip => '작업 공간 모드 전환';
 
   @override
   String get workspaceStageImport => '가져오기';
@@ -1923,6 +1923,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => '분석 완료';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total개 모듈 완료 · $seconds초 경과 · 실행 중: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return '분석이 계속 진행 중이며 화면은 응답하고 있습니다. 지난 $seconds초 동안 완료된 모듈이 없습니다. 큰 문서나 로컬 모델은 시간이 더 걸릴 수 있습니다.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      '분석이 예기치 않게 중지되었습니다. 다시 시도하거나 모델 설정을 확인하세요.';
 
   @override
   String get workspaceNewAnalysis => '새 분석';

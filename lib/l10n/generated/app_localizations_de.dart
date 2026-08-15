@@ -1921,7 +1921,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Der lokale OCR-Server ist nicht erreichbar. Prüfen Sie Anleitung, Firewall und URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Lagezentrum-Layout';
+  String get workspaceModeSectionTitle => 'Arbeitsbereichsmodus';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1943,7 +1943,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workspaceModeEvidence => 'Beweisfläche';
 
   @override
-  String get workspaceModeTooltip => 'Lagezentrum-Layout wechseln';
+  String get workspaceModeTooltip => 'Arbeitsbereichsmodus wechseln';
 
   @override
   String get workspaceStageImport => 'Import';
@@ -1980,6 +1980,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Analyse abgeschlossen';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total Module abgeschlossen · ${seconds}s vergangen · Aktiv: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'Die Analyse läuft weiter und die Oberfläche reagiert. Seit ${seconds}s wurde kein Modul abgeschlossen; große Dokumente oder lokale Modelle können länger dauern.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'Die Analyse wurde unerwartet beendet. Bitte erneut versuchen oder die Modelleinstellungen prüfen.';
 
   @override
   String get workspaceNewAnalysis => 'Neue Analyse';

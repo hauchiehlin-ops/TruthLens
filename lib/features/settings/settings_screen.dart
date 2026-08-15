@@ -30,6 +30,25 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
+            leading: const Icon(Icons.dashboard_customize_outlined),
+            title: Text(l10n.workspaceModeSectionTitle),
+            subtitle: Text(l10n.workspaceModeSectionSubtitle),
+            trailing: DropdownButton<WorkspaceMode>(
+              value: prefs.workspaceMode,
+              items: [
+                for (final mode in WorkspaceMode.values)
+                  DropdownMenuItem(
+                    value: mode,
+                    child: Text(_workspaceModeLabel(mode, l10n)),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) prefs.setWorkspaceMode(value);
+              },
+            ),
+          ),
+          const Divider(),
+          ListTile(
             title: const ThresholdSettingTitle(),
             subtitle: Text(
               l10n.settingsThresholdSubtitle(
@@ -112,25 +131,6 @@ class SettingsScreen extends StatelessWidget {
               ],
               selected: {prefs.themeMode},
               onSelectionChanged: (s) => prefs.setThemeMode(s.first),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.dashboard_customize_outlined),
-            title: Text(l10n.workspaceModeSectionTitle),
-            subtitle: Text(l10n.workspaceModeSectionSubtitle),
-            trailing: DropdownButton<WorkspaceMode>(
-              value: prefs.workspaceMode,
-              items: [
-                for (final mode in WorkspaceMode.values)
-                  DropdownMenuItem(
-                    value: mode,
-                    child: Text(_workspaceModeLabel(mode, l10n)),
-                  ),
-              ],
-              onChanged: (value) {
-                if (value != null) prefs.setWorkspaceMode(value);
-              },
             ),
           ),
           const Divider(),

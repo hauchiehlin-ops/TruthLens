@@ -78,6 +78,9 @@ class AdaptiveSentenceBatcher {
 
       List<double> scores;
       try {
+        // Native ONNX inference is synchronous. Yield between batches so the
+        // UI can repaint progress and process workspace-mode changes.
+        await Future<void>.delayed(Duration.zero);
         scores = await runBatch(batch);
       } catch (_) {
         if (size == 1) rethrow;

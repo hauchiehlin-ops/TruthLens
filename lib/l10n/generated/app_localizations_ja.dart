@@ -1858,7 +1858,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'ローカルOCRサーバーに接続できません。ガイド、ファイアウォール、URLを確認してください。';
 
   @override
-  String get workspaceModeSectionTitle => '状況センターのレイアウト';
+  String get workspaceModeSectionTitle => 'ワークスペースモード';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1880,7 +1880,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceModeEvidence => '証拠キャンバス';
 
   @override
-  String get workspaceModeTooltip => '状況センターのレイアウトを切り替え';
+  String get workspaceModeTooltip => 'ワークスペースモードを切り替え';
 
   @override
   String get workspaceStageImport => '取込';
@@ -1917,6 +1917,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => '分析完了';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total モジュール完了 · 経過 $seconds 秒 · 実行中：$engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return '分析は継続中で、画面は応答しています。$seconds 秒間モジュールの完了がありません。大きな文書やローカルモデルには時間がかかる場合があります。';
+  }
+
+  @override
+  String get workspaceAnalysisFailed => '分析が予期せず停止しました。再試行するかモデル設定を確認してください。';
 
   @override
   String get workspaceNewAnalysis => '新しい分析';

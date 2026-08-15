@@ -1903,7 +1903,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not reach the local OCR server. Open the setup guide and check the installer, firewall, and URL.';
 
   @override
-  String get workspaceModeSectionTitle => 'Situation center layout';
+  String get workspaceModeSectionTitle => 'Workspace mode';
 
   @override
   String get workspaceModeSectionSubtitle =>
@@ -1925,7 +1925,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workspaceModeEvidence => 'Evidence canvas';
 
   @override
-  String get workspaceModeTooltip => 'Switch situation center layout';
+  String get workspaceModeTooltip => 'Switch workspace mode';
 
   @override
   String get workspaceStageImport => 'Import';
@@ -1962,6 +1962,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => 'Analysis complete';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '$done/$total modules complete · ${seconds}s elapsed · Running: $engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return 'Analysis is still running and the interface is responsive. No module completed in the last ${seconds}s; large documents or local models may take longer.';
+  }
+
+  @override
+  String get workspaceAnalysisFailed =>
+      'Analysis stopped unexpectedly. Please retry or check the model settings.';
 
   @override
   String get workspaceNewAnalysis => 'New analysis';

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +19,7 @@ import '../../core/services/preferences_service.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/workspace_navigation.dart';
 import '../input/input_screen.dart'
     show InputSettingsDrawer, kSupportedLanguageOptions;
 import '../onboarding/model_prompt.dart';
@@ -42,6 +46,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
   final _done = <String>{};
+  final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
 
   String _sourceFileName = '';
@@ -49,6 +54,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   DetectionResult? _result;
   int _selectedEvidence = 0;
   int _analysisRun = 0;
+  Timer? _analysisTicker;
+  DateTime? _analysisStartedAt;
+  DateTime? _lastProgressAt;
+  int _elapsedSeconds = 0;
 
   bool get _isAnalyzing => _phase == _WorkspacePhase.analyzing;
 
@@ -75,6 +84,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   void dispose() {
+    _analysisTicker?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -115,16 +125,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _WorkspacePhase.complete => 1,
   };
 
-  WorkspaceMode _effectiveMode(PreferencesService prefs, double width) {
-    if (prefs.workspaceMode == WorkspaceMode.original) {
-      return WorkspaceMode.commandGrid;
-    }
-    if (prefs.workspaceMode != WorkspaceMode.automatic) {
-      return prefs.workspaceMode;
-    }
-    return width < 980
-        ? WorkspaceMode.missionTimeline
-        : WorkspaceMode.commandGrid;
+  int get _secondsSinceProgress {
+    final last = _lastProgressAt;
+    return last == null ? 0 : DateTime.now().difference(last).inSeconds;
+  }
+
+  void _startAnalysisTicker() {
+    _analysisTicker?.cancel();
+    _analysisTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || !_isAnalyzing) return;
+      setState(() {
+        _elapsedSeconds = DateTime.now()
+            .difference(_analysisStartedAt!)
+            .inSeconds;
+      });
+    });
+  }
+
+  void _stopAnalysisTicker() {
+    _analysisTicker?.cancel();
+    _analysisTicker = null;
   }
 
   void _showMessage(String text) {
@@ -146,6 +166,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           : _WorkspacePhase.ready;
       _result = null;
       _done.clear();
+      _activeEngines.clear();
       _scores.clear();
       _selectedEvidence = 0;
     });
@@ -244,49 +265,80 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
 
     final run = ++_analysisRun;
+    final startedAt = DateTime.now();
     setState(() {
       _phase = _WorkspacePhase.analyzing;
       _result = null;
       _done.clear();
+      _activeEngines.clear();
       _scores.clear();
       _selectedEvidence = 0;
+      _analysisStartedAt = startedAt;
+      _lastProgressAt = startedAt;
+      _elapsedSeconds = 0;
     });
+    _startAnalysisTicker();
+    await WidgetsBinding.instance.endOfFrame;
 
-    final result = await orchestrator.analyze(
-      text,
-      sourceFileName: _sourceFileName,
-      eslCorrectionEnabled: prefs.eslCorrectionEnabled,
-      threshold: prefs.confidenceThreshold,
-      prefs: prefs,
-      l10n: l10n,
-      onEngineDone: (id) {
-        if (mounted && run == _analysisRun) {
-          setState(() => _done.add(_engineRole(id)));
-        }
-      },
-      onEngineScore: (score) {
-        if (mounted && run == _analysisRun) {
-          setState(() => _scores[_engineRole(score.engineId)] = score);
-        }
-      },
-    );
-    await history.save(result);
-    if (!mounted || run != _analysisRun) return;
-    setState(() {
-      _result = result;
-      _phase = _WorkspacePhase.complete;
-      _done.addAll(PreferencesService.engineRoles);
-    });
+    try {
+      final result = await orchestrator.analyze(
+        text,
+        sourceFileName: _sourceFileName,
+        eslCorrectionEnabled: prefs.eslCorrectionEnabled,
+        threshold: prefs.confidenceThreshold,
+        prefs: prefs,
+        l10n: l10n,
+        onEngineStarted: (id) {
+          if (mounted && run == _analysisRun) {
+            setState(() => _activeEngines.add(_engineRole(id)));
+          }
+        },
+        onEngineDone: (id) {
+          if (mounted && run == _analysisRun) {
+            final role = _engineRole(id);
+            setState(() {
+              _done.add(role);
+              _activeEngines.remove(role);
+              _lastProgressAt = DateTime.now();
+            });
+          }
+        },
+        onEngineScore: (score) {
+          if (mounted && run == _analysisRun) {
+            setState(() => _scores[_engineRole(score.engineId)] = score);
+          }
+        },
+      );
+      await history.save(result);
+      if (!mounted || run != _analysisRun) return;
+      setState(() {
+        _result = result;
+        _phase = _WorkspacePhase.complete;
+        _done.addAll(PreferencesService.engineRoles);
+        _activeEngines.clear();
+      });
+    } catch (_) {
+      if (!mounted || run != _analysisRun) return;
+      setState(() {
+        _phase = _WorkspacePhase.ready;
+        _activeEngines.clear();
+      });
+      _showMessage(l10n.workspaceAnalysisFailed);
+    } finally {
+      if (run == _analysisRun) _stopAnalysisTicker();
+    }
   }
 
   void _newAnalysis() {
     _analysisRun++;
+    _stopAnalysisTicker();
     _controller.clear();
     _sourceFileName = '';
     setState(() {
       _phase = _WorkspacePhase.idle;
       _result = null;
       _done.clear();
+      _activeEngines.clear();
       _scores.clear();
       _selectedEvidence = 0;
     });
@@ -297,7 +349,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final l10n = AppLocalizations.of(context);
     final prefs = context.watch<PreferencesService>();
     final width = MediaQuery.sizeOf(context).width;
-    final appBarMode = _effectiveMode(prefs, width);
     final compact = width < 760;
     final reduceMotion = MediaQuery.of(context).disableAnimations;
 
@@ -306,13 +357,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       endDrawer: const InputSettingsDrawer(),
       appBar: AppBar(
         titleSpacing: 16,
-        title: const Text(
-          'TruthLens',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: const AppIdentityTitle(),
         actions: [
-          _WorkspaceModeMenu(activeMode: appBarMode),
+          WorkspaceModeMenuButton(
+            activeMode: prefs.workspaceMode,
+            analysisActive: _isAnalyzing,
+          ),
           if (!compact) _languageMenu(),
           IconButton(
             icon: const Icon(Icons.history_outlined),
@@ -420,7 +470,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         children: [
           SizedBox(height: 390, child: _sourcePanel(compact: false)),
           const SizedBox(height: 10),
-          SizedBox(height: 270, child: _telemetryPanel(showTimeline: true)),
+          SizedBox(height: 300, child: _telemetryPanel(showTimeline: true)),
           const SizedBox(height: 10),
           SizedBox(height: 230, child: _liveFindingsPanel()),
           if (_result != null) ...[
@@ -453,7 +503,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             : _reportPanel(),
                       ),
                       const SizedBox(height: 10),
-                      SizedBox(height: 210, child: _telemetryPanel()),
+                      SizedBox(height: 270, child: _telemetryPanel()),
                     ],
                   );
                 }
@@ -571,7 +621,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         const SizedBox(height: 10),
         Expanded(child: _evidenceDocument()),
         const SizedBox(height: 10),
-        SizedBox(height: 180, child: _telemetryPanel()),
+        SizedBox(height: 270, child: _telemetryPanel()),
       ],
     );
   }
@@ -716,69 +766,138 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final l10n = AppLocalizations.of(context);
     final labels = _engineLabels(l10n);
     final probability = _result?.aiProbability ?? _runningProbability ?? 0;
+    final activeNames = _activeEngines
+        .map((role) => labels[role])
+        .whereType<String>()
+        .toList();
+    final waitingTooLong = _isAnalyzing && _secondsSinceProgress >= 20;
     return _Panel(
       title: l10n.workspaceTelemetry,
       icon: Icons.monitor_heart_outlined,
-      trailing: Text('${(_overallProgress * 100).round()}%'),
-      child: Column(
-        children: [
-          Row(
+      trailing: Text(
+        _isAnalyzing
+            ? '${_done.length}/4 · ${_elapsedSeconds}s'
+            : '${(_overallProgress * 100).round()}%',
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final condensed = constraints.maxHeight < 310;
+          return Column(
             children: [
-              _ProbabilityGauge(
-                probability: probability,
-                progress: _overallProgress,
+              Row(
+                children: [
+                  _ProbabilityGauge(
+                    probability: probability,
+                    progress: _overallProgress,
+                    analyzing: _isAnalyzing,
+                    compact: condensed,
+                    engineStates: [
+                      for (final role in PreferencesService.engineRoles)
+                        _done.contains(role)
+                            ? 2
+                            : _activeEngines.contains(role)
+                            ? 1
+                            : 0,
+                    ],
+                  ),
+                  SizedBox(width: condensed ? 10 : 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(switch (_phase) {
+                          _WorkspacePhase.idle => l10n.workspaceWaiting,
+                          _WorkspacePhase.ready => l10n.workspaceStageParse,
+                          _WorkspacePhase.analyzing => l10n.workspaceAnalyzing,
+                          _WorkspacePhase.complete =>
+                            l10n.workspaceAnalysisComplete,
+                        }, style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(
+                          value: _isAnalyzing ? null : _overallProgress,
+                          minHeight: 6,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+              if (_isAnalyzing) ...[
+                const SizedBox(height: 6),
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(switch (_phase) {
-                      _WorkspacePhase.idle => l10n.workspaceWaiting,
-                      _WorkspacePhase.ready => l10n.workspaceStageParse,
-                      _WorkspacePhase.analyzing => l10n.workspaceAnalyzing,
-                      _WorkspacePhase.complete =>
-                        l10n.workspaceAnalysisComplete,
-                    }, style: Theme.of(context).textTheme.titleSmall),
-                    const SizedBox(height: 8),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(end: _overallProgress),
-                      duration: MediaQuery.of(context).disableAnimations
-                          ? Duration.zero
-                          : const Duration(milliseconds: 350),
-                      builder: (context, value, child) =>
-                          LinearProgressIndicator(
-                            value: value,
-                            minHeight: 6,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
+                    Icon(
+                      waitingTooLong
+                          ? Icons.hourglass_top_outlined
+                          : Icons.monitor_heart_outlined,
+                      size: 16,
+                      color: waitingTooLong
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        waitingTooLong
+                            ? l10n.workspaceAnalysisSlow(_secondsSinceProgress)
+                            : l10n.workspaceAnalysisActivity(
+                                _done.length,
+                                4,
+                                _elapsedSeconds,
+                                activeNames.join('、'),
+                              ),
+                        maxLines: condensed ? 2 : null,
+                        overflow: condensed ? TextOverflow.ellipsis : null,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                   ],
                 ),
+              ],
+              SizedBox(height: condensed ? 6 : 12),
+              Expanded(
+                child: condensed
+                    ? Row(
+                        children: [
+                          for (final entry in labels.entries)
+                            Expanded(
+                              child: _EngineTelemetryPulse(
+                                role: entry.key,
+                                label: entry.value,
+                                active: _activeEngines.contains(entry.key),
+                                done: _done.contains(entry.key),
+                              ),
+                            ),
+                        ],
+                      )
+                    : ListView.separated(
+                        padding: EdgeInsets.zero,
+                        itemCount: labels.length,
+                        separatorBuilder: (context, index) =>
+                            const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final entry = labels.entries.elementAt(index);
+                          return _EngineTelemetryRow(
+                            role: entry.key,
+                            label: entry.value,
+                            active: _activeEngines.contains(entry.key),
+                            done: _done.contains(entry.key),
+                            score: _scores[entry.key]?.aiProbability,
+                          );
+                        },
+                      ),
               ),
+              if (showTimeline && !condensed) ...[
+                const Divider(height: 14),
+                _timelineStrip(compact: true),
+              ],
             ],
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.zero,
-              itemCount: labels.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final entry = labels.entries.elementAt(index);
-                return _EngineTelemetryRow(
-                  label: entry.value,
-                  done: _done.contains(entry.key),
-                  score: _scores[entry.key]?.aiProbability,
-                );
-              },
-            ),
-          ),
-          if (showTimeline) ...[
-            const Divider(height: 14),
-            _timelineStrip(compact: true),
-          ],
-        ],
+          );
+        },
       ),
     );
   }
@@ -1010,51 +1129,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 }
 
-class _WorkspaceModeMenu extends StatelessWidget {
-  final WorkspaceMode activeMode;
-
-  const _WorkspaceModeMenu({required this.activeMode});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final prefs = context.read<PreferencesService>();
-    return PopupMenuButton<WorkspaceMode>(
-      icon: Icon(_modeIcon(activeMode)),
-      tooltip: l10n.workspaceModeTooltip,
-      onSelected: prefs.setWorkspaceMode,
-      itemBuilder: (context) => [
-        for (final mode in WorkspaceMode.values)
-          PopupMenuItem(
-            value: mode,
-            child: ListTile(
-              dense: true,
-              leading: Icon(_modeIcon(mode)),
-              title: Text(_modeLabel(mode, l10n)),
-            ),
-          ),
-      ],
-    );
-  }
-
-  static IconData _modeIcon(WorkspaceMode mode) => switch (mode) {
-    WorkspaceMode.original => Icons.view_agenda_outlined,
-    WorkspaceMode.automatic => Icons.auto_awesome_mosaic_outlined,
-    WorkspaceMode.commandGrid => Icons.grid_view_outlined,
-    WorkspaceMode.missionTimeline => Icons.route_outlined,
-    WorkspaceMode.evidenceCanvas => Icons.fact_check_outlined,
-  };
-
-  static String _modeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
-      switch (mode) {
-        WorkspaceMode.original => l10n.workspaceModeOriginal,
-        WorkspaceMode.automatic => l10n.workspaceModeAuto,
-        WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
-        WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
-        WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
-      };
-}
-
 class _Panel extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -1119,17 +1193,35 @@ class _Panel extends StatelessWidget {
 class _ProbabilityGauge extends StatelessWidget {
   final double probability;
   final double progress;
+  final bool analyzing;
+  final bool compact;
+  final List<int> engineStates;
 
-  const _ProbabilityGauge({required this.probability, required this.progress});
+  const _ProbabilityGauge({
+    required this.probability,
+    required this.progress,
+    required this.analyzing,
+    required this.compact,
+    required this.engineStates,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final color = AppTheme.verdictColor(
-      probability,
-      brightness: Theme.of(context).brightness,
-    );
+    final scheme = Theme.of(context).colorScheme;
+    final complete = progress >= 1;
+    final color = complete
+        ? AppTheme.verdictColor(
+            probability,
+            brightness: Theme.of(context).brightness,
+          )
+        : scheme.primary;
+    final displayedValue = complete ? probability : progress;
+    final segmentColors = [
+      for (final role in PreferencesService.engineRoles)
+        _engineColor(context, role),
+    ];
     return SizedBox.square(
-      dimension: 86,
+      dimension: compact ? 82 : 104,
       child: TweenAnimationBuilder<double>(
         tween: Tween(end: progress),
         duration: MediaQuery.of(context).disableAnimations
@@ -1138,18 +1230,43 @@ class _ProbabilityGauge extends StatelessWidget {
         builder: (context, value, _) => Stack(
           fit: StackFit.expand,
           children: [
-            CircularProgressIndicator(
-              value: value,
-              strokeWidth: 7,
-              color: color,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            CustomPaint(
+              painter: _SegmentedEngineRingPainter(
+                states: engineStates,
+                colors: segmentColors,
+                pendingColor: scheme.outlineVariant,
+              ),
             ),
+            if (analyzing)
+              Padding(
+                padding: const EdgeInsets.all(3),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: scheme.primary.withValues(alpha: 0.7),
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
             Center(
-              child: Text(
-                '${(probability * 100).round()}%',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color.withValues(alpha: 0.1),
+                ),
+                child: SizedBox.square(
+                  dimension: compact ? 50 : 66,
+                  child: Center(
+                    child: Text(
+                      '${(displayedValue * 100).round()}%',
+                      style:
+                          (compact
+                                  ? Theme.of(context).textTheme.titleMedium
+                                  : Theme.of(context).textTheme.titleLarge)
+                              ?.copyWith(
+                                color: color,
+                                fontWeight: FontWeight.w800,
+                              ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1160,45 +1277,231 @@ class _ProbabilityGauge extends StatelessWidget {
   }
 }
 
-class _EngineTelemetryRow extends StatelessWidget {
+Color _engineColor(BuildContext context, String role) {
+  final scheme = Theme.of(context).colorScheme;
+  final dark = Theme.of(context).brightness == Brightness.dark;
+  return switch (role) {
+    'transformer' => scheme.primary,
+    'statistical' => dark ? const Color(0xFF58D7D0) : const Color(0xFF087F7A),
+    'stylometry' => scheme.tertiary,
+    _ => dark ? const Color(0xFFFF9A6C) : const Color(0xFFC45127),
+  };
+}
+
+IconData _engineIcon(String role) => switch (role) {
+  'transformer' => Icons.hub_outlined,
+  'statistical' => Icons.query_stats_outlined,
+  'stylometry' => Icons.fingerprint_outlined,
+  _ => Icons.security_outlined,
+};
+
+class _SegmentedEngineRingPainter extends CustomPainter {
+  final List<int> states;
+  final List<Color> colors;
+  final Color pendingColor;
+
+  const _SegmentedEngineRingPainter({
+    required this.states,
+    required this.colors,
+    required this.pendingColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const gap = 0.14;
+    final sweep = math.pi / 2 - gap;
+    final rect = Offset.zero & size;
+    for (var i = 0; i < 4; i++) {
+      final state = i < states.length ? states[i] : 0;
+      final color = i < colors.length ? colors[i] : pendingColor;
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = state == 1 ? 10 : 8
+        ..strokeCap = StrokeCap.round
+        ..color = switch (state) {
+          2 => color,
+          1 => color.withValues(alpha: 0.72),
+          _ => pendingColor.withValues(alpha: 0.7),
+        };
+      canvas.drawArc(
+        rect.deflate(10),
+        -math.pi / 2 + i * math.pi / 2 + gap / 2,
+        sweep,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SegmentedEngineRingPainter oldDelegate) =>
+      oldDelegate.pendingColor != pendingColor ||
+      oldDelegate.states.toString() != states.toString() ||
+      oldDelegate.colors.toString() != colors.toString();
+}
+
+class _EngineTelemetryPulse extends StatelessWidget {
+  final String role;
   final String label;
+  final bool active;
+  final bool done;
+
+  const _EngineTelemetryPulse({
+    required this.role,
+    required this.label,
+    required this.active,
+    required this.done,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _engineColor(context, role);
+    final scheme = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: label,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox.square(
+              dimension: 34,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (active)
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: color,
+                      backgroundColor: color.withValues(alpha: 0.12),
+                    ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color.withValues(
+                        alpha: done || active ? 0.18 : 0.08,
+                      ),
+                      border: Border.all(
+                        color: done || active ? color : scheme.outlineVariant,
+                      ),
+                    ),
+                    child: Icon(_engineIcon(role), size: 17, color: color),
+                  ),
+                  if (done)
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Icon(Icons.check_circle, size: 13, color: color),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 3,
+              decoration: BoxDecoration(
+                color: done || active ? color : scheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EngineTelemetryRow extends StatelessWidget {
+  final String role;
+  final String label;
+  final bool active;
   final bool done;
   final double? score;
 
   const _EngineTelemetryRow({
+    required this.role,
     required this.label,
+    required this.active,
     required this.done,
     required this.score,
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final color = _engineColor(context, role);
+    final icon = _engineIcon(role);
     return SizedBox(
-      height: 44,
+      height: 58,
       child: Row(
         children: [
-          SizedBox(
-            width: 22,
-            height: 22,
-            child: done
-                ? Icon(
-                    Icons.check_circle,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  )
-                : score != null
-                ? const CircularProgressIndicator(strokeWidth: 2)
-                : Icon(
-                    Icons.radio_button_unchecked,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 240),
+            width: 4,
+            height: active ? 42 : 30,
+            decoration: BoxDecoration(
+              color: done || active ? color : scheme.outlineVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: active ? 0.2 : 0.1),
+            ),
+            child: Icon(icon, size: 18, color: color),
           ),
-          if (score != null) Text('${(score! * 100).round()}%'),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(2),
+                  child: LinearProgressIndicator(
+                    value: active ? null : (done ? 1 : 0),
+                    minHeight: 4,
+                    color: color,
+                    backgroundColor: scheme.surfaceContainerHighest,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 46,
+            child: done
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(Icons.check_circle, size: 17, color: color),
+                      if (score != null)
+                        Text(
+                          '${(score! * 100).round()}%',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                    ],
+                  )
+                : active
+                ? Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: color,
+                      ),
+                    ),
+                  )
+                : Icon(Icons.more_horiz, color: scheme.onSurfaceVariant),
+          ),
         ],
       ),
     );

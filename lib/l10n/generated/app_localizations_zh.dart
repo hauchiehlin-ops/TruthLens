@@ -1827,7 +1827,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
 
   @override
-  String get workspaceModeSectionTitle => '戰情中心配置';
+  String get workspaceModeSectionTitle => '工作台模式';
 
   @override
   String get workspaceModeSectionSubtitle => '選擇文件、即時分析與最終證據在同一工作台的呈現方式。';
@@ -1848,7 +1848,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
-  String get workspaceModeTooltip => '切換戰情中心配置';
+  String get workspaceModeTooltip => '切換工作台模式';
 
   @override
   String get workspaceStageImport => '匯入';
@@ -1885,6 +1885,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '已完成 $done/$total 個模組 · 經過 $seconds 秒 · 執行中：$engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return '分析仍在進行，介面可正常操作。過去 $seconds 秒尚無模組完成；大型文件或本機模型可能需要較長時間。';
+  }
+
+  @override
+  String get workspaceAnalysisFailed => '分析意外停止，請重試或檢查模型設定。';
 
   @override
   String get workspaceNewAnalysis => '新的分析';
@@ -3724,7 +3742,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get webOcrTestServerFailure => '无法连接本地 OCR 服务器，请打开设置指南并检查安装程序、防火墙和网址。';
 
   @override
-  String get workspaceModeSectionTitle => '战情中心布局';
+  String get workspaceModeSectionTitle => '工作台模式';
 
   @override
   String get workspaceModeSectionSubtitle => '选择文件、实时分析与最终证据在同一工作台的呈现方式。';
@@ -3745,7 +3763,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceModeEvidence => '证据画布';
 
   @override
-  String get workspaceModeTooltip => '切换战情中心布局';
+  String get workspaceModeTooltip => '切换工作台模式';
 
   @override
   String get workspaceStageImport => '导入';
@@ -3782,6 +3800,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '已完成 $done/$total 个模块 · 经过 $seconds 秒 · 运行中：$engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return '分析仍在进行，界面可正常操作。过去 $seconds 秒尚无模块完成；大型文件或本机模型可能需要更长时间。';
+  }
+
+  @override
+  String get workspaceAnalysisFailed => '分析意外停止，请重试或检查模型设置。';
 
   @override
   String get workspaceNewAnalysis => '新的分析';
@@ -5621,7 +5657,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
 
   @override
-  String get workspaceModeSectionTitle => '戰情中心配置';
+  String get workspaceModeSectionTitle => '工作台模式';
 
   @override
   String get workspaceModeSectionSubtitle => '選擇文件、即時分析與最終證據在同一工作台的呈現方式。';
@@ -5642,7 +5678,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
-  String get workspaceModeTooltip => '切換戰情中心配置';
+  String get workspaceModeTooltip => '切換工作台模式';
 
   @override
   String get workspaceStageImport => '匯入';
@@ -5679,6 +5715,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String workspaceAnalysisActivity(
+    Object done,
+    Object engines,
+    Object seconds,
+    Object total,
+  ) {
+    return '已完成 $done/$total 個模組 · 經過 $seconds 秒 · 執行中：$engines';
+  }
+
+  @override
+  String workspaceAnalysisSlow(Object seconds) {
+    return '分析仍在進行，介面可正常操作。過去 $seconds 秒尚無模組完成；大型文件或本機模型可能需要較長時間。';
+  }
+
+  @override
+  String get workspaceAnalysisFailed => '分析意外停止，請重試或檢查模型設定。';
 
   @override
   String get workspaceNewAnalysis => '新的分析';

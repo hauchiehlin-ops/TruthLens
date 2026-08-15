@@ -147,12 +147,16 @@ void main() {
     });
 
     test('進度回呼依引擎觸發', () async {
+      final started = <String>[];
       final done = <String>[];
       await EnsembleOrchestrator().analyze(
         'A sentence for testing callbacks. Another one here.',
+        onEngineStarted: started.add,
         onEngineDone: done.add,
       );
+      expect(started.length, 4);
       expect(done.length, 4);
+      expect(started.toSet(), done.toSet());
     });
 
     test('信心閾值影響 flaggedAsAi 但不影響機率', () async {
