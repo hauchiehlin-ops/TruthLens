@@ -845,49 +845,64 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             title: l10n.workspaceModeEvidence,
             icon: LucideIcons.checkSquare,
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              children: [
-                Expanded(
-                  child: IconButton.filledTonal(
-                    onPressed: _isAnalyzing ? null : _importDocument,
-                    icon: Icon(LucideIcons.folderOpen),
-                    tooltip: l10n.inputImportButton,
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    onPressed: _isAnalyzing ? null : _pasteFromClipboard,
-                    icon: Icon(LucideIcons.clipboard),
-                    tooltip: l10n.inputPasteButton,
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    onPressed: _isAnalyzing ? null : _scanImage,
-                    icon: Icon(LucideIcons.scanLine),
-                    tooltip: l10n.inputOcrButton,
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    onPressed: _isAnalyzing
-                        ? _confirmStopAnalysis
-                        : (_result != null ? _newAnalysis : _startAnalysis),
-                    icon: Icon(
-                      _isAnalyzing
-                          ? LucideIcons.stopCircle
-                          : (_result != null
-                                ? LucideIcons.plus
-                                : LucideIcons.play),
+            child: Builder(
+              builder: (context) {
+                // 同 _sourcePanel：裸 IconButton 會退回淺色系調校的
+                // onSurfaceVariant 灰階，在本面板深色背景下對比不足。
+                final scheme = Theme.of(context).colorScheme;
+                final iconColor = switch (_WorkspaceThemeScope.of(context)) {
+                  _WorkspaceVisualTheme.cosmic => _cosmicCyan,
+                  _WorkspaceVisualTheme.soft => Colors.white,
+                  _WorkspaceVisualTheme.standard => scheme.onSurface,
+                };
+                return Row(
+                  children: [
+                    Expanded(
+                      child: IconButton.filledTonal(
+                        onPressed: _isAnalyzing ? null : _importDocument,
+                        icon: Icon(LucideIcons.folderOpen),
+                        tooltip: l10n.inputImportButton,
+                      ),
                     ),
-                    tooltip: _isAnalyzing
-                        ? l10n.workspaceStopAnalysis
-                        : (_result != null
-                              ? l10n.workspaceNewAnalysis
-                              : l10n.inputStartButton),
-                  ),
-                ),
-              ],
+                    Expanded(
+                      child: IconButton(
+                        onPressed: _isAnalyzing ? null : _pasteFromClipboard,
+                        icon: Icon(LucideIcons.clipboard, color: iconColor),
+                        tooltip: l10n.inputPasteButton,
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: _isAnalyzing ? null : _scanImage,
+                        icon: Icon(LucideIcons.scanLine, color: iconColor),
+                        tooltip: l10n.inputOcrButton,
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: _isAnalyzing
+                            ? _confirmStopAnalysis
+                            : (_result != null
+                                  ? _newAnalysis
+                                  : _startAnalysis),
+                        icon: Icon(
+                          _isAnalyzing
+                              ? LucideIcons.stopCircle
+                              : (_result != null
+                                    ? LucideIcons.plus
+                                    : LucideIcons.play),
+                          color: iconColor,
+                        ),
+                        tooltip: _isAnalyzing
+                            ? l10n.workspaceStopAnalysis
+                            : (_result != null
+                                  ? l10n.workspaceNewAnalysis
+                                  : l10n.inputStartButton),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -991,29 +1006,43 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                l10n.inputCharCount(_controller.text.trim().length),
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: _isAnalyzing ? null : _pasteFromClipboard,
-                icon: Icon(LucideIcons.clipboard),
-                tooltip: l10n.inputPasteButton,
-              ),
-              IconButton(
-                onPressed: _isAnalyzing ? null : _scanImage,
-                icon: Icon(LucideIcons.scanLine),
-                tooltip: l10n.inputOcrButton,
-              ),
-              IconButton(
-                onPressed: _isAnalyzing ? null : _importDocument,
-                icon: Icon(LucideIcons.folderOpen),
-                tooltip: l10n.inputImportButton,
-              ),
-            ],
+          Builder(
+            builder: (context) {
+              // 這三個動作按鈕裸用 IconButton 時會退回 M3 預設的
+              // onSurfaceVariant 灰階，是為一般淺色 Material 介面調校的，
+              // 在本面板較深的背景（含 cosmic/soft 主題）下對比不足；
+              // 依目前視覺主題明確指定顏色，與同面板其他圖示一致。
+              final scheme = Theme.of(context).colorScheme;
+              final iconColor = switch (_WorkspaceThemeScope.of(context)) {
+                _WorkspaceVisualTheme.cosmic => _cosmicCyan,
+                _WorkspaceVisualTheme.soft => Colors.white,
+                _WorkspaceVisualTheme.standard => scheme.onSurface,
+              };
+              return Row(
+                children: [
+                  Text(
+                    l10n.inputCharCount(_controller.text.trim().length),
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: _isAnalyzing ? null : _pasteFromClipboard,
+                    icon: Icon(LucideIcons.clipboard, color: iconColor),
+                    tooltip: l10n.inputPasteButton,
+                  ),
+                  IconButton(
+                    onPressed: _isAnalyzing ? null : _scanImage,
+                    icon: Icon(LucideIcons.scanLine, color: iconColor),
+                    tooltip: l10n.inputOcrButton,
+                  ),
+                  IconButton(
+                    onPressed: _isAnalyzing ? null : _importDocument,
+                    icon: Icon(LucideIcons.folderOpen, color: iconColor),
+                    tooltip: l10n.inputImportButton,
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 6),
           SizedBox(
@@ -1465,12 +1494,21 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _reportPanel() {
     final result = _result;
     if (result == null) return const SizedBox.shrink();
+    // standard 主題的 _Panel 不會像 cosmic/soft 那樣自動包一層
+    // IconTheme 覆蓋 trailing 顏色，裸 IconButton 在此仍會退回對比不足的
+    // onSurfaceVariant，因此在此明確依主題指定顏色。
+    final scheme = Theme.of(context).colorScheme;
+    final trailingIconColor = switch (_WorkspaceThemeScope.of(context)) {
+      _WorkspaceVisualTheme.cosmic => _cosmicCyan,
+      _WorkspaceVisualTheme.soft => Colors.white,
+      _WorkspaceVisualTheme.standard => scheme.onSurface,
+    };
     return _Panel(
       title: AppLocalizations.of(context).workspaceAnalysisComplete,
       icon: LucideIcons.barChart,
       trailing: IconButton(
         onPressed: _newAnalysis,
-        icon: Icon(LucideIcons.plus),
+        icon: Icon(LucideIcons.plus, color: trailingIconColor),
         tooltip: AppLocalizations.of(context).workspaceNewAnalysis,
       ),
       padding: EdgeInsets.zero,
