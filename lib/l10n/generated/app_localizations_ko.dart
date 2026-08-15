@@ -474,7 +474,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      '다국어 Transformer로 완전한 문장을 평가합니다. 설정 가중치는 영향도를, AI 신호는 실제 기여도를 결정합니다.';
+      '다국어 Transformer로 문맥을 유지한 단락 블록을 평가한 뒤 상세 보고서를 위해 블록 점수를 문장에 다시 매핑합니다. 설정 가중치는 영향도를, AI 신호는 실제 기여도를 결정합니다.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1518,7 +1518,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '다국어 AI 분류기（가중치 40%）: 종합 판정의 주력으로, 문장 단위 AI 확률 예측을 수행하며 정확도 향상에 가장 크게 기여합니다.';
+      '다국어 AI 분류기（가중치 40%）: 문맥을 유지하는 제한된 단락 블록을 분석한 뒤 확률을 문장에 다시 매핑합니다.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1862,4 +1862,79 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       '로컬 OCR 서버에 연결할 수 없습니다. 안내, 방화벽, URL을 확인하세요.';
+
+  @override
+  String get workspaceModeSectionTitle => '상황 센터 레이아웃';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      '원문, 실시간 분석, 최종 근거를 한 작업 공간에 배치하는 방식을 선택합니다.';
+
+  @override
+  String get workspaceModeOriginal => '기존 레이아웃';
+
+  @override
+  String get workspaceModeAuto => '자동';
+
+  @override
+  String get workspaceModeCommandGrid => '지휘 그리드';
+
+  @override
+  String get workspaceModeTimeline => '임무 타임라인';
+
+  @override
+  String get workspaceModeEvidence => '근거 캔버스';
+
+  @override
+  String get workspaceModeTooltip => '상황 센터 레이아웃 전환';
+
+  @override
+  String get workspaceStageImport => '가져오기';
+
+  @override
+  String get workspaceStageParse => '파싱';
+
+  @override
+  String get workspaceStageAnalyze => '4개 엔진 분석';
+
+  @override
+  String get workspaceStageVerify => '검증';
+
+  @override
+  String get workspaceStageReport => '보고서';
+
+  @override
+  String get workspaceLiveFindings => '실시간 발견';
+
+  @override
+  String get workspaceTelemetry => '분석 텔레메트리';
+
+  @override
+  String get workspaceDocument => '문서 작업 공간';
+
+  @override
+  String get workspaceOverallProgress => '전체 진행률';
+
+  @override
+  String get workspaceWaiting => '문서 대기 중';
+
+  @override
+  String get workspaceAnalyzing => '분석 진행 중';
+
+  @override
+  String get workspaceAnalysisComplete => '분석 완료';
+
+  @override
+  String get workspaceNewAnalysis => '새 분석';
+
+  @override
+  String get workspaceSelectedEvidence => '선택한 근거';
+
+  @override
+  String get workspaceNoEvidence => '각 엔진이 완료되면 문장 근거가 여기에 표시됩니다.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return '예비 AI 확률: $percent%';
+  }
 }

@@ -498,7 +498,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'Avalia frases completas com um Transformer multilíngue. O peso define a influência e o sinal de IA determina a contribuição real.';
+      'Avalia blocos de parágrafos que preservam o contexto com um Transformer multilíngue e mapeia as pontuações de volta às frases para o relatório detalhado. O peso define a influência e o sinal de IA determina a contribuição real.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1562,7 +1562,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Classificador de IA multilíngue (peso 40%): o principal impulsionador do veredito geral, com previsão de probabilidade de IA no nível da frase — melhora mais a precisão.';
+      'Classificador de IA multilíngue (peso 40%): analisa blocos de parágrafos limitados para preservar o contexto e mapeia as probabilidades de volta às frases.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1918,4 +1918,80 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'Não foi possível acessar o servidor OCR local. Verifique o guia, firewall e URL.';
+
+  @override
+  String get workspaceModeSectionTitle => 'Layout do centro de situação';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'Escolha como fonte, análise ao vivo e evidências finais compartilham o mesmo espaço.';
+
+  @override
+  String get workspaceModeOriginal => 'Layout original';
+
+  @override
+  String get workspaceModeAuto => 'Automático';
+
+  @override
+  String get workspaceModeCommandGrid => 'Grade de comando';
+
+  @override
+  String get workspaceModeTimeline => 'Linha do tempo da missão';
+
+  @override
+  String get workspaceModeEvidence => 'Tela de evidências';
+
+  @override
+  String get workspaceModeTooltip => 'Alternar layout do centro de situação';
+
+  @override
+  String get workspaceStageImport => 'Importar';
+
+  @override
+  String get workspaceStageParse => 'Processar';
+
+  @override
+  String get workspaceStageAnalyze => 'Análise de quatro mecanismos';
+
+  @override
+  String get workspaceStageVerify => 'Verificação';
+
+  @override
+  String get workspaceStageReport => 'Relatório';
+
+  @override
+  String get workspaceLiveFindings => 'Descobertas ao vivo';
+
+  @override
+  String get workspaceTelemetry => 'Telemetria da análise';
+
+  @override
+  String get workspaceDocument => 'Espaço do documento';
+
+  @override
+  String get workspaceOverallProgress => 'Progresso geral';
+
+  @override
+  String get workspaceWaiting => 'Aguardando um documento';
+
+  @override
+  String get workspaceAnalyzing => 'Análise em andamento';
+
+  @override
+  String get workspaceAnalysisComplete => 'Análise concluída';
+
+  @override
+  String get workspaceNewAnalysis => 'Nova análise';
+
+  @override
+  String get workspaceSelectedEvidence => 'Evidência selecionada';
+
+  @override
+  String get workspaceNoEvidence =>
+      'As evidências por frase aparecem quando cada mecanismo termina.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'Probabilidade preliminar de IA: $percent%';
+  }
 }

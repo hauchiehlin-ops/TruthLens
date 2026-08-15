@@ -492,7 +492,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'Menilai ayat lengkap dengan Transformer berbilang bahasa. Pemberat menetapkan pengaruh, manakala isyarat AI menentukan sumbangan sebenar.';
+      'Menilai blok perenggan yang mengekalkan konteks dengan Transformer berbilang bahasa, kemudian memetakan skor blok kembali kepada ayat untuk laporan terperinci. Pemberat menetapkan pengaruh, manakala isyarat AI menentukan sumbangan sebenar.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1552,7 +1552,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Pengelas AI berbilang bahasa (pemberat 40%): pemacu utama penentuan keseluruhan, dengan ramalan kebarangkalian AI peringkat ayat — meningkatkan ketepatan paling banyak.';
+      'Pengelas AI berbilang bahasa (pemberat 40%): menganalisis blok perenggan terhad untuk mengekalkan konteks, kemudian memetakan kebarangkalian kembali kepada ayat.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1906,4 +1906,80 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'Pelayan OCR setempat tidak dapat dicapai. Semak panduan, tembok api dan URL.';
+
+  @override
+  String get workspaceModeSectionTitle => 'Susun atur pusat situasi';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'Pilih cara sumber, analisis langsung dan bukti akhir berkongsi satu ruang kerja.';
+
+  @override
+  String get workspaceModeOriginal => 'Susun atur asal';
+
+  @override
+  String get workspaceModeAuto => 'Automatik';
+
+  @override
+  String get workspaceModeCommandGrid => 'Grid arahan';
+
+  @override
+  String get workspaceModeTimeline => 'Garis masa misi';
+
+  @override
+  String get workspaceModeEvidence => 'Kanvas bukti';
+
+  @override
+  String get workspaceModeTooltip => 'Tukar susun atur pusat situasi';
+
+  @override
+  String get workspaceStageImport => 'Import';
+
+  @override
+  String get workspaceStageParse => 'Hurai';
+
+  @override
+  String get workspaceStageAnalyze => 'Analisis empat enjin';
+
+  @override
+  String get workspaceStageVerify => 'Pengesahan';
+
+  @override
+  String get workspaceStageReport => 'Laporan';
+
+  @override
+  String get workspaceLiveFindings => 'Penemuan langsung';
+
+  @override
+  String get workspaceTelemetry => 'Telemetri analisis';
+
+  @override
+  String get workspaceDocument => 'Ruang dokumen';
+
+  @override
+  String get workspaceOverallProgress => 'Kemajuan keseluruhan';
+
+  @override
+  String get workspaceWaiting => 'Menunggu dokumen';
+
+  @override
+  String get workspaceAnalyzing => 'Analisis sedang berjalan';
+
+  @override
+  String get workspaceAnalysisComplete => 'Analisis selesai';
+
+  @override
+  String get workspaceNewAnalysis => 'Analisis baharu';
+
+  @override
+  String get workspaceSelectedEvidence => 'Bukti dipilih';
+
+  @override
+  String get workspaceNoEvidence =>
+      'Bukti ayat muncul apabila setiap enjin selesai.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'Kebarangkalian AI awal: $percent%';
+  }
 }

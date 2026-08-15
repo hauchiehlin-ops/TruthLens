@@ -74,6 +74,8 @@ void main() {
       'How the AI flagging threshold affects the conclusion',
     );
     expect(thresholdInfo, findsOneWidget);
+    await tester.ensureVisible(thresholdInfo);
+    await tester.pumpAndSettle();
     await tester.tap(thresholdInfo);
     await tester.pumpAndSettle();
     expect(

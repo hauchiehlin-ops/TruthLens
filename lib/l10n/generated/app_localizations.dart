@@ -912,7 +912,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsEngineTransformerHelp.
   ///
   /// In en, this message translates to:
-  /// **'Evaluates complete sentences with a multilingual Transformer model. It is strongest at sentence-level AI pattern recognition; its configured weight controls influence, while its AI signal controls the actual contribution.'**
+  /// **'Evaluates context-preserving paragraph blocks with a multilingual Transformer model, then maps block scores back to sentences for detailed reporting. Its configured weight controls influence, while its AI signal controls the actual contribution.'**
   String get settingsEngineTransformerHelp;
 
   /// No description provided for @settingsEngineStatisticalHelp.
@@ -2521,7 +2521,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet1.
   ///
   /// In en, this message translates to:
-  /// **'Multilingual AI classifier (40% weight): the main driver of the overall verdict, with sentence-level AI probability prediction — improves accuracy the most.'**
+  /// **'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence.'**
   String get helpWorkflowStep2Bullet1;
 
   /// No description provided for @helpWorkflowStep2Bullet2.
@@ -2587,7 +2587,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'The report page includes: an overall verdict, AI probability, confidence badge, elapsed time, sentence-level heatmap, engine contribution breakdown, hyperlink checks, and citation checks. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card. Every analysis is automatically saved to \"History\" on this device, including the source file name when one exists.'**
+  /// **'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Automatic uses Command grid on desktop and Mission timeline on mobile. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.'**
   String get helpWorkflowStep5Body;
 
   /// No description provided for @helpWorkflowStep1ChipOnboarding.
@@ -3117,6 +3117,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not reach the local OCR server. Open the setup guide and check the installer, firewall, and URL.'**
   String get webOcrTestServerFailure;
+
+  /// No description provided for @workspaceModeSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Situation center layout'**
+  String get workspaceModeSectionTitle;
+
+  /// No description provided for @workspaceModeSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how source, live analysis, and final evidence share one workspace.'**
+  String get workspaceModeSectionSubtitle;
+
+  /// No description provided for @workspaceModeOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original layout'**
+  String get workspaceModeOriginal;
+
+  /// No description provided for @workspaceModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get workspaceModeAuto;
+
+  /// No description provided for @workspaceModeCommandGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Command grid'**
+  String get workspaceModeCommandGrid;
+
+  /// No description provided for @workspaceModeTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Mission timeline'**
+  String get workspaceModeTimeline;
+
+  /// No description provided for @workspaceModeEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence canvas'**
+  String get workspaceModeEvidence;
+
+  /// No description provided for @workspaceModeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch situation center layout'**
+  String get workspaceModeTooltip;
+
+  /// No description provided for @workspaceStageImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get workspaceStageImport;
+
+  /// No description provided for @workspaceStageParse.
+  ///
+  /// In en, this message translates to:
+  /// **'Parse'**
+  String get workspaceStageParse;
+
+  /// No description provided for @workspaceStageAnalyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Four-engine analysis'**
+  String get workspaceStageAnalyze;
+
+  /// No description provided for @workspaceStageVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get workspaceStageVerify;
+
+  /// No description provided for @workspaceStageReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get workspaceStageReport;
+
+  /// No description provided for @workspaceLiveFindings.
+  ///
+  /// In en, this message translates to:
+  /// **'Live findings'**
+  String get workspaceLiveFindings;
+
+  /// No description provided for @workspaceTelemetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis telemetry'**
+  String get workspaceTelemetry;
+
+  /// No description provided for @workspaceDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Document workspace'**
+  String get workspaceDocument;
+
+  /// No description provided for @workspaceOverallProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall progress'**
+  String get workspaceOverallProgress;
+
+  /// No description provided for @workspaceWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for a document'**
+  String get workspaceWaiting;
+
+  /// No description provided for @workspaceAnalyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis in progress'**
+  String get workspaceAnalyzing;
+
+  /// No description provided for @workspaceAnalysisComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis complete'**
+  String get workspaceAnalysisComplete;
+
+  /// No description provided for @workspaceNewAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'New analysis'**
+  String get workspaceNewAnalysis;
+
+  /// No description provided for @workspaceSelectedEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected evidence'**
+  String get workspaceSelectedEvidence;
+
+  /// No description provided for @workspaceNoEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence evidence appears here as each engine completes.'**
+  String get workspaceNoEvidence;
+
+  /// No description provided for @workspacePreliminaryVerdict.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary AI probability: {percent}%'**
+  String workspacePreliminaryVerdict(int percent);
 }
 
 class _AppLocalizationsDelegate

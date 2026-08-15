@@ -98,20 +98,39 @@ class SettingsScreen extends StatelessWidget {
             trailing: SegmentedButton<ThemeMode>(
               segments: const [
                 ButtonSegment(
-                  value: ThemeMode.dark,
-                  icon: Icon(Icons.dark_mode_outlined),
+                  value: ThemeMode.system,
+                  icon: Icon(Icons.brightness_auto_outlined),
                 ),
                 ButtonSegment(
                   value: ThemeMode.light,
                   icon: Icon(Icons.light_mode_outlined),
                 ),
                 ButtonSegment(
-                  value: ThemeMode.system,
-                  icon: Icon(Icons.brightness_auto_outlined),
+                  value: ThemeMode.dark,
+                  icon: Icon(Icons.dark_mode_outlined),
                 ),
               ],
               selected: {prefs.themeMode},
               onSelectionChanged: (s) => prefs.setThemeMode(s.first),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.dashboard_customize_outlined),
+            title: Text(l10n.workspaceModeSectionTitle),
+            subtitle: Text(l10n.workspaceModeSectionSubtitle),
+            trailing: DropdownButton<WorkspaceMode>(
+              value: prefs.workspaceMode,
+              items: [
+                for (final mode in WorkspaceMode.values)
+                  DropdownMenuItem(
+                    value: mode,
+                    child: Text(_workspaceModeLabel(mode, l10n)),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) prefs.setWorkspaceMode(value);
+              },
             ),
           ),
           const Divider(),
@@ -216,6 +235,15 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
+      switch (mode) {
+        WorkspaceMode.original => l10n.workspaceModeOriginal,
+        WorkspaceMode.automatic => l10n.workspaceModeAuto,
+        WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
+        WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
+        WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
+      };
 }
 
 /// 模型管理頁：依裝置能力列出各 role 的多個開源模型選項與安裝狀態，提供下載 / 移除。

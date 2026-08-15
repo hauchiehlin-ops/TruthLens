@@ -92,9 +92,9 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
                 message: widget.l10n.suspiciousExcludedTooltip,
                 child: Text(
                   widget.l10n.suspiciousCount(filteredItems.length),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
@@ -124,9 +124,9 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
             child: Center(
               child: Text(
                 widget.l10n.suspiciousEmpty,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[400]),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ),
@@ -136,19 +136,20 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
 
   Widget _buildFilterButton(String label, String value) {
     final isActive = _filterLevel == value;
+    final scheme = Theme.of(context).colorScheme;
     return FilterChip(
       label: Text(label),
       selected: isActive,
       onSelected: (_) {
         setState(() => _filterLevel = value);
       },
-      backgroundColor: Colors.grey[100],
-      selectedColor: const Color(0xFF6B5B95).withValues(alpha: 0.2),
+      backgroundColor: scheme.surfaceContainerHigh,
+      selectedColor: scheme.secondaryContainer,
       side: BorderSide(
-        color: isActive ? const Color(0xFF6B5B95) : Colors.grey[300]!,
+        color: isActive ? scheme.secondary : scheme.outlineVariant,
       ),
       labelStyle: TextStyle(
-        color: isActive ? const Color(0xFF6B5B95) : Colors.grey[600],
+        color: isActive ? scheme.onSecondaryContainer : scheme.onSurfaceVariant,
         fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
       ),
     );
@@ -178,9 +179,15 @@ class _SuspiciousSentenceItem {
     return l10n.suspiciousRiskMedium;
   }
 
-  Color get riskColor {
-    if (aiProbability >= 0.8) return const Color(0xFFD4AF37); // 金 - 高
-    return const Color(0xFF6B5B95); // 紫 - 中
+  Color riskColor(Brightness brightness) {
+    if (aiProbability >= 0.8) {
+      return brightness == Brightness.dark
+          ? const Color(0xFFFFD166)
+          : const Color(0xFF7A5700);
+    }
+    return brightness == Brightness.dark
+        ? const Color(0xFFC4B5FD)
+        : const Color(0xFF59418F);
   }
 
   String reasonSummary(AppLocalizations l10n) {
@@ -213,14 +220,20 @@ class _SuspiciousSentenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final riskColor = item.riskColor(Theme.of(context).brightness);
+    final onRisk =
+        ThemeData.estimateBrightnessForColor(riskColor) == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: item.riskColor.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(6),
+        color: scheme.surfaceContainerLow,
+        border: Border.all(color: riskColor.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: item.riskColor.withValues(alpha: 0.1),
+            color: riskColor.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -235,10 +248,10 @@ class _SuspiciousSentenceCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+                topLeft: Radius.circular(6),
+                topRight: Radius.circular(6),
               ),
-              color: item.riskColor.withValues(alpha: 0.08),
+              color: riskColor.withValues(alpha: 0.1),
             ),
             child: Row(
               children: [
@@ -248,13 +261,13 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                   height: 32,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: item.riskColor,
+                    color: riskColor,
                   ),
                   child: Center(
                     child: Text(
                       index.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: onRisk,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -277,13 +290,13 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: item.riskColor,
+                          color: riskColor,
                         ),
                       ),
                       Text(
                         l10n.suspiciousSentenceNumber(item.index + 1),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: scheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -300,13 +313,13 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: item.riskColor.withValues(alpha: 0.15),
+                        color: riskColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         item.riskLevel(l10n),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: item.riskColor,
+                          color: riskColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -315,7 +328,7 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                     Text(
                       '${(item.aiProbability * 100).round()}%',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: item.riskColor,
+                        color: riskColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -334,15 +347,15 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: scheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: scheme.outlineVariant),
                   ),
                   child: Text(
                     item.sentence,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       height: 1.6,
-                      color: const Color(0xFF1E3A5F),
+                      color: scheme.onSurface,
                     ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -363,7 +376,7 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                     l10n.suspiciousEvidenceLabel,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -377,14 +390,17 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: scheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: scheme.outlineVariant),
                         ),
                         child: Text(
                           pattern,
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: Colors.grey[700], fontSize: 12),
+                              ?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
                         ),
                       );
                     }).toList(),
@@ -397,12 +413,12 @@ class _SuspiciousSentenceCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: scheme.surfaceContainerHigh,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
+                bottomLeft: Radius.circular(6),
+                bottomRight: Radius.circular(6),
               ),
-              border: Border(top: BorderSide(color: Colors.grey[200]!)),
+              border: Border(top: BorderSide(color: scheme.outlineVariant)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -410,15 +426,15 @@ class _SuspiciousSentenceCard extends StatelessWidget {
                 Text(
                   l10n.suspiciousOriginalLocation(item.pageNumber),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: scheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
                   '$index/$totalCount',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[400]),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

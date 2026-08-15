@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/services/preferences_service.dart';
@@ -13,6 +14,21 @@ void main() {
 
     expect(preferences.confidenceThreshold, 0.5);
   });
+
+  test(
+    'appearance defaults to system brightness and handles unknown values',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = PreferencesService();
+      await preferences.load();
+      expect(preferences.themeMode, ThemeMode.system);
+
+      SharedPreferences.setMockInitialValues({'theme_mode': 'retiredTheme'});
+      final reloaded = PreferencesService();
+      await reloaded.load();
+      expect(reloaded.themeMode, ThemeMode.system);
+    },
+  );
 
   test('an existing saved threshold is preserved', () async {
     SharedPreferences.setMockInitialValues({'confidence_threshold': 0.75});
@@ -95,5 +111,27 @@ void main() {
       storage.containsKey('engineering_village_institution_token'),
       isFalse,
     );
+  });
+
+  test('workspace mode defaults to original and persists locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = PreferencesService();
+    await preferences.load();
+
+    expect(preferences.workspaceMode, WorkspaceMode.original);
+    await preferences.setWorkspaceMode(WorkspaceMode.evidenceCanvas);
+
+    final reloaded = PreferencesService();
+    await reloaded.load();
+    expect(reloaded.workspaceMode, WorkspaceMode.evidenceCanvas);
+  });
+
+  test('unknown saved workspace mode falls back to original', () async {
+    SharedPreferences.setMockInitialValues({'workspace_mode': 'retiredMode'});
+    final preferences = PreferencesService();
+
+    await preferences.load();
+
+    expect(preferences.workspaceMode, WorkspaceMode.original);
   });
 }

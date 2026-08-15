@@ -10,7 +10,8 @@ import '../onnx_detector.dart';
 
 /// 子模型 D：對抗式防禦模組（改寫偵測），ONNX Runtime 端上推論。
 /// 以「原生 AI + 改寫後 AI」皆標為 AI 訓練的分類器（見 training/prepare_adversarial.py），
-/// 對 QuillBot / Undetectable.ai 等改寫規避具韌性。
+/// 對 QuillBot / Undetectable.ai 等改寫規避具韌性；推論使用保留段落上下文的
+/// 受控區塊，再映射回逐句分數供報告使用。
 /// 使用中模型與 tokenizer 檔皆需存在才可用；否則回報 unavailable（優雅降級）。
 class AdversarialEngine implements DetectionEngine {
   final ModelManager modelManager;
@@ -134,13 +135,13 @@ class AdversarialEngine implements DetectionEngine {
     } catch (_) {
       detector = null;
     }
-    if (detector == null || text.sentences.isEmpty) {
+    if (detector == null || text.analysisChunks.isEmpty) {
       return _unavailable(l10n);
     }
 
-    List<double> perSentence;
+    List<double> perChunk;
     try {
-      perSentence = await detector.classifySentences(text.sentences);
+      perChunk = await detector.classifySentences(text.analysisChunks);
     } catch (e) {
       debugPrint('[AdversarialEngine] 模型推論失敗，啟動自動修復: $e');
       detector.dispose();
@@ -150,19 +151,25 @@ class AdversarialEngine implements DetectionEngine {
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
-    final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
-    final strongScores = perSentence.where((score) => score >= 0.6).toList();
-    final strongCount = strongScores.length;
-    final strongRatio = strongCount / perSentence.length;
+    final perSentence = text.expandChunkScoresToSentences(perChunk);
+    final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
+    final strongChunks = perChunk.where((score) => score >= 0.6).toList();
+    final strongChunkCount = strongChunks.length;
+    final strongChunkRatio = strongChunkCount / perChunk.length;
+    final strongSentenceCount = perSentence
+        .where((score) => score >= 0.6)
+        .length;
+    final strongSentenceRatio = strongSentenceCount / perSentence.length;
     double calibratedProbability;
-    if (strongCount == 0) {
-      final peak = perSentence.reduce((a, b) => a > b ? a : b);
+    if (strongChunkCount == 0) {
+      final peak = perChunk.reduce((a, b) => a > b ? a : b);
       final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
       final peakMargin = (peak - 0.5).clamp(0.0, 0.1) / 0.1;
       calibratedProbability = (averageMargin * 0.07) + (peakMargin * 0.03);
     } else {
-      final strongAverage = strongScores.reduce((a, b) => a + b) / strongCount;
-      calibratedProbability = (strongRatio * 0.7) + (strongAverage * 0.3);
+      final strongAverage =
+          strongChunks.reduce((a, b) => a + b) / strongChunkCount;
+      calibratedProbability = (strongChunkRatio * 0.7) + (strongAverage * 0.3);
     }
     calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
     return EngineScore(
@@ -172,19 +179,21 @@ class AdversarialEngine implements DetectionEngine {
       weight: defaultWeight,
       sentenceScores: perSentence,
       features: {
-        'strong_sentence_ratio': strongRatio,
+        'strong_sentence_ratio': strongSentenceRatio,
+        'strong_analysis_chunk_ratio': strongChunkRatio,
+        'analysis_chunk_count': perChunk.length.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
       },
       reasons: [
-        if (strongCount == 0)
+        if (strongChunkCount == 0)
           l10n.engineReasonAdversarialNoStrongSentence(
             perSentence.length,
             (calibratedProbability * 100).round(),
           )
         else
           l10n.engineReasonAdversarialStrongSentences(
-            strongCount,
+            strongSentenceCount,
             perSentence.length,
             (calibratedProbability * 100).round(),
           ),

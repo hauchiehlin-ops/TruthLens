@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum WorkspaceMode {
+  original,
+  automatic,
+  commandGrid,
+  missionTimeline,
+  evidenceCanvas,
+}
+
 /// 使用者偏好設定（閾值、主題、ESL 修正開關）
 class PreferencesService extends ChangeNotifier {
   static const engineRoles = <String>[
@@ -23,6 +31,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kDisabledEngines = 'disabled_engines';
   static const _kLinkVerificationEnabled = 'link_verification_enabled';
   static const _kLocale = 'app_locale';
+  static const _kWorkspaceMode = 'workspace_mode';
   static const _kEngineWeightPrefix = 'engine_weight_';
   static const minConfidenceThreshold = 0.2;
   static const maxConfidenceThreshold = 0.9;
@@ -31,7 +40,7 @@ class PreferencesService extends ChangeNotifier {
   SharedPreferences? _prefs;
 
   double confidenceThreshold = 0.5; // 判定為 AI 的信心閾值（可調，降低偽陽性）
-  ThemeMode themeMode = ThemeMode.dark; // 深色模式優先
+  ThemeMode themeMode = ThemeMode.system;
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
   bool modelPromptSuppressed = false; // 使用者選擇「不再提醒下載模型」
@@ -40,6 +49,7 @@ class PreferencesService extends ChangeNotifier {
   bool linkVerificationEnabled = true;
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
+  WorkspaceMode workspaceMode = WorkspaceMode.original;
   Set<String> _disabledEngines = {};
   Map<String, double> _engineWeights = Map.of(defaultEngineWeights);
 
@@ -53,8 +63,9 @@ class PreferencesService extends ChangeNotifier {
     confidenceThreshold = _clampThreshold(
       _prefs!.getDouble(_kThreshold) ?? 0.5,
     );
-    themeMode = ThemeMode.values.byName(
-      _prefs!.getString(_kThemeMode) ?? ThemeMode.dark.name,
+    themeMode = ThemeMode.values.firstWhere(
+      (mode) => mode.name == _prefs!.getString(_kThemeMode),
+      orElse: () => ThemeMode.system,
     );
     eslCorrectionEnabled = _prefs!.getBool(_kEslCorrection) ?? true;
     firstRunHandled = _prefs!.getBool(_kFirstRunHandled) ?? false;
@@ -67,6 +78,10 @@ class PreferencesService extends ChangeNotifier {
       _prefs!.remove('engineering_village_institution_token'),
     ]);
     locale = _decodeLocale(_prefs!.getString(_kLocale));
+    workspaceMode = WorkspaceMode.values.firstWhere(
+      (mode) => mode.name == _prefs!.getString(_kWorkspaceMode),
+      orElse: () => WorkspaceMode.original,
+    );
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
     final loadedWeights = <String, double>{
       for (final role in engineRoles)
@@ -123,6 +138,12 @@ class PreferencesService extends ChangeNotifier {
     } else {
       await _prefs?.setString(_kLocale, _encodeLocale(value));
     }
+    notifyListeners();
+  }
+
+  Future<void> setWorkspaceMode(WorkspaceMode value) async {
+    workspaceMode = value;
+    await _prefs?.setString(_kWorkspaceMode, value.name);
     notifyListeners();
   }
 

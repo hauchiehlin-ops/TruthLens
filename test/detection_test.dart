@@ -23,9 +23,47 @@ void main() {
     test('空文本不崩潰', () {
       final t = PreprocessedText.from('');
       expect(t.sentences, isEmpty);
+      expect(t.analysisChunks, isEmpty);
+      expect(t.sentenceChunkIndices, isEmpty);
       expect(t.burstiness, 0);
       expect(t.typeTokenRatio, 0);
       expect(t.entropy, 0);
+    });
+
+    test('同段句子合併為分析區塊且不跨越段落', () {
+      final t = PreprocessedText.from(
+        'This first sentence contains enough words for reliable analysis. '
+        'This second sentence keeps the same paragraph context intact.\n\n'
+        'This final sentence begins a separate paragraph for analysis.',
+      );
+
+      expect(t.sentences, hasLength(3));
+      expect(t.analysisChunks, hasLength(2));
+      expect(t.sentenceChunkIndices, [0, 0, 1]);
+      expect(t.analysisChunks.first, contains('same paragraph context'));
+    });
+
+    test('分析區塊最多容納五句', () {
+      final sentences = List.generate(
+        6,
+        (index) =>
+            'Sentence number $index contains several useful words for contextual analysis.',
+      ).join(' ');
+      final t = PreprocessedText.from(sentences);
+
+      expect(t.sentences, hasLength(6));
+      expect(t.analysisChunks, hasLength(2));
+      expect(t.sentenceChunkIndices, [0, 0, 0, 0, 0, 1]);
+    });
+
+    test('分析區塊遵守詞元上限並可映射回逐句分數', () {
+      final longSentence = List.filled(70, 'context').join(' ');
+      final t = PreprocessedText.from('$longSentence. $longSentence.');
+
+      expect(t.analysisChunks, hasLength(2));
+      expect(t.sentenceChunkIndices, [0, 1]);
+      expect(t.expandChunkScoresToSentences([0.2, 0.8]), [0.2, 0.8]);
+      expect(() => t.expandChunkScoresToSentences([0.2]), throwsArgumentError);
     });
 
     test('單一字母、頁碼、標題與引用殘片不作 AI 句級判讀', () {

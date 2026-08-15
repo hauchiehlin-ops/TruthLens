@@ -37,7 +37,8 @@ List<BibliographyCheckResult> deduplicateBibliographyPreviewResults(
 /// 依 document 的元件順序渲染，並標示生成來源。
 class ReportScreen extends StatefulWidget {
   final DetectionResult result;
-  const ReportScreen({super.key, required this.result});
+  final bool embedded;
+  const ReportScreen({super.key, required this.result, this.embedded = false});
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -280,6 +281,79 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final doc = _doc;
+    final content = doc == null
+        ? Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(l10n.reportGeneratingTitle),
+              ],
+            ),
+          )
+        : SelectionArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900),
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  children: [
+                    // 專業報告頂部：判定摘要 + 三列指標 + 引擎貢獻度
+                    ProfessionalReportHeader(
+                      result: result,
+                      onDownloadPdf: () => _export(ReportExporter.exportPdf),
+                    ),
+
+                    // 可疑句子清單
+                    if (result.sentences.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SuspiciousSentencesList(
+                          sentences: result.sentences,
+                          l10n: l10n,
+                        ),
+                      ),
+                    ],
+
+                    // 超連結驗證卡（可選）
+                    if (_detectedUrls.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _linkVerificationCard(l10n),
+                      ),
+                    ],
+
+                    // 文獻參考驗證卡（可選）
+                    if (_bibEntries.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _bibliographyCard(l10n),
+                      ),
+                    ],
+
+                    // 網路狀態警告（若適用）
+                    if (_networkAvailable == false &&
+                        (_detectedUrls.isNotEmpty ||
+                            _bibEntries.isNotEmpty)) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _networkWarningCard(l10n),
+                      ),
+                    ],
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          );
+    if (widget.embedded) return content;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.reportAppBarTitle),
@@ -331,77 +405,7 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         ],
       ),
-      body: doc == null
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(l10n.reportGeneratingTitle),
-                ],
-              ),
-            )
-          : SelectionArea(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    children: [
-                      // 專業報告頂部：判定摘要 + 三列指標 + 引擎貢獻度
-                      ProfessionalReportHeader(
-                        result: result,
-                        onDownloadPdf: () => _export(ReportExporter.exportPdf),
-                      ),
-
-                      // 可疑句子清單
-                      if (result.sentences.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: SuspiciousSentencesList(
-                            sentences: result.sentences,
-                            l10n: l10n,
-                          ),
-                        ),
-                      ],
-
-                      // 超連結驗證卡（可選）
-                      if (_detectedUrls.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: _linkVerificationCard(l10n),
-                        ),
-                      ],
-
-                      // 文獻參考驗證卡（可選）
-                      if (_bibEntries.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: _bibliographyCard(l10n),
-                        ),
-                      ],
-
-                      // 網路狀態警告（若適用）
-                      if (_networkAvailable == false &&
-                          (_detectedUrls.isNotEmpty ||
-                              _bibEntries.isNotEmpty)) ...[
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: _networkWarningCard(l10n),
-                        ),
-                      ],
-
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+      body: content,
     );
   }
 
@@ -550,9 +554,18 @@ class _ReportScreenState extends State<ReportScreen> {
                       },
                       size: 18,
                       color: switch (c.status) {
-                        LinkStatus.reachable => Colors.green,
-                        LinkStatus.notFound => Colors.red,
-                        LinkStatus.unreachable => Colors.orange,
+                        LinkStatus.reachable =>
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.greenAccent.shade200
+                              : Colors.green.shade800,
+                        LinkStatus.notFound =>
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.red.shade200
+                              : Colors.red.shade800,
+                        LinkStatus.unreachable =>
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.amber.shade300
+                              : Colors.orange.shade900,
                       },
                     ),
                     const SizedBox(width: 8),
@@ -697,6 +710,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               );
                               final statusColor = _bibStatusColor(
                                 presentation.tone,
+                                Theme.of(context).brightness,
                               );
                               return Padding(
                                 padding: const EdgeInsets.only(top: 3),
@@ -782,9 +796,13 @@ class _ReportScreenState extends State<ReportScreen> {
                     checks[i],
                     l10n,
                   );
-                  final statusColor = _bibStatusColor(presentation.tone);
+                  final statusColor = _bibStatusColor(
+                    presentation.tone,
+                    Theme.of(context).brightness,
+                  );
                   final warningColor = _bibStatusColor(
                     presentation.warningTone ?? presentation.tone,
+                    Theme.of(context).brightness,
                   );
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -886,11 +904,23 @@ class _ReportScreenState extends State<ReportScreen> {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  Color _bibStatusColor(BibliographyDisplayTone tone) => switch (tone) {
-    BibliographyDisplayTone.success => Colors.green.shade700,
-    BibliographyDisplayTone.warning => Colors.orange.shade800,
-    BibliographyDisplayTone.mismatch => Colors.blue.shade700,
-    BibliographyDisplayTone.error => Colors.red.shade700,
+  Color _bibStatusColor(
+    BibliographyDisplayTone tone,
+    Brightness brightness,
+  ) => switch ((tone, brightness)) {
+    (BibliographyDisplayTone.success, Brightness.dark) =>
+      Colors.greenAccent.shade200,
+    (BibliographyDisplayTone.success, Brightness.light) =>
+      Colors.green.shade800,
+    (BibliographyDisplayTone.warning, Brightness.dark) => Colors.amber.shade300,
+    (BibliographyDisplayTone.warning, Brightness.light) =>
+      Colors.orange.shade900,
+    (BibliographyDisplayTone.mismatch, Brightness.dark) =>
+      Colors.lightBlue.shade200,
+    (BibliographyDisplayTone.mismatch, Brightness.light) =>
+      Colors.blue.shade800,
+    (BibliographyDisplayTone.error, Brightness.dark) => Colors.red.shade200,
+    (BibliographyDisplayTone.error, Brightness.light) => Colors.red.shade800,
   };
 
   IconData _bibStatusIcon(BibliographyCheckResult check) =>

@@ -2,28 +2,29 @@ import 'package:go_router/go_router.dart';
 
 import '../core/models/analysis_request.dart';
 import '../core/models/detection_result.dart';
-import '../features/analysis/analysis_screen.dart';
 import '../features/help/help_screen.dart';
 import '../features/help/privacy_policy_screen.dart';
 import '../features/history/history_screen.dart';
-import '../features/input/input_screen.dart';
+import '../features/home/home_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/report/report_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/workspace/workspace_screen.dart';
 
 GoRouter createRouter({required String initialLocation}) => GoRouter(
   initialLocation: initialLocation,
   routes: [
-    GoRoute(path: '/', builder: (_, _) => const InputScreen()),
+    GoRoute(path: '/', builder: (_, _) => const HomeScreen()),
     GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(
       path: '/analysis',
       builder: (_, state) {
         final extra = state.extra;
-        return AnalysisScreen(
-          request: extra is AnalysisRequest
+        return WorkspaceScreen(
+          initialRequest: extra is AnalysisRequest
               ? extra
               : AnalysisRequest(text: extra as String),
+          autoStart: true,
         );
       },
     ),

@@ -467,7 +467,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      '使用多語言 Transformer 評估完整句子的 AI 模式。設定權重決定影響比例；AI 訊號決定實際貢獻。';
+      '使用多語言 Transformer 評估保留上下文的段落區塊，再將區塊分數映射回逐句報告。設定權重決定影響比例；AI 訊號決定實際貢獻。';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1489,7 +1489,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多語言 AI 分類器（權重 40%）：整體判定主力，句子級 AI 機率預測，對準確度提升最明顯。';
+      '多語言 AI 分類器（權重 40%）：以受控段落區塊保留上下文，再將機率映射回逐句證據。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1530,7 +1530,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      '報告頁包含：整體判定、AI 機率、信心度標籤、分析耗時、逐句熱力圖、四引擎貢獻與理由、超連結驗證、文獻參考驗證。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡。每次分析結果會自動保存於本機「歷史紀錄」，有來源檔名時也會一併保存。';
+      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；自動模式在桌面使用指揮網格、手機使用任務時間軸。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -1825,6 +1825,80 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
+
+  @override
+  String get workspaceModeSectionTitle => '戰情中心配置';
+
+  @override
+  String get workspaceModeSectionSubtitle => '選擇文件、即時分析與最終證據在同一工作台的呈現方式。';
+
+  @override
+  String get workspaceModeOriginal => '原始版面';
+
+  @override
+  String get workspaceModeAuto => '自動選擇';
+
+  @override
+  String get workspaceModeCommandGrid => '指揮網格';
+
+  @override
+  String get workspaceModeTimeline => '任務時間軸';
+
+  @override
+  String get workspaceModeEvidence => '證據畫布';
+
+  @override
+  String get workspaceModeTooltip => '切換戰情中心配置';
+
+  @override
+  String get workspaceStageImport => '匯入';
+
+  @override
+  String get workspaceStageParse => '解析';
+
+  @override
+  String get workspaceStageAnalyze => '四引擎分析';
+
+  @override
+  String get workspaceStageVerify => '核實';
+
+  @override
+  String get workspaceStageReport => '報告';
+
+  @override
+  String get workspaceLiveFindings => '即時發現';
+
+  @override
+  String get workspaceTelemetry => '分析遙測';
+
+  @override
+  String get workspaceDocument => '文件工作區';
+
+  @override
+  String get workspaceOverallProgress => '整體進度';
+
+  @override
+  String get workspaceWaiting => '等待匯入文件';
+
+  @override
+  String get workspaceAnalyzing => '分析進行中';
+
+  @override
+  String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String get workspaceNewAnalysis => '新的分析';
+
+  @override
+  String get workspaceSelectedEvidence => '選取證據';
+
+  @override
+  String get workspaceNoEvidence => '各引擎完成後，句子證據會依序顯示於此。';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return '初步 AI 機率：$percent%';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -2290,7 +2364,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settingsEngineTransformerHelp =>
-      '使用多语言 Transformer 评估完整句子的 AI 模式。设置权重决定影响比例；AI 信号决定实际贡献。';
+      '使用多语言 Transformer 评估保留上下文的段落区块，再将区块分数映射回逐句报告。设置权重决定影响比例；AI 信号决定实际贡献。';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -3312,7 +3386,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多语言 AI 分类器（权重 40%）：整体判定主力，句子级 AI 几率预测，对准确度提升最明显。';
+      '多语言 AI 分类器（权重 40%）：以受控段落区块保留上下文，再将几率映射回逐句证据。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -3353,7 +3427,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '报告页包含：整体判定、AI 几率、信心度标签、分析耗时、逐句热力图、四引擎贡献与理由、超链接验证、文献参考验证。可导出 PDF 完整报告、CSV 逐句数据、JSON（供系统集成）、PNG 摘要卡。每次分析结果会自动保存于本机「历史纪录」，有来源文件名时也会一并保存。';
+      '文档导入、四引擎实时进度与完整报告现在都保留在同一个战情中心工作台。可随时切换“指挥网格”“任务时间轴”与“证据画布”，不会中断或重新分析；自动模式在桌面使用指挥网格、手机使用任务时间轴。结果包含整体判定、AI 概率、信心度、耗时、逐句证据、引擎贡献、链接与文献核实，并可导出 PDF、CSV、JSON、PNG及保存至本机历史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
@@ -3648,6 +3722,80 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get webOcrTestServerFailure => '无法连接本地 OCR 服务器，请打开设置指南并检查安装程序、防火墙和网址。';
+
+  @override
+  String get workspaceModeSectionTitle => '战情中心布局';
+
+  @override
+  String get workspaceModeSectionSubtitle => '选择文件、实时分析与最终证据在同一工作台的呈现方式。';
+
+  @override
+  String get workspaceModeOriginal => '原始版面';
+
+  @override
+  String get workspaceModeAuto => '自动选择';
+
+  @override
+  String get workspaceModeCommandGrid => '指挥网格';
+
+  @override
+  String get workspaceModeTimeline => '任务时间轴';
+
+  @override
+  String get workspaceModeEvidence => '证据画布';
+
+  @override
+  String get workspaceModeTooltip => '切换战情中心布局';
+
+  @override
+  String get workspaceStageImport => '导入';
+
+  @override
+  String get workspaceStageParse => '解析';
+
+  @override
+  String get workspaceStageAnalyze => '四引擎分析';
+
+  @override
+  String get workspaceStageVerify => '核实';
+
+  @override
+  String get workspaceStageReport => '报告';
+
+  @override
+  String get workspaceLiveFindings => '实时发现';
+
+  @override
+  String get workspaceTelemetry => '分析遥测';
+
+  @override
+  String get workspaceDocument => '文件工作区';
+
+  @override
+  String get workspaceOverallProgress => '整体进度';
+
+  @override
+  String get workspaceWaiting => '等待导入文件';
+
+  @override
+  String get workspaceAnalyzing => '分析进行中';
+
+  @override
+  String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String get workspaceNewAnalysis => '新的分析';
+
+  @override
+  String get workspaceSelectedEvidence => '选取证据';
+
+  @override
+  String get workspaceNoEvidence => '各引擎完成后，句子证据会依序显示于此。';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return '初步 AI 概率：$percent%';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4113,7 +4261,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsEngineTransformerHelp =>
-      '使用多語言 Transformer 評估完整句子的 AI 模式。設定權重決定影響比例；AI 訊號決定實際貢獻。';
+      '使用多語言 Transformer 評估保留上下文的段落區塊，再將區塊分數映射回逐句報告。設定權重決定影響比例；AI 訊號決定實際貢獻。';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -5135,7 +5283,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多語言 AI 分類器（權重 40%）：整體判定主力，句子級 AI 機率預測，對準確度提升最明顯。';
+      '多語言 AI 分類器（權重 40%）：以受控段落區塊保留上下文，再將機率映射回逐句證據。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -5176,7 +5324,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '報告頁包含：整體判定、AI 機率、信心度標籤、分析耗時、逐句熱力圖、四引擎貢獻與理由、超連結驗證、文獻參考驗證。可匯出 PDF 完整報告、CSV 逐句數據、JSON（供系統整合）、PNG 摘要卡。每次分析結果會自動保存於本機「歷史紀錄」，有來源檔名時也會一併保存。';
+      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；自動模式在桌面使用指揮網格、手機使用任務時間軸。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -5471,4 +5619,78 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get webOcrTestServerFailure => '無法連上本地 OCR 伺服器，請開啟設定指引並檢查安裝程式、防火牆與網址。';
+
+  @override
+  String get workspaceModeSectionTitle => '戰情中心配置';
+
+  @override
+  String get workspaceModeSectionSubtitle => '選擇文件、即時分析與最終證據在同一工作台的呈現方式。';
+
+  @override
+  String get workspaceModeOriginal => '原始版面';
+
+  @override
+  String get workspaceModeAuto => '自動選擇';
+
+  @override
+  String get workspaceModeCommandGrid => '指揮網格';
+
+  @override
+  String get workspaceModeTimeline => '任務時間軸';
+
+  @override
+  String get workspaceModeEvidence => '證據畫布';
+
+  @override
+  String get workspaceModeTooltip => '切換戰情中心配置';
+
+  @override
+  String get workspaceStageImport => '匯入';
+
+  @override
+  String get workspaceStageParse => '解析';
+
+  @override
+  String get workspaceStageAnalyze => '四引擎分析';
+
+  @override
+  String get workspaceStageVerify => '核實';
+
+  @override
+  String get workspaceStageReport => '報告';
+
+  @override
+  String get workspaceLiveFindings => '即時發現';
+
+  @override
+  String get workspaceTelemetry => '分析遙測';
+
+  @override
+  String get workspaceDocument => '文件工作區';
+
+  @override
+  String get workspaceOverallProgress => '整體進度';
+
+  @override
+  String get workspaceWaiting => '等待匯入文件';
+
+  @override
+  String get workspaceAnalyzing => '分析進行中';
+
+  @override
+  String get workspaceAnalysisComplete => '分析完成';
+
+  @override
+  String get workspaceNewAnalysis => '新的分析';
+
+  @override
+  String get workspaceSelectedEvidence => '選取證據';
+
+  @override
+  String get workspaceNoEvidence => '各引擎完成後，句子證據會依序顯示於此。';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return '初步 AI 機率：$percent%';
+  }
 }

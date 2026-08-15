@@ -58,7 +58,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.info_outline).first);
       await tester.pumpAndSettle();
       expect(
-        find.textContaining('Evaluates complete sentences'),
+        find.textContaining('context-preserving paragraph blocks'),
         findsOneWidget,
       );
     },

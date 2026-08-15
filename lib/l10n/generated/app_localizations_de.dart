@@ -500,7 +500,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'Bewertet vollständige Sätze mit einem mehrsprachigen Transformer-Modell. Die Gewichtung bestimmt den Einfluss, das KI-Signal den tatsächlichen Beitrag.';
+      'Bewertet kontexterhaltende Absatzblöcke mit einem mehrsprachigen Transformer und ordnet die Blockwerte für detaillierte Berichte wieder den Sätzen zu. Die Gewichtung bestimmt den Einfluss, das KI-Signal den tatsächlichen Beitrag.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1564,7 +1564,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Mehrsprachiger KI-Klassifikator (Gewicht 40%): der Hauptfaktor für das Gesamturteil, mit Vorhersage der KI-Wahrscheinlichkeit auf Satzebene — verbessert die Genauigkeit am meisten.';
+      'Mehrsprachiger KI-Klassifikator (Gewicht 40%): analysiert begrenzte Absatzblöcke mit Kontext und ordnet die Wahrscheinlichkeiten anschließend den Sätzen zu.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1919,4 +1919,80 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'Der lokale OCR-Server ist nicht erreichbar. Prüfen Sie Anleitung, Firewall und URL.';
+
+  @override
+  String get workspaceModeSectionTitle => 'Lagezentrum-Layout';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'Wählen Sie, wie Quelle, Live-Analyse und Belege in einem Arbeitsbereich erscheinen.';
+
+  @override
+  String get workspaceModeOriginal => 'Ursprüngliches Layout';
+
+  @override
+  String get workspaceModeAuto => 'Automatisch';
+
+  @override
+  String get workspaceModeCommandGrid => 'Kommandoraster';
+
+  @override
+  String get workspaceModeTimeline => 'Missionszeitachse';
+
+  @override
+  String get workspaceModeEvidence => 'Beweisfläche';
+
+  @override
+  String get workspaceModeTooltip => 'Lagezentrum-Layout wechseln';
+
+  @override
+  String get workspaceStageImport => 'Import';
+
+  @override
+  String get workspaceStageParse => 'Auswertung';
+
+  @override
+  String get workspaceStageAnalyze => 'Vier-Engine-Analyse';
+
+  @override
+  String get workspaceStageVerify => 'Prüfung';
+
+  @override
+  String get workspaceStageReport => 'Bericht';
+
+  @override
+  String get workspaceLiveFindings => 'Live-Ergebnisse';
+
+  @override
+  String get workspaceTelemetry => 'Analyse-Telemetrie';
+
+  @override
+  String get workspaceDocument => 'Dokumentbereich';
+
+  @override
+  String get workspaceOverallProgress => 'Gesamtfortschritt';
+
+  @override
+  String get workspaceWaiting => 'Warten auf ein Dokument';
+
+  @override
+  String get workspaceAnalyzing => 'Analyse läuft';
+
+  @override
+  String get workspaceAnalysisComplete => 'Analyse abgeschlossen';
+
+  @override
+  String get workspaceNewAnalysis => 'Neue Analyse';
+
+  @override
+  String get workspaceSelectedEvidence => 'Ausgewählter Beleg';
+
+  @override
+  String get workspaceNoEvidence =>
+      'Satzbelege erscheinen hier, sobald die Engines fertig sind.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'Vorläufige KI-Wahrscheinlichkeit: $percent%';
+  }
 }

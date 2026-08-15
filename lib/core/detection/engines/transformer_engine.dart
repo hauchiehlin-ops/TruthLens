@@ -12,7 +12,8 @@ import '../model_manager.dart';
 import '../onnx_detector.dart';
 
 /// 子模型 A：多語言 Transformer 分類器（ONNX Runtime 端上推論）。
-/// 使用 [ModelManager] 目前「使用中」的已安裝模型；載入後逐句推論、彙整為整體分數。
+/// 使用 [ModelManager] 目前「使用中」的已安裝模型；載入後以保留段落上下文的
+/// 受控區塊推論，並將區塊分數映射回逐句報告。
 /// 支援 WordPiece（BERT 系）與 byte-level BPE（RoBERTa 系）tokenizer。
 /// 分類器一定需要 tokenizer；若使用中模型缺 tokenizer 或檔案不存在，回報 unavailable。
 class TransformerEngine implements DetectionEngine {
@@ -139,7 +140,9 @@ class TransformerEngine implements DetectionEngine {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded();
-      if (detector == null || text.sentences.isEmpty) return _unavailable(l10n);
+      if (detector == null || text.analysisChunks.isEmpty) {
+        return _unavailable(l10n);
+      }
     } catch (e) {
       debugPrint('[TransformerEngine] 模型載入例外，啟動自動修復: $e');
       _repairMessage = await _repairActiveVariant(reason: 'Transformer 模型載入失敗');
@@ -147,9 +150,9 @@ class TransformerEngine implements DetectionEngine {
       return _unavailable(l10n);
     }
 
-    List<double> perSentence;
+    List<double> perChunk;
     try {
-      perSentence = await detector.classifySentences(text.sentences);
+      perChunk = await detector.classifySentences(text.analysisChunks);
     } catch (e) {
       debugPrint('[TransformerEngine] 模型推論失敗，啟動自動修復: $e');
       detector.dispose();
@@ -159,23 +162,30 @@ class TransformerEngine implements DetectionEngine {
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
-    final avg = perSentence.reduce((a, b) => a + b) / perSentence.length;
-    final aiCount = perSentence.where((s) => s >= 0.6).length;
-    final aiRatio = aiCount / perSentence.length;
-    final maxSentence = perSentence.reduce(math.max);
+    final perSentence = text.expandChunkScoresToSentences(perChunk);
+    final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
+    final strongChunks = perChunk.where((score) => score >= 0.6).toList();
+    final strongChunkCount = strongChunks.length;
+    final strongChunkRatio = strongChunkCount / perChunk.length;
+    final maxChunk = perChunk.reduce(math.max);
+    final strongSentenceCount = perSentence
+        .where((score) => score >= 0.6)
+        .length;
+    final strongSentenceRatio = strongSentenceCount / perSentence.length;
 
-    // 置信度校準：避免隨機 Softmax 浮動（~0.50）在 0 句 AI 時輸出 52% 的矛盾
+    // 置信度校準：避免隨機 Softmax 浮動（~0.50）在 0 個強 AI 區塊時
+    // 輸出 52% 的矛盾結果。
     double calibratedProbability;
-    if (aiCount == 0) {
+    if (strongChunkCount == 0) {
       final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
-      final peakMargin = (maxSentence - 0.5).clamp(0.0, 0.1) / 0.1;
-      // 沒有任何句子跨過強 AI 閾值時，只保留最多 10% 的弱訊號，
+      final peakMargin = (maxChunk - 0.5).clamp(0.0, 0.1) / 0.1;
+      // 沒有任何區塊跨過強 AI 閾值時，只保留最多 10% 的弱訊號，
       // 避免 Softmax 在 0.5 附近的浮動被誤解成肯定的 AI 證據。
       calibratedProbability = (averageMargin * 0.07) + (peakMargin * 0.03);
     } else {
-      final aiAvg =
-          perSentence.where((s) => s >= 0.6).reduce((a, b) => a + b) / aiCount;
-      calibratedProbability = (aiRatio * 0.7) + (aiAvg * 0.3);
+      final strongAverage =
+          strongChunks.reduce((a, b) => a + b) / strongChunkCount;
+      calibratedProbability = (strongChunkRatio * 0.7) + (strongAverage * 0.3);
     }
     calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
 
@@ -186,12 +196,14 @@ class TransformerEngine implements DetectionEngine {
       aiProbability: calibratedProbability,
       weight: defaultWeight,
       features: {
-        'ai_sentence_ratio': aiRatio,
+        'ai_sentence_ratio': strongSentenceRatio,
+        'ai_analysis_chunk_ratio': strongChunkRatio,
+        'analysis_chunk_count': perChunk.length.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
       },
       reasons: [
-        if (aiCount == 0)
+        if (strongChunkCount == 0)
           l10n.engineReasonTransformerNoStrongSentence(
             variant?.variantId ?? name(l10n),
             perSentence.length,
@@ -200,7 +212,7 @@ class TransformerEngine implements DetectionEngine {
         else
           l10n.engineReasonTransformerResult(
             variant?.variantId ?? name(l10n),
-            aiCount,
+            strongSentenceCount,
             perSentence.length,
           ),
       ],

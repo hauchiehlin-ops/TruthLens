@@ -495,7 +495,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'Оценивает полные предложения многоязычной моделью Transformer. Вес задаёт влияние, а сигнал ИИ определяет фактический вклад.';
+      'Оценивает сохраняющие контекст блоки абзацев многоязычной моделью Transformer, затем сопоставляет оценки блоков с предложениями для подробного отчёта. Вес задаёт влияние, а сигнал ИИ определяет фактический вклад.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1556,7 +1556,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Многоязычный классификатор ИИ (вес 40%): главный фактор общего вердикта, с прогнозом вероятности ИИ на уровне предложений — повышает точность больше всего.';
+      'Многоязычный классификатор ИИ (вес 40%): анализирует ограниченные блоки абзацев с сохранением контекста, затем сопоставляет вероятности с предложениями.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1911,4 +1911,80 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'Не удалось подключиться к локальному OCR-серверу. Проверьте руководство, брандмауэр и URL.';
+
+  @override
+  String get workspaceModeSectionTitle => 'Макет ситуационного центра';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'Выберите размещение источника, анализа в реальном времени и итоговых доказательств.';
+
+  @override
+  String get workspaceModeOriginal => 'Исходный макет';
+
+  @override
+  String get workspaceModeAuto => 'Автоматически';
+
+  @override
+  String get workspaceModeCommandGrid => 'Командная сетка';
+
+  @override
+  String get workspaceModeTimeline => 'Хронология миссии';
+
+  @override
+  String get workspaceModeEvidence => 'Полотно доказательств';
+
+  @override
+  String get workspaceModeTooltip => 'Сменить макет ситуационного центра';
+
+  @override
+  String get workspaceStageImport => 'Импорт';
+
+  @override
+  String get workspaceStageParse => 'Разбор';
+
+  @override
+  String get workspaceStageAnalyze => 'Анализ четырьмя модулями';
+
+  @override
+  String get workspaceStageVerify => 'Проверка';
+
+  @override
+  String get workspaceStageReport => 'Отчёт';
+
+  @override
+  String get workspaceLiveFindings => 'Текущие результаты';
+
+  @override
+  String get workspaceTelemetry => 'Телеметрия анализа';
+
+  @override
+  String get workspaceDocument => 'Рабочая область документа';
+
+  @override
+  String get workspaceOverallProgress => 'Общий прогресс';
+
+  @override
+  String get workspaceWaiting => 'Ожидание документа';
+
+  @override
+  String get workspaceAnalyzing => 'Идёт анализ';
+
+  @override
+  String get workspaceAnalysisComplete => 'Анализ завершён';
+
+  @override
+  String get workspaceNewAnalysis => 'Новый анализ';
+
+  @override
+  String get workspaceSelectedEvidence => 'Выбранное доказательство';
+
+  @override
+  String get workspaceNoEvidence =>
+      'Доказательства по предложениям появятся после завершения модулей.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'Предварительная вероятность ИИ: $percent%';
+  }
 }

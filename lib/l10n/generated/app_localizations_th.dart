@@ -492,7 +492,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'ประเมินประโยคสมบูรณ์ด้วย Transformer หลายภาษา น้ำหนักกำหนดอิทธิพล ส่วนสัญญาณ AI กำหนดผลต่อคะแนนจริง';
+      'ประเมินบล็อกย่อหน้าที่คงบริบทด้วย Transformer หลายภาษา แล้วจับคู่คะแนนบล็อกกลับไปยังประโยคสำหรับรายงานโดยละเอียด น้ำหนักกำหนดอิทธิพล ส่วนสัญญาณ AI กำหนดผลต่อคะแนนจริง';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1549,7 +1549,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'ตัวจำแนก AI หลายภาษา（น้ำหนัก 40%）: แกนหลักของการตัดสินโดยรวม ทำนายความน่าจะเป็น AI ระดับประโยค ส่งผลต่อการเพิ่มความแม่นยำมากที่สุด';
+      'ตัวจำแนก AI หลายภาษา（น้ำหนัก 40%）: วิเคราะห์บล็อกย่อหน้าที่จำกัดเพื่อคงบริบท แล้วจับคู่ความน่าจะเป็นกลับไปยังประโยค';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1902,4 +1902,80 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ OCR ในเครื่อง โปรดตรวจสอบคู่มือ ไฟร์วอลล์ และ URL';
+
+  @override
+  String get workspaceModeSectionTitle => 'รูปแบบศูนย์สถานการณ์';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'เลือกวิธีแสดงต้นฉบับ การวิเคราะห์สด และหลักฐานสุดท้ายในพื้นที่เดียวกัน';
+
+  @override
+  String get workspaceModeOriginal => 'รูปแบบดั้งเดิม';
+
+  @override
+  String get workspaceModeAuto => 'อัตโนมัติ';
+
+  @override
+  String get workspaceModeCommandGrid => 'ตารางบัญชาการ';
+
+  @override
+  String get workspaceModeTimeline => 'ไทม์ไลน์ภารกิจ';
+
+  @override
+  String get workspaceModeEvidence => 'ผืนผ้าใบหลักฐาน';
+
+  @override
+  String get workspaceModeTooltip => 'สลับรูปแบบศูนย์สถานการณ์';
+
+  @override
+  String get workspaceStageImport => 'นำเข้า';
+
+  @override
+  String get workspaceStageParse => 'แยกข้อมูล';
+
+  @override
+  String get workspaceStageAnalyze => 'วิเคราะห์สี่เอนจิน';
+
+  @override
+  String get workspaceStageVerify => 'ตรวจสอบ';
+
+  @override
+  String get workspaceStageReport => 'รายงาน';
+
+  @override
+  String get workspaceLiveFindings => 'ผลที่พบสด';
+
+  @override
+  String get workspaceTelemetry => 'ข้อมูลการวิเคราะห์';
+
+  @override
+  String get workspaceDocument => 'พื้นที่เอกสาร';
+
+  @override
+  String get workspaceOverallProgress => 'ความคืบหน้ารวม';
+
+  @override
+  String get workspaceWaiting => 'รอเอกสาร';
+
+  @override
+  String get workspaceAnalyzing => 'กำลังวิเคราะห์';
+
+  @override
+  String get workspaceAnalysisComplete => 'วิเคราะห์เสร็จแล้ว';
+
+  @override
+  String get workspaceNewAnalysis => 'การวิเคราะห์ใหม่';
+
+  @override
+  String get workspaceSelectedEvidence => 'หลักฐานที่เลือก';
+
+  @override
+  String get workspaceNoEvidence =>
+      'หลักฐานระดับประโยคจะแสดงเมื่อแต่ละเอนจินทำงานเสร็จ';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'ความน่าจะเป็น AI เบื้องต้น: $percent%';
+  }
 }

@@ -3,19 +3,86 @@ import 'dart:math' as math;
 /// 輸入預處理：斷句、斷詞與基礎統計。
 /// 中日韓文字以標點斷句、逐字元計詞；其他語言以空白斷詞。
 class PreprocessedText {
+  static const int maxAnalysisChunkTokens = 120;
+  static const int maxAnalysisChunkSentences = 5;
+
   final String raw;
   final List<String> sentences;
   final List<List<String>> sentenceTokens;
+  final List<String> analysisChunks;
+  final List<int> sentenceChunkIndices;
 
-  PreprocessedText._(this.raw, this.sentences, this.sentenceTokens);
+  PreprocessedText._(
+    this.raw,
+    this.sentences,
+    this.sentenceTokens,
+    this.analysisChunks,
+    this.sentenceChunkIndices,
+  );
 
   factory PreprocessedText.from(String raw) {
     final normalized = raw.trim();
-    final sentences = _splitSentences(
+    final sentences = <String>[];
+    final tokens = <List<String>>[];
+    final analysisChunks = <String>[];
+    final sentenceChunkIndices = <int>[];
+
+    for (final paragraph in normalized.split(RegExp(r'\n\s*\n+'))) {
+      final paragraphSentences = _splitSentences(
+        paragraph,
+      ).map(normalizeSentenceForAnalysis).where(isAnalyzableSentence).toList();
+      var pendingSentences = <String>[];
+      var pendingTokenCount = 0;
+
+      void flushChunk() {
+        if (pendingSentences.isEmpty) return;
+        final chunkIndex = analysisChunks.length;
+        analysisChunks.add(pendingSentences.join(' '));
+        sentenceChunkIndices.addAll(
+          List<int>.filled(pendingSentences.length, chunkIndex),
+        );
+        pendingSentences = <String>[];
+        pendingTokenCount = 0;
+      }
+
+      for (final sentence in paragraphSentences) {
+        final sentenceTokenList = _tokenize(sentence);
+        final exceedsSentenceLimit =
+            pendingSentences.length >= maxAnalysisChunkSentences;
+        final exceedsTokenLimit =
+            pendingSentences.isNotEmpty &&
+            pendingTokenCount + sentenceTokenList.length >
+                maxAnalysisChunkTokens;
+        if (exceedsSentenceLimit || exceedsTokenLimit) flushChunk();
+
+        sentences.add(sentence);
+        tokens.add(sentenceTokenList);
+        pendingSentences.add(sentence);
+        pendingTokenCount += sentenceTokenList.length;
+      }
+      // 不跨越原始段落合併，避免把不同主題的句子放進同一推論區塊。
+      flushChunk();
+    }
+
+    return PreprocessedText._(
       normalized,
-    ).map(normalizeSentenceForAnalysis).where(isAnalyzableSentence).toList();
-    final tokens = sentences.map(_tokenize).toList();
-    return PreprocessedText._(normalized, sentences, tokens);
+      sentences,
+      tokens,
+      analysisChunks,
+      sentenceChunkIndices,
+    );
+  }
+
+  /// 將段落區塊的神經模型分數映射回原始句序，供逐句報告與熱區圖使用。
+  List<double> expandChunkScoresToSentences(List<double> chunkScores) {
+    if (chunkScores.length != analysisChunks.length) {
+      throw ArgumentError.value(
+        chunkScores.length,
+        'chunkScores',
+        'Expected ${analysisChunks.length} analysis chunk scores',
+      );
+    }
+    return sentenceChunkIndices.map((index) => chunkScores[index]).toList();
   }
 
   static List<String> _splitSentences(String text) {

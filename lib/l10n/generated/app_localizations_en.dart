@@ -488,7 +488,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      'Evaluates complete sentences with a multilingual Transformer model. It is strongest at sentence-level AI pattern recognition; its configured weight controls influence, while its AI signal controls the actual contribution.';
+      'Evaluates context-preserving paragraph blocks with a multilingual Transformer model, then maps block scores back to sentences for detailed reporting. Its configured weight controls influence, while its AI signal controls the actual contribution.';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1545,7 +1545,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Multilingual AI classifier (40% weight): the main driver of the overall verdict, with sentence-level AI probability prediction — improves accuracy the most.';
+      'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1586,7 +1586,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      'The report page includes: an overall verdict, AI probability, confidence badge, elapsed time, sentence-level heatmap, engine contribution breakdown, hyperlink checks, and citation checks. You can export a full PDF report, per-sentence CSV data, JSON (for system integration), or a PNG summary card. Every analysis is automatically saved to \"History\" on this device, including the source file name when one exists.';
+      'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Automatic uses Command grid on desktop and Mission timeline on mobile. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => 'First launch';
@@ -1901,4 +1901,80 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'Could not reach the local OCR server. Open the setup guide and check the installer, firewall, and URL.';
+
+  @override
+  String get workspaceModeSectionTitle => 'Situation center layout';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      'Choose how source, live analysis, and final evidence share one workspace.';
+
+  @override
+  String get workspaceModeOriginal => 'Original layout';
+
+  @override
+  String get workspaceModeAuto => 'Automatic';
+
+  @override
+  String get workspaceModeCommandGrid => 'Command grid';
+
+  @override
+  String get workspaceModeTimeline => 'Mission timeline';
+
+  @override
+  String get workspaceModeEvidence => 'Evidence canvas';
+
+  @override
+  String get workspaceModeTooltip => 'Switch situation center layout';
+
+  @override
+  String get workspaceStageImport => 'Import';
+
+  @override
+  String get workspaceStageParse => 'Parse';
+
+  @override
+  String get workspaceStageAnalyze => 'Four-engine analysis';
+
+  @override
+  String get workspaceStageVerify => 'Verification';
+
+  @override
+  String get workspaceStageReport => 'Report';
+
+  @override
+  String get workspaceLiveFindings => 'Live findings';
+
+  @override
+  String get workspaceTelemetry => 'Analysis telemetry';
+
+  @override
+  String get workspaceDocument => 'Document workspace';
+
+  @override
+  String get workspaceOverallProgress => 'Overall progress';
+
+  @override
+  String get workspaceWaiting => 'Waiting for a document';
+
+  @override
+  String get workspaceAnalyzing => 'Analysis in progress';
+
+  @override
+  String get workspaceAnalysisComplete => 'Analysis complete';
+
+  @override
+  String get workspaceNewAnalysis => 'New analysis';
+
+  @override
+  String get workspaceSelectedEvidence => 'Selected evidence';
+
+  @override
+  String get workspaceNoEvidence =>
+      'Sentence evidence appears here as each engine completes.';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return 'Preliminary AI probability: $percent%';
+  }
 }

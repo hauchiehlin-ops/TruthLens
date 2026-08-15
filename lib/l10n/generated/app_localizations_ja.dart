@@ -473,7 +473,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsEngineTransformerHelp =>
-      '多言語Transformerで完全な文を評価します。設定した重みが影響度を、AI信号が実際の寄与度を決定します。';
+      '多言語Transformerで文脈を保持した段落ブロックを評価し、詳細レポート用にブロックスコアを各文へ対応付けます。設定した重みが影響度を、AI信号が実際の寄与度を決定します。';
 
   @override
   String get settingsEngineStatisticalHelp =>
@@ -1515,7 +1515,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多言語AI分類器（重み40%）：総合判定の主力で、文単位のAI確率予測を行い、精度向上への貢献が最も大きいです。';
+      '多言語AI分類器（重み40%）：文脈を保つ制限付き段落ブロックを解析し、確率を各文へ対応付けます。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -1856,4 +1856,79 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get webOcrTestServerFailure =>
       'ローカルOCRサーバーに接続できません。ガイド、ファイアウォール、URLを確認してください。';
+
+  @override
+  String get workspaceModeSectionTitle => '状況センターのレイアウト';
+
+  @override
+  String get workspaceModeSectionSubtitle =>
+      '原文、ライブ分析、最終証拠を一つの作業画面に配置する方法を選択します。';
+
+  @override
+  String get workspaceModeOriginal => '元のレイアウト';
+
+  @override
+  String get workspaceModeAuto => '自動';
+
+  @override
+  String get workspaceModeCommandGrid => 'コマンドグリッド';
+
+  @override
+  String get workspaceModeTimeline => 'ミッションタイムライン';
+
+  @override
+  String get workspaceModeEvidence => '証拠キャンバス';
+
+  @override
+  String get workspaceModeTooltip => '状況センターのレイアウトを切り替え';
+
+  @override
+  String get workspaceStageImport => '取込';
+
+  @override
+  String get workspaceStageParse => '解析';
+
+  @override
+  String get workspaceStageAnalyze => '4エンジン分析';
+
+  @override
+  String get workspaceStageVerify => '検証';
+
+  @override
+  String get workspaceStageReport => 'レポート';
+
+  @override
+  String get workspaceLiveFindings => 'ライブ検出';
+
+  @override
+  String get workspaceTelemetry => '分析テレメトリ';
+
+  @override
+  String get workspaceDocument => '文書ワークスペース';
+
+  @override
+  String get workspaceOverallProgress => '全体の進捗';
+
+  @override
+  String get workspaceWaiting => '文書を待っています';
+
+  @override
+  String get workspaceAnalyzing => '分析中';
+
+  @override
+  String get workspaceAnalysisComplete => '分析完了';
+
+  @override
+  String get workspaceNewAnalysis => '新しい分析';
+
+  @override
+  String get workspaceSelectedEvidence => '選択した証拠';
+
+  @override
+  String get workspaceNoEvidence => '各エンジンの完了後、文ごとの証拠がここに表示されます。';
+
+  @override
+  String workspacePreliminaryVerdict(int percent) {
+    return '暫定AI確率：$percent%';
+  }
 }

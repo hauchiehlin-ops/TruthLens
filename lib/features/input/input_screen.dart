@@ -46,6 +46,15 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
   (Locale('pt'), 'Português'),
 ];
 
+String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
+    switch (mode) {
+      WorkspaceMode.original => l10n.workspaceModeOriginal,
+      WorkspaceMode.automatic => l10n.workspaceModeAuto,
+      WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
+      WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
+      WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
+    };
+
 class _InputScreenState extends State<InputScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
@@ -194,7 +203,6 @@ class _InputScreenState extends State<InputScreen> {
     final active = context.watch<ModelManager>().activeVariant('transformer');
     final scheme = Theme.of(context).colorScheme;
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           active != null ? Icons.memory : Icons.info_outline,
@@ -202,11 +210,15 @@ class _InputScreenState extends State<InputScreen> {
           color: scheme.onSurfaceVariant,
         ),
         const SizedBox(width: 4),
-        Text(
-          active != null
-              ? l10n.inputActiveModel(active.variantId)
-              : l10n.inputNoModel,
-          style: Theme.of(context).textTheme.bodySmall,
+        Expanded(
+          child: Text(
+            active != null
+                ? l10n.inputActiveModel(active.variantId)
+                : l10n.inputNoModel,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
       ],
     );
@@ -354,8 +366,8 @@ class _InputScreenState extends State<InputScreen> {
                             MergeSemantics(
                               child: Row(
                                 children: [
-                                  _activeModelChip(context),
-                                  const Spacer(),
+                                  Expanded(child: _activeModelChip(context)),
+                                  const SizedBox(width: 8),
                                   Text(
                                     l10n.inputCharCount(
                                       _controller.text.trim().length,
@@ -521,8 +533,8 @@ class _InputScreenState extends State<InputScreen> {
                       MergeSemantics(
                         child: Row(
                           children: [
-                            _activeModelChip(context),
-                            const Spacer(),
+                            Expanded(child: _activeModelChip(context)),
+                            const SizedBox(width: 8),
                             Text(
                               l10n.inputCharCount(
                                 _controller.text.trim().length,
@@ -758,16 +770,16 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 SegmentedButton<ThemeMode>(
                   segments: const [
                     ButtonSegment(
-                      value: ThemeMode.dark,
-                      icon: Icon(Icons.dark_mode_outlined),
+                      value: ThemeMode.system,
+                      icon: Icon(Icons.brightness_auto_outlined),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
                       icon: Icon(Icons.light_mode_outlined),
                     ),
                     ButtonSegment(
-                      value: ThemeMode.system,
-                      icon: Icon(Icons.brightness_auto_outlined),
+                      value: ThemeMode.dark,
+                      icon: Icon(Icons.dark_mode_outlined),
                     ),
                   ],
                   selected: {prefs.themeMode},
@@ -805,6 +817,28 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 onChanged: (value) => prefs.setLocale(value),
               ),
             ],
+          ),
+          const Divider(),
+
+          ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.dashboard_customize_outlined),
+            title: Text(l10n.workspaceModeSectionTitle),
+            subtitle: Text(l10n.workspaceModeSectionSubtitle),
+            trailing: DropdownButton<WorkspaceMode>(
+              value: prefs.workspaceMode,
+              items: [
+                for (final mode in WorkspaceMode.values)
+                  DropdownMenuItem(
+                    value: mode,
+                    child: Text(workspaceModeLabel(mode, l10n)),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) prefs.setWorkspaceMode(value);
+              },
+            ),
           ),
           const Divider(),
 
@@ -1020,6 +1054,25 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ),
             const Divider(),
             ListTile(
+              leading: const Icon(Icons.dashboard_customize_outlined),
+              title: Text(l10n.workspaceModeSectionTitle),
+              subtitle: Text(l10n.workspaceModeSectionSubtitle),
+              trailing: DropdownButton<WorkspaceMode>(
+                value: prefs.workspaceMode,
+                items: [
+                  for (final mode in WorkspaceMode.values)
+                    DropdownMenuItem(
+                      value: mode,
+                      child: Text(workspaceModeLabel(mode, l10n)),
+                    ),
+                ],
+                onChanged: (value) {
+                  if (value != null) prefs.setWorkspaceMode(value);
+                },
+              ),
+            ),
+            const Divider(),
+            ListTile(
               leading: const Icon(Icons.file_upload_outlined),
               title: Text(l10n.settingsCustomImportTitle),
               subtitle: Text(l10n.settingsCustomImportSubtitle),
@@ -1148,16 +1201,16 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               trailing: SegmentedButton<ThemeMode>(
                 segments: const [
                   ButtonSegment(
-                    value: ThemeMode.dark,
-                    icon: Icon(Icons.dark_mode_outlined),
+                    value: ThemeMode.system,
+                    icon: Icon(Icons.brightness_auto_outlined),
                   ),
                   ButtonSegment(
                     value: ThemeMode.light,
                     icon: Icon(Icons.light_mode_outlined),
                   ),
                   ButtonSegment(
-                    value: ThemeMode.system,
-                    icon: Icon(Icons.brightness_auto_outlined),
+                    value: ThemeMode.dark,
+                    icon: Icon(Icons.dark_mode_outlined),
                   ),
                 ],
                 selected: {prefs.themeMode},
