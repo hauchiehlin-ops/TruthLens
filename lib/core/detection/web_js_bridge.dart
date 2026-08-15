@@ -27,6 +27,18 @@ external JSPromise<JSString?> _fsReadText(JSString fileName);
 @JS('truthlensFs.writeText')
 external JSPromise<JSAny?> _fsWriteText(JSString fileName, JSString text);
 
+@JS('truthlensFs.openWritable')
+external JSPromise<JSObject> _fsOpenWritable(JSString fileName);
+
+@JS('truthlensFs.writeChunk')
+external JSPromise<JSAny?> _fsWriteChunk(JSObject writable, JSUint8Array bytes);
+
+@JS('truthlensFs.closeWritable')
+external JSPromise<JSAny?> _fsCloseWritable(JSObject writable);
+
+@JS('truthlensFs.abortWritable')
+external JSPromise<JSAny?> _fsAbortWritable(JSObject writable);
+
 /// OPFS（瀏覽器沙盒檔案系統）存取，供 web 版 ModelManager 快取已下載模型。
 class WebFs {
   static Future<Uint8List?> readBytes(String fileName) async {
@@ -51,6 +63,28 @@ class WebFs {
 
   static Future<void> writeText(String fileName, String text) =>
       _fsWriteText(fileName.toJS, text.toJS).toDart;
+
+  /// 開啟一個可逐塊寫入的 OPFS 串流（供大型模型檔案下載時邊收邊寫，
+  /// 不必先把整份檔案累積在記憶體）。用畢務必呼叫 [closeWritable] 或
+  /// [abortWritable] 之一，否則底層檔案鎖不會釋放。
+  static Future<WebFsWritable> openWritable(String fileName) async {
+    final handle = await _fsOpenWritable(fileName.toJS).toDart;
+    return WebFsWritable._(handle);
+  }
+}
+
+/// 對應瀏覽器 `FileSystemWritableFileStream` 的薄封裝。
+class WebFsWritable {
+  final JSObject _handle;
+
+  WebFsWritable._(this._handle);
+
+  Future<void> writeChunk(Uint8List bytes) =>
+      _fsWriteChunk(_handle, bytes.toJS).toDart;
+
+  Future<void> close() => _fsCloseWritable(_handle).toDart;
+
+  Future<void> abort() => _fsAbortWritable(_handle).toDart;
 }
 
 extension type _OrtRunResult._(JSObject _) implements JSObject {

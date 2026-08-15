@@ -50,6 +50,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
 
+  // 指令面板三欄可拖曳調整寬度（使用者手動調整後的期望寬度，未調整則為 null 走預設比例）
+  double? _commandGridSourceWidth;
+  double? _commandGridTelemetryWidth;
+
   String _sourceFileName = '';
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
@@ -260,7 +264,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         PdfImportIssue.needsOcr => l10n.inputPdfNeedsOcr(doc.fileName),
         PdfImportIssue.tooManyPages => l10n.inputPdfTooManyPages(
           doc.fileName,
-          DocumentImporter.maxPdfOcrPages,
+          DocumentImporter.effectiveMaxPdfOcrPages,
         ),
         PdfImportIssue.unreadable => l10n.inputPdfUnreadable(doc.fileName),
         PdfImportIssue.none => l10n.inputImportNoText(doc.fileName),
@@ -474,6 +478,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 980) return _compactCommandGrid();
+        const dividerWidth = 14.0;
+        const minPanelWidth = 220.0;
+        final available = constraints.maxWidth - dividerWidth * 2 - 20;
+        final maxSource = math.max(minPanelWidth, available - minPanelWidth * 2);
+        final sourceWidth = (_commandGridSourceWidth ?? 330).clamp(
+          minPanelWidth,
+          maxSource,
+        );
+        final remaining = available - sourceWidth;
+        final maxTelemetry = math.max(minPanelWidth, remaining - minPanelWidth);
+        final telemetryWidth = (_commandGridTelemetryWidth ?? remaining * 5 / 8)
+            .clamp(minPanelWidth, maxTelemetry);
+        final findingsWidth = remaining - telemetryWidth;
         return Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -483,14 +500,32 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(width: 330, child: _sourcePanel(compact: true)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 5,
+                    SizedBox(
+                      width: sourceWidth,
+                      child: _sourcePanel(compact: true),
+                    ),
+                    _PanelDragHandle(
+                      onDrag: (dx) => setState(() {
+                        _commandGridSourceWidth = (sourceWidth + dx).clamp(
+                          minPanelWidth,
+                          maxSource,
+                        );
+                      }),
+                    ),
+                    SizedBox(
+                      width: telemetryWidth,
                       child: _telemetryPanel(showTimeline: true),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(flex: 3, child: _liveFindingsPanel()),
+                    _PanelDragHandle(
+                      onDrag: (dx) => setState(() {
+                        _commandGridTelemetryWidth = (telemetryWidth + dx)
+                            .clamp(minPanelWidth, maxTelemetry);
+                      }),
+                    ),
+                    SizedBox(
+                      width: findingsWidth,
+                      child: _liveFindingsPanel(),
+                    ),
                   ],
                 ),
               ),
@@ -852,7 +887,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final condensed = constraints.maxHeight < 310;
+          // 分析完成後一律顯示完整詳細列表（可捲動），避免壓縮版看不到逐模組說明
+          final condensed = _result == null && constraints.maxHeight < 310;
           return Column(
             children: [
               Row(
@@ -1198,6 +1234,38 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         key: ValueKey(result.id),
         result: result,
         embedded: true,
+      ),
+    );
+  }
+}
+
+/// 面板之間的可拖曳分隔線，用於調整相鄰欄寬
+class _PanelDragHandle extends StatelessWidget {
+  final ValueChanged<double> onDrag;
+
+  const _PanelDragHandle({required this.onDrag});
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeColumn,
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onHorizontalDragUpdate: (details) => onDrag(details.delta.dx),
+        child: SizedBox(
+          width: 14,
+          child: Center(
+            child: Container(
+              width: 3,
+              height: double.infinity,
+              margin: const EdgeInsets.symmetric(vertical: 24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).dividerColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

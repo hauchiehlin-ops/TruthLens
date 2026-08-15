@@ -16,6 +16,18 @@ export 'model_manager_types.dart';
 
 const _manifestFileName = 'installed.json';
 
+/// 供 [Hash.startChunkedConversion] 取回最終 [Digest] 用的最小 Sink 實作
+/// （`package:crypto` 內建的 `DigestSink`未對外匯出）。
+class _DigestCapture implements Sink<Digest> {
+  Digest? value;
+
+  @override
+  void add(Digest data) => value = data;
+
+  @override
+  void close() {}
+}
+
 /// 模型檔案管理（web 版）：與原生版相同的公開介面與 [RoleState]／[InstalledModel]
 /// 語意，差別只在儲存後端——原生版寫入 App Support 目錄，web 版寫入瀏覽器
 /// OPFS（見 [WebFs]），全程留在瀏覽器沙盒內，不經任何伺服器。
@@ -206,8 +218,9 @@ class ModelManager extends ChangeNotifier {
     return v1 != v2;
   }
 
-  /// 下載並安裝變體：整份串流進記憶體（模型檔約數十~百餘 MB，瀏覽器可負荷），
-  /// 校驗後一次寫入 OPFS。首個安裝的變體自動設為使用中。
+  /// 下載並安裝變體：模型主檔逐塊直接串流寫入 OPFS（見 [_streamDownloadToFile]），
+  /// 不再整份先堆積在記憶體；Tokenizer 檔通常僅數十 KB～數 MB，仍以整包記憶體
+  /// 讀取（需要完整字串做 JSON 解析）。首個安裝的變體自動設為使用中。
   Future<bool> downloadVariant(String role, ModelVariant variant) async {
     if (!variant.isDownloadable) {
       _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
@@ -223,8 +236,9 @@ class ModelManager extends ChangeNotifier {
     String? tokenizerFileName;
 
     try {
-      final bytes = await _streamDownload(
+      final downloaded = await _streamDownloadToFile(
         variant.url!,
+        fileName,
         expected: variant.sizeBytes,
         onProgress: (r) {
           _mark(
@@ -236,13 +250,14 @@ class ModelManager extends ChangeNotifier {
         },
       );
 
-      _validateDownloadedSize(bytes.length, variant.sizeBytes);
-
-      if (variant.sha256 != null) {
-        final digest = sha256.convert(bytes).toString();
-        if (digest != variant.sha256) {
+      try {
+        _validateDownloadedSize(downloaded.sizeBytes, variant.sizeBytes);
+        if (variant.sha256 != null && downloaded.sha256Hex != variant.sha256) {
           throw const FormatException('校驗和不符，檔案可能損毀');
         }
+      } catch (_) {
+        await WebFs.deleteFile(fileName); // 驗證失敗，清除半成品，避免殘留壞檔
+        rethrow;
       }
 
       if (variant.tokenizerUrl != null) {
@@ -255,8 +270,6 @@ class ModelManager extends ChangeNotifier {
         }
         await WebFs.writeBytes(tokenizerFileName, tokBytes);
       }
-
-      await WebFs.writeBytes(fileName, bytes);
 
       final r = _roles[role]!;
       final installed = Map<String, InstalledModel>.from(r.installed);
@@ -359,11 +372,7 @@ class ModelManager extends ChangeNotifier {
     }
   }
 
-  Future<Uint8List> _streamDownload(
-    String originalUrl, {
-    int? expected,
-    void Function(double)? onProgress,
-  }) async {
+  List<String> _candidateUrls(String originalUrl) {
     final urlsToTry = <String>[];
 
     final proxyPath = '/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
@@ -386,9 +395,44 @@ class ModelManager extends ChangeNotifier {
       urlsToTry.add(prodVercelProxy);
       urlsToTry.add(originalUrl);
     }
+    return urlsToTry;
+  }
 
+  /// 串流下載並直接寫入 OPFS，全程不把整份檔案留在記憶體中——逐塊
+  /// （Range 分塊或連貫串流）邊收邊寫入 [WebFsWritable]，同步以增量方式
+  /// 計算 SHA-256，供下載完成後核對校驗和。
+  Future<({int sizeBytes, String sha256Hex})> _streamDownloadToFile(
+    String originalUrl,
+    String fileName, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
     Object? lastError;
-    for (final url in urlsToTry) {
+    for (final url in _candidateUrls(originalUrl)) {
+      try {
+        final result = await _tryChunkedDownloadToFile(
+          url,
+          fileName,
+          expected: expected,
+          onProgress: onProgress,
+        );
+        if (result.sizeBytes > 0) {
+          return result;
+        }
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError ?? http.ClientException('無可用的下載連線，請檢查網路狀態');
+  }
+
+  Future<Uint8List> _streamDownload(
+    String originalUrl, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
+    Object? lastError;
+    for (final url in _candidateUrls(originalUrl)) {
       try {
         final result = await _tryChunkedDownload(
           url,
@@ -406,6 +450,123 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 以 2MB 分塊 (Range: bytes=start-end) 執行斷點續傳下載
+  /// 與 [_tryChunkedDownload] 邏輯相同（Range 分塊探測／連貫串流回退），
+  /// 差別是每收到一塊資料就立刻寫入 [WebFsWritable]、同步累積 SHA-256，
+  /// 不在記憶體中保留已下載內容。任一環節失敗時會中止（abort）寫入串流，
+  /// 讓外層改試下一個候選網址時能重新開檔（OPFS 同一檔案僅允許單一寫入串流）。
+  Future<({int sizeBytes, String sha256Hex})> _tryChunkedDownloadToFile(
+    String url,
+    String fileName, {
+    int? expected,
+    void Function(double)? onProgress,
+  }) async {
+    int totalSize = expected ?? 0;
+    bool supportsRange = false;
+
+    try {
+      final headReq = http.Request('GET', Uri.parse(url));
+      headReq.headers['Range'] = 'bytes=0-1023';
+      final headRes = await _client
+          .send(headReq)
+          .timeout(const Duration(seconds: 15));
+
+      if (headRes.statusCode == 206) {
+        supportsRange = true;
+        final contentRange = headRes.headers['content-range'];
+        if (contentRange != null && contentRange.contains('/')) {
+          final totalStr = contentRange.split('/').last;
+          totalSize = int.tryParse(totalStr) ?? totalSize;
+        }
+      } else if (headRes.statusCode == 200) {
+        totalSize = headRes.contentLength ?? totalSize;
+      }
+      headRes.stream.drain().ignore();
+    } catch (_) {
+      // 探測失敗 → 後續嘗試完整流式下載
+    }
+
+    final writable = await WebFs.openWritable(fileName);
+    final digestCapture = _DigestCapture();
+    final hashSink = sha256.startChunkedConversion(digestCapture);
+    var written = 0;
+
+    try {
+      if (!supportsRange || totalSize <= 0) {
+        final req = http.Request('GET', Uri.parse(url));
+        final res = await _client
+            .send(req)
+            .timeout(const Duration(seconds: 45));
+        if (res.statusCode != 200 && res.statusCode != 206) {
+          throw http.ClientException('HTTP ${res.statusCode}');
+        }
+        final size = res.contentLength ?? expected ?? 0;
+        await for (final chunk in res.stream) {
+          final bytes = Uint8List.fromList(chunk);
+          await writable.writeChunk(bytes);
+          hashSink.add(bytes);
+          written += bytes.length;
+          if (onProgress != null && size > 0) {
+            onProgress((written / size).clamp(0.0, 1.0));
+          }
+        }
+      } else {
+        // 支援 Range：以 2MB 分塊分段流式下載並帶重試機制
+        const chunkSize = 2 * 1024 * 1024; // 2MB 塊
+        var downloaded = 0;
+
+        while (downloaded < totalSize) {
+          final end = (downloaded + chunkSize - 1).clamp(0, totalSize - 1);
+          Uint8List? chunkData;
+          int retry = 0;
+
+          while (retry < 5 && chunkData == null) {
+            try {
+              final chunkReq = http.Request('GET', Uri.parse(url));
+              chunkReq.headers['Range'] = 'bytes=$downloaded-$end';
+
+              final chunkRes = await _client
+                  .send(chunkReq)
+                  .timeout(const Duration(seconds: 30));
+              if (chunkRes.statusCode == 206 || chunkRes.statusCode == 200) {
+                final chunkBytes = await chunkRes.stream.toBytes();
+                if (chunkBytes.isNotEmpty) {
+                  chunkData = chunkBytes;
+                }
+              }
+            } catch (_) {
+              // 單一 Chunk 失敗時僅重試該 Chunk，不從 0 MB 重來
+            }
+
+            if (chunkData == null) {
+              retry++;
+              await Future.delayed(Duration(milliseconds: 500 * (1 << retry)));
+            }
+          }
+
+          if (chunkData == null) {
+            throw http.ClientException('下載在中途分塊 ($downloaded-$end) 斷線，重試多次失敗');
+          }
+
+          await writable.writeChunk(chunkData);
+          hashSink.add(chunkData);
+          downloaded += chunkData.length;
+          written += chunkData.length;
+
+          if (onProgress != null && totalSize > 0) {
+            onProgress((downloaded / totalSize).clamp(0.0, 1.0));
+          }
+        }
+      }
+
+      hashSink.close();
+      await writable.close();
+      return (sizeBytes: written, sha256Hex: digestCapture.value!.toString());
+    } catch (e) {
+      await writable.abort();
+      rethrow;
+    }
+  }
+
   Future<Uint8List?> _tryChunkedDownload(
     String url, {
     int? expected,

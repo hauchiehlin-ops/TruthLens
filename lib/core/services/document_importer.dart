@@ -3,11 +3,15 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image/image.dart' as image_lib;
 import 'package:pdfrx/pdfrx.dart' as pdfrx;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
+import '../detection/device_capabilities.dart';
+import '../detection/model_catalog.dart' show PerformanceTier;
+import 'web_file_picker.dart'
+    if (dart.library.io) 'web_file_picker_stub.dart';
 
 typedef PdfOcrRecognizer =
     Future<String?> Function(
@@ -23,6 +27,26 @@ class DocumentImporter {
   static const int maxPdfOcrPages = 100;
   static const double _minimumPdfTextQuality = 0.62;
 
+  /// 上一次 PDF OCR 依裝置分級套用的實際頁數上限，供「頁數過多」提示訊息使用
+  /// （因為實際上限依裝置記憶體動態調整，不再固定等於 [maxPdfOcrPages]）。
+  static int effectiveMaxPdfOcrPages = maxPdfOcrPages;
+
+  /// 依裝置效能分級決定 PDF 掃描檔 OCR 的頁數上限與光柵化解析度上限：
+  /// 低階（多為手機）裝置記憶體有限，同時光柵化多頁高解析度圖片很容易讓
+  /// 分頁記憶體見底（尤其疊加 CanvasKit 與 ONNX WASM 堆），因此調低上限。
+  static int _pdfOcrPageLimitFor(PerformanceTier tier) => switch (tier) {
+    PerformanceTier.low => 20,
+    PerformanceTier.mid => 50,
+    PerformanceTier.high => maxPdfOcrPages,
+  };
+
+  static double _pdfOcrRenderLongestSideFor(PerformanceTier tier) =>
+      switch (tier) {
+        PerformanceTier.low => 1400,
+        PerformanceTier.mid => 1800,
+        PerformanceTier.high => 2200,
+      };
+
   static const supportedExtensions = [
     'txt',
     'md',
@@ -37,23 +61,14 @@ class DocumentImporter {
     PdfOcrRecognizer? pdfOcr,
     void Function(int pageNumber, int pageCount)? onPdfOcrProgress,
   }) async {
-    final result = await FilePicker.pickFiles(
-      dialogTitle: '匯入文件',
-      type: FileType.custom,
-      allowedExtensions: supportedExtensions,
-      withData: true, // 行動平台以 bytes 提供內容
-    );
-    final file = result?.files.firstOrNull;
+    final file = await pickWebFile(extensions: supportedExtensions);
     if (file == null) return null;
 
-    // withData: true 已確保各平台（含 web，僅提供 bytes、無 path）都會填入 bytes。
     final bytes = file.bytes;
-    if (bytes == null) return null;
-
-    final extension = file.extension?.toLowerCase() ?? '';
+    final extension = file.extension;
     final parsed = extension == 'pdf'
         ? await _parsePdf(
-            Uint8List.fromList(bytes),
+            bytes,
             pdfOcr: pdfOcr,
             onPdfOcrProgress: onPdfOcrProgress,
           )
@@ -138,7 +153,12 @@ class DocumentImporter {
       if (pdfOcr == null) {
         return const _PdfParseResult(issue: PdfImportIssue.needsOcr);
       }
-      if (document.pages.length > maxPdfOcrPages) {
+
+      final tier = (await DeviceCapabilities.detect()).tier;
+      final pageLimit = _pdfOcrPageLimitFor(tier);
+      final renderLongestSide = _pdfOcrRenderLongestSideFor(tier);
+      effectiveMaxPdfOcrPages = pageLimit;
+      if (document.pages.length > pageLimit) {
         return const _PdfParseResult(issue: PdfImportIssue.tooManyPages);
       }
 
@@ -147,7 +167,7 @@ class DocumentImporter {
         final pageNumber = page.pageNumber;
         onPdfOcrProgress?.call(pageNumber, document.pages.length);
         final longestSide = math.max(page.width, page.height);
-        final scale = math.min(2.0, 2200 / longestSide);
+        final scale = math.min(2.0, renderLongestSide / longestSide);
         final rendered = await page.render(
           fullWidth: page.width * scale,
           fullHeight: page.height * scale,
@@ -451,23 +471,12 @@ class ImagePicker {
     'bmp',
   ];
 
-  /// 開啟選檔對話框選一張圖片，回傳本地路徑；取消回傳 null
+  /// 開啟選檔對話框選一張圖片，回傳 data URL；取消回傳 null
   static Future<String?> pick() async {
-    final result = await FilePicker.pickFiles(
-      dialogTitle: '選擇要辨識的圖片',
-      type: FileType.custom,
-      allowedExtensions: supportedExtensions,
-      withData: kIsWeb,
-    );
-    final file = result?.files.firstOrNull;
+    final file = await pickWebFile(extensions: supportedExtensions);
     if (file == null) return null;
-    if (kIsWeb) {
-      final bytes = file.bytes;
-      if (bytes == null) return null;
-      final mimeType = _mimeTypeFor(file.extension);
-      return 'data:$mimeType;base64,${base64Encode(bytes)}';
-    }
-    return file.path;
+    final mimeType = _mimeTypeFor(file.extension);
+    return 'data:$mimeType;base64,${base64Encode(file.bytes)}';
   }
 
   static String _mimeTypeFor(String? extension) {

@@ -180,7 +180,7 @@ class _InputScreenState extends State<InputScreen> {
         PdfImportIssue.needsOcr => l10n.inputPdfNeedsOcr(doc.fileName),
         PdfImportIssue.tooManyPages => l10n.inputPdfTooManyPages(
           doc.fileName,
-          DocumentImporter.maxPdfOcrPages,
+          DocumentImporter.effectiveMaxPdfOcrPages,
         ),
         PdfImportIssue.unreadable => l10n.inputPdfUnreadable(doc.fileName),
         PdfImportIssue.none => l10n.inputImportNoText(doc.fileName),
