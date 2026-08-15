@@ -126,6 +126,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '\"$fileName\" เป็นไฟล์ .doc รุ่นเก่า ไม่สามารถดึงข้อความได้อย่างน่าเชื่อถือ กรุณาบันทึกเป็น .docx ใน Word หรือส่งออกเป็น PDF แล้วนำเข้าใหม่อีกครั้ง';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'โมเดล: $modelId';
   }
@@ -1650,7 +1655,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'มีสามวิธีในการป้อนข้อมูล: วางข้อความโดยตรง, OCR รูปภาพ（รู้จำแบบออฟไลน์ด้วยเฟรมเวิร์กดั้งเดิมของแต่ละแพลตฟอร์ม）, นำเข้าไฟล์（txt / md / pdf / docx / doc） ข้อความต้องมีอย่างน้อย 40 ตัวอักษรจึงจะส่งวิเคราะห์ได้';
+      'มีสามวิธีในการป้อนข้อมูล: วางข้อความโดยตรง, OCR รูปภาพ（รู้จำแบบออฟไลน์ด้วยเฟรมเวิร์กดั้งเดิมของแต่ละแพลตฟอร์ม）, นำเข้าไฟล์（txt / md / pdf / docx / doc / odt） ข้อความต้องมีอย่างน้อย 40 ตัวอักษรจึงจะส่งวิเคราะห์ได้';
 
   @override
   String get helpWorkflowStep4Title => 'เริ่มการวิเคราะห์';
@@ -1697,7 +1702,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'OCR รูปภาพ';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => 'แยกโค้ด/สูตร';

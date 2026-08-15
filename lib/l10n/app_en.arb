@@ -1,17 +1,14 @@
 {
   "@@locale": "en",
-
   "commonCancel": "Cancel",
   "commonDelete": "Delete",
   "commonClose": "Close",
   "commonCopyrightNotice": "© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com",
-
   "verdictHuman": "Human-written",
   "verdictLikelyHuman": "Likely human",
   "verdictMixed": "Mixed content",
   "verdictLikelyAi": "Likely AI",
   "verdictAi": "AI-generated",
-
   "inputSubtitle": "Paste or type text to detect AI-generated content",
   "inputHint": "Type or paste the text to analyze…",
   "inputHistoryTooltip": "History",
@@ -28,47 +25,138 @@
   "inputOcrRecognizing": "Recognizing…",
   "inputOcrNoText": "No text was recognized in the image",
   "inputOcrRecognized": "Recognized {count} characters",
-  "@inputOcrRecognized": {"placeholders": {"count": {"type": "int"}}},
+  "@inputOcrRecognized": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "inputImportNoText": "\"{fileName}\" has no readable text content",
-  "@inputImportNoText": {"placeholders": {"fileName": {"type": "String"}}},
+  "@inputImportNoText": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "inputImportSuccess": "Imported \"{fileName}\" ({count} characters)",
-  "@inputImportSuccess": {"placeholders": {"fileName": {"type": "String"}, "count": {"type": "int"}}},
+  "@inputImportSuccess": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "inputPdfOcrProgress": "PDF text layer is unavailable; recognizing page {page} of {total} with OCR…",
-  "@inputPdfOcrProgress": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@inputPdfOcrProgress": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "inputPdfOcrSuccess": "Imported \"{fileName}\" with PDF OCR ({count} characters)",
-  "@inputPdfOcrSuccess": {"placeholders": {"fileName": {"type": "String"}, "count": {"type": "int"}}},
+  "@inputPdfOcrSuccess": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "inputPdfNeedsOcr": "\"{fileName}\" has no reliable text layer. Configure Web OCR or use an installed app with native OCR, then import it again.",
-  "@inputPdfNeedsOcr": {"placeholders": {"fileName": {"type": "String"}}},
+  "@inputPdfNeedsOcr": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "inputPdfTooManyPages": "\"{fileName}\" needs OCR but exceeds the {max} page safety limit. Split the PDF and import each part.",
-  "@inputPdfTooManyPages": {"placeholders": {"fileName": {"type": "String"}, "max": {"type": "int"}}},
+  "@inputPdfTooManyPages": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "inputPdfUnreadable": "\"{fileName}\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.",
-  "@inputPdfUnreadable": {"placeholders": {"fileName": {"type": "String"}}},
+  "inputDocLegacyUnreadable": "\"{fileName}\" is a legacy .doc file and its text could not be extracted reliably. In Word, save it as .docx or export it to PDF, then import again.",
+  "@inputPdfUnreadable": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "inputActiveModel": "Model: {modelId}",
-  "@inputActiveModel": {"placeholders": {"modelId": {"type": "String"}}},
+  "@inputActiveModel": {
+    "placeholders": {
+      "modelId": {
+        "type": "String"
+      }
+    }
+  },
   "inputNoModel": "No model installed (statistical/style analysis only)",
   "inputCharCount": "{count} characters",
-  "@inputCharCount": {"placeholders": {"count": {"type": "int"}}},
-
+  "@inputCharCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "analysisAppBarTitle": "Analyzing",
   "analysisEngineTransformer": "Transformer classifier",
   "analysisEngineStatistical": "Statistical analysis",
   "analysisEngineStylometry": "Stylometry analysis",
   "analysisEngineAdversarial": "Adversarial defense",
   "analysisProgressSemantics": "Analysis in progress, {done} of {total} engines completed",
-  "@analysisProgressSemantics": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@analysisProgressSemantics": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "analysisDoneSemantics": "Done",
   "analysisPreliminaryResult": "Preliminary result: AI probability {percent}%",
-  "@analysisPreliminaryResult": {"placeholders": {"percent": {"type": "int"}}},
+  "@analysisPreliminaryResult": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "analysisPreliminaryResultRefining": "Preliminary result: AI probability {percent}% (refining…)",
-  "@analysisPreliminaryResultRefining": {"placeholders": {"percent": {"type": "int"}}},
+  "@analysisPreliminaryResultRefining": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineNameAdversarialFull": "Adversarial defense (paraphrase detection)",
-
   "modelNecessityText": "Without a downloaded neural detection model, TruthLens still works, but only using statistical and stylistic analysis with limited accuracy and language coverage. After downloading a model, the multilingual Transformer classifier joins the ensemble vote, significantly improving accuracy and reliability. The model runs on-device; once downloaded, it never uploads any content.",
   "modelPromptTitle": "Download a detection model for full analysis",
   "modelPromptDontRemind": "Don't remind me again",
   "modelPromptSkip": "Skip for now",
   "modelPromptDownload": "Go to download",
-
   "onboardingWelcomeTitle": "Welcome to TruthLens",
   "onboardingHeadline": "On-device AI content detection",
   "onboardingDetectedDevice": "Detected device",
@@ -76,19 +164,63 @@
   "onboardingRecommendHint": "\"Recommended\" is marked based on your hardware; you may also pick another option.",
   "onboardingSkipButton": "Decide later (use statistical/stylistic analysis without a model)",
   "onboardingSkipHint": "You can still download later from \"Settings → AI Model Management\"; you'll be reminded again when an analysis needs a model.",
-
   "modelListCustomImportedLabel": "Custom imported models:",
   "modelListActiveChip": "Active",
   "modelListRecommendedChip": "Recommended",
   "modelListCustomChip": "Custom",
   "modelListSizeLangRam": "{size} · {langs} · needs {ram}GB RAM · v{version}",
-  "@modelListSizeLangRam": {"placeholders": {"size": {"type": "String"}, "langs": {"type": "String"}, "ram": {"type": "int"}, "version": {"type": "String"}}},
+  "@modelListSizeLangRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "langs": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      },
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "modelListSizeTokenizerLabel": "Size: {size} · Tokenizer: {tokenizer} · AI Label Index: {index}",
-  "@modelListSizeTokenizerLabel": {"placeholders": {"size": {"type": "String"}, "tokenizer": {"type": "String"}, "index": {"type": "int"}}},
+  "@modelListSizeTokenizerLabel": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "tokenizer": {
+        "type": "String"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
   "modelListDownloadingProgress": "Downloading… {percent}% ({downloaded} / {total})",
-  "@modelListDownloadingProgress": {"placeholders": {"percent": {"type": "int"}, "downloaded": {"type": "String"}, "total": {"type": "String"}}},
+  "@modelListDownloadingProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "downloaded": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "modelListDownloadButton": "Download ({size})",
-  "@modelListDownloadButton": {"placeholders": {"size": {"type": "String"}}},
+  "@modelListDownloadButton": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "modelListComingSoonChip": "Coming soon",
   "modelListSetActiveButton": "Set active",
   "modelListUpdateButton": "Update",
@@ -96,31 +228,81 @@
   "modelListPageButton": "Model page",
   "modelListMayExceedMemory": "May exceed device memory",
   "modelListFailedPrefix": "Failed: {error}",
-  "@modelListFailedPrefix": {"placeholders": {"error": {"type": "String"}}},
+  "@modelListFailedPrefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "modelCatalogLoadFailed": "Could not load model catalog",
   "modelCatalogEmpty": "No models available",
   "modelDownloadPathChip": "{label} download path",
-  "@modelDownloadPathChip": {"placeholders": {"label": {"type": "String"}}},
+  "@modelDownloadPathChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "modelDownloadPathModelFile": "Model file",
   "modelDownloadPathCopied": "Download path copied",
   "settingsSaveFailed": "Failed to save settings: {error}",
-  "@settingsSaveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@settingsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "modelListDeleteConfirmTitle": "Delete this model?",
   "modelListDeleteConfirmBody": "This will delete \"{name}\" ({size}). You'll need to download it again to use it.",
-  "@modelListDeleteConfirmBody": {"placeholders": {"name": {"type": "String"}, "size": {"type": "String"}}},
+  "@modelListDeleteConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "modelListDeleteCustomConfirmBody": "This will delete the custom-imported \"{name}\" ({size}). You'll need to import it again to use it.",
-  "@modelListDeleteCustomConfirmBody": {"placeholders": {"name": {"type": "String"}, "size": {"type": "String"}}},
-
+  "@modelListDeleteCustomConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "modelImportAppBarTitle": "Import Custom ONNX Model",
   "modelImportStep1Title": "1. Select an ONNX model file",
   "modelImportSelectedFile": "Selected: {name}",
-  "@modelImportSelectedFile": {"placeholders": {"name": {"type": "String"}}},
+  "@modelImportSelectedFile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "modelImportNoFileSelected": "No model file selected (.onnx)",
   "modelImportBrowseButton": "Browse",
   "modelImportCheckingDuplicate": "Checking whether this file was already imported…",
   "modelImportDuplicateTitle": "An identical model has already been imported",
   "modelImportDuplicateBody": "This file has exactly the same content as \"{name}\" (role: {role}). If you just want to switch the active model, go to \"AI Model Management\" and set it active there — no need to re-import. You can still continue the steps below.",
-  "@modelImportDuplicateBody": {"placeholders": {"name": {"type": "String"}, "role": {"type": "String"}}},
+  "@modelImportDuplicateBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "modelImportStep2Title": "2. Configuration",
   "modelImportNameLabel": "Model display name",
   "modelImportNameRequired": "Name cannot be empty",
@@ -131,7 +313,13 @@
   "modelImportTokenizerNone": "None (no tokenizer / char-level)",
   "modelImportNoTokenizerSelected": "No tokenizer file selected (.json)",
   "modelImportTokenizerSelected": "Selected: {name}",
-  "@modelImportTokenizerSelected": {"placeholders": {"name": {"type": "String"}}},
+  "@modelImportTokenizerSelected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "modelImportAiLabelIndexLabel": "AI label output index",
   "modelImportIndex0": "Index 0 (e.g. RoBERTa)",
   "modelImportIndex1": "Index 1 (e.g. DistilBERT)",
@@ -140,19 +328,30 @@
   "modelImportRunTestButton": "Run test inference",
   "modelImportResultLabel": "Inference result (AI probability):",
   "modelImportTestFailed": "Test failed: {error}",
-  "@modelImportTestFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@modelImportTestFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "modelImportConfirmButton": "Confirm import and activate model",
   "modelImportSelectTokenizerFirst": "Please select a tokenizer file first",
   "modelImportSelectTokenizer": "Please select a tokenizer file",
   "modelImportSuccessSnackbar": "Model imported successfully and set as active!",
   "modelImportFailedSnackbar": "Model import failed. Please check permissions or logs",
-
   "settingsAppBarTitle": "Settings",
   "settingsThresholdTitle": "AI flagging threshold",
   "settingsThresholdInfoTooltip": "How the AI flagging threshold affects the conclusion",
   "settingsThresholdInfoBody": "The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.",
   "settingsThresholdSubtitle": "Current: {percent}% — overall AI probability must reach this line before the report marks the text as AI",
-  "@settingsThresholdSubtitle": {"placeholders": {"percent": {"type": "int"}}},
+  "@settingsThresholdSubtitle": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEslTitle": "ESL non-native writer bias correction",
   "settingsEslSubtitle": "Automatically lowers the statistical model's weight when non-native writing style is detected",
   "settingsEngineSectionTitle": "Sub-detection engines (Ensemble)",
@@ -172,22 +371,73 @@
   "settingsEngineStylometryHelp": "Checks explainable writing-style markers such as repeated openings, formulaic transitions, and excessive list structure. No matched markers now produce a 0% signal.",
   "settingsEngineAdversarialHelp": "Looks for AI text that may have been paraphrased or processed to hide AI traces. A low score means only weak residual evidence, not a positive detection.",
   "settingsEngineWeightsTotalValid": "Total: {total}% — ready to save",
-  "@settingsEngineWeightsTotalValid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalValid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsTotalInvalid": "Total: {total}% — adjust to exactly 100%",
-  "@settingsEngineWeightsTotalInvalid": {"placeholders": {"total": {"type": "int"}}},
+  "@settingsEngineWeightsTotalInvalid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "settingsEngineWeightsSave": "Save weights",
   "settingsEngineWeightsSaved": "AI model weights saved on this device",
   "settingsEngineWeightsRestoreDefaults": "Restore defaults",
-  "engineReasonDisabledByUser": "Disabled in settings; this engine did not participate in the vote",
+  "engineReasonDisabledByUser": "The user disabled this engine in Settings",
   "engineReasonTransformerNoStrongSentence": "{model}: none of {total} sentences crossed the strong-AI threshold; the calibrated weak signal is {percent}%",
-  "@engineReasonTransformerNoStrongSentence": {"placeholders": {"model": {"type": "String"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonTransformerNoStrongSentence": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalLabel": "AI signal {percent}%",
-  "@reportEngineSignalLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineSignalLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineSignalExplanation": "AI signal is the engine's probability for this document; configured weight controls its influence, and contribution points are allocated so their displayed sum exactly matches the overall AI probability. ‘Not detected’ means below the 60% strong-signal threshold, not necessarily mathematically zero.",
   "engineReasonAdversarialNoStrongSentence": "None of {total} sentences crossed the strong paraphrase threshold; the calibrated weak signal is {percent}%",
-  "@engineReasonAdversarialNoStrongSentence": {"placeholders": {"total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialNoStrongSentence": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialStrongSentences": "{count} of {total} sentences crossed the strong paraphrase threshold; the calibrated document signal is {percent}%",
-  "@engineReasonAdversarialStrongSentences": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@engineReasonAdversarialStrongSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "settingsLinkVerificationTitle": "Hyperlink & bibliography verification",
   "settingsLinkVerificationSubtitle": "The report checks detected URLs and bibliography entries against Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. Only the URL, DOI, or individual citation fields (author, title, year, and venue) are queried; the rest of the document is not sent. Core AI detection remains on-device, and this verification can be turned off here.",
   "settingsThemeTitle": "Appearance",
@@ -203,24 +453,55 @@
   "settingsModelManagerAppBarTitle": "AI Model Management",
   "settingsImportTooltip": "Import a local ONNX model",
   "settingsDeviceLabel": "Device: {summary}",
-  "@settingsDeviceLabel": {"placeholders": {"summary": {"type": "String"}}},
-
+  "@settingsDeviceLabel": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
   "historyAppBarTitle": "History",
   "historyClearAllTooltip": "Clear all",
   "historySearchHint": "Search history…",
   "historyDeletedSnackbar": "Entry deleted",
   "historyClearAllTitle": "Clear all history?",
   "historyClearAllBody": "This will delete all {count} entries. This cannot be undone.",
-  "@historyClearAllBody": {"placeholders": {"count": {"type": "int"}}},
+  "@historyClearAllBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "historyClearButton": "Clear",
   "historyDeleteEntryTitle": "Delete this entry?",
   "historyReanalyzeTooltip": "Re-analyze",
   "historyEmptyDefault": "No analysis history yet",
   "historyEmptySearch": "No entries match \"{query}\"",
-  "@historyEmptySearch": {"placeholders": {"query": {"type": "String"}}},
+  "@historyEmptySearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "historyEntrySemantics": "{verdict}, AI probability {percent}%, {time}. {text}",
-  "@historyEntrySemantics": {"placeholders": {"verdict": {"type": "String"}, "percent": {"type": "int"}, "time": {"type": "String"}, "text": {"type": "String"}}},
-
+  "@historyEntrySemantics": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "reportAppBarTitle": "Detection Report",
   "reportExportTooltip": "Export report",
   "reportHomeTooltip": "Back to home",
@@ -228,15 +509,42 @@
   "reportSourceLlm": "AI-generated report",
   "reportSourceTemplate": "Template-generated report",
   "reportSentenceSummary": "{total} sentences · {ai} likely AI · {human} likely human · {seconds}s elapsed",
-  "@reportSentenceSummary": {"placeholders": {"total": {"type": "int"}, "ai": {"type": "int"}, "human": {"type": "int"}, "seconds": {"type": "String"}}},
+  "@reportSentenceSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "human": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "reportExportPdf": "Export PDF report",
   "reportExportCsv": "Export CSV data",
   "reportExportJson": "Export JSON (system integration)",
   "reportExportPng": "Export summary card (PNG)",
   "reportExported": "Exported: {path}",
-  "@reportExported": {"placeholders": {"path": {"type": "String"}}},
+  "@reportExported": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "reportExportFailed": "Export failed: {error}",
-  "@reportExportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@reportExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineWeightLabel": "Weight",
   "privacySealNoticeText": "TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.",
   "reportModelCalibrationTitle": "Model Benchmark Auto-Calibration",
@@ -257,60 +565,213 @@
   "reportRadarAxisAdversarial": "Rewrite defense",
   "reportVerdictBadgeTitle": "Overall verdict",
   "reportVerdictBadgeProbability": "Overall AI probability {percent}%",
-  "@reportVerdictBadgeProbability": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportVerdictBadgeProbability": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportVerdictHintHuman": "Most engine signals lean toward natural human writing.",
   "reportVerdictHintLikelyHuman": "Overall leans human, with a small amount of model uncertainty retained.",
   "reportVerdictHintMixed": "Engine signals are mixed; read the detailed analysis together with this result.",
   "reportVerdictHintLikelyAi": "Multiple indicators lean AI; review the high-scoring passages.",
   "reportVerdictHintAi": "Overall signals strongly lean AI-generated or rewritten.",
   "reportSynthesisOverall": "Overall verdict: {verdict}; overall AI probability {percent}%.",
-  "@reportSynthesisOverall": {"placeholders": {"verdict": {"type": "String"},"percent": {"type": "int"}}},
+  "@reportSynthesisOverall": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStrongestSignal": "Strongest single signal: {label} ({percent}%), but the final result merges engine weights and is not the conclusion of one engine alone.",
-  "@reportSynthesisStrongestSignal": {"placeholders": {"label": {"type": "String"},"percent": {"type": "int"}}},
+  "@reportSynthesisStrongestSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStrongestContribution": "Largest weighted contribution currently comes from {label} (about {points} percentage points).",
-  "@reportSynthesisStrongestContribution": {"placeholders": {"label": {"type": "String"},"points": {"type": "int"}}},
+  "@reportSynthesisStrongestContribution": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStyleCaveat": "“No obvious AI writing style detected” only means the style engine did not find fixed sentence patterns or transition-word patterns; other models may still raise the overall score through language regularity, sentence classification, or rewrite signals.",
   "reportSynthesisModelGap": "When some engines did not participate, use “Complete recommended analysis models” in Model Management first; if it still fails, the detailed analysis will state whether the cause is a missing model, unsupported tokenizer, missing file, or Web/ONNX Runtime compatibility limit.",
   "reportEngineRelationshipUnavailable": "{label} did not participate in this weighted vote, so this dimension is shown as 0%. {hint}",
-  "@reportEngineRelationshipUnavailable": {"placeholders": {"label": {"type": "String"},"hint": {"type": "String"}}},
+  "@reportEngineRelationshipUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineRelationshipAvailable": "Role weight {weight}%, contributing about {points} percentage points to the overall score{variantText}.",
-  "@reportEngineRelationshipAvailable": {"placeholders": {"weight": {"type": "int"},"points": {"type": "int"},"variantText": {"type": "String"}}},
+  "@reportEngineRelationshipAvailable": {
+    "placeholders": {
+      "weight": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      },
+      "variantText": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineVariantMerged": " (merged {count} model variants)",
-  "@reportEngineVariantMerged": {"placeholders": {"count": {"type": "int"}}},
+  "@reportEngineVariantMerged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineFallbackUnavailable": "{label} did not participate in this vote.",
-  "@reportEngineFallbackUnavailable": {"placeholders": {"label": {"type": "String"}}},
+  "@reportEngineFallbackUnavailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineFallbackAvailable": "{label} returned no additional text explanation.",
-  "@reportEngineFallbackAvailable": {"placeholders": {"label": {"type": "String"}}},
+  "@reportEngineFallbackAvailable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineResolutionTransformer": "Fix: download and enable the multilingual Transformer in Model Management; if it is already downloaded, re-download the model and tokenizer.",
   "reportEngineResolutionAdversarial": "Fix: re-download the rewrite detection model and tokenizer in Model Management; on web, update to a version with the BigInt compatibility fix and analyze again.",
   "reportEngineReasonBigInt": "{reason}. Cause: the web ONNX Runtime returned a BigInt tensor that the older bridge could not convert; update to the fixed build and analyze again.",
-  "@reportEngineReasonBigInt": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonBigInt": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineReasonTokenizer": "{reason}. Fix: switch to a catalog model, or re-download the model and tokenizer.",
-  "@reportEngineReasonTokenizer": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonTokenizer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineReasonNoActiveTransformer": "{reason}. Fix: open Model Management, tap “Complete recommended analysis models”, and confirm the multilingual Transformer is marked active.",
-  "@reportEngineReasonNoActiveTransformer": {"placeholders": {"reason": {"type": "String"}}},
+  "@reportEngineReasonNoActiveTransformer": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportDetailAnalysisTitle": "Detailed analysis",
   "reportNoEngineData": "No engine analysis data yet",
   "reportEngineNotParticipated": "Not involved",
   "reportAiContentReportTitle": "AI Content Detection Report",
   "reportAnalysisTimeLabel": "Analysis time: {time}",
-  "@reportAnalysisTimeLabel": {"placeholders": {"time": {"type": "String"}}},
+  "@reportAnalysisTimeLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "reportDownloadPdfButton": "Download PDF",
   "reportSuspiciousLocationsTitle": "Suspicious content locations",
   "reportSentenceCount": "{count} sentences",
-  "@reportSentenceCount": {"placeholders": {"count": {"type": "int"}}},
+  "@reportSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiProbabilityPrefix": "AI probability: ",
   "reportConfidenceLowTooltip": "Low confidence: available model weight is below 60% ({threshold}% threshold). {available}/{total} engines participated. Review detailed engine analysis.",
-  "@reportConfidenceLowTooltip": {"placeholders": {"threshold": {"type": "int"}, "available": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportConfidenceLowTooltip": {
+    "placeholders": {
+      "threshold": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "reportConfidenceHighTooltip": "High confidence: {available}/{total} detection models reached consensus ({threshold}% or more weight agrees with this verdict).",
-  "@reportConfidenceHighTooltip": {"placeholders": {"available": {"type": "int"}, "total": {"type": "int"}, "threshold": {"type": "int"}}},
+  "@reportConfidenceHighTooltip": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      }
+    }
+  },
   "reportConfidenceLowBadge": "Low confidence ({available}/{total})",
-  "@reportConfidenceLowBadge": {"placeholders": {"available": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportConfidenceLowBadge": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "reportConfidenceHighBadge": "High confidence ({available}/{total})",
-  "@reportConfidenceHighBadge": {"placeholders": {"available": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportConfidenceHighBadge": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "reportMetricAiSentenceRatio": "Strong AI-signal sentence ratio",
   "reportStrongAiSentenceCount": "{count} of {total} crossed the 60% strong-signal threshold",
-  "@reportStrongAiSentenceCount": {"placeholders": {"count": {"type": "int"}, "total": {"type": "int"}}},
+  "@reportStrongAiSentenceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "reportMetricElapsed": "Analysis time",
   "reportMetricElapsedNormal": "0.5-5s normal",
   "reportMetricReliability": "Reliability",
@@ -324,110 +785,376 @@
   "suspiciousFilterMedium": "Medium",
   "suspiciousExcludedTooltip": "Single letters, page numbers, section numbers, and overly short OCR/PDF fragments have been excluded.",
   "suspiciousCount": "{count} items",
-  "@suspiciousCount": {"placeholders": {"count": {"type": "int"}}},
+  "@suspiciousCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "suspiciousEmpty": "No suspicious content",
   "suspiciousRiskHigh": "High",
   "suspiciousRiskMedium": "Medium",
   "suspiciousReasonHighModelSignals": "Multiple model signals strongly lean AI",
   "suspiciousReasonSentenceSignal": "Sentence-level model signal is elevated",
   "suspiciousOriginalLocation": "Original location {location}",
-  "@suspiciousOriginalLocation": {"placeholders": {"location": {"type": "String"}}},
+  "@suspiciousOriginalLocation": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
   "suspiciousOriginalLocationWithReason": "Original location {location} · {reason}",
-  "@suspiciousOriginalLocationWithReason": {"placeholders": {"location": {"type": "String"}, "reason": {"type": "String"}}},
+  "@suspiciousOriginalLocationWithReason": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "suspiciousSentenceNumber": "Sentence #{number}",
-  "@suspiciousSentenceNumber": {"placeholders": {"number": {"type": "int"}}},
+  "@suspiciousSentenceNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "suspiciousEvidenceLabel": "Evidence:",
   "reportSentenceTooltip": "{text}. AI probability {percent}%{patterns}",
-  "@reportSentenceTooltip": {"placeholders": {"text": {"type": "String"}, "percent": {"type": "int"}, "patterns": {"type": "String"}}},
+  "@reportSentenceTooltip": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "patterns": {
+        "type": "String"
+      }
+    }
+  },
   "reportLinkAuthenticityTitle": "Hyperlink authenticity",
   "reportLinkNoneDetected": "No hyperlinks were detected in this document.",
   "reportLinkCheckingProgress": "Verifying links…",
   "reportLinkDetectedPending": "Detected {count} hyperlink(s); not yet verified",
-  "@reportLinkDetectedPending": {"placeholders": {"count": {"type": "int"}}},
+  "@reportLinkDetectedPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportLinkDisabledHint": "AI-generated content often includes plausible-looking but fabricated citation links. You've turned off hyperlink verification in Settings; you can turn it back on for automatic verification, or tap below for a one-time check.",
   "reportVerifyNowButton": "Verify now (requires network)",
   "reportLinkReachable": "Reachable — the URL exists",
   "reportLinkNotFound": "URL does not exist (404) — possibly a fabricated citation",
   "reportLinkUnreachable": "Could not verify (timed out or no server response)",
   "reportLinkCitationVerified": "Verified in journal registry: registered with {journal}{title}",
-  "@reportLinkCitationVerified": {"placeholders": {"journal": {"type": "String"}, "title": {"type": "String"}}},
+  "@reportLinkCitationVerified": {
+    "placeholders": {
+      "journal": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "reportLinkCitationNotFound": "No matching DOI registration found — possibly a fabricated citation",
   "reportLinkCitationUnreachable": "Could not verify (timed out or no response from bibliographic services)",
   "reportLinkTruncated": "Only the first {max} links were verified (detected {count} total)",
-  "@reportLinkTruncated": {"placeholders": {"max": {"type": "int"}, "count": {"type": "int"}}},
+  "@reportLinkTruncated": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportBibAuthenticityTitle": "Citation authenticity",
   "reportBibNoneDetected": "No bibliography entries were detected in this document.",
   "reportBibCheckingProgress": "Verifying bibliography…",
   "reportBibDetectedPending": "Detected a bibliography ({count} entries); not yet verified",
-  "@reportBibDetectedPending": {"placeholders": {"count": {"type": "int"}}},
+  "@reportBibDetectedPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportBibDisabledHint": "AI-generated content often includes plausible-looking but fabricated references. You've turned off hyperlink verification in Settings; you can turn it back on for automatic verification, or tap below for a one-time check.",
   "reportVerifyNowBibButton": "Verify now (requires network)",
   "reportBibRecheckAllUnreliableButton": "Recheck all unverified citations",
   "reportBibRecheckOneTooltip": "Recheck this citation",
   "reportBibResultHint": "Matched by author, year, title, and venue across Crossref, OpenAlex, DataCite, Semantic Scholar, Europe PMC/PubMed/AGRICOLA, ERIC, DOAJ, and recognizable publisher catalogs. A high-confidence result requires a DOI registration or multiple consistent metadata fields; entries without a reliable match are marked as not verified. Google Scholar is available only as a user-initiated manual lookup because it does not provide automated API access.",
   "reportBibVerificationSource": "Verification source: {source}",
-  "@reportBibVerificationSource": {"placeholders": {"source": {"type": "String"}}},
+  "@reportBibVerificationSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibGoogleScholarManualLookup": "Check manually in Google Scholar",
   "reportBibHighConfidence": "High confidence: likely exists{journal}",
-  "@reportBibHighConfidence": {"placeholders": {"journal": {"type": "String"}}},
+  "@reportBibHighConfidence": {
+    "placeholders": {
+      "journal": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibJournalSuffix": " (registered with {journal})",
-  "@reportBibJournalSuffix": {"placeholders": {"journal": {"type": "String"}}},
+  "@reportBibJournalSuffix": {
+    "placeholders": {
+      "journal": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibJournalMismatch": "Journal name mismatch: the document says “{reported}”, while the verified registry says “{registered}”. Please review this citation.",
-  "@reportBibJournalMismatch": {"placeholders": {"reported": {"type": "String"}, "registered": {"type": "String"}}},
+  "@reportBibJournalMismatch": {
+    "placeholders": {
+      "reported": {
+        "type": "String"
+      },
+      "registered": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibNotFound": "No close match found — possibly a fabricated reference",
   "reportBibUncertain": "Suspect: not verified by registry match",
   "reportBibTruncated": "All detected entries are verified with live progress (detected {count} total)",
-  "@reportBibTruncated": {"placeholders": {"max": {"type": "int"}, "count": {"type": "int"}}},
+  "@reportBibTruncated": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportBibCompletedPreview": "{count} completed; results will keep updating.",
-  "@reportBibCompletedPreview": {"placeholders": {"count": {"type": "int"}}},
+  "@reportBibCompletedPreview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "reportBibProgress": "Progress {completed}/{total}, {current}",
-  "@reportBibProgress": {"placeholders": {"completed": {"type": "int"}, "total": {"type": "int"}, "current": {"type": "String"}}},
+  "@reportBibProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibProgressCurrent": "Current: {text}",
-  "@reportBibProgressCurrent": {"placeholders": {"text": {"type": "String"}}},
+  "@reportBibProgressCurrent": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibProgressFinalizing": "Finalizing results",
   "reportBibUncertainWithCandidate": "{base}: similar candidate found “{candidate}”, but author, year, or title did not meet the reliable-match threshold.",
-  "@reportBibUncertainWithCandidate": {"placeholders": {"base": {"type": "String"}, "candidate": {"type": "String"}}},
+  "@reportBibUncertainWithCandidate": {
+    "placeholders": {
+      "base": {
+        "type": "String"
+      },
+      "candidate": {
+        "type": "String"
+      }
+    }
+  },
   "reportBibUncertainNoReliableResponse": "{base}: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.",
-  "@reportBibUncertainNoReliableResponse": {"placeholders": {"base": {"type": "String"}}},
+  "@reportBibUncertainNoReliableResponse": {
+    "placeholders": {
+      "base": {
+        "type": "String"
+      }
+    }
+  },
   "reportNetworkWarningTitle": "Poor network connection",
   "reportNetworkWarningBody": "This app assumes network connectivity is available by default; hyperlink and citation authenticity analysis both require network access to produce a result. A connection could not be established — please check your network and try again.",
   "reportRetryConnectionButton": "Recheck connection",
   "reportAiProbabilityLabel": "AI probability",
   "summaryCardStats": "{total} sentences\n{ai} likely AI\n{human} likely human",
-  "@summaryCardStats": {"placeholders": {"total": {"type": "int"}, "ai": {"type": "int"}, "human": {"type": "int"}}},
+  "@summaryCardStats": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "human": {
+        "type": "int"
+      }
+    }
+  },
   "summaryCardFooter": "Core AI inference runs entirely on-device",
   "exportReportTitle": "TruthLens Detection Report",
   "pdfPageFooter": "TruthLens · Page {page} / {total}",
-  "@pdfPageFooter": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pdfPageFooter": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "pdfAnalyzedAtElapsed": "Analyzed: {datetime} · {seconds}s elapsed",
-  "@pdfAnalyzedAtElapsed": {"placeholders": {"datetime": {"type": "String"}, "seconds": {"type": "String"}}},
+  "@pdfAnalyzedAtElapsed": {
+    "placeholders": {
+      "datetime": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "reportOverallVerdictLabel": "Overall verdict: {verdict}",
-  "@reportOverallVerdictLabel": {"placeholders": {"verdict": {"type": "String"}}},
+  "@reportOverallVerdictLabel": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
   "pdfEslAppliedSuffix": " (ESL correction applied)",
   "pdfSentenceCounts": "{total} sentences · {ai} likely AI · {human} likely human",
-  "@pdfSentenceCounts": {"placeholders": {"total": {"type": "int"}, "ai": {"type": "int"}, "human": {"type": "int"}}},
+  "@pdfSentenceCounts": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "human": {
+        "type": "int"
+      }
+    }
+  },
   "pdfTruncationNotice": "To keep the PDF readable, only the first {max} sentences are shown (of {count} total); for the complete per-sentence data, use \"{csvLabel}\" or \"{jsonLabel}\" instead.",
-  "@pdfTruncationNotice": {"placeholders": {"max": {"type": "int"}, "count": {"type": "int"}, "csvLabel": {"type": "String"}, "jsonLabel": {"type": "String"}}},
+  "@pdfTruncationNotice": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      },
+      "csvLabel": {
+        "type": "String"
+      },
+      "jsonLabel": {
+        "type": "String"
+      }
+    }
+  },
   "pdfSentenceColumnHeader": "Sentence (with matched patterns)",
-
   "composerHeadlineAi": "This text is very likely AI-generated (AI probability {percent}%)",
   "composerHeadlineLikelyAi": "This text leans AI-generated; further review is recommended (AI probability {percent}%)",
   "composerHeadlineMixed": "This text shows a mix of human and AI characteristics (AI probability {percent}%)",
   "composerHeadlineLikelyHuman": "This text leans human-written (AI probability {percent}%)",
   "composerHeadlineHuman": "This text is very likely human-written (AI probability {percent}%)",
-  "@composerHeadlineAi": {"placeholders": {"percent": {"type": "int"}}},
-  "@composerHeadlineLikelyAi": {"placeholders": {"percent": {"type": "int"}}},
-  "@composerHeadlineMixed": {"placeholders": {"percent": {"type": "int"}}},
-  "@composerHeadlineLikelyHuman": {"placeholders": {"percent": {"type": "int"}}},
-  "@composerHeadlineHuman": {"placeholders": {"percent": {"type": "int"}}},
+  "@composerHeadlineAi": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@composerHeadlineLikelyAi": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@composerHeadlineMixed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@composerHeadlineLikelyHuman": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@composerHeadlineHuman": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "composerThresholdFlagged": "The overall AI probability exceeds your {percent}% threshold and is flagged as AI.",
-  "@composerThresholdFlagged": {"placeholders": {"percent": {"type": "int"}}},
+  "@composerThresholdFlagged": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "composerThresholdNotFlagged": "The overall AI probability is below your {percent}% flagging threshold.",
-  "@composerThresholdNotFlagged": {"placeholders": {"percent": {"type": "int"}}},
+  "@composerThresholdNotFlagged": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "composerThresholdFlaggedDetailed": "Overall AI probability is {aiPercent}%, which reaches your {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.",
-  "@composerThresholdFlaggedDetailed": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
+  "@composerThresholdFlaggedDetailed": {
+    "placeholders": {
+      "aiPercent": {
+        "type": "int"
+      },
+      "thresholdPercent": {
+        "type": "int"
+      }
+    }
+  },
   "composerThresholdNotFlaggedDetailed": "Overall AI probability is {aiPercent}%, below your {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.",
-  "@composerThresholdNotFlaggedDetailed": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
+  "@composerThresholdNotFlaggedDetailed": {
+    "placeholders": {
+      "aiPercent": {
+        "type": "int"
+      },
+      "thresholdPercent": {
+        "type": "int"
+      }
+    }
+  },
   "composerNarrativeTitle": "Analysis interpretation",
   "composerParaphraseTitle": "Paraphrase traces detected",
   "composerParaphraseBody": "This text may have been processed by a paraphrasing tool (e.g. QuillBot, Undetectable.ai) to evade detection. Even if it reads naturally sentence-by-sentence, its overall statistical fingerprint still differs from genuine human writing — please pay extra attention.",
@@ -435,44 +1162,128 @@
   "composerEslTitle": "ESL non-native writer bias correction",
   "composerEslBody": "This text may be from a non-native writer. Low perplexity and regular sentence patterns common among non-native writers are not themselves signs of AI, so the system has lowered the statistical model's weight to avoid misjudging it.",
   "composerNarrativeIntro": "This text has {total} sentences in total, of which {ai} show strong AI characteristics and {human} lean human-written.",
-  "@composerNarrativeIntro": {"placeholders": {"total": {"type": "int"}, "ai": {"type": "int"}, "human": {"type": "int"}}},
+  "@composerNarrativeIntro": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "human": {
+        "type": "int"
+      }
+    }
+  },
   "composerNarrativeAiPattern": "Most sentences are highly regular in rhythm, word choice, and transition-word usage — a common fingerprint of AI-generated text.",
   "composerNarrativeMixedPattern": "The text contains both regularized and naturally-varying passages, suggesting a human draft polished by AI, or human-AI collaboration.",
   "composerNarrativeHumanPattern": "Sentence length and word choice show natural variation and personal style, with no clear signs of AI regularity.",
-
   "engineReasonPplLow": "Low language-model perplexity ({ppl}) [AI-leaning], text is highly predictable",
-  "@engineReasonPplLow": {"placeholders": {"ppl": {"type": "String"}}},
+  "@engineReasonPplLow": {
+    "placeholders": {
+      "ppl": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonPplHigh": "High language-model perplexity ({ppl}) [Human-leaning], consistent with human writing variety",
-  "@engineReasonPplHigh": {"placeholders": {"ppl": {"type": "String"}}},
+  "@engineReasonPplHigh": {
+    "placeholders": {
+      "ppl": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonPplMid": "Moderate language-model perplexity ({ppl}) [Neutral]",
-  "@engineReasonPplMid": {"placeholders": {"ppl": {"type": "String"}}},
+  "@engineReasonPplMid": {
+    "placeholders": {
+      "ppl": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonBurstinessLow": "Highly uniform sentence length (burstiness {value}) [AI-leaning], repetitive rhythm",
-  "@engineReasonBurstinessLow": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonBurstinessLow": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonBurstinessHigh": "Noticeable variation in sentence length (burstiness {value}) [Human-leaning], dynamic rhythm",
-  "@engineReasonBurstinessHigh": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonBurstinessHigh": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonTtrLow": "Low vocabulary diversity (TTR {value}) [AI-leaning template pattern]",
-  "@engineReasonTtrLow": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonTtrLow": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonTtrHigh": "High vocabulary diversity (TTR {value}) [Human-leaning]",
-  "@engineReasonTtrHigh": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonTtrHigh": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonStatisticalSummaryAi": "Overall statistical summary: Leans towards AI-generated characteristics ({percent}% AI probability)",
-  "@engineReasonStatisticalSummaryAi": {"placeholders": {"percent": {"type": "String"}}},
+  "@engineReasonStatisticalSummaryAi": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonStatisticalSummaryHuman": "Overall statistical summary: Leans towards human natural writing ({percent}% AI probability)",
-  "@engineReasonStatisticalSummaryHuman": {"placeholders": {"percent": {"type": "String"}}},
+  "@engineReasonStatisticalSummaryHuman": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonStatisticalSummaryNeutral": "Overall statistical summary: Indicators balance out, showing neutral characteristics ({percent}% AI probability)",
-  "@engineReasonStatisticalSummaryNeutral": {"placeholders": {"percent": {"type": "String"}}},
+  "@engineReasonStatisticalSummaryNeutral": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "reportFormulaTitle": "Weighted Calculation Transparency & Parameter Breakdown",
   "reportFormulaExplanation": "The overall AI probability is computed as a weighted average of probabilities from all active engines:",
   "reportFormulaActiveEngines": "Active Engines & Assigned Weights",
   "reportFormulaCalculation": "Weighted Formula Calculation",
   "reportFormulaFinalResult": "Final Weighted AI Probability",
   "reportFormulaEslApplied": "ESL non-native writing adjustment applied (statistical model weight halved)",
-  "reportVerdictAiLikelihood": "AI Leaning",
-  "reportVerdictHumanLikelihood": "Human Writing",
   "engineReasonNeutral": "Statistical indicators show no significant tendency — neutral verdict",
   "engineReasonTransitionWords": "Frequent use of generic transition words ({words}), averaging {density} per sentence — rarely this dense in human writing",
-  "@engineReasonTransitionWords": {"placeholders": {"words": {"type": "String"}, "density": {"type": "String"}}},
+  "@engineReasonTransitionWords": {
+    "placeholders": {
+      "words": {
+        "type": "String"
+      },
+      "density": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonRepeatedOpeners": "Multiple adjacent sentences start with the same word ({count} instances) — repetitive sentence structure",
-  "@engineReasonRepeatedOpeners": {"placeholders": {"count": {"type": "int"}}},
+  "@engineReasonRepeatedOpeners": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonNoStyleMarkers": "No significant AI writing style patterns detected",
   "engineReasonAdversarialNotInstalled": "The paraphrase-detection model is not installed; it did not take part in this vote",
   "engineReasonTransformerNotInstalled": "No model is installed or the active model is unsupported; it did not take part in this vote",
@@ -494,16 +1305,38 @@
   "engineReasonNotParticipatedWithError": "Model did not participate in this vote. {error}",
   "patternNotAnalyzable": "Segment too short or suspected PDF/OCR noise; no sentence-level AI judgment made",
   "engineReasonTransformerLoadFailed": "The model failed to load and did not take part in this vote ({error})",
-  "@engineReasonTransformerLoadFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@engineReasonTransformerLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonTransformerResult": "{model} judged {aiCount} of {total} sentences to show AI characteristics",
-  "@engineReasonTransformerResult": {"placeholders": {"model": {"type": "String"}, "aiCount": {"type": "int"}, "total": {"type": "int"}}},
+  "@engineReasonTransformerResult": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "aiCount": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialDetected": "The adversarial model detected likely AI traces scrubbed by a paraphrasing tool (e.g. QuillBot / Undetectable.ai)",
   "engineReasonAdversarialClean": "No clear paraphrase-evasion traces detected",
-  "engineReasonDisabledByUser": "The user disabled this engine in Settings",
   "engineReasonGenericNotInstalled": "Model not installed; it did not take part in this vote",
   "patternGenericTransition": "generic transition word \"{word}\"",
-  "@patternGenericTransition": {"placeholders": {"word": {"type": "String"}}},
-
+  "@patternGenericTransition": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
   "helpAppBarTitle": "User Guide",
   "helpAboutTitle": "About TruthLens",
   "helpAboutBody": "TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent engines — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated. Reports show sentence-level evidence, engine contributions, the confidence threshold used for the verdict, and the imported file name when a file was selected.",
@@ -533,7 +1366,13 @@
   "helpAdvantage4": "Local records and exports: reports can be saved as PDF/CSV/JSON/PNG, and the app keeps analysis history locally with the source file name when available, so you can re-run or review prior checks without an account.",
   "helpWorkflowTitle": "Full operating workflow",
   "helpWorkflowStepLabel": "Step {step}",
-  "@helpWorkflowStepLabel": {"placeholders": {"step": {"type": "int"}}},
+  "@helpWorkflowStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
   "helpWorkflowStep1Title": "Model download & update",
   "helpWorkflowStep1Body": "First launch guides you through installing the core detection model; afterward you can always check, download, update, or remove models from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.",
   "helpWorkflowStep2Title": "Choosing a model (purpose & effect)",
@@ -544,7 +1383,7 @@
   "helpWorkflowStep2Bullet5": "Report-writing LLM (optional): once installed, report text is dynamically written by an on-device LLM; without it, the app falls back to a fixed template — analysis itself is unaffected.",
   "helpWorkflowStep2Bullet6": "You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.",
   "helpWorkflowStep3Title": "Adding content",
-  "helpWorkflowStep3Body": "Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.",
+  "helpWorkflowStep3Body": "Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.",
   "helpWorkflowStep4Title": "Running analysis",
   "helpWorkflowStep4Body": "Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.",
   "helpWorkflowStep5Title": "Viewing & exporting results",
@@ -559,7 +1398,7 @@
   "helpWorkflowStep2ChipReportLlm": "Report LLM (optional)",
   "helpWorkflowStep3ChipPaste": "Paste text",
   "helpWorkflowStep3ChipImageOcr": "Image OCR",
-  "helpWorkflowStep3ChipImportFormats": "PDF / DOCX / DOC / TXT / MD",
+  "helpWorkflowStep3ChipImportFormats": "PDF / DOCX / DOC / ODT / TXT / MD",
   "helpWorkflowStep3ChipCodeFormulaIsolation": "Code/formula isolation",
   "helpWorkflowStep4ChipEnsemble": "Four-engine ensemble",
   "helpWorkflowStep4ChipLiveProgress": "Live progress",
@@ -586,12 +1425,23 @@
   "helpLinkRoleStatistical": "Perplexity statistical model (Statistical, 25% weight)",
   "helpLinkRoleAdversarial": "Adversarial paraphrase-detection model (Adversarial, 15% weight)",
   "helpLinkRoleLlm": "Report-writing LLM (optional)",
-
   "privacyAppBarTitle": "Privacy Policy",
   "privacyPlatformTitle": "{platform} Privacy Policy",
-  "@privacyPlatformTitle": {"placeholders": {"platform": {"type": "String"}}},
+  "@privacyPlatformTitle": {
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
   "privacyLastUpdated": "Last updated: {date}",
-  "@privacyLastUpdated": {"placeholders": {"date": {"type": "String"}}},
+  "@privacyLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "privacyWebOverview1": "TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser's own sandboxed storage (OPFS), not on any server.",
   "privacyWebOverview2": "The page only reads a file, image, or clipboard content when you actively choose to import, scan, or paste it; it never reads other tabs, other sites' data, or files you have not selected.",
   "privacySectionOverviewWeb": "Overview",
@@ -627,7 +1477,16 @@
   "privacySectionRights": "Your rights",
   "privacyGenericPlatformName": "This platform",
   "settingsVersionSubtitle": "Version {version} (Build {build}) · Local-first private detection engine",
-  "@settingsVersionSubtitle": {"placeholders": {"version": {"type": "String"}, "build": {"type": "String"}}},
+  "@settingsVersionSubtitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
   "webOcrSettingsTitle": "Web OCR settings",
   "webOcrPurpose": "Recognize printed or handwritten text in an uploaded image before analysis.",
   "webOcrGeminiKeyTitle": "Gemini API key (optional)",
@@ -681,7 +1540,13 @@
   "workspaceSelectedEvidence": "Selected evidence",
   "workspaceNoEvidence": "Sentence evidence appears here as each engine completes.",
   "workspacePreliminaryVerdict": "Preliminary AI probability: {percent}%",
-  "@workspacePreliminaryVerdict": {"placeholders": {"percent": {"type": "int"}}},
+  "@workspacePreliminaryVerdict": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "workspaceSentenceSignalTooltip": "This percentage is this sentence's own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.",
   "workspaceSentenceSignalHeader": "AI signal per sentence",
   "workspaceSentenceColumnHeader": "Sentence"

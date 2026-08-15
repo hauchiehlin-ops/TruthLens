@@ -170,6 +170,9 @@ class _InputScreenState extends State<InputScreen> {
           DocumentImporter.effectiveMaxPdfOcrPages,
         ),
         PdfImportIssue.unreadable => l10n.inputPdfUnreadable(doc.fileName),
+        PdfImportIssue.legacyDocUnreadable => l10n.inputDocLegacyUnreadable(
+          doc.fileName,
+        ),
         PdfImportIssue.none => l10n.inputImportNoText(doc.fileName),
       };
       _showFloatingSnackBar(message);

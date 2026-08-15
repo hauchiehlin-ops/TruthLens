@@ -126,6 +126,11 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '\"$fileName\" ialah fail .doc lama dan teksnya tidak dapat diekstrak dengan boleh dipercayai. Simpan sebagai .docx dalam Word atau eksport ke PDF, kemudian import semula.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'Model: $modelId';
   }
@@ -1652,7 +1657,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Tiga kaedah input: tampal teks terus, OCR imej (dikenal pasti pada peranti dengan rangka kerja natif setiap platform), atau import fail (txt / md / pdf / docx / doc). Teks mesti sekurang-kurangnya 40 aksara untuk dihantar untuk analisis.';
+      'Tiga kaedah input: tampal teks terus, OCR imej (dikenal pasti pada peranti dengan rangka kerja natif setiap platform), atau import fail (txt / md / pdf / docx / doc / odt). Teks mesti sekurang-kurangnya 40 aksara untuk dihantar untuk analisis.';
 
   @override
   String get helpWorkflowStep4Title => 'Menjalankan analisis';
@@ -1699,7 +1704,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'OCR imej';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>

@@ -123,6 +123,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '「$fileName」是舊版 .doc 格式，無法可靠擷取文字內容。請在 Word 另存為 .docx 或匯出成 PDF 後再重新匯入。';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return '模型：$modelId';
   }
@@ -1585,7 +1590,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -1633,7 +1638,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3ChipImportFormats =>
-      'PDF / DOCX / DOC / TXT / MD';
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';
@@ -2160,6 +2165,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String inputPdfUnreadable(String fileName) {
     return '无法可靠读取「$fileName」。文件可能已损坏、受密码保护，或当前设置的 OCR 服务不支持。';
+  }
+
+  @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '「$fileName」是旧版 .doc 格式，无法可靠提取文字内容。请在 Word 另存为 .docx 或导出成 PDF 后再重新导入。';
   }
 
   @override
@@ -3625,7 +3635,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc）。PDF 导入会比较两套文本层解析结果并排除乱码；扫描型 PDF 在 OCR 可用时会自动逐页识别。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
+      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc / odt）。PDF 导入会比较两套文本层解析结果并排除乱码；扫描型 PDF 在 OCR 可用时会自动逐页识别。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
 
   @override
   String get helpWorkflowStep4Title => '开始分析';
@@ -3673,7 +3683,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3ChipImportFormats =>
-      'PDF / DOCX / DOC / TXT / MD';
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '代码/公式隔离';
@@ -4200,6 +4210,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String inputPdfUnreadable(String fileName) {
     return '無法可靠讀取「$fileName」。檔案可能已損壞、受密碼保護，或目前設定的 OCR 服務不支援。';
+  }
+
+  @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '「$fileName」是舊版 .doc 格式，無法可靠擷取文字內容。請在 Word 另存為 .docx 或匯出成 PDF 後再重新匯入。';
   }
 
   @override
@@ -5665,7 +5680,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -5713,7 +5728,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3ChipImportFormats =>
-      'PDF / DOCX / DOC / TXT / MD';
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '碼段/公式隔離';

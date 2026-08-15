@@ -126,6 +126,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '„$fileName“ ist eine alte .doc-Datei, deren Text nicht zuverlässig extrahiert werden konnte. Speichern Sie sie in Word als .docx oder exportieren Sie sie als PDF und importieren Sie sie erneut.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'Modell: $modelId';
   }
@@ -1667,7 +1672,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Drei Eingabemethoden: direktes Einfügen von Text, Bild-OCR (auf dem Gerät mit plattformspezifischen nativen Frameworks erkannt) oder Dateiimport (txt / md / pdf / docx / doc). Der Text muss mindestens 40 Zeichen umfassen, um zur Analyse eingereicht zu werden.';
+      'Drei Eingabemethoden: direktes Einfügen von Text, Bild-OCR (auf dem Gerät mit plattformspezifischen nativen Frameworks erkannt) oder Dateiimport (txt / md / pdf / docx / doc / odt). Der Text muss mindestens 40 Zeichen umfassen, um zur Analyse eingereicht zu werden.';
 
   @override
   String get helpWorkflowStep4Title => 'Analyse ausführen';
@@ -1714,7 +1719,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'Bild-OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>

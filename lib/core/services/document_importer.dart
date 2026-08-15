@@ -19,9 +19,9 @@ typedef PdfOcrRecognizer =
       int pageCount,
     );
 
-enum PdfImportIssue { none, needsOcr, tooManyPages, unreadable }
+enum PdfImportIssue { none, needsOcr, tooManyPages, unreadable, legacyDocUnreadable }
 
-/// 文件匯入：支援 txt, md, pdf, docx, doc；PDF 文字層失效時可選擇 OCR。
+/// 文件匯入：支援 txt, md, pdf, docx, doc, odt；PDF 文字層失效時可選擇 OCR。
 class DocumentImporter {
   static const int maxPdfOcrPages = 100;
   static const double _minimumPdfTextQuality = 0.62;
@@ -53,6 +53,7 @@ class DocumentImporter {
     'pdf',
     'docx',
     'doc',
+    'odt',
   ];
 
   /// 開啟選檔對話框並讀取內容；使用者取消時回傳 null
@@ -71,7 +72,7 @@ class DocumentImporter {
             pdfOcr: pdfOcr,
             onPdfOcrProgress: onPdfOcrProgress,
           )
-        : _PdfParseResult(text: parseBytes(bytes, extension: extension));
+        : _parseNonPdf(bytes, extension);
 
     return ImportedDocument(
       fileName: file.name,
@@ -88,13 +89,23 @@ class DocumentImporter {
     try {
       if (normalizedExtension == 'pdf') {
         final text = _extractSyncfusionPdfText(bytes);
-        return _isUsablePdfText(text) ? text : '';
+        return _isUsableText(text) ? text : '';
       } else if (normalizedExtension == 'docx') {
         // DOCX 離線解壓與 <w:t> 文字提取
         return _parseDocx(bytes);
+      } else if (normalizedExtension == 'odt') {
+        // ODT（OpenDocument Text，Google 文件「下載→OpenDocument」的匯出
+        // 格式）離線解壓與 content.xml 文字提取
+        return _parseOdt(bytes);
       } else if (normalizedExtension == 'doc') {
-        // 舊版 OLE Binary DOC 格式寬字元與可讀區段提取 Heuristics
-        return _parseLegacyDoc(bytes);
+        // 舊版 OLE Binary DOC 並非純文字容器（FAT 磁區表、目錄項、屬性集、
+        // 壓縮/分段文字流等二進位結構），下方僅為位元組層級的 Heuristics，
+        // 不是真正的 OLE2/CFB 解析器；把結構性位元組誤判為寬字元時，會產生
+        // 貌似合理但其實是雜訊的文字（隨機命中 CJK 區段的亂碼＋替代字元）。
+        // 因此以與 PDF 相同的文字品質檢查把關，品質不足就視為無法讀取，
+        // 不讓亂碼進入分析流程。
+        final text = _parseLegacyDoc(bytes);
+        return _isUsableText(text) ? text : '';
       }
     } catch (e) {
       // PDF 是二進位容器，不能以純文字 fallback，否則會把 xref / obj /
@@ -104,6 +115,17 @@ class DocumentImporter {
 
     // 預設為純文字（txt, md 等）
     return utf8.decode(bytes, allowMalformed: true);
+  }
+
+  /// 非 PDF 副檔名的匯入結果組裝；.doc 因僅有 Heuristics 可用，品質不足時
+  /// 需標示專屬的 [PdfImportIssue.legacyDocUnreadable]，與一般「找不到文字」
+  /// 區分開來，才能提示使用者改用 .docx 或 PDF 匯入。
+  static _PdfParseResult _parseNonPdf(List<int> bytes, String extension) {
+    final text = parseBytes(bytes, extension: extension);
+    if (extension.toLowerCase() == 'doc' && text.isEmpty) {
+      return const _PdfParseResult(issue: PdfImportIssue.legacyDocUnreadable);
+    }
+    return _PdfParseResult(text: text);
   }
 
   static String _extractSyncfusionPdfText(List<int> bytes) {
@@ -304,7 +326,54 @@ class DocumentImporter {
     }
   }
 
-  static bool _isUsablePdfText(String text) {
+  /// ODT（OpenDocument Text）與 DOCX 同為 zip+XML 容器，但文字節點直接夾在
+  /// 段落／標題／清單項標籤內（無 DOCX 那種獨立 `<w:t>` run 標籤包住每段
+  /// 文字），因此改用「先把段落／換行標籤轉為實際換行，再剝除所有標籤只
+  /// 留文字節點」的做法，而非逐一比對特定標籤。
+  static String _parseOdt(List<int> bytes) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final file = archive.findFile('content.xml');
+      if (file == null) return '';
+      var xmlContent = utf8.decode(
+        file.content as List<int>,
+        allowMalformed: true,
+      );
+
+      xmlContent = xmlContent
+          .replaceAll(RegExp(r'<text:tab\s*/>'), '\t')
+          .replaceAll(RegExp(r'<text:line-break\s*/>'), '\n')
+          .replaceAll(RegExp(r'</text:p>'), '\n')
+          .replaceAll(RegExp(r'</text:h>'), '\n')
+          .replaceAll(RegExp(r'</text:list-item>'), '\n');
+
+      final textBuffer = StringBuffer();
+      var insideTag = false;
+      for (final rune in xmlContent.runes) {
+        if (rune == 0x3C) {
+          insideTag = true;
+        } else if (rune == 0x3E) {
+          insideTag = false;
+        } else if (!insideTag) {
+          textBuffer.writeCharCode(rune);
+        }
+      }
+
+      final text = textBuffer
+          .toString()
+          .replaceAll('&amp;', '&')
+          .replaceAll('&lt;', '<')
+          .replaceAll('&gt;', '>')
+          .replaceAll('&quot;', '"')
+          .replaceAll('&apos;', "'");
+
+      return text.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
+    } catch (_) {
+      return '';
+    }
+  }
+
+  static bool _isUsableText(String text) {
     return pdfTextQuality(text) >= _minimumPdfTextQuality;
   }
 

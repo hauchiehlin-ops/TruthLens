@@ -25,6 +25,7 @@ const Map<String, String> _mimeByExtension = {
   'docx':
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'doc': 'application/msword',
+  'odt': 'application/vnd.oasis.opendocument.text',
   'jpg': 'image/jpeg',
   'jpeg': 'image/jpeg',
   'png': 'image/png',

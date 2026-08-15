@@ -1,5 +1,34 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-16（第七十一次更新）— 功能：支援匯入 ODT（Google 文件開放格式匯出）
+
+**概述**
+使用者詢問能否支援 Google 文件格式；確認 Google 文件沒有可直接下載的原生格式（`.gdoc` 只是指向雲端的連結檔，實際內容需連線 Google 才取得，與現行「內容不上傳」架構衝突），故改為支援 Google 文件「檔案 → 下載 → OpenDocument (.odt)」匯出的開放格式：
+
+1. `DocumentImporter` 新增 `.odt` 支援：ODT 與 DOCX 同為 zip+XML 容器，但文字節點直接夾在段落／標題／清單項標籤內（不像 DOCX 有獨立 `<w:t>` run 標籤），改用「先把段落／標題／換行標籤轉為實際換行，再剝除所有標籤只留文字節點」的解析方式（`_parseOdt`）
+2. `web_file_picker.dart` 補上 `.odt` 的 MIME type 對應，選檔對話框可正確篩選
+3. 說明頁「支援格式」文字與晶片（`helpWorkflowStep3Body`／`helpWorkflowStep3ChipImportFormats`）14 語系同步補上 ODT；順帶修正部分語系原本就漏列 DOC 的不一致
+4. 新增 ODT 段落／粗體行內標籤／換行標籤解析測試
+
+**改善內容**：✅ **完成**（`flutter analyze`、`flutter test` 246 項全數通過，含新增的 ODT 測試）
+
+---
+
+## 2026-08-16（第七十次更新）— 修正：舊版 .doc 匯入產生亂碼
+
+**概述**
+使用者回報匯入「博士論文(endnote).doc」後，文件工作區顯示的內容整段是亂碼（隨機漢字夾雜 □ 缺字符號）：
+
+1. 根因：`DocumentImporter` 把舊版二進位 .doc（OLE2/CFB 容器：磁區表、目錄項、屬性集、壓縮文字流等）列為「支援」格式，但 `_parseLegacyDoc()` 其實不是真正的 OLE2 解析器，只是逐位元組掃描 Heuristics——把二進位結構位元組硬當成 UTF-16LE 字元解讀，剛好落在 CJK 區段（0x4E00–0x9FFF，約 31% 命中機率）的位元組就輸出成看似合理、實則毫無意義的漢字，這正是「隨機漢字＋□」亂碼的成因
+2. PDF 匯入路徑本身沒有問題（`pdfrx`＋Syncfusion 雙引擎抽取＋`pdfTextQuality` 品質檢查會擋下真正的亂碼），使用者說「pdf匯入」其實是誤稱，實際匯入的是 `.doc`
+3. 修正方式：不去硬寫一個完整的 OLE2/CFB 解析器（超出合理範圍），改為讓 `.doc` 的 Heuristics 輸出比照 PDF 一樣先過 `pdfTextQuality` 品質檢查（現已改名 `_isUsableText`，PDF／DOC 共用同一把關卡）；品質不足時視為「無法讀取」，回傳空文字，不讓亂碼流入分析流程
+4. 新增 `PdfImportIssue.legacyDocUnreadable` 專屬提示，明確告知使用者「這是舊版 .doc，請在 Word 另存為 .docx 或匯出 PDF 後再匯入」，而非籠統的「找不到文字」；新增 l10n 鍵 `inputDocLegacyUnreadable`，14 語系全數補齊
+5. 補上 `.doc` 解析先前完全缺乏的測試覆蓋：模擬真實二進位雜訊位元組應被擋下（回傳空字串），以及可還原出通順文字時仍應正常匯入
+
+**修正內容**：✅ **完成**（`flutter analyze`、`flutter test` 245 項全數通過，含新增的 2 個 .doc 測試）
+
+---
+
 ## 2026-08-15（第六十九次更新）— 修正：報告頁／可疑句清單 77 個 l10n 鍵在 10 語系中完全缺失
 
 **概述**

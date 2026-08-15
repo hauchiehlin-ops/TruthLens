@@ -126,6 +126,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '\"$fileName\" é um arquivo .doc antigo e seu texto não pôde ser extraído de forma confiável. Salve-o como .docx no Word ou exporte-o para PDF e importe novamente.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'Modelo: $modelId';
   }
@@ -1666,7 +1671,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Três métodos de entrada: colar texto diretamente, OCR de imagem (reconhecido no dispositivo com frameworks nativos de cada plataforma), ou importar arquivo (txt / md / pdf / docx / doc). O texto deve ter pelo menos 40 caracteres para ser enviado para análise.';
+      'Três métodos de entrada: colar texto diretamente, OCR de imagem (reconhecido no dispositivo com frameworks nativos de cada plataforma), ou importar arquivo (txt / md / pdf / docx / doc / odt). O texto deve ter pelo menos 40 caracteres para ser enviado para análise.';
 
   @override
   String get helpWorkflowStep4Title => 'Executando a análise';
@@ -1713,7 +1718,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'OCR de imagem';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>

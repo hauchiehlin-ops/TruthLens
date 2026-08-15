@@ -312,6 +312,12 @@ abstract class AppLocalizations {
   /// **'\"{fileName}\" could not be read reliably. It may be damaged, password-protected, or unsupported by the configured OCR service.'**
   String inputPdfUnreadable(String fileName);
 
+  /// No description provided for @inputDocLegacyUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{fileName}\" is a legacy .doc file and its text could not be extracted reliably. In Word, save it as .docx or export it to PDF, then import again.'**
+  String inputDocLegacyUnreadable(Object fileName);
+
   /// No description provided for @inputActiveModel.
   ///
   /// In en, this message translates to:
@@ -2659,7 +2665,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep3Body.
   ///
   /// In en, this message translates to:
-  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
+  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
   String get helpWorkflowStep3Body;
 
   /// No description provided for @helpWorkflowStep4Title.
@@ -2749,7 +2755,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep3ChipImportFormats.
   ///
   /// In en, this message translates to:
-  /// **'PDF / DOCX / DOC / TXT / MD'**
+  /// **'PDF / DOCX / DOC / ODT / TXT / MD'**
   String get helpWorkflowStep3ChipImportFormats;
 
   /// No description provided for @helpWorkflowStep3ChipCodeFormulaIsolation.

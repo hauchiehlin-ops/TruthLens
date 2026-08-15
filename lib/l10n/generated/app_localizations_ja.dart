@@ -123,6 +123,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '「$fileName」は旧形式の .doc ファイルのため、テキストを確実に抽出できませんでした。Word で .docx として保存するか、PDF に書き出してから再度インポートしてください。';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'モデル：$modelId';
   }
@@ -1602,7 +1607,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '3つの入力方法：テキストを直接貼り付け、画像OCR（各プラットフォームのネイティブフレームワークでオフライン認識）、ファイルの読み込み（txt / md / pdf / docx / doc）。分析を送信するにはテキストが40文字以上必要です。';
+      '3つの入力方法：テキストを直接貼り付け、画像OCR（各プラットフォームのネイティブフレームワークでオフライン認識）、ファイルの読み込み（txt / md / pdf / docx / doc / odt）。分析を送信するにはテキストが40文字以上必要です。';
 
   @override
   String get helpWorkflowStep4Title => '分析の開始';
@@ -1649,7 +1654,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => '画像 OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => 'コード/数式の除外';

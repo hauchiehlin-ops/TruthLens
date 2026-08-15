@@ -126,6 +126,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '«$fileName» — это файл в устаревшем формате .doc, текст которого не удалось надёжно извлечь. Сохраните его как .docx в Word или экспортируйте в PDF, затем импортируйте снова.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'Модель: $modelId';
   }
@@ -1656,7 +1661,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Три способа ввода: прямая вставка текста, OCR изображения (распознаётся на устройстве с нативными фреймворками каждой платформы) или импорт файла (txt / md / pdf / docx / doc). Текст должен содержать не менее 40 символов для отправки на анализ.';
+      'Три способа ввода: прямая вставка текста, OCR изображения (распознаётся на устройстве с нативными фреймворками каждой платформы) или импорт файла (txt / md / pdf / docx / doc / odt). Текст должен содержать не менее 40 символов для отправки на анализ.';
 
   @override
   String get helpWorkflowStep4Title => 'Запуск анализа';
@@ -1703,7 +1708,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => 'OCR изображения';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>

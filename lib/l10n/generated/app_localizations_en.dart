@@ -126,6 +126,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '\"$fileName\" is a legacy .doc file and its text could not be extracted reliably. In Word, save it as .docx or export it to PDF, then import again.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return 'Model: $modelId';
   }
@@ -1644,7 +1649,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.';
+      'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.';
 
   @override
   String get helpWorkflowStep4Title => 'Running analysis';
@@ -1692,7 +1697,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3ChipImportFormats =>
-      'PDF / DOCX / DOC / TXT / MD';
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation =>

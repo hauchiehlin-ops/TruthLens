@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:truthlens/core/services/document_importer.dart';
@@ -156,6 +159,70 @@ for validating an imported academic document before content detection begins.
         final fragmented = List.filled(24, '\uE001 x \uE002 y').join(' ');
 
         expect(DocumentImporter.pdfTextQuality(fragmented), lessThan(0.62));
+      });
+
+      test('舊版 .doc 二進位結構位元組不得被誤判為可用文字（避免亂碼進入分析）', () {
+        // 模擬真實 OLE2/CFB 檔案的隨機結構性位元組（磁區表、屬性集等），
+        // 而非任何有意義的文字內容。
+        final random = List<int>.generate(
+          4000,
+          (i) => (i * 2654435761) % 256,
+        );
+
+        final text = DocumentImporter.parseBytes(random, extension: 'doc');
+
+        expect(text, isEmpty);
+      });
+
+      test('.doc 若能還原出通順文字仍應正常匯入', () {
+        // 長度需超過 _parseLegacyDoc 內建的 50 字元下限，否則會回退到只掃
+        // ASCII 可列印字元的 Heuristic 2，把中文內容整段清空。
+        const original =
+            '本研究探討人工智慧內容檢測的可靠度，並比較不同分析方法在中英文語料上的判定結果，'
+            '同時討論後續可能的改進方向與應用建議，供後續研究者參考。';
+        final utf16leBytes = <int>[];
+        for (final rune in original.runes) {
+          utf16leBytes.add(rune & 0xff);
+          utf16leBytes.add((rune >> 8) & 0xff);
+        }
+
+        final text = DocumentImporter.parseBytes(
+          utf16leBytes,
+          extension: 'doc',
+        );
+
+        expect(text, contains('本研究探討人工智慧內容檢測'));
+      });
+
+      test('ODT（Google 文件匯出的 OpenDocument）可正確抽取分段文字', () {
+        const contentXml = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">
+  <office:body>
+    <office:text>
+      <text:h text:style-name="Heading_1">研究標題：AI 內容檢測</text:h>
+      <text:p>第一段說明研究背景與動機。</text:p>
+      <text:p>第二段包含<text:span text:style-name="T1">粗體強調文字</text:span>與換行<text:line-break/>接續內容。</text:p>
+    </office:text>
+  </office:body>
+</office:document-content>
+''';
+
+        final contentBytes = utf8.encode(contentXml);
+        final archive = Archive()
+          ..addFile(
+            ArchiveFile('content.xml', contentBytes.length, contentBytes),
+          );
+        final bytes = ZipEncoder().encode(archive);
+
+        final text = DocumentImporter.parseBytes(bytes, extension: 'odt');
+
+        expect(text, contains('研究標題：AI 內容檢測'));
+        expect(text, contains('第一段說明研究背景與動機。'));
+        expect(text, contains('粗體強調文字'));
+        expect(text, contains('接續內容。'));
+        expect(text, isNot(contains('<text:')));
       });
     },
   );

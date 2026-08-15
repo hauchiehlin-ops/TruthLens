@@ -123,6 +123,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String inputDocLegacyUnreadable(Object fileName) {
+    return '\"$fileName\"은(는) 구형 .doc 형식이라 텍스트를 안정적으로 추출할 수 없습니다. Word에서 .docx로 저장하거나 PDF로 내보낸 후 다시 가져오세요.';
+  }
+
+  @override
   String inputActiveModel(String modelId) {
     return '모델: $modelId';
   }
@@ -1608,7 +1613,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '세 가지 입력 방법: 텍스트 직접 붙여넣기, 이미지 OCR（각 플랫폼의 네이티브 프레임워크로 오프라인 인식）, 파일 가져오기（txt / md / pdf / docx / doc）. 분석을 제출하려면 텍스트가 40자 이상이어야 합니다.';
+      '세 가지 입력 방법: 텍스트 직접 붙여넣기, 이미지 OCR（각 플랫폼의 네이티브 프레임워크로 오프라인 인식）, 파일 가져오기（txt / md / pdf / docx / doc / odt）. 분석을 제출하려면 텍스트가 40자 이상이어야 합니다.';
 
   @override
   String get helpWorkflowStep4Title => '분석 시작';
@@ -1655,7 +1660,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get helpWorkflowStep3ChipImageOcr => '이미지 OCR';
 
   @override
-  String get helpWorkflowStep3ChipImportFormats => 'PDF / DOCX / TXT / MD';
+  String get helpWorkflowStep3ChipImportFormats =>
+      'PDF / DOCX / DOC / ODT / TXT / MD';
 
   @override
   String get helpWorkflowStep3ChipCodeFormulaIsolation => '코드/수식 제외';
