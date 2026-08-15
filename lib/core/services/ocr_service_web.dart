@@ -16,6 +16,10 @@ import '../utils/ocr_post_processor.dart';
 class OcrService {
   static const String _storageKeyApiKey = 'ocr_gemini_api_key';
   static const String _storageKeyServerUrl = 'ocr_local_server_url';
+  // 記錄「上次測試成功」時的確切設定值；重新整理或重啟瀏覽器後，只要目前
+  // 設定值與此相符，就代表該端點/金鑰已驗證過，不需要使用者每次都重新測試。
+  static const String _storageKeyServerVerified = 'ocr_local_server_verified_url';
+  static const String _storageKeyApiKeyVerified = 'ocr_gemini_api_key_verified';
 
   // 佇列與速率限制機制（Gemini Free Tier: 1500 req/day = ~2 req/min）
   static const int _requestDelayMs = 2000; // 相鄰請求間隔（毫秒）
@@ -321,11 +325,32 @@ class OcrService {
     return window.localStorage.getItem(_storageKeyServerUrl);
   }
 
+  /// 取得上次「測試連線成功」時的本地伺服器 URL（若目前設定值與此相符，
+  /// 代表該端點已驗證過，不必每次重啟都重新測試）。
+  static String? getVerifiedLocalServerUrl() {
+    return window.localStorage.getItem(_storageKeyServerVerified);
+  }
+
+  /// 取得上次「測試金鑰成功」時的 Gemini API 金鑰。
+  static String? getVerifiedGeminiApiKey() {
+    return window.localStorage.getItem(_storageKeyApiKeyVerified);
+  }
+
   /// Checks the companion server's lightweight status endpoint without
   /// sending any image data.
   static Future<bool> testLocalServer() async {
     final configured = getLocalServerUrl()?.trim();
     if (configured == null || configured.isEmpty) return false;
+    final ok = await _testLocalServerConnection(configured);
+    if (ok) {
+      window.localStorage.setItem(_storageKeyServerVerified, configured);
+    } else {
+      window.localStorage.removeItem(_storageKeyServerVerified);
+    }
+    return ok;
+  }
+
+  static Future<bool> _testLocalServerConnection(String configured) async {
     try {
       final endpoint = Uri.parse(configured);
       final segments = [...endpoint.pathSegments];
@@ -365,6 +390,36 @@ class OcrService {
       if (probe.statusCode != 200) return false;
       return parseLocalOcrResponse(jsonDecode(probe.body)).supportedFormat;
     } catch (_) {
+      return false;
+    }
+  }
+
+  /// 實際呼叫 Gemini API 驗證金鑰是否有效可連線（列出可用模型，不產生內容、
+  /// 不消耗生成配額），成功則記住此金鑰已驗證。
+  static Future<bool> testGeminiKey() async {
+    final apiKey = getGeminiApiKey()?.trim();
+    if (apiKey == null || apiKey.isEmpty) return false;
+    try {
+      final response = await http
+          .get(
+            Uri.parse(
+              'https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey',
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
+      final ok = response.statusCode == 200;
+      if (ok) {
+        window.localStorage.setItem(_storageKeyApiKeyVerified, apiKey);
+      } else {
+        window.localStorage.removeItem(_storageKeyApiKeyVerified);
+        _lastErrorMessage = response.statusCode == 401 || response.statusCode == 400
+            ? 'Gemini API 金鑰無效或未授權（HTTP ${response.statusCode}）。'
+            : 'Gemini API 連線測試失敗（HTTP ${response.statusCode}）。';
+      }
+      return ok;
+    } catch (e) {
+      window.localStorage.removeItem(_storageKeyApiKeyVerified);
+      _lastErrorMessage = 'Gemini API 連線測試失敗：$e';
       return false;
     }
   }

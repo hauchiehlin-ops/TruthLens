@@ -12,6 +12,7 @@ import 'core/detection/model_provisioner.dart';
 import 'core/detection/orchestrator.dart';
 import 'core/detection/report_llm_service.dart';
 import 'core/services/history_repository.dart';
+import 'core/services/ocr_config_notifier.dart';
 import 'core/services/ocr_service.dart';
 import 'core/services/preferences_service.dart';
 import 'core/utils/app_version.dart';
@@ -90,6 +91,7 @@ class TruthLensApp extends StatelessWidget {
           create: (ctx) => ReportLlmService(llmManager: ctx.read<LlmManager>()),
         ),
         Provider(create: (_) => OcrService()),
+        ChangeNotifierProvider(create: (_) => OcrConfigNotifier()),
         Provider(create: (_) => HistoryRepository()),
       ],
       child: Consumer<PreferencesService>(

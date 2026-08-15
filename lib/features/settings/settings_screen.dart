@@ -17,7 +17,7 @@ import 'engine_weight_settings.dart';
 import 'web_ocr_settings.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-/// 設定頁：信心閾值、ESL 修正、主題、語言；模型管理（P2）與語言包（P4）後續加入
+/// 設定頁：信心閾值、ESL 修正、主題、語言、模型管理
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -182,47 +182,6 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
-          ListTile(
-            leading: Icon(LucideIcons.globe),
-            title: Text(l10n.settingsLanguagePackTitle),
-            subtitle: Text(l10n.settingsLanguagePackSubtitle),
-            trailing: TextButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Row(
-                      children: [
-                        Icon(LucideIcons.globe),
-                        const SizedBox(width: 8),
-                        Text(l10n.settingsLanguagePackTitle),
-                      ],
-                    ),
-                    content: Text(l10n.settingsLanguagePackDialogBody),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: Text(l10n.commonClose),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ModelManagerScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(l10n.settingsOpenButton),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: Text(l10n.settingsOpenButton),
-            ),
-          ),
-          const Divider(),
           ListTile(
             leading: Icon(LucideIcons.info),
             title: const Text('TruthLens'),

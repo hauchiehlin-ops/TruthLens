@@ -7,7 +7,6 @@ enum ModelTier {
   bundled, // 隨 App 安裝（風格分析器 C、OCR）
   core, // 首次啟動下載（分類器 A、統計 B、對抗 D）
   optional, // 選擇性下載（本地端 LLM）
-  language, // 選擇性語言包
 }
 
 /// 推論後端（決定走哪條原生橋接）

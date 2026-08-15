@@ -9,11 +9,13 @@ import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/services/document_importer.dart';
+import '../../core/services/ocr_config_notifier.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/threshold_setting_title.dart';
 import '../../shared/widgets/workspace_navigation.dart';
 import '../onboarding/model_prompt.dart';
@@ -210,6 +212,62 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
+  /// 顯示目前實際生效的 OCR 引擎（本地伺服器／Gemini／尚未設定），並標示是否
+  /// 已實測連線成功，讓使用者不必打開設定就能確認辨識來源。
+  Widget _ocrEngineChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final zh = l10n.localeName.toLowerCase().startsWith('zh');
+    final notifier = context.watch<OcrConfigNotifier>();
+    final scheme = Theme.of(context).colorScheme;
+
+    final (icon, label, color) = switch (notifier.activeEngine) {
+      OcrEngineKind.local => (
+        LucideIcons.server,
+        zh
+            ? (notifier.localVerified ? '本地 OCR（已測試）' : '本地 OCR（未測試）')
+            : (notifier.localVerified ? 'Local OCR (verified)' : 'Local OCR (untested)'),
+        notifier.localVerified ? Colors.green.shade700 : Colors.amber.shade700,
+      ),
+      OcrEngineKind.gemini => (
+        LucideIcons.sparkles,
+        zh
+            ? (notifier.geminiVerified ? 'Gemini（已測試）' : 'Gemini（未測試）')
+            : (notifier.geminiVerified ? 'Gemini (verified)' : 'Gemini (untested)'),
+        notifier.geminiVerified ? Colors.green.shade700 : Colors.amber.shade700,
+      ),
+      OcrEngineKind.none => (
+        LucideIcons.info,
+        zh ? 'OCR 引擎：尚未設定' : 'OCR engine: not configured',
+        scheme.onSurfaceVariant,
+      ),
+    };
+
+    final isWideScreen = MediaQuery.of(context).size.width >= 1200;
+    return InkWell(
+      onTap: isWideScreen
+          ? () => context.push('/settings')
+          : () => _scaffoldKey.currentState?.openEndDrawer(),
+      borderRadius: BorderRadius.circular(6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -303,6 +361,8 @@ class _InputScreenState extends State<InputScreen> {
                                 children: [
                                   Expanded(child: _activeModelChip(context)),
                                   const SizedBox(width: 8),
+                                  _ocrEngineChip(context),
+                                  const SizedBox(width: 8),
                                   Text(
                                     l10n.inputCharCount(
                                       _controller.text.trim().length,
@@ -353,6 +413,7 @@ class _InputScreenState extends State<InputScreen> {
                                 ),
                               ),
                             ),
+                            const AppCopyrightFooter(),
                           ],
                         ),
                       ),
@@ -470,6 +531,8 @@ class _InputScreenState extends State<InputScreen> {
                           children: [
                             Expanded(child: _activeModelChip(context)),
                             const SizedBox(width: 8),
+                            _ocrEngineChip(context),
+                            const SizedBox(width: 8),
                             Text(
                               l10n.inputCharCount(
                                 _controller.text.trim().length,
@@ -516,6 +579,7 @@ class _InputScreenState extends State<InputScreen> {
                           ),
                         ),
                       ),
+                      const AppCopyrightFooter(),
                     ],
                   ),
                 ),
@@ -822,53 +886,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
-          // 語言包
-          ListTile(
-            dense: true,
-            leading: Icon(LucideIcons.globe),
-            title: Text(
-              l10n.settingsLanguagePackTitle,
-              style: Theme.of(context).textTheme.labelSmall,
-            ),
-            subtitle: Text(
-              l10n.settingsLanguagePackSubtitle,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Row(
-                    children: [
-                      Icon(LucideIcons.globe),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(l10n.settingsLanguagePackTitle)),
-                    ],
-                  ),
-                  content: Text(l10n.settingsLanguagePackDialogBody),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(),
-                      child: Text(l10n.commonClose),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const ModelManagerScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(l10n.settingsOpenButton),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          const Divider(),
-
           // Web OCR 設定
           if (kIsWeb) ...[
             const WebOcrSettingsCard(compact: true),
@@ -1015,44 +1032,6 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ModelImportScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Icon(LucideIcons.globe),
-              title: Text(l10n.settingsLanguagePackTitle),
-              subtitle: Text(l10n.settingsLanguagePackSubtitle),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Row(
-                      children: [
-                        Icon(LucideIcons.globe),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(l10n.settingsLanguagePackTitle)),
-                      ],
-                    ),
-                    content: Text(l10n.settingsLanguagePackDialogBody),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: Text(l10n.commonClose),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ModelManagerScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(l10n.settingsOpenButton),
-                      ),
-                    ],
-                  ),
                 );
               },
             ),

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/detection/model_catalog_service.dart';
 import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:truthlens/core/services/ocr_config_notifier.dart';
 import 'package:truthlens/core/services/preferences_service.dart';
 import 'package:truthlens/core/utils/app_version.dart';
 import 'package:truthlens/features/home/home_screen.dart';
@@ -54,6 +55,7 @@ Widget _testApp(PreferencesService prefs) => MultiProvider(
     ChangeNotifierProvider.value(value: prefs),
     ChangeNotifierProvider<ModelManager>.value(value: _FakeModelManager()),
     Provider(create: (_) => ModelCatalogService()),
+    ChangeNotifierProvider(create: (_) => OcrConfigNotifier()),
   ],
   child: const MaterialApp(
     locale: Locale('en'),

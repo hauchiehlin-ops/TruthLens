@@ -18,6 +18,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get commonClose => '閉じる';
 
   @override
+  String commonCopyrightNotice(Object year) {
+    return '© $year B&B出版 · E-mail: dr.cobra.lin@gmail.com';
+  }
+
+  @override
   String get verdictHuman => '人間が執筆';
 
   @override
@@ -581,12 +586,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get modelImportWebUnsupported =>
       'Custom model import is not supported on the web version yet. Please use the app version.';
-
-  @override
-  String get settingsLanguagePackTitle => '言語パック';
-
-  @override
-  String get settingsLanguagePackSubtitle => '追加の言語微調整モデル（フェーズ4で提供予定）';
 
   @override
   String get settingsModelManagerAppBarTitle => 'AIモデル管理';
@@ -1811,10 +1810,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyGenericPlatformName => 'このプラットフォーム';
 
   @override
-  String get settingsLanguagePackDialogBody =>
-      'TruthLens 内蔵の多言語検出モデルはすでに104以上の言語に対応しています。AIモデル管理で、言語強化コミュニティモデルを検索、ダウンロード、切り替えできます。';
-
-  @override
   String settingsVersionSubtitle(String version, String build) {
     return 'バージョン $version（Build $build）・ローカル優先のプライバシー検出エンジン';
   }
@@ -1938,6 +1933,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workspaceOverallProgress => '全体の進捗';
+
+  @override
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  ) {
+    return 'ステップ $current/$total・$stage';
+  }
 
   @override
   String get workspaceWaiting => '文書を待っています';

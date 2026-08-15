@@ -71,6 +71,11 @@ class OcrService {
   /// The local companion server is only used by the Web build.
   static Future<bool> testLocalServer() async => false;
 
+  /// Gemini 連線驗證與「已驗證」狀態記憶僅適用於 Web 版設定卡。
+  static Future<bool> testGeminiKey() async => false;
+  static String? getVerifiedLocalServerUrl() => null;
+  static String? getVerifiedGeminiApiKey() => null;
+
   /// 此平台是否已實作 OCR
   Future<bool> get isSupported async {
     try {

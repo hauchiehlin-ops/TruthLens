@@ -22,6 +22,7 @@ import '../../core/services/preferences_service.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/professional_report_header.dart' show EngineGroup;
 import '../../shared/widgets/workspace_navigation.dart';
 import '../input/input_screen.dart' show InputSettingsDrawer;
@@ -427,33 +428,40 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final mode = prefs.workspaceMode == WorkspaceMode.automatic
-              ? (constraints.maxWidth < 980
-                    ? WorkspaceMode.missionTimeline
-                    : WorkspaceMode.commandGrid)
-              : prefs.workspaceMode;
-          return AnimatedSwitcher(
-            duration: reduceMotion
-                ? Duration.zero
-                : const Duration(milliseconds: 280),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            child: KeyedSubtree(
-              key: ValueKey(mode),
-              child: switch (mode) {
-                WorkspaceMode.commandGrid => _commandGrid(),
-                WorkspaceMode.missionTimeline => _missionTimeline(),
-                WorkspaceMode.evidenceCanvas => _evidenceCanvas(),
-                WorkspaceMode.original => _commandGrid(),
-                WorkspaceMode.automatic => _commandGrid(),
-                WorkspaceMode.cosmicFuture => _cosmicFutureLayout(),
-                WorkspaceMode.softEducation => _softEducationLayout(),
+      body: Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final mode = prefs.workspaceMode == WorkspaceMode.automatic
+                    ? (constraints.maxWidth < 980
+                          ? WorkspaceMode.missionTimeline
+                          : WorkspaceMode.commandGrid)
+                    : prefs.workspaceMode;
+                return AnimatedSwitcher(
+                  duration: reduceMotion
+                      ? Duration.zero
+                      : const Duration(milliseconds: 280),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  child: KeyedSubtree(
+                    key: ValueKey(mode),
+                    child: switch (mode) {
+                      WorkspaceMode.commandGrid => _commandGrid(),
+                      WorkspaceMode.missionTimeline => _missionTimeline(),
+                      WorkspaceMode.evidenceCanvas => _evidenceCanvas(),
+                      WorkspaceMode.original => _commandGrid(),
+                      WorkspaceMode.automatic => _commandGrid(),
+                      WorkspaceMode.cosmicFuture => _cosmicFutureLayout(),
+                      WorkspaceMode.softEducation => _softEducationLayout(),
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+          const AppCopyrightFooter(),
+        ],
       ),
     );
   }
@@ -1227,15 +1235,36 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       ],
     );
     if (compact) return strip;
+    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 112,
       child: _Panel(
         title: l10n.workspaceOverallProgress,
         icon: LucideIcons.map,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: strip,
+        trailing: Text(
+          l10n.workspaceProgressStatusSummary(
+            active + 1,
+            labels[active],
+            labels.length,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.right,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 8,
+            children: [
+              for (var i = 0; i < labels.length; i++)
+                _StageChip(label: labels[i], index: i, active: active),
+            ],
+          ),
         ),
       ),
     );
@@ -1259,7 +1288,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ),
             )
           : ListView.separated(
-              itemCount: evidence.take(8).length,
+              itemCount: evidence.length,
               separatorBuilder: (context, index) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final item = evidence[index];
@@ -2322,12 +2351,22 @@ class _EngineTelemetryRow extends StatelessWidget {
     final icon = _engineIcon(role);
     final showDetail =
         done && (relationshipText != null || (reasons?.isNotEmpty ?? false));
+    // cosmic/soft 主題面板背景較深，內文若沿用淺色主題的 onSurfaceVariant
+    // 會呈現深灰字疊深色底、對比不足；改用半透明白字確保可讀性。
+    final isOverlayTheme =
+        _WorkspaceThemeScope.of(context) != _WorkspaceVisualTheme.standard;
+    final detailColor = isOverlayTheme
+        ? Colors.white.withValues(alpha: 0.82)
+        : scheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 42, child: _buildRow(context, scheme, color, icon)),
+          SizedBox(
+            height: 42,
+            child: _buildRow(context, scheme, color, icon, isOverlayTheme),
+          ),
           if (showDetail)
             Padding(
               padding: const EdgeInsets.only(left: 54, top: 4),
@@ -2338,7 +2377,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                     Text(
                       relationshipText!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: detailColor,
                         height: 1.25,
                       ),
                     ),
@@ -2348,7 +2387,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                       child: Text(
                         reason,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: scheme.onSurfaceVariant,
+                          color: detailColor,
                           height: 1.25,
                         ),
                       ),
@@ -2366,6 +2405,7 @@ class _EngineTelemetryRow extends StatelessWidget {
     ColorScheme scheme,
     Color color,
     IconData icon,
+    bool isOverlayTheme,
   ) {
     return Row(
       children: [
@@ -2420,7 +2460,10 @@ class _EngineTelemetryRow extends StatelessWidget {
                     if (score != null)
                       Text(
                         '${(score! * 100).round()}%',
-                        style: Theme.of(context).textTheme.labelSmall,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: isOverlayTheme ? Colors.white : scheme.onSurface,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                   ],
                 )
@@ -2437,7 +2480,9 @@ class _EngineTelemetryRow extends StatelessWidget {
                 )
               : Icon(
                   LucideIcons.moreHorizontal,
-                  color: scheme.onSurfaceVariant,
+                  color: isOverlayTheme
+                      ? Colors.white.withValues(alpha: 0.7)
+                      : scheme.onSurfaceVariant,
                 ),
         ),
       ],
@@ -2497,6 +2542,72 @@ class _StageNode extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 寬螢幕「整體進度」面板使用的左靠步驟膠囊：依內容寬度自動收攏，
+/// 避免 5 個步驟被平均撐開成充滿空隙的等寬格。
+class _StageChip extends StatelessWidget {
+  final String label;
+  final int index;
+  final int active;
+
+  const _StageChip({
+    required this.label,
+    required this.index,
+    required this.active,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final complete = index < active;
+    final current = index == active;
+    final scheme = Theme.of(context).colorScheme;
+    final background = complete || current
+        ? scheme.primary
+        : scheme.surfaceContainerHighest;
+    final foreground = complete || current
+        ? scheme.onPrimary
+        : scheme.onSurfaceVariant;
+    return Semantics(
+      selected: current,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: current ? scheme.onSurface : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (complete)
+              Icon(LucideIcons.check, size: 13, color: foreground)
+            else
+              Text(
+                '${index + 1}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: foreground,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: foreground,
+                fontWeight: current ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

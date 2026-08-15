@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform, kIsWeb;
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../core/services/ocr_service.dart';
+import '../../core/services/ocr_config_notifier.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Shared Web OCR settings used by the settings page and both input-screen
@@ -37,28 +37,15 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
 
   late final TextEditingController _apiKeyController;
   late final TextEditingController _serverUrlController;
-  bool _testingServer = false;
-  _LocalOcrStatus _localOcrStatus = _LocalOcrStatus.notConfigured;
 
   @override
   void initState() {
     super.initState();
-    _apiKeyController = TextEditingController();
-    _serverUrlController = TextEditingController();
-    _loadSettings();
-  }
-
-  void _loadSettings() {
-    if (!kIsWeb) return;
-    try {
-      _apiKeyController.text = OcrService.getGeminiApiKey() ?? '';
-      _serverUrlController.text = OcrService.getLocalServerUrl() ?? '';
-      _localOcrStatus = _statusForUrl(_serverUrlController.text);
-    } catch (_) {
-      _apiKeyController.clear();
-      _serverUrlController.clear();
-      _localOcrStatus = _LocalOcrStatus.notConfigured;
-    }
+    final notifier = context.read<OcrConfigNotifier>();
+    _apiKeyController = TextEditingController(text: notifier.geminiApiKey);
+    _serverUrlController = TextEditingController(
+      text: notifier.localServerUrl,
+    );
   }
 
   @override
@@ -72,12 +59,21 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final notifier = context.watch<OcrConfigNotifier>();
     final titleStyle = widget.compact
         ? theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)
         : theme.textTheme.titleSmall;
     final fieldPadding = widget.compact
         ? const EdgeInsets.symmetric(horizontal: 10, vertical: 8)
         : const EdgeInsets.all(12);
+
+    // 外部（如安裝精靈）改動了設定值時，同步回輸入框，避免顯示落後於實際狀態。
+    if (_serverUrlController.text != notifier.localServerUrl) {
+      _serverUrlController.text = notifier.localServerUrl;
+    }
+
+    final geminiStatus = _geminiStatus(notifier);
+    final localStatus = _localStatus(notifier);
 
     return Padding(
       padding: widget.compact
@@ -121,11 +117,32 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                       tooltip: l10n.commonDelete,
                       onPressed: () {
                         _apiKeyController.clear();
-                        _saveSettings();
+                        notifier.setGeminiApiKey('');
                       },
                     ),
             ),
-            onChanged: (_) => _saveSettings(),
+            onChanged: (value) => notifier.setGeminiApiKey(value),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _LocalOcrStatusLight(
+                status: geminiStatus,
+                compact: widget.compact,
+                label: _geminiStatusLabel(l10n, geminiStatus),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.tonalIcon(
+                onPressed: notifier.testingGemini ? null : _testGeminiKey,
+                icon: notifier.testingGemini
+                    ? const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(LucideIcons.wifi, size: 16),
+                label: Text(l10n.webOcrTestServerButton),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Row(
@@ -160,20 +177,17 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                       tooltip: l10n.commonDelete,
                       onPressed: () {
                         _serverUrlController.clear();
-                        _saveSettings();
+                        notifier.setLocalServerUrl('');
                       },
                     ),
             ),
-            onChanged: (_) => _saveSettings(),
+            onChanged: (value) => notifier.setLocalServerUrl(value),
           ),
           const SizedBox(height: 8),
           _LocalOcrStatusLight(
-            status: _testingServer ? _LocalOcrStatus.checking : _localOcrStatus,
+            status: localStatus,
             compact: widget.compact,
-            label: _localOcrStatusLabel(
-              l10n,
-              _testingServer ? _LocalOcrStatus.checking : _localOcrStatus,
-            ),
+            label: _localOcrStatusLabel(l10n, localStatus),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -186,8 +200,8 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                 label: Text(_assistantButtonLabel(l10n)),
               ),
               FilledButton.tonalIcon(
-                onPressed: _testingServer ? null : _testLocalServer,
-                icon: _testingServer
+                onPressed: notifier.testingLocal ? null : _testLocalServer,
+                icon: notifier.testingLocal
                     ? const SizedBox.square(
                         dimension: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
@@ -219,6 +233,14 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
                   l10n.webOcrPriorityDescription,
                   style: theme.textTheme.bodySmall,
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  _activeEngineSummary(l10n, notifier),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
               ],
             ),
           ),
@@ -229,6 +251,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
 
   Future<void> _configureLocalOcrAssistant() async {
     final l10n = AppLocalizations.of(context);
+    final notifier = context.read<OcrConfigNotifier>();
     final installer = _detectLocalOcrInstaller();
 
     if (installer == null) {
@@ -241,8 +264,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       return;
     }
 
-    _serverUrlController.text = _defaultLocalOcrEndpoint;
-    _saveSettings();
+    notifier.setLocalServerUrl(_defaultLocalOcrEndpoint);
     await _openUri(installer.downloadUri);
 
     if (!mounted) return;
@@ -291,31 +313,46 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
 
   Future<void> _testLocalServer() async {
     final l10n = AppLocalizations.of(context);
+    final notifier = context.read<OcrConfigNotifier>();
     if (_serverUrlController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.webOcrTestServerMissingUrl)));
       return;
     }
-    _saveSettings();
-    setState(() {
-      _testingServer = true;
-      _localOcrStatus = _LocalOcrStatus.checking;
-    });
-    final connected = await OcrService.testLocalServer();
+    final connected = await notifier.testLocal();
     if (!mounted) return;
-    setState(() {
-      _testingServer = false;
-      _localOcrStatus = connected
-          ? _LocalOcrStatus.ready
-          : _LocalOcrStatus.unavailable;
-    });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           connected
               ? l10n.webOcrTestServerSuccess
               : l10n.webOcrTestServerFailure,
+        ),
+        backgroundColor: connected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.error,
+      ),
+    );
+  }
+
+  Future<void> _testGeminiKey() async {
+    final l10n = AppLocalizations.of(context);
+    final notifier = context.read<OcrConfigNotifier>();
+    if (_apiKeyController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_isZh(l10n) ? '請先輸入 Gemini API 金鑰。' : 'Enter a Gemini API key first.')),
+      );
+      return;
+    }
+    final connected = await notifier.testGemini();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          connected
+              ? (_isZh(l10n) ? 'Gemini API 金鑰有效，可正常連線。' : 'Gemini API key is valid and reachable.')
+              : (_isZh(l10n) ? 'Gemini API 連線失敗，請確認金鑰是否正確。' : 'Could not reach Gemini API. Please check the key.'),
         ),
         backgroundColor: connected
             ? Theme.of(context).colorScheme.primary
@@ -356,10 +393,20 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   bool _isZh(AppLocalizations l10n) =>
       l10n.localeName.toLowerCase().startsWith('zh');
 
-  _LocalOcrStatus _statusForUrl(String url) {
-    return url.trim().isEmpty
-        ? _LocalOcrStatus.notConfigured
-        : _LocalOcrStatus.needsTest;
+  _LocalOcrStatus _localStatus(OcrConfigNotifier notifier) {
+    if (notifier.testingLocal) return _LocalOcrStatus.checking;
+    if (notifier.localServerUrl.isEmpty) return _LocalOcrStatus.notConfigured;
+    if (notifier.localVerified) return _LocalOcrStatus.ready;
+    if (notifier.localLastTestOk == false) return _LocalOcrStatus.unavailable;
+    return _LocalOcrStatus.needsTest;
+  }
+
+  _LocalOcrStatus _geminiStatus(OcrConfigNotifier notifier) {
+    if (notifier.testingGemini) return _LocalOcrStatus.checking;
+    if (notifier.geminiApiKey.isEmpty) return _LocalOcrStatus.notConfigured;
+    if (notifier.geminiVerified) return _LocalOcrStatus.ready;
+    if (notifier.geminiLastTestOk == false) return _LocalOcrStatus.unavailable;
+    return _LocalOcrStatus.needsTest;
   }
 
   String _localOcrStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
@@ -374,6 +421,31 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       _LocalOcrStatus.ready => zh ? '本地 OCR：可運行' : 'Local OCR: ready',
       _LocalOcrStatus.unavailable =>
         zh ? '本地 OCR：無法連線' : 'Local OCR: unreachable',
+    };
+  }
+
+  String _geminiStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
+    final zh = _isZh(l10n);
+    return switch (status) {
+      _LocalOcrStatus.notConfigured => zh ? 'Gemini：尚未設定金鑰' : 'Gemini: no key set',
+      _LocalOcrStatus.needsTest => zh ? 'Gemini：已填入金鑰，尚未測試' : 'Gemini: key set, not tested',
+      _LocalOcrStatus.checking => zh ? 'Gemini：正在驗證金鑰' : 'Gemini: verifying key',
+      _LocalOcrStatus.ready => zh ? 'Gemini：金鑰有效' : 'Gemini: key valid',
+      _LocalOcrStatus.unavailable =>
+        zh ? 'Gemini：金鑰無效或無法連線' : 'Gemini: invalid or unreachable',
+    };
+  }
+
+  String _activeEngineSummary(AppLocalizations l10n, OcrConfigNotifier notifier) {
+    final zh = _isZh(l10n);
+    return switch (notifier.activeEngine) {
+      OcrEngineKind.local => notifier.localVerified
+          ? (zh ? '目前生效引擎：本地 OCR 伺服器（已測試可用）' : 'Active engine: local OCR server (verified)')
+          : (zh ? '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）' : 'Active engine: local OCR server (not yet tested)'),
+      OcrEngineKind.gemini => notifier.geminiVerified
+          ? (zh ? '目前生效引擎：Gemini API（已測試可用）' : 'Active engine: Gemini API (verified)')
+          : (zh ? '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）' : 'Active engine: Gemini API (not yet tested)'),
+      OcrEngineKind.none => zh ? '尚未設定任何 OCR 引擎' : 'No OCR engine configured yet',
     };
   }
 
@@ -398,33 +470,6 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       return '已偵測到 ${installer.osName}，並已自動填入本地端點：\n$_defaultLocalOcrEndpoint\n\n瀏覽器已開始下載 ${installer.fileName}。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：${installer.zhRunInstruction}\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「${l10n.webOcrTestServerButton}」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
     }
     return '${installer.osName} was detected, and the local endpoint has been filled in automatically:\n$_defaultLocalOcrEndpoint\n\nYour browser has started downloading ${installer.fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: ${installer.enRunInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “${l10n.webOcrTestServerButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.';
-  }
-
-  void _saveSettings() {
-    final nextStatus = _statusForUrl(_serverUrlController.text);
-    final statusChanged =
-        _localOcrStatus != nextStatus &&
-        _localOcrStatus != _LocalOcrStatus.checking;
-    if (statusChanged) {
-      _localOcrStatus = nextStatus;
-      if (mounted) setState(() {});
-    }
-    if (!kIsWeb) return;
-    try {
-      OcrService.setGeminiApiKey(_apiKeyController.text);
-      OcrService.setLocalServerUrl(_serverUrlController.text);
-      if (!statusChanged) setState(() {});
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).settingsSaveFailed('$error'),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
   }
 }
 

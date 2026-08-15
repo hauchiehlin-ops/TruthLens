@@ -12,6 +12,7 @@ import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/professional_report_header.dart';
 import '../../shared/widgets/suspicious_sentences_list.dart';
 import 'bibliography_presentation.dart';
@@ -61,6 +62,10 @@ class _ReportScreenState extends State<ReportScreen> {
   int _bibCompleted = 0;
   int _bibTotal = 0;
   BibliographyEntry? _bibCurrentEntry;
+  // 針對已顯示清單中特定幾筆文獻重新查核時使用；與 [_checkingBib]（整批初次
+  // 驗證）分開追蹤，讓畫面能停留在完整清單、只在受影響列顯示查核中狀態，
+  // 不會因暫時切換成精簡進度卡而讓捲動位置跳回頁首。
+  Set<int> _bibRecheckingIndexes = {};
 
   /// App 執行時預設假定網路可用；`null` 代表本次報告尚未探測過，
   /// `false` 代表偵測到連線不佳／離線，需提示使用者。
@@ -175,7 +180,7 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _recheckBibliographyEntries(List<int> indexes) async {
-    if (_checkingBib || indexes.isEmpty) return;
+    if (_bibRecheckingIndexes.isNotEmpty || indexes.isEmpty) return;
 
     final existingChecks = _bibChecks;
     if (existingChecks == null || existingChecks.isEmpty) {
@@ -192,7 +197,7 @@ class _ReportScreenState extends State<ReportScreen> {
     if (targetIndexes.isEmpty) return;
 
     setState(() {
-      _checkingBib = true;
+      _bibRecheckingIndexes = targetIndexes.toSet();
       _bibCompleted = 0;
       _bibTotal = targetIndexes.length;
       _bibCurrentEntry = existingChecks[targetIndexes.first].entry;
@@ -205,7 +210,7 @@ class _ReportScreenState extends State<ReportScreen> {
     if (!online) {
       if (mounted) {
         setState(() {
-          _checkingBib = false;
+          _bibRecheckingIndexes = {};
           _bibCurrentEntry = null;
         });
       }
@@ -241,7 +246,7 @@ class _ReportScreenState extends State<ReportScreen> {
         workingChecks[targetIndexes[i]] = updatedChecks[i];
       }
       _bibChecks = orderBibliographyChecks(workingChecks);
-      _checkingBib = false;
+      _bibRecheckingIndexes = {};
       _bibCompleted = updatedChecks.length;
       _bibTotal = updatedChecks.length;
       _bibCurrentEntry = null;
@@ -348,6 +353,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     ],
 
                     const SizedBox(height: 24),
+                    const AppCopyrightFooter(),
                   ],
                 ),
               ),
@@ -776,7 +782,7 @@ class _ReportScreenState extends State<ReportScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
-                  onPressed: _checkingBib
+                  onPressed: _bibRecheckingIndexes.isNotEmpty
                       ? null
                       : () => _recheckBibliographyEntries(
                           _unreliableBibIndexes(checks),
@@ -802,18 +808,27 @@ class _ReportScreenState extends State<ReportScreen> {
                     presentation.warningTone ?? presentation.tone,
                     Theme.of(context).brightness,
                   );
+                  final rechecking = _bibRecheckingIndexes.contains(i);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          _bibStatusIcon(checks[i]),
-                          size: 18,
-                          color: presentation.warning == null
-                              ? statusColor
-                              : warningColor,
-                        ),
+                        rechecking
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Icon(
+                                _bibStatusIcon(checks[i]),
+                                size: 18,
+                                color: presentation.warning == null
+                                    ? statusColor
+                                    : warningColor,
+                              ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -865,7 +880,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           const SizedBox(width: 6),
                           IconButton(
                             tooltip: l10n.reportBibRecheckOneTooltip,
-                            onPressed: _checkingBib
+                            onPressed: _bibRecheckingIndexes.isNotEmpty
                                 ? null
                                 : () => _recheckBibliographyEntries([i]),
                             icon: Icon(LucideIcons.refreshCw),

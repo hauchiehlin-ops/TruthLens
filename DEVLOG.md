@@ -1,5 +1,51 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-15（第六十七次更新）— 改善：整體進度條重新設計、即時發現移除筆數上限、版權宣告、文獻重新查核不跳頁
+
+**概述**
+1. 「整體進度」步驟條在寬螢幕下過於鬆散：提供三個設計方案（置中收攏＋彈性連接線／連續軌道進度條／左靠步驟膠囊＋狀態摘要）供使用者選擇，採用方案 C——步驟改為左靠、依內容寬度收攏的膠囊（`_StageChip`），面板標題列右側加入「步驟 X/5・目前階段」文字摘要（新增 l10n 鍵 `workspaceProgressStatusSummary`，14 語系皆已補上）
+2. 「即時發現」清單原本寫死 `evidence.take(8)`，導致無論文件多長都只顯示前 8 筆訊號；移除上限，清單本身可捲動，不再遺漏後段句子
+3. 首頁（原始版面 `InputScreen`）、多面板工作台（`WorkspaceScreen`，Automatic/Command grid/Mission timeline 等模式）與分析報告（`ReportScreen`）底部新增版權宣告列 `AppCopyrightFooter`（新增共用元件），文字經 l10n 鍵 `commonCopyrightNotice` 管理、年份動態帶入。工作台加入固定版權列後，手機寬度 Command grid 精簡版面的「即時發現」區塊會落在預設掛載範圍（視窗高度＋cacheExtent）之外，需捲動才可見——已徵求使用者確認接受此代價（選擇「全部版面都加」），並同步修正 `workspace_screen_test.dart` 改用 `dragUntilVisible` 驗證
+4. 文獻「重新查核」（單筆或整批未通過項目）原本會把整張卡片暫時換成精簡進度卡，造成捲動位置跳回頁首；改為新增 `_bibRecheckingIndexes` 狀態，查核中維持完整清單顯示、只在受影響列顯示查核中圖示，捲動位置不再跳動
+
+**改善內容**：✅ **完成**（`flutter analyze`、`flutter test` 243 項全數通過；已在瀏覽器實測整體進度條與版權列顯示正確）
+
+---
+
+## 2026-08-15（第六十六次更新）— 改善：Web OCR 設定持久化、Gemini 連線驗證與引擎狀態指示；移除語言包空殼
+
+**概述**
+使用者回報本地 OCR 伺服器設定完成後仍感覺每次都要重新設定，並詢問本地／Gemini 雙路徑同時設定時如何判斷生效引擎與 Gemini 是否真的可連線；同時要求移除無實質功能的「語言包」項目：
+
+1. 根因其實是 URL/金鑰本身已正確存入 `localStorage`，但「已測試可用」狀態未跨重整保留，每次重新載入都顯示「尚未測試」，造成使用者誤以為要重設。新增 `ocr_local_server_verified_url` / `ocr_gemini_api_key_verified` 兩把持久化鍵，測試成功時記住當下設定值，只要設定不變，重新整理後仍顯示「可運行」
+2. 新增 `OcrService.testGeminiKey()`：實際呼叫 Gemini `models` 端點驗證金鑰有效性（不消耗生成配額），取代過去「只要欄位非空就當作已設定」的假象；Web OCR 設定卡新增 Gemini 專屬測試按鈕與狀態燈號
+3. 新增 `OcrConfigNotifier`（`lib/core/services/ocr_config_notifier.dart`）集中管理設定與驗證狀態並透過 Provider 全域分享，設定卡與首頁不再各自讀寫 localStorage
+4. 首頁新增 OCR 引擎狀態徽章（點擊可開啟設定），依「本地 URL 已設定 → 本地優先；否則有金鑰 → Gemini；皆無 → 尚未設定」規則即時顯示目前生效引擎與是否已實測，呼應設定卡內顯示的相同判斷邏輯與優先順序說明
+5. 移除設定頁、首頁精簡設定與行動版抽屜中三處重複的「語言包」項目——確認它只是彈出「第四階段開放」靜態說明的空殼，不含任何下載或使用邏輯；一併清除 `ModelTier.language`（零處實際引用的死列舉值）與 12 語系 arb／生成檔中的對應字串
+6. 補齊/修正相關測試（`web_ocr_settings_test.dart`、`home_screen_test.dart`、`input_screen_mobile_settings_test.dart`）以涵蓋新的 Provider 依賴與移除的項目
+
+**改善內容**：✅ **完成**
+
+- `flutter analyze`、`flutter test`（243 項）全數通過
+- 本地 OCR 測試失敗後的「無法連線」紅燈狀態為單次工作階段內的暫時提示，不跨重整持久化（避免陳舊失敗訊號誤導使用者）
+
+---
+
+## 2026-08-15（第六十五次更新）— 修正：教育文柔主題面板文字與圖示對比不足
+
+**概述**
+使用者回報教育文柔（soft）工作台主題的分析遙測面板文字與部分圖示看不清楚：
+
+1. 根因為淺色模式下 `Theme.textTheme` 預設文字色（近黑）與 `scheme.onSurfaceVariant`（中灰）在 soft/cosmic 主題的深色玻璃感面板背景上對比不足，套用時未依主題覆寫顏色
+2. 引擎判讀理由文字、完成後的百分比數字、待處理狀態圖示，於非 standard 主題下改用半透明白字／白色
+3. 一併修正「詳細分析」清單中「未參與」引擎百分比文字（`Colors.grey[400]` 在白底卡片上過淺）改為 `grey[600]`
+
+**修正內容**：✅ **完成**
+
+- `flutter analyze` 通過；未變更任何引擎推論或加權邏輯，僅調整顯示顏色
+
+---
+
 ## 2026-08-15（第六十四次更新）— 修正：分析中止與未完成結果隔離
 
 **概述**

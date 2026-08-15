@@ -138,6 +138,12 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get commonClose;
 
+  /// No description provided for @commonCopyrightNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'© {year} B&B出版 · E-mail: dr.cobra.lin@gmail.com'**
+  String commonCopyrightNotice(Object year);
+
   /// No description provided for @verdictHuman.
   ///
   /// In en, this message translates to:
@@ -1078,18 +1084,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom model import is not supported on the web version yet. Please use the app version.'**
   String get modelImportWebUnsupported;
-
-  /// No description provided for @settingsLanguagePackTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Language packs'**
-  String get settingsLanguagePackTitle;
-
-  /// No description provided for @settingsLanguagePackSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Additional fine-tuned language models (available in phase 4)'**
-  String get settingsLanguagePackSubtitle;
 
   /// No description provided for @settingsModelManagerAppBarTitle.
   ///
@@ -3034,12 +3028,6 @@ abstract class AppLocalizations {
   /// **'This platform'**
   String get privacyGenericPlatformName;
 
-  /// No description provided for @settingsLanguagePackDialogBody.
-  ///
-  /// In en, this message translates to:
-  /// **'TruthLens\'s built-in multilingual detector already supports 104+ languages. Use AI Model Management to explore, download, or switch language-enhanced community models.'**
-  String get settingsLanguagePackDialogBody;
-
   /// No description provided for @settingsVersionSubtitle.
   ///
   /// In en, this message translates to:
@@ -3273,6 +3261,16 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Overall progress'**
   String get workspaceOverallProgress;
+
+  /// No description provided for @workspaceProgressStatusSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current}/{total} · {stage}'**
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  );
 
   /// No description provided for @workspaceWaiting.
   ///

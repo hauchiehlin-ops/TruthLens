@@ -544,7 +544,7 @@ class _EngineContributionCard extends StatelessWidget {
                                     ?.copyWith(
                                       color: group.available
                                           ? const Color(0xFF1E3A5F)
-                                          : Colors.grey[400],
+                                          : Colors.grey[600],
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),

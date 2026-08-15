@@ -60,6 +60,13 @@ void main() {
     await tester.pumpWidget(_testApp(prefs));
     await tester.pumpAndSettle();
 
+    // 版權宣告列固定佔用視窗底部空間，Command grid 精簡版面的「即時發現」
+    // 區塊因此落在預設掛載範圍（視窗高度 + cacheExtent）之外，需先捲動。
+    await tester.dragUntilVisible(
+      find.text('Live findings'),
+      find.byType(Scrollable).first,
+      const Offset(0, -300),
+    );
     expect(find.text('Live findings'), findsOneWidget);
     expect(find.text('Overall progress'), findsNothing);
     expect(tester.takeException(), isNull);

@@ -18,6 +18,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonClose => '關閉';
 
   @override
+  String commonCopyrightNotice(Object year) {
+    return '© $year B&B出版 · E-mail: dr.cobra.lin@gmail.com';
+  }
+
+  @override
   String get verdictHuman => '人類撰寫';
 
   @override
@@ -572,12 +577,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelImportWebUnsupported => '匯入自訂模型尚未支援於網頁版，請使用 App 版本。';
-
-  @override
-  String get settingsLanguagePackTitle => '語言包';
-
-  @override
-  String get settingsLanguagePackSubtitle => '額外語言微調模型（第四階段開放）';
 
   @override
   String get settingsModelManagerAppBarTitle => 'AI 模型管理';
@@ -1782,10 +1781,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyGenericPlatformName => '本平台';
 
   @override
-  String get settingsLanguagePackDialogBody =>
-      'TruthLens 內建的多語言偵測器已支援 104 種以上語言。請至「AI 模型管理」探索、下載或切換特定語言的強化社群模型。';
-
-  @override
   String settingsVersionSubtitle(String version, String build) {
     return '版本 $version（Build $build）· 本地優先的隱私檢測引擎';
   }
@@ -1908,6 +1903,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceOverallProgress => '整體進度';
 
   @override
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  ) {
+    return '步驟 $current/$total・$stage';
+  }
+
+  @override
   String get workspaceWaiting => '等待匯入文件';
 
   @override
@@ -1983,6 +1987,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get commonClose => '关闭';
+
+  @override
+  String commonCopyrightNotice(Object year) {
+    return '© $year B&B出版 · E-mail: dr.cobra.lin@gmail.com';
+  }
 
   @override
   String get verdictHuman => '人类撰写';
@@ -2539,12 +2548,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get modelImportWebUnsupported => '导入自定义模型尚未支持网页版，请使用 App 版本。';
-
-  @override
-  String get settingsLanguagePackTitle => '语言包';
-
-  @override
-  String get settingsLanguagePackSubtitle => '额外语言微调模型（第四阶段开放）';
 
   @override
   String get settingsModelManagerAppBarTitle => 'AI 模型管理';
@@ -3748,10 +3751,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get privacyGenericPlatformName => '本平台';
 
   @override
-  String get settingsLanguagePackDialogBody =>
-      'TruthLens 内置的多语言检测器已支持 104 种以上语言。请至“AI 模型管理”探索、下载或切换特定语言的增强社区模型。';
-
-  @override
   String settingsVersionSubtitle(String version, String build) {
     return '版本 $version（Build $build）· 本地优先的隐私检测引擎';
   }
@@ -3874,6 +3873,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceOverallProgress => '整体进度';
 
   @override
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  ) {
+    return '步骤 $current/$total・$stage';
+  }
+
+  @override
   String get workspaceWaiting => '等待导入文件';
 
   @override
@@ -3949,6 +3957,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get commonClose => '關閉';
+
+  @override
+  String commonCopyrightNotice(Object year) {
+    return '© $year B&B出版 · E-mail: dr.cobra.lin@gmail.com';
+  }
 
   @override
   String get verdictHuman => '人類撰寫';
@@ -4505,12 +4518,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get modelImportWebUnsupported => '匯入自訂模型尚未支援於網頁版，請使用 App 版本。';
-
-  @override
-  String get settingsLanguagePackTitle => '語言包';
-
-  @override
-  String get settingsLanguagePackSubtitle => '額外語言微調模型（第四階段開放）';
 
   @override
   String get settingsModelManagerAppBarTitle => 'AI 模型管理';
@@ -5714,10 +5721,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get privacyGenericPlatformName => '本平台';
 
   @override
-  String get settingsLanguagePackDialogBody =>
-      'TruthLens 內建的多語言偵測器已支援 104 種以上語言。請至「AI 模型管理」探索、下載或切換特定語言的強化社群模型。';
-
-  @override
   String settingsVersionSubtitle(String version, String build) {
     return '版本 $version（Build $build）· 本地優先的隱私檢測引擎';
   }
@@ -5838,6 +5841,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceOverallProgress => '整體進度';
+
+  @override
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  ) {
+    return '步驟 $current/$total・$stage';
+  }
 
   @override
   String get workspaceWaiting => '等待匯入文件';

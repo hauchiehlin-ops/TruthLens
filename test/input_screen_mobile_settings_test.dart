@@ -66,13 +66,6 @@ void main() {
     expect(find.text('Custom ONNX model import & test'), findsOneWidget);
 
     await tester.dragUntilVisible(
-      find.text('Language packs'),
-      scrollable,
-      const Offset(0, -300),
-    );
-    expect(find.text('Language packs'), findsOneWidget);
-
-    await tester.dragUntilVisible(
       find.text('AI flagging threshold'),
       scrollable,
       const Offset(0, -300),

@@ -18,6 +18,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get commonClose => 'Fechar';
 
   @override
+  String commonCopyrightNotice(Object year) {
+    return '© $year B&B出版 · E-mail: dr.cobra.lin@gmail.com';
+  }
+
+  @override
   String get verdictHuman => 'Escrito por humano';
 
   @override
@@ -611,13 +616,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get modelImportWebUnsupported =>
       'Custom model import is not supported on the web version yet. Please use the app version.';
-
-  @override
-  String get settingsLanguagePackTitle => 'Pacote de idiomas';
-
-  @override
-  String get settingsLanguagePackSubtitle =>
-      'Modelo de ajuste de idioma adicional (disponível na fase 4)';
 
   @override
   String get settingsModelManagerAppBarTitle =>
@@ -1870,10 +1868,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get privacyGenericPlatformName => 'Esta plataforma';
 
   @override
-  String get settingsLanguagePackDialogBody =>
-      'O detector multilíngue integrado do TruthLens já oferece suporte a mais de 104 idiomas. Use o Gerenciamento de modelos de IA para explorar, baixar ou alternar modelos da comunidade otimizados por idioma.';
-
-  @override
   String settingsVersionSubtitle(String version, String build) {
     return 'Versão $version (Build $build) · Motor privado com prioridade local';
   }
@@ -2000,6 +1994,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get workspaceOverallProgress => 'Progresso geral';
+
+  @override
+  String workspaceProgressStatusSummary(
+    Object current,
+    Object stage,
+    Object total,
+  ) {
+    return 'Etapa $current/$total · $stage';
+  }
 
   @override
   String get workspaceWaiting => 'Aguardando um documento';
