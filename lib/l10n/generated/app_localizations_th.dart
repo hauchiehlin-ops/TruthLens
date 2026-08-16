@@ -907,6 +907,64 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get provenanceTitle => 'หลักฐานที่มาของเอกสาร';
+
+  @override
+  String get provenanceRiskHigh => 'ประวัติการแก้ไขผิดปกติอย่างชัดเจน';
+
+  @override
+  String get provenanceRiskMedium => 'ประวัติการแก้ไขมีจุดน่าสงสัย';
+
+  @override
+  String get provenanceRiskLow => 'ประวัติการแก้ไขดูปกติ';
+
+  @override
+  String get provenanceRiskUnknown => 'ไม่มีประวัติการแก้ไขให้ใช้';
+
+  @override
+  String get provenanceNoMetadata =>
+      'ข้อมูลที่นำเข้านี้ไม่มีประวัติการแก้ไขติดมา (ข้อความที่วาง ไฟล์ PDF หรือไฟล์ที่ถูกลบบันทึกไปแล้ว) จึงตัดสินจากที่มาไม่ได้ เหลือเพียงการวิเคราะห์ตัวข้อความ';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'เวลาแก้ไขที่บันทึกในไฟล์: $minutes นาที';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'จำนวนครั้งที่บันทึก: $count ครั้ง';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'สร้างด้วย: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'เนื้อความมีเครื่องหมายรอบการแก้ไขเพียง $count ชุด สำหรับเนื้อหา $words คำ การเขียนไปคิดไปตามปกติจะทิ้งไว้หลายสิบชุด การกระจุกตัวขนาดนี้มักหมายความว่าข้อความเข้ามาทีเดียว เช่น การวาง';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words คำ เทียบกับเวลาแก้ไขที่บันทึกไว้ $minutes นาที คิดเป็น $wpm คำต่อนาที ซึ่งสูงกว่าที่คนทั่วไปจะรักษาไว้ได้ขณะเขียนจริงมาก';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'ไฟล์บันทึกเวลาแก้ไขไว้เกือบเป็นศูนย์ แต่เนื้อความมีถึง $words คำ';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return 'เนื้อหา $words คำ ถูกบันทึกเพียง $count ครั้ง';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'ควรทราบไว้: บันทึกเหล่านี้ถูกลบหรือรีเซ็ตได้ ไม่ว่าจะบันทึกเป็นไฟล์ใหม่ แปลงไฟล์ออนไลน์ ส่งออกจาก Google เอกสาร หรือคัดลอกไปไฟล์ใหม่ ล้วนทำให้กลับเป็นศูนย์ สัญญาณตรงนี้จึงเป็นเพียงหลักฐานประกอบ ไม่ใช่ข้อสรุปในตัวเอง และการไม่มีสัญญาณก็ไม่ได้พิสูจน์ว่าคนเป็นผู้เขียน';
+
+  @override
   String get telemetrySummaryTitle => 'สรุปผลการวิเคราะห์';
 
   @override

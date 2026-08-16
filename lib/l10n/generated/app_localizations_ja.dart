@@ -879,6 +879,64 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get provenanceTitle => '文書の来歴証拠';
+
+  @override
+  String get provenanceRiskHigh => '編集履歴が明らかに不自然です';
+
+  @override
+  String get provenanceRiskMedium => '編集履歴に気になる点があります';
+
+  @override
+  String get provenanceRiskLow => '編集履歴は自然に見えます';
+
+  @override
+  String get provenanceRiskUnknown => '利用できる編集履歴がありません';
+
+  @override
+  String get provenanceNoMetadata =>
+      'この入力には編集履歴が含まれていません（貼り付けたテキスト、PDF、または履歴が消去されたファイル）。そのため来歴からは判断できず、本文の分析のみとなります。';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'ファイルに記録された編集時間：$minutes分';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return '保存回数：$count回';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return '作成ソフト：$name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return '本文の編集バッチ標識が$count組しかないのに対し、内容は$words語あります。考えながら書けば通常は数十組残るため、これほど集中しているのは一度にまとめて入力された（貼り付けなど）ことを示唆します。';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words語に対し記録された編集時間は$minutes分で、毎分$wpm語となります。実際に書きながら維持できる速度をはるかに超えています。';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'ファイルの記録上、編集時間がほぼ0であるにもかかわらず、本文は$words語あります。';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words語の内容が$count回しか保存されていません。';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'ご注意：これらの記録は消去やリセットが可能です。別名で保存する、オンラインで変換する、Googleドキュメントからエクスポートする、新しいファイルにコピーする——いずれも記録をゼロに戻します。したがって、信号は補強証拠にすぎず単独で結論にはできません。また信号がないことは人が書いた証明にもなりません。';
+
+  @override
   String get telemetrySummaryTitle => '分析のまとめ';
 
   @override

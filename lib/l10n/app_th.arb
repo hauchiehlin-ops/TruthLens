@@ -671,6 +671,81 @@
   "privacyWebOverview2": "หน้านี้จะอ่านไฟล์ รูปภาพ หรือเนื้อหาคลิปบอร์ดเฉพาะเมื่อคุณเลือกที่จะนำเข้า สแกน หรือวางอย่างจริงจังเท่านั้น จะไม่อ่านแท็บอื่น ข้อมูลของเว็บไซต์อื่น หรือไฟล์ที่คุณไม่ได้เลือก",
   "reportAiContentReportTitle": "รายงานการตรวจจับเนื้อหา AI",
   "reportAiProbabilityPrefix": "ความน่าจะเป็น AI: ",
+  "provenanceTitle": "หลักฐานที่มาของเอกสาร",
+  "provenanceRiskHigh": "ประวัติการแก้ไขผิดปกติอย่างชัดเจน",
+  "provenanceRiskMedium": "ประวัติการแก้ไขมีจุดน่าสงสัย",
+  "provenanceRiskLow": "ประวัติการแก้ไขดูปกติ",
+  "provenanceRiskUnknown": "ไม่มีประวัติการแก้ไขให้ใช้",
+  "provenanceNoMetadata": "ข้อมูลที่นำเข้านี้ไม่มีประวัติการแก้ไขติดมา (ข้อความที่วาง ไฟล์ PDF หรือไฟล์ที่ถูกลบบันทึกไปแล้ว) จึงตัดสินจากที่มาไม่ได้ เหลือเพียงการวิเคราะห์ตัวข้อความ",
+  "provenanceEditingDuration": "เวลาแก้ไขที่บันทึกในไฟล์: {minutes} นาที",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "จำนวนครั้งที่บันทึก: {count} ครั้ง",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "สร้างด้วย: {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "เนื้อความมีเครื่องหมายรอบการแก้ไขเพียง {count} ชุด สำหรับเนื้อหา {words} คำ การเขียนไปคิดไปตามปกติจะทิ้งไว้หลายสิบชุด การกระจุกตัวขนาดนี้มักหมายความว่าข้อความเข้ามาทีเดียว เช่น การวาง",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} คำ เทียบกับเวลาแก้ไขที่บันทึกไว้ {minutes} นาที คิดเป็น {wpm} คำต่อนาที ซึ่งสูงกว่าที่คนทั่วไปจะรักษาไว้ได้ขณะเขียนจริงมาก",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "ไฟล์บันทึกเวลาแก้ไขไว้เกือบเป็นศูนย์ แต่เนื้อความมีถึง {words} คำ",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "เนื้อหา {words} คำ ถูกบันทึกเพียง {count} ครั้ง",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "ควรทราบไว้: บันทึกเหล่านี้ถูกลบหรือรีเซ็ตได้ ไม่ว่าจะบันทึกเป็นไฟล์ใหม่ แปลงไฟล์ออนไลน์ ส่งออกจาก Google เอกสาร หรือคัดลอกไปไฟล์ใหม่ ล้วนทำให้กลับเป็นศูนย์ สัญญาณตรงนี้จึงเป็นเพียงหลักฐานประกอบ ไม่ใช่ข้อสรุปในตัวเอง และการไม่มีสัญญาณก็ไม่ได้พิสูจน์ว่าคนเป็นผู้เขียน",
   "telemetrySummaryTitle": "สรุปผลการวิเคราะห์",
   "telemetrySummaryVerdict": "เอนจิน {engines} จาก {total} ตัวทำงานเสร็จ ความน่าจะเป็น AI โดยรวมอยู่ที่ {percent}% จึงตัดสินเป็น “{verdict}”",
   "@telemetrySummaryVerdict": {

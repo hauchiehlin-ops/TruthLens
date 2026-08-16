@@ -908,6 +908,65 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get provenanceTitle => 'Bukti asal dokumen';
+
+  @override
+  String get provenanceRiskHigh => 'Sejarah penyuntingan jelas luar biasa';
+
+  @override
+  String get provenanceRiskMedium =>
+      'Ada yang ganjil pada sejarah penyuntingan';
+
+  @override
+  String get provenanceRiskLow => 'Sejarah penyuntingan kelihatan biasa';
+
+  @override
+  String get provenanceRiskUnknown => 'Tiada sejarah penyuntingan tersedia';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Input ini tidak membawa sejarah penyuntingan — teks tampalan, PDF, atau fail yang rekodnya telah dibuang. Tiada apa untuk dinilai dari asal usulnya di sini, hanya analisis teks sahaja.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Masa penyuntingan yang direkodkan: $minutes minit';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Bilangan simpanan: $count kali';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Dihasilkan dengan: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'Badan teks hanya membawa $count penanda kelompok penyuntingan bagi $words patah perkataan. Menulis sambil berfikir biasanya meninggalkan berpuluh; kepekatan sebegini lazimnya bermakna teks masuk sekali gus — ditampal, contohnya.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words patah perkataan berbanding $minutes minit penyuntingan yang direkodkan menjadi $wpm patah seminit, jauh melebihi apa yang mampu dikekalkan semasa benar-benar menulis.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'Fail hampir tidak merekodkan masa penyuntingan, sedangkan badan teks mencecah $words patah perkataan.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return 'Kandungan $words patah perkataan, disimpan hanya $count kali.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Perlu diketahui: rekod ini boleh dipadam atau ditetapkan semula — menyimpan sebagai fail baharu, menukar dalam talian, mengeksport dari Google Dokumen, atau menyalin ke dokumen baharu semuanya mengosongkannya. Jadi isyarat di sini ialah bukti sokongan, bukan kesimpulan tersendiri; ketiadaannya juga tidak membuktikan manusia yang menulisnya.';
+
+  @override
   String get telemetrySummaryTitle => 'Ringkasan analisis';
 
   @override

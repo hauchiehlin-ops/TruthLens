@@ -1,5 +1,35 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第七十五次更新）— 新增：文件來源鑑識（六項升級計畫第 1 項）
+
+**背景**
+與使用者討論後確立新的產品定位：不在「這段文字像不像 AI」這條軍備競賽上追伺服器端大模型的原始準度，
+改為發揮 Web-only 的結構性優勢——**看得到伺服器看不到的東西**，轉向「來源證據 + 統計上誠實的結論」。
+六項升級依序執行，本次為第 1 項。
+
+**新增內容**
+1. `lib/core/services/document_provenance.dart`：從 DOCX／ODT 的 zip 容器讀出編輯紀錄
+   - DOCX：`docProps/app.xml` 的 `TotalTime`／`Words`／`Application`、`docProps/core.xml` 的
+     `cp:revision`／建立與修改時間、`word/document.xml` 內所有 `w:rsid*` 屬性的**相異數量**
+   - ODT：`meta.xml` 的 `editing-duration`（ISO 8601）／`editing-cycles`／`generator`／建立時間
+   - 衍生四種訊號：正文編輯批次過度集中、打字速度超過常人上限（≥120 字/分）、
+     編輯時長近乎 0、存檔次數過少
+2. **刻意不併入 AI 機率**：這是「檔案怎麼產生的」的來源證據，與「文字像不像 AI」的統計推論
+   性質不同，合併會讓使用者誤以為分數已把編輯紀錄計入。`DetectionResult.provenance` 獨立存放，
+   報告中以獨立卡片呈現。
+3. **防誤報設計**：內容少於 150 字時完全不做推論；打字速度門檻取寬鬆值（寧可漏報不要誤報）；
+   卡片一律附上免責說明（紀錄可被另存／線上轉檔／Google 文件匯出重置，因此有訊號只是佐證、
+   沒訊號也不代表由人撰寫）。
+4. 新增 l10n 鍵 15 個（`provenance*`），14 語系全數補齊。
+5. 測試：`document_provenance_test.dart` 10 項（以**真實 zip 容器**驗證解析與訊號推導，
+   含「正常寫作歷程不產生訊號」的偽陽性防護）、`provenance_card_test.dart` 2 項（UI 兩種狀態）。
+
+**新增內容**：✅ **完成**（`flutter analyze` 無問題、`flutter test` 265 項全通過；release build
+實測貼上純文字時正確顯示「沒有可用的編輯紀錄」與免責說明。DOCX 實檔路徑由單元測試涵蓋，
+因瀏覽器自動化無法驅動原生選檔對話框。）
+
+---
+
 ## 2026-08-17（第七十四次更新）— 修正：面板「新的分析」按鈕在深色主題下幾乎看不見
 
 **問題**

@@ -903,6 +903,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get provenanceTitle => 'Document origin evidence';
+
+  @override
+  String get provenanceRiskHigh => 'Editing history is clearly unusual';
+
+  @override
+  String get provenanceRiskMedium =>
+      'Editing history has something odd about it';
+
+  @override
+  String get provenanceRiskLow => 'Editing history looks normal';
+
+  @override
+  String get provenanceRiskUnknown => 'No editing history available';
+
+  @override
+  String get provenanceNoMetadata =>
+      'This input carries no editing history — pasted text, a PDF, or a file whose record was stripped. There is nothing to judge from origin here, only the text analysis itself.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Editing time recorded in the file: $minutes minutes';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Times saved: $count';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Produced with: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'The body carries only $count editing-batch marker(s) for $words words. Writing as you think normally leaves dozens; this much concentration usually means the text went in all at once — pasted, for instance.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words words against $minutes minutes of recorded editing works out to $wpm words per minute, far above what anyone sustains while actually writing.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'The file records almost no editing time at all, yet the body runs to $words words.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words words of content, saved only $count time(s).';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Worth knowing: these records can be wiped or reset — saving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all zero them out. So a signal here is supporting evidence, never a conclusion on its own; and the absence of one does not prove a person wrote it.';
+
+  @override
   String get telemetrySummaryTitle => 'What this adds up to';
 
   @override

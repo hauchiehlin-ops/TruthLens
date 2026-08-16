@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+
+import 'document_provenance.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image/image.dart' as image_lib;
 import 'package:pdfrx/pdfrx.dart' as pdfrx;
@@ -74,11 +76,18 @@ class DocumentImporter {
           )
         : _parseNonPdf(bytes, extension);
 
+    final text = _stripFormatting(parsed.text.trim());
     return ImportedDocument(
       fileName: file.name,
-      text: _stripFormatting(parsed.text.trim()),
+      text: text,
       usedPdfOcr: parsed.usedOcr,
       pdfImportIssue: parsed.issue,
+      // 來源證據只有 zip 容器格式（docx/odt）帶得出來；其餘格式回傳 none
+      provenance: DocumentProvenance.fromBytes(
+        bytes,
+        extension: extension,
+        bodyText: text,
+      ),
     );
   }
 
@@ -508,11 +517,16 @@ class ImportedDocument {
   final bool usedPdfOcr;
   final PdfImportIssue pdfImportIssue;
 
+  /// 檔案自身攜帶的編輯紀錄證據（僅 docx/odt 有；其餘為
+  /// [DocumentProvenance.none]）
+  final DocumentProvenance provenance;
+
   const ImportedDocument({
     required this.fileName,
     required this.text,
     this.usedPdfOcr = false,
     this.pdfImportIssue = PdfImportIssue.none,
+    this.provenance = DocumentProvenance.none,
   });
 }
 

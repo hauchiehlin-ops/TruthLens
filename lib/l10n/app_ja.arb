@@ -671,6 +671,81 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "provenanceTitle": "文書の来歴証拠",
+  "provenanceRiskHigh": "編集履歴が明らかに不自然です",
+  "provenanceRiskMedium": "編集履歴に気になる点があります",
+  "provenanceRiskLow": "編集履歴は自然に見えます",
+  "provenanceRiskUnknown": "利用できる編集履歴がありません",
+  "provenanceNoMetadata": "この入力には編集履歴が含まれていません（貼り付けたテキスト、PDF、または履歴が消去されたファイル）。そのため来歴からは判断できず、本文の分析のみとなります。",
+  "provenanceEditingDuration": "ファイルに記録された編集時間：{minutes}分",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "保存回数：{count}回",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "作成ソフト：{name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "本文の編集バッチ標識が{count}組しかないのに対し、内容は{words}語あります。考えながら書けば通常は数十組残るため、これほど集中しているのは一度にまとめて入力された（貼り付けなど）ことを示唆します。",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words}語に対し記録された編集時間は{minutes}分で、毎分{wpm}語となります。実際に書きながら維持できる速度をはるかに超えています。",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "ファイルの記録上、編集時間がほぼ0であるにもかかわらず、本文は{words}語あります。",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words}語の内容が{count}回しか保存されていません。",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "ご注意：これらの記録は消去やリセットが可能です。別名で保存する、オンラインで変換する、Googleドキュメントからエクスポートする、新しいファイルにコピーする——いずれも記録をゼロに戻します。したがって、信号は補強証拠にすぎず単独で結論にはできません。また信号がないことは人が書いた証明にもなりません。",
   "telemetrySummaryTitle": "分析のまとめ",
   "telemetrySummaryVerdict": "{total}個中{engines}個のエンジンが完了しました。全体のAI確率は{percent}%で、「{verdict}」と判定されました。",
   "@telemetrySummaryVerdict": {

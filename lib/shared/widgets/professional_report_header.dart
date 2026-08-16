@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'provenance_card.dart';
 
 /// 專業級報告頁頭：判定摘要 + 詳細指標
 class ProfessionalReportHeader extends StatelessWidget {
@@ -85,7 +86,14 @@ class ProfessionalReportHeader extends StatelessWidget {
             child: _MetricsRow(result: result, l10n: l10n),
           ),
 
-          // 4. 引擎貢獻度卡
+          // 4. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
+          //    仍顯示，明確告訴使用者「這份無從由來源判斷」而非默默略過）
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: ProvenanceCard(provenance: result.provenance),
+          ),
+
+          // 5. 引擎貢獻度卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _EngineContributionCard(result: result, l10n: l10n),
@@ -93,7 +101,7 @@ class ProfessionalReportHeader extends StatelessWidget {
 
           const Divider(thickness: 1, height: 24),
 
-          // 5. 可疑句子清單標題
+          // 6. 可疑句子清單標題
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(

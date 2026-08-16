@@ -671,6 +671,81 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "provenanceTitle": "Herkunftsnachweise der Datei",
+  "provenanceRiskHigh": "Bearbeitungsverlauf ist deutlich auffällig",
+  "provenanceRiskMedium": "Am Bearbeitungsverlauf ist etwas merkwürdig",
+  "provenanceRiskLow": "Bearbeitungsverlauf wirkt normal",
+  "provenanceRiskUnknown": "Kein Bearbeitungsverlauf verfügbar",
+  "provenanceNoMetadata": "Diese Eingabe bringt keinen Bearbeitungsverlauf mit — eingefügter Text, ein PDF oder eine Datei, deren Verlauf entfernt wurde. Zur Herkunft lässt sich hier nichts sagen, es bleibt allein die Textanalyse.",
+  "provenanceEditingDuration": "In der Datei vermerkte Bearbeitungszeit: {minutes} Minuten",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "Speichervorgänge: {count}",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "Erstellt mit: {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "Der Fließtext trägt nur {count} Bearbeitungsmarker bei {words} Wörtern. Wer schreibend denkt, hinterlässt normalerweise Dutzende; eine solche Ballung heißt meist, dass der Text auf einen Schlag hineinkam — etwa per Einfügen.",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} Wörter bei {minutes} Minuten vermerkter Bearbeitungszeit ergeben {wpm} Wörter pro Minute — weit über dem, was sich beim tatsächlichen Schreiben durchhalten lässt.",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "Die Datei vermerkt praktisch keine Bearbeitungszeit, der Fließtext umfasst aber {words} Wörter.",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words} Wörter Inhalt, nur {count}-mal gespeichert.",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "Wichtig: Diese Vermerke lassen sich löschen oder zurücksetzen — Speichern unter, Online-Konvertierung, Export aus Google Docs oder Kopieren in eine neue Datei setzen sie alle auf null. Ein Signal ist daher ein Indiz, nie für sich genommen ein Ergebnis; und sein Fehlen beweist nicht, dass ein Mensch geschrieben hat.",
   "telemetrySummaryTitle": "Fazit der Analyse",
   "telemetrySummaryVerdict": "{engines} von {total} Engines sind durch. Die KI-Wahrscheinlichkeit liegt insgesamt bei {percent}% — das ergibt „{verdict}“.",
   "@telemetrySummaryVerdict": {

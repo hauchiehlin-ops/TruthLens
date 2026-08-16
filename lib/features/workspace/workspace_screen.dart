@@ -16,6 +16,7 @@ import '../../core/detection/orchestrator.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/document_importer.dart';
+import '../../core/services/document_provenance.dart';
 import '../../core/services/history_repository.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
@@ -69,6 +70,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   double? _compactEvidenceDocumentHeight;
 
   String _sourceFileName = '';
+  DocumentProvenance _sourceProvenance = DocumentProvenance.none;
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
   int _selectedEvidence = 0;
@@ -232,6 +234,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     if (data?.text == null || data!.text!.isEmpty) return;
     _controller.text = data.text!;
     _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
     _markInputReady();
   }
 
@@ -254,6 +257,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final text = OcrPostProcessor.clean(rawText);
     _controller.text = text;
     _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
     _markInputReady();
     _showMessage(l10n.inputOcrRecognized(text.length));
   }
@@ -291,6 +295,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
+    _sourceProvenance = doc.provenance;
     _markInputReady();
     _showMessage(
       doc.usedPdfOcr
@@ -342,6 +347,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       final result = await orchestrator.analyze(
         text,
         sourceFileName: _sourceFileName,
+        provenance: _sourceProvenance,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         threshold: prefs.confidenceThreshold,
         prefs: prefs,
@@ -397,6 +403,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _stopAnalysisTicker();
     _controller.clear();
     _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
     setState(() {
       _phase = _WorkspacePhase.idle;
       _result = null;
@@ -1005,6 +1012,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ),
               onChanged: (_) {
                 if (_sourceFileName.isNotEmpty) _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
                 _markInputReady();
               },
             ),

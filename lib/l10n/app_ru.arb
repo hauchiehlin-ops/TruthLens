@@ -671,6 +671,81 @@
   "privacyWebOverview2": "Страница читает файл, изображение или содержимое буфера обмена только тогда, когда вы активно выбираете импорт, сканирование или вставку; она никогда не читает другие вкладки, данные других сайтов или невыбранные файлы.",
   "reportAiContentReportTitle": "Отчёт об обнаружении ИИ-контента",
   "reportAiProbabilityPrefix": "Вероятность ИИ: ",
+  "provenanceTitle": "Свидетельства о происхождении документа",
+  "provenanceRiskHigh": "История правок явно необычна",
+  "provenanceRiskMedium": "В истории правок есть странности",
+  "provenanceRiskLow": "История правок выглядит обычной",
+  "provenanceRiskUnknown": "История правок недоступна",
+  "provenanceNoMetadata": "Во входных данных нет истории правок — вставленный текст, PDF или файл с очищенной записью. Судить о происхождении здесь не по чему, остаётся только анализ текста.",
+  "provenanceEditingDuration": "Время правки, записанное в файле: {minutes} мин",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "Число сохранений: {count}",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "Создано в: {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "В основном тексте всего {count} метк(а/и) сеанса правки на {words} слов. При обычном письме их остаются десятки; такая концентрация обычно означает, что текст попал целиком за один раз — например, вставкой.",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} слов при {minutes} мин записанной правки — это {wpm} слов в минуту, намного выше того, что удаётся удерживать при реальном письме.",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "Файл почти не фиксирует время правки, хотя в тексте {words} слов.",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words} слов текста сохранялись всего {count} раз.",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "Важно: эти записи можно стереть или обнулить — сохранение под новым именем, онлайн-конвертация, экспорт из Google Документов или копирование в новый файл сбрасывают их. Поэтому сигнал здесь — вспомогательное свидетельство, а не самостоятельный вывод; его отсутствие тоже не доказывает, что писал человек.",
   "telemetrySummaryTitle": "Что в итоге",
   "telemetrySummaryVerdict": "Отработали {engines} из {total} движков. Общая вероятность ИИ — {percent}%, это даёт «{verdict}».",
   "@telemetrySummaryVerdict": {

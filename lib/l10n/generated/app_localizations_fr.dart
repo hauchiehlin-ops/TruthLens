@@ -922,6 +922,67 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get provenanceTitle => 'Indices sur l\'origine du document';
+
+  @override
+  String get provenanceRiskHigh =>
+      'L\'historique de modification est nettement inhabituel';
+
+  @override
+  String get provenanceRiskMedium =>
+      'Quelque chose cloche dans l\'historique de modification';
+
+  @override
+  String get provenanceRiskLow => 'L\'historique de modification paraît normal';
+
+  @override
+  String get provenanceRiskUnknown =>
+      'Aucun historique de modification disponible';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Cette entrée ne contient aucun historique de modification — texte collé, PDF, ou fichier dont l\'enregistrement a été effacé. Rien à juger côté origine ici, seulement l\'analyse du texte.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Temps d\'édition enregistré dans le fichier : $minutes minutes';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Nombre d\'enregistrements : $count';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Produit avec : $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'Le corps du texte ne porte que $count marqueur(s) de session d\'édition pour $words mots. Écrire en réfléchissant en laisse d\'ordinaire des dizaines ; une telle concentration signifie généralement que le texte est arrivé d\'un seul bloc — collé, par exemple.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words mots pour $minutes minutes d\'édition enregistrée, soit $wpm mots par minute, bien au-delà de ce que l\'on tient en écrivant réellement.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'Le fichier n\'enregistre presque aucun temps d\'édition, alors que le corps compte $words mots.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words mots de contenu, enregistrés seulement $count fois.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'À savoir : ces enregistrements peuvent être effacés ou remis à zéro — enregistrer sous, convertir en ligne, exporter depuis Google Docs ou copier dans un nouveau fichier les annulent tous. Un signal est donc un élément à charge parmi d\'autres, jamais une conclusion à lui seul ; et son absence ne prouve pas qu\'un humain a écrit le texte.';
+
+  @override
   String get telemetrySummaryTitle => 'Ce que ça donne';
 
   @override

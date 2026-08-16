@@ -2,6 +2,7 @@
 library;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../services/document_provenance.dart';
 import '../utils/text_stats.dart';
 
 /// 五級分類（依整體 AI 機率與使用者可調的 AI 標記門檻閾值劃分）
@@ -105,6 +106,11 @@ class DetectionResult {
   final int availableEngineCount; // 本次參與投票的引擎數
   final int totalEngineCount; // 註冊的引擎總數
 
+  /// 來源檔案自身攜帶的編輯紀錄證據。刻意不併入 [aiProbability]：
+  /// 這是「檔案怎麼產生的」的來源證據，與「文字像不像 AI」的統計推論
+  /// 性質不同，合併會讓使用者誤以為分數已把編輯紀錄計入。
+  final DocumentProvenance provenance;
+
   const DetectionResult({
     required this.id,
     required this.analyzedAt,
@@ -120,6 +126,7 @@ class DetectionResult {
     this.elapsed = Duration.zero,
     this.availableEngineCount = 0,
     this.totalEngineCount = 0,
+    this.provenance = DocumentProvenance.none,
   });
 
   /// 計算可用引擎數（available=true 的引擎）

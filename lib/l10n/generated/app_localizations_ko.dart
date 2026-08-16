@@ -883,6 +883,64 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get provenanceTitle => '문서 출처 증거';
+
+  @override
+  String get provenanceRiskHigh => '편집 기록이 명백히 이례적입니다';
+
+  @override
+  String get provenanceRiskMedium => '편집 기록에 의심스러운 점이 있습니다';
+
+  @override
+  String get provenanceRiskLow => '편집 기록은 정상으로 보입니다';
+
+  @override
+  String get provenanceRiskUnknown => '사용할 수 있는 편집 기록이 없습니다';
+
+  @override
+  String get provenanceNoMetadata =>
+      '이 입력에는 편집 기록이 없습니다(붙여넣은 텍스트, PDF, 또는 기록이 지워진 파일). 따라서 출처로는 판단할 수 없고 본문 분석만 가능합니다.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return '파일에 기록된 총 편집 시간: $minutes분';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return '저장 횟수: $count회';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return '생성 프로그램: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return '본문의 편집 배치 표식이 $count개뿐인데 내용은 $words단어입니다. 생각하며 쓰면 보통 수십 개가 남으므로, 이 정도로 집중되어 있다면 대개 한 번에 들어간 것(예: 붙여넣기)입니다.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words단어에 기록된 편집 시간 $minutes분이면 분당 $wpm단어로, 실제로 글을 쓰면서 유지할 수 있는 속도를 훨씬 넘습니다.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return '파일에 기록된 편집 시간이 거의 0인데 본문은 $words단어입니다.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words단어 분량이 $count번만 저장되었습니다.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      '참고: 이 기록은 지우거나 초기화할 수 있습니다. 다른 이름으로 저장, 온라인 변환, Google 문서에서 내보내기, 새 파일로 복사 — 모두 기록을 0으로 만듭니다. 따라서 신호는 보조 증거일 뿐 단독으로 결론이 될 수 없으며, 신호가 없다고 사람이 썼다는 증명도 되지 않습니다.';
+
+  @override
   String get telemetrySummaryTitle => '분석 요약';
 
   @override

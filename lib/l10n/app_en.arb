@@ -710,6 +710,81 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "provenanceTitle": "Document origin evidence",
+  "provenanceRiskHigh": "Editing history is clearly unusual",
+  "provenanceRiskMedium": "Editing history has something odd about it",
+  "provenanceRiskLow": "Editing history looks normal",
+  "provenanceRiskUnknown": "No editing history available",
+  "provenanceNoMetadata": "This input carries no editing history — pasted text, a PDF, or a file whose record was stripped. There is nothing to judge from origin here, only the text analysis itself.",
+  "provenanceEditingDuration": "Editing time recorded in the file: {minutes} minutes",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "Times saved: {count}",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "Produced with: {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "The body carries only {count} editing-batch marker(s) for {words} words. Writing as you think normally leaves dozens; this much concentration usually means the text went in all at once — pasted, for instance.",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} words against {minutes} minutes of recorded editing works out to {wpm} words per minute, far above what anyone sustains while actually writing.",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "The file records almost no editing time at all, yet the body runs to {words} words.",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words} words of content, saved only {count} time(s).",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "Worth knowing: these records can be wiped or reset — saving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all zero them out. So a signal here is supporting evidence, never a conclusion on its own; and the absence of one does not prove a person wrote it.",
   "telemetrySummaryTitle": "What this adds up to",
   "telemetrySummaryVerdict": "{engines} of {total} engines finished. Overall AI probability is {percent}%, which lands on “{verdict}”.",
   "@telemetrySummaryVerdict": {

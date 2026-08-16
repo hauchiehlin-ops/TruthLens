@@ -671,6 +671,81 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "provenanceTitle": "Indices sur l'origine du document",
+  "provenanceRiskHigh": "L'historique de modification est nettement inhabituel",
+  "provenanceRiskMedium": "Quelque chose cloche dans l'historique de modification",
+  "provenanceRiskLow": "L'historique de modification paraît normal",
+  "provenanceRiskUnknown": "Aucun historique de modification disponible",
+  "provenanceNoMetadata": "Cette entrée ne contient aucun historique de modification — texte collé, PDF, ou fichier dont l'enregistrement a été effacé. Rien à juger côté origine ici, seulement l'analyse du texte.",
+  "provenanceEditingDuration": "Temps d'édition enregistré dans le fichier : {minutes} minutes",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "Nombre d'enregistrements : {count}",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "Produit avec : {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "Le corps du texte ne porte que {count} marqueur(s) de session d'édition pour {words} mots. Écrire en réfléchissant en laisse d'ordinaire des dizaines ; une telle concentration signifie généralement que le texte est arrivé d'un seul bloc — collé, par exemple.",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} mots pour {minutes} minutes d'édition enregistrée, soit {wpm} mots par minute, bien au-delà de ce que l'on tient en écrivant réellement.",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "Le fichier n'enregistre presque aucun temps d'édition, alors que le corps compte {words} mots.",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words} mots de contenu, enregistrés seulement {count} fois.",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "À savoir : ces enregistrements peuvent être effacés ou remis à zéro — enregistrer sous, convertir en ligne, exporter depuis Google Docs ou copier dans un nouveau fichier les annulent tous. Un signal est donc un élément à charge parmi d'autres, jamais une conclusion à lui seul ; et son absence ne prouve pas qu'un humain a écrit le texte.",
   "telemetrySummaryTitle": "Ce que ça donne",
   "telemetrySummaryVerdict": "{engines} moteurs sur {total} ont terminé. La probabilité IA globale est de {percent} %, ce qui donne « {verdict} ».",
   "@telemetrySummaryVerdict": {

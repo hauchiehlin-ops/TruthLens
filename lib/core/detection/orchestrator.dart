@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart' show Locale;
 
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
+import '../services/document_provenance.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
@@ -74,6 +75,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
   Future<DetectionResult> analyze(
     String input, {
     String sourceFileName = '',
+    DocumentProvenance provenance = DocumentProvenance.none,
     bool eslCorrectionEnabled = true,
     double threshold = 0.6,
     PreferencesService? prefs,
@@ -148,6 +150,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
       analyzedAt: started,
       inputText: input,
       sourceFileName: sourceFileName,
+      provenance: provenance,
       aiProbability: overall,
       verdict: Verdict.fromProbability(overall, threshold),
       engineScores: scores,

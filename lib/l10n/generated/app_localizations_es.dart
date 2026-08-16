@@ -921,6 +921,65 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String get provenanceTitle => 'Evidencia de origen del documento';
+
+  @override
+  String get provenanceRiskHigh =>
+      'El historial de edición es claramente inusual';
+
+  @override
+  String get provenanceRiskMedium => 'Hay algo raro en el historial de edición';
+
+  @override
+  String get provenanceRiskLow => 'El historial de edición parece normal';
+
+  @override
+  String get provenanceRiskUnknown => 'No hay historial de edición disponible';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Esta entrada no trae historial de edición: texto pegado, un PDF o un archivo al que le borraron el registro. Aquí no hay nada que juzgar por el origen, solo el análisis del texto.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Tiempo de edición registrado en el archivo: $minutes minutos';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Veces guardado: $count';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Creado con: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'El cuerpo lleva solo $count marca(s) de tanda de edición para $words palabras. Escribir mientras se piensa suele dejar decenas; tanta concentración normalmente significa que el texto entró de una vez, por ejemplo pegado.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words palabras frente a $minutes minutos de edición registrada dan $wpm palabras por minuto, muy por encima de lo que alguien sostiene escribiendo de verdad.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'El archivo casi no registra tiempo de edición, pero el cuerpo llega a $words palabras.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words palabras de contenido, guardadas solo $count vez/veces.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Conviene saberlo: estos registros pueden borrarse o reiniciarse — guardar como archivo nuevo, convertir en línea, exportar desde Google Docs o copiar a un documento nuevo los dejan a cero. Una señal aquí es prueba de apoyo, nunca una conclusión por sí sola; y su ausencia no demuestra que lo escribiera una persona.';
+
+  @override
   String get telemetrySummaryTitle => 'En resumen';
 
   @override

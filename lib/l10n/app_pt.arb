@@ -671,6 +671,81 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "provenanceTitle": "Evidências de origem do documento",
+  "provenanceRiskHigh": "O histórico de edição é claramente incomum",
+  "provenanceRiskMedium": "Há algo estranho no histórico de edição",
+  "provenanceRiskLow": "O histórico de edição parece normal",
+  "provenanceRiskUnknown": "Nenhum histórico de edição disponível",
+  "provenanceNoMetadata": "Esta entrada não traz histórico de edição — texto colado, um PDF, ou um arquivo cujo registro foi apagado. Não há o que julgar pela origem aqui, apenas a análise do texto.",
+  "provenanceEditingDuration": "Tempo de edição registrado no arquivo: {minutes} minutos",
+  "@provenanceEditingDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceRevisionCount": "Vezes salvo: {count}",
+  "@provenanceRevisionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceApplication": "Produzido com: {name}",
+  "@provenanceApplication": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalSingleSession": "O corpo carrega apenas {count} marcador(es) de lote de edição para {words} palavras. Escrever pensando costuma deixar dezenas; tanta concentração normalmente significa que o texto entrou de uma vez — colado, por exemplo.",
+  "@provenanceSignalSingleSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalTypingSpeed": "{words} palavras contra {minutes} minutos de edição registrada dão {wpm} palavras por minuto, muito acima do que alguém sustenta escrevendo de fato.",
+  "@provenanceSignalTypingSpeed": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalNoEditingTime": "O arquivo praticamente não registra tempo de edição, mas o corpo chega a {words} palavras.",
+  "@provenanceSignalNoEditingTime": {
+    "placeholders": {
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalFewRevisions": "{words} palavras de conteúdo, salvas apenas {count} vez(es).",
+  "@provenanceSignalFewRevisions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceCaveat": "Vale saber: esses registros podem ser apagados ou zerados — salvar como novo arquivo, converter online, exportar do Google Docs ou copiar para um documento novo zeram todos eles. Um sinal aqui é evidência de apoio, nunca uma conclusão sozinha; e a ausência dele não prova que uma pessoa escreveu.",
   "telemetrySummaryTitle": "Resumindo",
   "telemetrySummaryVerdict": "{engines} de {total} motores terminaram. A probabilidade de IA geral é de {percent}%, o que dá “{verdict}”.",
   "@telemetrySummaryVerdict": {

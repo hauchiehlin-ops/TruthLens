@@ -1562,6 +1562,90 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @provenanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Document origin evidence'**
+  String get provenanceTitle;
+
+  /// No description provided for @provenanceRiskHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing history is clearly unusual'**
+  String get provenanceRiskHigh;
+
+  /// No description provided for @provenanceRiskMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing history has something odd about it'**
+  String get provenanceRiskMedium;
+
+  /// No description provided for @provenanceRiskLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing history looks normal'**
+  String get provenanceRiskLow;
+
+  /// No description provided for @provenanceRiskUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No editing history available'**
+  String get provenanceRiskUnknown;
+
+  /// No description provided for @provenanceNoMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'This input carries no editing history — pasted text, a PDF, or a file whose record was stripped. There is nothing to judge from origin here, only the text analysis itself.'**
+  String get provenanceNoMetadata;
+
+  /// No description provided for @provenanceEditingDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing time recorded in the file: {minutes} minutes'**
+  String provenanceEditingDuration(int minutes);
+
+  /// No description provided for @provenanceRevisionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Times saved: {count}'**
+  String provenanceRevisionCount(int count);
+
+  /// No description provided for @provenanceApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Produced with: {name}'**
+  String provenanceApplication(String name);
+
+  /// No description provided for @provenanceSignalSingleSession.
+  ///
+  /// In en, this message translates to:
+  /// **'The body carries only {count} editing-batch marker(s) for {words} words. Writing as you think normally leaves dozens; this much concentration usually means the text went in all at once — pasted, for instance.'**
+  String provenanceSignalSingleSession(int count, int words);
+
+  /// No description provided for @provenanceSignalTypingSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'{words} words against {minutes} minutes of recorded editing works out to {wpm} words per minute, far above what anyone sustains while actually writing.'**
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm);
+
+  /// No description provided for @provenanceSignalNoEditingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'The file records almost no editing time at all, yet the body runs to {words} words.'**
+  String provenanceSignalNoEditingTime(int words);
+
+  /// No description provided for @provenanceSignalFewRevisions.
+  ///
+  /// In en, this message translates to:
+  /// **'{words} words of content, saved only {count} time(s).'**
+  String provenanceSignalFewRevisions(int count, int words);
+
+  /// No description provided for @provenanceCaveat.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth knowing: these records can be wiped or reset — saving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all zero them out. So a signal here is supporting evidence, never a conclusion on its own; and the absence of one does not prove a person wrote it.'**
+  String get provenanceCaveat;
+
   /// No description provided for @telemetrySummaryTitle.
   ///
   /// In en, this message translates to:

@@ -911,6 +911,64 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get provenanceTitle => 'Свидетельства о происхождении документа';
+
+  @override
+  String get provenanceRiskHigh => 'История правок явно необычна';
+
+  @override
+  String get provenanceRiskMedium => 'В истории правок есть странности';
+
+  @override
+  String get provenanceRiskLow => 'История правок выглядит обычной';
+
+  @override
+  String get provenanceRiskUnknown => 'История правок недоступна';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Во входных данных нет истории правок — вставленный текст, PDF или файл с очищенной записью. Судить о происхождении здесь не по чему, остаётся только анализ текста.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Время правки, записанное в файле: $minutes мин';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Число сохранений: $count';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Создано в: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'В основном тексте всего $count метк(а/и) сеанса правки на $words слов. При обычном письме их остаются десятки; такая концентрация обычно означает, что текст попал целиком за один раз — например, вставкой.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words слов при $minutes мин записанной правки — это $wpm слов в минуту, намного выше того, что удаётся удерживать при реальном письме.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'Файл почти не фиксирует время правки, хотя в тексте $words слов.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words слов текста сохранялись всего $count раз.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Важно: эти записи можно стереть или обнулить — сохранение под новым именем, онлайн-конвертация, экспорт из Google Документов или копирование в новый файл сбрасывают их. Поэтому сигнал здесь — вспомогательное свидетельство, а не самостоятельный вывод; его отсутствие тоже не доказывает, что писал человек.';
+
+  @override
   String get telemetrySummaryTitle => 'Что в итоге';
 
   @override

@@ -918,6 +918,65 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get provenanceTitle => 'Herkunftsnachweise der Datei';
+
+  @override
+  String get provenanceRiskHigh => 'Bearbeitungsverlauf ist deutlich auffällig';
+
+  @override
+  String get provenanceRiskMedium =>
+      'Am Bearbeitungsverlauf ist etwas merkwürdig';
+
+  @override
+  String get provenanceRiskLow => 'Bearbeitungsverlauf wirkt normal';
+
+  @override
+  String get provenanceRiskUnknown => 'Kein Bearbeitungsverlauf verfügbar';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Diese Eingabe bringt keinen Bearbeitungsverlauf mit — eingefügter Text, ein PDF oder eine Datei, deren Verlauf entfernt wurde. Zur Herkunft lässt sich hier nichts sagen, es bleibt allein die Textanalyse.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'In der Datei vermerkte Bearbeitungszeit: $minutes Minuten';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Speichervorgänge: $count';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Erstellt mit: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'Der Fließtext trägt nur $count Bearbeitungsmarker bei $words Wörtern. Wer schreibend denkt, hinterlässt normalerweise Dutzende; eine solche Ballung heißt meist, dass der Text auf einen Schlag hineinkam — etwa per Einfügen.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words Wörter bei $minutes Minuten vermerkter Bearbeitungszeit ergeben $wpm Wörter pro Minute — weit über dem, was sich beim tatsächlichen Schreiben durchhalten lässt.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'Die Datei vermerkt praktisch keine Bearbeitungszeit, der Fließtext umfasst aber $words Wörter.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words Wörter Inhalt, nur $count-mal gespeichert.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Wichtig: Diese Vermerke lassen sich löschen oder zurücksetzen — Speichern unter, Online-Konvertierung, Export aus Google Docs oder Kopieren in eine neue Datei setzen sie alle auf null. Ein Signal ist daher ein Indiz, nie für sich genommen ein Ergebnis; und sein Fehlen beweist nicht, dass ein Mensch geschrieben hat.';
+
+  @override
   String get telemetrySummaryTitle => 'Fazit der Analyse';
 
   @override

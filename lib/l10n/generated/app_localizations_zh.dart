@@ -871,6 +871,64 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get provenanceTitle => '文件來源證據';
+
+  @override
+  String get provenanceRiskHigh => '編輯紀錄明顯不尋常';
+
+  @override
+  String get provenanceRiskMedium => '編輯紀錄有可疑之處';
+
+  @override
+  String get provenanceRiskLow => '編輯紀錄看起來正常';
+
+  @override
+  String get provenanceRiskUnknown => '沒有可用的編輯紀錄';
+
+  @override
+  String get provenanceNoMetadata =>
+      '這份輸入沒有夾帶編輯紀錄（直接貼上的文字、PDF、或紀錄已被清除），因此無法從來源判斷，只能看文字本身的分析。';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return '檔案記錄的編輯總時長：$minutes 分鐘';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return '存檔次數：$count 次';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return '產生軟體：$name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return '正文的編輯批次標記只有 $count 組，但內容有 $words 字。正常一邊想一邊寫會留下數十組，這種高度集中通常代表整段是一次寫入的（例如貼上）。';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words 字對上 $minutes 分鐘的編輯時長，平均每分鐘 $wpm 字，遠高於一般人能持續維持的打字速度。';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return '檔案記錄的編輯總時長接近 0，但正文有 $words 字。';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words 字的內容只存檔過 $count 次。';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      '請注意：這些紀錄可以被清除或重置——另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案都會讓它歸零。因此有訊號只能當作佐證，不能單獨當成結論；沒有訊號也不代表文件必然由人撰寫。';
+
+  @override
   String get telemetrySummaryTitle => '分析總結';
 
   @override
@@ -2992,6 +3050,64 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get provenanceTitle => '文件来源证据';
+
+  @override
+  String get provenanceRiskHigh => '编辑记录明显不寻常';
+
+  @override
+  String get provenanceRiskMedium => '编辑记录有可疑之处';
+
+  @override
+  String get provenanceRiskLow => '编辑记录看起来正常';
+
+  @override
+  String get provenanceRiskUnknown => '没有可用的编辑记录';
+
+  @override
+  String get provenanceNoMetadata =>
+      '这份输入没有夹带编辑记录（直接粘贴的文字、PDF、或记录已被清除），因此无法从来源判断，只能看文字本身的分析。';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return '文件记录的编辑总时长：$minutes 分钟';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return '存档次数：$count 次';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return '生成软件：$name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return '正文的编辑批次标记只有 $count 组，但内容有 $words 字。正常一边想一边写会留下数十组，这种高度集中通常代表整段是一次写入的（例如粘贴）。';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words 字对上 $minutes 分钟的编辑时长，平均每分钟 $wpm 字，远高于一般人能持续维持的打字速度。';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return '文件记录的编辑总时长接近 0，但正文有 $words 字。';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words 字的内容只存档过 $count 次。';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      '请注意：这些记录可以被清除或重置——另存新档、在线转档、从 Google 文档导出、或复制到新文件都会让它归零。因此有信号只能当作佐证，不能单独当成结论；没有信号也不代表文件必然由人撰写。';
+
+  @override
   String get telemetrySummaryTitle => '分析总结';
 
   @override
@@ -5111,6 +5227,64 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get provenanceTitle => '文件來源證據';
+
+  @override
+  String get provenanceRiskHigh => '編輯紀錄明顯不尋常';
+
+  @override
+  String get provenanceRiskMedium => '編輯紀錄有可疑之處';
+
+  @override
+  String get provenanceRiskLow => '編輯紀錄看起來正常';
+
+  @override
+  String get provenanceRiskUnknown => '沒有可用的編輯紀錄';
+
+  @override
+  String get provenanceNoMetadata =>
+      '這份輸入沒有夾帶編輯紀錄（直接貼上的文字、PDF、或紀錄已被清除），因此無法從來源判斷，只能看文字本身的分析。';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return '檔案記錄的編輯總時長：$minutes 分鐘';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return '存檔次數：$count 次';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return '產生軟體：$name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return '正文的編輯批次標記只有 $count 組，但內容有 $words 字。正常一邊想一邊寫會留下數十組，這種高度集中通常代表整段是一次寫入的（例如貼上）。';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words 字對上 $minutes 分鐘的編輯時長，平均每分鐘 $wpm 字，遠高於一般人能持續維持的打字速度。';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return '檔案記錄的編輯總時長接近 0，但正文有 $words 字。';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return '$words 字的內容只存檔過 $count 次。';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      '請注意：這些紀錄可以被清除或重置——另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案都會讓它歸零。因此有訊號只能當作佐證，不能單獨當成結論；沒有訊號也不代表文件必然由人撰寫。';
 
   @override
   String get telemetrySummaryTitle => '分析總結';

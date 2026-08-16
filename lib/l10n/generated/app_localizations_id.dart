@@ -911,6 +911,65 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get provenanceTitle => 'Bukti asal dokumen';
+
+  @override
+  String get provenanceRiskHigh => 'Riwayat penyuntingan jelas tidak wajar';
+
+  @override
+  String get provenanceRiskMedium =>
+      'Ada yang janggal pada riwayat penyuntingan';
+
+  @override
+  String get provenanceRiskLow => 'Riwayat penyuntingan tampak wajar';
+
+  @override
+  String get provenanceRiskUnknown => 'Tidak ada riwayat penyuntingan';
+
+  @override
+  String get provenanceNoMetadata =>
+      'Masukan ini tidak membawa riwayat penyuntingan — teks tempelan, PDF, atau berkas yang catatannya sudah dihapus. Tidak ada yang bisa dinilai dari asal-usulnya, hanya analisis teksnya saja.';
+
+  @override
+  String provenanceEditingDuration(int minutes) {
+    return 'Waktu penyuntingan yang tercatat: $minutes menit';
+  }
+
+  @override
+  String provenanceRevisionCount(int count) {
+    return 'Jumlah penyimpanan: $count kali';
+  }
+
+  @override
+  String provenanceApplication(String name) {
+    return 'Dibuat dengan: $name';
+  }
+
+  @override
+  String provenanceSignalSingleSession(int count, int words) {
+    return 'Isi dokumen hanya membawa $count penanda sesi penyuntingan untuk $words kata. Menulis sambil berpikir biasanya meninggalkan puluhan; sepekat ini umumnya berarti teks masuk sekaligus — misalnya ditempel.';
+  }
+
+  @override
+  String provenanceSignalTypingSpeed(int words, int minutes, int wpm) {
+    return '$words kata berbanding $minutes menit penyuntingan tercatat menghasilkan $wpm kata per menit, jauh di atas yang bisa dipertahankan orang saat benar-benar menulis.';
+  }
+
+  @override
+  String provenanceSignalNoEditingTime(int words) {
+    return 'Berkas nyaris tidak mencatat waktu penyuntingan, padahal isinya $words kata.';
+  }
+
+  @override
+  String provenanceSignalFewRevisions(int count, int words) {
+    return 'Konten $words kata, hanya disimpan $count kali.';
+  }
+
+  @override
+  String get provenanceCaveat =>
+      'Perlu diketahui: catatan ini bisa dihapus atau direset — menyimpan sebagai berkas baru, mengonversi daring, mengekspor dari Google Dokumen, atau menyalin ke dokumen baru semuanya menolkannya. Jadi sinyal di sini adalah bukti pendukung, bukan kesimpulan tersendiri; dan ketiadaannya tidak membuktikan bahwa manusia yang menulisnya.';
+
+  @override
   String get telemetrySummaryTitle => 'Ringkasan analisis';
 
   @override
