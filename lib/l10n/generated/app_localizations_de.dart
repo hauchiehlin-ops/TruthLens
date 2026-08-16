@@ -918,6 +918,84 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get telemetrySummaryTitle => 'Fazit der Analyse';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$engines von $total Engines sind durch. Die KI-Wahrscheinlichkeit liegt insgesamt bei $percent% — das ergibt „$verdict“.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'Die Engines sind sich weitgehend einig (höchster Wert $high%, niedrigster $low%), das Ergebnis steht also auf festem Boden.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'Die Engines sind sich uneinig: $highLabel kommt auf $high%, $lowLabel dagegen nur auf $low%. Dann verlassen Sie sich besser nicht auf den Gesamtwert — die Satzbelege weiter unten sagen deutlich mehr.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'Den Ausschlag gibt vor allem $label mit rund $points Prozentpunkten.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Von allen $total Sätzen hat kein einziger die Schwelle für ein starkes KI-Signal überschritten.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'Von $total Sätzen haben $count die Schwelle für ein starkes KI-Signal überschritten — die sollten Sie einzeln durchgehen.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'Liest sich wie von Hand geschrieben; hier gibt es nichts, dem man nachgehen müsste.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'Der Text liegt in der Grauzone. Nur nach dem Wert zu urteilen wäre riskant — ziehen Sie die Satzbelege und die Herkunft des Dokuments mit heran.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'Die Signale deuten klar auf KI-Erzeugung oder -Umschreibung hin. Prüfen Sie die markierten Sätze einzeln, bevor Sie entscheiden.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'Außerdem haben $count Engine(s) diesmal nicht mit abgestimmt — nehmen Sie die Sicherheit also mit Abstrichen. Über die Modellverwaltung ergänzen und neu laufen lassen macht das Ergebnis schärfer.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'KI-Kennzeichnungsschwelle: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'KI-Wahrscheinlichkeit unter $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'KI-Wahrscheinlichkeit $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'KI-Wahrscheinlichkeit ab $value%';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Niedrige Konfidenz: Das verfügbare Modellgewicht liegt unter 60% (Schwellenwert $threshold%). $available/$total Engines haben teilgenommen. Prüfen Sie die detaillierte Engine-Analyse.';
   }

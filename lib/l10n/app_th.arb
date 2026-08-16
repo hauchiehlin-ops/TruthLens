@@ -671,6 +671,121 @@
   "privacyWebOverview2": "หน้านี้จะอ่านไฟล์ รูปภาพ หรือเนื้อหาคลิปบอร์ดเฉพาะเมื่อคุณเลือกที่จะนำเข้า สแกน หรือวางอย่างจริงจังเท่านั้น จะไม่อ่านแท็บอื่น ข้อมูลของเว็บไซต์อื่น หรือไฟล์ที่คุณไม่ได้เลือก",
   "reportAiContentReportTitle": "รายงานการตรวจจับเนื้อหา AI",
   "reportAiProbabilityPrefix": "ความน่าจะเป็น AI: ",
+  "telemetrySummaryTitle": "สรุปผลการวิเคราะห์",
+  "telemetrySummaryVerdict": "เอนจิน {engines} จาก {total} ตัวทำงานเสร็จ ความน่าจะเป็น AI โดยรวมอยู่ที่ {percent}% จึงตัดสินเป็น “{verdict}”",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "เอนจินแต่ละตัวมองตรงกันพอสมควร (สูงสุด {high}% ต่ำสุด {low}%) ข้อสรุปนี้จึงค่อนข้างหนักแน่น",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "เอนจินมองไม่ตรงกัน: {highLabel} ให้ {high}% แต่ {lowLabel} ให้แค่ {low}% กรณีแบบนี้อย่าดูแค่คะแนนรวม ลองไล่ดูหลักฐานรายประโยคด้านล่างจะแม่นกว่ามาก",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "ตัวที่ดันคะแนนขึ้นมาหลัก ๆ คือ{label} คิดเป็นราว {points} จุดเปอร์เซ็นต์",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "ไล่ดูครบทั้ง {total} ประโยคแล้ว ไม่มีประโยคไหนข้ามเส้นสัญญาณ AI ที่ชัดเจนเลย",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "จาก {total} ประโยค มี {count} ประโยคที่ข้ามเส้นสัญญาณ AI ที่ชัดเจน ควรไล่อ่านทีละประโยค",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "อ่านแล้วเหมือนคนเขียนเองจริง ๆ ไม่มีจุดไหนที่ต้องตามต่อ",
+  "telemetrySummaryAdviceMixed": "ฉบับนี้อยู่ในโซนก้ำกึ่ง จะสรุปจากคะแนนอย่างเดียวเสี่ยงเกินไป แนะนำให้ดูควบคู่กับหลักฐานรายประโยคและที่มาของเอกสาร",
+  "telemetrySummaryAdviceAi": "สัญญาณชี้ชัดไปทาง AI สร้างหรือเขียนใหม่ แนะนำให้ตรวจประโยคที่ถูกทำเครื่องหมายทีละประโยคก่อนตัดสินใจ",
+  "telemetrySummaryModelGap": "นอกจากนี้ยังมีเอนจิน {count} ตัวที่ไม่ได้ร่วมโหวตรอบนี้ ความมั่นใจจึงต้องหักลบไว้บ้าง ลองเติมให้ครบในหน้าจัดการโมเดลแล้วรันใหม่จะแม่นขึ้น",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "เกณฑ์การตั้งค่าสถานะ AI: ",
+  "reportVerdictRangeBelow": "ความน่าจะเป็น AI ต่ำกว่า {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "ความน่าจะเป็น AI {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "ความน่าจะเป็น AI {value}% ขึ้นไป",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "เวลาวิเคราะห์: {time}",
   "reportBibCompletedPreview": "เสร็จสิ้น {count} รายการ ผลลัพธ์จะยังคงอัปเดตต่อไป",
   "reportBibGoogleScholarManualLookup": "ตรวจสอบด้วยตนเองใน Google Scholar",

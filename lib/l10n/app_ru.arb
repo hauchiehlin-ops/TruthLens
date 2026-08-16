@@ -671,6 +671,121 @@
   "privacyWebOverview2": "Страница читает файл, изображение или содержимое буфера обмена только тогда, когда вы активно выбираете импорт, сканирование или вставку; она никогда не читает другие вкладки, данные других сайтов или невыбранные файлы.",
   "reportAiContentReportTitle": "Отчёт об обнаружении ИИ-контента",
   "reportAiProbabilityPrefix": "Вероятность ИИ: ",
+  "telemetrySummaryTitle": "Что в итоге",
+  "telemetrySummaryVerdict": "Отработали {engines} из {total} движков. Общая вероятность ИИ — {percent}%, это даёт «{verdict}».",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Движки в целом сходятся (максимум {high}%, минимум {low}%), так что вывод вполне надёжен.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Движки расходятся: {highLabel} даёт {high}%, а {lowLabel} — всего {low}%. В таком случае не опирайтесь на общий балл: разбор по предложениям ниже скажет намного больше.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Балл тянет вверх в основном {label} — около {points} процентных пунктов.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Из всех {total} предложений ни одно не пересекло порог сильного ИИ-сигнала.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Из {total} предложений {count} пересекли порог сильного ИИ-сигнала — их стоит просмотреть по одному.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Читается как написанное человеком; копать тут особо нечего.",
+  "telemetrySummaryAdviceMixed": "Текст в серой зоне. Судить только по баллу рискованно — смотрите вместе с разбором по предложениям и тем, что знаете об источнике документа.",
+  "telemetrySummaryAdviceAi": "Сигналы чётко указывают на генерацию или переписывание ИИ. Проверьте отмеченные предложения по одному, прежде чем решать.",
+  "telemetrySummaryModelGap": "Кроме того, {count} движок(ов) в этот раз не голосовали, так что уверенность стоит немного снизить. Дозагрузите их в управлении моделями и запустите заново — будет точнее.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "Порог маркировки ИИ: ",
+  "reportVerdictRangeBelow": "Вероятность ИИ ниже {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "Вероятность ИИ {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "Вероятность ИИ от {value}%",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Время анализа: {time}",
   "reportBibCompletedPreview": "Завершено {count}; результаты будут продолжать обновляться.",
   "reportBibGoogleScholarManualLookup": "Проверить вручную в Google Scholar",

@@ -911,6 +911,84 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get telemetrySummaryTitle => 'Что в итоге';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return 'Отработали $engines из $total движков. Общая вероятность ИИ — $percent%, это даёт «$verdict».';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'Движки в целом сходятся (максимум $high%, минимум $low%), так что вывод вполне надёжен.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'Движки расходятся: $highLabel даёт $high%, а $lowLabel — всего $low%. В таком случае не опирайтесь на общий балл: разбор по предложениям ниже скажет намного больше.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'Балл тянет вверх в основном $label — около $points процентных пунктов.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Из всех $total предложений ни одно не пересекло порог сильного ИИ-сигнала.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'Из $total предложений $count пересекли порог сильного ИИ-сигнала — их стоит просмотреть по одному.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'Читается как написанное человеком; копать тут особо нечего.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'Текст в серой зоне. Судить только по баллу рискованно — смотрите вместе с разбором по предложениям и тем, что знаете об источнике документа.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'Сигналы чётко указывают на генерацию или переписывание ИИ. Проверьте отмеченные предложения по одному, прежде чем решать.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'Кроме того, $count движок(ов) в этот раз не голосовали, так что уверенность стоит немного снизить. Дозагрузите их в управлении моделями и запустите заново — будет точнее.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'Порог маркировки ИИ: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'Вероятность ИИ ниже $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'Вероятность ИИ $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'Вероятность ИИ от $value%';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Низкая достоверность: доступный вес модели ниже 60% (порог $threshold%). Участвовало $available/$total движков. Ознакомьтесь с подробным анализом движков.';
   }

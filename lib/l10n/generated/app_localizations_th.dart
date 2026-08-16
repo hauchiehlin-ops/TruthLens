@@ -907,6 +907,84 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get telemetrySummaryTitle => 'สรุปผลการวิเคราะห์';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return 'เอนจิน $engines จาก $total ตัวทำงานเสร็จ ความน่าจะเป็น AI โดยรวมอยู่ที่ $percent% จึงตัดสินเป็น “$verdict”';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'เอนจินแต่ละตัวมองตรงกันพอสมควร (สูงสุด $high% ต่ำสุด $low%) ข้อสรุปนี้จึงค่อนข้างหนักแน่น';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'เอนจินมองไม่ตรงกัน: $highLabel ให้ $high% แต่ $lowLabel ให้แค่ $low% กรณีแบบนี้อย่าดูแค่คะแนนรวม ลองไล่ดูหลักฐานรายประโยคด้านล่างจะแม่นกว่ามาก';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'ตัวที่ดันคะแนนขึ้นมาหลัก ๆ คือ$label คิดเป็นราว $points จุดเปอร์เซ็นต์';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'ไล่ดูครบทั้ง $total ประโยคแล้ว ไม่มีประโยคไหนข้ามเส้นสัญญาณ AI ที่ชัดเจนเลย';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'จาก $total ประโยค มี $count ประโยคที่ข้ามเส้นสัญญาณ AI ที่ชัดเจน ควรไล่อ่านทีละประโยค';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'อ่านแล้วเหมือนคนเขียนเองจริง ๆ ไม่มีจุดไหนที่ต้องตามต่อ';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'ฉบับนี้อยู่ในโซนก้ำกึ่ง จะสรุปจากคะแนนอย่างเดียวเสี่ยงเกินไป แนะนำให้ดูควบคู่กับหลักฐานรายประโยคและที่มาของเอกสาร';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'สัญญาณชี้ชัดไปทาง AI สร้างหรือเขียนใหม่ แนะนำให้ตรวจประโยคที่ถูกทำเครื่องหมายทีละประโยคก่อนตัดสินใจ';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'นอกจากนี้ยังมีเอนจิน $count ตัวที่ไม่ได้ร่วมโหวตรอบนี้ ความมั่นใจจึงต้องหักลบไว้บ้าง ลองเติมให้ครบในหน้าจัดการโมเดลแล้วรันใหม่จะแม่นขึ้น';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'เกณฑ์การตั้งค่าสถานะ AI: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'ความน่าจะเป็น AI ต่ำกว่า $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'ความน่าจะเป็น AI $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'ความน่าจะเป็น AI $value% ขึ้นไป';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'ความเชื่อมั่นต่ำ: น้ำหนักโมเดลที่ใช้ได้ต่ำกว่า 60%（เกณฑ์ $threshold%）ม เอนจิน $available/$total เข้าร่วม กรุณาตรวจสอบการวิเคราะห์เอนจินโดยละเอียด';
   }

@@ -710,6 +710,121 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "telemetrySummaryTitle": "What this adds up to",
+  "telemetrySummaryVerdict": "{engines} of {total} engines finished. Overall AI probability is {percent}%, which lands on “{verdict}”.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "The engines broadly agree — the highest read {high}% and the lowest {low}% — so this conclusion holds up well.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "The engines disagree: {highLabel} read {high}% while {lowLabel} read only {low}%. When that happens, don't lean on the headline score — the sentence-level evidence below tells you much more.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Most of the score comes from {label}, worth about {points} percentage points.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Across all {total} sentences, not one crossed the strong-AI line.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Of {total} sentences, {count} crossed the strong-AI line — worth reading through one by one.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "It reads like something a person actually wrote, with nothing that needs chasing down.",
+  "telemetrySummaryAdviceMixed": "This one sits in the grey zone. The score alone isn't enough to call it — read it alongside the sentence evidence and whatever you know about where the document came from.",
+  "telemetrySummaryAdviceAi": "The signals point clearly at AI generation or rewriting. Check the flagged sentences one by one before you decide.",
+  "telemetrySummaryModelGap": "{count} engine(s) sat this one out, so take the confidence with a pinch of salt — fill them in under model management and re-run for a sharper read.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "AI flag threshold: ",
+  "reportVerdictRangeBelow": "AI probability below {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "AI probability {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "AI probability {value}% or above",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportConfidenceLowTooltip": "Low confidence: available model weight is below 60% ({threshold}% threshold). {available}/{total} engines participated. Review detailed engine analysis.",
   "@reportConfidenceLowTooltip": {
     "placeholders": {

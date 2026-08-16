@@ -107,4 +107,48 @@ void main() {
 
     expect(find.text('AI Content Detection Report：paper.md'), findsOneWidget);
   });
+
+  testWidgets(
+    'verdict card shows threshold and all five tiers, no confidence badge, no overflow on a narrow screen',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(360, 1600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final result = sampleResult();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: Scaffold(
+            body: ProfessionalReportHeader(
+              result: result,
+              onDownloadPdf: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.textContaining('AI flag threshold', findRichText: true),
+        findsOneWidget,
+      );
+      // "Likely human" is the active verdict, so it also appears as the
+      // headline label and in the radar-panel badge, not just the tier chip.
+      expect(find.text('Human-written'), findsOneWidget);
+      expect(find.text('Likely human'), findsWidgets);
+      expect(find.text('Mixed content'), findsOneWidget);
+      expect(find.text('Likely AI'), findsOneWidget);
+      expect(find.text('AI-generated'), findsOneWidget);
+      expect(find.textContaining('confidence'), findsNothing);
+    },
+  );
 }

@@ -903,6 +903,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get telemetrySummaryTitle => 'What this adds up to';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$engines of $total engines finished. Overall AI probability is $percent%, which lands on “$verdict”.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'The engines broadly agree — the highest read $high% and the lowest $low% — so this conclusion holds up well.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'The engines disagree: $highLabel read $high% while $lowLabel read only $low%. When that happens, don\'t lean on the headline score — the sentence-level evidence below tells you much more.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'Most of the score comes from $label, worth about $points percentage points.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Across all $total sentences, not one crossed the strong-AI line.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'Of $total sentences, $count crossed the strong-AI line — worth reading through one by one.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'It reads like something a person actually wrote, with nothing that needs chasing down.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'This one sits in the grey zone. The score alone isn\'t enough to call it — read it alongside the sentence evidence and whatever you know about where the document came from.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'The signals point clearly at AI generation or rewriting. Check the flagged sentences one by one before you decide.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return '$count engine(s) sat this one out, so take the confidence with a pinch of salt — fill them in under model management and re-run for a sharper read.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'AI flag threshold: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'AI probability below $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'AI probability $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'AI probability $value% or above';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Low confidence: available model weight is below 60% ($threshold% threshold). $available/$total engines participated. Review detailed engine analysis.';
   }

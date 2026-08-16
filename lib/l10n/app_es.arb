@@ -671,6 +671,121 @@
   "privacyWebOverview2": "La página solo lee un archivo, imagen o contenido del portapapeles cuando usted elige activamente importar, escanear o pegarlo; nunca lee otras pestañas, datos de otros sitios ni archivos que no haya seleccionado.",
   "reportAiContentReportTitle": "Informe de detección de contenido de IA",
   "reportAiProbabilityPrefix": "Probabilidad de IA: ",
+  "telemetrySummaryTitle": "En resumen",
+  "telemetrySummaryVerdict": "{engines} de {total} motores han terminado. La probabilidad de IA global es del {percent}%, lo que da “{verdict}”.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Los motores coinciden bastante (el más alto marca {high}% y el más bajo {low}%), así que la conclusión se sostiene bien.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Los motores no coinciden: {highLabel} marca {high}% y {lowLabel} apenas {low}%. Cuando pasa esto, no te fes solo de la puntuación global; las pruebas frase a frase de abajo dicen mucho más.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Lo que más empuja la puntuación es {label}, con unos {points} puntos porcentuales.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "De las {total} frases revisadas, ninguna ha cruzado la línea de señal fuerte de IA.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "De {total} frases, {count} han cruzado la línea de señal fuerte de IA; vale la pena leerlas una a una.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Se lee como algo escrito por una persona, sin nada que merezca más investigación.",
+  "telemetrySummaryAdviceMixed": "Este cae en zona gris. Concluir solo con la puntuación es arriesgado: míralo junto con las pruebas por frase y lo que sepas del origen del documento.",
+  "telemetrySummaryAdviceAi": "Las señales apuntan claramente a texto generado o reescrito por IA. Revisa una a una las frases marcadas antes de decidir.",
+  "telemetrySummaryModelGap": "Además, {count} motor(es) no han participado esta vez, así que baja un poco la confianza; complétalos en gestión de modelos y vuelve a ejecutar para afinar.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "Umbral de marcado de IA: ",
+  "reportVerdictRangeBelow": "Probabilidad de IA inferior al {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "Probabilidad de IA {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "Probabilidad de IA a partir del {value}%",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Tiempo de análisis: {time}",
   "reportBibCompletedPreview": "{count} completados; los resultados seguirán actualizándose.",
   "reportBibGoogleScholarManualLookup": "Verificar manualmente en Google Scholar",

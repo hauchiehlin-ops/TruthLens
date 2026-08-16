@@ -883,6 +883,84 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get telemetrySummaryTitle => '분석 요약';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '엔진 $total개 중 $engines개가 완료됐습니다. 전체 AI 확률은 $percent%로 “$verdict”으로 판정됐습니다.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return '엔진들의 판단이 대체로 일치합니다(최고 $high%, 최저 $low%). 이 결론은 충분히 믿을 만합니다.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return '엔진들의 판단이 엇갈립니다. $highLabel은 $high%인데 $lowLabel은 $low%에 그쳤습니다. 이럴 땐 종합 점수만 보지 말고 아래 문장별 근거를 확인하는 편이 훨씬 정확합니다.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return '점수를 끌어올린 건 주로 $label이며, 약 $points퍼센트포인트를 기여했습니다.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return '$total개 문장을 모두 훑었지만 강한 AI 신호선을 넘은 문장은 하나도 없습니다.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return '$total개 문장 중 $count개가 강한 AI 신호선을 넘었습니다. 한 문장씩 살펴볼 가치가 있습니다.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      '전체적으로 사람이 직접 쓴 글로 읽힙니다. 따로 파고들 만한 부분은 없습니다.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      '이 문서는 회색지대에 있습니다. 점수만으로 결론 내리기엔 위험하니 문장별 근거와 문서 출처를 함께 보고 판단하세요.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      '신호가 AI 생성이나 재작성 쪽을 뚜렷하게 가리킵니다. 표시된 문장을 하나씩 확인한 뒤 결정하세요.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return '참고로 $count개 엔진이 이번 투표에 참여하지 않아 확신도는 조금 낮춰 보셔야 합니다. 모델 관리에서 채운 뒤 다시 돌리면 더 정확해집니다.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'AI 표시 기준값: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'AI 확률 $value% 미만';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'AI 확률 $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'AI 확률 $value% 이상';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return '낮은 신뢰도: 사용 가능한 모델 가중치가 60% 미만입니다（임계값 $threshold%）. $available/$total개 엔진이 참여했습니다. 상세 엔진 분석을 검토하세요.';
   }

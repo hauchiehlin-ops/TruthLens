@@ -671,6 +671,121 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "telemetrySummaryTitle": "Fazit der Analyse",
+  "telemetrySummaryVerdict": "{engines} von {total} Engines sind durch. Die KI-Wahrscheinlichkeit liegt insgesamt bei {percent}% — das ergibt „{verdict}“.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Die Engines sind sich weitgehend einig (höchster Wert {high}%, niedrigster {low}%), das Ergebnis steht also auf festem Boden.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Die Engines sind sich uneinig: {highLabel} kommt auf {high}%, {lowLabel} dagegen nur auf {low}%. Dann verlassen Sie sich besser nicht auf den Gesamtwert — die Satzbelege weiter unten sagen deutlich mehr.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Den Ausschlag gibt vor allem {label} mit rund {points} Prozentpunkten.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Von allen {total} Sätzen hat kein einziger die Schwelle für ein starkes KI-Signal überschritten.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Von {total} Sätzen haben {count} die Schwelle für ein starkes KI-Signal überschritten — die sollten Sie einzeln durchgehen.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Liest sich wie von Hand geschrieben; hier gibt es nichts, dem man nachgehen müsste.",
+  "telemetrySummaryAdviceMixed": "Der Text liegt in der Grauzone. Nur nach dem Wert zu urteilen wäre riskant — ziehen Sie die Satzbelege und die Herkunft des Dokuments mit heran.",
+  "telemetrySummaryAdviceAi": "Die Signale deuten klar auf KI-Erzeugung oder -Umschreibung hin. Prüfen Sie die markierten Sätze einzeln, bevor Sie entscheiden.",
+  "telemetrySummaryModelGap": "Außerdem haben {count} Engine(s) diesmal nicht mit abgestimmt — nehmen Sie die Sicherheit also mit Abstrichen. Über die Modellverwaltung ergänzen und neu laufen lassen macht das Ergebnis schärfer.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "KI-Kennzeichnungsschwelle: ",
+  "reportVerdictRangeBelow": "KI-Wahrscheinlichkeit unter {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "KI-Wahrscheinlichkeit {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "KI-Wahrscheinlichkeit ab {value}%",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Analysezeit: {time}",
   "reportBibCompletedPreview": "{count} abgeschlossen; die Ergebnisse werden weiter aktualisiert.",
   "reportBibGoogleScholarManualLookup": "Manuell in Google Scholar prüfen",

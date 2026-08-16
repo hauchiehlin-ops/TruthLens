@@ -671,6 +671,121 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "telemetrySummaryTitle": "Ce que ça donne",
+  "telemetrySummaryVerdict": "{engines} moteurs sur {total} ont terminé. La probabilité IA globale est de {percent} %, ce qui donne « {verdict} ».",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Les moteurs sont plutôt d'accord (le plus haut à {high} %, le plus bas à {low} %), la conclusion tient donc bien.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Les moteurs divergent : {highLabel} donne {high} % alors que {lowLabel} n'en donne que {low} %. Dans ce cas, ne vous fiez pas au seul score global — les preuves phrase par phrase ci-dessous en disent bien plus.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Ce qui tire le score, c'est surtout {label}, pour environ {points} points de pourcentage.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Sur les {total} phrases passées en revue, aucune n'a franchi le seuil de signal IA fort.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Sur {total} phrases, {count} ont franchi le seuil de signal IA fort — à relire une par une.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Ça se lit comme un texte écrit par une personne ; rien ici ne demande de vérification.",
+  "telemetrySummaryAdviceMixed": "Ce texte est en zone grise. Trancher sur le seul score serait risqué : croisez-le avec les preuves par phrase et ce que vous savez de la provenance du document.",
+  "telemetrySummaryAdviceAi": "Les signaux pointent nettement vers une génération ou une réécriture par IA. Vérifiez les phrases signalées une par une avant de décider.",
+  "telemetrySummaryModelGap": "Par ailleurs, {count} moteur(s) n'ont pas participé cette fois : prenez la confiance avec un peu de recul. Complétez-les dans la gestion des modèles et relancez pour affiner.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "Seuil de signalement IA : ",
+  "reportVerdictRangeBelow": "Probabilité IA inférieure à {value} %",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "Probabilité IA {low} % – {high} %",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "Probabilité IA à partir de {value} %",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Temps d'analyse : {time}",
   "reportBibCompletedPreview": "{count} terminés ; les résultats continueront de se mettre à jour.",
   "reportBibGoogleScholarManualLookup": "Vérifier manuellement sur Google Scholar",

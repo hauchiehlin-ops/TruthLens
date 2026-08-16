@@ -28,6 +28,7 @@ import '../../shared/widgets/workspace_navigation.dart';
 import '../input/input_screen.dart' show InputSettingsDrawer;
 import '../onboarding/model_prompt.dart';
 import '../report/report_screen.dart';
+import 'telemetry_summary.dart';
 
 enum _WorkspacePhase { idle, ready, analyzing, complete }
 
@@ -1152,6 +1153,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                   ),
                 ],
               ),
+              if (!_isAnalyzing && !condensed) ...[
+                Builder(
+                  builder: (context) {
+                    final summary = buildTelemetrySummary(_result, l10n);
+                    if (summary.isEmpty) return const SizedBox.shrink();
+                    return _TelemetrySummaryCard(
+                      title: l10n.telemetrySummaryTitle,
+                      lines: summary,
+                    );
+                  },
+                ),
+              ],
               if (_isAnalyzing) ...[
                 const SizedBox(height: 6),
                 Row(
@@ -2290,6 +2303,62 @@ class _SegmentedEngineRingPainter extends CustomPainter {
       oldDelegate.pendingColor != pendingColor ||
       oldDelegate.states.toString() != states.toString() ||
       oldDelegate.colors.toString() != colors.toString();
+}
+
+/// 分析完成後的白話總結卡：逐行條列，內容由 [_telemetrySummaryLines] 依實際數據組出
+class _TelemetrySummaryCard extends StatelessWidget {
+  final String title;
+  final List<String> lines;
+
+  const _TelemetrySummaryCard({required this.title, required this.lines});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.dividerColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.messageSquare,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          for (final line in lines)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                line,
+                style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _EngineTelemetryPulse extends StatelessWidget {

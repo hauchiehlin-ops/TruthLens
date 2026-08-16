@@ -911,6 +911,84 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get telemetrySummaryTitle => 'Ringkasan analisis';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$engines dari $total mesin sudah selesai. Probabilitas AI keseluruhan $percent%, sehingga masuk ke “$verdict”.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'Antar-mesin cukup sepakat (tertinggi $high%, terendah $low%), jadi kesimpulan ini cukup kokoh.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'Mesin-mesinnya berbeda pendapat: $highLabel memberi $high% sementara $lowLabel cuma $low%. Kalau begini, jangan cuma pegang skor total — bukti per kalimat di bawah jauh lebih memberi tahu.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'Yang paling menarik skor ke atas adalah $label, sekitar $points poin persen.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Dari $total kalimat yang ditelusuri, tidak satu pun melewati garis sinyal AI yang kuat.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'Dari $total kalimat, $count melewati garis sinyal AI yang kuat — layak dibaca satu per satu.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'Bacanya memang seperti tulisan orang sendiri, tidak ada yang perlu ditelusuri lebih jauh.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'Yang ini ada di zona abu-abu. Menyimpulkan hanya dari skor terlalu berisiko — lihat bersama bukti per kalimat dan asal-usul dokumennya.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'Sinyalnya jelas mengarah ke hasil buatan atau tulisan ulang AI. Periksa kalimat yang ditandai satu per satu sebelum memutuskan.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'Selain itu ada $count mesin yang tidak ikut memilih kali ini, jadi tingkat keyakinannya perlu dikurangi sedikit; lengkapi di manajemen model lalu jalankan ulang agar lebih tajam.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'Ambang tanda AI: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'Probabilitas AI di bawah $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'Probabilitas AI $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'Probabilitas AI $value% ke atas';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Keyakinan rendah: bobot model yang tersedia di bawah 60% (ambang batas $threshold%). $available/$total mesin berpartisipasi. Tinjau analisis mesin terperinci.';
   }

@@ -149,7 +149,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
       inputText: input,
       sourceFileName: sourceFileName,
       aiProbability: overall,
-      verdict: Verdict.fromProbability(overall),
+      verdict: Verdict.fromProbability(overall, threshold),
       engineScores: scores,
       sentences: sentences,
       dominantPatterns: _dominantPatterns(scores),

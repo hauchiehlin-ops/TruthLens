@@ -920,6 +920,84 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get telemetrySummaryTitle => 'Resumindo';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$engines de $total motores terminaram. A probabilidade de IA geral é de $percent%, o que dá “$verdict”.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'Os motores concordam bastante (o mais alto marca $high% e o mais baixo $low%), então a conclusão se sustenta bem.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'Os motores discordam: $highLabel marcou $high% e $lowLabel apenas $low%. Nesses casos, não confie só na pontuação geral — as evidências frase a frase abaixo dizem muito mais.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'O que mais puxa a pontuação é $label, com cerca de $points pontos percentuais.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Das $total frases analisadas, nenhuma cruzou a linha de sinal forte de IA.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'De $total frases, $count cruzaram a linha de sinal forte de IA — vale a pena ler uma a uma.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'Lê-se como algo escrito por uma pessoa, sem nada que precise ser investigado.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'Este ficou na zona cinzenta. Concluir só pela pontuação é arriscado: olhe junto com as evidências por frase e o que você sabe sobre a origem do documento.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'Os sinais apontam claramente para geração ou reescrita por IA. Confira as frases marcadas uma a uma antes de decidir.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'Além disso, $count motor(es) não participaram desta vez, então pese a confiança com cuidado; complete-os no gerenciamento de modelos e rode de novo para afinar.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'Limite de sinalização de IA: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'Probabilidade de IA abaixo de $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'Probabilidade de IA $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'Probabilidade de IA a partir de $value%';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Confiança baixa: o peso do modelo disponível está abaixo de 60% (limite $threshold%). $available/$total mecanismos participaram. Revise a análise detalhada dos mecanismos.';
   }

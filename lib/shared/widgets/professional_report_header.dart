@@ -104,14 +104,18 @@ class ProfessionalReportHeader extends StatelessWidget {
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  l10n.reportSuspiciousLocationsTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1E3A5F),
+                Expanded(
+                  child: Text(
+                    l10n.reportSuspiciousLocationsTitle,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1E3A5F),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
                   l10n.reportSentenceCount(result.aiSentenceCount),
                   style: Theme.of(
@@ -195,68 +199,129 @@ class _VerdictSummaryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: l10n.reportAiProbabilityPrefix,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
-                      ),
-                      TextSpan(
-                        text: '${(result.aiProbability * 100).round()}%',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  children: [
+                    _InlineLabel(
+                      prefix: l10n.reportAiThresholdPrefix,
+                      value: '${(result.threshold * 100).round()}%',
+                    ),
+                    _InlineLabel(
+                      prefix: l10n.reportAiProbabilityPrefix,
+                      value: '${(result.aiProbability * 100).round()}%',
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Tooltip(
-                  message: result.isLowConfidence
-                      ? l10n.reportConfidenceLowTooltip(
-                          (result.threshold * 100).round(),
-                          result.availableEngineCount,
-                          result.totalEngineCount,
-                        )
-                      : l10n.reportConfidenceHighTooltip(
-                          result.availableEngineCount,
-                          result.totalEngineCount,
-                          (result.threshold * 100).round(),
-                        ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      result.isLowConfidence
-                          ? l10n.reportConfidenceLowBadge(
-                              result.availableEngineCount,
-                              result.totalEngineCount,
-                            )
-                          : l10n.reportConfidenceHighBadge(
-                              result.availableEngineCount,
-                              result.totalEngineCount,
-                            ),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelSmall?.copyWith(color: Colors.white),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 12),
+                _VerdictTierList(result: result, l10n: l10n),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 前綴＋數值的行內文字（例如「AI 機率：1%」）
+class _InlineLabel extends StatelessWidget {
+  final String prefix;
+  final String value;
+
+  const _InlineLabel({required this.prefix, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: prefix,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+          ),
+          TextSpan(
+            text: value,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 五個判定等級清單，標示各等級對應的 AI 機率區間，目前等級以高亮呈現。
+/// 使用 [Wrap] 讓區塊在窄螢幕自動換行，符合響應式設計。
+class _VerdictTierList extends StatelessWidget {
+  final DetectionResult result;
+  final AppLocalizations l10n;
+
+  const _VerdictTierList({required this.result, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final cuts = Verdict.cutPoints(result.threshold);
+    final cutPercents = cuts.map((c) => (c * 100).round()).toList();
+
+    final ranges = <Verdict, String>{
+      Verdict.human: l10n.reportVerdictRangeBelow(cutPercents[0]),
+      Verdict.likelyHuman: l10n.reportVerdictRangeBetween(
+        cutPercents[0],
+        cutPercents[1],
+      ),
+      Verdict.mixed: l10n.reportVerdictRangeBetween(
+        cutPercents[1],
+        cutPercents[2],
+      ),
+      Verdict.likelyAi: l10n.reportVerdictRangeBetween(
+        cutPercents[2],
+        cutPercents[3],
+      ),
+      Verdict.ai: l10n.reportVerdictRangeAbove(cutPercents[3]),
+    };
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: Verdict.values.map((verdict) {
+        final active = verdict == result.verdict;
+        return Container(
+          constraints: const BoxConstraints(minWidth: 120),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: active ? 0.25 : 0.08),
+            borderRadius: BorderRadius.circular(8),
+            border: active
+                ? Border.all(color: Colors.white.withValues(alpha: 0.6))
+                : null,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                verdict.label(l10n),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                ranges[verdict]!,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Colors.white.withValues(alpha: active ? 0.95 : 0.7),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

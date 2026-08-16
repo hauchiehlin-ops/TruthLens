@@ -671,6 +671,121 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "telemetrySummaryTitle": "Ringkasan analisis",
+  "telemetrySummaryVerdict": "{engines} daripada {total} enjin telah selesai. Kebarangkalian AI keseluruhan ialah {percent}%, jadi ia jatuh pada “{verdict}”.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Enjin-enjin ini agak sependapat (tertinggi {high}%, terendah {low}%), jadi kesimpulan ini cukup kukuh.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Enjin tidak sependapat: {highLabel} memberi {high}% manakala {lowLabel} hanya {low}%. Kalau begini, jangan bergantung pada skor keseluruhan sahaja — bukti ayat demi ayat di bawah jauh lebih memberitahu.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Yang paling menaikkan skor ialah {label}, kira-kira {points} mata peratus.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Daripada {total} ayat yang diteliti, tiada satu pun melepasi garis isyarat AI yang kuat.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Daripada {total} ayat, {count} melepasi garis isyarat AI yang kuat — berbaloi dibaca satu persatu.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Ia berbunyi seperti tulisan orang sendiri, tiada apa yang perlu disiasat lanjut.",
+  "telemetrySummaryAdviceMixed": "Yang ini berada di zon kelabu. Membuat kesimpulan berdasarkan skor sahaja terlalu berisiko — lihat sekali dengan bukti setiap ayat dan asal usul dokumen itu.",
+  "telemetrySummaryAdviceAi": "Isyaratnya jelas menunjuk kepada penjanaan atau penulisan semula oleh AI. Semak ayat yang ditanda satu persatu sebelum membuat keputusan.",
+  "telemetrySummaryModelGap": "Selain itu {count} enjin tidak menyertai undian kali ini, jadi kurangkan sedikit keyakinan anda; lengkapkan di pengurusan model dan jalankan semula untuk hasil lebih tepat.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "Ambang penanda AI: ",
+  "reportVerdictRangeBelow": "Kebarangkalian AI di bawah {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "Kebarangkalian AI {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "Kebarangkalian AI {value}% ke atas",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Masa analisis: {time}",
   "reportBibCompletedPreview": "{count} selesai; hasil akan terus dikemas kini.",
   "reportBibGoogleScholarManualLookup": "Semak secara manual dalam Google Scholar",

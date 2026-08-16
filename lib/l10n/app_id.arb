@@ -671,6 +671,121 @@
   "privacyWebOverview2": "Halaman hanya membaca file, gambar, atau konten clipboard saat Anda secara aktif memilih untuk mengimpor, memindai, atau menempelkannya; halaman tidak pernah membaca tab lain, data situs lain, atau file yang belum Anda pilih.",
   "reportAiContentReportTitle": "Laporan Deteksi Konten AI",
   "reportAiProbabilityPrefix": "Probabilitas AI: ",
+  "telemetrySummaryTitle": "Ringkasan analisis",
+  "telemetrySummaryVerdict": "{engines} dari {total} mesin sudah selesai. Probabilitas AI keseluruhan {percent}%, sehingga masuk ke “{verdict}”.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "Antar-mesin cukup sepakat (tertinggi {high}%, terendah {low}%), jadi kesimpulan ini cukup kokoh.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "Mesin-mesinnya berbeda pendapat: {highLabel} memberi {high}% sementara {lowLabel} cuma {low}%. Kalau begini, jangan cuma pegang skor total — bukti per kalimat di bawah jauh lebih memberi tahu.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "Yang paling menarik skor ke atas adalah {label}, sekitar {points} poin persen.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "Dari {total} kalimat yang ditelusuri, tidak satu pun melewati garis sinyal AI yang kuat.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "Dari {total} kalimat, {count} melewati garis sinyal AI yang kuat — layak dibaca satu per satu.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "Bacanya memang seperti tulisan orang sendiri, tidak ada yang perlu ditelusuri lebih jauh.",
+  "telemetrySummaryAdviceMixed": "Yang ini ada di zona abu-abu. Menyimpulkan hanya dari skor terlalu berisiko — lihat bersama bukti per kalimat dan asal-usul dokumennya.",
+  "telemetrySummaryAdviceAi": "Sinyalnya jelas mengarah ke hasil buatan atau tulisan ulang AI. Periksa kalimat yang ditandai satu per satu sebelum memutuskan.",
+  "telemetrySummaryModelGap": "Selain itu ada {count} mesin yang tidak ikut memilih kali ini, jadi tingkat keyakinannya perlu dikurangi sedikit; lengkapi di manajemen model lalu jalankan ulang agar lebih tajam.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "Ambang tanda AI: ",
+  "reportVerdictRangeBelow": "Probabilitas AI di bawah {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "Probabilitas AI {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "Probabilitas AI {value}% ke atas",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "Waktu analisis: {time}",
   "reportBibCompletedPreview": "{count} selesai; hasil akan terus diperbarui.",
   "reportBibGoogleScholarManualLookup": "Periksa secara manual di Google Scholar",

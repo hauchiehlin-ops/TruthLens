@@ -1562,6 +1562,106 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @telemetrySummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What this adds up to'**
+  String get telemetrySummaryTitle;
+
+  /// No description provided for @telemetrySummaryVerdict.
+  ///
+  /// In en, this message translates to:
+  /// **'{engines} of {total} engines finished. Overall AI probability is {percent}%, which lands on “{verdict}”.'**
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  );
+
+  /// No description provided for @telemetrySummaryAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'The engines broadly agree — the highest read {high}% and the lowest {low}% — so this conclusion holds up well.'**
+  String telemetrySummaryAgreement(int high, int low);
+
+  /// No description provided for @telemetrySummaryDisagreement.
+  ///
+  /// In en, this message translates to:
+  /// **'The engines disagree: {highLabel} read {high}% while {lowLabel} read only {low}%. When that happens, don\'t lean on the headline score — the sentence-level evidence below tells you much more.'**
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  );
+
+  /// No description provided for @telemetrySummaryDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Most of the score comes from {label}, worth about {points} percentage points.'**
+  String telemetrySummaryDriver(String label, int points);
+
+  /// No description provided for @telemetrySummarySentencesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Across all {total} sentences, not one crossed the strong-AI line.'**
+  String telemetrySummarySentencesNone(int total);
+
+  /// No description provided for @telemetrySummarySentencesSome.
+  ///
+  /// In en, this message translates to:
+  /// **'Of {total} sentences, {count} crossed the strong-AI line — worth reading through one by one.'**
+  String telemetrySummarySentencesSome(int count, int total);
+
+  /// No description provided for @telemetrySummaryAdviceHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'It reads like something a person actually wrote, with nothing that needs chasing down.'**
+  String get telemetrySummaryAdviceHuman;
+
+  /// No description provided for @telemetrySummaryAdviceMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'This one sits in the grey zone. The score alone isn\'t enough to call it — read it alongside the sentence evidence and whatever you know about where the document came from.'**
+  String get telemetrySummaryAdviceMixed;
+
+  /// No description provided for @telemetrySummaryAdviceAi.
+  ///
+  /// In en, this message translates to:
+  /// **'The signals point clearly at AI generation or rewriting. Check the flagged sentences one by one before you decide.'**
+  String get telemetrySummaryAdviceAi;
+
+  /// No description provided for @telemetrySummaryModelGap.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} engine(s) sat this one out, so take the confidence with a pinch of salt — fill them in under model management and re-run for a sharper read.'**
+  String telemetrySummaryModelGap(int count);
+
+  /// No description provided for @reportAiThresholdPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'AI flag threshold: '**
+  String get reportAiThresholdPrefix;
+
+  /// No description provided for @reportVerdictRangeBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'AI probability below {value}%'**
+  String reportVerdictRangeBelow(int value);
+
+  /// No description provided for @reportVerdictRangeBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'AI probability {low}%–{high}%'**
+  String reportVerdictRangeBetween(int low, int high);
+
+  /// No description provided for @reportVerdictRangeAbove.
+  ///
+  /// In en, this message translates to:
+  /// **'AI probability {value}% or above'**
+  String reportVerdictRangeAbove(int value);
+
   /// No description provided for @reportConfidenceLowTooltip.
   ///
   /// In en, this message translates to:

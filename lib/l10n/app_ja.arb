@@ -671,6 +671,121 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "telemetrySummaryTitle": "分析のまとめ",
+  "telemetrySummaryVerdict": "{total}個中{engines}個のエンジンが完了しました。全体のAI確率は{percent}%で、「{verdict}」と判定されました。",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "各エンジンの見方はおおむね一致しています（最高{high}%、最低{low}%）。この結論は十分に信頼できます。",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "エンジン間で見方が分かれています。{highLabel}は{high}%、一方{lowLabel}は{low}%でした。こういうときは総合スコアだけで判断せず、下の文単位の根拠を見たほうが確実です。",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "スコアを押し上げている主な要因は{label}で、約{points}パーセントポイント寄与しています。",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "{total}文をすべて確認しましたが、強いAIシグナルの線を越えた文は1つもありませんでした。",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "{total}文のうち{count}文が強いAIシグナルの線を越えました。1文ずつ目を通す価値があります。",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "全体として人が自分で書いた文章に読めます。特に追跡が必要な箇所はありません。",
+  "telemetrySummaryAdviceMixed": "これはグレーゾーンです。スコアだけで結論を出すのは危険なので、文単位の根拠と文書の出所を合わせて判断してください。",
+  "telemetrySummaryAdviceAi": "シグナルは明らかにAI生成または書き換えを示しています。マークされた文を1つずつ確認してから判断してください。",
+  "telemetrySummaryModelGap": "なお{count}個のエンジンが今回の投票に参加していないため、確信度は割り引いて考えてください。モデル管理で補ってから再実行すると精度が上がります。",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "AI判定しきい値：",
+  "reportVerdictRangeBelow": "AI確率が{value}%未満",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "AI確率{low}%〜{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "AI確率が{value}%以上",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "分析時間：{time}",
   "reportBibCompletedPreview": "{count} 件完了。結果は継続して更新されます。",
   "reportBibGoogleScholarManualLookup": "Google Scholarで手動確認",

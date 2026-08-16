@@ -871,6 +871,82 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get telemetrySummaryTitle => '分析總結';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$total 個引擎中有 $engines 個跑完了，整體 AI 機率 $percent%，判定為「$verdict」。';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return '各引擎看法蠻一致的，最高 $high%、最低 $low%，這個結論算站得住腳。';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return '引擎之間看法不太一樣：$highLabel給了 $high%，$lowLabel卻只有 $low%，這種時候別只看總分，往下翻逐句證據會準得多。';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return '把分數拉上來的主要是$label，大約貢獻了 $points 個百分點。';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return '逐句掃過 $total 句，沒有任何一句踩到強 AI 訊號線。';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return '逐句掃過 $total 句，其中 $count 句踩到強 AI 訊號線，值得一句一句看過。';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman => '整體讀起來就是人自己寫的，沒有特別需要追查的地方。';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      '這份落在灰色地帶，光憑分數下結論太冒險，建議搭配逐句證據和文件來源一起看。';
+
+  @override
+  String get telemetrySummaryAdviceAi => '訊號明顯偏向 AI 生成或改寫，建議把標紅的句子逐一核對過再做決定。';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return '另外有 $count 個引擎這次沒參與投票，把握度會打點折；到模型管理補齊後重跑會更準。';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'AI 標記門檻閾值：';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'AI 機率低於 $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'AI 機率 $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'AI 機率達 $value% 以上';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return '信心度低：可用模型權重不足 60%（$threshold% 閾值）。$available/$total 引擎參與投票。建議參考各引擎詳細分析結果。';
   }
@@ -2916,6 +2992,82 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get telemetrySummaryTitle => '分析总结';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$total 个引擎中有 $engines 个跑完了，整体 AI 几率 $percent%，判定为「$verdict」。';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return '各引擎看法挺一致的，最高 $high%、最低 $low%，这个结论算站得住脚。';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return '引擎之间看法不太一样：$highLabel给了 $high%，$lowLabel却只有 $low%，这种时候别只看总分，往下翻逐句证据会准得多。';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return '把分数拉上来的主要是$label，大约贡献了 $points 个百分点。';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return '逐句扫过 $total 句，没有任何一句踩到强 AI 信号线。';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return '逐句扫过 $total 句，其中 $count 句踩到强 AI 信号线，值得一句一句看过。';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman => '整体读起来就是人自己写的，没有特别需要追查的地方。';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      '这份落在灰色地带，光凭分数下结论太冒险，建议搭配逐句证据和文件来源一起看。';
+
+  @override
+  String get telemetrySummaryAdviceAi => '信号明显偏向 AI 生成或改写，建议把标红的句子逐一核对过再做决定。';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return '另外有 $count 个引擎这次没参与投票，把握度会打点折；到模型管理补齐后重跑会更准。';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'AI 标记门槛阈值：';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'AI 几率低于 $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'AI 几率 $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'AI 几率达 $value% 以上';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return '信心度低：可用模型权重不足 60%（$threshold% 阈值）。$available/$total 引擎参与投票。建议参考各引擎详细分析结果。';
   }
@@ -4959,6 +5111,82 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get telemetrySummaryTitle => '分析總結';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$total 個引擎中有 $engines 個跑完了，整體 AI 機率 $percent%，判定為「$verdict」。';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return '各引擎看法蠻一致的，最高 $high%、最低 $low%，這個結論算站得住腳。';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return '引擎之間看法不太一樣：$highLabel給了 $high%，$lowLabel卻只有 $low%，這種時候別只看總分，往下翻逐句證據會準得多。';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return '把分數拉上來的主要是$label，大約貢獻了 $points 個百分點。';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return '逐句掃過 $total 句，沒有任何一句踩到強 AI 訊號線。';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return '逐句掃過 $total 句，其中 $count 句踩到強 AI 訊號線，值得一句一句看過。';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman => '整體讀起來就是人自己寫的，沒有特別需要追查的地方。';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      '這份落在灰色地帶，光憑分數下結論太冒險，建議搭配逐句證據和文件來源一起看。';
+
+  @override
+  String get telemetrySummaryAdviceAi => '訊號明顯偏向 AI 生成或改寫，建議把標紅的句子逐一核對過再做決定。';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return '另外有 $count 個引擎這次沒參與投票，把握度會打點折；到模型管理補齊後重跑會更準。';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'AI 標記門檻閾值：';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'AI 機率低於 $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'AI 機率 $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'AI 機率達 $value% 以上';
+  }
 
   @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {

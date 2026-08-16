@@ -395,6 +395,121 @@
   "reportSuspiciousLocationsTitle": "可疑內容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 機率：",
+  "telemetrySummaryTitle": "分析總結",
+  "telemetrySummaryVerdict": "{total} 個引擎中有 {engines} 個跑完了，整體 AI 機率 {percent}%，判定為「{verdict}」。",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "各引擎看法蠻一致的，最高 {high}%、最低 {low}%，這個結論算站得住腳。",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "引擎之間看法不太一樣：{highLabel}給了 {high}%，{lowLabel}卻只有 {low}%，這種時候別只看總分，往下翻逐句證據會準得多。",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "把分數拉上來的主要是{label}，大約貢獻了 {points} 個百分點。",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "逐句掃過 {total} 句，沒有任何一句踩到強 AI 訊號線。",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "逐句掃過 {total} 句，其中 {count} 句踩到強 AI 訊號線，值得一句一句看過。",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "整體讀起來就是人自己寫的，沒有特別需要追查的地方。",
+  "telemetrySummaryAdviceMixed": "這份落在灰色地帶，光憑分數下結論太冒險，建議搭配逐句證據和文件來源一起看。",
+  "telemetrySummaryAdviceAi": "訊號明顯偏向 AI 生成或改寫，建議把標紅的句子逐一核對過再做決定。",
+  "telemetrySummaryModelGap": "另外有 {count} 個引擎這次沒參與投票，把握度會打點折；到模型管理補齊後重跑會更準。",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "AI 標記門檻閾值：",
+  "reportVerdictRangeBelow": "AI 機率低於 {value}%",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "AI 機率 {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "AI 機率達 {value}% 以上",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportConfidenceLowTooltip": "信心度低：可用模型權重不足 60%（{threshold}% 閾值）。{available}/{total} 引擎參與投票。建議參考各引擎詳細分析結果。",
   "reportConfidenceHighTooltip": "信心度高：{available}/{total} 個檢測模型達成共識（{threshold}% 以上權重同意此判定）",
   "reportConfidenceLowBadge": "信心度低（{available}/{total}）",

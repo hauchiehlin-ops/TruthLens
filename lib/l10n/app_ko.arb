@@ -671,6 +671,121 @@
   "privacyWebOverview2": "이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.",
   "reportAiContentReportTitle": "AI 콘텐츠 감지 보고서",
   "reportAiProbabilityPrefix": "AI 확률: ",
+  "telemetrySummaryTitle": "분석 요약",
+  "telemetrySummaryVerdict": "엔진 {total}개 중 {engines}개가 완료됐습니다. 전체 AI 확률은 {percent}%로 “{verdict}”으로 판정됐습니다.",
+  "@telemetrySummaryVerdict": {
+    "placeholders": {
+      "engines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummaryAgreement": "엔진들의 판단이 대체로 일치합니다(최고 {high}%, 최저 {low}%). 이 결론은 충분히 믿을 만합니다.",
+  "@telemetrySummaryAgreement": {
+    "placeholders": {
+      "high": {
+        "type": "int"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDisagreement": "엔진들의 판단이 엇갈립니다. {highLabel}은 {high}%인데 {lowLabel}은 {low}%에 그쳤습니다. 이럴 땐 종합 점수만 보지 말고 아래 문장별 근거를 확인하는 편이 훨씬 정확합니다.",
+  "@telemetrySummaryDisagreement": {
+    "placeholders": {
+      "highLabel": {
+        "type": "String"
+      },
+      "high": {
+        "type": "int"
+      },
+      "lowLabel": {
+        "type": "String"
+      },
+      "low": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryDriver": "점수를 끌어올린 건 주로 {label}이며, 약 {points}퍼센트포인트를 기여했습니다.",
+  "@telemetrySummaryDriver": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesNone": "{total}개 문장을 모두 훑었지만 강한 AI 신호선을 넘은 문장은 하나도 없습니다.",
+  "@telemetrySummarySentencesNone": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySentencesSome": "{total}개 문장 중 {count}개가 강한 AI 신호선을 넘었습니다. 한 문장씩 살펴볼 가치가 있습니다.",
+  "@telemetrySummarySentencesSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummaryAdviceHuman": "전체적으로 사람이 직접 쓴 글로 읽힙니다. 따로 파고들 만한 부분은 없습니다.",
+  "telemetrySummaryAdviceMixed": "이 문서는 회색지대에 있습니다. 점수만으로 결론 내리기엔 위험하니 문장별 근거와 문서 출처를 함께 보고 판단하세요.",
+  "telemetrySummaryAdviceAi": "신호가 AI 생성이나 재작성 쪽을 뚜렷하게 가리킵니다. 표시된 문장을 하나씩 확인한 뒤 결정하세요.",
+  "telemetrySummaryModelGap": "참고로 {count}개 엔진이 이번 투표에 참여하지 않아 확신도는 조금 낮춰 보셔야 합니다. 모델 관리에서 채운 뒤 다시 돌리면 더 정확해집니다.",
+  "@telemetrySummaryModelGap": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportAiThresholdPrefix": "AI 표시 기준값: ",
+  "reportVerdictRangeBelow": "AI 확률 {value}% 미만",
+  "@reportVerdictRangeBelow": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeBetween": "AI 확률 {low}%–{high}%",
+  "@reportVerdictRangeBetween": {
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerdictRangeAbove": "AI 확률 {value}% 이상",
+  "@reportVerdictRangeAbove": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "reportAnalysisTimeLabel": "분석 시간: {time}",
   "reportBibCompletedPreview": "{count}개 완료됨. 결과는 계속 업데이트됩니다.",
   "reportBibGoogleScholarManualLookup": "Google Scholar에서 수동으로 확인",

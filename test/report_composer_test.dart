@@ -15,7 +15,7 @@ DetectionResult _result({
   analyzedAt: DateTime(2026, 7, 3),
   inputText: 'a',
   aiProbability: ai,
-  verdict: Verdict.fromProbability(ai),
+  verdict: Verdict.fromProbability(ai, threshold),
   threshold: threshold,
   eslAdjusted: esl,
   engineScores: [

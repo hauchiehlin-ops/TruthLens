@@ -908,6 +908,84 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get telemetrySummaryTitle => 'Ringkasan analisis';
+
+  @override
+  String telemetrySummaryVerdict(
+    int engines,
+    int total,
+    int percent,
+    String verdict,
+  ) {
+    return '$engines daripada $total enjin telah selesai. Kebarangkalian AI keseluruhan ialah $percent%, jadi ia jatuh pada “$verdict”.';
+  }
+
+  @override
+  String telemetrySummaryAgreement(int high, int low) {
+    return 'Enjin-enjin ini agak sependapat (tertinggi $high%, terendah $low%), jadi kesimpulan ini cukup kukuh.';
+  }
+
+  @override
+  String telemetrySummaryDisagreement(
+    String highLabel,
+    int high,
+    String lowLabel,
+    int low,
+  ) {
+    return 'Enjin tidak sependapat: $highLabel memberi $high% manakala $lowLabel hanya $low%. Kalau begini, jangan bergantung pada skor keseluruhan sahaja — bukti ayat demi ayat di bawah jauh lebih memberitahu.';
+  }
+
+  @override
+  String telemetrySummaryDriver(String label, int points) {
+    return 'Yang paling menaikkan skor ialah $label, kira-kira $points mata peratus.';
+  }
+
+  @override
+  String telemetrySummarySentencesNone(int total) {
+    return 'Daripada $total ayat yang diteliti, tiada satu pun melepasi garis isyarat AI yang kuat.';
+  }
+
+  @override
+  String telemetrySummarySentencesSome(int count, int total) {
+    return 'Daripada $total ayat, $count melepasi garis isyarat AI yang kuat — berbaloi dibaca satu persatu.';
+  }
+
+  @override
+  String get telemetrySummaryAdviceHuman =>
+      'Ia berbunyi seperti tulisan orang sendiri, tiada apa yang perlu disiasat lanjut.';
+
+  @override
+  String get telemetrySummaryAdviceMixed =>
+      'Yang ini berada di zon kelabu. Membuat kesimpulan berdasarkan skor sahaja terlalu berisiko — lihat sekali dengan bukti setiap ayat dan asal usul dokumen itu.';
+
+  @override
+  String get telemetrySummaryAdviceAi =>
+      'Isyaratnya jelas menunjuk kepada penjanaan atau penulisan semula oleh AI. Semak ayat yang ditanda satu persatu sebelum membuat keputusan.';
+
+  @override
+  String telemetrySummaryModelGap(int count) {
+    return 'Selain itu $count enjin tidak menyertai undian kali ini, jadi kurangkan sedikit keyakinan anda; lengkapkan di pengurusan model dan jalankan semula untuk hasil lebih tepat.';
+  }
+
+  @override
+  String get reportAiThresholdPrefix => 'Ambang penanda AI: ';
+
+  @override
+  String reportVerdictRangeBelow(int value) {
+    return 'Kebarangkalian AI di bawah $value%';
+  }
+
+  @override
+  String reportVerdictRangeBetween(int low, int high) {
+    return 'Kebarangkalian AI $low%–$high%';
+  }
+
+  @override
+  String reportVerdictRangeAbove(int value) {
+    return 'Kebarangkalian AI $value% ke atas';
+  }
+
+  @override
   String reportConfidenceLowTooltip(int threshold, int available, int total) {
     return 'Keyakinan rendah: berat model yang tersedia di bawah 60% (ambang $threshold%). $available/$total enjin mengambil bahagian. Semak analisis enjin terperinci.';
   }

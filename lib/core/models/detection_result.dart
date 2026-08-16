@@ -4,19 +4,28 @@ library;
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/text_stats.dart';
 
-/// 五級分類（依整體 AI 機率劃分）
+/// 五級分類（依整體 AI 機率與使用者可調的 AI 標記門檻閾值劃分）
 enum Verdict {
-  human, // 🟢 人類撰寫 (aiProbability < 0.20)
-  likelyHuman, // 🟡 可能人類 (0.20 - 0.40)
-  mixed, // 🟠 混合內容 (0.40 - 0.60)
-  likelyAi, // 🔴 可能 AI (0.60 - 0.80)
-  ai; // ⛔ AI 生成 (> 0.80)
+  human, // 🟢 人類撰寫
+  likelyHuman, // 🟡 可能人類
+  mixed, // 🟠 混合內容
+  likelyAi, // 🔴 可能 AI
+  ai; // ⛔ AI 生成
 
-  static Verdict fromProbability(double p) {
-    if (p < 0.20) return Verdict.human;
-    if (p < 0.40) return Verdict.likelyHuman;
-    if (p < 0.60) return Verdict.mixed;
-    if (p < 0.80) return Verdict.likelyAi;
+  /// 四個分級切點，以 [threshold]（AI 標記門檻閾值）為中心、按左右兩側可用
+  /// 空間等比例縮放，確保無論門檻設在哪裡，五個等級永遠都有非零區間。
+  /// 門檻為 0.5（預設值）時，切點恰為原本寫死的 0.2/0.4/0.6/0.8。
+  static List<double> cutPoints(double threshold) {
+    final t = threshold.clamp(0.0, 1.0);
+    return [t * 0.4, t * 0.8, t + (1 - t) * 0.2, t + (1 - t) * 0.6];
+  }
+
+  static Verdict fromProbability(double p, double threshold) {
+    final cuts = cutPoints(threshold);
+    if (p < cuts[0]) return Verdict.human;
+    if (p < cuts[1]) return Verdict.likelyHuman;
+    if (p < cuts[2]) return Verdict.mixed;
+    if (p < cuts[3]) return Verdict.likelyAi;
     return Verdict.ai;
   }
 

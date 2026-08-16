@@ -111,12 +111,23 @@ void main() {
   });
 
   group('Verdict', () {
-    test('五級分類界線', () {
-      expect(Verdict.fromProbability(0.1), Verdict.human);
-      expect(Verdict.fromProbability(0.3), Verdict.likelyHuman);
-      expect(Verdict.fromProbability(0.5), Verdict.mixed);
-      expect(Verdict.fromProbability(0.7), Verdict.likelyAi);
-      expect(Verdict.fromProbability(0.9), Verdict.ai);
+    test('五級分類界線（門檻 0.5 時對應原本固定的 0.2/0.4/0.6/0.8）', () {
+      expect(Verdict.fromProbability(0.1, 0.5), Verdict.human);
+      expect(Verdict.fromProbability(0.3, 0.5), Verdict.likelyHuman);
+      expect(Verdict.fromProbability(0.5, 0.5), Verdict.mixed);
+      expect(Verdict.fromProbability(0.7, 0.5), Verdict.likelyAi);
+      expect(Verdict.fromProbability(0.9, 0.5), Verdict.ai);
+    });
+
+    test('切點隨門檻等比例縮放，且五個等級永遠留有非零區間', () {
+      for (final threshold in [0.2, 0.35, 0.5, 0.65, 0.9]) {
+        final cuts = Verdict.cutPoints(threshold);
+        expect(cuts, hasLength(4));
+        for (var i = 0; i < cuts.length; i++) {
+          expect(cuts[i], greaterThan(i == 0 ? 0.0 : cuts[i - 1]));
+        }
+        expect(cuts.last, lessThan(1.0));
+      }
     });
   });
 
