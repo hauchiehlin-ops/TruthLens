@@ -920,6 +920,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get helpDesignTitle => 'Filosofia de projeto e limites conhecidos';
+
+  @override
+  String get helpShiftTitle =>
+      '1. A virada: não competimos por exatidão de pontuação';
+
+  @override
+  String get helpShiftBody =>
+      'Quase todo detector do mercado responde à mesma pergunta: este texto parece escrito por uma IA?\n\nEssa é uma corrida armamentista perdida. Quanto mais forte o modelo, mais sua saída se aproxima estatisticamente da escrita humana — e as ferramentas de reescrita melhoram muito mais rápido que os detectores. Nesse caminho, um grande modelo em servidor apenas perde mais devagar.\n\nO TruthLens faz outra pergunta: que evidências realmente temos sobre como este documento passou a existir, e qual o peso de cada uma?\n\nÉ passar do palpite sobre estilo para a pesagem de evidências de origem, junto a conclusões estatisticamente honestas. Por isso esta ferramenta deliberadamente não busca posição em rankings de exatidão de pontuação única, mas expõe cada evidência separadamente e diz claramente quando não sabe. A verdadeira vantagem de rodar no seu navegador não é velocidade — é enxergar o que um servidor nunca vê: o arquivo completo e a base que você mesmo reuniu.';
+
+  @override
+  String get helpPillarsTitle => '2. Os cinco pilares';
+
+  @override
+  String get helpPillarsBody =>
+      '1. Perícia de origem do documento (ativo)\nLê o registro de edição dentro dos contêineres DOCX e ODT: tempo total de edição, número de salvamentos, datas de criação e modificação, e os marcadores de lote de edição (RSID) no corpo. Um ou dois RSID em um trabalho inteiro costuma significar que o texto entrou de uma vez; 3.000 palavras com quatro minutos de edição é evidência mais dura que qualquer pontuação de perplexidade. Isso conta como evidência de origem e aparece separado da probabilidade de IA — deliberadamente nunca somado à pontuação.\n\n2. Calibração com base local e predição conforme (ativo)\nAdicione textos que você sabe terem sido escritos pelos próprios alunos e o sistema julgará pela distribuição deste grupo em vez de um limite global. A predição conforme dá uma garantia livre de distribuição: se a base e a amostra testada forem intercambiáveis, a taxa de falsos positivos fica abaixo do alfa que você definir. É a chave para reduzir erros com escrita não nativa, e algo que produtos comerciais não conseguem fazer: eles não têm os trabalhos de referência dos seus alunos.\n\n3. Pesos de motor aprendidos (ativo)\nQuando a base contém amostras humanas e de IA, o sistema mede o quanto cada motor separa os dois grupos (tamanho de efeito, d de Cohen) e sugere pesos correspondentes, substituindo as proporções fixas definidas à mão. Nada muda até você tocar em Aplicar — as configurações nunca são alteradas em silêncio.\n\n4. Perplexidade cruzada Binoculars (núcleo de cálculo pronto, ainda não ativo)\nA perplexidade crua trata o quanto um texto é previsível como se isso medisse o quanto ele parece de IA — daí exatamente seus falsos positivos sistemáticos com escrita não nativa de estilo simples. O Binoculars mede essa previsibilidade em relação ao quanto dois modelos discordam entre si. A matemática está implementada e testada, mas ligá-la ainda exige um par de modelos de linguagem pequenos que rodem no navegador, além de validação com dados rotulados.\n\n5. Detecção de marca d\'água (verificado, inviável, não construído)\nA detecção do SynthID-Text é atrelada a chaves: o detector precisa calcular com as mesmas chaves usadas na geração, e as chaves de produção do Google não são públicas. Fazer isso no navegador nunca dispararia com saídas reais de ChatGPT, Claude ou Gemini — seria apenas um recurso que jamais aciona, enquanto deixa você acreditando que marcas d\'água estão sendo verificadas. Por isso foi deliberadamente deixado de fora.';
+
+  @override
+  String get helpCascadeTitle => '3. A cascata em camadas e a abstenção';
+
+  @override
+  String get helpCascadeBody =>
+      'Para manter a velocidade dentro do orçamento de processamento de um navegador, a análise roda em camadas: sinais baratos primeiro, caros só quando necessário.\n\nCamada 0  Evidências de origem do documento (custo quase nulo)\nCamada 1  Traços estatísticos e estilométricos (motores existentes, baratos)\nCamada 2  Classificador Transformer por frase\nCamada 3  Perplexidade cruzada (o mais caro, só se o quadro continuar incerto)\n\nO resultado então passa para a calibração local, que produz uma conclusão com garantia de falsos positivos — ou uma abstenção explícita.\n\n[Por que a abstenção importa]\nA maioria das acusações falsas nasce de devolver um número confiante sobre uma entrada curta ou fraca demais para sustentá-lo. Esta ferramenta mostra abertamente \"Evidência insuficiente para julgar\", em vez de forçar uma pontuação, quando:\n\n- menos de 5 frases analisáveis\n- menos de 100 palavras\n- menos de 2 motores participaram\n- os motores divergem em mais de 60 pontos percentuais (a média deixou de significar algo)\n\nAo se abster, a pontuação completa e as evidências por frase continuam abaixo para sua referência — mas não as trate como conclusão. Um sistema disposto a dizer \"não sei\" merece mais confiança do que um que sempre lhe entrega um número.';
+
+  @override
+  String get helpRisksTitle => '4. Riscos que vale encarar com honestidade';
+
+  @override
+  String get helpRisksBody =>
+      'Cada item abaixo é uma limitação real desta ferramenta. Pondere-os antes de agir com base no que ela relatar.\n\n1. Evidências de origem podem ser apagadas ou forjadas\nSalvar como arquivo novo, converter online, exportar do Google Docs ou copiar para um documento novo zeram o registro de edição. Um sinal aqui é apenas evidência de apoio, e a ausência dele certamente não prova que uma pessoa escreveu.\n\n2. A garantia conforme se apoia na intercambiabilidade\nSó vale se as amostras base e o texto analisado vierem do mesmo grupo de pessoas fazendo o mesmo tipo de tarefa. Se a escrita de alguém melhorou claramente, ou o tipo de trabalho mudou por completo, a premissa cai e a base precisa ser refeita.\n\n3. A própria base pode estar contaminada\nSe os trabalhos usados como base foram na verdade escritos por IA, toda a calibração distorce. As amostras base precisam ser coletadas em condições controladas — trabalhos feitos em aula, por exemplo.\n\n4. Modelos pequenos no navegador são menos exatos que grandes em servidor\nEsse é o preço inevitável que a decisão Web-only paga pela privacidade. O valor desta ferramenta não é uma pontuação única mais exata, mas ser explicável, calibrável e honesta o bastante para se abster.\n\n5. Nenhuma pontuação deve sustentar sozinha uma acusação\nLeia-a sempre junto às evidências por frase, à origem do documento e ao que você já sabe sobre esse aluno específico. Esta ferramenta foi projetada para apoiar uma conversa que você conduz, não para dar um veredicto no seu lugar.';
+
+  @override
   String get calibrationAddHuman => 'Adicionar como base escrita por humano';
 
   @override

@@ -908,6 +908,40 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get helpDesignTitle =>
+      'Falsafah reka bentuk dan batasan yang diketahui';
+
+  @override
+  String get helpShiftTitle =>
+      '1. Peralihan: kami tidak bersaing pada ketepatan skor';
+
+  @override
+  String get helpShiftBody =>
+      'Hampir setiap pengesan di pasaran menjawab soalan yang sama: adakah teks ini kelihatan ditulis oleh AI?\n\nItu perlumbaan senjata yang pasti kalah. Semakin kuat model, semakin hampir keluarannya kepada tulisan manusia dari segi statistik — dan alat penulisan semula bertambah baik jauh lebih pantas daripada pengesan. Di laluan itu, model besar di pelayan cuma kalah lebih perlahan.\n\nTruthLens bertanya soalan lain: apakah bukti yang benar-benar kita ada tentang bagaimana dokumen ini terhasil, dan sekuat mana setiap satunya?\n\nItulah peralihan daripada meneka gaya penulisan kepada menimbang bukti asal usul bersama kesimpulan yang jujur dari segi statistik. Sebab itulah alat ini sengaja tidak mengejar kedudukan dalam ranking ketepatan skor tunggal, sebaliknya membentangkan setiap bukti secara berasingan dan berterus terang apabila ia tidak tahu. Kelebihan sebenar berjalan dalam pelayar anda bukan kelajuan, tetapi melihat apa yang pelayan tidak pernah lihat: fail yang lengkap, dan asas yang anda kumpulkan sendiri.';
+
+  @override
+  String get helpPillarsTitle => '2. Lima tonggak';
+
+  @override
+  String get helpPillarsBody =>
+      '1. Forensik asal dokumen (beroperasi)\nMembaca rekod penyuntingan dalam bekas DOCX dan ODT: jumlah masa penyuntingan, bilangan simpanan, masa penciptaan dan pengubahsuaian, serta penanda kelompok penyuntingan (RSID) dalam badan teks. Satu atau dua RSID bagi keseluruhan tugasan lazimnya bermakna teks masuk sekali gus; 3,000 patah perkataan dengan empat minit penyuntingan ialah bukti yang lebih keras daripada mana-mana skor kekeliruan. Ini dikira sebagai bukti asal dan dipaparkan berasingan daripada kebarangkalian AI — sengaja tidak pernah digabungkan ke dalam skor.\n\n2. Penentukuran asas setempat dan ramalan konformal (beroperasi)\nTambahkan tulisan yang anda pasti ditulis sendiri oleh pelajar, dan sistem akan menilai berdasarkan taburan kumpulan ini, bukan ambang global. Ramalan konformal memberi jaminan bebas taburan: jika asas dan sampel yang diuji boleh ditukar ganti, kadar positif palsu kekal di bawah alfa yang anda tetapkan. Inilah kunci mengurangkan salah nilai pada tulisan bukan penutur asli, dan sesuatu yang produk komersial tidak mampu lakukan: mereka tiada tulisan asas pelajar anda.\n\n3. Pemberat enjin yang dipelajari (beroperasi)\nSebaik asas mengandungi sampel manusia dan AI, sistem mengukur sejauh mana setiap enjin memisahkan kedua-dua kumpulan (saiz kesan Cohen\'s d) lalu mencadangkan pemberat yang sepadan, menggantikan nisbah tetap yang ditetapkan secara manual. Tiada apa berubah sehingga anda menekan Guna — tetapan tidak pernah diubah secara senyap.\n\n4. Kekeliruan silang Binoculars (teras pemarkahan siap, belum beroperasi)\nKekeliruan mentah menganggap sejauh mana teks boleh diramal seolah-olah itu mengukur sejauh mana ia menyerupai AI — di situlah punca positif palsu sistematiknya pada tulisan bukan penutur asli yang bersahaja. Binoculars mengukur kebolehramalan itu berbanding sejauh mana dua model berbeza antara satu sama lain. Matematiknya telah dilaksana dan diuji, tetapi menghidupkannya masih memerlukan sepasang model bahasa kecil yang boleh berjalan dalam pelayar, serta pengesahan dengan data berlabel.\n\n5. Pengesanan tera air (disemak, tidak boleh dilaksana, tidak dibina)\nPengesanan SynthID-Text terikat kepada kunci: pengesan mesti mengira dengan kunci yang sama seperti semasa penjanaan, sedangkan kunci pengeluaran Google tidak didedahkan. Melakukannya dalam pelayar tidak akan sekali-kali bertindak balas terhadap keluaran sebenar ChatGPT, Claude atau Gemini — ia hanya menjadi ciri yang tidak pernah tercetus sambil membuat anda percaya tera air sedang disemak. Maka ia sengaja ditinggalkan.';
+
+  @override
+  String get helpCascadeTitle =>
+      '3. Kaskad berperingkat dan keputusan berkecuali';
+
+  @override
+  String get helpCascadeBody =>
+      'Untuk kekal pantas dalam bajet pengiraan pelayar yang terhad, analisis berjalan berperingkat: isyarat murah dahulu, yang mahal hanya apabila perlu.\n\nPeringkat 0  Bukti asal dokumen (kos hampir sifar)\nPeringkat 1  Ciri statistik dan stilometrik (enjin sedia ada, murah)\nPeringkat 2  Pengelas Transformer peringkat ayat\nPeringkat 3  Kekeliruan silang (paling mahal, hanya jika gambarannya masih kabur)\n\nHasilnya kemudian masuk ke penentukuran setempat, yang menghasilkan kesimpulan berjaminan positif palsu — atau berkecuali secara jelas.\n\n[Mengapa berkecuali itu penting]\nKebanyakan tuduhan palsu lahir daripada memulangkan angka yang yakin bagi input yang terlalu pendek atau terlalu lemah untuk menyokongnya. Alat ini memaparkan terus terang \"Bukti tidak mencukupi untuk menilai\", dan bukannya memaksa skor, apabila:\n\n- ayat yang boleh dianalisis kurang daripada 5\n- teks kurang daripada 100 patah perkataan\n- enjin yang menyertainya kurang daripada 2\n- enjin berbeza lebih daripada 60 mata peratus (purata sudah hilang makna)\n\nSemasa berkecuali, skor penuh dan bukti setiap ayat tetap dipaparkan di bawah untuk rujukan anda — tetapi jangan anggap ia sebagai kesimpulan. Sistem yang sanggup berkata \"saya tidak tahu\" lebih layak dipercayai daripada yang sentiasa menghulurkan angka.';
+
+  @override
+  String get helpRisksTitle => '4. Risiko yang wajar dihadapi dengan jujur';
+
+  @override
+  String get helpRisksBody =>
+      'Setiap perkara di bawah ialah batasan sebenar alat ini. Sila timbangkannya sebelum bertindak atas apa jua yang dilaporkan.\n\n1. Bukti asal boleh dipadam atau dipalsukan\nMenyimpan sebagai fail baharu, menukar dalam talian, mengeksport daripada Google Dokumen, atau menyalin ke dokumen baharu semuanya mengosongkan rekod penyuntingan. Isyarat di sini hanyalah bukti sokongan, dan ketiadaannya sudah tentu tidak membuktikan manusia yang menulisnya.\n\n2. Jaminan konformal bergantung pada keterbolehtukaran\nIa hanya berkuat kuasa jika sampel asas dan teks yang diuji datang daripada kumpulan orang yang sama melakukan jenis tugasan yang sama. Jika penulisan pelajar jelas bertambah baik, atau jenis tugasan berubah sepenuhnya, premisnya gugur dan asas perlu dibina semula.\n\n3. Set asas itu sendiri boleh tercemar\nJika tugasan yang digunakan sebagai asas sebenarnya ditulis oleh AI, seluruh penentukuran menjadi senget. Sampel asas mesti dikumpulkan dalam keadaan terkawal — contohnya kerja yang disiapkan di dalam kelas.\n\n4. Model kecil dalam pelayar kurang tepat berbanding model besar di pelayan\nItulah harga yang tidak dapat dielakkan dibayar oleh keputusan Web sahaja demi privasi. Nilai alat ini bukan skor tunggal yang lebih tepat, tetapi kebolehjelasan, kebolehtentukuran, dan kejujuran untuk berkecuali.\n\n5. Tiada skor yang boleh berdiri sendiri sebagai asas tuduhan\nSentiasa bacanya bersama bukti setiap ayat, asal dokumen, dan apa yang anda sudah tahu tentang pelajar tersebut. Alat ini direka untuk menyokong perbualan yang anda kendalikan, bukan menjatuhkan keputusan bagi pihak anda.';
+
+  @override
   String get calibrationAddHuman => 'Tambah sebagai asas tulisan manusia';
 
   @override

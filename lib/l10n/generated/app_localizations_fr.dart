@@ -922,6 +922,38 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get helpDesignTitle => 'Principes de conception et limites connues';
+
+  @override
+  String get helpShiftTitle =>
+      '1. Le changement d\'angle : pas une course à la précision du score';
+
+  @override
+  String get helpShiftBody =>
+      'Presque tous les détecteurs du marché répondent à la même question : ce texte a-t-il l\'air écrit par une IA ?\n\nC\'est une course aux armements perdue d\'avance. Plus le modèle est puissant, plus sa production se rapproche statistiquement de l\'écriture humaine — et les outils de reformulation progressent bien plus vite que les détecteurs. Sur cette voie, un gros modèle côté serveur perd simplement moins vite.\n\nTruthLens pose une autre question : de quels éléments disposons-nous réellement sur la façon dont ce document a vu le jour, et quelle est la solidité de chacun ?\n\nC\'est passer de la conjecture stylistique à la pesée d\'indices d\'origine, assortie de conclusions statistiquement honnêtes. D\'où le choix assumé de ne pas viser une place dans les classements de précision au score unique, mais d\'exposer chaque indice séparément et de dire clairement quand on ne sait pas. Le vrai avantage de l\'exécution dans votre navigateur n\'est pas la vitesse : c\'est de voir ce qu\'un serveur ne voit jamais — le fichier complet, et la référence que vous avez constituée vous-même.';
+
+  @override
+  String get helpPillarsTitle => '2. Les cinq piliers';
+
+  @override
+  String get helpPillarsBody =>
+      '1. Analyse de l\'origine du document (en service)\nLit le journal d\'édition contenu dans les conteneurs DOCX et ODT : temps total d\'édition, nombre d\'enregistrements, dates de création et de modification, et les marqueurs de session d\'édition (RSID) du corps du texte. Un ou deux RSID sur tout un devoir signifie généralement que le texte est arrivé d\'un bloc ; 3 000 mots pour quatre minutes d\'édition constituent un indice plus dur que n\'importe quel score de perplexité. Cela relève de la preuve d\'origine et s\'affiche séparément de la probabilité IA : jamais fondu dans le score.\n\n2. Étalonnage sur base locale et prédiction conforme (en service)\nAjoutez des textes dont vous êtes sûr qu\'ils ont été écrits par vos élèves : le système juge alors d\'après la distribution propre à ce groupe plutôt qu\'un seuil mondial. La prédiction conforme offre une garantie sans hypothèse de distribution : si la référence et l\'échantillon testé sont échangeables, le taux de faux positifs reste sous l\'alpha que vous fixez. C\'est la clé pour réduire les erreurs sur l\'écriture non native, et une chose que les produits commerciaux ne peuvent pas faire : ils n\'ont pas les travaux de référence de vos élèves.\n\n3. Poids de moteurs appris (en service)\nDès que la référence contient des échantillons humains et IA, le système mesure la capacité de chaque moteur à séparer les deux groupes (taille d\'effet, d de Cohen) et propose des poids en conséquence, remplaçant les proportions fixes réglées à la main. Rien ne change tant que vous n\'avez pas cliqué sur Appliquer : les réglages ne sont jamais modifiés en silence.\n\n4. Perplexité croisée Binoculars (cœur de calcul terminé, pas encore actif)\nLa perplexité brute traite la prévisibilité d\'un texte comme si elle mesurait sa parenté avec l\'IA — d\'où précisément ses faux positifs systématiques sur une écriture non native au style simple. Binoculars mesure cette prévisibilité relativement à l\'ampleur du désaccord entre deux modèles. Les mathématiques sont implémentées et testées, mais l\'activation exige encore une paire de petits modèles de langue exécutables dans un navigateur, plus une validation sur données annotées.\n\n5. Détection de filigrane (vérifié, non réalisable, non développé)\nLa détection SynthID-Text est liée aux clés : le détecteur doit calculer avec les mêmes clés qu\'à la génération, or les clés de production de Google ne sont pas publiques. Dans un navigateur, cela ne se déclencherait jamais sur des sorties réelles de ChatGPT, Claude ou Gemini : ce serait une fonction qui ne s\'active jamais tout en vous laissant croire que les filigranes sont vérifiés. Elle a donc été délibérément écartée.';
+
+  @override
+  String get helpCascadeTitle => '3. La cascade par paliers et l\'abstention';
+
+  @override
+  String get helpCascadeBody =>
+      'Pour rester rapide dans le budget de calcul limité d\'un navigateur, l\'analyse procède par paliers : signaux bon marché d\'abord, coûteux seulement si nécessaire.\n\nPalier 0  Preuves d\'origine du document (coût quasi nul)\nPalier 1  Traits statistiques et stylométriques (moteurs existants, peu coûteux)\nPalier 2  Classifieur Transformer phrase par phrase\nPalier 3  Perplexité croisée (le plus coûteux, uniquement si le tableau reste flou)\n\nLe résultat passe ensuite à l\'étalonnage local, qui produit une conclusion assortie d\'une garantie de faux positifs — ou une abstention explicite.\n\n[Pourquoi l\'abstention compte]\nLa plupart des accusations infondées naissent d\'un chiffre assuré rendu sur une entrée trop courte ou trop faible pour le soutenir. Cet outil affiche franchement « Pas assez d\'éléments pour trancher » plutôt que de forcer un score lorsque :\n\n- moins de 5 phrases analysables\n- moins de 100 mots\n- moins de 2 moteurs ont participé\n- les moteurs divergent de plus de 60 points de pourcentage (en faire la moyenne ne veut plus rien dire)\n\nEn cas d\'abstention, le score complet et les preuves par phrase restent affichés plus bas à titre indicatif — mais ne les prenez pas pour une conclusion. Un système capable de dire « je ne sais pas » mérite plus de confiance que celui qui vous tend toujours un chiffre.';
+
+  @override
+  String get helpRisksTitle => '4. Risques à regarder en face';
+
+  @override
+  String get helpRisksBody =>
+      'Chacun des points ci-dessous est une limite réelle de cet outil. Pesez-les avant d\'agir sur ce qu\'il rapporte.\n\n1. Les preuves d\'origine peuvent être effacées ou falsifiées\nEnregistrer sous, convertir en ligne, exporter depuis Google Docs ou copier dans un nouveau fichier remettent le journal d\'édition à zéro. Un signal n\'est qu\'un élément à charge parmi d\'autres, et son absence ne prouve certainement pas qu\'un humain a écrit le texte.\n\n2. La garantie conforme repose sur l\'échangeabilité\nElle ne tient que si les échantillons de référence et le texte examiné proviennent du même groupe de personnes pour le même type d\'exercice. Si l\'écriture d\'un élève a nettement progressé, ou si le type de devoir a complètement changé, l\'hypothèse tombe et la référence doit être reconstituée.\n\n3. Le jeu de référence lui-même peut être contaminé\nSi les travaux servant de référence ont en réalité été rédigés par une IA, tout l\'étalonnage est faussé. Les échantillons de référence doivent être recueillis en conditions contrôlées, par exemple des travaux faits en classe.\n\n4. Les petits modèles dans le navigateur sont moins précis que les gros côté serveur\nC\'est le prix inévitable que le choix du tout-Web paie pour la confidentialité. La valeur de cet outil n\'est pas un score unique plus juste, mais le fait d\'être explicable, étalonnable et assez honnête pour s\'abstenir.\n\n5. Aucun score ne doit à lui seul fonder une accusation\nLisez-le toujours avec les preuves phrase par phrase, l\'origine du document et ce que vous savez déjà de cet élève en particulier. Cet outil est conçu pour appuyer une conversation que vous menez, non pour rendre un verdict à votre place.';
+
+  @override
   String get calibrationAddHuman =>
       'Ajouter comme référence écrite par un humain';
 

@@ -1562,6 +1562,60 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @helpDesignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Design philosophy and known limits'**
+  String get helpDesignTitle;
+
+  /// No description provided for @helpShiftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'1. The shift: not competing on score accuracy'**
+  String get helpShiftTitle;
+
+  /// No description provided for @helpShiftBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearly every detector on the market answers the same question: does this text look like it was written by AI?\n\nThat is an arms race you lose. The stronger the model, the closer its output sits to human writing statistically — and paraphrasing tools improve far faster than detectors do. On that road a large server-side model merely loses more slowly.\n\nTruthLens asks a different question: what evidence do we actually hold about how this document came to exist, and how strong is each piece?\n\nThat is a shift from guessing at writing style to weighing origin evidence alongside statistically honest conclusions. It is why this tool deliberately does not chase a place in the single-score accuracy rankings, but lays each piece of evidence out separately and says plainly when it does not know. The real advantage of running in your browser is not inference speed — it is seeing what a server never gets to see: the complete file, and the baseline you collected yourself.'**
+  String get helpShiftBody;
+
+  /// No description provided for @helpPillarsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'2. The five pillars'**
+  String get helpPillarsTitle;
+
+  /// No description provided for @helpPillarsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Document origin forensics (live)\nReads the editing record inside DOCX and ODT containers: total editing time, number of saves, creation and modification times, and the editing-batch markers (RSIDs) in the body. One or two RSIDs across a whole essay usually means the text went in all at once; 3,000 words with four minutes of editing is harder evidence than any perplexity score. This counts as origin evidence and is shown separately from the AI probability — deliberately never folded into the score.\n\n2. Local baseline calibration and conformal prediction (live)\nAdd pieces you know your students wrote themselves, and the system judges against this group\'s own distribution rather than a global threshold. Conformal prediction gives a distribution-free guarantee: provided baseline and tested samples are exchangeable, the false-positive rate stays under the alpha you set. This is the key to cutting misjudgements on non-native writing, and it is something commercial products cannot do — they do not have your students\' baseline work.\n\n3. Learned engine weights (live)\nOnce the baseline holds both human and AI samples, the system measures how well each engine separates the two groups (Cohen\'s d effect size) and suggests weights accordingly, replacing the hand-set fixed ratios. Nothing changes until you press Apply — settings are never altered silently.\n\n4. Binoculars cross-perplexity (scoring core done, not yet live)\nRaw perplexity treats how predictable a text is as though that meant how AI-like it is, which is exactly why it produces systematic false positives on plain-spoken non-native writing. Binoculars measures predictability relative to how much two models disagree with each other. The scoring maths is implemented and tested, but switching it on still needs a pair of small language models that can run in a browser, plus validation against labelled data.\n\n5. Watermark detection (checked, not feasible, not built)\nSynthID-Text detection is key-bound: the detector must compute with the same keys used at generation, and Google\'s production keys are not public. Doing this in a browser would never fire on real output from ChatGPT, Claude or Gemini — it would only be a feature that never triggers while leaving you believing watermarks are being checked. So it was deliberately left out.'**
+  String get helpPillarsBody;
+
+  /// No description provided for @helpCascadeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'3. The tiered cascade and abstention'**
+  String get helpCascadeTitle;
+
+  /// No description provided for @helpCascadeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To stay fast within a browser\'s limited compute budget, analysis runs in tiers: cheap signals first, expensive ones only when needed.\n\nTier 0  Document origin evidence (near-zero cost)\nTier 1  Statistical and stylometric features (existing engines, cheap)\nTier 2  Transformer sentence-level classifier\nTier 3  Cross-perplexity (most expensive, only if the picture is still unclear)\n\nThe result then passes to local calibration, which produces a conclusion carrying a false-positive guarantee — or an explicit abstention.\n\n[Why abstention matters]\nMost false accusations come from handing back a confident number on an input too short or too weak to support one. This tool shows \"Not enough evidence to judge\" outright, rather than forcing a score, when:\n\n- fewer than 5 analysable sentences\n- fewer than 100 words\n- fewer than 2 engines took part\n- engines disagree by more than 60 percentage points (averaging them has stopped meaning anything)\n\nWhen it abstains, the full score and sentence evidence remain below for your reference — but please do not treat them as a conclusion. A system willing to say \"I don\'t know\" deserves more trust than one that always hands you a number.'**
+  String get helpCascadeBody;
+
+  /// No description provided for @helpRisksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Risks worth facing honestly'**
+  String get helpRisksTitle;
+
+  /// No description provided for @helpRisksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every item below is a real limitation of this tool. Please weigh them before acting on anything it reports.\n\n1. Origin evidence can be wiped or faked\nSaving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all reset the editing record. A signal here is supporting evidence only, and the absence of one certainly does not prove a person wrote it.\n\n2. The conformal guarantee rests on exchangeability\nIt holds only if the baseline samples and the text under test come from the same group of people doing the same kind of writing task. If a student\'s writing has clearly improved, or the assignment type has changed entirely, the premise fails and the baseline needs rebuilding.\n\n3. The baseline itself can be contaminated\nIf the work you used as a baseline was in fact ghost-written by AI, the whole calibration skews. Baseline samples must be gathered under controlled conditions — work completed in class, for instance.\n\n4. Small in-browser models are less accurate than large server-side ones\nThat is the unavoidable price the Web-only decision pays for privacy. This tool\'s value is not a more accurate single score, but being explainable, calibratable, and honest enough to abstain.\n\n5. No score should ever stand alone as grounds for an accusation\nAlways read it alongside the sentence-level evidence, the document\'s origin, and what you already know about this particular student. This tool is designed to support a conversation you have, not to deliver a verdict in your place.'**
+  String get helpRisksBody;
+
   /// No description provided for @calibrationAddHuman.
   ///
   /// In en, this message translates to:

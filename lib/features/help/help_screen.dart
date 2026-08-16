@@ -148,6 +148,21 @@ class HelpScreen extends StatelessWidget {
             title: l10n.helpTuningStep5Title,
             body: l10n.helpTuningStep5Body,
           ),
+          const SizedBox(height: 24),
+
+          // 設計理念與限制：把定位轉換、五個支柱、分級瀑布＋棄權、
+          // 以及必須誠實面對的風險完整寫進手冊，避免只存在於開發紀錄。
+          Text(l10n.helpDesignTitle, style: textTheme.titleLarge),
+          const SizedBox(height: 12),
+          _ProseCard(title: l10n.helpShiftTitle, body: l10n.helpShiftBody),
+          _ProseCard(title: l10n.helpPillarsTitle, body: l10n.helpPillarsBody),
+          _ProseCard(title: l10n.helpCascadeTitle, body: l10n.helpCascadeBody),
+          _ProseCard(
+            title: l10n.helpRisksTitle,
+            body: l10n.helpRisksBody,
+            emphasize: true,
+          ),
+
           const SizedBox(height: 16),
           Text(l10n.helpOfficialLinksTitle, style: textTheme.titleMedium),
           const SizedBox(height: 4),
@@ -232,6 +247,59 @@ class HelpScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 長篇說明卡：標題＋可換行的內文。內文以空行分段，逐段渲染以保留可讀性。
+/// [emphasize] 用於風險說明，套用警示色外框讓它不會被當成一般段落略過。
+class _ProseCard extends StatelessWidget {
+  final String title;
+  final String body;
+  final bool emphasize;
+
+  const _ProseCard({
+    required this.title,
+    required this.body,
+    this.emphasize = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accent = emphasize
+        ? theme.colorScheme.error
+        : theme.colorScheme.primary;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: accent.withValues(alpha: 0.4)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: accent,
+              ),
+            ),
+            const SizedBox(height: 10),
+            for (final paragraph in body.split('\n\n'))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  paragraph,
+                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.6),
+                ),
+              ),
+          ],
         ),
       ),
     );

@@ -918,6 +918,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get helpDesignTitle => 'Gestaltungsprinzipien und bekannte Grenzen';
+
+  @override
+  String get helpShiftTitle =>
+      '1. Der Perspektivwechsel: kein Wettlauf um Punktgenauigkeit';
+
+  @override
+  String get helpShiftBody =>
+      'Nahezu jeder Detektor am Markt beantwortet dieselbe Frage: Sieht dieser Text so aus, als hätte ihn eine KI geschrieben?\n\nDas ist ein Wettrüsten, das man verliert. Je stärker das Modell, desto näher liegt seine Ausgabe statistisch am menschlichen Schreiben — und Umschreibewerkzeuge werden weit schneller besser als Detektoren. Auf diesem Weg verliert ein großes serverseitiges Modell lediglich langsamer.\n\nTruthLens stellt eine andere Frage: Welche Belege haben wir tatsächlich darüber, wie dieses Dokument entstanden ist, und wie belastbar ist jeder einzelne?\n\nDas verschiebt den Schwerpunkt vom Raten über den Schreibstil hin zu Herkunftsnachweisen und statistisch ehrlichen Schlüssen. Deshalb strebt dieses Werkzeug bewusst keinen Platz in Genauigkeitsranglisten für Einzelwerte an, sondern legt jeden Beleg einzeln offen und sagt klar, wenn es etwas nicht weiß. Der wirkliche Vorteil der Ausführung im Browser ist nicht die Geschwindigkeit, sondern der Blick auf das, was ein Server nie zu sehen bekommt: die vollständige Datei und die Referenz, die Sie selbst gesammelt haben.';
+
+  @override
+  String get helpPillarsTitle => '2. Die fünf Säulen';
+
+  @override
+  String get helpPillarsBody =>
+      '1. Herkunftsforensik für Dateien (aktiv)\nLiest den Bearbeitungsverlauf in DOCX- und ODT-Containern: Gesamtbearbeitungszeit, Anzahl der Speichervorgänge, Erstellungs- und Änderungszeit sowie die Bearbeitungsmarker (RSIDs) im Fließtext. Ein oder zwei RSIDs über eine ganze Arbeit hinweg heißt meist, dass der Text auf einen Schlag hineinkam; 3.000 Wörter bei vier Minuten Bearbeitungszeit sind ein härterer Beleg als jeder Perplexitätswert. Das zählt als Herkunftsnachweis und wird getrennt von der KI-Wahrscheinlichkeit gezeigt — bewusst nie in den Wert eingerechnet.\n\n2. Lokale Referenzkalibrierung und konforme Vorhersage (aktiv)\nNehmen Sie Texte auf, von denen Sie sicher wissen, dass Ihre Schülerinnen und Schüler sie selbst geschrieben haben; dann urteilt das System anhand der Verteilung dieser Gruppe statt anhand einer globalen Schwelle. Die konforme Vorhersage liefert eine verteilungsfreie Garantie: Sind Referenz und geprüfte Probe austauschbar, bleibt die Fehlalarmrate unter dem von Ihnen gesetzten Alpha. Das ist der Schlüssel gegen Fehlurteile bei nicht muttersprachlichen Texten — und etwas, das kommerzielle Produkte nicht leisten können, denn ihnen fehlen die Referenzarbeiten Ihrer Lernenden.\n\n3. Gelernte Engine-Gewichte (aktiv)\nSobald die Referenz sowohl menschliche als auch KI-Proben enthält, misst das System, wie gut jede Engine die beiden Gruppen trennt (Effektstärke Cohens d), und schlägt entsprechende Gewichte vor, die die handgesetzten festen Verhältnisse ersetzen. Nichts ändert sich, bis Sie auf Übernehmen drücken — Einstellungen werden nie stillschweigend verändert.\n\n4. Binoculars-Kreuzperplexität (Bewertungskern fertig, noch nicht aktiv)\nRohe Perplexität behandelt die Vorhersagbarkeit eines Textes so, als wäre sie ein Maß für KI-Nähe — genau daher rühren die systematischen Fehlalarme bei schlicht formulierten, nicht muttersprachlichen Texten. Binoculars misst die Vorhersagbarkeit im Verhältnis dazu, wie stark zwei Modelle voneinander abweichen. Die Rechenlogik ist implementiert und getestet, doch zum Einschalten fehlen noch ein Paar kleiner, browsertauglicher Sprachmodelle sowie eine Validierung an gelabelten Daten.\n\n5. Wasserzeichenerkennung (geprüft, nicht machbar, nicht gebaut)\nDie SynthID-Text-Erkennung ist schlüsselgebunden: Der Detektor muss mit denselben Schlüsseln rechnen, die bei der Erzeugung verwendet wurden, und Googles Produktionsschlüssel sind nicht öffentlich. Im Browser würde das bei echten Ausgaben von ChatGPT, Claude oder Gemini nie anschlagen — es wäre nur eine Funktion, die niemals auslöst und Sie zugleich glauben lässt, Wasserzeichen würden geprüft. Deshalb wurde sie bewusst weggelassen.';
+
+  @override
+  String get helpCascadeTitle =>
+      '3. Die Stufenkaskade und der Verzicht auf ein Urteil';
+
+  @override
+  String get helpCascadeBody =>
+      'Um im knappen Rechenbudget eines Browsers schnell zu bleiben, läuft die Analyse gestuft: günstige Signale zuerst, teure nur bei Bedarf.\n\nStufe 0  Herkunftsnachweise der Datei (nahezu kostenlos)\nStufe 1  Statistische und stilometrische Merkmale (bestehende Engines, günstig)\nStufe 2  Transformer-Klassifikator auf Satzebene\nStufe 3  Kreuzperplexität (am teuersten, nur wenn das Bild noch unklar ist)\n\nDas Ergebnis geht anschließend in die lokale Kalibrierung, die einen Schluss mit Fehlalarm-Garantie liefert — oder ausdrücklich auf ein Urteil verzichtet.\n\n[Warum der Verzicht wichtig ist]\nDie meisten falschen Anschuldigungen entstehen, wenn auf eine zu kurze oder zu schwache Eingabe hin eine selbstbewusste Zahl zurückgegeben wird. Dieses Werkzeug zeigt in folgenden Fällen unmissverständlich „Zu wenig Belege für ein Urteil\" an, statt einen Wert zu erzwingen:\n\n- weniger als 5 auswertbare Sätze\n- weniger als 100 Wörter\n- weniger als 2 beteiligte Engines\n- Engines liegen mehr als 60 Prozentpunkte auseinander (ein Mittelwert sagt dann nichts mehr aus)\n\nAuch beim Verzicht bleiben der vollständige Wert und die Satzbelege unten zu Ihrer Einsicht stehen — behandeln Sie sie bitte nicht als Ergebnis. Ein System, das „Ich weiß es nicht\" sagen kann, verdient mehr Vertrauen als eines, das Ihnen immer eine Zahl reicht.';
+
+  @override
+  String get helpRisksTitle => '4. Risiken, denen man ehrlich begegnen sollte';
+
+  @override
+  String get helpRisksBody =>
+      'Jeder der folgenden Punkte ist eine reale Grenze dieses Werkzeugs. Bitte wägen Sie sie ab, bevor Sie aufgrund einer Ausgabe handeln.\n\n1. Herkunftsnachweise lassen sich löschen oder fälschen\nSpeichern unter, Online-Konvertierung, Export aus Google Docs oder Kopieren in eine neue Datei setzen den Bearbeitungsverlauf jeweils zurück. Ein Signal ist nur ein unterstützender Beleg, und sein Fehlen beweist keineswegs, dass ein Mensch geschrieben hat.\n\n2. Die konforme Garantie beruht auf Austauschbarkeit\nSie gilt nur, wenn Referenzproben und geprüfter Text von derselben Personengruppe bei derselben Art von Schreibaufgabe stammen. Hat sich das Schreiben einer Person deutlich verbessert oder wurde der Aufgabentyp völlig gewechselt, fällt die Voraussetzung und die Referenz muss neu aufgebaut werden.\n\n3. Die Referenzmenge selbst kann verunreinigt sein\nWurden die als Referenz genutzten Arbeiten in Wahrheit von einer KI verfasst, verzerrt das die gesamte Kalibrierung. Referenzproben müssen unter kontrollierten Bedingungen entstehen — etwa im Unterricht angefertigte Arbeiten.\n\n4. Kleine Modelle im Browser sind ungenauer als große serverseitige\nDas ist der unvermeidliche Preis, den die Web-only-Entscheidung für Datenschutz zahlt. Der Wert dieses Werkzeugs liegt nicht in einem genaueren Einzelwert, sondern darin, erklärbar und kalibrierbar zu sein und ehrlich auf ein Urteil zu verzichten.\n\n5. Kein Wert darf allein als Grundlage einer Anschuldigung dienen\nLesen Sie ihn stets zusammen mit den Satzbelegen, der Herkunft des Dokuments und dem, was Sie über diese Person bereits wissen. Dieses Werkzeug soll ein Gespräch unterstützen, das Sie führen, nicht an Ihrer Stelle ein Urteil fällen.';
+
+  @override
   String get calibrationAddHuman =>
       'Als menschlich geschriebene Referenz aufnehmen';
 

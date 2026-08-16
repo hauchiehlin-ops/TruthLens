@@ -11,6 +11,16 @@ import 'calibration_card.dart';
 import 'provenance_card.dart';
 
 
+/// 報告區塊標題色。深色工作台主題（宇宙未來風／教育文柔風）的面板會以
+/// [DefaultTextStyle] 指定白色文字，此時再套原本的深青色會變成深色疊深色而
+/// 幾乎看不見；因此改由繼承下來的文字色推測背景明暗再決定。
+Color headingColorFor(BuildContext context) {
+  final inherited = DefaultTextStyle.of(context).style.color;
+  final onDarkSurface =
+      inherited != null && inherited.computeLuminance() > 0.5;
+  return onDarkSurface ? Colors.white : const Color(0xFF1E3A5F);
+}
+
 /// 把棄權原因轉成該語系的白話說明
 String describeAbstention(DetectionResult result, AppLocalizations l10n) {
   return switch (result.abstention) {
@@ -59,25 +69,49 @@ class ProfessionalReportHeader extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // 主題與檔名分行：檔名可能很長，接在主題後面會把兩者
+                      // 擠成一團而無法辨識何者為何。檔名再縮 30% 拉開層級。
                       Text(
-                        result.sourceFileName.isEmpty
-                            ? l10n.reportAiContentReportTitle
-                            : '${l10n.reportAiContentReportTitle}：${result.sourceFileName}',
+                        l10n.reportAiContentReportTitle,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1E3A5F), // 深青
+                              color: headingColorFor(context),
                             ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      if (result.sourceFileName.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Builder(
+                          builder: (context) {
+                            final base =
+                                Theme.of(context).textTheme.headlineSmall;
+                            return Text(
+                              result.sourceFileName,
+                              style: base?.copyWith(
+                                // 主題字級的 70%
+                                fontSize: (base.fontSize ?? 24) * 0.7,
+                                fontWeight: FontWeight.w600,
+                                color: headingColorFor(
+                                  context,
+                                ).withValues(alpha: 0.85),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 4),
                       Text(
                         l10n.reportAnalysisTimeLabel(
                           DateTime.now().toString().split('.')[0],
                         ),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: headingColorFor(
+                            context,
+                          ).withValues(alpha: 0.65),
                         ),
                       ),
                     ],
@@ -176,7 +210,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                     l10n.reportSuspiciousLocationsTitle,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1E3A5F),
+                      color: headingColorFor(context),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -185,9 +219,9 @@ class ProfessionalReportHeader extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   l10n.reportSentenceCount(result.aiSentenceCount),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: headingColorFor(context).withValues(alpha: 0.65),
+                  ),
                 ),
               ],
             ),

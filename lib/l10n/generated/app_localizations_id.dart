@@ -911,6 +911,38 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get helpDesignTitle => 'Filosofi desain dan batasan yang diketahui';
+
+  @override
+  String get helpShiftTitle =>
+      '1. Pergeseran: kami tidak bersaing soal ketepatan skor';
+
+  @override
+  String get helpShiftBody =>
+      'Hampir semua detektor di pasaran menjawab pertanyaan yang sama: apakah teks ini tampak ditulis AI?\n\nItu perlombaan senjata yang pasti kalah. Makin kuat modelnya, makin dekat keluarannya dengan tulisan manusia secara statistik — dan alat parafrase membaik jauh lebih cepat daripada detektor. Di jalur itu, model besar di server hanya kalah lebih lambat.\n\nTruthLens mengajukan pertanyaan lain: bukti apa yang sebenarnya kita pegang tentang bagaimana dokumen ini terwujud, dan seberapa kuat masing-masing?\n\nItulah pergeseran dari menebak gaya tulisan menuju menimbang bukti asal-usul beserta kesimpulan yang jujur secara statistik. Karena itulah alat ini sengaja tidak mengejar peringkat ketepatan skor tunggal, melainkan membentangkan tiap bukti secara terpisah dan berterus terang ketika tidak tahu. Keunggulan sesungguhnya dari berjalan di peramban bukan kecepatan, melainkan melihat apa yang tak pernah dilihat server: berkas yang utuh, dan basis yang Anda kumpulkan sendiri.';
+
+  @override
+  String get helpPillarsTitle => '2. Lima pilar';
+
+  @override
+  String get helpPillarsBody =>
+      '1. Forensik asal dokumen (aktif)\nMembaca catatan penyuntingan di dalam kontainer DOCX dan ODT: total waktu penyuntingan, jumlah penyimpanan, waktu pembuatan dan perubahan, serta penanda sesi penyuntingan (RSID) pada isi. Satu atau dua RSID untuk satu tulisan penuh biasanya berarti teks masuk sekaligus; 3.000 kata dengan empat menit penyuntingan adalah bukti yang lebih keras daripada skor perpleksitas mana pun. Ini dihitung sebagai bukti asal dan ditampilkan terpisah dari probabilitas AI — sengaja tidak pernah dilebur ke dalam skor.\n\n2. Kalibrasi basis lokal dan prediksi konformal (aktif)\nTambahkan tulisan yang Anda yakin ditulis sendiri oleh siswa, dan sistem akan menilai berdasarkan sebaran kelompok ini, bukan ambang global. Prediksi konformal memberi jaminan bebas asumsi sebaran: bila basis dan sampel yang diuji dapat dipertukarkan, tingkat positif palsu tetap di bawah alfa yang Anda tetapkan. Inilah kunci menekan salah nilai pada tulisan penutur non-asli, dan hal yang tak bisa dilakukan produk komersial: mereka tidak punya tulisan basis siswa Anda.\n\n3. Bobot mesin hasil pembelajaran (aktif)\nBegitu basis memuat sampel manusia dan AI, sistem mengukur seberapa baik tiap mesin memisahkan kedua kelompok (ukuran efek Cohen\'s d) lalu menyarankan bobot yang sesuai, menggantikan rasio tetap yang disetel manual. Tidak ada yang berubah sampai Anda menekan Terapkan — pengaturan tidak pernah diubah diam-diam.\n\n4. Perpleksitas silang Binoculars (inti penilaian selesai, belum aktif)\nPerpleksitas mentah memperlakukan seberapa mudah teks diprediksi seolah itu mengukur seberapa mirip AI — persis dari situlah positif palsu sistematisnya pada tulisan penutur non-asli yang bersahaja. Binoculars mengukur keterprediksian itu relatif terhadap seberapa jauh dua model saling berbeda. Matematikanya sudah diterapkan dan diuji, tetapi mengaktifkannya masih perlu sepasang model bahasa kecil yang bisa berjalan di peramban, ditambah validasi dengan data berlabel.\n\n5. Deteksi tanda air (diperiksa, tidak layak, tidak dibangun)\nDeteksi SynthID-Text terikat kunci: detektor harus menghitung dengan kunci yang sama seperti saat pembuatan, sementara kunci produksi Google tidak dipublikasikan. Melakukannya di peramban tidak akan pernah terpicu pada keluaran nyata ChatGPT, Claude, atau Gemini — hanya akan menjadi fitur yang tak pernah aktif sembari membuat Anda percaya tanda air sedang diperiksa. Maka sengaja ditinggalkan.';
+
+  @override
+  String get helpCascadeTitle => '3. Kaskade berjenjang dan abstain';
+
+  @override
+  String get helpCascadeBody =>
+      'Agar tetap cepat dalam anggaran komputasi peramban yang terbatas, analisis berjalan berjenjang: sinyal murah dulu, yang mahal hanya bila perlu.\n\nJenjang 0  Bukti asal dokumen (nyaris tanpa biaya)\nJenjang 1  Ciri statistik dan stilometrik (mesin yang ada, murah)\nJenjang 2  Pengklasifikasi Transformer tingkat kalimat\nJenjang 3  Perpleksitas silang (paling mahal, hanya bila gambarannya masih kabur)\n\nHasilnya lalu masuk ke kalibrasi lokal, yang menghasilkan kesimpulan berjaminan positif palsu — atau abstain secara eksplisit.\n\n[Mengapa abstain itu penting]\nSebagian besar tuduhan keliru lahir dari mengembalikan angka yang meyakinkan atas masukan yang terlalu pendek atau terlalu lemah untuk menopangnya. Alat ini menampilkan terus terang \"Bukti tidak cukup untuk menilai\", alih-alih memaksakan skor, ketika:\n\n- kalimat yang bisa dianalisis kurang dari 5\n- teks kurang dari 100 kata\n- mesin yang ikut kurang dari 2\n- mesin berselisih lebih dari 60 poin persen (merata-ratakannya sudah kehilangan makna)\n\nSaat abstain, skor lengkap dan bukti per kalimat tetap ada di bawah sebagai rujukan — tetapi mohon jangan diperlakukan sebagai kesimpulan. Sistem yang bersedia berkata \"saya tidak tahu\" lebih layak dipercaya daripada yang selalu menyodorkan angka.';
+
+  @override
+  String get helpRisksTitle => '4. Risiko yang layak dihadapi dengan jujur';
+
+  @override
+  String get helpRisksBody =>
+      'Setiap butir di bawah ini adalah batasan nyata alat ini. Timbanglah sebelum bertindak atas apa pun yang dilaporkannya.\n\n1. Bukti asal bisa dihapus atau dipalsukan\nMenyimpan sebagai berkas baru, mengonversi daring, mengekspor dari Google Dokumen, atau menyalin ke dokumen baru semuanya menolkan catatan penyuntingan. Sinyal di sini hanyalah bukti pendukung, dan ketiadaannya jelas tidak membuktikan bahwa manusia yang menulisnya.\n\n2. Jaminan konformal bersandar pada keterpertukaran\nIa hanya berlaku bila sampel basis dan teks yang diuji berasal dari kelompok orang yang sama mengerjakan jenis tugas yang sama. Bila tulisan siswa jelas membaik, atau jenis tugasnya berubah total, premisnya gugur dan basis perlu dibangun ulang.\n\n3. Basis itu sendiri bisa terkontaminasi\nBila tugas yang dipakai sebagai basis sebenarnya ditulis AI, seluruh kalibrasi menjadi miring. Sampel basis harus dikumpulkan dalam kondisi terkendali — misalnya tugas yang diselesaikan di kelas.\n\n4. Model kecil di peramban kurang akurat dibanding model besar di server\nItulah harga tak terhindarkan yang dibayar keputusan Web-only demi privasi. Nilai alat ini bukan skor tunggal yang lebih akurat, melainkan dapat dijelaskan, dapat dikalibrasi, dan cukup jujur untuk abstain.\n\n5. Tidak ada skor yang boleh berdiri sendiri sebagai dasar tuduhan\nSelalu baca bersama bukti per kalimat, asal dokumen, dan apa yang sudah Anda ketahui tentang siswa tersebut. Alat ini dirancang untuk menopang percakapan yang Anda lakukan, bukan menjatuhkan vonis menggantikan Anda.';
+
+  @override
   String get calibrationAddHuman => 'Tambahkan sebagai basis tulisan manusia';
 
   @override

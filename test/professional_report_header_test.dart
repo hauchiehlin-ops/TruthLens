@@ -113,7 +113,20 @@ void main() {
             onDownloadPdf: () {},
           )));
 
-    expect(find.text('AI Content Detection Report：paper.md'), findsOneWidget);
+    // 主題與檔名必須各自成行，不再串成一行
+    expect(find.text('AI Content Detection Report'), findsOneWidget);
+    expect(find.text('paper.md'), findsOneWidget);
+    expect(find.text('AI Content Detection Report：paper.md'), findsNothing);
+
+    // 檔名字級為主題的 70%
+    final title = tester.widget<Text>(
+      find.text('AI Content Detection Report'),
+    );
+    final fileName = tester.widget<Text>(find.text('paper.md'));
+    expect(
+      fileName.style!.fontSize,
+      closeTo(title.style!.fontSize! * 0.7, 0.01),
+    );
   });
 
   testWidgets(
