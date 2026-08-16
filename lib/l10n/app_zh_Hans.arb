@@ -395,6 +395,70 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "calibrationAddHuman": "加入为「人类撰写」基准",
+  "calibrationAddAi": "加入为「AI 产出」样本",
+  "calibrationCounts": "基准集：人类 {human} 份、AI {ai} 份",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "学习式引擎权重",
+  "learnedWeightsNeedMore": "目前人类 {human} 份、AI {ai} 份。两类各需至少 {required} 份才能学出可靠的权重；在此之前沿用你手动设定的权重。",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "已可依你的 {human} 份人类样本与 {ai} 份 AI 样本学出权重。",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}：建议权重 {weight}%（分离度 {effect}）",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "注意：{engine} 把两组判反了（AI 样本反而拿到较低分数），因此权重归零。这通常代表该引擎不适用于你这类文本。",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "套用学习到的权重",
+  "learnedWeightsApplied": "已套用学习到的权重",
+  "learnedWeightsExplain": "权重依各引擎「把你的人类样本与 AI 样本分开」的程度计算（Cohen's d 效果量）：分得越开、组内越稳定的引擎权重越高。这会取代手调的固定权重，让集成贴合你自己的文本类型。",
   "calibrationTitle": "本地基准校准",
   "calibrationEmpty": "尚未建立基准集。加入若干份「确定由学生本人撰写」的文章后（例如课堂当场完成的作业），系统就能改用这个群体自己的分布来判断，而不是套用全球通用的门槛——这正是降低非母语写作伪阳性的关键。",
   "calibrationNotEnough": "基准集目前 {count} 份，要让 {alpha}% 的伪阳性率上限真的成立，至少需要 {required} 份。在补齐之前只显示参考数值，不会据此标记任何文章。",

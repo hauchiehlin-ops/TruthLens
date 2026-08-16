@@ -871,6 +871,50 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get calibrationAddHuman => '加入為「人類撰寫」基準';
+
+  @override
+  String get calibrationAddAi => '加入為「AI 產出」樣本';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return '基準集：人類 $human 份、AI $ai 份';
+  }
+
+  @override
+  String get learnedWeightsTitle => '學習式引擎權重';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return '目前人類 $human 份、AI $ai 份。兩類各需至少 $required 份才能學出可靠的權重；在此之前沿用你手動設定的權重。';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return '已可依你的 $human 份人類樣本與 $ai 份 AI 樣本學出權重。';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine：建議權重 $weight%（分離度 $effect）';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return '注意：$engine 把兩組判反了（AI 樣本反而拿到較低分數），因此權重歸零。這通常代表該引擎不適用於你這類文本。';
+  }
+
+  @override
+  String get learnedWeightsApply => '套用學習到的權重';
+
+  @override
+  String get learnedWeightsApplied => '已套用學習到的權重';
+
+  @override
+  String get learnedWeightsExplain =>
+      '權重依各引擎「把你的人類樣本與 AI 樣本分開」的程度計算（Cohen\'s d 效果量）：分得越開、組內越穩定的引擎權重越高。這會取代手調的固定權重，讓集成貼合你自己的文本類型。';
+
+  @override
   String get calibrationTitle => '本地基準校準';
 
   @override
@@ -3144,6 +3188,50 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get calibrationAddHuman => '加入为「人类撰写」基准';
+
+  @override
+  String get calibrationAddAi => '加入为「AI 产出」样本';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return '基准集：人类 $human 份、AI $ai 份';
+  }
+
+  @override
+  String get learnedWeightsTitle => '学习式引擎权重';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return '目前人类 $human 份、AI $ai 份。两类各需至少 $required 份才能学出可靠的权重；在此之前沿用你手动设定的权重。';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return '已可依你的 $human 份人类样本与 $ai 份 AI 样本学出权重。';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine：建议权重 $weight%（分离度 $effect）';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return '注意：$engine 把两组判反了（AI 样本反而拿到较低分数），因此权重归零。这通常代表该引擎不适用于你这类文本。';
+  }
+
+  @override
+  String get learnedWeightsApply => '套用学习到的权重';
+
+  @override
+  String get learnedWeightsApplied => '已套用学习到的权重';
+
+  @override
+  String get learnedWeightsExplain =>
+      '权重依各引擎「把你的人类样本与 AI 样本分开」的程度计算（Cohen\'s d 效果量）：分得越开、组内越稳定的引擎权重越高。这会取代手调的固定权重，让集成贴合你自己的文本类型。';
+
+  @override
   String get calibrationTitle => '本地基准校准';
 
   @override
@@ -5415,6 +5503,50 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get calibrationAddHuman => '加入為「人類撰寫」基準';
+
+  @override
+  String get calibrationAddAi => '加入為「AI 產出」樣本';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return '基準集：人類 $human 份、AI $ai 份';
+  }
+
+  @override
+  String get learnedWeightsTitle => '學習式引擎權重';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return '目前人類 $human 份、AI $ai 份。兩類各需至少 $required 份才能學出可靠的權重；在此之前沿用你手動設定的權重。';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return '已可依你的 $human 份人類樣本與 $ai 份 AI 樣本學出權重。';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine：建議權重 $weight%（分離度 $effect）';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return '注意：$engine 把兩組判反了（AI 樣本反而拿到較低分數），因此權重歸零。這通常代表該引擎不適用於你這類文本。';
+  }
+
+  @override
+  String get learnedWeightsApply => '套用學習到的權重';
+
+  @override
+  String get learnedWeightsApplied => '已套用學習到的權重';
+
+  @override
+  String get learnedWeightsExplain =>
+      '權重依各引擎「把你的人類樣本與 AI 樣本分開」的程度計算（Cohen\'s d 效果量）：分得越開、組內越穩定的引擎權重越高。這會取代手調的固定權重，讓集成貼合你自己的文本類型。';
 
   @override
   String get calibrationTitle => '本地基準校準';

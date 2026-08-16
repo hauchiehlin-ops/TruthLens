@@ -908,6 +908,51 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get calibrationAddHuman => 'Tambah sebagai asas tulisan manusia';
+
+  @override
+  String get calibrationAddAi => 'Tambah sebagai sampel AI yang diketahui';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Asas: $human manusia, $ai AI';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Pemberat enjin yang dipelajari';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Kini terdapat $human sampel manusia dan $ai sampel AI. Setiap kelas memerlukan sekurang-kurangnya $required sebelum pemberat boleh dipelajari dengan yakin; sehingga itu pemberat manual anda kekal digunakan.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Pemberat kini boleh dipelajari daripada $human sampel manusia dan $ai sampel AI anda.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: pemberat dicadangkan $weight% (pemisahan $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Perhatian: $engine menterbalikkan kedua-dua kumpulan — sampel AI mendapat skor lebih rendah, bukan lebih tinggi — jadi pemberatnya menjadi sifar. Lazimnya ini bermakna enjin itu tidak sesuai untuk teks jenis ini.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Guna pemberat yang dipelajari';
+
+  @override
+  String get learnedWeightsApplied =>
+      'Pemberat yang dipelajari telah digunakan';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Pemberat datang daripada sejauh mana setiap enjin memisahkan sampel manusia anda daripada sampel AI (saiz kesan Cohen\'s d): semakin jauh kedua-dua kumpulan terpisah dan semakin stabil setiap satu, semakin banyak pemberat diperoleh enjin itu. Ini menggantikan pemberat tetap yang ditetapkan secara manual supaya ensembel sepadan dengan jenis teks yang anda gunakan.';
+
+  @override
   String get calibrationTitle => 'Penentukuran asas setempat';
 
   @override

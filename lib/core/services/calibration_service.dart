@@ -14,13 +14,21 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 一筆已知由人撰寫的基準樣本
+/// 一筆已知標籤的基準樣本
 @immutable
 class CalibrationSample {
   final String id;
 
   /// 該樣本經同一套引擎算出的整體 AI 機率
   final double score;
+
+  /// 是否為已知的 AI 產出。共形預測只用人類樣本（虛無分布），
+  /// AI 樣本則供第 4 項的權重學習衡量鑑別力。
+  final bool isAi;
+
+  /// 各引擎當時的個別分數（engineId → 機率），供權重學習使用。
+  /// 舊版樣本沒有此欄位，會是空 Map。
+  final Map<String, double> engineScores;
 
   /// 使用者自訂的標示（例如「三年二班 期中作業」），可留空
   final String label;
@@ -32,12 +40,16 @@ class CalibrationSample {
     required this.score,
     required this.addedAt,
     this.label = '',
+    this.isAi = false,
+    this.engineScores = const {},
   });
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'score': score,
     'label': label,
+    'isAi': isAi,
+    'engineScores': engineScores,
     'addedAt': addedAt.toIso8601String(),
   };
 
@@ -46,10 +58,19 @@ class CalibrationSample {
     final id = json['id'] as String?;
     final addedAt = DateTime.tryParse(json['addedAt'] as String? ?? '');
     if (score == null || id == null || addedAt == null) return null;
+    final rawEngines = json['engineScores'];
     return CalibrationSample(
       id: id,
       score: score.clamp(0.0, 1.0),
       label: json['label'] as String? ?? '',
+      isAi: json['isAi'] as bool? ?? false,
+      engineScores: rawEngines is Map
+          ? {
+              for (final e in rawEngines.entries)
+                if (e.value is num)
+                  e.key.toString(): (e.value as num).toDouble(),
+            }
+          : const {},
       addedAt: addedAt,
     );
   }
@@ -101,7 +122,17 @@ class CalibrationService extends ChangeNotifier {
   double _alpha = defaultAlpha;
 
   List<CalibrationSample> get samples => List.unmodifiable(_samples);
-  int get size => _samples.length;
+
+  /// 已知人類樣本，共形預測的虛無分布只用這些
+  List<CalibrationSample> get humanSamples =>
+      _samples.where((s) => !s.isAi).toList();
+
+  /// 已知 AI 樣本，僅供權重學習
+  List<CalibrationSample> get aiSamples =>
+      _samples.where((s) => s.isAi).toList();
+
+  /// 共形預測的樣本數＝人類樣本數（AI 樣本不屬於虛無分布）
+  int get size => humanSamples.length;
   double get alpha => _alpha;
 
   /// 要讓 α 真的可達，最小 p 值 1/(n+1) 必須 ≤ α，因此 n ≥ 1/α − 1。
@@ -143,13 +174,20 @@ class CalibrationService extends ChangeNotifier {
     );
   }
 
-  Future<void> addSample(double score, {String label = ''}) async {
+  Future<void> addSample(
+    double score, {
+    String label = '',
+    bool isAi = false,
+    Map<String, double> engineScores = const {},
+  }) async {
     _samples = [
       ..._samples,
       CalibrationSample(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
         score: score.clamp(0.0, 1.0),
         label: label,
+        isAi: isAi,
+        engineScores: engineScores,
         addedAt: DateTime.now(),
       ),
     ];
@@ -175,9 +213,10 @@ class CalibrationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 以目前校準集評估 [score]。
+  /// 以目前校準集評估 [score]。只拿人類樣本當虛無分布——把 AI 樣本混進去
+  /// 會把分布往高分推，反而讓真正的 AI 文章更不容易被標記。
   ConformalResult evaluate(double score) =>
-      conformal(score, _samples.map((s) => s.score).toList(), _alpha);
+      conformal(score, humanSamples.map((s) => s.score).toList(), _alpha);
 
   /// 純函式版本，方便直接測試。
   ///

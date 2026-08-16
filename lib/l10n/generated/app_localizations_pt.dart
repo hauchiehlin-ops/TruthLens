@@ -920,6 +920,50 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get calibrationAddHuman => 'Adicionar como base escrita por humano';
+
+  @override
+  String get calibrationAddAi => 'Adicionar como amostra de IA conhecida';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Base: $human humanas, $ai de IA';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Pesos de motor aprendidos';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Você tem $human amostras humanas e $ai de IA. Cada classe precisa de pelo menos $required para que os pesos sejam aprendidos de forma confiável; até lá valem os seus pesos manuais.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Já é possível aprender pesos a partir das suas $human amostras humanas e $ai de IA.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: peso sugerido $weight% (separação $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Atenção: $engine inverteu os dois grupos — as amostras de IA pontuaram mais baixo, não mais alto — então seu peso cai a zero. Isso costuma indicar que o motor não serve para esse tipo de texto.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Aplicar os pesos aprendidos';
+
+  @override
+  String get learnedWeightsApplied => 'Pesos aprendidos aplicados';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Os pesos vêm de quão bem cada motor separa suas amostras humanas das de IA (tamanho de efeito, d de Cohen): quanto mais distantes os dois grupos e mais estável cada um, mais peso o motor ganha. Isso substitui os pesos fixos definidos à mão para que o conjunto se ajuste ao tipo de texto com que você realmente trabalha.';
+
+  @override
   String get calibrationTitle => 'Calibração com base local';
 
   @override

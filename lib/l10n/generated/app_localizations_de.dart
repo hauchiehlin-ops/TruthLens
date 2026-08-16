@@ -918,6 +918,51 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get calibrationAddHuman =>
+      'Als menschlich geschriebene Referenz aufnehmen';
+
+  @override
+  String get calibrationAddAi => 'Als bekannte KI-Probe aufnehmen';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Referenz: $human menschlich, $ai KI';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Gelernte Engine-Gewichte';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Sie haben $human menschliche und $ai KI-Proben. Pro Klasse sind mindestens $required nötig, damit Gewichte verlässlich gelernt werden können; bis dahin gelten Ihre manuellen Gewichte.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Aus Ihren $human menschlichen und $ai KI-Proben lassen sich jetzt Gewichte lernen.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: empfohlenes Gewicht $weight% (Trennschärfe $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Hinweis: $engine hat die beiden Gruppen vertauscht — die KI-Proben erhielten niedrigere statt höhere Werte — daher fällt das Gewicht auf null. Meist heißt das, die Engine passt nicht zu dieser Art Text.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Gelernte Gewichte übernehmen';
+
+  @override
+  String get learnedWeightsApplied => 'Gelernte Gewichte übernommen';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Die Gewichte ergeben sich daraus, wie gut jede Engine Ihre menschlichen von Ihren KI-Proben trennt (Effektstärke Cohens d): je weiter die beiden Gruppen auseinanderliegen und je stabiler jede Gruppe ist, desto mehr Gewicht bekommt die Engine. Das ersetzt die handgesetzten festen Gewichte, damit das Ensemble zu der Textsorte passt, mit der Sie tatsächlich arbeiten.';
+
+  @override
   String get calibrationTitle => 'Lokale Referenzkalibrierung';
 
   @override

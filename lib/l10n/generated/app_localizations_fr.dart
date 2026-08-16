@@ -922,6 +922,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get calibrationAddHuman =>
+      'Ajouter comme référence écrite par un humain';
+
+  @override
+  String get calibrationAddAi => 'Ajouter comme échantillon IA connu';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Référence : $human humains, $ai IA';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Poids de moteurs appris';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Vous avez $human échantillons humains et $ai IA. Il en faut au moins $required par classe pour apprendre des poids fiables ; d\'ici là, vos poids manuels restent en vigueur.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Les poids peuvent désormais être appris à partir de vos $human échantillons humains et $ai IA.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine : poids suggéré $weight % (séparation $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'À noter : $engine inverse les deux groupes — les échantillons IA ont obtenu des scores plus bas, et non plus hauts — son poids tombe donc à zéro. Cela signifie généralement que ce moteur ne convient pas à ce type de texte.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Appliquer les poids appris';
+
+  @override
+  String get learnedWeightsApplied => 'Poids appris appliqués';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Les poids découlent de la capacité de chaque moteur à séparer vos échantillons humains de vos échantillons IA (taille d\'effet, d de Cohen) : plus les deux groupes sont éloignés et plus chacun est stable, plus le moteur gagne du poids. Cela remplace les poids fixes réglés à la main, pour que l\'ensemble colle au type de texte que vous traitez réellement.';
+
+  @override
   String get calibrationTitle => 'Étalonnage sur base locale';
 
   @override

@@ -879,6 +879,50 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get calibrationAddHuman => '「人間が執筆」の基準として追加';
+
+  @override
+  String get calibrationAddAi => '「AI生成」のサンプルとして追加';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return '基準セット：人間$human件、AI$ai件';
+  }
+
+  @override
+  String get learnedWeightsTitle => '学習によるエンジン重み';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return '現在、人間$human件・AI$ai件です。信頼できる重みを学習するには各クラス最低$required件必要で、それまでは手動設定の重みが使われます。';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return '人間$human件・AI$ai件のサンプルから重みを学習できます。';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine：推奨重み$weight%（分離度 $effect）';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return '注意：$engineは2グループを逆に判定しています（AIサンプルの方が低いスコア）。そのため重みは0になります。多くの場合、このエンジンがこの種の文章に向いていないことを意味します。';
+  }
+
+  @override
+  String get learnedWeightsApply => '学習した重みを適用';
+
+  @override
+  String get learnedWeightsApplied => '学習した重みを適用しました';
+
+  @override
+  String get learnedWeightsExplain =>
+      '重みは、各エンジンが人間のサンプルとAIのサンプルをどれだけよく分離できるか（Cohen\'s dの効果量）から決まります。2グループが離れているほど、また各グループが安定しているほど、そのエンジンの重みは大きくなります。これにより手動の固定重みが置き換えられ、実際に扱う文章の種類にアンサンブルが適合します。';
+
+  @override
   String get calibrationTitle => 'ローカル基準キャリブレーション';
 
   @override

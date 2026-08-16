@@ -10,12 +10,24 @@ import '../../l10n/generated/app_localizations.dart';
 /// 這裡是相對於使用者自己蒐集的族群基準，因此能吸收非母語寫作等系統性偏移。
 class CalibrationCard extends StatelessWidget {
   final ConformalResult result;
-  final VoidCallback? onAddToBaseline;
+
+  /// 加入為已知人類樣本（共形預測的虛無分布）
+  final VoidCallback? onAddHuman;
+
+  /// 加入為已知 AI 樣本（僅供權重學習，不進虛無分布）
+  final VoidCallback? onAddAi;
+
+  /// 目前兩類樣本數，供顯示
+  final int humanCount;
+  final int aiCount;
 
   const CalibrationCard({
     super.key,
     required this.result,
-    this.onAddToBaseline,
+    this.onAddHuman,
+    this.onAddAi,
+    this.humanCount = 0,
+    this.aiCount = 0,
   });
 
   /// p 值顯示：小數點後三位，並避免顯示成 0.000 造成「絕對確定」的錯覺
@@ -126,12 +138,32 @@ class CalibrationCard extends StatelessWidget {
             ),
           ],
 
-          if (onAddToBaseline != null) ...[
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: onAddToBaseline,
-              icon: Icon(LucideIcons.plus, size: 16),
-              label: Text(l10n.calibrationAddButton),
+          if (onAddHuman != null || onAddAi != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              l10n.calibrationCounts(humanCount, aiCount),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (onAddHuman != null)
+                  OutlinedButton.icon(
+                    onPressed: onAddHuman,
+                    icon: Icon(LucideIcons.userCheck, size: 16),
+                    label: Text(l10n.calibrationAddHuman),
+                  ),
+                if (onAddAi != null)
+                  OutlinedButton.icon(
+                    onPressed: onAddAi,
+                    icon: Icon(LucideIcons.bot, size: 16),
+                    label: Text(l10n.calibrationAddAi),
+                  ),
+              ],
             ),
           ],
 

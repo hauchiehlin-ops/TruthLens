@@ -114,18 +114,34 @@ class ProfessionalReportHeader extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Consumer<CalibrationService>(
-              builder: (context, calibration, _) => CalibrationCard(
-                result: calibration.evaluate(result.aiProbability),
-                onAddToBaseline: () async {
-                  await calibration.addSample(result.aiProbability);
+              builder: (context, calibration, _) {
+                // 逐引擎分數一併存入，第 4 項的權重學習才有特徵可用
+                final engineScores = {
+                  for (final e in result.engineScores)
+                    if (e.available) e.engineId: e.aiProbability,
+                };
+                Future<void> add(bool isAi) async {
+                  await calibration.addSample(
+                    result.aiProbability,
+                    isAi: isAi,
+                    engineScores: engineScores,
+                  );
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(l10n.calibrationAdded(calibration.size)),
                     ),
                   );
-                },
-              ),
+                }
+
+                return CalibrationCard(
+                  result: calibration.evaluate(result.aiProbability),
+                  humanCount: calibration.size,
+                  aiCount: calibration.aiSamples.length,
+                  onAddHuman: () => add(false),
+                  onAddAi: () => add(true),
+                );
+              },
             ),
           ),
 

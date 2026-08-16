@@ -911,6 +911,50 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get calibrationAddHuman => 'Добавить как эталон, написанный человеком';
+
+  @override
+  String get calibrationAddAi => 'Добавить как заведомо ИИ-образец';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Эталон: $human человеческих, $ai ИИ';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Выученные веса движков';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Сейчас $human человеческих и $ai ИИ-образцов. Для надёжного обучения весов нужно минимум $required в каждом классе; до тех пор действуют ваши ручные веса.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Веса уже можно выучить по вашим $human человеческим и $ai ИИ-образцам.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: рекомендуемый вес $weight% (разделение $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Внимание: $engine перепутал группы — ИИ-образцы получили более низкие оценки, а не более высокие — поэтому его вес обнуляется. Обычно это значит, что движок не подходит для такого типа текстов.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Применить выученные веса';
+
+  @override
+  String get learnedWeightsApplied => 'Выученные веса применены';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Веса выводятся из того, насколько хорошо каждый движок разделяет ваши человеческие и ИИ-образцы (размер эффекта, d Коэна): чем дальше группы друг от друга и чем устойчивее каждая, тем больше веса получает движок. Это заменяет заданные вручную фиксированные веса, чтобы ансамбль подходил к тому типу текстов, с которым вы действительно работаете.';
+
+  @override
   String get calibrationTitle => 'Локальная калибровка по эталону';
 
   @override

@@ -883,6 +883,50 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get calibrationAddHuman => '\'사람이 작성\' 기준으로 추가';
+
+  @override
+  String get calibrationAddAi => '\'AI 생성\' 표본으로 추가';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return '기준 세트: 사람 $human편, AI $ai편';
+  }
+
+  @override
+  String get learnedWeightsTitle => '학습된 엔진 가중치';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return '현재 사람 $human편, AI $ai편입니다. 신뢰할 만한 가중치를 학습하려면 각 부류마다 최소 $required편이 필요하며, 그전까지는 수동 설정 가중치가 그대로 적용됩니다.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return '사람 $human편, AI $ai편의 표본으로 가중치를 학습할 수 있습니다.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: 권장 가중치 $weight%(분리도 $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return '참고: $engine은(는) 두 집단을 반대로 판정했습니다(AI 표본이 오히려 낮은 점수). 그래서 가중치가 0이 됩니다. 보통 이 엔진이 이런 종류의 글에 맞지 않는다는 뜻입니다.';
+  }
+
+  @override
+  String get learnedWeightsApply => '학습된 가중치 적용';
+
+  @override
+  String get learnedWeightsApplied => '학습된 가중치를 적용했습니다';
+
+  @override
+  String get learnedWeightsExplain =>
+      '가중치는 각 엔진이 사람 표본과 AI 표본을 얼마나 잘 갈라내는지(Cohen\'s d 효과크기)에서 나옵니다. 두 집단이 멀리 떨어질수록, 각 집단이 안정적일수록 그 엔진의 가중치가 커집니다. 이는 수동으로 정한 고정 가중치를 대체해, 실제로 다루는 글의 종류에 앙상블을 맞춥니다.';
+
+  @override
   String get calibrationTitle => '로컬 기준 보정';
 
   @override

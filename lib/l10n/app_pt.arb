@@ -671,6 +671,70 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "calibrationAddHuman": "Adicionar como base escrita por humano",
+  "calibrationAddAi": "Adicionar como amostra de IA conhecida",
+  "calibrationCounts": "Base: {human} humanas, {ai} de IA",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Pesos de motor aprendidos",
+  "learnedWeightsNeedMore": "Você tem {human} amostras humanas e {ai} de IA. Cada classe precisa de pelo menos {required} para que os pesos sejam aprendidos de forma confiável; até lá valem os seus pesos manuais.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Já é possível aprender pesos a partir das suas {human} amostras humanas e {ai} de IA.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}: peso sugerido {weight}% (separação {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "Atenção: {engine} inverteu os dois grupos — as amostras de IA pontuaram mais baixo, não mais alto — então seu peso cai a zero. Isso costuma indicar que o motor não serve para esse tipo de texto.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Aplicar os pesos aprendidos",
+  "learnedWeightsApplied": "Pesos aprendidos aplicados",
+  "learnedWeightsExplain": "Os pesos vêm de quão bem cada motor separa suas amostras humanas das de IA (tamanho de efeito, d de Cohen): quanto mais distantes os dois grupos e mais estável cada um, mais peso o motor ganha. Isso substitui os pesos fixos definidos à mão para que o conjunto se ajuste ao tipo de texto com que você realmente trabalha.",
   "calibrationTitle": "Calibração com base local",
   "calibrationEmpty": "Ainda não há conjunto base. Acrescente alguns textos que você sabe terem sido escritos pelos próprios alunos — trabalhos feitos em aula, por exemplo — e o sistema poderá julgar pela distribuição deste grupo em vez de um limite global igual para todos. É justamente isso que reduz os falsos positivos na escrita não nativa.",
   "calibrationNotEnough": "O conjunto base tem {count} amostra(s); para que um teto de falsos positivos de {alpha}% valha de fato, são necessárias pelo menos {required}. Até lá os números são apenas de referência e nada é sinalizado com base neles.",

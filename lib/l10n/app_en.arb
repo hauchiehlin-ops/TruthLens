@@ -710,6 +710,70 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "calibrationAddHuman": "Add as human-written baseline",
+  "calibrationAddAi": "Add as known-AI sample",
+  "calibrationCounts": "Baseline: {human} human, {ai} AI",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Learned engine weights",
+  "learnedWeightsNeedMore": "You have {human} human and {ai} AI samples. Each class needs at least {required} before weights can be learned reliably; until then your manual weights stay in force.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Weights can now be learned from your {human} human and {ai} AI samples.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}: suggested weight {weight}% (separation {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "Note: {engine} has the two groups the wrong way round — the AI samples scored lower, not higher — so its weight drops to zero. That usually means the engine does not suit this kind of text.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Apply the learned weights",
+  "learnedWeightsApplied": "Learned weights applied",
+  "learnedWeightsExplain": "Weights come from how well each engine separates your human samples from your AI ones (Cohen's d effect size): the further apart the two groups, and the steadier each group is, the more weight that engine earns. This replaces the hand-set fixed weights so the ensemble fits the kind of text you actually work with.",
   "calibrationTitle": "Local baseline calibration",
   "calibrationEmpty": "No baseline set yet. Add a handful of pieces you know your students wrote themselves — work completed in class, for instance — and the system can judge against this group's own distribution instead of a one-size-fits-all global threshold. That is exactly what brings down false positives on non-native writing.",
   "calibrationNotEnough": "The baseline holds {count} sample(s); making a {alpha}% false-positive ceiling actually hold needs at least {required}. Until then the figures are shown for reference only and nothing gets flagged on their basis.",

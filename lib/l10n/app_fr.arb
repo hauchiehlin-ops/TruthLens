@@ -671,6 +671,70 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "calibrationAddHuman": "Ajouter comme référence écrite par un humain",
+  "calibrationAddAi": "Ajouter comme échantillon IA connu",
+  "calibrationCounts": "Référence : {human} humains, {ai} IA",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Poids de moteurs appris",
+  "learnedWeightsNeedMore": "Vous avez {human} échantillons humains et {ai} IA. Il en faut au moins {required} par classe pour apprendre des poids fiables ; d'ici là, vos poids manuels restent en vigueur.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Les poids peuvent désormais être appris à partir de vos {human} échantillons humains et {ai} IA.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine} : poids suggéré {weight} % (séparation {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "À noter : {engine} inverse les deux groupes — les échantillons IA ont obtenu des scores plus bas, et non plus hauts — son poids tombe donc à zéro. Cela signifie généralement que ce moteur ne convient pas à ce type de texte.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Appliquer les poids appris",
+  "learnedWeightsApplied": "Poids appris appliqués",
+  "learnedWeightsExplain": "Les poids découlent de la capacité de chaque moteur à séparer vos échantillons humains de vos échantillons IA (taille d'effet, d de Cohen) : plus les deux groupes sont éloignés et plus chacun est stable, plus le moteur gagne du poids. Cela remplace les poids fixes réglés à la main, pour que l'ensemble colle au type de texte que vous traitez réellement.",
   "calibrationTitle": "Étalonnage sur base locale",
   "calibrationEmpty": "Aucun jeu de référence pour l'instant. Ajoutez quelques textes dont vous êtes sûr qu'ils ont été écrits par vos élèves — des travaux faits en classe, par exemple — et le système pourra juger d'après la distribution propre à ce groupe plutôt qu'un seuil mondial uniforme. C'est précisément ce qui fait chuter les faux positifs sur l'écriture non native.",
   "calibrationNotEnough": "Le jeu de référence compte {count} échantillon(s) ; pour qu'un plafond de faux positifs de {alpha} % tienne réellement, il en faut au moins {required}. D'ici là, les chiffres sont indicatifs et rien n'est signalé sur cette base.",

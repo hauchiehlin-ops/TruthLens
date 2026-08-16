@@ -1562,6 +1562,72 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @calibrationAddHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Add as human-written baseline'**
+  String get calibrationAddHuman;
+
+  /// No description provided for @calibrationAddAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Add as known-AI sample'**
+  String get calibrationAddAi;
+
+  /// No description provided for @calibrationCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Baseline: {human} human, {ai} AI'**
+  String calibrationCounts(int human, int ai);
+
+  /// No description provided for @learnedWeightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learned engine weights'**
+  String get learnedWeightsTitle;
+
+  /// No description provided for @learnedWeightsNeedMore.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {human} human and {ai} AI samples. Each class needs at least {required} before weights can be learned reliably; until then your manual weights stay in force.'**
+  String learnedWeightsNeedMore(int human, int ai, int required);
+
+  /// No description provided for @learnedWeightsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Weights can now be learned from your {human} human and {ai} AI samples.'**
+  String learnedWeightsReady(int human, int ai);
+
+  /// No description provided for @learnedWeightsRow.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine}: suggested weight {weight}% (separation {effect})'**
+  String learnedWeightsRow(String engine, int weight, String effect);
+
+  /// No description provided for @learnedWeightsReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: {engine} has the two groups the wrong way round — the AI samples scored lower, not higher — so its weight drops to zero. That usually means the engine does not suit this kind of text.'**
+  String learnedWeightsReversed(String engine);
+
+  /// No description provided for @learnedWeightsApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply the learned weights'**
+  String get learnedWeightsApply;
+
+  /// No description provided for @learnedWeightsApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Learned weights applied'**
+  String get learnedWeightsApplied;
+
+  /// No description provided for @learnedWeightsExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'Weights come from how well each engine separates your human samples from your AI ones (Cohen\'s d effect size): the further apart the two groups, and the steadier each group is, the more weight that engine earns. This replaces the hand-set fixed weights so the ensemble fits the kind of text you actually work with.'**
+  String get learnedWeightsExplain;
+
   /// No description provided for @calibrationTitle.
   ///
   /// In en, this message translates to:

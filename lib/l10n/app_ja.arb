@@ -671,6 +671,70 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "calibrationAddHuman": "「人間が執筆」の基準として追加",
+  "calibrationAddAi": "「AI生成」のサンプルとして追加",
+  "calibrationCounts": "基準セット：人間{human}件、AI{ai}件",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "学習によるエンジン重み",
+  "learnedWeightsNeedMore": "現在、人間{human}件・AI{ai}件です。信頼できる重みを学習するには各クラス最低{required}件必要で、それまでは手動設定の重みが使われます。",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "人間{human}件・AI{ai}件のサンプルから重みを学習できます。",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}：推奨重み{weight}%（分離度 {effect}）",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "注意：{engine}は2グループを逆に判定しています（AIサンプルの方が低いスコア）。そのため重みは0になります。多くの場合、このエンジンがこの種の文章に向いていないことを意味します。",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "学習した重みを適用",
+  "learnedWeightsApplied": "学習した重みを適用しました",
+  "learnedWeightsExplain": "重みは、各エンジンが人間のサンプルとAIのサンプルをどれだけよく分離できるか（Cohen's dの効果量）から決まります。2グループが離れているほど、また各グループが安定しているほど、そのエンジンの重みは大きくなります。これにより手動の固定重みが置き換えられ、実際に扱う文章の種類にアンサンブルが適合します。",
   "calibrationTitle": "ローカル基準キャリブレーション",
   "calibrationEmpty": "基準セットがまだありません。学生本人が書いたと確実にわかるもの（授業中に仕上げた課題など）をいくつか登録すると、世界共通のしきい値ではなく、この集団自身の分布に照らして判断できるようになります。非母語話者の文章での誤検出を減らす鍵がまさにこれです。",
   "calibrationNotEnough": "基準セットは現在{count}件ですが、{alpha}%の誤検出率上限を実際に成立させるには最低{required}件必要です。それまでは参考値の表示のみで、これを根拠に文章を判定することはありません。",

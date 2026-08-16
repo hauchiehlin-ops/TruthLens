@@ -907,6 +907,50 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get calibrationAddHuman => 'เพิ่มเป็นฐานเทียบ «คนเขียน»';
+
+  @override
+  String get calibrationAddAi => 'เพิ่มเป็นตัวอย่าง «AI สร้าง»';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'ชุดฐานเทียบ: คน $human ชิ้น, AI $ai ชิ้น';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'น้ำหนักเอนจินจากการเรียนรู้';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'ขณะนี้มีของคน $human ชิ้น และของ AI $ai ชิ้น แต่ละประเภทต้องมีอย่างน้อย $required ชิ้นจึงจะเรียนรู้น้ำหนักได้อย่างน่าเชื่อถือ ระหว่างนี้จะใช้น้ำหนักที่คุณตั้งเองต่อไป';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'ตอนนี้เรียนรู้น้ำหนักจากตัวอย่างของคน $human ชิ้น และของ AI $ai ชิ้นได้แล้ว';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: น้ำหนักที่แนะนำ $weight% (ค่าการแยก $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'ข้อสังเกต: $engine แยกสองกลุ่มกลับด้าน (ตัวอย่าง AI กลับได้คะแนนต่ำกว่า) น้ำหนักจึงเป็นศูนย์ โดยทั่วไปหมายความว่าเอนจินนี้ไม่เหมาะกับข้อความประเภทนี้';
+  }
+
+  @override
+  String get learnedWeightsApply => 'ใช้น้ำหนักที่เรียนรู้ได้';
+
+  @override
+  String get learnedWeightsApplied => 'ใช้น้ำหนักที่เรียนรู้ได้แล้ว';
+
+  @override
+  String get learnedWeightsExplain =>
+      'น้ำหนักคำนวณจากความสามารถของแต่ละเอนจินในการแยกตัวอย่างของคนออกจากตัวอย่างของ AI (ขนาดอิทธิพลแบบ Cohen\'s d) ยิ่งสองกลุ่มห่างกันและแต่ละกลุ่มยิ่งนิ่ง เอนจินนั้นก็ยิ่งได้น้ำหนักมาก วิธีนี้แทนที่น้ำหนักตายตัวที่ตั้งด้วยมือ เพื่อให้การรวมผลเข้ากับประเภทข้อความที่คุณใช้งานจริง';
+
+  @override
   String get calibrationTitle => 'การปรับเทียบด้วยฐานข้อมูลในเครื่อง';
 
   @override

@@ -671,6 +671,70 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "calibrationAddHuman": "Tambah sebagai asas tulisan manusia",
+  "calibrationAddAi": "Tambah sebagai sampel AI yang diketahui",
+  "calibrationCounts": "Asas: {human} manusia, {ai} AI",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Pemberat enjin yang dipelajari",
+  "learnedWeightsNeedMore": "Kini terdapat {human} sampel manusia dan {ai} sampel AI. Setiap kelas memerlukan sekurang-kurangnya {required} sebelum pemberat boleh dipelajari dengan yakin; sehingga itu pemberat manual anda kekal digunakan.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Pemberat kini boleh dipelajari daripada {human} sampel manusia dan {ai} sampel AI anda.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}: pemberat dicadangkan {weight}% (pemisahan {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "Perhatian: {engine} menterbalikkan kedua-dua kumpulan — sampel AI mendapat skor lebih rendah, bukan lebih tinggi — jadi pemberatnya menjadi sifar. Lazimnya ini bermakna enjin itu tidak sesuai untuk teks jenis ini.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Guna pemberat yang dipelajari",
+  "learnedWeightsApplied": "Pemberat yang dipelajari telah digunakan",
+  "learnedWeightsExplain": "Pemberat datang daripada sejauh mana setiap enjin memisahkan sampel manusia anda daripada sampel AI (saiz kesan Cohen's d): semakin jauh kedua-dua kumpulan terpisah dan semakin stabil setiap satu, semakin banyak pemberat diperoleh enjin itu. Ini menggantikan pemberat tetap yang ditetapkan secara manual supaya ensembel sepadan dengan jenis teks yang anda gunakan.",
   "calibrationTitle": "Penentukuran asas setempat",
   "calibrationEmpty": "Belum ada set asas. Tambahkan beberapa tulisan yang anda pasti ditulis sendiri oleh pelajar — contohnya kerja yang disiapkan di dalam kelas — supaya sistem boleh menilai berdasarkan taburan kumpulan ini sendiri, bukan ambang global yang sama untuk semua. Inilah yang menurunkan positif palsu pada tulisan bukan penutur asli.",
   "calibrationNotEnough": "Set asas mempunyai {count} sampel; untuk siling positif palsu {alpha}% benar-benar berkuat kuasa, sekurang-kurangnya {required} diperlukan. Sehingga itu angka hanya dipaparkan sebagai rujukan dan tiada apa ditanda berdasarkannya.",

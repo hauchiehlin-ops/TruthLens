@@ -671,6 +671,70 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "calibrationAddHuman": "Als menschlich geschriebene Referenz aufnehmen",
+  "calibrationAddAi": "Als bekannte KI-Probe aufnehmen",
+  "calibrationCounts": "Referenz: {human} menschlich, {ai} KI",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Gelernte Engine-Gewichte",
+  "learnedWeightsNeedMore": "Sie haben {human} menschliche und {ai} KI-Proben. Pro Klasse sind mindestens {required} nötig, damit Gewichte verlässlich gelernt werden können; bis dahin gelten Ihre manuellen Gewichte.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Aus Ihren {human} menschlichen und {ai} KI-Proben lassen sich jetzt Gewichte lernen.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}: empfohlenes Gewicht {weight}% (Trennschärfe {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "Hinweis: {engine} hat die beiden Gruppen vertauscht — die KI-Proben erhielten niedrigere statt höhere Werte — daher fällt das Gewicht auf null. Meist heißt das, die Engine passt nicht zu dieser Art Text.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Gelernte Gewichte übernehmen",
+  "learnedWeightsApplied": "Gelernte Gewichte übernommen",
+  "learnedWeightsExplain": "Die Gewichte ergeben sich daraus, wie gut jede Engine Ihre menschlichen von Ihren KI-Proben trennt (Effektstärke Cohens d): je weiter die beiden Gruppen auseinanderliegen und je stabiler jede Gruppe ist, desto mehr Gewicht bekommt die Engine. Das ersetzt die handgesetzten festen Gewichte, damit das Ensemble zu der Textsorte passt, mit der Sie tatsächlich arbeiten.",
   "calibrationTitle": "Lokale Referenzkalibrierung",
   "calibrationEmpty": "Noch keine Referenzmenge vorhanden. Nehmen Sie einige Texte auf, von denen Sie sicher wissen, dass Ihre Schülerinnen und Schüler sie selbst geschrieben haben — etwa im Unterricht angefertigte Arbeiten. Dann beurteilt das System anhand der Verteilung dieser Gruppe statt anhand einer weltweit einheitlichen Schwelle. Genau das senkt die Fehlalarme bei nicht muttersprachlichen Texten.",
   "calibrationNotEnough": "Die Referenzmenge umfasst {count} Probe(n); damit eine Fehlalarm-Obergrenze von {alpha}% tatsächlich hält, sind mindestens {required} nötig. Bis dahin dienen die Werte nur zur Orientierung, und es wird nichts auf ihrer Grundlage markiert.",

@@ -903,6 +903,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get calibrationAddHuman => 'Add as human-written baseline';
+
+  @override
+  String get calibrationAddAi => 'Add as known-AI sample';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Baseline: $human human, $ai AI';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Learned engine weights';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'You have $human human and $ai AI samples. Each class needs at least $required before weights can be learned reliably; until then your manual weights stay in force.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Weights can now be learned from your $human human and $ai AI samples.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: suggested weight $weight% (separation $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Note: $engine has the two groups the wrong way round — the AI samples scored lower, not higher — so its weight drops to zero. That usually means the engine does not suit this kind of text.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Apply the learned weights';
+
+  @override
+  String get learnedWeightsApplied => 'Learned weights applied';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Weights come from how well each engine separates your human samples from your AI ones (Cohen\'s d effect size): the further apart the two groups, and the steadier each group is, the more weight that engine earns. This replaces the hand-set fixed weights so the ensemble fits the kind of text you actually work with.';
+
+  @override
   String get calibrationTitle => 'Local baseline calibration';
 
   @override

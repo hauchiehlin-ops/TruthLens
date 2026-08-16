@@ -911,6 +911,50 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get calibrationAddHuman => 'Tambahkan sebagai basis tulisan manusia';
+
+  @override
+  String get calibrationAddAi => 'Tambahkan sebagai sampel AI yang diketahui';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Basis: $human manusia, $ai AI';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Bobot mesin hasil pembelajaran';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Saat ini ada $human sampel manusia dan $ai sampel AI. Tiap kelas butuh setidaknya $required agar bobot dapat dipelajari dengan andal; sampai saat itu bobot manual Anda tetap berlaku.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Bobot kini dapat dipelajari dari $human sampel manusia dan $ai sampel AI Anda.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: bobot disarankan $weight% (pemisahan $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Catatan: $engine membalik kedua kelompok — sampel AI justru bernilai lebih rendah — sehingga bobotnya menjadi nol. Biasanya ini berarti mesin tersebut tidak cocok untuk jenis teks ini.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Terapkan bobot hasil pembelajaran';
+
+  @override
+  String get learnedWeightsApplied => 'Bobot hasil pembelajaran diterapkan';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Bobot berasal dari seberapa baik tiap mesin memisahkan sampel manusia dari sampel AI Anda (ukuran efek Cohen\'s d): makin jauh kedua kelompok terpisah dan makin stabil masing-masing, makin besar bobot mesin itu. Ini menggantikan bobot tetap yang disetel manual agar ansambel cocok dengan jenis teks yang benar-benar Anda tangani.';
+
+  @override
   String get calibrationTitle => 'Kalibrasi basis lokal';
 
   @override

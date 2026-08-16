@@ -6,6 +6,7 @@ import '../../core/detection/device_capabilities.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/calibration_service.dart';
+import '../../core/services/weight_learner.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -89,6 +90,95 @@ class SettingsScreen extends StatelessWidget {
                   divisions: 19,
                   label: '${(calibration.alpha * 100).round()}%',
                   onChanged: (v) => calibration.setAlpha(v),
+                ),
+                // 學習式權重：由基準集的兩類樣本學出各引擎鑑別力
+                Builder(
+                  builder: (context) {
+                    final learned = WeightLearner.learn(
+                      calibration.samples,
+                      PreferencesService.engineRoles,
+                    );
+                    final humanCount = calibration.size;
+                    final aiCount = calibration.aiSamples.length;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ListTile(
+                          title: Text(l10n.learnedWeightsTitle),
+                          subtitle: Text(
+                            learned == null
+                                ? l10n.learnedWeightsNeedMore(
+                                    humanCount,
+                                    aiCount,
+                                    WeightLearner.minSamplesPerClass,
+                                  )
+                                : l10n.learnedWeightsReady(
+                                    learned.humanCount,
+                                    learned.aiCount,
+                                  ),
+                          ),
+                        ),
+                        if (learned != null) ...[
+                          for (final sep in learned.separations)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 2,
+                              ),
+                              child: Text(
+                                l10n.learnedWeightsRow(
+                                  sep.engineId,
+                                  (sep.suggestedWeight * 100).round(),
+                                  sep.effectSize.toStringAsFixed(2),
+                                ),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                          for (final sep in learned.separations)
+                            if (sep.effectSize < 0)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  6,
+                                  16,
+                                  0,
+                                ),
+                                child: Text(
+                                  l10n.learnedWeightsReversed(sep.engineId),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.error,
+                                      ),
+                                ),
+                              ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                            child: Text(
+                              l10n.learnedWeightsExplain,
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: FilledButton.tonal(
+                              onPressed: () async {
+                                await prefs.setEngineWeights(learned.weights);
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(l10n.learnedWeightsApplied),
+                                  ),
+                                );
+                              },
+                              child: Text(l10n.learnedWeightsApply),
+                            ),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
                 ListTile(
                   title: Text(l10n.settingsCalibrationTitle),

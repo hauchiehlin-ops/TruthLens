@@ -107,6 +107,42 @@ void main() {
       expect(reloaded.size, 0);
     });
 
+    test('AI 樣本不進入共形虛無分布，只有人類樣本算數', () async {
+      final service = CalibrationService();
+      await service.load();
+
+      // 25 份人類樣本（低分）
+      for (var i = 0; i < 25; i++) {
+        await service.addSample(0.1 + i * 0.001);
+      }
+      // 10 份 AI 樣本（高分）
+      for (var i = 0; i < 10; i++) {
+        await service.addSample(0.95, isAi: true);
+      }
+
+      expect(service.size, 25, reason: 'size 應只計人類樣本');
+      expect(service.aiSamples.length, 10);
+
+      // 若把 AI 樣本混進虛無分布，0.9 的 p 值會被推高而不再被標記
+      final r = service.evaluate(0.9);
+      expect(r.calibrationSize, 25);
+      expect(r.isFlagged, isTrue);
+    });
+
+    test('逐引擎分數會一併持久化，供權重學習使用', () async {
+      final service = CalibrationService();
+      await service.load();
+      await service.addSample(
+        0.4,
+        engineScores: const {'transformer': 0.5, 'statistical': 0.3},
+      );
+
+      final reloaded = CalibrationService();
+      await reloaded.load();
+      expect(reloaded.samples.single.engineScores['transformer'], 0.5);
+      expect(reloaded.samples.single.engineScores['statistical'], 0.3);
+    });
+
     test('α 設定會夾在合法範圍並持久化', () async {
       final service = CalibrationService();
       await service.load();

@@ -671,6 +671,70 @@
   "privacyWebOverview2": "Halaman hanya membaca file, gambar, atau konten clipboard saat Anda secara aktif memilih untuk mengimpor, memindai, atau menempelkannya; halaman tidak pernah membaca tab lain, data situs lain, atau file yang belum Anda pilih.",
   "reportAiContentReportTitle": "Laporan Deteksi Konten AI",
   "reportAiProbabilityPrefix": "Probabilitas AI: ",
+  "calibrationAddHuman": "Tambahkan sebagai basis tulisan manusia",
+  "calibrationAddAi": "Tambahkan sebagai sampel AI yang diketahui",
+  "calibrationCounts": "Basis: {human} manusia, {ai} AI",
+  "@calibrationCounts": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsTitle": "Bobot mesin hasil pembelajaran",
+  "learnedWeightsNeedMore": "Saat ini ada {human} sampel manusia dan {ai} sampel AI. Tiap kelas butuh setidaknya {required} agar bobot dapat dipelajari dengan andal; sampai saat itu bobot manual Anda tetap berlaku.",
+  "@learnedWeightsNeedMore": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsReady": "Bobot kini dapat dipelajari dari {human} sampel manusia dan {ai} sampel AI Anda.",
+  "@learnedWeightsReady": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      }
+    }
+  },
+  "learnedWeightsRow": "{engine}: bobot disarankan {weight}% (pemisahan {effect})",
+  "@learnedWeightsRow": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsReversed": "Catatan: {engine} membalik kedua kelompok — sampel AI justru bernilai lebih rendah — sehingga bobotnya menjadi nol. Biasanya ini berarti mesin tersebut tidak cocok untuk jenis teks ini.",
+  "@learnedWeightsReversed": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learnedWeightsApply": "Terapkan bobot hasil pembelajaran",
+  "learnedWeightsApplied": "Bobot hasil pembelajaran diterapkan",
+  "learnedWeightsExplain": "Bobot berasal dari seberapa baik tiap mesin memisahkan sampel manusia dari sampel AI Anda (ukuran efek Cohen's d): makin jauh kedua kelompok terpisah dan makin stabil masing-masing, makin besar bobot mesin itu. Ini menggantikan bobot tetap yang disetel manual agar ansambel cocok dengan jenis teks yang benar-benar Anda tangani.",
   "calibrationTitle": "Kalibrasi basis lokal",
   "calibrationEmpty": "Belum ada himpunan basis. Tambahkan beberapa tulisan yang Anda yakin ditulis sendiri oleh siswa — misalnya tugas yang diselesaikan di kelas — agar sistem bisa menilai berdasarkan sebaran kelompok ini sendiri, bukan ambang global yang sama untuk semua. Justru inilah yang menekan positif palsu pada tulisan penutur non-asli.",
   "calibrationNotEnough": "Himpunan basis berisi {count} sampel; agar batas atas positif palsu {alpha}% benar-benar berlaku, dibutuhkan setidaknya {required}. Sampai itu tercapai, angka hanya ditampilkan sebagai rujukan dan tidak dipakai menandai apa pun.",

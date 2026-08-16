@@ -921,6 +921,50 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String get calibrationAddHuman => 'Añadir como base escrita por humano';
+
+  @override
+  String get calibrationAddAi => 'Añadir como muestra de IA conocida';
+
+  @override
+  String calibrationCounts(int human, int ai) {
+    return 'Base: $human humanas, $ai de IA';
+  }
+
+  @override
+  String get learnedWeightsTitle => 'Pesos de motor aprendidos';
+
+  @override
+  String learnedWeightsNeedMore(int human, int ai, int required) {
+    return 'Tienes $human muestras humanas y $ai de IA. Cada clase necesita al menos $required para aprender pesos fiables; hasta entonces siguen vigentes tus pesos manuales.';
+  }
+
+  @override
+  String learnedWeightsReady(int human, int ai) {
+    return 'Ya se pueden aprender pesos a partir de tus $human muestras humanas y $ai de IA.';
+  }
+
+  @override
+  String learnedWeightsRow(String engine, int weight, String effect) {
+    return '$engine: peso sugerido $weight% (separación $effect)';
+  }
+
+  @override
+  String learnedWeightsReversed(String engine) {
+    return 'Aviso: $engine tiene los dos grupos al revés — las muestras de IA puntuaron más bajo, no más alto — así que su peso cae a cero. Suele significar que ese motor no encaja con este tipo de texto.';
+  }
+
+  @override
+  String get learnedWeightsApply => 'Aplicar los pesos aprendidos';
+
+  @override
+  String get learnedWeightsApplied => 'Pesos aprendidos aplicados';
+
+  @override
+  String get learnedWeightsExplain =>
+      'Los pesos salen de lo bien que cada motor separa tus muestras humanas de las de IA (tamaño del efecto, d de Cohen): cuanto más lejos queden los dos grupos y más estable sea cada uno, más peso gana ese motor. Esto sustituye a los pesos fijos puestos a mano para que el conjunto encaje con el tipo de texto con el que trabajas.';
+
+  @override
   String get calibrationTitle => 'Calibración con base local';
 
   @override
