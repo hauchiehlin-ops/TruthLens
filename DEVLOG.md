@@ -1,5 +1,39 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第八十二次更新）— 新增：AI 對照組批次生成腳本
+
+**目的**
+階段一的 human 語料必須自己蒐集，但 AI 對照組可以自動化。新增
+`training/binoculars/generate_ai_corpus.py`，支援 anthropic／openai／gemini／
+groq／together 五種供應商（專案既有的 remote_llm_provider 也是這幾家）。
+
+**三個會讓評測假性樂觀的陷阱，腳本都內建對策**
+1. **題材不對齊**：AI 樣本若寫別的主題，模型只要認出主題就能分開兩組
+   → `--from-human` 由 human 語料反推題目。
+2. **流暢度混淆（最容易被忽略）**：human 是非母語學生原稿，AI 若一律產出母語級
+   散文，兩組差的其實是「流暢度」而非「來源」。這樣的高分無法外推，**上線後會把
+   英文好的學生通通誤判**。→ 預設同時生成 `nonnative` 語域，四種語域涵蓋從母語級
+   到非母語學生的光譜。
+3. **生成器單一**：→ 文件明確建議至少跑兩家供應商並混在同一資料夾。
+
+**題目種子的清理（實跑才發現的問題）**
+用使用者的 PDF 實測時，反推出來的題目混進了頁首雜訊：
+`TECHNIQUES by W.M. Yang and H.C. Lin TRANSFORMATIONAL PHENOMENON... C ircular Couette ﬂow`
+——包含**作者姓名**、全大寫標題、PDF 連字（ﬂ）與首字放大斷字（C ircular）。
+這不只讓題材對不準，更會把姓名送進第三方 API。逐一修正後輸出為乾淨的
+`Circular Couette flow or Taylor-Couette flow is a classical problem of...`。
+新增 `test_topic_cleaning.py` 5 項測試鎖住這些清理規則（含「全被濾掉時不得回空字串」）。
+
+**隱私**：`--from-human` 是本專案唯一會外送文字的環節，因此執行前會明確告知
+「會送出每份樣本開頭約 45 字」並要求輸入 yes 確認；`--dry-run` 可先檢視全部內容；
+不接受的話改用 `--topics-file` 完全不外送學生文字。
+
+**驗證**：dry-run、topics-file、未指定來源報錯、未知語域報錯等路徑均實跑確認；
+清理邏輯 5 項測試全通過。API 實際呼叫未測（需金鑰與費用），但請求格式依各家
+官方規格撰寫，且具備重試與續跑機制。
+
+---
+
 ## 2026-08-17（第八十一次更新）— 新增：Binoculars 階段一離線驗證管線（training/binoculars/）
 
 **目的**

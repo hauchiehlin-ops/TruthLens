@@ -35,6 +35,44 @@ cd training
     --device cpu --dtype float32 --limit 4
 ```
 
+## 生成 AI 對照組
+
+human 那組必須自己蒐集，但 AI 那組可以自動化：
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# 先看會送出什麼、不花錢
+.venv/bin/python binoculars/generate_ai_corpus.py \
+    --from-human binoculars/data/corpus.jsonl --dry-run
+
+# 實際生成
+.venv/bin/python binoculars/generate_ai_corpus.py \
+    --from-human binoculars/data/corpus.jsonl \
+    --provider anthropic --model claude-sonnet-5 \
+    --out-dir binoculars/data/ai_generated
+```
+
+支援 `anthropic` / `openai` / `gemini` / `groq` / `together`。**建議至少跑兩個不同
+供應商並把輸出混在同一資料夾**——真實情境裡學生用的是各種工具，只用單一生成器
+會讓評測結果無法外推。可續跑：已存在的檔案會自動略過。
+
+### 三個會讓結果假性樂觀的陷阱（腳本已內建對策）
+
+| 陷阱 | 後果 | 對策 |
+|---|---|---|
+| 題材不對齊 | 模型只要認出主題就能分開兩組 | `--from-human` 由 human 語料反推題目 |
+| **流暢度混淆** | human 是非母語原稿、AI 一律母語級散文，測到的是「流暢度」不是「AI 生成」；上線後會把英文好的學生全誤判 | 預設同時生成 `nonnative` 語域 |
+| 生成器單一 | 只認得出某一家的文風 | 換 `--provider` 多跑幾輪 |
+
+### 隱私
+
+`--from-human` 會把每份 human 樣本的**開頭約 45 字**送到第三方 API 以反推題目。
+腳本會自動濾除標題、作者列與 PDF 連字，並在執行前要求確認。若不接受，改用
+`--topics-file` 自備題目清單即可**完全不外送學生文字**。
+
+`binoculars/data/` 已列入 .gitignore，語料不會進版控。
+
 ## 語料要求（這是目前的瓶頸）
 
 | 類別 | 需要 | 為什麼 |
