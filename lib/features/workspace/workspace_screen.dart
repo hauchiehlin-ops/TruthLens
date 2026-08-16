@@ -1510,22 +1510,40 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _reportPanel() {
     final result = _result;
     if (result == null) return const SizedBox.shrink();
-    // standard 主題的 _Panel 不會像 cosmic/soft 那樣自動包一層
-    // IconTheme 覆蓋 trailing 顏色，裸 IconButton 在此仍會退回對比不足的
-    // onSurfaceVariant，因此在此明確依主題指定顏色。
-    final scheme = Theme.of(context).colorScheme;
-    final trailingIconColor = switch (_WorkspaceThemeScope.of(context)) {
-      _WorkspaceVisualTheme.cosmic => _cosmicCyan,
-      _WorkspaceVisualTheme.soft => Colors.white,
-      _WorkspaceVisualTheme.standard => scheme.onSurface,
-    };
     return _Panel(
       title: AppLocalizations.of(context).workspaceAnalysisComplete,
       icon: LucideIcons.barChart,
-      trailing: IconButton(
-        onPressed: _newAnalysis,
-        icon: Icon(LucideIcons.plus, color: trailingIconColor),
-        tooltip: AppLocalizations.of(context).workspaceNewAnalysis,
+      // 必須用 Builder 取得 _Panel 子樹的 context：_WorkspaceThemeScope 建立在
+      // WorkspaceScreen 的子樹裡，直接用 State 的 context 去查永遠只會拿到
+      // standard，於是 cosmic/soft 深色面板上會套到淺色系的近黑色而幾乎看不見。
+      trailing: Builder(
+        builder: (context) {
+          final scheme = Theme.of(context).colorScheme;
+          final theme = _WorkspaceThemeScope.of(context);
+          // 「新的分析」是本面板唯一的動作鈕，只靠線條圖示在深色主題下太弱，
+          // 補一層對比色底與外框，讓它在三種主題下都明顯是可按的按鈕。
+          final (foreground, background) = switch (theme) {
+            _WorkspaceVisualTheme.cosmic => (
+              Colors.black,
+              _cosmicCyan.withValues(alpha: 0.95),
+            ),
+            _WorkspaceVisualTheme.soft => (
+              Colors.black87,
+              Colors.white.withValues(alpha: 0.9),
+            ),
+            _WorkspaceVisualTheme.standard => (
+              scheme.onPrimaryContainer,
+              scheme.primaryContainer,
+            ),
+          };
+          return IconButton(
+            onPressed: _newAnalysis,
+            icon: Icon(LucideIcons.plus, size: 18, color: foreground),
+            tooltip: AppLocalizations.of(context).workspaceNewAnalysis,
+            visualDensity: VisualDensity.compact,
+            style: IconButton.styleFrom(backgroundColor: background),
+          );
+        },
       ),
       padding: EdgeInsets.zero,
       child: ReportScreen(
@@ -1694,10 +1712,9 @@ class _Panel extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (trailing != null)
-                    Flexible(child: trailing!)
-                  else
-                    const SizedBox.shrink(),
+                  // 不可包 Flexible：標題已是 Expanded，兩者都吃彈性空間會把
+                  // 剩餘寬度五五對分，trailing 因此停在面板中央而非靠右。
+                  ?trailing,
                 ],
               ),
             ),
@@ -1772,13 +1789,11 @@ class _Panel extends StatelessWidget {
                           ),
                         ),
                       if (trailing != null)
-                        Flexible(
-                          child: DefaultTextStyle.merge(
-                            style: const TextStyle(color: Colors.white70),
-                            child: IconTheme.merge(
-                              data: const IconThemeData(color: _cosmicCyan),
-                              child: trailing!,
-                            ),
+                        DefaultTextStyle.merge(
+                          style: const TextStyle(color: Colors.white70),
+                          child: IconTheme.merge(
+                            data: const IconThemeData(color: _cosmicCyan),
+                            child: trailing!,
                           ),
                         )
                       else
@@ -1883,13 +1898,11 @@ class _Panel extends StatelessWidget {
                           ),
                         ),
                       if (trailing != null)
-                        Flexible(
-                          child: DefaultTextStyle.merge(
-                            style: const TextStyle(color: Colors.white70),
-                            child: IconTheme.merge(
-                              data: const IconThemeData(color: _softTeal),
-                              child: trailing!,
-                            ),
+                        DefaultTextStyle.merge(
+                          style: const TextStyle(color: Colors.white70),
+                          child: IconTheme.merge(
+                            data: const IconThemeData(color: _softTeal),
+                            child: trailing!,
                           ),
                         )
                       else

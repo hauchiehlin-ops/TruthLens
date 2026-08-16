@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第七十四次更新）— 修正：面板「新的分析」按鈕在深色主題下幾乎看不見
+
+**問題**
+使用者回報宇宙未來風模式下報告面板的「＋（新的分析）」圖示太模糊。實際查出兩個獨立缺陷：
+
+1. **主題解析錯誤（對比不足的根因）**：`_reportPanel()` 用 `State` 的 `context` 去查
+   `_WorkspaceThemeScope.of(context)`，但該 Scope 是建立在 `WorkspaceScreen` 的**子樹**裡，
+   由上往下查永遠拿不到，因此固定退回 `standard` 分支、套用淺色系的 `scheme.onSurface`（近黑），
+   在 cosmic/soft 深色面板上等於隱形。改用 `Builder` 取得子樹 context 後才正確解析
+   （同檔 857、1020 行本來就包 `Builder`，是對的；只有此處漏掉）。
+2. **位置錯誤**：`_Panel` 三個主題分支都把 `trailing` 包在 `Flexible` 裡，但標題已是 `Expanded`，
+   兩者都吃彈性空間會把剩餘寬度五五對分，導致 trailing 停在面板中央而非靠右。移除 `Flexible`
+   讓 trailing 取自然寬度即可（標題的 `Expanded` 會吸收其餘空間）。
+
+**額外強化**：「新的分析」是該面板唯一動作鈕，只靠線條圖示在深色底下仍偏弱，改為帶對比底色的
+圓形按鈕（cosmic：青底黑圖；soft：白底深圖；standard：`primaryContainer`／`onPrimaryContainer`）。
+
+**修正內容**：✅ **完成**（`flutter analyze` 無問題、`flutter test` 253 項全通過；以 release build
+實測宇宙未來風與自動模式兩種主題，按鈕皆明顯可見且靠右對齊）
+
+---
+
 ## 2026-08-16（第七十三次更新）— 新增：分析遙測面板的白話「分析總結」
 
 **概述**
