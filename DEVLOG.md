@@ -1,5 +1,42 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第七十九次更新）— 第 5 項判定不可行並跳過；第 6 項完成評分核心
+
+### 第 5 項（SynthID 浮水印偵測）— ❌ **不實作，經查證不可行**
+
+查證後確認 SynthID-Text 的偵測是**綁金鑰的**：偵測器必須用與生成時相同的 watermarking keys
+計算 g-function，且是針對特定模型與設定訓練出來的。Google 生產環境 Gemini 使用的金鑰未公開，
+開源版與 Google 生產系統處於**完全隔離的金鑰空間**。
+
+實務後果：瀏覽器端的 SynthID 偵測對 ChatGPT／Claude／Gemini 的真實輸出**永遠不會命中**，
+只能偵測「使用者自己用自己金鑰加浮水印」的內容，在教育場景毫無用處。做出來會是一個永不觸發、
+卻讓使用者誤以為有在檢查浮水印的假功能——**比沒有更糟**，因此主動跳過。
+
+參考：Google AI for Developers（SynthID）、huggingface/transformers `watermarking.py`、
+google-deepmind/synthid-text。
+
+### 第 6 項（Binoculars 交叉困惑度）— ⚠️ **評分核心完成，尚未接上模型**
+
+`lib/core/detection/binoculars_scorer.dart`：實作 `B = log-perplexity ÷ cross-perplexity`。
+直覺是「文字好預測本身不代表什麼，有訊號的是它好預測的程度**相對於兩個模型彼此分歧的程度**」，
+這正是裸 perplexity 對非母語寫作偽陽性的來源。**分數越低越像機器產出**（方向與直覺相反，
+已在測試中鎖住）。
+
+防呆設計：位置數／詞彙維度不一致時明確報錯而非靜默對齊；分母為 0 回傳 null 讓呼叫端棄權
+而非回無限大的假分數；機率為 0 的詞元不產生 NaN；映射為 AI 機率時先夾住指數輸入避免 overflow。
+
+**尚未完成的部分（誠實說明）**：要真正上線還需要一組可在瀏覽器執行的小型因果語言模型配對，
+並以標註資料驗證「縮小模型後效果掉多少」。原論文用 7B 級模型，縮到瀏覽器可跑的尺寸效果會掉
+多少**必須實測才知道**。因此本評分器目前**未接上任何引擎**，`placeholderThreshold` 也只是佔位值，
+未經驗證前不應當成定論。
+
+**測試**：`binoculars_scorer_test.dart` 11 項，涵蓋數學正確性（分布相同時交叉熵＝該分布的熵）、
+方向正確性、以及全部退化輸入的 NaN／overflow 防護。
+
+**狀態**：✅ 評分核心完成（`flutter analyze` 無問題、`flutter test` 310 項全通過）
+
+---
+
 ## 2026-08-17（第七十八次更新）— 新增：學習式引擎權重（六項升級第 4 項）
 
 **先面對的統計問題**
