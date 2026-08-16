@@ -907,6 +907,72 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get calibrationTitle => 'การปรับเทียบด้วยฐานข้อมูลในเครื่อง';
+
+  @override
+  String get calibrationEmpty =>
+      'ยังไม่มีชุดฐานเทียบ ลองเพิ่มงานเขียนที่แน่ใจว่านักเรียนเขียนเองสัก 2-3 ชิ้น (เช่น งานที่ทำเสร็จในห้องเรียน) ระบบจะได้ตัดสินโดยเทียบกับการกระจายตัวของกลุ่มนี้เอง แทนที่จะใช้เกณฑ์เดียวกันทั้งโลก ซึ่งนี่แหละคือกุญแจสำคัญที่ลดการแจ้งเตือนผิดพลาดกับงานเขียนของผู้ที่ไม่ใช่เจ้าของภาษา';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'ชุดฐานเทียบมี $count ชิ้น แต่การจะให้เพดานอัตราแจ้งเตือนผิดพลาด $alpha% เป็นจริงได้ ต้องมีอย่างน้อย $required ชิ้น ระหว่างนี้จะแสดงตัวเลขไว้อ้างอิงเท่านั้น และจะไม่ใช้ทำเครื่องหมายงานใด ๆ';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'ที่เพดานอัตราแจ้งเตือนผิดพลาด $alpha% งานชิ้นนี้**ถูกทำเครื่องหมาย**';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'ที่เพดานอัตราแจ้งเตือนผิดพลาด $alpha% งานชิ้นนี้**ไม่ถูกทำเครื่องหมาย**';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'ค่า p แบบอนุรักษ์ $value (เทียบกับตัวอย่างฐาน $count ชิ้น)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'คะแนนอยู่ที่เปอร์เซ็นไทล์ที่ $percentile ของชุดฐานเทียบ';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'การรับประกันนี้ตั้งอยู่บนสมมติฐานว่าตัวอย่างฐานและงานที่ตรวจสลับกันได้ คือมาจากคนกลุ่มเดียวกันและงานเขียนประเภทเดียวกัน หากทักษะการเขียนของนักเรียนดีขึ้นชัดเจน หรือเปลี่ยนประเภทงานไปคนละแบบ สมมติฐานก็ใช้ไม่ได้ ต้องสร้างชุดฐานใหม่ อีกข้อควรระวัง: หากงานที่ใช้เป็นฐานถูก AI เขียนแทนเสียเอง การปรับเทียบทั้งหมดจะเพี้ยน จึงควรเก็บตัวอย่างในสภาพแวดล้อมที่ควบคุมได้';
+
+  @override
+  String get calibrationAddButton => 'เพิ่มงานชิ้นนี้เข้าชุดฐานเทียบ';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'เพิ่มเข้าชุดฐานเทียบแล้ว ขณะนี้มี $count ชิ้น';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'ชุดฐานเทียบในเครื่อง';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return 'ขณะนี้มี $count ชิ้น (ค่า α นี้ต้องการ $required ชิ้น)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'ล้างชุดฐานเทียบ';
+
+  @override
+  String get settingsCalibrationCleared => 'ล้างชุดฐานเทียบแล้ว';
+
+  @override
+  String get settingsAlphaTitle => 'เพดานอัตราแจ้งเตือนผิดพลาด (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'ขณะนี้ $alpha% — ยิ่งต่ำยิ่งเข้มงวด แต่ต้องใช้ตัวอย่างฐานมากขึ้น (อย่างน้อย $required ชิ้น)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'ความน่าจะเป็น AI $probability% / เกณฑ์การตั้งค่าสถานะ $threshold% = AI index $index%';
   }

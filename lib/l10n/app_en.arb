@@ -710,6 +710,93 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "calibrationTitle": "Local baseline calibration",
+  "calibrationEmpty": "No baseline set yet. Add a handful of pieces you know your students wrote themselves — work completed in class, for instance — and the system can judge against this group's own distribution instead of a one-size-fits-all global threshold. That is exactly what brings down false positives on non-native writing.",
+  "calibrationNotEnough": "The baseline holds {count} sample(s); making a {alpha}% false-positive ceiling actually hold needs at least {required}. Until then the figures are shown for reference only and nothing gets flagged on their basis.",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "At a {alpha}% false-positive ceiling, this text **is flagged**.",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "At a {alpha}% false-positive ceiling, this text **is not flagged**.",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "Conservative p-value {value} (against {count} baseline samples)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "The score sits at the {percentile}th percentile of the baseline",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "This guarantee rests on the baseline samples and the text under test being exchangeable — same group of people, same kind of writing task. If a student's writing has clearly improved, or the assignment type has changed entirely, that no longer holds and the baseline needs rebuilding. Note too: if the baseline pieces were themselves ghost-written by AI, the whole calibration skews, so collect them under controlled conditions.",
+  "calibrationAddButton": "Add this to the baseline",
+  "calibrationAdded": "Added to the baseline — {count} sample(s) now",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "Local baseline set",
+  "settingsCalibrationSubtitle": "{count} sample(s) held ({required} needed at this α)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "Clear the baseline set",
+  "settingsCalibrationCleared": "Baseline set cleared",
+  "settingsAlphaTitle": "False-positive ceiling (α)",
+  "settingsAlphaSubtitle": "Currently {alpha}% — lower is stricter but needs more baseline samples (at least {required})",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "AI probability {probability}% / AI flag threshold {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

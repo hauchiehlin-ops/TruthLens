@@ -671,6 +671,93 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "calibrationTitle": "Penentukuran asas setempat",
+  "calibrationEmpty": "Belum ada set asas. Tambahkan beberapa tulisan yang anda pasti ditulis sendiri oleh pelajar — contohnya kerja yang disiapkan di dalam kelas — supaya sistem boleh menilai berdasarkan taburan kumpulan ini sendiri, bukan ambang global yang sama untuk semua. Inilah yang menurunkan positif palsu pada tulisan bukan penutur asli.",
+  "calibrationNotEnough": "Set asas mempunyai {count} sampel; untuk siling positif palsu {alpha}% benar-benar berkuat kuasa, sekurang-kurangnya {required} diperlukan. Sehingga itu angka hanya dipaparkan sebagai rujukan dan tiada apa ditanda berdasarkannya.",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "Pada siling positif palsu {alpha}%, teks ini **ditanda**.",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "Pada siling positif palsu {alpha}%, teks ini **tidak ditanda**.",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "Nilai p konservatif {value} (berbanding {count} sampel asas)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "Skor berada pada persentil ke-{percentile} set asas",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "Jaminan ini bergantung pada sampel asas dan teks yang diuji boleh ditukar ganti — kumpulan orang yang sama, jenis tugasan menulis yang sama. Jika penulisan pelajar jelas bertambah baik, atau jenis tugasan berubah sepenuhnya, syarat itu tidak lagi dipenuhi dan set asas perlu dibina semula. Perhatikan juga: jika tulisan asas itu sendiri ditulis oleh AI, seluruh penentukuran akan senget, jadi kumpulkannya dalam keadaan terkawal.",
+  "calibrationAddButton": "Tambah teks ini ke set asas",
+  "calibrationAdded": "Ditambah ke set asas — kini {count} sampel",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "Set asas setempat",
+  "settingsCalibrationSubtitle": "{count} sampel disimpan ({required} diperlukan pada α ini)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "Kosongkan set asas",
+  "settingsCalibrationCleared": "Set asas dikosongkan",
+  "settingsAlphaTitle": "Siling positif palsu (α)",
+  "settingsAlphaSubtitle": "Kini {alpha}% — lebih rendah lebih ketat, tetapi memerlukan lebih banyak sampel asas (sekurang-kurangnya {required})",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "Kebarangkalian AI {probability}% / ambang penanda {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

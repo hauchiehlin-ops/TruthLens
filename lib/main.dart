@@ -14,6 +14,7 @@ import 'core/detection/report_llm_service.dart';
 import 'core/services/history_repository.dart';
 import 'core/services/ocr_config_notifier.dart';
 import 'core/services/ocr_service.dart';
+import 'core/services/calibration_service.dart';
 import 'core/services/preferences_service.dart';
 import 'core/utils/app_version.dart';
 import 'l10n/generated/app_localizations.dart';
@@ -35,6 +36,8 @@ void main() async {
   await AppVersion.init();
   final prefs = PreferencesService();
   await prefs.load();
+  final calibration = CalibrationService();
+  await calibration.load();
   await OcrService.hydrate();
 
   final modelManager = ModelManager();
@@ -54,6 +57,7 @@ void main() async {
       prefs: prefs,
       modelManager: modelManager,
       provisioner: provisioner,
+      calibration: calibration,
       initialLocation: needsOnboarding ? '/onboarding' : '/',
     ),
   );
@@ -63,12 +67,14 @@ class TruthLensApp extends StatelessWidget {
   final PreferencesService prefs;
   final ModelManager modelManager;
   final ModelProvisioner provisioner;
+  final CalibrationService calibration;
   final String initialLocation;
   const TruthLensApp({
     super.key,
     required this.prefs,
     required this.modelManager,
     required this.provisioner,
+    required this.calibration,
     required this.initialLocation,
   });
 
@@ -79,6 +85,7 @@ class TruthLensApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: prefs),
         ChangeNotifierProvider.value(value: modelManager),
+        ChangeNotifierProvider.value(value: calibration),
         Provider.value(value: provisioner),
         Provider.value(value: provisioner.catalogService),
         ChangeNotifierProvider(

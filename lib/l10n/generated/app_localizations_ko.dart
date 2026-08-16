@@ -883,6 +883,72 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get calibrationTitle => '로컬 기준 보정';
+
+  @override
+  String get calibrationEmpty =>
+      '아직 기준 세트가 없습니다. 학생이 직접 쓴 것이 확실한 글(예: 수업 중 완성한 과제)을 몇 편 추가하면, 전 세계 공통 기준값 대신 이 집단 자체의 분포에 견주어 판단할 수 있습니다. 비원어민 글쓰기의 오탐을 줄이는 핵심이 바로 이것입니다.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return '기준 세트가 현재 $count편인데, $alpha% 오탐률 상한이 실제로 성립하려면 최소 $required편이 필요합니다. 그때까지는 참고 수치만 보여 주며 이를 근거로 어떤 글도 표시하지 않습니다.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return '오탐률 상한 $alpha% 설정에서 이 글은 **표시되었습니다**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return '오탐률 상한 $alpha% 설정에서 이 글은 **표시되지 않았습니다**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return '보수적 p값 $value(기준 표본 $count편 대비)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return '점수가 기준 세트의 $percentile번째 백분위에 있습니다';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      '이 보장은 기준 표본과 검사 대상이 교환 가능하다는 것, 즉 같은 집단·같은 종류의 과제라는 전제에 기댑니다. 학생의 글쓰기 실력이 뚜렷이 늘었거나 과제 유형이 완전히 바뀌었다면 전제가 무너지므로 기준 세트를 다시 만들어야 합니다. 또한 기준 글 자체가 AI 대필이라면 보정 전체가 틀어지므로 통제된 환경에서 수집하세요.';
+
+  @override
+  String get calibrationAddButton => '이 글을 기준 세트에 추가';
+
+  @override
+  String calibrationAdded(int count) {
+    return '기준 세트에 추가했습니다 — 현재 $count편';
+  }
+
+  @override
+  String get settingsCalibrationTitle => '로컬 기준 세트';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '현재 $count편(이 α에는 $required편 필요)';
+  }
+
+  @override
+  String get settingsCalibrationClear => '기준 세트 비우기';
+
+  @override
+  String get settingsCalibrationCleared => '기준 세트를 비웠습니다';
+
+  @override
+  String get settingsAlphaTitle => '오탐률 상한(α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return '현재 $alpha% — 낮을수록 엄격하지만 기준 표본이 더 많이 필요합니다(최소 $required편)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'AI 확률 $probability% / AI 표시 기준값 $threshold% = AI index $index%';
   }

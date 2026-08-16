@@ -871,6 +871,72 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get calibrationTitle => '本地基準校準';
+
+  @override
+  String get calibrationEmpty =>
+      '尚未建立基準集。加入若干份「確定由學生本人撰寫」的文章後（例如課堂當場完成的作業），系統就能改用這個族群自己的分布來判斷，而不是套用全球通用的門檻——這正是降低非母語寫作偽陽性的關鍵。';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return '基準集目前 $count 份，要讓 $alpha% 的偽陽性率上限真的成立，至少需要 $required 份。在補齊之前只顯示參考數值，不會據此標記任何文章。';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return '在 $alpha% 偽陽性率上限的設定下，本文**被標記**。';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return '在 $alpha% 偽陽性率上限的設定下，本文**未被標記**。';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return '保守 p 值 $value（相對於 $count 份基準樣本）';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return '分數落在基準集的第 $percentile 百分位';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      '這個保證的前提是「基準樣本與待測文章可交換」——也就是出自同一群人、同一類寫作任務。若學生的寫作能力明顯進步、或換了完全不同的題型，前提就不再成立，需要重新建立基準集。另請注意：若基準樣本本身就是 AI 代寫的，整個校準都會偏掉，取樣必須在可控環境下進行。';
+
+  @override
+  String get calibrationAddButton => '把這份加入基準集';
+
+  @override
+  String calibrationAdded(int count) {
+    return '已加入基準集，目前共 $count 份';
+  }
+
+  @override
+  String get settingsCalibrationTitle => '本地基準校準集';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '目前 $count 份（此 α 需要 $required 份）';
+  }
+
+  @override
+  String get settingsCalibrationClear => '清空基準集';
+
+  @override
+  String get settingsCalibrationCleared => '基準集已清空';
+
+  @override
+  String get settingsAlphaTitle => '偽陽性率上限（α）';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return '目前 $alpha% — 數值越低越保守，但需要越多基準樣本（至少 $required 份）';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'AI 機率 $probability% / AI 標記門檻閾值 $threshold% ＝ AI index $index%';
   }
@@ -3078,6 +3144,72 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get calibrationTitle => '本地基准校准';
+
+  @override
+  String get calibrationEmpty =>
+      '尚未建立基准集。加入若干份「确定由学生本人撰写」的文章后（例如课堂当场完成的作业），系统就能改用这个群体自己的分布来判断，而不是套用全球通用的门槛——这正是降低非母语写作伪阳性的关键。';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return '基准集目前 $count 份，要让 $alpha% 的伪阳性率上限真的成立，至少需要 $required 份。在补齐之前只显示参考数值，不会据此标记任何文章。';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return '在 $alpha% 伪阳性率上限的设定下，本文**被标记**。';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return '在 $alpha% 伪阳性率上限的设定下，本文**未被标记**。';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return '保守 p 值 $value（相对于 $count 份基准样本）';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return '分数落在基准集的第 $percentile 百分位';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      '这个保证的前提是「基准样本与待测文章可交换」——也就是出自同一群人、同一类写作任务。若学生的写作能力明显进步、或换了完全不同的题型，前提就不再成立，需要重新建立基准集。另请注意：若基准样本本身就是 AI 代写的，整个校准都会偏掉，取样必须在可控环境下进行。';
+
+  @override
+  String get calibrationAddButton => '把这份加入基准集';
+
+  @override
+  String calibrationAdded(int count) {
+    return '已加入基准集，目前共 $count 份';
+  }
+
+  @override
+  String get settingsCalibrationTitle => '本地基准校准集';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '目前 $count 份（此 α 需要 $required 份）';
+  }
+
+  @override
+  String get settingsCalibrationClear => '清空基准集';
+
+  @override
+  String get settingsCalibrationCleared => '基准集已清空';
+
+  @override
+  String get settingsAlphaTitle => '伪阳性率上限（α）';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return '目前 $alpha% — 数值越低越保守，但需要越多基准样本（至少 $required 份）';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'AI 几率 $probability% / AI 标记门槛阈值 $threshold% ＝ AI index $index%';
   }
@@ -5283,6 +5415,72 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get calibrationTitle => '本地基準校準';
+
+  @override
+  String get calibrationEmpty =>
+      '尚未建立基準集。加入若干份「確定由學生本人撰寫」的文章後（例如課堂當場完成的作業），系統就能改用這個族群自己的分布來判斷，而不是套用全球通用的門檻——這正是降低非母語寫作偽陽性的關鍵。';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return '基準集目前 $count 份，要讓 $alpha% 的偽陽性率上限真的成立，至少需要 $required 份。在補齊之前只顯示參考數值，不會據此標記任何文章。';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return '在 $alpha% 偽陽性率上限的設定下，本文**被標記**。';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return '在 $alpha% 偽陽性率上限的設定下，本文**未被標記**。';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return '保守 p 值 $value（相對於 $count 份基準樣本）';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return '分數落在基準集的第 $percentile 百分位';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      '這個保證的前提是「基準樣本與待測文章可交換」——也就是出自同一群人、同一類寫作任務。若學生的寫作能力明顯進步、或換了完全不同的題型，前提就不再成立，需要重新建立基準集。另請注意：若基準樣本本身就是 AI 代寫的，整個校準都會偏掉，取樣必須在可控環境下進行。';
+
+  @override
+  String get calibrationAddButton => '把這份加入基準集';
+
+  @override
+  String calibrationAdded(int count) {
+    return '已加入基準集，目前共 $count 份';
+  }
+
+  @override
+  String get settingsCalibrationTitle => '本地基準校準集';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '目前 $count 份（此 α 需要 $required 份）';
+  }
+
+  @override
+  String get settingsCalibrationClear => '清空基準集';
+
+  @override
+  String get settingsCalibrationCleared => '基準集已清空';
+
+  @override
+  String get settingsAlphaTitle => '偽陽性率上限（α）';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return '目前 $alpha% — 數值越低越保守，但需要越多基準樣本（至少 $required 份）';
+  }
 
   @override
   String reportAiIndexFormula(int probability, int threshold, int index) {

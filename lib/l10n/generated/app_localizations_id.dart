@@ -911,6 +911,72 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get calibrationTitle => 'Kalibrasi basis lokal';
+
+  @override
+  String get calibrationEmpty =>
+      'Belum ada himpunan basis. Tambahkan beberapa tulisan yang Anda yakin ditulis sendiri oleh siswa — misalnya tugas yang diselesaikan di kelas — agar sistem bisa menilai berdasarkan sebaran kelompok ini sendiri, bukan ambang global yang sama untuk semua. Justru inilah yang menekan positif palsu pada tulisan penutur non-asli.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'Himpunan basis berisi $count sampel; agar batas atas positif palsu $alpha% benar-benar berlaku, dibutuhkan setidaknya $required. Sampai itu tercapai, angka hanya ditampilkan sebagai rujukan dan tidak dipakai menandai apa pun.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'Pada batas atas positif palsu $alpha%, teks ini **ditandai**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'Pada batas atas positif palsu $alpha%, teks ini **tidak ditandai**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Nilai p konservatif $value (terhadap $count sampel basis)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'Skor berada di persentil ke-$percentile dari himpunan basis';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Jaminan ini bersandar pada sampel basis dan teks yang diuji bersifat dapat dipertukarkan — kelompok orang yang sama, jenis tugas menulis yang sama. Bila tulisan siswa jelas membaik, atau jenis tugasnya berubah total, syarat itu tidak lagi berlaku dan himpunan basis perlu dibangun ulang. Perhatikan juga: bila tulisan basisnya sendiri dibuatkan AI, seluruh kalibrasi menjadi miring, jadi kumpulkan dalam kondisi terkendali.';
+
+  @override
+  String get calibrationAddButton => 'Tambahkan ini ke himpunan basis';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Ditambahkan ke himpunan basis — kini $count sampel';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Himpunan basis lokal';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return 'Tersimpan $count sampel ($required dibutuhkan pada α ini)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Kosongkan himpunan basis';
+
+  @override
+  String get settingsCalibrationCleared => 'Himpunan basis dikosongkan';
+
+  @override
+  String get settingsAlphaTitle => 'Batas atas positif palsu (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Saat ini $alpha% — makin rendah makin ketat, tetapi butuh lebih banyak sampel basis (minimal $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'Probabilitas AI $probability% / ambang tanda $threshold% = AI index $index%';
   }

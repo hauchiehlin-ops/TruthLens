@@ -671,6 +671,93 @@
   "privacyWebOverview2": "La página solo lee un archivo, imagen o contenido del portapapeles cuando usted elige activamente importar, escanear o pegarlo; nunca lee otras pestañas, datos de otros sitios ni archivos que no haya seleccionado.",
   "reportAiContentReportTitle": "Informe de detección de contenido de IA",
   "reportAiProbabilityPrefix": "Probabilidad de IA: ",
+  "calibrationTitle": "Calibración con base local",
+  "calibrationEmpty": "Todavía no hay conjunto base. Añade unos cuantos textos que sepas con certeza que escribieron tus estudiantes — trabajos hechos en clase, por ejemplo — y el sistema podrá juzgar según la distribución de este grupo en lugar de un umbral global igual para todos. Eso es precisamente lo que reduce los falsos positivos en escritura no nativa.",
+  "calibrationNotEnough": "El conjunto base tiene {count} muestra(s); para que un techo de falsos positivos del {alpha}% se cumpla de verdad hacen falta al menos {required}. Hasta entonces las cifras son solo orientativas y no se marca nada con ellas.",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "Con un techo de falsos positivos del {alpha}%, este texto **queda marcado**.",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "Con un techo de falsos positivos del {alpha}%, este texto **no queda marcado**.",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "Valor p conservador {value} (frente a {count} muestras base)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "La puntuación cae en el percentil {percentile} del conjunto base",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "Esta garantía se apoya en que las muestras base y el texto analizado sean intercambiables: mismo grupo de personas, mismo tipo de tarea. Si la escritura de alguien ha mejorado claramente, o el tipo de trabajo ha cambiado por completo, deja de cumplirse y hay que rehacer el conjunto base. Ojo además: si las piezas base las escribió una IA, toda la calibración se tuerce, así que recógelas en condiciones controladas.",
+  "calibrationAddButton": "Añadir este texto a la base",
+  "calibrationAdded": "Añadido al conjunto base: ahora {count} muestra(s)",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "Conjunto base local",
+  "settingsCalibrationSubtitle": "{count} muestra(s) guardadas ({required} necesarias con esta α)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "Vaciar el conjunto base",
+  "settingsCalibrationCleared": "Conjunto base vaciado",
+  "settingsAlphaTitle": "Techo de falsos positivos (α)",
+  "settingsAlphaSubtitle": "Actualmente {alpha}% — más bajo es más estricto, pero exige más muestras base (al menos {required})",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "Probabilidad de IA {probability}% / umbral de marcado {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

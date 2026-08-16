@@ -918,6 +918,72 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get calibrationTitle => 'Lokale Referenzkalibrierung';
+
+  @override
+  String get calibrationEmpty =>
+      'Noch keine Referenzmenge vorhanden. Nehmen Sie einige Texte auf, von denen Sie sicher wissen, dass Ihre Schülerinnen und Schüler sie selbst geschrieben haben — etwa im Unterricht angefertigte Arbeiten. Dann beurteilt das System anhand der Verteilung dieser Gruppe statt anhand einer weltweit einheitlichen Schwelle. Genau das senkt die Fehlalarme bei nicht muttersprachlichen Texten.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'Die Referenzmenge umfasst $count Probe(n); damit eine Fehlalarm-Obergrenze von $alpha% tatsächlich hält, sind mindestens $required nötig. Bis dahin dienen die Werte nur zur Orientierung, und es wird nichts auf ihrer Grundlage markiert.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'Bei einer Fehlalarm-Obergrenze von $alpha% wird dieser Text **markiert**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'Bei einer Fehlalarm-Obergrenze von $alpha% wird dieser Text **nicht markiert**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Konservativer p-Wert $value (gegen $count Referenzproben)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'Der Wert liegt im $percentile. Perzentil der Referenzmenge';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Diese Garantie setzt voraus, dass Referenzproben und geprüfter Text austauschbar sind — dieselbe Personengruppe, dieselbe Art von Schreibaufgabe. Hat sich das Schreiben einer Person deutlich verbessert oder wurde der Aufgabentyp völlig gewechselt, gilt das nicht mehr und die Referenzmenge muss neu aufgebaut werden. Außerdem: Wurden die Referenztexte selbst von einer KI verfasst, verzerrt das die gesamte Kalibrierung — sammeln Sie sie unter kontrollierten Bedingungen.';
+
+  @override
+  String get calibrationAddButton => 'Diesen Text zur Referenz hinzufügen';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Zur Referenzmenge hinzugefügt — jetzt $count Probe(n)';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Lokale Referenzmenge';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '$count Probe(n) vorhanden ($required bei diesem α nötig)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Referenzmenge leeren';
+
+  @override
+  String get settingsCalibrationCleared => 'Referenzmenge geleert';
+
+  @override
+  String get settingsAlphaTitle => 'Fehlalarm-Obergrenze (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Derzeit $alpha% — niedriger ist strenger, braucht aber mehr Referenzproben (mindestens $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'KI-Wahrscheinlichkeit $probability% / KI-Kennzeichnungsschwelle $threshold% = AI index $index%';
   }

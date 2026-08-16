@@ -395,6 +395,93 @@
   "reportSuspiciousLocationsTitle": "可疑內容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 機率：",
+  "calibrationTitle": "本地基準校準",
+  "calibrationEmpty": "尚未建立基準集。加入若干份「確定由學生本人撰寫」的文章後（例如課堂當場完成的作業），系統就能改用這個族群自己的分布來判斷，而不是套用全球通用的門檻——這正是降低非母語寫作偽陽性的關鍵。",
+  "calibrationNotEnough": "基準集目前 {count} 份，要讓 {alpha}% 的偽陽性率上限真的成立，至少需要 {required} 份。在補齊之前只顯示參考數值，不會據此標記任何文章。",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "在 {alpha}% 偽陽性率上限的設定下，本文**被標記**。",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "在 {alpha}% 偽陽性率上限的設定下，本文**未被標記**。",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "保守 p 值 {value}（相對於 {count} 份基準樣本）",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "分數落在基準集的第 {percentile} 百分位",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "這個保證的前提是「基準樣本與待測文章可交換」——也就是出自同一群人、同一類寫作任務。若學生的寫作能力明顯進步、或換了完全不同的題型，前提就不再成立，需要重新建立基準集。另請注意：若基準樣本本身就是 AI 代寫的，整個校準都會偏掉，取樣必須在可控環境下進行。",
+  "calibrationAddButton": "把這份加入基準集",
+  "calibrationAdded": "已加入基準集，目前共 {count} 份",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "本地基準校準集",
+  "settingsCalibrationSubtitle": "目前 {count} 份（此 α 需要 {required} 份）",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "清空基準集",
+  "settingsCalibrationCleared": "基準集已清空",
+  "settingsAlphaTitle": "偽陽性率上限（α）",
+  "settingsAlphaSubtitle": "目前 {alpha}% — 數值越低越保守，但需要越多基準樣本（至少 {required} 份）",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "AI 機率 {probability}% / AI 標記門檻閾值 {threshold}% ＝ AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

@@ -395,6 +395,93 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "calibrationTitle": "本地基准校准",
+  "calibrationEmpty": "尚未建立基准集。加入若干份「确定由学生本人撰写」的文章后（例如课堂当场完成的作业），系统就能改用这个群体自己的分布来判断，而不是套用全球通用的门槛——这正是降低非母语写作伪阳性的关键。",
+  "calibrationNotEnough": "基准集目前 {count} 份，要让 {alpha}% 的伪阳性率上限真的成立，至少需要 {required} 份。在补齐之前只显示参考数值，不会据此标记任何文章。",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "在 {alpha}% 伪阳性率上限的设定下，本文**被标记**。",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "在 {alpha}% 伪阳性率上限的设定下，本文**未被标记**。",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "保守 p 值 {value}（相对于 {count} 份基准样本）",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "分数落在基准集的第 {percentile} 百分位",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "这个保证的前提是「基准样本与待测文章可交换」——也就是出自同一群人、同一类写作任务。若学生的写作能力明显进步、或换了完全不同的题型，前提就不再成立，需要重新建立基准集。另请注意：若基准样本本身就是 AI 代写的，整个校准都会偏掉，取样必须在可控环境下进行。",
+  "calibrationAddButton": "把这份加入基准集",
+  "calibrationAdded": "已加入基准集，目前共 {count} 份",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "本地基准校准集",
+  "settingsCalibrationSubtitle": "目前 {count} 份（此 α 需要 {required} 份）",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "清空基准集",
+  "settingsCalibrationCleared": "基准集已清空",
+  "settingsAlphaTitle": "伪阳性率上限（α）",
+  "settingsAlphaSubtitle": "目前 {alpha}% — 数值越低越保守，但需要越多基准样本（至少 {required} 份）",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "AI 几率 {probability}% / AI 标记门槛阈值 {threshold}% ＝ AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

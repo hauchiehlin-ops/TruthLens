@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/detection/device_capabilities.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
+import '../../core/services/calibration_service.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -65,6 +66,55 @@ class SettingsScreen extends StatelessWidget {
             divisions: PreferencesService.confidenceThresholdDivisions,
             label: '${(prefs.confidenceThreshold * 100).round()}%',
             onChanged: (v) => prefs.setThreshold(v),
+          ),
+          const Divider(),
+          // 本地基準校準（共形預測）：α 與基準集管理
+          Consumer<CalibrationService>(
+            builder: (context, calibration, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ListTile(
+                  title: Text(l10n.settingsAlphaTitle),
+                  subtitle: Text(
+                    l10n.settingsAlphaSubtitle(
+                      (calibration.alpha * 100).round(),
+                      calibration.requiredSamples,
+                    ),
+                  ),
+                ),
+                Slider(
+                  value: calibration.alpha,
+                  min: CalibrationService.minAlpha,
+                  max: CalibrationService.maxAlpha,
+                  divisions: 19,
+                  label: '${(calibration.alpha * 100).round()}%',
+                  onChanged: (v) => calibration.setAlpha(v),
+                ),
+                ListTile(
+                  title: Text(l10n.settingsCalibrationTitle),
+                  subtitle: Text(
+                    l10n.settingsCalibrationSubtitle(
+                      calibration.size,
+                      calibration.requiredSamples,
+                    ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: calibration.size == 0
+                        ? null
+                        : () async {
+                            await calibration.clear();
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.settingsCalibrationCleared),
+                              ),
+                            );
+                          },
+                    child: Text(l10n.settingsCalibrationClear),
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(),
           SwitchListTile(

@@ -911,6 +911,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get calibrationTitle => 'Локальная калибровка по эталону';
+
+  @override
+  String get calibrationEmpty =>
+      'Эталонного набора пока нет. Добавьте несколько работ, о которых точно известно, что их писали сами ученики — например, выполненные в классе, — и система будет судить по распределению именно этой группы, а не по единому для всех порогу. Именно это снижает ложные срабатывания на текстах неносителей языка.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'В эталонном наборе $count образц(ов); чтобы предел ложных срабатываний в $alpha% действительно соблюдался, нужно минимум $required. До тех пор цифры показываются лишь для справки и ничего по ним не помечается.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'При пределе ложных срабатываний $alpha% этот текст **помечен**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'При пределе ложных срабатываний $alpha% этот текст **не помечен**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Консервативное p-значение $value (против $count эталонных образцов)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'Оценка находится в $percentile-м процентиле эталонного набора';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Гарантия опирается на обмениваемость эталонных образцов и проверяемого текста — та же группа людей, тот же тип задания. Если письмо ученика заметно улучшилось или тип работы полностью сменился, предпосылка рушится и набор нужно собрать заново. И ещё: если сами эталонные работы написаны ИИ, вся калибровка смещается — собирайте их в контролируемых условиях.';
+
+  @override
+  String get calibrationAddButton => 'Добавить этот текст в эталон';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Добавлено в эталонный набор — теперь $count образц(ов)';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Локальный эталонный набор';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return 'Хранится $count образц(ов) (при этом α нужно $required)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Очистить эталонный набор';
+
+  @override
+  String get settingsCalibrationCleared => 'Эталонный набор очищен';
+
+  @override
+  String get settingsAlphaTitle => 'Предел ложных срабатываний (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Сейчас $alpha% — ниже строже, но требует больше эталонных образцов (минимум $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'Вероятность ИИ $probability% / порог маркировки $threshold% = AI index $index%';
   }

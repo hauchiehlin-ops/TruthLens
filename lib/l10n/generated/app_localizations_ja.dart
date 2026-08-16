@@ -879,6 +879,72 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get calibrationTitle => 'ローカル基準キャリブレーション';
+
+  @override
+  String get calibrationEmpty =>
+      '基準セットがまだありません。学生本人が書いたと確実にわかるもの（授業中に仕上げた課題など）をいくつか登録すると、世界共通のしきい値ではなく、この集団自身の分布に照らして判断できるようになります。非母語話者の文章での誤検出を減らす鍵がまさにこれです。';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return '基準セットは現在$count件ですが、$alpha%の誤検出率上限を実際に成立させるには最低$required件必要です。それまでは参考値の表示のみで、これを根拠に文章を判定することはありません。';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return '誤検出率上限$alpha%の設定において、この文章は**判定対象となりました**。';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return '誤検出率上限$alpha%の設定において、この文章は**判定対象外です**。';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return '保守的p値 $value（基準サンプル$count件に対して）';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'スコアは基準セットの第$percentileパーセンタイルに位置します';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'この保証は「基準サンプルと検査対象が交換可能である」こと、つまり同じ集団・同じ種類の課題であることを前提とします。学生の文章力が明らかに向上した場合や課題の種類が全く変わった場合、前提は崩れるため基準セットの作り直しが必要です。また、基準サンプル自体がAIによる代筆であればキャリブレーション全体が歪むため、収集は管理された環境で行ってください。';
+
+  @override
+  String get calibrationAddButton => 'これを基準セットに追加';
+
+  @override
+  String calibrationAdded(int count) {
+    return '基準セットに追加しました（現在$count件）';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'ローカル基準セット';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '現在$count件（このαには$required件必要）';
+  }
+
+  @override
+  String get settingsCalibrationClear => '基準セットを消去';
+
+  @override
+  String get settingsCalibrationCleared => '基準セットを消去しました';
+
+  @override
+  String get settingsAlphaTitle => '誤検出率上限（α）';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return '現在$alpha% — 低いほど厳格ですが、より多くの基準サンプルが必要です（最低$required件）';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'AI確率 $probability% / AI判定しきい値 $threshold% ＝ AI index $index%';
   }

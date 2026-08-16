@@ -922,6 +922,72 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get calibrationTitle => 'Étalonnage sur base locale';
+
+  @override
+  String get calibrationEmpty =>
+      'Aucun jeu de référence pour l\'instant. Ajoutez quelques textes dont vous êtes sûr qu\'ils ont été écrits par vos élèves — des travaux faits en classe, par exemple — et le système pourra juger d\'après la distribution propre à ce groupe plutôt qu\'un seuil mondial uniforme. C\'est précisément ce qui fait chuter les faux positifs sur l\'écriture non native.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'Le jeu de référence compte $count échantillon(s) ; pour qu\'un plafond de faux positifs de $alpha % tienne réellement, il en faut au moins $required. D\'ici là, les chiffres sont indicatifs et rien n\'est signalé sur cette base.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'Avec un plafond de faux positifs de $alpha %, ce texte **est signalé**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'Avec un plafond de faux positifs de $alpha %, ce texte **n\'est pas signalé**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Valeur p conservatrice $value (face à $count échantillons de référence)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'Le score se situe au ${percentile}e centile du jeu de référence';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Cette garantie suppose que les échantillons de référence et le texte examiné sont échangeables : même groupe de personnes, même type d\'exercice. Si l\'écriture d\'un élève a nettement progressé, ou si le type de devoir a complètement changé, l\'hypothèse tombe et il faut reconstituer le jeu de référence. À noter aussi : si les textes de référence ont eux-mêmes été rédigés par une IA, tout l\'étalonnage est faussé — recueillez-les en conditions contrôlées.';
+
+  @override
+  String get calibrationAddButton => 'Ajouter ce texte à la référence';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Ajouté au jeu de référence — $count échantillon(s) désormais';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Jeu de référence local';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '$count échantillon(s) conservés ($required requis avec cet α)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Vider le jeu de référence';
+
+  @override
+  String get settingsCalibrationCleared => 'Jeu de référence vidé';
+
+  @override
+  String get settingsAlphaTitle => 'Plafond de faux positifs (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Actuellement $alpha % — plus bas est plus strict, mais exige davantage d\'échantillons (au moins $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'Probabilité IA $probability % / seuil de signalement $threshold % = AI index $index %';
   }

@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:truthlens/core/services/calibration_service.dart';
 import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
 import 'package:truthlens/shared/widgets/professional_report_header.dart';
+
+/// 報告頁頭內含共形校準卡，需要 CalibrationService provider 才能建構
+Widget _testApp(Widget child) => MultiProvider(
+  providers: [ChangeNotifierProvider.value(value: _calibration)],
+  child: MaterialApp(
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    home: Scaffold(body: child),
+  ),
+);
+
+late CalibrationService _calibration;
 
 /// 足以通過棄權門檻的正文
 final _sampleBody = List.filled(200, 'alpha').join(' ');
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    _calibration = CalibrationService();
+    await _calibration.load();
+  });
+
   DetectionResult sampleResult({String sourceFileName = ''}) => DetectionResult(
     id: 'header-test',
     analyzedAt: DateTime(2026, 8, 12, 21, 21),
@@ -53,21 +82,7 @@ void main() {
 
     final result = sampleResult();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: Scaffold(
-          body: ProfessionalReportHeader(result: result, onDownloadPdf: () {}),
-        ),
-      ),
-    );
+    await tester.pumpWidget(_testApp(ProfessionalReportHeader(result: result, onDownloadPdf: () {})));
 
     final scrollable = find.byType(Scrollable).first;
     for (
@@ -93,24 +108,10 @@ void main() {
   testWidgets('report title includes the imported source file name', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: Scaffold(
-          body: ProfessionalReportHeader(
+    await tester.pumpWidget(_testApp(ProfessionalReportHeader(
             result: sampleResult(sourceFileName: 'paper.md'),
             onDownloadPdf: () {},
-          ),
-        ),
-      ),
-    );
+          )));
 
     expect(find.text('AI Content Detection Report：paper.md'), findsOneWidget);
   });
@@ -123,24 +124,10 @@ void main() {
 
       final result = sampleResult();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          home: Scaffold(
-            body: ProfessionalReportHeader(
+      await tester.pumpWidget(_testApp(ProfessionalReportHeader(
               result: result,
               onDownloadPdf: () {},
-            ),
-          ),
-        ),
-      );
+            )));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);

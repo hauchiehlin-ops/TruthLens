@@ -908,6 +908,72 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get calibrationTitle => 'Penentukuran asas setempat';
+
+  @override
+  String get calibrationEmpty =>
+      'Belum ada set asas. Tambahkan beberapa tulisan yang anda pasti ditulis sendiri oleh pelajar — contohnya kerja yang disiapkan di dalam kelas — supaya sistem boleh menilai berdasarkan taburan kumpulan ini sendiri, bukan ambang global yang sama untuk semua. Inilah yang menurunkan positif palsu pada tulisan bukan penutur asli.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'Set asas mempunyai $count sampel; untuk siling positif palsu $alpha% benar-benar berkuat kuasa, sekurang-kurangnya $required diperlukan. Sehingga itu angka hanya dipaparkan sebagai rujukan dan tiada apa ditanda berdasarkannya.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'Pada siling positif palsu $alpha%, teks ini **ditanda**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'Pada siling positif palsu $alpha%, teks ini **tidak ditanda**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Nilai p konservatif $value (berbanding $count sampel asas)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'Skor berada pada persentil ke-$percentile set asas';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Jaminan ini bergantung pada sampel asas dan teks yang diuji boleh ditukar ganti — kumpulan orang yang sama, jenis tugasan menulis yang sama. Jika penulisan pelajar jelas bertambah baik, atau jenis tugasan berubah sepenuhnya, syarat itu tidak lagi dipenuhi dan set asas perlu dibina semula. Perhatikan juga: jika tulisan asas itu sendiri ditulis oleh AI, seluruh penentukuran akan senget, jadi kumpulkannya dalam keadaan terkawal.';
+
+  @override
+  String get calibrationAddButton => 'Tambah teks ini ke set asas';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Ditambah ke set asas — kini $count sampel';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Set asas setempat';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '$count sampel disimpan ($required diperlukan pada α ini)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Kosongkan set asas';
+
+  @override
+  String get settingsCalibrationCleared => 'Set asas dikosongkan';
+
+  @override
+  String get settingsAlphaTitle => 'Siling positif palsu (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Kini $alpha% — lebih rendah lebih ketat, tetapi memerlukan lebih banyak sampel asas (sekurang-kurangnya $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'Kebarangkalian AI $probability% / ambang penanda $threshold% = AI index $index%';
   }

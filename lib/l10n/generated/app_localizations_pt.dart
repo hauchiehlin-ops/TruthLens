@@ -920,6 +920,72 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get calibrationTitle => 'Calibração com base local';
+
+  @override
+  String get calibrationEmpty =>
+      'Ainda não há conjunto base. Acrescente alguns textos que você sabe terem sido escritos pelos próprios alunos — trabalhos feitos em aula, por exemplo — e o sistema poderá julgar pela distribuição deste grupo em vez de um limite global igual para todos. É justamente isso que reduz os falsos positivos na escrita não nativa.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'O conjunto base tem $count amostra(s); para que um teto de falsos positivos de $alpha% valha de fato, são necessárias pelo menos $required. Até lá os números são apenas de referência e nada é sinalizado com base neles.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'Com um teto de falsos positivos de $alpha%, este texto **é sinalizado**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'Com um teto de falsos positivos de $alpha%, este texto **não é sinalizado**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Valor p conservador $value (contra $count amostras base)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'A pontuação fica no percentil $percentile do conjunto base';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'Essa garantia se apoia em as amostras base e o texto analisado serem intercambiáveis: mesmo grupo de pessoas, mesmo tipo de tarefa. Se a escrita de alguém melhorou claramente, ou o tipo de trabalho mudou por completo, isso deixa de valer e o conjunto base precisa ser refeito. Note ainda: se os textos base foram escritos por uma IA, toda a calibração distorce — colete-os em condições controladas.';
+
+  @override
+  String get calibrationAddButton => 'Adicionar este texto à base';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Adicionado ao conjunto base — agora $count amostra(s)';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Conjunto base local';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '$count amostra(s) guardadas ($required necessárias com este α)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Esvaziar o conjunto base';
+
+  @override
+  String get settingsCalibrationCleared => 'Conjunto base esvaziado';
+
+  @override
+  String get settingsAlphaTitle => 'Teto de falsos positivos (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Atualmente $alpha% — mais baixo é mais rígido, mas exige mais amostras base (pelo menos $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'Probabilidade de IA $probability% / limite de sinalização $threshold% = AI index $index%';
   }

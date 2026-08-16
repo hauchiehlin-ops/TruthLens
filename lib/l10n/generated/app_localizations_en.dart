@@ -903,6 +903,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get calibrationTitle => 'Local baseline calibration';
+
+  @override
+  String get calibrationEmpty =>
+      'No baseline set yet. Add a handful of pieces you know your students wrote themselves — work completed in class, for instance — and the system can judge against this group\'s own distribution instead of a one-size-fits-all global threshold. That is exactly what brings down false positives on non-native writing.';
+
+  @override
+  String calibrationNotEnough(int count, int required, int alpha) {
+    return 'The baseline holds $count sample(s); making a $alpha% false-positive ceiling actually hold needs at least $required. Until then the figures are shown for reference only and nothing gets flagged on their basis.';
+  }
+
+  @override
+  String calibrationFlagged(int alpha) {
+    return 'At a $alpha% false-positive ceiling, this text **is flagged**.';
+  }
+
+  @override
+  String calibrationNotFlagged(int alpha) {
+    return 'At a $alpha% false-positive ceiling, this text **is not flagged**.';
+  }
+
+  @override
+  String calibrationPValue(String value, int count) {
+    return 'Conservative p-value $value (against $count baseline samples)';
+  }
+
+  @override
+  String calibrationPercentile(int percentile) {
+    return 'The score sits at the ${percentile}th percentile of the baseline';
+  }
+
+  @override
+  String get calibrationCaveat =>
+      'This guarantee rests on the baseline samples and the text under test being exchangeable — same group of people, same kind of writing task. If a student\'s writing has clearly improved, or the assignment type has changed entirely, that no longer holds and the baseline needs rebuilding. Note too: if the baseline pieces were themselves ghost-written by AI, the whole calibration skews, so collect them under controlled conditions.';
+
+  @override
+  String get calibrationAddButton => 'Add this to the baseline';
+
+  @override
+  String calibrationAdded(int count) {
+    return 'Added to the baseline — $count sample(s) now';
+  }
+
+  @override
+  String get settingsCalibrationTitle => 'Local baseline set';
+
+  @override
+  String settingsCalibrationSubtitle(int count, int required) {
+    return '$count sample(s) held ($required needed at this α)';
+  }
+
+  @override
+  String get settingsCalibrationClear => 'Clear the baseline set';
+
+  @override
+  String get settingsCalibrationCleared => 'Baseline set cleared';
+
+  @override
+  String get settingsAlphaTitle => 'False-positive ceiling (α)';
+
+  @override
+  String settingsAlphaSubtitle(int alpha, int required) {
+    return 'Currently $alpha% — lower is stricter but needs more baseline samples (at least $required)';
+  }
+
+  @override
   String reportAiIndexFormula(int probability, int threshold, int index) {
     return 'AI probability $probability% / AI flag threshold $threshold% = AI index $index%';
   }

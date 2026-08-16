@@ -671,6 +671,93 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "calibrationTitle": "ローカル基準キャリブレーション",
+  "calibrationEmpty": "基準セットがまだありません。学生本人が書いたと確実にわかるもの（授業中に仕上げた課題など）をいくつか登録すると、世界共通のしきい値ではなく、この集団自身の分布に照らして判断できるようになります。非母語話者の文章での誤検出を減らす鍵がまさにこれです。",
+  "calibrationNotEnough": "基準セットは現在{count}件ですが、{alpha}%の誤検出率上限を実際に成立させるには最低{required}件必要です。それまでは参考値の表示のみで、これを根拠に文章を判定することはありません。",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "誤検出率上限{alpha}%の設定において、この文章は**判定対象となりました**。",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "誤検出率上限{alpha}%の設定において、この文章は**判定対象外です**。",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "保守的p値 {value}（基準サンプル{count}件に対して）",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "スコアは基準セットの第{percentile}パーセンタイルに位置します",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "この保証は「基準サンプルと検査対象が交換可能である」こと、つまり同じ集団・同じ種類の課題であることを前提とします。学生の文章力が明らかに向上した場合や課題の種類が全く変わった場合、前提は崩れるため基準セットの作り直しが必要です。また、基準サンプル自体がAIによる代筆であればキャリブレーション全体が歪むため、収集は管理された環境で行ってください。",
+  "calibrationAddButton": "これを基準セットに追加",
+  "calibrationAdded": "基準セットに追加しました（現在{count}件）",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "ローカル基準セット",
+  "settingsCalibrationSubtitle": "現在{count}件（このαには{required}件必要）",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "基準セットを消去",
+  "settingsCalibrationCleared": "基準セットを消去しました",
+  "settingsAlphaTitle": "誤検出率上限（α）",
+  "settingsAlphaSubtitle": "現在{alpha}% — 低いほど厳格ですが、より多くの基準サンプルが必要です（最低{required}件）",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "AI確率 {probability}% / AI判定しきい値 {threshold}% ＝ AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

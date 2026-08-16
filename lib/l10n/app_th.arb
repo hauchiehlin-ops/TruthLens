@@ -671,6 +671,93 @@
   "privacyWebOverview2": "หน้านี้จะอ่านไฟล์ รูปภาพ หรือเนื้อหาคลิปบอร์ดเฉพาะเมื่อคุณเลือกที่จะนำเข้า สแกน หรือวางอย่างจริงจังเท่านั้น จะไม่อ่านแท็บอื่น ข้อมูลของเว็บไซต์อื่น หรือไฟล์ที่คุณไม่ได้เลือก",
   "reportAiContentReportTitle": "รายงานการตรวจจับเนื้อหา AI",
   "reportAiProbabilityPrefix": "ความน่าจะเป็น AI: ",
+  "calibrationTitle": "การปรับเทียบด้วยฐานข้อมูลในเครื่อง",
+  "calibrationEmpty": "ยังไม่มีชุดฐานเทียบ ลองเพิ่มงานเขียนที่แน่ใจว่านักเรียนเขียนเองสัก 2-3 ชิ้น (เช่น งานที่ทำเสร็จในห้องเรียน) ระบบจะได้ตัดสินโดยเทียบกับการกระจายตัวของกลุ่มนี้เอง แทนที่จะใช้เกณฑ์เดียวกันทั้งโลก ซึ่งนี่แหละคือกุญแจสำคัญที่ลดการแจ้งเตือนผิดพลาดกับงานเขียนของผู้ที่ไม่ใช่เจ้าของภาษา",
+  "calibrationNotEnough": "ชุดฐานเทียบมี {count} ชิ้น แต่การจะให้เพดานอัตราแจ้งเตือนผิดพลาด {alpha}% เป็นจริงได้ ต้องมีอย่างน้อย {required} ชิ้น ระหว่างนี้จะแสดงตัวเลขไว้อ้างอิงเท่านั้น และจะไม่ใช้ทำเครื่องหมายงานใด ๆ",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "ที่เพดานอัตราแจ้งเตือนผิดพลาด {alpha}% งานชิ้นนี้**ถูกทำเครื่องหมาย**",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "ที่เพดานอัตราแจ้งเตือนผิดพลาด {alpha}% งานชิ้นนี้**ไม่ถูกทำเครื่องหมาย**",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "ค่า p แบบอนุรักษ์ {value} (เทียบกับตัวอย่างฐาน {count} ชิ้น)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "คะแนนอยู่ที่เปอร์เซ็นไทล์ที่ {percentile} ของชุดฐานเทียบ",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "การรับประกันนี้ตั้งอยู่บนสมมติฐานว่าตัวอย่างฐานและงานที่ตรวจสลับกันได้ คือมาจากคนกลุ่มเดียวกันและงานเขียนประเภทเดียวกัน หากทักษะการเขียนของนักเรียนดีขึ้นชัดเจน หรือเปลี่ยนประเภทงานไปคนละแบบ สมมติฐานก็ใช้ไม่ได้ ต้องสร้างชุดฐานใหม่ อีกข้อควรระวัง: หากงานที่ใช้เป็นฐานถูก AI เขียนแทนเสียเอง การปรับเทียบทั้งหมดจะเพี้ยน จึงควรเก็บตัวอย่างในสภาพแวดล้อมที่ควบคุมได้",
+  "calibrationAddButton": "เพิ่มงานชิ้นนี้เข้าชุดฐานเทียบ",
+  "calibrationAdded": "เพิ่มเข้าชุดฐานเทียบแล้ว ขณะนี้มี {count} ชิ้น",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "ชุดฐานเทียบในเครื่อง",
+  "settingsCalibrationSubtitle": "ขณะนี้มี {count} ชิ้น (ค่า α นี้ต้องการ {required} ชิ้น)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "ล้างชุดฐานเทียบ",
+  "settingsCalibrationCleared": "ล้างชุดฐานเทียบแล้ว",
+  "settingsAlphaTitle": "เพดานอัตราแจ้งเตือนผิดพลาด (α)",
+  "settingsAlphaSubtitle": "ขณะนี้ {alpha}% — ยิ่งต่ำยิ่งเข้มงวด แต่ต้องใช้ตัวอย่างฐานมากขึ้น (อย่างน้อย {required} ชิ้น)",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "ความน่าจะเป็น AI {probability}% / เกณฑ์การตั้งค่าสถานะ {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

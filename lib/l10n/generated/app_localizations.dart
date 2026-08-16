@@ -1562,6 +1562,102 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @calibrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local baseline calibration'**
+  String get calibrationTitle;
+
+  /// No description provided for @calibrationEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No baseline set yet. Add a handful of pieces you know your students wrote themselves — work completed in class, for instance — and the system can judge against this group\'s own distribution instead of a one-size-fits-all global threshold. That is exactly what brings down false positives on non-native writing.'**
+  String get calibrationEmpty;
+
+  /// No description provided for @calibrationNotEnough.
+  ///
+  /// In en, this message translates to:
+  /// **'The baseline holds {count} sample(s); making a {alpha}% false-positive ceiling actually hold needs at least {required}. Until then the figures are shown for reference only and nothing gets flagged on their basis.'**
+  String calibrationNotEnough(int count, int required, int alpha);
+
+  /// No description provided for @calibrationFlagged.
+  ///
+  /// In en, this message translates to:
+  /// **'At a {alpha}% false-positive ceiling, this text **is flagged**.'**
+  String calibrationFlagged(int alpha);
+
+  /// No description provided for @calibrationNotFlagged.
+  ///
+  /// In en, this message translates to:
+  /// **'At a {alpha}% false-positive ceiling, this text **is not flagged**.'**
+  String calibrationNotFlagged(int alpha);
+
+  /// No description provided for @calibrationPValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Conservative p-value {value} (against {count} baseline samples)'**
+  String calibrationPValue(String value, int count);
+
+  /// No description provided for @calibrationPercentile.
+  ///
+  /// In en, this message translates to:
+  /// **'The score sits at the {percentile}th percentile of the baseline'**
+  String calibrationPercentile(int percentile);
+
+  /// No description provided for @calibrationCaveat.
+  ///
+  /// In en, this message translates to:
+  /// **'This guarantee rests on the baseline samples and the text under test being exchangeable — same group of people, same kind of writing task. If a student\'s writing has clearly improved, or the assignment type has changed entirely, that no longer holds and the baseline needs rebuilding. Note too: if the baseline pieces were themselves ghost-written by AI, the whole calibration skews, so collect them under controlled conditions.'**
+  String get calibrationCaveat;
+
+  /// No description provided for @calibrationAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add this to the baseline'**
+  String get calibrationAddButton;
+
+  /// No description provided for @calibrationAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to the baseline — {count} sample(s) now'**
+  String calibrationAdded(int count);
+
+  /// No description provided for @settingsCalibrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local baseline set'**
+  String get settingsCalibrationTitle;
+
+  /// No description provided for @settingsCalibrationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sample(s) held ({required} needed at this α)'**
+  String settingsCalibrationSubtitle(int count, int required);
+
+  /// No description provided for @settingsCalibrationClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the baseline set'**
+  String get settingsCalibrationClear;
+
+  /// No description provided for @settingsCalibrationCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Baseline set cleared'**
+  String get settingsCalibrationCleared;
+
+  /// No description provided for @settingsAlphaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'False-positive ceiling (α)'**
+  String get settingsAlphaTitle;
+
+  /// No description provided for @settingsAlphaSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently {alpha}% — lower is stricter but needs more baseline samples (at least {required})'**
+  String settingsAlphaSubtitle(int alpha, int required);
+
   /// No description provided for @reportAiIndexFormula.
   ///
   /// In en, this message translates to:

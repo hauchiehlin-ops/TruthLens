@@ -671,6 +671,93 @@
   "privacyWebOverview2": "이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.",
   "reportAiContentReportTitle": "AI 콘텐츠 감지 보고서",
   "reportAiProbabilityPrefix": "AI 확률: ",
+  "calibrationTitle": "로컬 기준 보정",
+  "calibrationEmpty": "아직 기준 세트가 없습니다. 학생이 직접 쓴 것이 확실한 글(예: 수업 중 완성한 과제)을 몇 편 추가하면, 전 세계 공통 기준값 대신 이 집단 자체의 분포에 견주어 판단할 수 있습니다. 비원어민 글쓰기의 오탐을 줄이는 핵심이 바로 이것입니다.",
+  "calibrationNotEnough": "기준 세트가 현재 {count}편인데, {alpha}% 오탐률 상한이 실제로 성립하려면 최소 {required}편이 필요합니다. 그때까지는 참고 수치만 보여 주며 이를 근거로 어떤 글도 표시하지 않습니다.",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "오탐률 상한 {alpha}% 설정에서 이 글은 **표시되었습니다**.",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "오탐률 상한 {alpha}% 설정에서 이 글은 **표시되지 않았습니다**.",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "보수적 p값 {value}(기준 표본 {count}편 대비)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "점수가 기준 세트의 {percentile}번째 백분위에 있습니다",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "이 보장은 기준 표본과 검사 대상이 교환 가능하다는 것, 즉 같은 집단·같은 종류의 과제라는 전제에 기댑니다. 학생의 글쓰기 실력이 뚜렷이 늘었거나 과제 유형이 완전히 바뀌었다면 전제가 무너지므로 기준 세트를 다시 만들어야 합니다. 또한 기준 글 자체가 AI 대필이라면 보정 전체가 틀어지므로 통제된 환경에서 수집하세요.",
+  "calibrationAddButton": "이 글을 기준 세트에 추가",
+  "calibrationAdded": "기준 세트에 추가했습니다 — 현재 {count}편",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "로컬 기준 세트",
+  "settingsCalibrationSubtitle": "현재 {count}편(이 α에는 {required}편 필요)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "기준 세트 비우기",
+  "settingsCalibrationCleared": "기준 세트를 비웠습니다",
+  "settingsAlphaTitle": "오탐률 상한(α)",
+  "settingsAlphaSubtitle": "현재 {alpha}% — 낮을수록 엄격하지만 기준 표본이 더 많이 필요합니다(최소 {required}편)",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "AI 확률 {probability}% / AI 표시 기준값 {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {

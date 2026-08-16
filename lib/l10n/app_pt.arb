@@ -671,6 +671,93 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "calibrationTitle": "Calibração com base local",
+  "calibrationEmpty": "Ainda não há conjunto base. Acrescente alguns textos que você sabe terem sido escritos pelos próprios alunos — trabalhos feitos em aula, por exemplo — e o sistema poderá julgar pela distribuição deste grupo em vez de um limite global igual para todos. É justamente isso que reduz os falsos positivos na escrita não nativa.",
+  "calibrationNotEnough": "O conjunto base tem {count} amostra(s); para que um teto de falsos positivos de {alpha}% valha de fato, são necessárias pelo menos {required}. Até lá os números são apenas de referência e nada é sinalizado com base neles.",
+  "@calibrationNotEnough": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      },
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationFlagged": "Com um teto de falsos positivos de {alpha}%, este texto **é sinalizado**.",
+  "@calibrationFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationNotFlagged": "Com um teto de falsos positivos de {alpha}%, este texto **não é sinalizado**.",
+  "@calibrationNotFlagged": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPValue": "Valor p conservador {value} (contra {count} amostras base)",
+  "@calibrationPValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationPercentile": "A pontuação fica no percentil {percentile} do conjunto base",
+  "@calibrationPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationCaveat": "Essa garantia se apoia em as amostras base e o texto analisado serem intercambiáveis: mesmo grupo de pessoas, mesmo tipo de tarefa. Se a escrita de alguém melhorou claramente, ou o tipo de trabalho mudou por completo, isso deixa de valer e o conjunto base precisa ser refeito. Note ainda: se os textos base foram escritos por uma IA, toda a calibração distorce — colete-os em condições controladas.",
+  "calibrationAddButton": "Adicionar este texto à base",
+  "calibrationAdded": "Adicionado ao conjunto base — agora {count} amostra(s)",
+  "@calibrationAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationTitle": "Conjunto base local",
+  "settingsCalibrationSubtitle": "{count} amostra(s) guardadas ({required} necessárias com este α)",
+  "@settingsCalibrationSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalibrationClear": "Esvaziar o conjunto base",
+  "settingsCalibrationCleared": "Conjunto base esvaziado",
+  "settingsAlphaTitle": "Teto de falsos positivos (α)",
+  "settingsAlphaSubtitle": "Atualmente {alpha}% — mais baixo é mais rígido, mas exige mais amostras base (pelo menos {required})",
+  "@settingsAlphaSubtitle": {
+    "placeholders": {
+      "alpha": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
   "reportAiIndexFormula": "Probabilidade de IA {probability}% / limite de sinalização {threshold}% = AI index {index}%",
   "@reportAiIndexFormula": {
     "placeholders": {
