@@ -922,6 +922,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get settingsStoreTextTitle =>
+      'Conserver le texte pour la validation hors ligne';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Une fois activé, les textes ajoutés à la référence sont conservés localement avec leur contenu intégral, ce qui permet de les exporter ensuite comme corpus pour l\'évaluation hors ligne.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Ces textes sont le plus souvent des travaux d\'élèves, donc sensibles. N\'activez cette option que pendant la constitution effective d\'un corpus de validation, et utilisez « Effacer les textes conservés » dès l\'export terminé. L\'effacement n\'affecte pas la prédiction conforme : elle n\'a besoin que des scores.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Exporter le corpus d\'étalonnage';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Prêts à l\'export : $human humains, $ai IA ($required de chaque nécessaires)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Exporter en JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Rien à exporter — activez d\'abord « conserver le texte », puis constituez la référence';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count échantillon(s) exporté(s) ; $skipped ignoré(s) faute de texte conservé';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Effacer les textes conservés';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Tous les textes conservés ont été effacés. Les scores et l\'étalonnage restent inchangés.';
+
+  @override
   String get helpDesignTitle => 'Principes de conception et limites connues';
 
   @override

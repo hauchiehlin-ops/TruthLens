@@ -671,6 +671,39 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "settingsStoreTextTitle": "オフライン検証用に本文を保存",
+  "settingsStoreTextSubtitle": "有効にすると、基準セットに追加した文章が本文ごと端末内に保存され、後でコーパスファイルとして書き出してオフライン評価に使えます。",
+  "settingsStoreTextWarning": "本文は多くの場合が学生の課題であり、機微な情報です。オフライン検証用のコーパスを実際に収集するときだけ有効にし、書き出し後は下の「保存した本文を消去」で速やかに削除してください。消去しても共形予測には影響しません（スコアのみを使うため）。",
+  "settingsExportCorpusTitle": "キャリブレーションコーパスを書き出す",
+  "settingsExportCorpusSubtitle": "書き出し可能：人間{human}件、AI{ai}件（オフライン評価には各{required}件必要）",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "JSONLとして書き出す",
+  "settingsExportCorpusEmpty": "書き出せるサンプルがありません。まず「本文を保存」を有効にし、基準セットを蓄積してください",
+  "settingsExportCorpusDone": "{count}件を書き出しました（本文が未保存の{skipped}件はスキップ）",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "保存した本文を消去",
+  "settingsClearStoredTextDone": "保存されていた本文をすべて消去しました。スコアとキャリブレーションはそのままです。",
   "helpDesignTitle": "設計思想と既知の限界",
   "helpShiftTitle": "1. 位置づけの転換：スコアの正確さでは競わない",
   "helpShiftBody": "市場のほとんどの検出器は同じ問いに答えています。「この文章はAIが書いたように見えるか？」\n\nこれは負けが決まった軍拡競争です。モデルが強くなるほど生成文の統計的特徴は人間に近づき、書き換えツールの進歩は検出器よりはるかに速い。この道ではサーバー側の大規模モデルも負け方が遅いだけです。\n\nTruthLensは別の問いを立てます。「この文書がどのように作られたかについて、手元にどんな証拠があり、それぞれどれほど強いのか？」\n\nつまり文体からの推測ではなく、来歴の証拠と統計的に誠実な結論へ軸足を移します。本ツールが単一スコアの精度競争を意図的に追わず、証拠を個別に並べ、根拠が足りないときは分からないと明言するのはこのためです。ブラウザ実行の本当の利点は推論速度ではなく、サーバーには見えないもの——完全なファイルと、利用者自身が集めた基準——が見えることです。",

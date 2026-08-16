@@ -671,6 +671,39 @@
   "privacyWebOverview2": "La página solo lee un archivo, imagen o contenido del portapapeles cuando usted elige activamente importar, escanear o pegarlo; nunca lee otras pestañas, datos de otros sitios ni archivos que no haya seleccionado.",
   "reportAiContentReportTitle": "Informe de detección de contenido de IA",
   "reportAiProbabilityPrefix": "Probabilidad de IA: ",
+  "settingsStoreTextTitle": "Conservar el texto para validación sin conexión",
+  "settingsStoreTextSubtitle": "Al activarlo, los textos que añadas a la base se guardan localmente con su contenido completo, para poder exportarlos luego como corpus y evaluarlos sin conexión.",
+  "settingsStoreTextWarning": "Ese texto suele ser trabajo de estudiantes y por tanto es sensible. Actívalo solo mientras reúnes de verdad un corpus de validación, y usa «Borrar el texto guardado» en cuanto hayas exportado. Borrarlo no afecta a la predicción conforme: esta solo necesita las puntuaciones.",
+  "settingsExportCorpusTitle": "Exportar el corpus de calibración",
+  "settingsExportCorpusSubtitle": "Listos para exportar: {human} humanos, {ai} de IA (hacen falta {required} de cada uno)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Exportar como JSONL",
+  "settingsExportCorpusEmpty": "No hay nada que exportar: activa primero «conservar el texto» y ve acumulando la base",
+  "settingsExportCorpusDone": "Se exportaron {count} muestras; se omitieron {skipped} sin texto guardado",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Borrar el texto guardado",
+  "settingsClearStoredTextDone": "Se borró todo el texto guardado. Las puntuaciones y la calibración siguen intactas.",
   "helpDesignTitle": "Filosofía de diseño y límites conocidos",
   "helpShiftTitle": "1. El giro: no competimos por la exactitud de la puntuación",
   "helpShiftBody": "Casi todos los detectores del mercado responden a la misma pregunta: ¿este texto parece escrito por una IA?\n\nEsa es una carrera armamentística que se pierde. Cuanto más potente es el modelo, más se acerca su salida a la escritura humana en términos estadísticos, y las herramientas de reescritura mejoran mucho más rápido que los detectores. Por ese camino, un gran modelo en servidor solo pierde más despacio.\n\nTruthLens plantea otra pregunta: ¿qué pruebas tenemos realmente sobre cómo llegó a existir este documento, y qué peso tiene cada una?\n\nEs pasar de adivinar el estilo a sopesar pruebas de origen junto a conclusiones estadísticamente honestas. Por eso esta herramienta no persigue un puesto en los rankings de exactitud de puntuación única, sino que expone cada prueba por separado y dice claramente cuándo no lo sabe. La verdadera ventaja de ejecutarse en tu navegador no es la velocidad, sino ver lo que un servidor nunca llega a ver: el archivo completo y la base que tú mismo has reunido.",

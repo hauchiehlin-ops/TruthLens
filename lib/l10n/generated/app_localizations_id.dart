@@ -911,6 +911,44 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get settingsStoreTextTitle => 'Simpan teks untuk validasi luring';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Bila aktif, tulisan yang Anda tambahkan ke basis disimpan di perangkat beserta teks lengkapnya, sehingga nanti bisa diekspor sebagai berkas korpus untuk evaluasi luring.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Teks itu umumnya tugas siswa sehingga bersifat sensitif. Aktifkan hanya selama Anda benar-benar mengumpulkan korpus validasi, dan gunakan “Hapus teks tersimpan” begitu selesai mengekspor. Menghapusnya tidak memengaruhi prediksi konformal — ia hanya perlu skornya.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Ekspor korpus kalibrasi';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Siap diekspor: $human manusia, $ai AI (dibutuhkan $required untuk tiap kelas)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Ekspor sebagai JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Tidak ada yang bisa diekspor — aktifkan dulu “simpan teks”, lalu kumpulkan basisnya';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count sampel diekspor; $skipped dilewati karena tanpa teks tersimpan';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Hapus teks tersimpan';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Semua teks tersimpan telah dihapus. Skor dan kalibrasi tidak berubah.';
+
+  @override
   String get helpDesignTitle => 'Filosofi desain dan batasan yang diketahui';
 
   @override

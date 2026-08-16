@@ -395,6 +395,39 @@
   "reportSuspiciousLocationsTitle": "可疑內容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 機率：",
+  "settingsStoreTextTitle": "保留原文以供離線驗證",
+  "settingsStoreTextSubtitle": "開啟後，加入基準集的文章會連同原文一起保存在本機，之後可匯出成語料檔進行離線評測。",
+  "settingsStoreTextWarning": "原文多為學生作業，屬敏感資料。僅在你確實要蒐集離線驗證語料時開啟，匯出後可用下方「清除已保存的原文」立即移除；清除不影響共形預測（它只需要分數）。",
+  "settingsExportCorpusTitle": "匯出校準語料",
+  "settingsExportCorpusSubtitle": "可匯出：人類 {human} 份、AI {ai} 份（離線評測每類需 {required} 份）",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "匯出為 JSONL",
+  "settingsExportCorpusEmpty": "沒有可匯出的樣本——請先開啟「保留原文」再累積基準集",
+  "settingsExportCorpusDone": "已匯出 {count} 份（略過 {skipped} 份未保留原文的樣本）",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "清除已保存的原文",
+  "settingsClearStoredTextDone": "已清除所有原文，分數與校準結果保留不變",
   "helpDesignTitle": "設計理念與已知限制",
   "helpShiftTitle": "一、核心定位轉換：不比誰的分數準",
   "helpShiftBody": "市面上的偵測器幾乎都在回答同一個問題：「這段文字看起來像不像 AI 寫的？」\n\n這是一場必輸的軍備競賽。模型越強，生成文字的統計特徵就越接近人類；而改寫工具的進步速度遠快於偵測器。在這條路上，伺服器端的大模型只是輸得慢一點。\n\nTruthLens 改問另一個問題：「關於這份文件是怎麼產生的，我們手上有哪些證據？各自有多強？」\n\n也就是從「文字風格推測」轉向「來源證據 ＋ 統計上誠實的結論」。這是為什麼本工具刻意不追求單一分數的準確度排名，而是把每一項證據分開攤給你看，並在證據不足時明白說不知道。瀏覽器端執行帶來的真正優勢不是推論速度，而是它看得到伺服器看不到的東西——完整的檔案，以及你自己蒐集的族群基準。",

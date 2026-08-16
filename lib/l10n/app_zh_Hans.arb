@@ -395,6 +395,39 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "settingsStoreTextTitle": "保留原文以供离线验证",
+  "settingsStoreTextSubtitle": "开启后，加入基准集的文章会连同原文一起保存在本机，之后可导出成语料档进行离线评测。",
+  "settingsStoreTextWarning": "原文多为学生作业，属敏感数据。仅在你确实要收集离线验证语料时开启，导出后可用下方「清除已保存的原文」立即移除；清除不影响共形预测（它只需要分数）。",
+  "settingsExportCorpusTitle": "导出校准语料",
+  "settingsExportCorpusSubtitle": "可导出：人类 {human} 份、AI {ai} 份（离线评测每类需 {required} 份）",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "导出为 JSONL",
+  "settingsExportCorpusEmpty": "没有可导出的样本——请先开启「保留原文」再累积基准集",
+  "settingsExportCorpusDone": "已导出 {count} 份（略过 {skipped} 份未保留原文的样本）",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "清除已保存的原文",
+  "settingsClearStoredTextDone": "已清除所有原文，分数与校准结果保留不变",
   "helpDesignTitle": "设计理念与已知限制",
   "helpShiftTitle": "一、核心定位转换：不比谁的分数准",
   "helpShiftBody": "市面上的检测器几乎都在回答同一个问题：「这段文字看起来像不像 AI 写的？」\n\n这是一场必输的军备竞赛。模型越强，生成文字的统计特征就越接近人类；而改写工具的进步速度远快于检测器。在这条路上，服务器端的大模型只是输得慢一点。\n\nTruthLens 改问另一个问题：「关于这份文件是怎么产生的，我们手上有哪些证据？各自有多强？」\n\n也就是从「文字风格推测」转向「来源证据 ＋ 统计上诚实的结论」。这是为什么本工具刻意不追求单一分数的准确度排名，而是把每一项证据分开摊给你看，并在证据不足时明白说不知道。浏览器端执行带来的真正优势不是推论速度，而是它看得到服务器看不到的东西——完整的文件，以及你自己收集的族群基准。",

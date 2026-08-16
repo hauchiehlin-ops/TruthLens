@@ -35,6 +35,30 @@ cd training
     --device cpu --dtype float32 --limit 4
 ```
 
+## 由 App 實戰累積語料（推薦，邊跑邊蒐集）
+
+不必另外辦一次資料蒐集。教師日常使用時：
+
+1. 設定 → 開啟「**保留原文以供離線驗證**」（預設關閉）
+2. 分析確定由學生本人撰寫的作業 → 報告頁按「加入為人類撰寫基準」
+3. 分析貼上的 AI 產出 → 按「加入為 AI 產出樣本」
+4. 累積夠了 → 設定 → 「**匯出校準語料**」→ 得到 `truthlens_corpus.jsonl`
+
+匯出格式與 `prepare_corpus.py` 的輸出**完全一致**，因此可跳過語料準備步驟，
+直接進計分：
+
+```bash
+.venv/bin/python binoculars/run_binoculars.py --corpus /path/to/truthlens_corpus.jsonl
+.venv/bin/python binoculars/evaluate.py --scores binoculars/data/scores.jsonl
+```
+
+這條路徑的好處是**語料就是真實使用場景本身**——非母語學生原稿、真實題型、
+真實長度，不需要找代理樣本。設定頁會即時顯示「人類 N 份、AI M 份」，
+達到每類 30 份就能跑評測。
+
+匯出後可立即用「清除已保存的原文」移除敏感內容；清除**不影響**共形預測，
+因為它只需要分數。
+
 ## 生成 AI 對照組
 
 human 那組必須自己蒐集，但 AI 那組可以自動化：

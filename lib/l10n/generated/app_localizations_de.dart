@@ -918,6 +918,45 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get settingsStoreTextTitle =>
+      'Text für die Offline-Validierung behalten';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Ist dies aktiv, werden zur Referenz hinzugefügte Texte samt Volltext lokal gespeichert, sodass Sie sie später als Korpusdatei für die Offline-Auswertung exportieren können.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Diese Texte sind meist Schülerarbeiten und damit sensibel. Schalten Sie das nur ein, solange Sie tatsächlich ein Validierungskorpus sammeln, und löschen Sie nach dem Export mit „Gespeicherte Texte löschen“. Das Löschen berührt die konforme Vorhersage nicht — sie braucht nur die Werte.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Kalibrierungskorpus exportieren';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Exportierbar: $human menschlich, $ai KI ($required je Klasse für die Offline-Auswertung nötig)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Als JSONL exportieren';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Nichts zu exportieren — erst „Text behalten“ einschalten und dann die Referenz aufbauen';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count Probe(n) exportiert; $skipped ohne gespeicherten Text übersprungen';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Gespeicherte Texte löschen';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Alle gespeicherten Texte gelöscht. Werte und Kalibrierung bleiben unverändert.';
+
+  @override
   String get helpDesignTitle => 'Gestaltungsprinzipien und bekannte Grenzen';
 
   @override

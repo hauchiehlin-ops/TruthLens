@@ -671,6 +671,39 @@
   "privacyWebOverview2": "Halaman hanya membaca file, gambar, atau konten clipboard saat Anda secara aktif memilih untuk mengimpor, memindai, atau menempelkannya; halaman tidak pernah membaca tab lain, data situs lain, atau file yang belum Anda pilih.",
   "reportAiContentReportTitle": "Laporan Deteksi Konten AI",
   "reportAiProbabilityPrefix": "Probabilitas AI: ",
+  "settingsStoreTextTitle": "Simpan teks untuk validasi luring",
+  "settingsStoreTextSubtitle": "Bila aktif, tulisan yang Anda tambahkan ke basis disimpan di perangkat beserta teks lengkapnya, sehingga nanti bisa diekspor sebagai berkas korpus untuk evaluasi luring.",
+  "settingsStoreTextWarning": "Teks itu umumnya tugas siswa sehingga bersifat sensitif. Aktifkan hanya selama Anda benar-benar mengumpulkan korpus validasi, dan gunakan “Hapus teks tersimpan” begitu selesai mengekspor. Menghapusnya tidak memengaruhi prediksi konformal — ia hanya perlu skornya.",
+  "settingsExportCorpusTitle": "Ekspor korpus kalibrasi",
+  "settingsExportCorpusSubtitle": "Siap diekspor: {human} manusia, {ai} AI (dibutuhkan {required} untuk tiap kelas)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Ekspor sebagai JSONL",
+  "settingsExportCorpusEmpty": "Tidak ada yang bisa diekspor — aktifkan dulu “simpan teks”, lalu kumpulkan basisnya",
+  "settingsExportCorpusDone": "{count} sampel diekspor; {skipped} dilewati karena tanpa teks tersimpan",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Hapus teks tersimpan",
+  "settingsClearStoredTextDone": "Semua teks tersimpan telah dihapus. Skor dan kalibrasi tidak berubah.",
   "helpDesignTitle": "Filosofi desain dan batasan yang diketahui",
   "helpShiftTitle": "1. Pergeseran: kami tidak bersaing soal ketepatan skor",
   "helpShiftBody": "Hampir semua detektor di pasaran menjawab pertanyaan yang sama: apakah teks ini tampak ditulis AI?\n\nItu perlombaan senjata yang pasti kalah. Makin kuat modelnya, makin dekat keluarannya dengan tulisan manusia secara statistik — dan alat parafrase membaik jauh lebih cepat daripada detektor. Di jalur itu, model besar di server hanya kalah lebih lambat.\n\nTruthLens mengajukan pertanyaan lain: bukti apa yang sebenarnya kita pegang tentang bagaimana dokumen ini terwujud, dan seberapa kuat masing-masing?\n\nItulah pergeseran dari menebak gaya tulisan menuju menimbang bukti asal-usul beserta kesimpulan yang jujur secara statistik. Karena itulah alat ini sengaja tidak mengejar peringkat ketepatan skor tunggal, melainkan membentangkan tiap bukti secara terpisah dan berterus terang ketika tidak tahu. Keunggulan sesungguhnya dari berjalan di peramban bukan kecepatan, melainkan melihat apa yang tak pernah dilihat server: berkas yang utuh, dan basis yang Anda kumpulkan sendiri.",

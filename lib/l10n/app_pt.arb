@@ -671,6 +671,39 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "settingsStoreTextTitle": "Guardar o texto para validação offline",
+  "settingsStoreTextSubtitle": "Quando ativo, os textos adicionados à base ficam guardados localmente com o conteúdo completo, permitindo exportá-los depois como corpus para avaliação offline.",
+  "settingsStoreTextWarning": "Esse texto costuma ser trabalho de alunos e portanto é sensível. Ative apenas enquanto estiver de fato reunindo um corpus de validação e use “Limpar o texto guardado” assim que exportar. Limpar não afeta a predição conforme: ela só precisa das pontuações.",
+  "settingsExportCorpusTitle": "Exportar o corpus de calibração",
+  "settingsExportCorpusSubtitle": "Prontos para exportar: {human} humanos, {ai} de IA (são necessários {required} de cada)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Exportar como JSONL",
+  "settingsExportCorpusEmpty": "Nada a exportar — ative primeiro “guardar o texto” e vá acumulando a base",
+  "settingsExportCorpusDone": "{count} amostra(s) exportada(s); {skipped} ignorada(s) por não ter texto guardado",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Limpar o texto guardado",
+  "settingsClearStoredTextDone": "Todo o texto guardado foi limpo. Pontuações e calibração permanecem intactas.",
   "helpDesignTitle": "Filosofia de projeto e limites conhecidos",
   "helpShiftTitle": "1. A virada: não competimos por exatidão de pontuação",
   "helpShiftBody": "Quase todo detector do mercado responde à mesma pergunta: este texto parece escrito por uma IA?\n\nEssa é uma corrida armamentista perdida. Quanto mais forte o modelo, mais sua saída se aproxima estatisticamente da escrita humana — e as ferramentas de reescrita melhoram muito mais rápido que os detectores. Nesse caminho, um grande modelo em servidor apenas perde mais devagar.\n\nO TruthLens faz outra pergunta: que evidências realmente temos sobre como este documento passou a existir, e qual o peso de cada uma?\n\nÉ passar do palpite sobre estilo para a pesagem de evidências de origem, junto a conclusões estatisticamente honestas. Por isso esta ferramenta deliberadamente não busca posição em rankings de exatidão de pontuação única, mas expõe cada evidência separadamente e diz claramente quando não sabe. A verdadeira vantagem de rodar no seu navegador não é velocidade — é enxergar o que um servidor nunca vê: o arquivo completo e a base que você mesmo reuniu.",

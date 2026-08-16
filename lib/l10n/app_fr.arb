@@ -671,6 +671,39 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "settingsStoreTextTitle": "Conserver le texte pour la validation hors ligne",
+  "settingsStoreTextSubtitle": "Une fois activé, les textes ajoutés à la référence sont conservés localement avec leur contenu intégral, ce qui permet de les exporter ensuite comme corpus pour l'évaluation hors ligne.",
+  "settingsStoreTextWarning": "Ces textes sont le plus souvent des travaux d'élèves, donc sensibles. N'activez cette option que pendant la constitution effective d'un corpus de validation, et utilisez « Effacer les textes conservés » dès l'export terminé. L'effacement n'affecte pas la prédiction conforme : elle n'a besoin que des scores.",
+  "settingsExportCorpusTitle": "Exporter le corpus d'étalonnage",
+  "settingsExportCorpusSubtitle": "Prêts à l'export : {human} humains, {ai} IA ({required} de chaque nécessaires)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Exporter en JSONL",
+  "settingsExportCorpusEmpty": "Rien à exporter — activez d'abord « conserver le texte », puis constituez la référence",
+  "settingsExportCorpusDone": "{count} échantillon(s) exporté(s) ; {skipped} ignoré(s) faute de texte conservé",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Effacer les textes conservés",
+  "settingsClearStoredTextDone": "Tous les textes conservés ont été effacés. Les scores et l'étalonnage restent inchangés.",
   "helpDesignTitle": "Principes de conception et limites connues",
   "helpShiftTitle": "1. Le changement d'angle : pas une course à la précision du score",
   "helpShiftBody": "Presque tous les détecteurs du marché répondent à la même question : ce texte a-t-il l'air écrit par une IA ?\n\nC'est une course aux armements perdue d'avance. Plus le modèle est puissant, plus sa production se rapproche statistiquement de l'écriture humaine — et les outils de reformulation progressent bien plus vite que les détecteurs. Sur cette voie, un gros modèle côté serveur perd simplement moins vite.\n\nTruthLens pose une autre question : de quels éléments disposons-nous réellement sur la façon dont ce document a vu le jour, et quelle est la solidité de chacun ?\n\nC'est passer de la conjecture stylistique à la pesée d'indices d'origine, assortie de conclusions statistiquement honnêtes. D'où le choix assumé de ne pas viser une place dans les classements de précision au score unique, mais d'exposer chaque indice séparément et de dire clairement quand on ne sait pas. Le vrai avantage de l'exécution dans votre navigateur n'est pas la vitesse : c'est de voir ce qu'un serveur ne voit jamais — le fichier complet, et la référence que vous avez constituée vous-même.",

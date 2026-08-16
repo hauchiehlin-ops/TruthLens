@@ -911,6 +911,44 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get settingsStoreTextTitle => 'Сохранять текст для офлайн-проверки';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Когда включено, добавленные в эталон работы сохраняются на устройстве вместе с полным текстом, чтобы позже выгрузить их как корпус для офлайн-оценки.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Эти тексты, как правило, ученические работы, то есть чувствительные данные. Включайте только на время реального сбора корпуса и сразу после выгрузки используйте «Удалить сохранённые тексты». Удаление не влияет на конформное предсказание — ему нужны лишь оценки.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Выгрузить калибровочный корпус';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Готово к выгрузке: человеческих $human, ИИ $ai (для офлайн-оценки нужно по $required)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Выгрузить в JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Выгружать нечего — сначала включите «сохранять текст», затем накапливайте эталон';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return 'Выгружено $count; пропущено $skipped без сохранённого текста';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Удалить сохранённые тексты';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Все сохранённые тексты удалены. Оценки и калибровка не затронуты.';
+
+  @override
   String get helpDesignTitle =>
       'Принципы проектирования и известные ограничения';
 

@@ -879,6 +879,44 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get settingsStoreTextTitle => 'オフライン検証用に本文を保存';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      '有効にすると、基準セットに追加した文章が本文ごと端末内に保存され、後でコーパスファイルとして書き出してオフライン評価に使えます。';
+
+  @override
+  String get settingsStoreTextWarning =>
+      '本文は多くの場合が学生の課題であり、機微な情報です。オフライン検証用のコーパスを実際に収集するときだけ有効にし、書き出し後は下の「保存した本文を消去」で速やかに削除してください。消去しても共形予測には影響しません（スコアのみを使うため）。';
+
+  @override
+  String get settingsExportCorpusTitle => 'キャリブレーションコーパスを書き出す';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return '書き出し可能：人間$human件、AI$ai件（オフライン評価には各$required件必要）';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'JSONLとして書き出す';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      '書き出せるサンプルがありません。まず「本文を保存」を有効にし、基準セットを蓄積してください';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count件を書き出しました（本文が未保存の$skipped件はスキップ）';
+  }
+
+  @override
+  String get settingsClearStoredText => '保存した本文を消去';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      '保存されていた本文をすべて消去しました。スコアとキャリブレーションはそのままです。';
+
+  @override
   String get helpDesignTitle => '設計思想と既知の限界';
 
   @override

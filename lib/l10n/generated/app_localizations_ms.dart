@@ -908,6 +908,45 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get settingsStoreTextTitle =>
+      'Simpan teks untuk pengesahan luar talian';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Apabila dihidupkan, tulisan yang anda tambah ke set asas disimpan dalam peranti berserta teks penuhnya, supaya nanti boleh dieksport sebagai fail korpus untuk penilaian luar talian.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Teks itu lazimnya kerja pelajar dan bersifat sensitif. Hidupkan hanya semasa anda benar-benar mengumpul korpus pengesahan, dan gunakan “Kosongkan teks tersimpan” sebaik selesai mengeksport. Mengosongkannya tidak menjejaskan ramalan konformal — ia hanya perlukan skor.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Eksport korpus penentukuran';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Sedia dieksport: $human manusia, $ai AI ($required diperlukan bagi setiap kelas)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Eksport sebagai JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Tiada apa untuk dieksport — hidupkan “simpan teks” dahulu, kemudian kumpulkan set asas';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count sampel dieksport; $skipped dilangkau kerana tiada teks tersimpan';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Kosongkan teks tersimpan';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Semua teks tersimpan telah dikosongkan. Skor dan penentukuran kekal tidak berubah.';
+
+  @override
   String get helpDesignTitle =>
       'Falsafah reka bentuk dan batasan yang diketahui';
 

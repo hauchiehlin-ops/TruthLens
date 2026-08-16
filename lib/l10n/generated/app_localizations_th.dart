@@ -907,6 +907,45 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get settingsStoreTextTitle =>
+      'เก็บเนื้อความไว้สำหรับการตรวจสอบออฟไลน์';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'เมื่อเปิด งานที่เพิ่มเข้าชุดฐานเทียบจะถูกเก็บไว้ในเครื่องพร้อมเนื้อความเต็ม เพื่อให้ส่งออกเป็นไฟล์คลังข้อความสำหรับประเมินแบบออฟไลน์ได้ในภายหลัง';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'เนื้อความเหล่านี้ส่วนใหญ่เป็นงานของนักเรียนจึงเป็นข้อมูลอ่อนไหว ควรเปิดเฉพาะตอนที่กำลังรวบรวมคลังข้อความจริง ๆ และเมื่อส่งออกเสร็จให้ใช้ «ลบเนื้อความที่เก็บไว้» ด้านล่างทันที การลบไม่กระทบการทำนายเชิงคอนฟอร์มัล เพราะใช้เพียงคะแนนเท่านั้น';
+
+  @override
+  String get settingsExportCorpusTitle => 'ส่งออกคลังข้อความสำหรับปรับเทียบ';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'พร้อมส่งออก: ของคน $human ชิ้น, ของ AI $ai ชิ้น (การประเมินออฟไลน์ต้องมีอย่างละ $required ชิ้น)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'ส่งออกเป็น JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'ไม่มีอะไรให้ส่งออก โปรดเปิด «เก็บเนื้อความ» ก่อนแล้วค่อยสะสมชุดฐานเทียบ';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return 'ส่งออกแล้ว $count ชิ้น (ข้าม $skipped ชิ้นที่ไม่ได้เก็บเนื้อความ)';
+  }
+
+  @override
+  String get settingsClearStoredText => 'ลบเนื้อความที่เก็บไว้';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'ลบเนื้อความที่เก็บไว้ทั้งหมดแล้ว คะแนนและการปรับเทียบยังคงเดิม';
+
+  @override
   String get helpDesignTitle => 'แนวคิดการออกแบบและข้อจำกัดที่ทราบ';
 
   @override

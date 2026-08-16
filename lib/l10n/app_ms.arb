@@ -671,6 +671,39 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "settingsStoreTextTitle": "Simpan teks untuk pengesahan luar talian",
+  "settingsStoreTextSubtitle": "Apabila dihidupkan, tulisan yang anda tambah ke set asas disimpan dalam peranti berserta teks penuhnya, supaya nanti boleh dieksport sebagai fail korpus untuk penilaian luar talian.",
+  "settingsStoreTextWarning": "Teks itu lazimnya kerja pelajar dan bersifat sensitif. Hidupkan hanya semasa anda benar-benar mengumpul korpus pengesahan, dan gunakan “Kosongkan teks tersimpan” sebaik selesai mengeksport. Mengosongkannya tidak menjejaskan ramalan konformal — ia hanya perlukan skor.",
+  "settingsExportCorpusTitle": "Eksport korpus penentukuran",
+  "settingsExportCorpusSubtitle": "Sedia dieksport: {human} manusia, {ai} AI ({required} diperlukan bagi setiap kelas)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Eksport sebagai JSONL",
+  "settingsExportCorpusEmpty": "Tiada apa untuk dieksport — hidupkan “simpan teks” dahulu, kemudian kumpulkan set asas",
+  "settingsExportCorpusDone": "{count} sampel dieksport; {skipped} dilangkau kerana tiada teks tersimpan",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Kosongkan teks tersimpan",
+  "settingsClearStoredTextDone": "Semua teks tersimpan telah dikosongkan. Skor dan penentukuran kekal tidak berubah.",
   "helpDesignTitle": "Falsafah reka bentuk dan batasan yang diketahui",
   "helpShiftTitle": "1. Peralihan: kami tidak bersaing pada ketepatan skor",
   "helpShiftBody": "Hampir setiap pengesan di pasaran menjawab soalan yang sama: adakah teks ini kelihatan ditulis oleh AI?\n\nItu perlumbaan senjata yang pasti kalah. Semakin kuat model, semakin hampir keluarannya kepada tulisan manusia dari segi statistik — dan alat penulisan semula bertambah baik jauh lebih pantas daripada pengesan. Di laluan itu, model besar di pelayan cuma kalah lebih perlahan.\n\nTruthLens bertanya soalan lain: apakah bukti yang benar-benar kita ada tentang bagaimana dokumen ini terhasil, dan sekuat mana setiap satunya?\n\nItulah peralihan daripada meneka gaya penulisan kepada menimbang bukti asal usul bersama kesimpulan yang jujur dari segi statistik. Sebab itulah alat ini sengaja tidak mengejar kedudukan dalam ranking ketepatan skor tunggal, sebaliknya membentangkan setiap bukti secara berasingan dan berterus terang apabila ia tidak tahu. Kelebihan sebenar berjalan dalam pelayar anda bukan kelajuan, tetapi melihat apa yang pelayan tidak pernah lihat: fail yang lengkap, dan asas yang anda kumpulkan sendiri.",

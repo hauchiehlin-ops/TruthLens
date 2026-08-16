@@ -871,6 +871,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get settingsStoreTextTitle => '保留原文以供離線驗證';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      '開啟後，加入基準集的文章會連同原文一起保存在本機，之後可匯出成語料檔進行離線評測。';
+
+  @override
+  String get settingsStoreTextWarning =>
+      '原文多為學生作業，屬敏感資料。僅在你確實要蒐集離線驗證語料時開啟，匯出後可用下方「清除已保存的原文」立即移除；清除不影響共形預測（它只需要分數）。';
+
+  @override
+  String get settingsExportCorpusTitle => '匯出校準語料';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return '可匯出：人類 $human 份、AI $ai 份（離線評測每類需 $required 份）';
+  }
+
+  @override
+  String get settingsExportCorpusButton => '匯出為 JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty => '沒有可匯出的樣本——請先開啟「保留原文」再累積基準集';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '已匯出 $count 份（略過 $skipped 份未保留原文的樣本）';
+  }
+
+  @override
+  String get settingsClearStoredText => '清除已保存的原文';
+
+  @override
+  String get settingsClearStoredTextDone => '已清除所有原文，分數與校準結果保留不變';
+
+  @override
   String get helpDesignTitle => '設計理念與已知限制';
 
   @override
@@ -3219,6 +3255,42 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get settingsStoreTextTitle => '保留原文以供离线验证';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      '开启后，加入基准集的文章会连同原文一起保存在本机，之后可导出成语料档进行离线评测。';
+
+  @override
+  String get settingsStoreTextWarning =>
+      '原文多为学生作业，属敏感数据。仅在你确实要收集离线验证语料时开启，导出后可用下方「清除已保存的原文」立即移除；清除不影响共形预测（它只需要分数）。';
+
+  @override
+  String get settingsExportCorpusTitle => '导出校准语料';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return '可导出：人类 $human 份、AI $ai 份（离线评测每类需 $required 份）';
+  }
+
+  @override
+  String get settingsExportCorpusButton => '导出为 JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty => '没有可导出的样本——请先开启「保留原文」再累积基准集';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '已导出 $count 份（略过 $skipped 份未保留原文的样本）';
+  }
+
+  @override
+  String get settingsClearStoredText => '清除已保存的原文';
+
+  @override
+  String get settingsClearStoredTextDone => '已清除所有原文，分数与校准结果保留不变';
+
+  @override
   String get helpDesignTitle => '设计理念与已知限制';
 
   @override
@@ -5565,6 +5637,42 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get settingsStoreTextTitle => '保留原文以供離線驗證';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      '開啟後，加入基準集的文章會連同原文一起保存在本機，之後可匯出成語料檔進行離線評測。';
+
+  @override
+  String get settingsStoreTextWarning =>
+      '原文多為學生作業，屬敏感資料。僅在你確實要蒐集離線驗證語料時開啟，匯出後可用下方「清除已保存的原文」立即移除；清除不影響共形預測（它只需要分數）。';
+
+  @override
+  String get settingsExportCorpusTitle => '匯出校準語料';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return '可匯出：人類 $human 份、AI $ai 份（離線評測每類需 $required 份）';
+  }
+
+  @override
+  String get settingsExportCorpusButton => '匯出為 JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty => '沒有可匯出的樣本——請先開啟「保留原文」再累積基準集';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '已匯出 $count 份（略過 $skipped 份未保留原文的樣本）';
+  }
+
+  @override
+  String get settingsClearStoredText => '清除已保存的原文';
+
+  @override
+  String get settingsClearStoredTextDone => '已清除所有原文，分數與校準結果保留不變';
 
   @override
   String get helpDesignTitle => '設計理念與已知限制';

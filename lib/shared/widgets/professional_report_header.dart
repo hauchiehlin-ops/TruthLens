@@ -159,6 +159,9 @@ class ProfessionalReportHeader extends StatelessWidget {
                     result.aiProbability,
                     isAi: isAi,
                     engineScores: engineScores,
+                    // 是否真的保存由 CalibrationService.storeText 決定，
+                    // 預設關閉；這裡一律傳入，由服務層統一把關。
+                    text: result.inputText,
                   );
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(

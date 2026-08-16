@@ -671,6 +671,39 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "settingsStoreTextTitle": "Text für die Offline-Validierung behalten",
+  "settingsStoreTextSubtitle": "Ist dies aktiv, werden zur Referenz hinzugefügte Texte samt Volltext lokal gespeichert, sodass Sie sie später als Korpusdatei für die Offline-Auswertung exportieren können.",
+  "settingsStoreTextWarning": "Diese Texte sind meist Schülerarbeiten und damit sensibel. Schalten Sie das nur ein, solange Sie tatsächlich ein Validierungskorpus sammeln, und löschen Sie nach dem Export mit „Gespeicherte Texte löschen“. Das Löschen berührt die konforme Vorhersage nicht — sie braucht nur die Werte.",
+  "settingsExportCorpusTitle": "Kalibrierungskorpus exportieren",
+  "settingsExportCorpusSubtitle": "Exportierbar: {human} menschlich, {ai} KI ({required} je Klasse für die Offline-Auswertung nötig)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Als JSONL exportieren",
+  "settingsExportCorpusEmpty": "Nichts zu exportieren — erst „Text behalten“ einschalten und dann die Referenz aufbauen",
+  "settingsExportCorpusDone": "{count} Probe(n) exportiert; {skipped} ohne gespeicherten Text übersprungen",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Gespeicherte Texte löschen",
+  "settingsClearStoredTextDone": "Alle gespeicherten Texte gelöscht. Werte und Kalibrierung bleiben unverändert.",
   "helpDesignTitle": "Gestaltungsprinzipien und bekannte Grenzen",
   "helpShiftTitle": "1. Der Perspektivwechsel: kein Wettlauf um Punktgenauigkeit",
   "helpShiftBody": "Nahezu jeder Detektor am Markt beantwortet dieselbe Frage: Sieht dieser Text so aus, als hätte ihn eine KI geschrieben?\n\nDas ist ein Wettrüsten, das man verliert. Je stärker das Modell, desto näher liegt seine Ausgabe statistisch am menschlichen Schreiben — und Umschreibewerkzeuge werden weit schneller besser als Detektoren. Auf diesem Weg verliert ein großes serverseitiges Modell lediglich langsamer.\n\nTruthLens stellt eine andere Frage: Welche Belege haben wir tatsächlich darüber, wie dieses Dokument entstanden ist, und wie belastbar ist jeder einzelne?\n\nDas verschiebt den Schwerpunkt vom Raten über den Schreibstil hin zu Herkunftsnachweisen und statistisch ehrlichen Schlüssen. Deshalb strebt dieses Werkzeug bewusst keinen Platz in Genauigkeitsranglisten für Einzelwerte an, sondern legt jeden Beleg einzeln offen und sagt klar, wenn es etwas nicht weiß. Der wirkliche Vorteil der Ausführung im Browser ist nicht die Geschwindigkeit, sondern der Blick auf das, was ein Server nie zu sehen bekommt: die vollständige Datei und die Referenz, die Sie selbst gesammelt haben.",

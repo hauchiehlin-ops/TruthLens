@@ -30,6 +30,11 @@ class CalibrationSample {
   /// 舊版樣本沒有此欄位，會是空 Map。
   final Map<String, double> engineScores;
 
+  /// 樣本原文。**預設不保存**——只有使用者在設定中明確開啟「保留原文以供
+  /// 離線驗證」時才會填入。共形預測本身只需要分數，原文純粹是為了能把
+  /// 實戰中累積的語料匯出、餵進 training/binoculars 的離線評測管線。
+  final String? text;
+
   /// 使用者自訂的標示（例如「三年二班 期中作業」），可留空
   final String label;
 
@@ -42,6 +47,7 @@ class CalibrationSample {
     this.label = '',
     this.isAi = false,
     this.engineScores = const {},
+    this.text,
   });
 
   Map<String, dynamic> toJson() => {
@@ -51,6 +57,7 @@ class CalibrationSample {
     'isAi': isAi,
     'engineScores': engineScores,
     'addedAt': addedAt.toIso8601String(),
+    if (text != null) 'text': text,
   };
 
   static CalibrationSample? fromJson(Map<String, dynamic> json) {
@@ -71,6 +78,7 @@ class CalibrationSample {
                   e.key.toString(): (e.value as num).toDouble(),
             }
           : const {},
+      text: json['text'] as String?,
       addedAt: addedAt,
     );
   }
@@ -111,6 +119,7 @@ class ConformalResult {
 class CalibrationService extends ChangeNotifier {
   static const _kSamples = 'calibration_samples';
   static const _kAlpha = 'calibration_alpha';
+  static const _kStoreText = 'calibration_store_text';
 
   /// 預設偽陽性率上限 5%
   static const double defaultAlpha = 0.05;
@@ -120,6 +129,14 @@ class CalibrationService extends ChangeNotifier {
   SharedPreferences? _prefs;
   List<CalibrationSample> _samples = const [];
   double _alpha = defaultAlpha;
+  bool _storeText = false;
+
+  /// 是否連同原文一起保存。預設關閉：原文是敏感資料（多為學生作業），
+  /// 只有在使用者明確要蒐集離線驗證語料時才該開啟。
+  bool get storeText => _storeText;
+
+  /// 已保有原文的樣本數，供設定頁顯示
+  int get samplesWithText => _samples.where((s) => s.text != null).length;
 
   List<CalibrationSample> get samples => List.unmodifiable(_samples);
 
@@ -164,6 +181,7 @@ class CalibrationService extends ChangeNotifier {
       minAlpha,
       maxAlpha,
     );
+    _storeText = _prefs!.getBool(_kStoreText) ?? false;
     notifyListeners();
   }
 
@@ -174,11 +192,36 @@ class CalibrationService extends ChangeNotifier {
     );
   }
 
+  Future<void> setStoreText(bool value) async {
+    _storeText = value;
+    await _prefs?.setBool(_kStoreText, value);
+    notifyListeners();
+  }
+
+  /// 把已保存的原文全部清掉，但保留分數（共形預測不受影響）。
+  /// 讓使用者能在匯出完語料後立刻移除敏感內容。
+  Future<void> clearStoredText() async {
+    _samples = [
+      for (final s in _samples)
+        CalibrationSample(
+          id: s.id,
+          score: s.score,
+          label: s.label,
+          isAi: s.isAi,
+          engineScores: s.engineScores,
+          addedAt: s.addedAt,
+        ),
+    ];
+    await _persist();
+    notifyListeners();
+  }
+
   Future<void> addSample(
     double score, {
     String label = '',
     bool isAi = false,
     Map<String, double> engineScores = const {},
+    String? text,
   }) async {
     _samples = [
       ..._samples,
@@ -188,6 +231,7 @@ class CalibrationService extends ChangeNotifier {
         label: label,
         isAi: isAi,
         engineScores: engineScores,
+        text: _storeText ? text : null,
         addedAt: DateTime.now(),
       ),
     ];

@@ -903,6 +903,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get settingsStoreTextTitle => 'Keep the text for offline validation';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'When on, pieces you add to the baseline are stored locally with their full text, so you can later export them as a corpus file for offline evaluation.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'That text is usually student work and therefore sensitive. Turn this on only while you are actually gathering an offline validation corpus, and use \\u201cClear stored text\\u201d below once you have exported. Clearing does not affect conformal prediction — it only needs the scores.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Export the calibration corpus';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Ready to export: $human human, $ai AI ($required of each needed for offline evaluation)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Export as JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Nothing to export — turn on \\u201ckeep the text\\u201d first, then build up the baseline';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return 'Exported $count sample(s); skipped $skipped that had no stored text';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Clear stored text';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'All stored text cleared. Scores and calibration are untouched.';
+
+  @override
   String get helpDesignTitle => 'Design philosophy and known limits';
 
   @override

@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 import '../../core/detection/device_capabilities.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
+import 'package:file_picker/file_picker.dart';
+
+import '../../core/services/calibration_exporter.dart';
 import '../../core/services/calibration_service.dart';
 import '../../core/services/weight_learner.dart';
 import '../../core/services/preferences_service.dart';
@@ -176,6 +179,105 @@ class SettingsScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+                      ],
+                    );
+                  },
+                ),
+                // 離線驗證語料蒐集：讓實戰使用自然累積出評測語料
+                SwitchListTile(
+                  title: Text(l10n.settingsStoreTextTitle),
+                  subtitle: Text(l10n.settingsStoreTextSubtitle),
+                  value: calibration.storeText,
+                  onChanged: (v) => calibration.setStoreText(v),
+                ),
+                if (calibration.storeText)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      l10n.settingsStoreTextWarning,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                Builder(
+                  builder: (context) {
+                    final payload = CalibrationExporter.buildJsonl(
+                      calibration.samples,
+                    );
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ListTile(
+                          title: Text(l10n.settingsExportCorpusTitle),
+                          subtitle: Text(
+                            l10n.settingsExportCorpusSubtitle(
+                              payload.humanCount,
+                              payload.aiCount,
+                              ExportPayload.minDocsPerClass,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              FilledButton.tonal(
+                                onPressed: () async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
+                                  if (payload.isEmpty) {
+                                    messenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          l10n.settingsExportCorpusEmpty,
+                                        ),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  await FilePicker.saveFile(
+                                    dialogTitle:
+                                        l10n.settingsExportCorpusTitle,
+                                    fileName: 'truthlens_corpus.jsonl',
+                                    bytes: payload.bytes,
+                                  );
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        l10n.settingsExportCorpusDone(
+                                          payload.exported,
+                                          payload.skippedMissingText,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(l10n.settingsExportCorpusButton),
+                              ),
+                              if (calibration.samplesWithText > 0)
+                                TextButton(
+                                  onPressed: () async {
+                                    await calibration.clearStoredText();
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          l10n.settingsClearStoredTextDone,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(l10n.settingsClearStoredText),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                       ],
                     );
                   },

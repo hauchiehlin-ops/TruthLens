@@ -710,6 +710,39 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "settingsStoreTextTitle": "Keep the text for offline validation",
+  "settingsStoreTextSubtitle": "When on, pieces you add to the baseline are stored locally with their full text, so you can later export them as a corpus file for offline evaluation.",
+  "settingsStoreTextWarning": "That text is usually student work and therefore sensitive. Turn this on only while you are actually gathering an offline validation corpus, and use \\u201cClear stored text\\u201d below once you have exported. Clearing does not affect conformal prediction — it only needs the scores.",
+  "settingsExportCorpusTitle": "Export the calibration corpus",
+  "settingsExportCorpusSubtitle": "Ready to export: {human} human, {ai} AI ({required} of each needed for offline evaluation)",
+  "@settingsExportCorpusSubtitle": {
+    "placeholders": {
+      "human": {
+        "type": "int"
+      },
+      "ai": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsExportCorpusButton": "Export as JSONL",
+  "settingsExportCorpusEmpty": "Nothing to export — turn on \\u201ckeep the text\\u201d first, then build up the baseline",
+  "settingsExportCorpusDone": "Exported {count} sample(s); skipped {skipped} that had no stored text",
+  "@settingsExportCorpusDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsClearStoredText": "Clear stored text",
+  "settingsClearStoredTextDone": "All stored text cleared. Scores and calibration are untouched.",
   "helpDesignTitle": "Design philosophy and known limits",
   "helpShiftTitle": "1. The shift: not competing on score accuracy",
   "helpShiftBody": "Nearly every detector on the market answers the same question: does this text look like it was written by AI?\n\nThat is an arms race you lose. The stronger the model, the closer its output sits to human writing statistically — and paraphrasing tools improve far faster than detectors do. On that road a large server-side model merely loses more slowly.\n\nTruthLens asks a different question: what evidence do we actually hold about how this document came to exist, and how strong is each piece?\n\nThat is a shift from guessing at writing style to weighing origin evidence alongside statistically honest conclusions. It is why this tool deliberately does not chase a place in the single-score accuracy rankings, but lays each piece of evidence out separately and says plainly when it does not know. The real advantage of running in your browser is not inference speed — it is seeing what a server never gets to see: the complete file, and the baseline you collected yourself.",

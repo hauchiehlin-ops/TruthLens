@@ -883,6 +883,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get settingsStoreTextTitle => '오프라인 검증용으로 원문 보관';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      '켜면 기준 세트에 추가한 글이 원문과 함께 기기에 저장되어, 나중에 코퍼스 파일로 내보내 오프라인 평가에 쓸 수 있습니다.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      '원문은 대개 학생 과제이므로 민감한 자료입니다. 오프라인 검증용 코퍼스를 실제로 모을 때만 켜고, 내보낸 뒤에는 아래 ‘저장된 원문 지우기’로 즉시 삭제하세요. 지워도 공형 예측에는 영향이 없습니다(점수만 사용).';
+
+  @override
+  String get settingsExportCorpusTitle => '기준 코퍼스 내보내기';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return '내보낼 수 있음: 사람 $human편, AI $ai편(오프라인 평가에는 각 $required편 필요)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'JSONL로 내보내기';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      '내보낼 표본이 없습니다. 먼저 ‘원문 보관’을 켜고 기준 세트를 쌓으세요';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count편을 내보냈습니다(원문이 없는 $skipped편은 건너뜀)';
+  }
+
+  @override
+  String get settingsClearStoredText => '저장된 원문 지우기';
+
+  @override
+  String get settingsClearStoredTextDone => '저장된 원문을 모두 지웠습니다. 점수와 보정은 그대로입니다.';
+
+  @override
   String get helpDesignTitle => '설계 철학과 알려진 한계';
 
   @override

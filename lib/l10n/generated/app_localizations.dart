@@ -1562,6 +1562,66 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @settingsStoreTextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the text for offline validation'**
+  String get settingsStoreTextTitle;
+
+  /// No description provided for @settingsStoreTextSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When on, pieces you add to the baseline are stored locally with their full text, so you can later export them as a corpus file for offline evaluation.'**
+  String get settingsStoreTextSubtitle;
+
+  /// No description provided for @settingsStoreTextWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'That text is usually student work and therefore sensitive. Turn this on only while you are actually gathering an offline validation corpus, and use \\u201cClear stored text\\u201d below once you have exported. Clearing does not affect conformal prediction — it only needs the scores.'**
+  String get settingsStoreTextWarning;
+
+  /// No description provided for @settingsExportCorpusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export the calibration corpus'**
+  String get settingsExportCorpusTitle;
+
+  /// No description provided for @settingsExportCorpusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to export: {human} human, {ai} AI ({required} of each needed for offline evaluation)'**
+  String settingsExportCorpusSubtitle(int human, int ai, int required);
+
+  /// No description provided for @settingsExportCorpusButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export as JSONL'**
+  String get settingsExportCorpusButton;
+
+  /// No description provided for @settingsExportCorpusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export — turn on \\u201ckeep the text\\u201d first, then build up the baseline'**
+  String get settingsExportCorpusEmpty;
+
+  /// No description provided for @settingsExportCorpusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {count} sample(s); skipped {skipped} that had no stored text'**
+  String settingsExportCorpusDone(int count, int skipped);
+
+  /// No description provided for @settingsClearStoredText.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear stored text'**
+  String get settingsClearStoredText;
+
+  /// No description provided for @settingsClearStoredTextDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All stored text cleared. Scores and calibration are untouched.'**
+  String get settingsClearStoredTextDone;
+
   /// No description provided for @helpDesignTitle.
   ///
   /// In en, this message translates to:

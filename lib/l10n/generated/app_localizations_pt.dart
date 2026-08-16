@@ -920,6 +920,44 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get settingsStoreTextTitle => 'Guardar o texto para validação offline';
+
+  @override
+  String get settingsStoreTextSubtitle =>
+      'Quando ativo, os textos adicionados à base ficam guardados localmente com o conteúdo completo, permitindo exportá-los depois como corpus para avaliação offline.';
+
+  @override
+  String get settingsStoreTextWarning =>
+      'Esse texto costuma ser trabalho de alunos e portanto é sensível. Ative apenas enquanto estiver de fato reunindo um corpus de validação e use “Limpar o texto guardado” assim que exportar. Limpar não afeta a predição conforme: ela só precisa das pontuações.';
+
+  @override
+  String get settingsExportCorpusTitle => 'Exportar o corpus de calibração';
+
+  @override
+  String settingsExportCorpusSubtitle(int human, int ai, int required) {
+    return 'Prontos para exportar: $human humanos, $ai de IA (são necessários $required de cada)';
+  }
+
+  @override
+  String get settingsExportCorpusButton => 'Exportar como JSONL';
+
+  @override
+  String get settingsExportCorpusEmpty =>
+      'Nada a exportar — ative primeiro “guardar o texto” e vá acumulando a base';
+
+  @override
+  String settingsExportCorpusDone(int count, int skipped) {
+    return '$count amostra(s) exportada(s); $skipped ignorada(s) por não ter texto guardado';
+  }
+
+  @override
+  String get settingsClearStoredText => 'Limpar o texto guardado';
+
+  @override
+  String get settingsClearStoredTextDone =>
+      'Todo o texto guardado foi limpo. Pontuações e calibração permanecem intactas.';
+
+  @override
   String get helpDesignTitle => 'Filosofia de projeto e limites conhecidos';
 
   @override
