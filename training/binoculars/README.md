@@ -129,11 +129,61 @@ B = log-perplexity(觀察者對實際詞元的困惑度) ÷ cross-perplexity(兩
 本來就有多難預測」的基準，正是它讓 Binoculars 對用詞平實的非母語寫作比較
 不會誤判。
 
-## 後續階段
+## 階段二：模型尺寸衰減曲線
 
-- **階段二**：換小模型配對量衰減曲線（Qwen2.5-0.5B → SmolLM2-360M → SmolLM2-135M），
-  找出「效果仍可接受的最小配對」。下載預算已確認可接受 700MB–1GB 的選擇性下載。
-- **階段三**：以驗證集重新校準門檻，並**分語言各求一組**（中文與英文分布不同）。
-  `BinocularsScorer.placeholderThreshold` 目前只是佔位值。
-- **階段四**：匯出 ONNX INT8 → `verify_onnx.py` 驗證數值一致 → 在 Web 量測
-  500 字的實際耗時與記憶體峰值。若超過 5 秒目標，就只掛在瀑布第 3 層。
+階段一證明有效之後，真正的未知數是「縮到瀏覽器跑得動會掉多少」。
+
+```bash
+.venv/bin/python binoculars/sweep_models.py --corpus binoculars/data/corpus.jsonl
+```
+
+由大到小依序跑四組配對，輸出對照表。**往下找體積符合預算、且 AUC 尚未明顯崩掉
+的最小配對**，那就是要上線的組合。每組跑完立刻寫檔，中斷不會白跑。
+
+| 配對 | INT8 雙模型合計 |
+|---|---|
+| Qwen2.5-1.5B base/instruct | 約 3.0 GB（超出預算） |
+| Qwen2.5-0.5B base/instruct | 約 1.0 GB |
+| SmolLM2-360M base/instruct | 約 0.7 GB |
+| SmolLM2-135M base/instruct | 約 0.3 GB |
+
+下載預算已確認可接受 700MB–1GB（選擇性下載）。若最小可用配對超出預算，
+就只能降級或放棄這項升級。
+
+## 階段三：門檻校準
+
+`placeholderThreshold = 0.9` 只是佔位值。真正的門檻取決於**模型配對**與**語言**。
+
+```bash
+.venv/bin/python binoculars/calibrate_threshold.py \
+    --scores binoculars/data/sweep/scores_<選定配對>.jsonl \
+    --corpus binoculars/data/corpus.jsonl
+```
+
+- 以 doc_id 分層切成校準／測試兩半，**同一份文件不會同時出現在兩邊**
+- 在目標偽陽性率下反解門檻（與 App 共形校準同一個單位）
+- 在**獨立測試集**上回報實際偽陽性率——若明顯超標會直接警告，因為那代表
+  校準集太小、分位數估計不穩，上線後實際誤判會高於名目值
+- 中英文分開求門檻（斷詞粒度不同，分布形狀不一樣）
+- 輸出可直接貼回 Dart 的常數
+
+## 階段四：匯出與瀏覽器實測
+
+尚未腳本化（需先有階段二選定的配對）。步驟：
+
+1. **匯出 ONNX INT8**：沿用既有的 `export_onnx.py` 流程，兩個模型各匯一份
+2. **數值驗證**：`verify_onnx.py` 確認 ONNX 與 PyTorch 的 logits 一致，
+   再用 `binoculars_scorer_test.dart` 的同一組數學驗證 Dart 端算出的
+   B 值與 Python 端一致（這是跨語言實作最容易出錯的地方）
+3. **效能實測**：在 Web 量測 500 字的耗時與記憶體峰值
+   - 目標：< 5 秒、記憶體峰值 < 2 GB（含既有 400MB 核心模型與 CanvasKit）
+   - 超標的話就只掛在**瀑布第 3 層**（僅前面仍模稜兩可時才跑），而非預設啟用
+4. **接上引擎**：在 `orchestrator.dart` 註冊為 statistical 的變體，
+   讓使用者可在模型管理中選擇是否啟用
+
+### 上線前的最後檢查
+
+- [ ] 門檻是用**選定配對**校準的，不是沿用階段一的
+- [ ] Dart 與 Python 端的 B 值在同一段文字上一致
+- [ ] 500 字實測符合效能目標，否則降為第 3 層
+- [ ] 操作說明手冊第 4 支柱的「尚未上線」改為實際狀態
