@@ -911,6 +911,38 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'Probabilitas AI $probability% / ambang tanda $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => 'Bukti tidak cukup untuk menilai';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return 'Hanya $count kalimat yang bisa dianalisis, padahal dibutuhkan setidaknya $required. Pada panjang ini sinyal statistik dan per kalimat tidak berbobot, dan memaksakan skor darinya hanya akan menyesatkan.';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return 'Teks berisi $count kata, dibutuhkan setidaknya $required. Di bawah itu, ciri tulisan apa pun bisa jadi kebetulan.';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return 'Hanya $available dari $total mesin yang ikut, jadi tidak ada yang bisa diperiksa silang dari sudut lain. Lengkapi model yang hilang di manajemen model lalu jalankan lagi.';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'Antar-mesin berselisih $spread poin persen — cukup jauh sehingga merata-ratakannya kehilangan makna. Gunakan bukti per kalimat dan asal dokumen, lalu nilai sendiri.';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      'Skor lengkap dan bukti per kalimat tetap ditampilkan di bawah sebagai rujukan. Mohon jangan diperlakukan sebagai kesimpulan.';
+
+  @override
   String get provenanceTitle => 'Bukti asal dokumen';
 
   @override
@@ -1030,21 +1062,18 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'Ambang tanda AI: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'Probabilitas AI di bawah $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'Probabilitas AI $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'Probabilitas AI $value% ke atas';
+    return 'AI index ≥ $value%';
   }
 
   @override

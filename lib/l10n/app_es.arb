@@ -671,6 +671,63 @@
   "privacyWebOverview2": "La página solo lee un archivo, imagen o contenido del portapapeles cuando usted elige activamente importar, escanear o pegarlo; nunca lee otras pestañas, datos de otros sitios ni archivos que no haya seleccionado.",
   "reportAiContentReportTitle": "Informe de detección de contenido de IA",
   "reportAiProbabilityPrefix": "Probabilidad de IA: ",
+  "reportAiIndexFormula": "Probabilidad de IA {probability}% / umbral de marcado {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "No hay evidencia suficiente para juzgar",
+  "abstentionTooFewSentences": "Solo {count} frase(s) analizable(s), cuando hacen falta al menos {required}. Con esta extensión las señales estadísticas y por frase no pesan nada, y forzar una puntuación solo despistaría.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "El texto tiene {count} palabras y hacen falta al menos {required}. Por debajo de eso, cualquier rasgo de escritura puede ser casualidad.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Solo participaron {available} de {total} motores, así que no hay forma de contrastar desde otro ángulo. Completa los modelos que faltan en gestión de modelos y vuelve a ejecutarlo.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Los motores están a {spread} puntos porcentuales de distancia, lo bastante como para que promediarlos deje de significar algo. Mira las pruebas por frase y el origen del documento, y juzga tú.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Abajo se mantienen la puntuación completa y las pruebas por frase para tu referencia. No las tomes como conclusión.",
   "provenanceTitle": "Evidencia de origen del documento",
   "provenanceRiskHigh": "El historial de edición es claramente inusual",
   "provenanceRiskMedium": "Hay algo raro en el historial de edición",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Umbral de marcado de IA: ",
-  "reportVerdictRangeBelow": "Probabilidad de IA inferior al {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Probabilidad de IA {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Probabilidad de IA a partir del {value}%",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

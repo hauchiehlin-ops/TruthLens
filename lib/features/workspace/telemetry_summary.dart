@@ -3,7 +3,8 @@ library;
 
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
-import '../../shared/widgets/professional_report_header.dart' show EngineGroup;
+import '../../shared/widgets/professional_report_header.dart'
+    show EngineGroup, describeAbstention;
 
 /// 以白話文總結各引擎的分析結果：先講結論，再講引擎之間合不合、
 /// 分數主要被誰拉動、逐句掃出什麼，最後給一句「所以該怎麼辦」。
@@ -19,6 +20,15 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
   );
   final available = groups.where((g) => g.available).toList();
   if (available.isEmpty) return const [];
+
+  // 報告已棄權時，總結不能反過來給一個自信的判定，否則兩處自相矛盾
+  if (result.shouldAbstain) {
+    return [
+      l10n.abstentionHeadline,
+      describeAbstention(result, l10n),
+      l10n.abstentionScoreStillShown,
+    ];
+  }
 
   final lines = <String>[
     l10n.telemetrySummaryVerdict(

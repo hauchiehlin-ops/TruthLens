@@ -921,6 +921,38 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'Probabilidad de IA $probability% / umbral de marcado $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => 'No hay evidencia suficiente para juzgar';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return 'Solo $count frase(s) analizable(s), cuando hacen falta al menos $required. Con esta extensión las señales estadísticas y por frase no pesan nada, y forzar una puntuación solo despistaría.';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return 'El texto tiene $count palabras y hacen falta al menos $required. Por debajo de eso, cualquier rasgo de escritura puede ser casualidad.';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return 'Solo participaron $available de $total motores, así que no hay forma de contrastar desde otro ángulo. Completa los modelos que faltan en gestión de modelos y vuelve a ejecutarlo.';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'Los motores están a $spread puntos porcentuales de distancia, lo bastante como para que promediarlos deje de significar algo. Mira las pruebas por frase y el origen del documento, y juzga tú.';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      'Abajo se mantienen la puntuación completa y las pruebas por frase para tu referencia. No las tomes como conclusión.';
+
+  @override
   String get provenanceTitle => 'Evidencia de origen del documento';
 
   @override
@@ -1040,21 +1072,18 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'Umbral de marcado de IA: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'Probabilidad de IA inferior al $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'Probabilidad de IA $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'Probabilidad de IA a partir del $value%';
+    return 'AI index ≥ $value%';
   }
 
   @override

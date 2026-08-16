@@ -671,6 +671,63 @@
   "privacyWebOverview2": "このページは、インポート・スキャン・貼り付けを積極的に選択したときのみ、対応するファイル、画像、クリップボードの内容を読み取ります。他のタブや他サイトのデータ、選択していないファイルを読み取ることはありません。",
   "reportAiContentReportTitle": "AIコンテンツ検出レポート",
   "reportAiProbabilityPrefix": "AI確率：",
+  "reportAiIndexFormula": "AI確率 {probability}% / AI判定しきい値 {threshold}% ＝ AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "証拠が不十分なため判定しません",
+  "abstentionTooFewSentences": "分析可能な文が{count}文しかありません（最低{required}文必要）。この長さでは統計的・文単位のシグナルに意味がなく、無理に点数を出せば誤解を招くだけです。",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "本文は{count}語で、最低{required}語が必要です。これを下回ると、どんな文章的特徴も偶然でありえます。",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "{total}個中{available}個のエンジンしか参加しておらず、別角度からの相互検証ができません。モデル管理で補ってから再実行してください。",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "エンジン間の差が{spread}パーセントポイントあり、平均を取る意味が失われるほど分かれています。文単位の根拠と文書の来歴を見てご自身で判断してください。",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "下には参考用に完全なスコアと文単位の根拠を残していますが、結論として扱わないでください。",
   "provenanceTitle": "文書の来歴証拠",
   "provenanceRiskHigh": "編集履歴が明らかに不自然です",
   "provenanceRiskMedium": "編集履歴に気になる点があります",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "AI判定しきい値：",
-  "reportVerdictRangeBelow": "AI確率が{value}%未満",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI確率{low}%〜{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI確率が{value}%以上",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

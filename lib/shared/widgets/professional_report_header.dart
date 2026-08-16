@@ -7,6 +7,27 @@ import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
 
+
+/// 把棄權原因轉成該語系的白話說明
+String describeAbstention(DetectionResult result, AppLocalizations l10n) {
+  return switch (result.abstention) {
+    AbstentionReason.none => '',
+    AbstentionReason.tooFewSentences => l10n.abstentionTooFewSentences(
+      result.analyzableSentenceCount,
+      DetectionResult.minAnalyzableSentences,
+    ),
+    AbstentionReason.tooFewWords => l10n.abstentionTooFewWords(
+      result.wordCount,
+      DetectionResult.minWords,
+    ),
+    AbstentionReason.tooFewEngines => l10n.abstentionTooFewEngines(
+      result.effectiveAvailableEngineCount,
+      result.effectiveTotalEngineCount,
+    ),
+    AbstentionReason.enginesConflict => l10n.abstentionEnginesConflict(result.engineSpreadPoints),
+  };
+}
+
 /// 專業級報告頁頭：判定摘要 + 詳細指標
 class ProfessionalReportHeader extends StatelessWidget {
   final DetectionResult result;
@@ -200,61 +221,51 @@ class _VerdictSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  result.verdict.label(l10n),
+                  result.shouldAbstain
+                      ? l10n.abstentionHeadline
+                      : result.verdict.label(l10n),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if (result.shouldAbstain) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    describeAbstention(result, l10n),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.abstentionScoreStillShown,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.white70,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 4,
-                  children: [
-                    _InlineLabel(
-                      prefix: l10n.reportAiThresholdPrefix,
-                      value: '${(result.threshold * 100).round()}%',
-                    ),
-                    _InlineLabel(
-                      prefix: l10n.reportAiProbabilityPrefix,
-                      value: '${(result.aiProbability * 100).round()}%',
-                    ),
-                  ],
+                // AI index ＝ AI 機率 ÷ 標記門檻閾值。同時列出兩個運算元與
+                // 結果，讓「離門檻多遠」可以直接讀出來，而非自行心算。
+                Text(
+                  l10n.reportAiIndexFormula(
+                    (result.aiProbability * 100).round(),
+                    (result.threshold * 100).round(),
+                    result.aiIndexPercent,
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                _VerdictTierList(result: result, l10n: l10n),
+                if (!result.shouldAbstain) ...[
+                  const SizedBox(height: 12),
+                  _VerdictTierList(result: result, l10n: l10n),
+                ],
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 前綴＋數值的行內文字（例如「AI 機率：1%」）
-class _InlineLabel extends StatelessWidget {
-  final String prefix;
-  final String value;
-
-  const _InlineLabel({required this.prefix, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: prefix,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
-          ),
-          TextSpan(
-            text: value,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -273,8 +284,8 @@ class _VerdictTierList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cuts = Verdict.cutPoints(result.threshold);
-    final cutPercents = cuts.map((c) => (c * 100).round()).toList();
+    // 切點同樣換算成 AI index，與上方公式的單位一致
+    final cutPercents = Verdict.cutPointIndexPercents(result.threshold);
 
     final ranges = <Verdict, String>{
       Verdict.human: l10n.reportVerdictRangeBelow(cutPercents[0]),

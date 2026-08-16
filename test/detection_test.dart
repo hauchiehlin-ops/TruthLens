@@ -119,6 +119,42 @@ void main() {
       expect(Verdict.fromProbability(0.9, 0.5), Verdict.ai);
     });
 
+    test('AI index ＝ 機率 ÷ 門檻，且門檻 0.5 時切點恰為 40/80/120/160%', () {
+      expect(Verdict.cutPointIndexPercents(0.5), [40, 80, 120, 160]);
+
+      DetectionResult withThreshold(double p, double t) => DetectionResult(
+        id: 'i',
+        analyzedAt: DateTime(2026, 8, 17),
+        inputText: 'x',
+        aiProbability: p,
+        verdict: Verdict.fromProbability(p, t),
+        threshold: t,
+        engineScores: const [],
+        sentences: const [],
+      );
+
+      expect(withThreshold(0.08, 0.5).aiIndexPercent, 16);
+      expect(withThreshold(0.5, 0.5).aiIndexPercent, 100); // 恰在門檻上
+      expect(withThreshold(0.9, 0.6).aiIndexPercent, 150);
+      // 門檻為 0 時不得除以零
+      expect(withThreshold(0.5, 0).aiIndexPercent, 0);
+    });
+
+    test('用 index 分級與用機率分級完全等價（index 只是單調轉換）', () {
+      for (final t in [0.2, 0.35, 0.5, 0.65, 0.9]) {
+        final cuts = Verdict.cutPoints(t);
+        final indexCuts = Verdict.cutPointIndexPercents(t);
+        for (var i = 0; i < cuts.length; i++) {
+          // 切點換算回 index 後，應等於該切點自身的 index 值
+          expect(indexCuts[i], (cuts[i] / t * 100).round());
+        }
+        // index 切點必須嚴格遞增，五個等級才都留有空間
+        for (var i = 1; i < indexCuts.length; i++) {
+          expect(indexCuts[i], greaterThan(indexCuts[i - 1]));
+        }
+      }
+    });
+
     test('切點隨門檻等比例縮放，且五個等級永遠留有非零區間', () {
       for (final threshold in [0.2, 0.35, 0.5, 0.65, 0.9]) {
         final cuts = Verdict.cutPoints(threshold);

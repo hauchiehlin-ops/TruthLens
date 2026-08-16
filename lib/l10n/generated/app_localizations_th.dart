@@ -907,6 +907,38 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'ความน่าจะเป็น AI $probability% / เกณฑ์การตั้งค่าสถานะ $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => 'หลักฐานไม่พอที่จะตัดสิน';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return 'มีประโยคที่วิเคราะห์ได้เพียง $count ประโยค ขณะที่ต้องการอย่างน้อย $required ประโยค ที่ความยาวเท่านี้สัญญาณเชิงสถิติและรายประโยคไม่มีน้ำหนัก การฝืนให้คะแนนมีแต่จะทำให้เข้าใจผิด';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return 'เนื้อหามี $count คำ แต่ต้องการอย่างน้อย $required คำ ต่ำกว่านั้นลักษณะการเขียนใด ๆ อาจเป็นเพียงความบังเอิญ';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return 'มีเอนจินร่วมเพียง $available จาก $total ตัว จึงไม่มีทางตรวจทานจากอีกมุมหนึ่ง กรุณาเติมโมเดลที่ขาดในหน้าจัดการโมเดลแล้วรันใหม่';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'เอนจินต่างกันถึง $spread จุดเปอร์เซ็นต์ มากพอที่การเฉลี่ยจะหมดความหมาย แนะนำให้ดูหลักฐานรายประโยคและที่มาของเอกสารแล้วตัดสินด้วยตัวเอง';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      'ด้านล่างยังคงแสดงคะแนนเต็มและหลักฐานรายประโยคไว้ให้อ้างอิง แต่โปรดอย่าถือเป็นข้อสรุป';
+
+  @override
   String get provenanceTitle => 'หลักฐานที่มาของเอกสาร';
 
   @override
@@ -1025,21 +1057,18 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'เกณฑ์การตั้งค่าสถานะ AI: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'ความน่าจะเป็น AI ต่ำกว่า $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'ความน่าจะเป็น AI $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'ความน่าจะเป็น AI $value% ขึ้นไป';
+    return 'AI index ≥ $value%';
   }
 
   @override

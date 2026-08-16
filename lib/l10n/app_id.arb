@@ -671,6 +671,63 @@
   "privacyWebOverview2": "Halaman hanya membaca file, gambar, atau konten clipboard saat Anda secara aktif memilih untuk mengimpor, memindai, atau menempelkannya; halaman tidak pernah membaca tab lain, data situs lain, atau file yang belum Anda pilih.",
   "reportAiContentReportTitle": "Laporan Deteksi Konten AI",
   "reportAiProbabilityPrefix": "Probabilitas AI: ",
+  "reportAiIndexFormula": "Probabilitas AI {probability}% / ambang tanda {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Bukti tidak cukup untuk menilai",
+  "abstentionTooFewSentences": "Hanya {count} kalimat yang bisa dianalisis, padahal dibutuhkan setidaknya {required}. Pada panjang ini sinyal statistik dan per kalimat tidak berbobot, dan memaksakan skor darinya hanya akan menyesatkan.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "Teks berisi {count} kata, dibutuhkan setidaknya {required}. Di bawah itu, ciri tulisan apa pun bisa jadi kebetulan.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Hanya {available} dari {total} mesin yang ikut, jadi tidak ada yang bisa diperiksa silang dari sudut lain. Lengkapi model yang hilang di manajemen model lalu jalankan lagi.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Antar-mesin berselisih {spread} poin persen — cukup jauh sehingga merata-ratakannya kehilangan makna. Gunakan bukti per kalimat dan asal dokumen, lalu nilai sendiri.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Skor lengkap dan bukti per kalimat tetap ditampilkan di bawah sebagai rujukan. Mohon jangan diperlakukan sebagai kesimpulan.",
   "provenanceTitle": "Bukti asal dokumen",
   "provenanceRiskHigh": "Riwayat penyuntingan jelas tidak wajar",
   "provenanceRiskMedium": "Ada yang janggal pada riwayat penyuntingan",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Ambang tanda AI: ",
-  "reportVerdictRangeBelow": "Probabilitas AI di bawah {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Probabilitas AI {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Probabilitas AI {value}% ke atas",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

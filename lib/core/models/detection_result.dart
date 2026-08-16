@@ -30,6 +30,15 @@ enum Verdict {
     return Verdict.ai;
   }
 
+  /// 四個分級切點換算為「AI index」百分比（＝切點 ÷ 門檻）。
+  /// 因為 index 是對機率的單調轉換，用 index 分級與用機率分級完全等價，
+  /// 改的只是表達方式；門檻為預設 0.5 時，恰為 40／80／120／160%。
+  static List<int> cutPointIndexPercents(double threshold) {
+    final t = threshold.clamp(0.0, 1.0);
+    if (t <= 0) return const [0, 0, 0, 0];
+    return cutPoints(t).map((c) => (c / t * 100).round()).toList();
+  }
+
   /// 判定結果的顯示文字，依 [l10n] 語系呈現。
   String label(AppLocalizations l10n) => switch (this) {
     Verdict.human => l10n.verdictHuman,
@@ -38,6 +47,25 @@ enum Verdict {
     Verdict.likelyAi => l10n.verdictLikelyAi,
     Verdict.ai => l10n.verdictAi,
   };
+}
+
+/// 為什麼這次分析不給判定。棄權不是失敗，而是拒絕在證據不足時假裝有結論——
+/// 多數誤指控都來自對太短或訊號太弱的輸入給出自信的數字。
+enum AbstentionReason {
+  /// 證據充足，正常出判定
+  none,
+
+  /// 可分析的句子太少，句級與統計訊號都不具代表性
+  tooFewSentences,
+
+  /// 內容字數太少
+  tooFewWords,
+
+  /// 參與投票的引擎不足，無法多角度驗證
+  tooFewEngines,
+
+  /// 引擎之間分歧過大，加權平均已不具意義
+  enginesConflict,
 }
 
 /// 單一子模型（引擎）的評分結果
@@ -153,6 +181,76 @@ class DetectionResult {
     if (availableCount < 2) return true;
 
     return false;
+  }
+
+  /// 棄權門檻：低於這些量體時，任何統計訊號都不具代表性
+  static const int minAnalyzableSentences = 5;
+  static const int minWords = 100;
+
+  /// 可用引擎之間的分數全距超過此值即視為分歧過大（0-1 尺度）
+  static const double maxEngineSpread = 0.60;
+
+  /// 實際參與投票的引擎數。優先由 [engineScores] 推導，而不是信任呼叫端
+  /// 另外傳入的計數欄位——兩者不一致時（例如未填計數的建構）會讓棄權判斷
+  /// 誤以為沒有引擎參與。
+  int get effectiveAvailableEngineCount =>
+      engineScores.isEmpty ? availableEngineCount : _computeAvailableCount;
+
+  /// 同上，註冊的引擎總數
+  int get effectiveTotalEngineCount =>
+      engineScores.isEmpty ? totalEngineCount : engineScores.length;
+
+  /// 可用引擎之間分數全距，換算為整數百分點（0 表示不足兩個引擎可比）
+  int get engineSpreadPoints {
+    final active = engineScores.where((e) => e.available).toList();
+    if (active.length < 2) return 0;
+    final probabilities = active.map((e) => e.aiProbability);
+    final high = probabilities.reduce((a, b) => a > b ? a : b);
+    final low = probabilities.reduce((a, b) => a < b ? a : b);
+    return ((high - low) * 100).round();
+  }
+
+  /// 本次分析應否棄權，以及棄權的原因。判斷順序由「最根本」到「最細緻」，
+  /// 讓回報的理由是最該先解決的那一個。
+  AbstentionReason get abstention {
+    if (effectiveAvailableEngineCount < 2) {
+      return AbstentionReason.tooFewEngines;
+    }
+    if (wordCount < minWords) return AbstentionReason.tooFewWords;
+    if (analyzableSentenceCount < minAnalyzableSentences) {
+      return AbstentionReason.tooFewSentences;
+    }
+
+    final active = engineScores.where((e) => e.available).toList();
+    if (active.length >= 2) {
+      // 以整數百分點比較：浮點相減會讓 0.80-0.20 變成 0.6000000000000001，
+      // 使恰好落在門檻上的情形被誤判為超標。這裡也與畫面顯示的單位一致。
+      if (engineSpreadPoints > (maxEngineSpread * 100).round()) {
+        return AbstentionReason.enginesConflict;
+      }
+    }
+    return AbstentionReason.none;
+  }
+
+  /// 證據不足以支撐任何判定時為 true。此時介面必須以棄權取代判定標題，
+  /// 但仍保留底下的數字供人工參考——隱藏數字只會讓使用者更困惑。
+  bool get shouldAbstain => abstention != AbstentionReason.none;
+
+  /// 粗略字數：CJK 逐字計，其他語言以空白分詞
+  int get wordCount {
+    final trimmed = inputText.trim();
+    if (trimmed.isEmpty) return 0;
+    final cjk = RegExp(r'[㐀-䶿一-鿿぀-ヿ가-힯]').allMatches(trimmed).length;
+    final latin = RegExp(r'[A-Za-zÀ-ɏЀ-ӿ]+').allMatches(trimmed).length;
+    return cjk + latin;
+  }
+
+  /// AI index：整體 AI 機率相對於使用者設定門檻的比值，以百分比表示。
+  /// 100% 代表恰好落在標記門檻上，因此「離線多遠」一眼可讀，
+  /// 不必先在心裡拿分數跟門檻相減。
+  int get aiIndexPercent {
+    if (threshold <= 0) return 0;
+    return (aiProbability / threshold * 100).round();
   }
 
   /// 是否越過使用者設定的信心閾值而被明確標記為 AI。

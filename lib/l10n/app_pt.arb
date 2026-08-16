@@ -671,6 +671,63 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "reportAiIndexFormula": "Probabilidade de IA {probability}% / limite de sinalização {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Evidência insuficiente para julgar",
+  "abstentionTooFewSentences": "Apenas {count} frase(s) analisável(is), quando são necessárias pelo menos {required}. Nesse tamanho os sinais estatísticos e por frase não pesam nada, e forçar uma pontuação só enganaria.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "O texto tem {count} palavras e precisa de pelo menos {required}. Abaixo disso, qualquer traço de escrita pode ser acaso.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Apenas {available} de {total} motores participaram, então não há como conferir por outro ângulo. Complete os modelos que faltam no gerenciamento de modelos e rode de novo.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Os motores estão a {spread} pontos percentuais de distância — o bastante para que a média deixe de significar algo. Use as evidências por frase e a origem do documento e julgue você mesmo.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "A pontuação completa e as evidências por frase continuam abaixo para sua referência. Não as trate como conclusão.",
   "provenanceTitle": "Evidências de origem do documento",
   "provenanceRiskHigh": "O histórico de edição é claramente incomum",
   "provenanceRiskMedium": "Há algo estranho no histórico de edição",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Limite de sinalização de IA: ",
-  "reportVerdictRangeBelow": "Probabilidade de IA abaixo de {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Probabilidade de IA {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Probabilidade de IA a partir de {value}%",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

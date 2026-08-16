@@ -395,6 +395,63 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "reportAiIndexFormula": "AI 几率 {probability}% / AI 标记门槛阈值 {threshold}% ＝ AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "证据不足，不做判定",
+  "abstentionTooFewSentences": "只有 {count} 个可分析的句子（至少需要 {required} 句）。句数这么少时，统计与句级信号都不具代表性，硬给分数只会误导。",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "内容只有 {count} 字（至少需要 {required} 字）。文字量太少时，任何写作特征都可能只是偶然。",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "只有 {available}/{total} 个引擎参与投票，无法多角度交叉验证。请到模型管理补齐后重跑。",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "各引擎的看法相差 {spread} 个百分点，分歧大到加权平均已失去意义。请改用逐句证据与文件来源自行判读。",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "下方仍保留完整的分数与逐句证据供你自行参考，但请不要把它当成结论。",
   "provenanceTitle": "文件来源证据",
   "provenanceRiskHigh": "编辑记录明显不寻常",
   "provenanceRiskMedium": "编辑记录有可疑之处",
@@ -557,8 +614,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "AI 标记门槛阈值：",
-  "reportVerdictRangeBelow": "AI 几率低于 {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -566,7 +622,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI 几率 {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -577,7 +633,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI 几率达 {value}% 以上",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

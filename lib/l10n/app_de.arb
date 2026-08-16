@@ -671,6 +671,63 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "reportAiIndexFormula": "KI-Wahrscheinlichkeit {probability}% / KI-Kennzeichnungsschwelle {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Zu wenig Belege für ein Urteil",
+  "abstentionTooFewSentences": "Nur {count} auswertbare(r) Satz/Sätze, nötig sind mindestens {required}. Bei dieser Länge tragen die statistischen und satzweisen Signale nichts, und ein daraus erzwungener Wert würde nur in die Irre führen.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "Der Text umfasst {count} Wörter, nötig sind mindestens {required}. Darunter kann jedes Schreibmerkmal reiner Zufall sein.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Nur {available} von {total} Engines haben mitgewirkt, ein Gegencheck aus zweiter Richtung ist damit nicht möglich. Ergänzen Sie die fehlenden Modelle in der Modellverwaltung und starten Sie erneut.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Die Engines liegen {spread} Prozentpunkte auseinander — weit genug, dass ein Mittelwert nichts mehr aussagt. Ziehen Sie stattdessen die Satzbelege und die Herkunft des Dokuments heran und urteilen Sie selbst.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Der vollständige Wert und die Satzbelege stehen unten weiterhin zu Ihrer Einsicht. Bitte behandeln Sie sie nicht als Ergebnis.",
   "provenanceTitle": "Herkunftsnachweise der Datei",
   "provenanceRiskHigh": "Bearbeitungsverlauf ist deutlich auffällig",
   "provenanceRiskMedium": "Am Bearbeitungsverlauf ist etwas merkwürdig",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "KI-Kennzeichnungsschwelle: ",
-  "reportVerdictRangeBelow": "KI-Wahrscheinlichkeit unter {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "KI-Wahrscheinlichkeit {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "KI-Wahrscheinlichkeit ab {value}%",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

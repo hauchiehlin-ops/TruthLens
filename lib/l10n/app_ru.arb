@@ -671,6 +671,63 @@
   "privacyWebOverview2": "Страница читает файл, изображение или содержимое буфера обмена только тогда, когда вы активно выбираете импорт, сканирование или вставку; она никогда не читает другие вкладки, данные других сайтов или невыбранные файлы.",
   "reportAiContentReportTitle": "Отчёт об обнаружении ИИ-контента",
   "reportAiProbabilityPrefix": "Вероятность ИИ: ",
+  "reportAiIndexFormula": "Вероятность ИИ {probability}% / порог маркировки {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Недостаточно данных для вывода",
+  "abstentionTooFewSentences": "Всего {count} пригодн(ое/ых) для анализа предложени(е/й), а нужно минимум {required}. На такой длине статистические и пословные сигналы ничего не значат, а выжатая из них оценка только введёт в заблуждение.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "В тексте {count} слов, а нужно минимум {required}. Ниже этого порога любая особенность письма может оказаться случайностью.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Участвовали лишь {available} из {total} движков — перепроверить с другой стороны нечем. Дозагрузите недостающие модели в управлении моделями и запустите заново.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Движки расходятся на {spread} процентных пунктов — достаточно, чтобы усреднение потеряло смысл. Опирайтесь на пословные свидетельства и происхождение документа и судите сами.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Полная оценка и пословные свидетельства остаются ниже для справки. Не считайте их выводом.",
   "provenanceTitle": "Свидетельства о происхождении документа",
   "provenanceRiskHigh": "История правок явно необычна",
   "provenanceRiskMedium": "В истории правок есть странности",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Порог маркировки ИИ: ",
-  "reportVerdictRangeBelow": "Вероятность ИИ ниже {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Вероятность ИИ {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Вероятность ИИ от {value}%",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

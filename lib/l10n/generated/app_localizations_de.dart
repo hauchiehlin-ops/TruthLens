@@ -918,6 +918,38 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'KI-Wahrscheinlichkeit $probability% / KI-Kennzeichnungsschwelle $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => 'Zu wenig Belege für ein Urteil';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return 'Nur $count auswertbare(r) Satz/Sätze, nötig sind mindestens $required. Bei dieser Länge tragen die statistischen und satzweisen Signale nichts, und ein daraus erzwungener Wert würde nur in die Irre führen.';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return 'Der Text umfasst $count Wörter, nötig sind mindestens $required. Darunter kann jedes Schreibmerkmal reiner Zufall sein.';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return 'Nur $available von $total Engines haben mitgewirkt, ein Gegencheck aus zweiter Richtung ist damit nicht möglich. Ergänzen Sie die fehlenden Modelle in der Modellverwaltung und starten Sie erneut.';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'Die Engines liegen $spread Prozentpunkte auseinander — weit genug, dass ein Mittelwert nichts mehr aussagt. Ziehen Sie stattdessen die Satzbelege und die Herkunft des Dokuments heran und urteilen Sie selbst.';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      'Der vollständige Wert und die Satzbelege stehen unten weiterhin zu Ihrer Einsicht. Bitte behandeln Sie sie nicht als Ergebnis.';
+
+  @override
   String get provenanceTitle => 'Herkunftsnachweise der Datei';
 
   @override
@@ -1037,21 +1069,18 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'KI-Kennzeichnungsschwelle: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'KI-Wahrscheinlichkeit unter $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'KI-Wahrscheinlichkeit $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'KI-Wahrscheinlichkeit ab $value%';
+    return 'AI index ≥ $value%';
   }
 
   @override

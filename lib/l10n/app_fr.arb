@@ -671,6 +671,63 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "reportAiIndexFormula": "Probabilité IA {probability} % / seuil de signalement {threshold} % = AI index {index} %",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Pas assez d'éléments pour trancher",
+  "abstentionTooFewSentences": "Seulement {count} phrase(s) analysable(s), alors qu'il en faut au moins {required}. À cette longueur, les signaux statistiques et phrase par phrase ne pèsent rien, et en tirer un score de force ne ferait qu'induire en erreur.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "Le texte compte {count} mots, il en faut au moins {required}. En dessous, n'importe quel trait d'écriture peut relever du hasard.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Seuls {available} moteurs sur {total} ont participé : impossible de recouper sous un autre angle. Complétez les modèles manquants dans la gestion des modèles, puis relancez.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Les moteurs sont séparés de {spread} points de pourcentage — assez pour qu'en faire la moyenne ne veuille plus rien dire. Appuyez-vous plutôt sur les preuves phrase par phrase et l'origine du document, et jugez vous-même.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Le score complet et les preuves par phrase restent affichés ci-dessous à titre indicatif. Ne les prenez pas pour une conclusion.",
   "provenanceTitle": "Indices sur l'origine du document",
   "provenanceRiskHigh": "L'historique de modification est nettement inhabituel",
   "provenanceRiskMedium": "Quelque chose cloche dans l'historique de modification",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Seuil de signalement IA : ",
-  "reportVerdictRangeBelow": "Probabilité IA inférieure à {value} %",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Probabilité IA {low} % – {high} %",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Probabilité IA à partir de {value} %",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

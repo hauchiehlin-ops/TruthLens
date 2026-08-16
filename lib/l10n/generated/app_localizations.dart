@@ -1562,6 +1562,48 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @reportAiIndexFormula.
+  ///
+  /// In en, this message translates to:
+  /// **'AI probability {probability}% / AI flag threshold {threshold}% = AI index {index}%'**
+  String reportAiIndexFormula(int probability, int threshold, int index);
+
+  /// No description provided for @abstentionHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough evidence to judge'**
+  String get abstentionHeadline;
+
+  /// No description provided for @abstentionTooFewSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} analysable sentence(s), where at least {required} are needed. At this length the statistical and sentence-level signals carry no weight, and forcing a score out of them would only mislead.'**
+  String abstentionTooFewSentences(int count, int required);
+
+  /// No description provided for @abstentionTooFewWords.
+  ///
+  /// In en, this message translates to:
+  /// **'The text runs to {count} words, where at least {required} are needed. Below that, any writing trait could just be chance.'**
+  String abstentionTooFewWords(int count, int required);
+
+  /// No description provided for @abstentionTooFewEngines.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {available} of {total} engines took part, so nothing can be cross-checked from a second angle. Fill in the missing models under model management and run it again.'**
+  String abstentionTooFewEngines(int available, int total);
+
+  /// No description provided for @abstentionEnginesConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'The engines are {spread} percentage points apart — far enough that averaging them stops meaning anything. Read the sentence evidence and the document\'s origin instead, and judge for yourself.'**
+  String abstentionEnginesConflict(int spread);
+
+  /// No description provided for @abstentionScoreStillShown.
+  ///
+  /// In en, this message translates to:
+  /// **'The full score and sentence evidence are still shown below for your own reference. Please don\'t treat them as a conclusion.'**
+  String get abstentionScoreStillShown;
+
   /// No description provided for @provenanceTitle.
   ///
   /// In en, this message translates to:
@@ -1722,28 +1764,22 @@ abstract class AppLocalizations {
   /// **'{count} engine(s) sat this one out, so take the confidence with a pinch of salt — fill them in under model management and re-run for a sharper read.'**
   String telemetrySummaryModelGap(int count);
 
-  /// No description provided for @reportAiThresholdPrefix.
-  ///
-  /// In en, this message translates to:
-  /// **'AI flag threshold: '**
-  String get reportAiThresholdPrefix;
-
   /// No description provided for @reportVerdictRangeBelow.
   ///
   /// In en, this message translates to:
-  /// **'AI probability below {value}%'**
+  /// **'AI index < {value}%'**
   String reportVerdictRangeBelow(int value);
 
   /// No description provided for @reportVerdictRangeBetween.
   ///
   /// In en, this message translates to:
-  /// **'AI probability {low}%–{high}%'**
+  /// **'AI index {low}%–{high}%'**
   String reportVerdictRangeBetween(int low, int high);
 
   /// No description provided for @reportVerdictRangeAbove.
   ///
   /// In en, this message translates to:
-  /// **'AI probability {value}% or above'**
+  /// **'AI index ≥ {value}%'**
   String reportVerdictRangeAbove(int value);
 
   /// No description provided for @reportConfidenceLowTooltip.

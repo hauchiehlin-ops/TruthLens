@@ -4,11 +4,14 @@ import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/features/workspace/telemetry_summary.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
 
+/// 足以通過棄權字數門檻的正文
+final _longText = List.filled(200, 'alpha').join(' ');
+
 /// 依指定的各引擎分數組出檢測結果；[threshold] 預設 0.5，切點即 20/40/60/80
 DetectionResult _result({
   required Map<String, double> engineScores,
   Set<String> unavailable = const {},
-  List<double> sentenceScores = const [0.1, 0.1],
+  List<double> sentenceScores = const [0.1, 0.1, 0.1, 0.15, 0.12, 0.08],
   double threshold = 0.5,
 }) {
   final scores = [
@@ -34,7 +37,8 @@ DetectionResult _result({
   return DetectionResult(
     id: 't',
     analyzedAt: DateTime(2026, 8, 16),
-    inputText: 'x',
+    // 需超過棄權門檻（100 字），這些案例測的是有結論時的總結內容
+    inputText: _longText,
     aiProbability: overall,
     verdict: Verdict.fromProbability(overall, threshold),
     threshold: threshold,
@@ -97,10 +101,11 @@ void main() {
     final lines = buildTelemetrySummary(
       _result(
         engineScores: {
-          'transformer': 0.90,
+          // 全距 55 個百分點：足以觸發「引擎不合」，但未達棄權門檻（60）
+          'transformer': 0.60,
           'statistical': 0.05,
-          'stylometry': 0.05,
-          'adversarial': 0.05,
+          'stylometry': 0.10,
+          'adversarial': 0.08,
         },
       ),
       l10n,
@@ -123,13 +128,13 @@ void main() {
           'stylometry': 0.9,
           'adversarial': 0.88,
         },
-        sentenceScores: const [0.95, 0.9, 0.1],
+        sentenceScores: const [0.95, 0.9, 0.1, 0.92, 0.88, 0.91],
       ),
       l10n,
     );
     final text = lines.join(' ');
 
-    expect(text, contains('Of 3 sentences, 2 crossed the strong-AI line'));
+    expect(text, contains('Of 6 sentences, 5 crossed the strong-AI line'));
     expect(text, contains('AI generation or rewriting'));
   });
 

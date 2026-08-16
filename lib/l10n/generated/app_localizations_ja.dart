@@ -879,6 +879,38 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'AI確率 $probability% / AI判定しきい値 $threshold% ＝ AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => '証拠が不十分なため判定しません';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return '分析可能な文が$count文しかありません（最低$required文必要）。この長さでは統計的・文単位のシグナルに意味がなく、無理に点数を出せば誤解を招くだけです。';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return '本文は$count語で、最低$required語が必要です。これを下回ると、どんな文章的特徴も偶然でありえます。';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return '$total個中$available個のエンジンしか参加しておらず、別角度からの相互検証ができません。モデル管理で補ってから再実行してください。';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'エンジン間の差が$spreadパーセントポイントあり、平均を取る意味が失われるほど分かれています。文単位の根拠と文書の来歴を見てご自身で判断してください。';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      '下には参考用に完全なスコアと文単位の根拠を残していますが、結論として扱わないでください。';
+
+  @override
   String get provenanceTitle => '文書の来歴証拠';
 
   @override
@@ -997,21 +1029,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'AI判定しきい値：';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI確率が$value%未満';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI確率$low%〜$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI確率が$value%以上';
+    return 'AI index ≥ $value%';
   }
 
   @override

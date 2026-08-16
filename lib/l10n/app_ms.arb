@@ -671,6 +671,63 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "reportAiIndexFormula": "Kebarangkalian AI {probability}% / ambang penanda {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Bukti tidak mencukupi untuk menilai",
+  "abstentionTooFewSentences": "Hanya {count} ayat yang boleh dianalisis, sedangkan sekurang-kurangnya {required} diperlukan. Pada panjang ini isyarat statistik dan setiap ayat tidak membawa berat, dan memaksa skor daripadanya hanya mengelirukan.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "Teks mengandungi {count} patah perkataan, sekurang-kurangnya {required} diperlukan. Di bawah itu, sebarang ciri penulisan mungkin hanya kebetulan.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Hanya {available} daripada {total} enjin menyertainya, jadi tiada apa yang boleh disemak silang dari sudut lain. Lengkapkan model yang hilang dalam pengurusan model dan jalankan semula.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "Enjin berbeza sebanyak {spread} mata peratus — cukup jauh sehingga purata kehilangan makna. Gunakan bukti setiap ayat dan asal dokumen, kemudian nilai sendiri.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "Skor penuh dan bukti setiap ayat masih dipaparkan di bawah untuk rujukan anda. Jangan anggap ia sebagai kesimpulan.",
   "provenanceTitle": "Bukti asal dokumen",
   "provenanceRiskHigh": "Sejarah penyuntingan jelas luar biasa",
   "provenanceRiskMedium": "Ada yang ganjil pada sejarah penyuntingan",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "Ambang penanda AI: ",
-  "reportVerdictRangeBelow": "Kebarangkalian AI di bawah {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "Kebarangkalian AI {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "Kebarangkalian AI {value}% ke atas",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

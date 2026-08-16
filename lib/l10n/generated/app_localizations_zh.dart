@@ -871,6 +871,37 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'AI 機率 $probability% / AI 標記門檻閾值 $threshold% ＝ AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => '證據不足，不做判定';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return '只有 $count 個可分析的句子（至少需要 $required 句）。句數這麼少時，統計與句級訊號都不具代表性，硬給分數只會誤導。';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return '內容只有 $count 字（至少需要 $required 字）。文字量太少時，任何寫作特徵都可能只是偶然。';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return '只有 $available/$total 個引擎參與投票，無法多角度交叉驗證。請到模型管理補齊後重跑。';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return '各引擎的看法相差 $spread 個百分點，分歧大到加權平均已失去意義。請改用逐句證據與文件來源自行判讀。';
+  }
+
+  @override
+  String get abstentionScoreStillShown => '下方仍保留完整的分數與逐句證據供你自行參考，但請不要把它當成結論。';
+
+  @override
   String get provenanceTitle => '文件來源證據';
 
   @override
@@ -987,21 +1018,18 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'AI 標記門檻閾值：';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI 機率低於 $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI 機率 $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI 機率達 $value% 以上';
+    return 'AI index ≥ $value%';
   }
 
   @override
@@ -3050,6 +3078,37 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'AI 几率 $probability% / AI 标记门槛阈值 $threshold% ＝ AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => '证据不足，不做判定';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return '只有 $count 个可分析的句子（至少需要 $required 句）。句数这么少时，统计与句级信号都不具代表性，硬给分数只会误导。';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return '内容只有 $count 字（至少需要 $required 字）。文字量太少时，任何写作特征都可能只是偶然。';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return '只有 $available/$total 个引擎参与投票，无法多角度交叉验证。请到模型管理补齐后重跑。';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return '各引擎的看法相差 $spread 个百分点，分歧大到加权平均已失去意义。请改用逐句证据与文件来源自行判读。';
+  }
+
+  @override
+  String get abstentionScoreStillShown => '下方仍保留完整的分数与逐句证据供你自行参考，但请不要把它当成结论。';
+
+  @override
   String get provenanceTitle => '文件来源证据';
 
   @override
@@ -3166,21 +3225,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'AI 标记门槛阈值：';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI 几率低于 $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI 几率 $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI 几率达 $value% 以上';
+    return 'AI index ≥ $value%';
   }
 
   @override
@@ -5229,6 +5285,37 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'AI 機率 $probability% / AI 標記門檻閾值 $threshold% ＝ AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => '證據不足，不做判定';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return '只有 $count 個可分析的句子（至少需要 $required 句）。句數這麼少時，統計與句級訊號都不具代表性，硬給分數只會誤導。';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return '內容只有 $count 字（至少需要 $required 字）。文字量太少時，任何寫作特徵都可能只是偶然。';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return '只有 $available/$total 個引擎參與投票，無法多角度交叉驗證。請到模型管理補齊後重跑。';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return '各引擎的看法相差 $spread 個百分點，分歧大到加權平均已失去意義。請改用逐句證據與文件來源自行判讀。';
+  }
+
+  @override
+  String get abstentionScoreStillShown => '下方仍保留完整的分數與逐句證據供你自行參考，但請不要把它當成結論。';
+
+  @override
   String get provenanceTitle => '文件來源證據';
 
   @override
@@ -5345,21 +5432,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'AI 標記門檻閾值：';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI 機率低於 $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI 機率 $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI 機率達 $value% 以上';
+    return 'AI index ≥ $value%';
   }
 
   @override

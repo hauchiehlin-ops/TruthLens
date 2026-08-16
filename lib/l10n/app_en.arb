@@ -710,6 +710,63 @@
     }
   },
   "reportAiProbabilityPrefix": "AI probability: ",
+  "reportAiIndexFormula": "AI probability {probability}% / AI flag threshold {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "Not enough evidence to judge",
+  "abstentionTooFewSentences": "Only {count} analysable sentence(s), where at least {required} are needed. At this length the statistical and sentence-level signals carry no weight, and forcing a score out of them would only mislead.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "The text runs to {count} words, where at least {required} are needed. Below that, any writing trait could just be chance.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "Only {available} of {total} engines took part, so nothing can be cross-checked from a second angle. Fill in the missing models under model management and run it again.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "The engines are {spread} percentage points apart — far enough that averaging them stops meaning anything. Read the sentence evidence and the document's origin instead, and judge for yourself.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "The full score and sentence evidence are still shown below for your own reference. Please don't treat them as a conclusion.",
   "provenanceTitle": "Document origin evidence",
   "provenanceRiskHigh": "Editing history is clearly unusual",
   "provenanceRiskMedium": "Editing history has something odd about it",
@@ -872,8 +929,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "AI flag threshold: ",
-  "reportVerdictRangeBelow": "AI probability below {value}%",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -881,7 +937,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI probability {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -892,7 +948,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI probability {value}% or above",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

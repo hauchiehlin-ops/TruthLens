@@ -5,11 +5,15 @@ import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
 import 'package:truthlens/shared/widgets/professional_report_header.dart';
 
+/// 足以通過棄權門檻的正文
+final _sampleBody = List.filled(200, 'alpha').join(' ');
+
 void main() {
   DetectionResult sampleResult({String sourceFileName = ''}) => DetectionResult(
     id: 'header-test',
     analyzedAt: DateTime(2026, 8, 12, 21, 21),
-    inputText: 'This is a complete sentence for report rendering.',
+    // 需超過棄權門檻（>=100 字、>=5 可分析句），否則報告會改顯示棄權而非判定
+    inputText: _sampleBody,
     sourceFileName: sourceFileName,
     aiProbability: 0.22,
     verdict: Verdict.likelyHuman,
@@ -29,12 +33,15 @@ void main() {
         reasons: ['No obvious AI writing style markers'],
       ),
     ],
-    sentences: const [
-      SentenceScore(
-        index: 0,
-        text: 'This is a complete sentence for report rendering.',
-        aiProbability: 0.22,
-      ),
+    sentences: [
+      for (var i = 0; i < 8; i++)
+        SentenceScore(
+          index: i,
+          text:
+              'This is a complete and sufficiently long sentence for report '
+              'rendering, numbered $i.',
+          aiProbability: 0.22,
+        ),
     ],
   );
 
@@ -137,10 +144,13 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
+      // 標題列改為 AI index 公式：22% / 60% = 37%
       expect(
-        find.textContaining('AI flag threshold', findRichText: true),
+        find.textContaining('AI index 37%', findRichText: true),
         findsOneWidget,
       );
+      // 五級區間改以 AI index 表達，門檻 60% 時第一個切點為 40%
+      expect(find.text('AI index < 40%'), findsOneWidget);
       // "Likely human" is the active verdict, so it also appears as the
       // headline label and in the radar-panel badge, not just the tier chip.
       expect(find.text('Human-written'), findsOneWidget);

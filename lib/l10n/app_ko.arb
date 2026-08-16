@@ -671,6 +671,63 @@
   "privacyWebOverview2": "이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.",
   "reportAiContentReportTitle": "AI 콘텐츠 감지 보고서",
   "reportAiProbabilityPrefix": "AI 확률: ",
+  "reportAiIndexFormula": "AI 확률 {probability}% / AI 표시 기준값 {threshold}% = AI index {index}%",
+  "@reportAiIndexFormula": {
+    "placeholders": {
+      "probability": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionHeadline": "증거가 부족하여 판정하지 않습니다",
+  "abstentionTooFewSentences": "분석 가능한 문장이 {count}개뿐입니다(최소 {required}개 필요). 이 길이에서는 통계·문장 단위 신호가 의미를 갖지 못하며, 억지로 점수를 내면 오해만 부릅니다.",
+  "@abstentionTooFewSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewWords": "본문이 {count}단어로, 최소 {required}단어가 필요합니다. 그 아래에서는 어떤 문체 특징도 우연일 수 있습니다.",
+  "@abstentionTooFewWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionTooFewEngines": "{total}개 중 {available}개 엔진만 참여해 다른 각도에서 교차 검증할 수 없습니다. 모델 관리에서 채운 뒤 다시 실행하세요.",
+  "@abstentionTooFewEngines": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionEnginesConflict": "엔진 간 차이가 {spread}퍼센트포인트로, 평균을 내는 것이 의미를 잃을 만큼 갈립니다. 문장별 근거와 문서 출처를 보고 직접 판단하세요.",
+  "@abstentionEnginesConflict": {
+    "placeholders": {
+      "spread": {
+        "type": "int"
+      }
+    }
+  },
+  "abstentionScoreStillShown": "아래에 전체 점수와 문장별 근거를 참고용으로 남겨 두었습니다. 다만 결론으로 받아들이지는 마세요.",
   "provenanceTitle": "문서 출처 증거",
   "provenanceRiskHigh": "편집 기록이 명백히 이례적입니다",
   "provenanceRiskMedium": "편집 기록에 의심스러운 점이 있습니다",
@@ -833,8 +890,7 @@
       }
     }
   },
-  "reportAiThresholdPrefix": "AI 표시 기준값: ",
-  "reportVerdictRangeBelow": "AI 확률 {value}% 미만",
+  "reportVerdictRangeBelow": "AI index < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -842,7 +898,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI 확률 {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -853,7 +909,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI 확률 {value}% 이상",
+  "reportVerdictRangeAbove": "AI index ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {

@@ -883,6 +883,38 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'AI 확률 $probability% / AI 표시 기준값 $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => '증거가 부족하여 판정하지 않습니다';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return '분석 가능한 문장이 $count개뿐입니다(최소 $required개 필요). 이 길이에서는 통계·문장 단위 신호가 의미를 갖지 못하며, 억지로 점수를 내면 오해만 부릅니다.';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return '본문이 $count단어로, 최소 $required단어가 필요합니다. 그 아래에서는 어떤 문체 특징도 우연일 수 있습니다.';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return '$total개 중 $available개 엔진만 참여해 다른 각도에서 교차 검증할 수 없습니다. 모델 관리에서 채운 뒤 다시 실행하세요.';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return '엔진 간 차이가 $spread퍼센트포인트로, 평균을 내는 것이 의미를 잃을 만큼 갈립니다. 문장별 근거와 문서 출처를 보고 직접 판단하세요.';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      '아래에 전체 점수와 문장별 근거를 참고용으로 남겨 두었습니다. 다만 결론으로 받아들이지는 마세요.';
+
+  @override
   String get provenanceTitle => '문서 출처 증거';
 
   @override
@@ -1001,21 +1033,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'AI 표시 기준값: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI 확률 $value% 미만';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI 확률 $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI 확률 $value% 이상';
+    return 'AI index ≥ $value%';
   }
 
   @override

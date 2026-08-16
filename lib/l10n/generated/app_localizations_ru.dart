@@ -911,6 +911,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String reportAiIndexFormula(int probability, int threshold, int index) {
+    return 'Вероятность ИИ $probability% / порог маркировки $threshold% = AI index $index%';
+  }
+
+  @override
+  String get abstentionHeadline => 'Недостаточно данных для вывода';
+
+  @override
+  String abstentionTooFewSentences(int count, int required) {
+    return 'Всего $count пригодн(ое/ых) для анализа предложени(е/й), а нужно минимум $required. На такой длине статистические и пословные сигналы ничего не значат, а выжатая из них оценка только введёт в заблуждение.';
+  }
+
+  @override
+  String abstentionTooFewWords(int count, int required) {
+    return 'В тексте $count слов, а нужно минимум $required. Ниже этого порога любая особенность письма может оказаться случайностью.';
+  }
+
+  @override
+  String abstentionTooFewEngines(int available, int total) {
+    return 'Участвовали лишь $available из $total движков — перепроверить с другой стороны нечем. Дозагрузите недостающие модели в управлении моделями и запустите заново.';
+  }
+
+  @override
+  String abstentionEnginesConflict(int spread) {
+    return 'Движки расходятся на $spread процентных пунктов — достаточно, чтобы усреднение потеряло смысл. Опирайтесь на пословные свидетельства и происхождение документа и судите сами.';
+  }
+
+  @override
+  String get abstentionScoreStillShown =>
+      'Полная оценка и пословные свидетельства остаются ниже для справки. Не считайте их выводом.';
+
+  @override
   String get provenanceTitle => 'Свидетельства о происхождении документа';
 
   @override
@@ -1029,21 +1061,18 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reportAiThresholdPrefix => 'Порог маркировки ИИ: ';
-
-  @override
   String reportVerdictRangeBelow(int value) {
-    return 'Вероятность ИИ ниже $value%';
+    return 'AI index < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'Вероятность ИИ $low%–$high%';
+    return 'AI index $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'Вероятность ИИ от $value%';
+    return 'AI index ≥ $value%';
   }
 
   @override
