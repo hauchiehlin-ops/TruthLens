@@ -1,5 +1,35 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第九十一次更新）— 全介面移除「學生」措辭，改為不預設使用對象
+
+**背景**：本工具同樣適用於編輯、審稿、人資、研究等情境，介面卻多處預設教育場景。
+
+**修改範圍**：8 個字串 × 14 語系。除先前已改的 `provenanceHowToGetRecord` 外，
+另含 `calibrationEmpty`、`calibrationCaveat`、`calibrationAutoWhy`、
+`settingsStoreTextWarning`、`helpFormatCoverage`、`helpPillarsBody`、`helpRisksBody`。
+
+用詞改為「作者／撰寫者」等中性稱呼，並把教育專屬的例子一併泛化
+（「課堂當場完成的作業」→「在可控環境下當場完成的作品」、「題型」→「任務類型」）。
+刻意保留具體感，不改成過度抽象的「受檢對象」。
+
+**做法**：先做語境化片語替換以保持語句自然，再以單詞替換兜底，最後用正規式
+掃描全 14 語系斷言歸零——長字串逐句人工核對很容易漏，機器掃描才靠得住。
+
+**過程中的兩個發現**
+1. `calibrationAutoWhy` 是漏網之魚：繁中版寫「真人作業」不含「學生」，但英／日／韓／
+   德／俄／泰／印尼／馬來版都有。只掃繁中會完全看不到，凸顯多語系必須逐語掃描。
+2. 馬來語／印尼語的 `dipelajari`（學習）內含 `pelajar`（學生），造成誤判。
+   已改用詞界正規式 `\bpelajar\b` 區分。
+
+**自己造成的錯誤**：以 `cp app_zh_Hant.arb app_zh.arb` 同步時，把
+`@@locale: zh_Hant` 一併複製進 `app_zh.arb`，導致檔名與 locale 不符。
+`flutter analyze` 與 `flutter test` **都沒有發現**（它們用的是先前產生的 l10n），
+只有 `flutter build web` 重新產生時才報錯。已修正並確認建置通過。
+
+**狀態**：✅ `flutter analyze` 無問題、`flutter test` 335 項全通過、web 建置成功
+
+---
+
 ## 2026-08-17（第九十次更新）— 來源證據建議改為不預設使用對象
 
 `provenanceHowToGetRecord` 原本寫「請**向學生收** .docx 或 .odt 原始檔」，預設了
