@@ -341,17 +341,6 @@
   "modelImportSuccessSnackbar": "Model imported successfully and set as active!",
   "modelImportFailedSnackbar": "Model import failed. Please check permissions or logs",
   "settingsAppBarTitle": "Settings",
-  "settingsThresholdTitle": "AI flagging threshold",
-  "settingsThresholdInfoTooltip": "How the AI flagging threshold affects the conclusion",
-  "settingsThresholdInfoBody": "The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.",
-  "settingsThresholdSubtitle": "Current: {percent}% — overall AI probability must reach this line before the report marks the text as AI",
-  "@settingsThresholdSubtitle": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
   "settingsEslTitle": "ESL non-native writer bias correction",
   "settingsEslSubtitle": "Automatically lowers the statistical model's weight when non-native writing style is detected",
   "settingsEngineSectionTitle": "Sub-detection engines (Ensemble)",
@@ -959,20 +948,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "AI probability {probability}% / AI flag threshold {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Not enough evidence to judge",
   "abstentionTooFewSentences": "Only {count} analysable sentence(s), where at least {required} are needed. At this length the statistical and sentence-level signals carry no weight, and forcing a score out of them would only mislead.",
   "@abstentionTooFewSentences": {
@@ -1178,7 +1153,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "AI probability < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1186,7 +1161,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI probability {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1197,7 +1172,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "AI probability ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1612,7 +1587,7 @@
       }
     }
   },
-  "composerThresholdFlagged": "The overall AI probability exceeds your {percent}% threshold and is flagged as AI.",
+  "composerThresholdFlagged": "The overall AI probability exceeds the fixed {percent}% threshold and is flagged as AI.",
   "@composerThresholdFlagged": {
     "placeholders": {
       "percent": {
@@ -1620,7 +1595,7 @@
       }
     }
   },
-  "composerThresholdNotFlagged": "The overall AI probability is below your {percent}% flagging threshold.",
+  "composerThresholdNotFlagged": "The overall AI probability is below the fixed {percent}% flagging threshold.",
   "@composerThresholdNotFlagged": {
     "placeholders": {
       "percent": {
@@ -1628,7 +1603,7 @@
       }
     }
   },
-  "composerThresholdFlaggedDetailed": "Overall AI probability is {aiPercent}%, which reaches your {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.",
+  "composerThresholdFlaggedDetailed": "Overall AI probability is {aiPercent}%, which reaches the fixed {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.",
   "@composerThresholdFlaggedDetailed": {
     "placeholders": {
       "aiPercent": {
@@ -1639,7 +1614,7 @@
       }
     }
   },
-  "composerThresholdNotFlaggedDetailed": "Overall AI probability is {aiPercent}%, below your {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.",
+  "composerThresholdNotFlaggedDetailed": "Overall AI probability is {aiPercent}%, below the fixed {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.",
   "@composerThresholdNotFlaggedDetailed": {
     "placeholders": {
       "aiPercent": {
@@ -1834,7 +1809,7 @@
   },
   "helpAppBarTitle": "User Guide",
   "helpAboutTitle": "About TruthLens",
-  "helpAboutBody": "TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI index (AI probability ÷ the flag threshold you set), alongside sentence-level evidence, each engine's contribution, the document's origin evidence, and the source filename when you import one. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.",
+  "helpAboutBody": "TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI probability sorted into five fixed bands (under 20%, 20–40%, 40–60%, 60–80%, 80% and above), alongside sentence-level evidence, each engine's contribution, the document's origin evidence, and the source filename when you import one. The cut points are not adjustable, so the same document always lands in the same band. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.",
   "helpComparisonTitle": "Comparison with leading tools",
   "helpComparisonDisclaimer": "This comparison is compiled from each tool's public information and general market perception, for positioning reference only — not third-party-certified benchmark data.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -1876,7 +1851,7 @@
   "helpWorkflowStep2Bullet3": "Stylometric analysis (20% weight): semantic fluency, repeated sentence patterns, transition-word usage — the most explainable, easiest to understand \"why\".",
   "helpWorkflowStep2Bullet4": "Adversarial defense (15% weight): detects text that has been washed through a paraphrasing tool (e.g. QuillBot, Undetectable.ai).",
   "helpWorkflowStep2Bullet5": "Report-writing LLM (optional): once installed, report text is dynamically written by an on-device LLM; without it, the app falls back to a fixed template — analysis itself is unaffected.",
-  "helpWorkflowStep2Bullet6": "You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.",
+  "helpWorkflowStep2Bullet6": "You can individually enable/disable engines and adjust engine weights in Settings. The five verdict bands use fixed cut points (20% / 40% / 60% / 80%) and cannot be changed, so the same document always yields the same verdict for everyone.",
   "helpWorkflowStep3Title": "Adding content",
   "helpWorkflowStep3Body": "Three ways in: paste text directly, recognise an image with OCR, or import a document (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer parsers and discards garbled output; scanned PDFs are recognised page by page when OCR is available. When you import, the filename appears under the input heading and on its own line in the report title; when you paste or type, it stays blank.\n\nOCR prefers the local server you configure, and only uses the cloud fallback if you supply a Gemini API key yourself.",
   "helpWorkflowStep4Title": "Running analysis",
@@ -1913,7 +1888,7 @@
   "helpTuningStep4Title": "Updating a model",
   "helpTuningStep4Body": "When a new version becomes available, \"AI Model Management\" and the settings gear icon show a badge — come back to this screen to see and download the update (the previously installed version is kept unless you remove it manually).",
   "helpTuningStep5Title": "Advanced: importing a custom model",
-  "helpTuningStep5Body": "If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you'll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI flagging threshold from Settings.",
+  "helpTuningStep5Body": "If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you'll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights from Settings.",
   "helpOfficialLinksTitle": "Official model download links",
   "helpOfficialLinksHint": "Tapping an item opens that model's official page in your system browser.",
   "helpLinkRoleTransformer": "Multilingual AI classifier (Transformer, 40% weight)",

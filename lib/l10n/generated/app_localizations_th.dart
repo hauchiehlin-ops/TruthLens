@@ -431,22 +431,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsAppBarTitle => 'การตั้งค่า';
 
   @override
-  String get settingsThresholdTitle => 'เกณฑ์ความเชื่อมั่นในการตัดสิน AI';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'เกณฑ์การตั้งค่าสถานะ AI ส่งผลต่อข้อสรุปอย่างไร';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'เอนจินที่เปิดใช้งานจะคำนวณความน่าจะเป็น AI โดยรวมก่อน การตั้งค่านี้ไม่เปลี่ยนคะแนนเอนจินใด ๆ หรือความน่าจะเป็นโดยรวมนั้น แต่จะเปลี่ยนข้อสรุปที่นำไปใช้กับคะแนน เกณฑ์ที่ต่ำกว่าทำให้ความน่าจะเป็นเดียวกันมีแนวโน้มที่จะสรุปและทำเครื่องหมายเป็น AI มากขึ้น ในขณะที่เกณฑ์ที่สูงกว่าต้องการความน่าจะเป็น AI ที่แข็งแกร่งกว่าและมีแนวโน้มที่จะสรุปเป็นการเขียนของมนุษย์มากขึ้น รายงานจะเก็บความน่าจะเป็นดั้งเดิมและหลักฐานสนับสนุนไว้เสมอ';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'ปัจจุบัน: $percent% — เพิ่มค่านี้เพื่อลดผลบวกลวง（การตัดสินบทความมนุษย์ผิดว่าเป็น AI）';
-  }
-
-  @override
   String get settingsEslTitle =>
       'การปรับแก้ความเอนเอียงสำหรับผู้ไม่ใช่เจ้าของภาษา (ESL)';
 
@@ -1172,11 +1156,6 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'ความน่าจะเป็น AI $probability% / เกณฑ์การตั้งค่าสถานะ $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'หลักฐานไม่พอที่จะตัดสิน';
 
   @override
@@ -1323,17 +1302,17 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'ความน่าจะเป็น AI < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'ความน่าจะเป็น AI $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'ความน่าจะเป็น AI ≥ $value%';
   }
 
   @override
@@ -1680,17 +1659,17 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'ความน่าจะเป็น AI โดยรวมเกินเกณฑ์ $percent% ที่คุณตั้งไว้ และถูกทำเครื่องหมายว่าเป็น AI';
+    return 'ความน่าจะเป็น AI โดยรวมเกินเกณฑ์คงที่ $percent% และถูกทำเครื่องหมายว่าเป็น AI';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'ความน่าจะเป็น AI โดยรวมต่ำกว่าเกณฑ์ $percent% ที่คุณตั้งไว้';
+    return 'ความน่าจะเป็น AI โดยรวมต่ำกว่าเกณฑ์คงที่ $percent%';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'ความน่าจะเป็น AI โดยรวมคือ $aiPercent% ซึ่งถึงเกณฑ์การตั้งค่าสถานะ AI ที่ $thresholdPercent% ของคุณ รายงานจึงทำเครื่องหมายข้อความนี้ว่าเป็น AI กรุณาตรวจสอบหลักฐานระดับประโยคและเหตุผลของเอนจินก่อนตัดสินใจขั้นสุดท้าย';
+    return 'ความน่าจะเป็น AI โดยรวมคือ $aiPercent% ซึ่งถึงเกณฑ์คงที่การตั้งค่าสถานะ AI ที่ $thresholdPercent% รายงานจึงทำเครื่องหมายข้อความนี้ว่าเป็น AI กรุณาตรวจสอบหลักฐานระดับประโยคและเหตุผลของเอนจินก่อนตัดสินใจขั้นสุดท้าย';
   }
 
   @override
@@ -1698,7 +1677,7 @@ class AppLocalizationsTh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'ความน่าจะเป็น AI โดยรวมคือ $aiPercent% ต่ำกว่าเกณฑ์การตั้งค่าสถานะ AI ที่ $thresholdPercent% ของคุณ รายงานจึงไม่ทำเครื่องหมายข้อความนี้ว่าเป็น AI อย่างเป็นทางการ ความน่าจะเป็นและหลักฐานยังคงแสดงไว้เพื่อตรวจสอบ';
+    return 'ความน่าจะเป็น AI โดยรวมคือ $aiPercent% ต่ำกว่าเกณฑ์คงที่การตั้งค่าสถานะ AI ที่ $thresholdPercent% รายงานจึงไม่ทำเครื่องหมายข้อความนี้ว่าเป็น AI อย่างเป็นทางการ ความน่าจะเป็นและหลักฐานยังคงแสดงไว้เพื่อตรวจสอบ';
   }
 
   @override
@@ -1947,7 +1926,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens คือเครื่องมือตรวจเนื้อหา AI ที่ทำงาน**ภายในเบราว์เซอร์ของคุณทั้งหมด** เอนจินอิสระสี่ตัว ได้แก่ ตัวจำแนกโครงข่ายประสาท Transformer การวิเคราะห์เชิงสถิติ การวิเคราะห์สำนวน และการตรวจจับการเขียนใหม่เชิงปฏิปักษ์ จะลงคะแนนแบบถ่วงน้ำหนักว่าข้อความถูกสร้างโดย AI หรือไม่ และเอกสารของคุณจะไม่ถูกส่งออกไปไหน\n\nรายงานแสดงผลตัดสินเป็น AI index (ความน่าจะเป็น AI ÷ เกณฑ์การตั้งค่าสถานะที่คุณกำหนด) พร้อมหลักฐานรายประโยค สัดส่วนที่แต่ละเอนจินมีส่วนร่วม หลักฐานที่มาของเอกสาร และชื่อไฟล์เมื่อนำเข้า หากหลักฐานบางเกินไป (ประโยคหรือคำน้อยเกินไป หรือเอนจินขัดแย้งกันมาก) ระบบจะบอกตรง ๆ แทนที่จะฝืนให้คะแนน';
+      'TruthLens คือเครื่องมือตรวจเนื้อหา AI ที่ทำงาน**ภายในเบราว์เซอร์ของคุณทั้งหมด** เอนจินอิสระสี่ตัว ได้แก่ ตัวจำแนกโครงข่ายประสาท Transformer การวิเคราะห์เชิงสถิติ การวิเคราะห์สำนวน และการตรวจจับการเขียนใหม่เชิงปฏิปักษ์ จะลงคะแนนแบบถ่วงน้ำหนักว่าข้อความถูกสร้างโดย AI หรือไม่ และเอกสารของคุณจะไม่ถูกส่งออกไปไหน\n\nรายงานแสดงผลตัดสินเป็นความน่าจะเป็น AI โดยจัดเข้าห้าช่วงคงที่ (ต่ำกว่า 20%, 20–40%, 40–60%, 60–80%, 80% ขึ้นไป) พร้อมหลักฐานรายประโยค สัดส่วนที่แต่ละเอนจินมีส่วนร่วม หลักฐานที่มาของเอกสาร และชื่อไฟล์เมื่อนำเข้า จุดแบ่งช่วงปรับไม่ได้ ดังนั้นเอกสารเดียวกันจะอยู่ในช่วงเดิมเสมอ หากหลักฐานบางเกินไป (ประโยคหรือคำน้อยเกินไป หรือเอนจินขัดแย้งกันมาก) ระบบจะบอกตรง ๆ แทนที่จะฝืนให้คะแนน';
 
   @override
   String get helpComparisonTitle => 'การเปรียบเทียบกับเครื่องมือชั้นนำ';
@@ -2078,7 +2057,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'สามารถเปิด/ปิดแต่ละเอนจินและปรับเกณฑ์ความเชื่อมั่นในการตัดสิน AI ได้ที่ \"การตั้งค่า\"（การเพิ่มค่าจะลดโอกาสตัดสินบทความมนุษย์ผิดว่าเป็น AI）';
+      'สามารถเปิด/ปิดแต่ละเอนจินและปรับน้ำหนักของเอนจินได้ที่ \"การตั้งค่า\" ห้าช่วงผลตัดสินใช้จุดแบ่งคงที่ (20% / 40% / 60% / 80%) และเปลี่ยนไม่ได้ ดังนั้นเอกสารเดียวกันจะให้ผลตัดสินเหมือนกันสำหรับทุกคน';
 
   @override
   String get helpWorkflowStep3Title => 'การอัปโหลดเอกสาร';

@@ -130,7 +130,7 @@ void main() {
   });
 
   testWidgets(
-    'verdict card shows threshold and all five tiers, no confidence badge, no overflow on a narrow screen',
+    'verdict card shows AI probability and all five fixed tiers, no confidence badge, no overflow on a narrow screen',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(360, 1600));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -144,13 +144,13 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      // 標題列改為 AI index 公式：22% / 60% = 37%
+      // 標題列直接顯示 AI 機率，不再有門檻換算
       expect(
-        find.textContaining('AI index 37%', findRichText: true),
-        findsOneWidget,
+        find.textContaining('22%', findRichText: true),
+        findsWidgets,
       );
-      // 五級區間改以 AI index 表達，門檻 60% 時第一個切點為 40%
-      expect(find.text('AI index < 40%'), findsOneWidget);
+      // 五級區間為固定切點，第一個切點 20%
+      expect(find.text('AI probability < 20%'), findsOneWidget);
       // "Likely human" is the active verdict, so it also appears as the
       // headline label and in the radar-panel badge, not just the tier chip.
       expect(find.text('Human-written'), findsOneWidget);

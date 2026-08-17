@@ -55,7 +55,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       widget.request.text,
       sourceFileName: widget.request.sourceFileName,
       eslCorrectionEnabled: prefs.eslCorrectionEnabled,
-      threshold: prefs.confidenceThreshold,
       prefs: prefs,
       l10n: l10n,
       onEngineDone: (id) {

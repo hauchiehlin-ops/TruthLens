@@ -12,7 +12,6 @@ DetectionResult _result({
   required Map<String, double> engineScores,
   Set<String> unavailable = const {},
   List<double> sentenceScores = const [0.1, 0.1, 0.1, 0.15, 0.12, 0.08],
-  double threshold = 0.5,
 }) {
   final scores = [
     for (final entry in engineScores.entries)
@@ -40,8 +39,7 @@ DetectionResult _result({
     // 需超過棄權門檻（100 字），這些案例測的是有結論時的總結內容
     inputText: _longText,
     aiProbability: overall,
-    verdict: Verdict.fromProbability(overall, threshold),
-    threshold: threshold,
+    verdict: Verdict.fromProbability(overall),
     engineScores: scores,
     sentences: [
       for (var i = 0; i < sentenceScores.length; i++)

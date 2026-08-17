@@ -440,22 +440,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsAppBarTitle => 'Einstellungen';
 
   @override
-  String get settingsThresholdTitle => 'Vertrauensschwelle für KI-Bestimmung';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Wie der KI-Kennzeichnungsschwellenwert die Schlussfolgerung beeinflusst';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Die aktivierten Engines berechnen zunächst die Gesamt-KI-Wahrscheinlichkeit. Diese Einstellung ändert keinen Engine-Score oder diese Gesamtwahrscheinlichkeit; sie ändert, welche Schlussfolgerung auf den Score angewendet wird. Ein niedrigerer Schwellenwert macht es wahrscheinlicher, dass dieselbe Wahrscheinlichkeit als KI eingestuft und markiert wird, während ein höherer Schwellenwert eine stärkere KI-Wahrscheinlichkeit erfordert und eher zu menschlichem Schreiben tendiert. Der Bericht behält immer die ursprüngliche Wahrscheinlichkeit und die Belege bei.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Aktuell: $percent% — eine Erhöhung reduziert Falschmeldungen (menschlicher Text fälschlich als KI eingestuft)';
-  }
-
-  @override
   String get settingsEslTitle =>
       'ESL-Verzerrungskorrektur (Nicht-Muttersprachler)';
 
@@ -1187,11 +1171,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'KI-Wahrscheinlichkeit $probability% / KI-Kennzeichnungsschwelle $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'Zu wenig Belege für ein Urteil';
 
   @override
@@ -1339,17 +1318,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'KI-Wahrscheinlichkeit < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'KI-Wahrscheinlichkeit $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'KI-Wahrscheinlichkeit ≥ $value%';
   }
 
   @override
@@ -1702,17 +1681,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'Die Gesamt-KI-Wahrscheinlichkeit überschreitet die von Ihnen festgelegte Schwelle von $percent% und wurde als KI markiert.';
+    return 'Die Gesamt-KI-Wahrscheinlichkeit überschreitet die feste Schwelle von $percent% und wurde als KI markiert.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'Die Gesamt-KI-Wahrscheinlichkeit liegt unter der von Ihnen festgelegten Markierungsschwelle von $percent%.';
+    return 'Die Gesamt-KI-Wahrscheinlichkeit liegt unter der festen Markierungsschwelle von $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Die Gesamt-KI-Wahrscheinlichkeit beträgt $aiPercent%, was Ihren Schwellenwert von $thresholdPercent% für die KI-Kennzeichnung erreicht, sodass der Bericht diesen Text als KI markiert. Prüfen Sie die Satzbelege und Engine-Begründungen, bevor Sie eine endgültige Entscheidung treffen.';
+    return 'Die Gesamt-KI-Wahrscheinlichkeit beträgt $aiPercent%, was den festen Schwellenwert von $thresholdPercent% für die KI-Kennzeichnung erreicht, sodass der Bericht diesen Text als KI markiert. Prüfen Sie die Satzbelege und Engine-Begründungen, bevor Sie eine endgültige Entscheidung treffen.';
   }
 
   @override
@@ -1720,7 +1699,7 @@ class AppLocalizationsDe extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Die Gesamt-KI-Wahrscheinlichkeit beträgt $aiPercent%, unter Ihrem Schwellenwert von $thresholdPercent% für die KI-Kennzeichnung, sodass der Bericht diesen Text nicht formell als KI markiert. Die Wahrscheinlichkeit und die Belege werden dennoch zur Überprüfung angezeigt.';
+    return 'Die Gesamt-KI-Wahrscheinlichkeit beträgt $aiPercent%, unter dem festen Schwellenwert von $thresholdPercent% für die KI-Kennzeichnung, sodass der Bericht diesen Text nicht formell als KI markiert. Die Wahrscheinlichkeit und die Belege werden dennoch zur Überprüfung angezeigt.';
   }
 
   @override
@@ -1969,7 +1948,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens ist ein KI-Inhaltsdetektor, der **vollständig in Ihrem Browser** läuft. Vier unabhängige Engines — ein neuronaler Transformer-Klassifikator, statistische Merkmalsanalyse, Stilometrie und Erkennung gegnerischer Umschreibungen — stimmen gewichtet darüber ab, ob ein Text von einer KI stammt; Ihr Dokument verlässt den Rechner nie.\n\nDer Bericht zeigt das Urteil als KI-Index (KI-Wahrscheinlichkeit ÷ von Ihnen gesetzte Kennzeichnungsschwelle), dazu Satzbelege, den Beitrag jeder Engine, Herkunftsnachweise des Dokuments und den Dateinamen beim Import. Ist die Beweislage zu dünn — zu wenige Sätze oder Wörter, oder zu stark uneinige Engines — sagt er das offen, statt einen Wert zu erzwingen.';
+      'TruthLens ist ein KI-Inhaltsdetektor, der **vollständig in Ihrem Browser** läuft. Vier unabhängige Engines — ein neuronaler Transformer-Klassifikator, statistische Merkmalsanalyse, Stilometrie und Erkennung gegnerischer Umschreibungen — stimmen gewichtet darüber ab, ob ein Text von einer KI stammt; Ihr Dokument verlässt den Rechner nie.\n\nDer Bericht zeigt das Urteil als KI-Wahrscheinlichkeit, eingeordnet in fünf feste Stufen (unter 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % und mehr), dazu Satzbelege, den Beitrag jeder Engine, Herkunftsnachweise des Dokuments und den Dateinamen beim Import. Die Grenzwerte sind nicht einstellbar, dasselbe Dokument landet also immer in derselben Stufe. Ist die Beweislage zu dünn — zu wenige Sätze oder Wörter, oder zu stark uneinige Engines — sagt er das offen, statt einen Wert zu erzwingen.';
 
   @override
   String get helpComparisonTitle => 'Vergleich mit führenden Tools';
@@ -2100,7 +2079,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Sie können Engines einzeln aktivieren/deaktivieren und die Vertrauensschwelle der KI-Erkennung in den Einstellungen anpassen (eine Erhöhung verringert die Wahrscheinlichkeit, menschliches Schreiben fälschlicherweise als KI einzustufen).';
+      'Sie können Engines einzeln aktivieren/deaktivieren und die Engine-Gewichte in den Einstellungen anpassen. Die fünf Urteilsstufen nutzen feste Grenzwerte (20 % / 40 % / 60 % / 80 %) und sind nicht änderbar, dasselbe Dokument ergibt also für jeden dasselbe Urteil.';
 
   @override
   String get helpWorkflowStep3Title => 'Ein Dokument hochladen';

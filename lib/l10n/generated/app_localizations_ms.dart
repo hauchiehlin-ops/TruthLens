@@ -432,22 +432,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get settingsAppBarTitle => 'Tetapan';
 
   @override
-  String get settingsThresholdTitle => 'Ambang keyakinan penentuan AI';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Bagaimana ambang penandaan AI menjejaskan kesimpulan';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Enjin yang diaktifkan mula-mula mengira kebarangkalian AI keseluruhan. Tetapan ini tidak mengubah sebarang skor enjin atau kebarangkalian keseluruhan itu; ia mengubah kesimpulan mana yang digunakan pada skor. Ambang yang lebih rendah menjadikan kebarangkalian yang sama lebih berkemungkinan disimpulkan dan ditandakan sebagai AI, manakala ambang yang lebih tinggi memerlukan kebarangkalian AI yang lebih kuat dan lebih berkemungkinan menyimpulkan penulisan manusia. Laporan sentiasa mengekalkan kebarangkalian asal dan bukti sokongan.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Semasa: $percent% — meningkatkannya mengurangkan positif palsu (teks manusia disalah anggap sebagai AI)';
-  }
-
-  @override
   String get settingsEslTitle => 'Pembetulan bias ESL (bukan penutur asli)';
 
   @override
@@ -1178,11 +1162,6 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'Kebarangkalian AI $probability% / ambang penanda $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'Bukti tidak mencukupi untuk menilai';
 
   @override
@@ -1330,17 +1309,17 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'Kebarangkalian AI < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'Kebarangkalian AI $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'Kebarangkalian AI ≥ $value%';
   }
 
   @override
@@ -1691,17 +1670,17 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'Kebarangkalian AI keseluruhan melebihi ambang $percent% yang anda tetapkan dan ditandakan sebagai AI.';
+    return 'Kebarangkalian AI keseluruhan melebihi ambang tetap $percent% dan ditandakan sebagai AI.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'Kebarangkalian AI keseluruhan di bawah ambang penandaan $percent% yang anda tetapkan.';
+    return 'Kebarangkalian AI keseluruhan di bawah ambang penandaan tetap $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Kebarangkalian AI keseluruhan ialah $aiPercent%, yang mencapai ambang penandaan AI $thresholdPercent% anda, jadi laporan menandakan teks ini sebagai AI. Semak bukti peringkat ayat dan sebab enjin sebelum membuat keputusan akhir.';
+    return 'Kebarangkalian AI keseluruhan ialah $aiPercent%, yang mencapai ambang penandaan AI tetap $thresholdPercent%, jadi laporan menandakan teks ini sebagai AI. Semak bukti peringkat ayat dan sebab enjin sebelum membuat keputusan akhir.';
   }
 
   @override
@@ -1709,7 +1688,7 @@ class AppLocalizationsMs extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Kebarangkalian AI keseluruhan ialah $aiPercent%, di bawah ambang penandaan AI $thresholdPercent% anda, jadi laporan tidak menandakan teks ini sebagai AI secara rasmi. Kebarangkalian dan bukti masih dipaparkan untuk semakan.';
+    return 'Kebarangkalian AI keseluruhan ialah $aiPercent%, di bawah ambang penandaan AI tetap $thresholdPercent%, jadi laporan tidak menandakan teks ini sebagai AI secara rasmi. Kebarangkalian dan bukti masih dipaparkan untuk semakan.';
   }
 
   @override
@@ -1955,7 +1934,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens ialah pengesan kandungan AI yang berjalan **sepenuhnya dalam pelayar anda**. Empat enjin bebas — pengelas neural Transformer, analisis ciri statistik, stilometri, dan pengesanan penulisan semula adversarial — mengundi secara berpemberat sama ada teks dijana AI, dan dokumen anda tidak pernah meninggalkan mesin.\n\nLaporan menyatakan keputusannya sebagai indeks AI (kebarangkalian AI ÷ ambang penandaan yang anda tetapkan), berserta bukti setiap ayat, sumbangan setiap enjin, bukti asal dokumen, dan nama fail semasa mengimport. Apabila buktinya nipis — terlalu sedikit ayat atau perkataan, atau enjin terlalu berbeza pendapat — ia menyatakannya terus terang dan bukannya memaksa skor.';
+      'TruthLens ialah pengesan kandungan AI yang berjalan **sepenuhnya dalam pelayar anda**. Empat enjin bebas — pengelas neural Transformer, analisis ciri statistik, stilometri, dan pengesanan penulisan semula adversarial — mengundi secara berpemberat sama ada teks dijana AI, dan dokumen anda tidak pernah meninggalkan mesin.\n\nLaporan menyatakan keputusannya sebagai kebarangkalian AI yang dikelaskan ke dalam lima jalur tetap (bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), berserta bukti setiap ayat, sumbangan setiap enjin, bukti asal dokumen, dan nama fail semasa mengimport. Titik pemisahnya tidak boleh dilaraskan, jadi dokumen yang sama sentiasa jatuh dalam jalur yang sama. Apabila buktinya nipis — terlalu sedikit ayat atau perkataan, atau enjin terlalu berbeza pendapat — ia menyatakannya terus terang dan bukannya memaksa skor.';
 
   @override
   String get helpComparisonTitle => 'Perbandingan dengan alat terkemuka';
@@ -2086,7 +2065,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Anda boleh mengaktifkan/menyahaktifkan enjin secara individu dan melaraskan ambang keyakinan pengesanan AI dalam Tetapan (meningkatkannya mengurangkan peluang salah anggap penulisan manusia sebagai AI).';
+      'Anda boleh mengaktifkan/menyahaktifkan enjin secara individu dan melaraskan pemberat enjin dalam Tetapan. Lima jalur keputusan menggunakan titik pemisah tetap (20% / 40% / 60% / 80%) dan tidak boleh diubah, jadi dokumen yang sama memberi keputusan yang sama kepada semua orang.';
 
   @override
   String get helpWorkflowStep3Title => 'Memuat naik dokumen';

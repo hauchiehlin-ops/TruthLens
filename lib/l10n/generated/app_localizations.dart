@@ -813,30 +813,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsAppBarTitle;
 
-  /// No description provided for @settingsThresholdTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'AI flagging threshold'**
-  String get settingsThresholdTitle;
-
-  /// No description provided for @settingsThresholdInfoTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'How the AI flagging threshold affects the conclusion'**
-  String get settingsThresholdInfoTooltip;
-
-  /// No description provided for @settingsThresholdInfoBody.
-  ///
-  /// In en, this message translates to:
-  /// **'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.'**
-  String get settingsThresholdInfoBody;
-
-  /// No description provided for @settingsThresholdSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Current: {percent}% — overall AI probability must reach this line before the report marks the text as AI'**
-  String settingsThresholdSubtitle(int percent);
-
   /// No description provided for @settingsEslTitle.
   ///
   /// In en, this message translates to:
@@ -1970,12 +1946,6 @@ abstract class AppLocalizations {
   /// **'Currently {alpha}% — lower is stricter but needs more baseline samples (at least {required})'**
   String settingsAlphaSubtitle(int alpha, int required);
 
-  /// No description provided for @reportAiIndexFormula.
-  ///
-  /// In en, this message translates to:
-  /// **'AI probability {probability}% / AI flag threshold {threshold}% = AI index {index}%'**
-  String reportAiIndexFormula(int probability, int threshold, int index);
-
   /// No description provided for @abstentionHeadline.
   ///
   /// In en, this message translates to:
@@ -2175,19 +2145,19 @@ abstract class AppLocalizations {
   /// No description provided for @reportVerdictRangeBelow.
   ///
   /// In en, this message translates to:
-  /// **'AI index < {value}%'**
+  /// **'AI probability < {value}%'**
   String reportVerdictRangeBelow(int value);
 
   /// No description provided for @reportVerdictRangeBetween.
   ///
   /// In en, this message translates to:
-  /// **'AI index {low}%–{high}%'**
+  /// **'AI probability {low}%–{high}%'**
   String reportVerdictRangeBetween(int low, int high);
 
   /// No description provided for @reportVerdictRangeAbove.
   ///
   /// In en, this message translates to:
-  /// **'AI index ≥ {value}%'**
+  /// **'AI probability ≥ {value}%'**
   String reportVerdictRangeAbove(int value);
 
   /// No description provided for @reportConfidenceLowTooltip.
@@ -2702,25 +2672,25 @@ abstract class AppLocalizations {
   /// No description provided for @composerThresholdFlagged.
   ///
   /// In en, this message translates to:
-  /// **'The overall AI probability exceeds your {percent}% threshold and is flagged as AI.'**
+  /// **'The overall AI probability exceeds the fixed {percent}% threshold and is flagged as AI.'**
   String composerThresholdFlagged(int percent);
 
   /// No description provided for @composerThresholdNotFlagged.
   ///
   /// In en, this message translates to:
-  /// **'The overall AI probability is below your {percent}% flagging threshold.'**
+  /// **'The overall AI probability is below the fixed {percent}% flagging threshold.'**
   String composerThresholdNotFlagged(int percent);
 
   /// No description provided for @composerThresholdFlaggedDetailed.
   ///
   /// In en, this message translates to:
-  /// **'Overall AI probability is {aiPercent}%, which reaches your {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.'**
+  /// **'Overall AI probability is {aiPercent}%, which reaches the fixed {thresholdPercent}% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.'**
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent);
 
   /// No description provided for @composerThresholdNotFlaggedDetailed.
   ///
   /// In en, this message translates to:
-  /// **'Overall AI probability is {aiPercent}%, below your {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.'**
+  /// **'Overall AI probability is {aiPercent}%, below the fixed {thresholdPercent}% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.'**
   String composerThresholdNotFlaggedDetailed(
     int aiPercent,
     int thresholdPercent,
@@ -3071,7 +3041,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI index (AI probability ÷ the flag threshold you set), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.'**
+  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI probability sorted into five fixed bands (under 20%, 20–40%, 40–60%, 60–80%, 80% and above), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. The cut points are not adjustable, so the same document always lands in the same band. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -3281,7 +3251,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet6.
   ///
   /// In en, this message translates to:
-  /// **'You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.'**
+  /// **'You can individually enable/disable engines and adjust engine weights in Settings. The five verdict bands use fixed cut points (20% / 40% / 60% / 80%) and cannot be changed, so the same document always yields the same verdict for everyone.'**
   String get helpWorkflowStep2Bullet6;
 
   /// No description provided for @helpWorkflowStep3Title.
@@ -3503,7 +3473,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpTuningStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI flagging threshold from Settings.'**
+  /// **'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights from Settings.'**
   String get helpTuningStep5Body;
 
   /// No description provided for @helpOfficialLinksTitle.

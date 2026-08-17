@@ -30,7 +30,6 @@ DetectionResult _result({bool paraphrase = false}) => DetectionResult(
   inputText: 'This paragraph looks formulaic. This sentence feels human.',
   aiProbability: 0.64,
   verdict: Verdict.likelyAi,
-  threshold: 0.6,
   engineScores: [
     const EngineScore(
       engineId: 'stylometry',

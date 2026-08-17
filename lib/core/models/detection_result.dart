@@ -13,30 +13,17 @@ enum Verdict {
   likelyAi, // 🔴 可能 AI
   ai; // ⛔ AI 生成
 
-  /// 四個分級切點，以 [threshold]（AI 標記門檻閾值）為中心、按左右兩側可用
-  /// 空間等比例縮放，確保無論門檻設在哪裡，五個等級永遠都有非零區間。
-  /// 門檻為 0.5（預設值）時，切點恰為原本寫死的 0.2/0.4/0.6/0.8。
-  static List<double> cutPoints(double threshold) {
-    final t = threshold.clamp(0.0, 1.0);
-    return [t * 0.4, t * 0.8, t + (1 - t) * 0.2, t + (1 - t) * 0.6];
-  }
+  /// 五級分類的固定切點。刻意不做成可調參數：門檻一旦可調，同一份文件在
+  /// 不同人手上會得到不同結論，跨使用者、跨時間的紀錄也不再可比。
+  /// 固定值讓「可能 AI」這個詞永遠指同一件事。
+  static const List<double> cutPoints = [0.20, 0.40, 0.60, 0.80];
 
-  static Verdict fromProbability(double p, double threshold) {
-    final cuts = cutPoints(threshold);
-    if (p < cuts[0]) return Verdict.human;
-    if (p < cuts[1]) return Verdict.likelyHuman;
-    if (p < cuts[2]) return Verdict.mixed;
-    if (p < cuts[3]) return Verdict.likelyAi;
+  static Verdict fromProbability(double p) {
+    if (p < cutPoints[0]) return Verdict.human;
+    if (p < cutPoints[1]) return Verdict.likelyHuman;
+    if (p < cutPoints[2]) return Verdict.mixed;
+    if (p < cutPoints[3]) return Verdict.likelyAi;
     return Verdict.ai;
-  }
-
-  /// 四個分級切點換算為「AI index」百分比（＝切點 ÷ 門檻）。
-  /// 因為 index 是對機率的單調轉換，用 index 分級與用機率分級完全等價，
-  /// 改的只是表達方式；門檻為預設 0.5 時，恰為 40／80／120／160%。
-  static List<int> cutPointIndexPercents(double threshold) {
-    final t = threshold.clamp(0.0, 1.0);
-    if (t <= 0) return const [0, 0, 0, 0];
-    return cutPoints(t).map((c) => (c / t * 100).round()).toList();
   }
 
   /// 判定結果的顯示文字，依 [l10n] 語系呈現。
@@ -129,7 +116,6 @@ class DetectionResult {
   final List<SentenceScore> sentences;
   final List<String> dominantPatterns;
   final bool eslAdjusted; // 是否套用了 ESL 偏差修正
-  final double threshold; // 本次採用的 AI 判定信心閾值
   final Duration elapsed;
   final int availableEngineCount; // 本次參與投票的引擎數
   final int totalEngineCount; // 註冊的引擎總數
@@ -150,7 +136,6 @@ class DetectionResult {
     required this.sentences,
     this.dominantPatterns = const [],
     this.eslAdjusted = false,
-    this.threshold = 0.6,
     this.elapsed = Duration.zero,
     this.availableEngineCount = 0,
     this.totalEngineCount = 0,
@@ -245,17 +230,12 @@ class DetectionResult {
     return cjk + latin;
   }
 
-  /// AI index：整體 AI 機率相對於使用者設定門檻的比值，以百分比表示。
-  /// 100% 代表恰好落在標記門檻上，因此「離線多遠」一眼可讀，
-  /// 不必先在心裡拿分數跟門檻相減。
-  int get aiIndexPercent {
-    if (threshold <= 0) return 0;
-    return (aiProbability / threshold * 100).round();
-  }
+  /// 正式標記為 AI 的固定門檻，等於「混合內容 → 可能 AI」的分界。
+  /// 與五級切點取同一個值，判定文字與標記狀態才不會互相矛盾。
+  static const double aiFlagThreshold = 0.60;
 
-  /// 是否越過使用者設定的信心閾值而被明確標記為 AI。
-  /// 閾值調高 → 需更高信心才標記 → 降低偽陽性（誤判人類文章）。
-  bool get flaggedAsAi => aiProbability >= threshold;
+  /// 是否越過標記門檻。這是固定值，不隨使用者設定變動。
+  bool get flaggedAsAi => aiProbability >= aiFlagThreshold;
 
   double effectiveWeightFor(EngineScore score) {
     final statistical =

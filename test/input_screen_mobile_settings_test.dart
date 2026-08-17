@@ -66,33 +66,6 @@ void main() {
     expect(find.text('Custom ONNX model import & test'), findsOneWidget);
 
     await tester.dragUntilVisible(
-      find.text('AI flagging threshold'),
-      scrollable,
-      const Offset(0, -300),
-    );
-    expect(find.text('AI flagging threshold'), findsOneWidget);
-    final thresholdInfo = find.byTooltip(
-      'How the AI flagging threshold affects the conclusion',
-    );
-    expect(thresholdInfo, findsOneWidget);
-    await tester.ensureVisible(thresholdInfo);
-    await tester.pumpAndSettle();
-    await tester.tap(thresholdInfo);
-    await tester.pumpAndSettle();
-    expect(
-      find.textContaining(
-        'A lower threshold makes the same probability more likely',
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.textContaining('does not change any engine score'),
-      findsOneWidget,
-    );
-    await tester.tap(find.text('Close'));
-    await tester.pumpAndSettle();
-
-    await tester.dragUntilVisible(
       find.text('AI model weights'),
       scrollable,
       const Offset(0, -300),

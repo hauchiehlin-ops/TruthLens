@@ -86,7 +86,7 @@ class ReportExporter {
         'ai_probability': r.aiProbability,
         'verdict': r.verdict.name,
         'flagged_as_ai': r.flaggedAsAi,
-        'threshold': r.threshold,
+        'threshold': DetectionResult.aiFlagThreshold,
       },
       'esl_adjusted': r.eslAdjusted,
       'sentence_count': r.analyzableSentenceCount,

@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "Model berhasil diimpor! Otomatis diatur sebagai model aktif.",
   "modelImportFailedSnackbar": "Impor model gagal. Periksa izin atau log",
   "settingsAppBarTitle": "Pengaturan",
-  "settingsThresholdTitle": "Ambang kepercayaan penentuan AI",
-  "settingsThresholdSubtitle": "Saat ini: {percent}% — meningkatkannya mengurangi positif palsu (teks manusia salah dinilai sebagai AI)",
   "settingsEslTitle": "Koreksi bias ESL (bukan penutur asli)",
   "settingsEslSubtitle": "Secara otomatis mengurangi bobot model statistik saat gaya penulisan bukan penutur asli terdeteksi",
   "settingsEngineSectionTitle": "Pengaturan sub-mesin deteksi (Ensemble)",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "Teks ini menunjukkan karakteristik campuran manusia dan AI (probabilitas AI {percent}%)",
   "composerHeadlineLikelyHuman": "Teks ini cenderung ditulis manusia (probabilitas AI {percent}%)",
   "composerHeadlineHuman": "Teks ini kemungkinan besar ditulis manusia (probabilitas AI {percent}%)",
-  "composerThresholdFlagged": "Probabilitas AI keseluruhan melebihi ambang {percent}% yang Anda tetapkan dan ditandai sebagai AI.",
-  "composerThresholdNotFlagged": "Probabilitas AI keseluruhan di bawah ambang penandaan {percent}% yang Anda tetapkan.",
+  "composerThresholdFlagged": "Probabilitas AI keseluruhan melebihi ambang tetap {percent}% dan ditandai sebagai AI.",
+  "composerThresholdNotFlagged": "Probabilitas AI keseluruhan di bawah ambang penandaan tetap {percent}%.",
   "composerNarrativeTitle": "Interpretasi analisis",
   "composerParaphraseTitle": "Jejak parafrasa terdeteksi",
   "composerParaphraseBody": "Teks ini mungkin telah diproses oleh alat parafrasa (mis. QuillBot, Undetectable.ai) untuk menghindari deteksi. Meskipun tampak alami kalimat demi kalimat, jejak statistik keseluruhannya tetap berbeda dari tulisan manusia asli — harap perhatikan secara khusus.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "kata penghubung generik \"{word}\"",
   "helpAppBarTitle": "Panduan Pengguna",
   "helpAboutTitle": "Tentang TruthLens",
-  "helpAboutBody": "TruthLens adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai indeks AI (probabilitas AI ÷ ambang penandaan yang Anda tetapkan), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.",
+  "helpAboutBody": "TruthLens adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai probabilitas AI yang digolongkan ke lima rentang tetap (di bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Titik potongnya tidak dapat diubah, sehingga dokumen yang sama selalu jatuh di rentang yang sama. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.",
   "helpComparisonTitle": "Perbandingan dengan alat terkemuka",
   "helpComparisonDisclaimer": "Perbandingan ini disusun dari informasi publik masing-masing alat dan persepsi pasar umum, hanya untuk referensi posisi fungsional — bukan data benchmark yang diverifikasi pihak ketiga.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "Analisis stilometri (bobot 20%): kelancaran semantik, pola kalimat berulang, penggunaan kata penghubung — paling dapat dijelaskan, paling mudah dipahami \"mengapa\".",
   "helpWorkflowStep2Bullet4": "Pertahanan adversarial (bobot 15%): mendeteksi teks yang telah \"dibersihkan\" melalui alat parafrasa (mis. QuillBot, Undetectable.ai).",
   "helpWorkflowStep2Bullet5": "LLM penulisan laporan (opsional): setelah terpasang, teks laporan ditulis secara dinamis oleh LLM di perangkat; tanpanya, aplikasi kembali ke templat tetap — analisis itu sendiri tidak terpengaruh.",
-  "helpWorkflowStep2Bullet6": "Anda dapat mengaktifkan/menonaktifkan mesin secara individual dan menyesuaikan ambang kepercayaan deteksi AI di Pengaturan (meningkatkannya mengurangi kemungkinan salah menilai tulisan manusia sebagai AI).",
+  "helpWorkflowStep2Bullet6": "Anda dapat mengaktifkan/menonaktifkan mesin secara individual dan menyesuaikan bobot mesin di Pengaturan. Lima rentang putusan memakai titik potong tetap (20% / 40% / 60% / 80%) dan tidak dapat diubah, jadi dokumen yang sama memberi putusan yang sama bagi semua orang.",
   "helpWorkflowStep3Title": "Mengunggah dokumen",
   "helpWorkflowStep3Body": "Tiga cara memasukkan: tempel teks langsung, kenali gambar dengan OCR, atau impor dokumen (txt / md / pdf / docx / doc / odt). Impor PDF membandingkan dua pengurai lapisan teks dan membuang keluaran kacau; PDF pindaian dikenali per halaman bila OCR tersedia. Saat mengimpor, nama berkas muncul di bawah judul masukan dan pada barisnya sendiri di judul laporan; saat menempel atau mengetik, ia tetap kosong.\n\nOCR mengutamakan server lokal yang Anda siapkan dan hanya memakai awan bila Anda sendiri memberikan kunci API Gemini.",
   "helpWorkflowStep4Title": "Menjalankan analisis",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "Bukti terpilih",
   "workspaceNoEvidence": "Bukti kalimat muncul saat setiap mesin selesai.",
   "workspacePreliminaryVerdict": "Probabilitas AI sementara: {percent}%",
-  "composerThresholdFlaggedDetailed": "Probabilitas AI keseluruhan adalah {aiPercent}%, yang mencapai ambang batas penandaan AI {thresholdPercent}% Anda, sehingga laporan menandai teks ini sebagai AI. Tinjau bukti tingkat kalimat dan alasan mesin sebelum membuat keputusan akhir.",
-  "composerThresholdNotFlaggedDetailed": "Probabilitas AI keseluruhan adalah {aiPercent}%, di bawah ambang batas penandaan AI {thresholdPercent}% Anda, sehingga laporan tidak secara resmi menandai teks ini sebagai AI. Probabilitas dan bukti tetap ditampilkan untuk ditinjau.",
+  "composerThresholdFlaggedDetailed": "Probabilitas AI keseluruhan adalah {aiPercent}%, yang mencapai ambang batas penandaan AI tetap {thresholdPercent}%, sehingga laporan menandai teks ini sebagai AI. Tinjau bukti tingkat kalimat dan alasan mesin sebelum membuat keputusan akhir.",
+  "composerThresholdNotFlaggedDetailed": "Probabilitas AI keseluruhan adalah {aiPercent}%, di bawah ambang batas penandaan AI tetap {thresholdPercent}%, sehingga laporan tidak secara resmi menandai teks ini sebagai AI. Probabilitas dan bukti tetap ditampilkan untuk ditinjau.",
   "engineReasonStatisticalSummaryAi": "Ringkasan statistik keseluruhan: Condong ke karakteristik yang dihasilkan AI (probabilitas AI {percent}%)",
   "engineReasonStatisticalSummaryHuman": "Ringkasan statistik keseluruhan: Condong ke tulisan manusia alami (probabilitas AI {percent}%)",
   "engineReasonStatisticalSummaryNeutral": "Ringkasan statistik keseluruhan: Indikator seimbang, menunjukkan karakteristik netral (probabilitas AI {percent}%)",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "Probabilitas AI {probability}% / ambang tanda {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Bukti tidak cukup untuk menilai",
   "abstentionTooFewSentences": "Hanya {count} kalimat yang bisa dianalisis, padahal dibutuhkan setidaknya {required}. Pada panjang ini sinyal statistik dan per kalimat tidak berbobot, dan memaksakan skor darinya hanya akan menyesatkan.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "Probabilitas AI < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "Probabilitas AI {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "Probabilitas AI ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "Lokasi konten mencurigakan",
   "reportVerdictAiLikelihood": "Kecenderungan AI",
   "reportVerdictHumanLikelihood": "Tulisan Manusia",
-  "settingsThresholdInfoBody": "Mesin yang diaktifkan pertama-tama menghitung probabilitas AI keseluruhan. Pengaturan ini tidak mengubah skor mesin apa pun atau probabilitas keseluruhan tersebut; pengaturan ini mengubah kesimpulan mana yang diterapkan pada skor. Ambang batas yang lebih rendah membuat probabilitas yang sama lebih mungkin disimpulkan dan ditandai sebagai AI, sementara ambang batas yang lebih tinggi memerlukan probabilitas AI yang lebih kuat dan lebih mungkin menyimpulkan tulisan manusia. Laporan selalu mempertahankan probabilitas asli dan bukti pendukung.",
-  "settingsThresholdInfoTooltip": "Bagaimana ambang batas penandaan AI memengaruhi kesimpulan",
   "suspiciousCount": "{count} item",
   "suspiciousEmpty": "Tidak ada konten mencurigakan",
   "suspiciousEvidenceLabel": "Bukti:",

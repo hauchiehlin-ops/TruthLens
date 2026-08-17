@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "Modèle importé avec succès ! Défini automatiquement comme modèle actif.",
   "modelImportFailedSnackbar": "Échec de l'importation du modèle. Veuillez vérifier les autorisations ou les journaux",
   "settingsAppBarTitle": "Paramètres",
-  "settingsThresholdTitle": "Seuil de confiance pour la détermination IA",
-  "settingsThresholdSubtitle": "Actuel : {percent}% — l'augmenter réduit les faux positifs (texte humain classé à tort comme IA)",
   "settingsEslTitle": "Correction du biais ESL (non natif)",
   "settingsEslSubtitle": "Réduit automatiquement le poids du modèle statistique lorsqu'un style d'écriture non natif est détecté",
   "settingsEngineSectionTitle": "Paramètres des sous-moteurs de détection (Ensemble)",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "Ce texte présente des caractéristiques mixtes humaines et IA (probabilité IA {percent}%)",
   "composerHeadlineLikelyHuman": "Ce texte tend à avoir été écrit par un humain (probabilité IA {percent}%)",
   "composerHeadlineHuman": "Ce texte a très probablement été écrit par un humain (probabilité IA {percent}%)",
-  "composerThresholdFlagged": "La probabilité IA globale dépasse le seuil de {percent}% que vous avez défini et a été signalée comme IA.",
-  "composerThresholdNotFlagged": "La probabilité IA globale est inférieure au seuil de signalement de {percent}% que vous avez défini.",
+  "composerThresholdFlagged": "La probabilité IA globale dépasse le seuil fixe de {percent}% et a été signalée comme IA.",
+  "composerThresholdNotFlagged": "La probabilité IA globale est inférieure au seuil fixe de signalement de {percent}%.",
   "composerNarrativeTitle": "Interprétation de l'analyse",
   "composerParaphraseTitle": "Traces de paraphrase détectées",
   "composerParaphraseBody": "Ce texte a peut-être été traité par un outil de paraphrase (par ex. QuillBot, Undetectable.ai) pour échapper à la détection. Bien qu'il paraisse naturel phrase par phrase, son empreinte statistique globale reste différente de l'écriture humaine authentique — veuillez y prêter une attention particulière.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "mot de transition générique « {word} »",
   "helpAppBarTitle": "Guide de l'utilisateur",
   "helpAboutTitle": "À propos de TruthLens",
-  "helpAboutBody": "TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme d'indice IA (probabilité IA ÷ seuil de signalement que vous fixez), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d'origine du document et du nom de fichier à l'import. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.",
+  "helpAboutBody": "TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme de probabilité IA classée en cinq paliers fixes (moins de 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % et plus), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d'origine du document et du nom de fichier à l'import. Les seuils ne sont pas réglables : un même document tombe donc toujours dans le même palier. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.",
   "helpComparisonTitle": "Comparaison avec les outils leaders",
   "helpComparisonDisclaimer": "Cette comparaison a été compilée à partir d'informations publiques de chaque outil et de perceptions générales du marché, à titre de référence de positionnement fonctionnel uniquement — pas des données de référence vérifiées par un tiers.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "Analyse stylométrique (poids 20%) : fluidité sémantique, motifs de phrases répétitifs, utilisation de mots de transition — le plus explicable, le plus facile à comprendre le \"pourquoi\".",
   "helpWorkflowStep2Bullet4": "Défense adversariale (poids 15%) : détecte le texte qui a été \"nettoyé\" via des outils de paraphrase (par ex. QuillBot, Undetectable.ai).",
   "helpWorkflowStep2Bullet5": "LLM de rédaction de rapports (optionnel) : une fois installé, le texte du rapport est rédigé dynamiquement par un LLM sur l'appareil ; sans lui, l'application revient à un modèle fixe — l'analyse elle-même n'est pas affectée.",
-  "helpWorkflowStep2Bullet6": "Vous pouvez activer/désactiver les moteurs individuellement et ajuster le seuil de confiance de détection IA dans les paramètres (l'augmenter réduit la probabilité de classer à tort l'écriture humaine comme IA).",
+  "helpWorkflowStep2Bullet6": "Vous pouvez activer/désactiver les moteurs individuellement et ajuster leurs poids dans les paramètres. Les cinq paliers de verdict utilisent des seuils fixes (20 % / 40 % / 60 % / 80 %) et ne sont pas modifiables : un même document donne donc le même verdict pour tout le monde.",
   "helpWorkflowStep3Title": "Téléverser un document",
   "helpWorkflowStep3Body": "Trois entrées possibles : coller du texte, reconnaître une image par OCR, ou importer un document (txt / md / pdf / docx / doc / odt). L'import PDF compare deux analyseurs de couche texte et écarte les sorties illisibles ; les PDF numérisés sont reconnus page par page lorsque l'OCR est disponible. À l'import, le nom du fichier apparaît sous l'intitulé de saisie et sur sa propre ligne dans le titre du rapport ; en cas de collage ou de saisie, il reste vide.\n\nL'OCR privilégie le serveur local que vous configurez et n'utilise le cloud que si vous fournissez vous-même une clé d'API Gemini.",
   "helpWorkflowStep4Title": "Exécuter l'analyse",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "Preuve sélectionnée",
   "workspaceNoEvidence": "Les preuves par phrase apparaissent à mesure que les moteurs terminent.",
   "workspacePreliminaryVerdict": "Probabilité IA préliminaire : {percent}%",
-  "composerThresholdFlaggedDetailed": "La probabilité IA globale est de {aiPercent} %, ce qui atteint votre seuil de signalement IA de {thresholdPercent} %, le rapport marque donc ce texte comme IA. Examinez les preuves au niveau des phrases et les raisons des moteurs avant de prendre une décision finale.",
-  "composerThresholdNotFlaggedDetailed": "La probabilité IA globale est de {aiPercent} %, en dessous de votre seuil de signalement IA de {thresholdPercent} %, le rapport ne marque donc pas formellement ce texte comme IA. La probabilité et les preuves sont tout de même affichées pour examen.",
+  "composerThresholdFlaggedDetailed": "La probabilité IA globale est de {aiPercent} %, ce qui atteint le seuil fixe de signalement IA de {thresholdPercent} %, le rapport marque donc ce texte comme IA. Examinez les preuves au niveau des phrases et les raisons des moteurs avant de prendre une décision finale.",
+  "composerThresholdNotFlaggedDetailed": "La probabilité IA globale est de {aiPercent} %, en dessous du seuil fixe de signalement IA de {thresholdPercent} %, le rapport ne marque donc pas formellement ce texte comme IA. La probabilité et les preuves sont tout de même affichées pour examen.",
   "engineReasonStatisticalSummaryAi": "Résumé statistique global : penche vers des caractéristiques générées par IA (probabilité IA {percent} %)",
   "engineReasonStatisticalSummaryHuman": "Résumé statistique global : penche vers une écriture humaine naturelle (probabilité IA {percent} %)",
   "engineReasonStatisticalSummaryNeutral": "Résumé statistique global : les indicateurs s'équilibrent, montrant des caractéristiques neutres (probabilité IA {percent} %)",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "Probabilité IA {probability} % / seuil de signalement {threshold} % = AI index {index} %",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Pas assez d'éléments pour trancher",
   "abstentionTooFewSentences": "Seulement {count} phrase(s) analysable(s), alors qu'il en faut au moins {required}. À cette longueur, les signaux statistiques et phrase par phrase ne pèsent rien, et en tirer un score de force ne ferait qu'induire en erreur.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "Probabilité IA < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "Probabilité IA {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "Probabilité IA ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "Emplacements de contenu suspect",
   "reportVerdictAiLikelihood": "Tendance IA",
   "reportVerdictHumanLikelihood": "Écriture humaine",
-  "settingsThresholdInfoBody": "Les moteurs activés calculent d'abord la probabilité IA globale. Ce paramètre ne modifie aucun score de moteur ni cette probabilité globale ; il modifie la conclusion appliquée au score. Un seuil plus bas rend plus probable que la même probabilité soit conclue et marquée comme IA, tandis qu'un seuil plus élevé nécessite une probabilité IA plus forte et conclut plus probablement à une écriture humaine. Le rapport conserve toujours la probabilité d'origine et les preuves à l'appui.",
-  "settingsThresholdInfoTooltip": "Comment le seuil de signalement IA affecte la conclusion",
   "suspiciousCount": "{count} éléments",
   "suspiciousEmpty": "Aucun contenu suspect",
   "suspiciousEvidenceLabel": "Preuve :",

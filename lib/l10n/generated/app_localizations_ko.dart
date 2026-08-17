@@ -420,21 +420,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAppBarTitle => '설정';
 
   @override
-  String get settingsThresholdTitle => 'AI 판정 신뢰도 임계값';
-
-  @override
-  String get settingsThresholdInfoTooltip => 'AI 표시 임계값이 결론에 미치는 영향';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      '활성화된 엔진은 먼저 전체 AI 확률을 계산합니다. 이 설정은 엔진 점수나 전체 확률을 변경하지 않으며, 점수에 적용되는 결론을 변경합니다. 임계값이 낮을수록 동일한 확률이 AI로 결론지어져 표시될 가능성이 높아지고, 임계값이 높을수록 더 강한 AI 확률이 필요하여 인간의 글쓰기로 결론지어질 가능성이 높아집니다. 보고서는 항상 원래 확률과 근거를 유지합니다.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return '현재: $percent% — 높이면 오탐（사람 글을 AI로 오판）을 줄일 수 있습니다';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL（비원어민） 편향 보정';
 
   @override
@@ -1144,11 +1129,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI 확률 $probability% / AI 표시 기준값 $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => '증거가 부족하여 판정하지 않습니다';
 
   @override
@@ -1295,17 +1275,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI 확률 < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI 확률 $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI 확률 ≥ $value%';
   }
 
   @override
@@ -1644,17 +1624,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return '종합 AI 확률이 설정한 $percent% 임계값을 초과하여 AI로 표시되었습니다.';
+    return '종합 AI 확률이 고정 $percent% 임계값을 초과하여 AI로 표시되었습니다.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return '종합 AI 확률이 설정한 $percent% 표시 임계값 미만입니다.';
+    return '종합 AI 확률이 고정 $percent% 표시 임계값 미만입니다.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return '전체 AI 확률은 $aiPercent%로, 설정한 AI 표시 임계값 $thresholdPercent%에 도달하여 보고서가 이 텍스트를 AI로 표시합니다. 최종 결정을 내리기 전에 문장 단위 증거와 엔진 이유를 검토하세요.';
+    return '전체 AI 확률은 $aiPercent%로, 고정 AI 표시 임계값 $thresholdPercent%에 도달하여 보고서가 이 텍스트를 AI로 표시합니다. 최종 결정을 내리기 전에 문장 단위 증거와 엔진 이유를 검토하세요.';
   }
 
   @override
@@ -1662,7 +1642,7 @@ class AppLocalizationsKo extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '전체 AI 확률은 $aiPercent%로, 설정한 AI 표시 임계값 $thresholdPercent%보다 낮아 보고서가 이 텍스트를 공식적으로 AI로 표시하지 않습니다. 확률과 증거는 검토를 위해 계속 표시됩니다.';
+    return '전체 AI 확률은 $aiPercent%로, 고정 AI 표시 임계값 $thresholdPercent%보다 낮아 보고서가 이 텍스트를 공식적으로 AI로 표시하지 않습니다. 확률과 증거는 검토를 위해 계속 표시됩니다.';
   }
 
   @override
@@ -1901,7 +1881,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI index(AI 확률 ÷ 설정한 표시 기준값)로 제시하고, 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 \'판정하지 않습니다\'라고 분명히 밝힙니다.';
+      'TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI 확률로 제시하며 다섯 개의 고정 구간(20% 미만, 20–40%, 40–60%, 60–80%, 80% 이상)으로 분류합니다. 여기에 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 구간 경계는 조정할 수 없으므로 같은 문서는 누구에게나 같은 구간에 들어갑니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 \'판정하지 않습니다\'라고 분명히 밝힙니다.';
 
   @override
   String get helpComparisonTitle => '주요 도구와의 비교';
@@ -2032,7 +2012,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '\"설정\"에서 각 엔진을 개별적으로 켜거나 끌 수 있고, AI 판정 신뢰도 임계값을 조정할 수 있습니다（높이면 사람의 글을 AI로 오판할 확률을 낮출 수 있습니다）.';
+      '\"설정\"에서 각 엔진을 개별적으로 켜거나 끌 수 있고, 엔진 가중치를 조정할 수 있습니다. 다섯 개의 판정 구간은 고정 경계(20% / 40% / 60% / 80%)를 사용하며 변경할 수 없으므로, 같은 문서는 누구에게나 같은 판정이 나옵니다.';
 
   @override
   String get helpWorkflowStep3Title => '문서 업로드';

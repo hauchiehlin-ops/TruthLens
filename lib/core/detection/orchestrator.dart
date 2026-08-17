@@ -71,13 +71,12 @@ class EnsembleOrchestrator extends ChangeNotifier {
 
   /// 逐引擎回報進度：engineId → 完成。
   /// [eslCorrectionEnabled] 對應設定頁開關，關閉時不套用偏差修正。
-  /// [threshold] 為使用者設定的 AI 判定信心閾值（降低偽陽性）。
+  /// 五級判定使用 [Verdict.cutPoints] 的固定切點，不再接受可調門檻。
   Future<DetectionResult> analyze(
     String input, {
     String sourceFileName = '',
     DocumentProvenance provenance = DocumentProvenance.none,
     bool eslCorrectionEnabled = true,
-    double threshold = 0.6,
     PreferencesService? prefs,
     AppLocalizations? l10n,
     void Function(String engineId)? onEngineStarted,
@@ -152,12 +151,11 @@ class EnsembleOrchestrator extends ChangeNotifier {
       sourceFileName: sourceFileName,
       provenance: provenance,
       aiProbability: overall,
-      verdict: Verdict.fromProbability(overall, threshold),
+      verdict: Verdict.fromProbability(overall),
       engineScores: scores,
       sentences: sentences,
       dominantPatterns: _dominantPatterns(scores),
       eslAdjusted: eslAdjusted,
-      threshold: threshold,
       elapsed: DateTime.now().difference(started),
       availableEngineCount: availableCount,
       totalEngineCount: totalCount,

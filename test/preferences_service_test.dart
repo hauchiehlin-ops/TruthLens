@@ -6,15 +6,6 @@ import 'package:truthlens/core/services/preferences_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('new installations default AI confidence threshold to 50%', () async {
-    SharedPreferences.setMockInitialValues({});
-    final preferences = PreferencesService();
-
-    await preferences.load();
-
-    expect(preferences.confidenceThreshold, 0.5);
-  });
-
   test(
     'appearance defaults to system brightness and handles unknown values',
     () async {
@@ -27,31 +18,6 @@ void main() {
       final reloaded = PreferencesService();
       await reloaded.load();
       expect(reloaded.themeMode, ThemeMode.system);
-    },
-  );
-
-  test('an existing saved threshold is preserved', () async {
-    SharedPreferences.setMockInitialValues({'confidence_threshold': 0.75});
-    final preferences = PreferencesService();
-
-    await preferences.load();
-
-    expect(preferences.confidenceThreshold, 0.75);
-  });
-
-  test(
-    'AI confidence threshold is clamped to the 20 percent minimum',
-    () async {
-      SharedPreferences.setMockInitialValues({'confidence_threshold': 0.1});
-      final preferences = PreferencesService();
-
-      await preferences.load();
-
-      expect(preferences.confidenceThreshold, 0.2);
-
-      await preferences.setThreshold(0.1);
-
-      expect(preferences.confidenceThreshold, 0.2);
     },
   );
 

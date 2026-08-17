@@ -16,7 +16,6 @@ import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
-import '../../shared/widgets/threshold_setting_title.dart';
 import '../../shared/widgets/workspace_navigation.dart';
 import '../onboarding/model_prompt.dart';
 import '../settings/model_import_screen.dart';
@@ -648,37 +647,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
-          // 信心度閾值
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ThresholdSettingTitle(
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  l10n.settingsThresholdSubtitle(
-                    (prefs.confidenceThreshold * 100).round(),
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                Slider(
-                  value: prefs.confidenceThreshold,
-                  min: PreferencesService.minConfidenceThreshold,
-                  max: PreferencesService.maxConfidenceThreshold,
-                  divisions: PreferencesService.confidenceThresholdDivisions,
-                  label: '${(prefs.confidenceThreshold * 100).round()}%',
-                  onChanged: (v) => prefs.setThreshold(v),
-                ),
-              ],
-            ),
-          ),
-          const Divider(),
 
           // ESL 糾正
           SwitchListTile(
@@ -1043,26 +1011,6 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               const WebOcrSettingsCard(compact: true),
               const Divider(),
             ],
-            ListTile(
-              title: const ThresholdSettingTitle(),
-              subtitle: Text(
-                l10n.settingsThresholdSubtitle(
-                  (prefs.confidenceThreshold * 100).round(),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Slider(
-                value: prefs.confidenceThreshold,
-                min: PreferencesService.minConfidenceThreshold,
-                max: PreferencesService.maxConfidenceThreshold,
-                divisions: PreferencesService.confidenceThresholdDivisions,
-                label: '${(prefs.confidenceThreshold * 100).round()}%',
-                onChanged: (v) => prefs.setThreshold(v),
-              ),
-            ),
-            const Divider(),
             SwitchListTile(
               title: Text(l10n.settingsEslTitle),
               subtitle: Text(l10n.settingsEslSubtitle),

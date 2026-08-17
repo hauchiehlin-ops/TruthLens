@@ -18,7 +18,6 @@ import '../../core/services/weight_learner.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../l10n/generated/app_localizations.dart';
-import '../../shared/widgets/threshold_setting_title.dart';
 import '../../shared/widgets/workspace_navigation.dart'
     show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
@@ -60,22 +59,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const Divider(),
-          ListTile(
-            title: const ThresholdSettingTitle(),
-            subtitle: Text(
-              l10n.settingsThresholdSubtitle(
-                (prefs.confidenceThreshold * 100).round(),
-              ),
-            ),
-          ),
-          Slider(
-            value: prefs.confidenceThreshold,
-            min: PreferencesService.minConfidenceThreshold,
-            max: PreferencesService.maxConfidenceThreshold,
-            divisions: PreferencesService.confidenceThresholdDivisions,
-            label: '${(prefs.confidenceThreshold * 100).round()}%',
-            onChanged: (v) => prefs.setThreshold(v),
-          ),
           const Divider(),
           // 本地基準校準（共形預測）：α 與基準集管理
           Consumer<CalibrationService>(
@@ -601,7 +584,6 @@ class _AiSampleTileState extends State<_AiSampleTile> {
       final result = await orchestrator.analyze(
         text,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
-        threshold: prefs.confidenceThreshold,
         prefs: prefs,
         l10n: l10n,
       );

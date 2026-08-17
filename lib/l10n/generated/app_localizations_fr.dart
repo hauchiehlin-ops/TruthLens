@@ -441,23 +441,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsAppBarTitle => 'Paramètres';
 
   @override
-  String get settingsThresholdTitle =>
-      'Seuil de confiance pour la détermination IA';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Comment le seuil de signalement IA affecte la conclusion';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Les moteurs activés calculent d\'abord la probabilité IA globale. Ce paramètre ne modifie aucun score de moteur ni cette probabilité globale ; il modifie la conclusion appliquée au score. Un seuil plus bas rend plus probable que la même probabilité soit conclue et marquée comme IA, tandis qu\'un seuil plus élevé nécessite une probabilité IA plus forte et conclut plus probablement à une écriture humaine. Le rapport conserve toujours la probabilité d\'origine et les preuves à l\'appui.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Actuel : $percent% — l\'augmenter réduit les faux positifs (texte humain classé à tort comme IA)';
-  }
-
-  @override
   String get settingsEslTitle => 'Correction du biais ESL (non natif)';
 
   @override
@@ -1190,11 +1173,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'Probabilité IA $probability % / seuil de signalement $threshold % = AI index $index %';
-  }
-
-  @override
   String get abstentionHeadline => 'Pas assez d\'éléments pour trancher';
 
   @override
@@ -1344,17 +1322,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'Probabilité IA < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'Probabilité IA $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'Probabilité IA ≥ $value%';
   }
 
   @override
@@ -1704,17 +1682,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'La probabilité IA globale dépasse le seuil de $percent% que vous avez défini et a été signalée comme IA.';
+    return 'La probabilité IA globale dépasse le seuil fixe de $percent% et a été signalée comme IA.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'La probabilité IA globale est inférieure au seuil de signalement de $percent% que vous avez défini.';
+    return 'La probabilité IA globale est inférieure au seuil fixe de signalement de $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'La probabilité IA globale est de $aiPercent %, ce qui atteint votre seuil de signalement IA de $thresholdPercent %, le rapport marque donc ce texte comme IA. Examinez les preuves au niveau des phrases et les raisons des moteurs avant de prendre une décision finale.';
+    return 'La probabilité IA globale est de $aiPercent %, ce qui atteint le seuil fixe de signalement IA de $thresholdPercent %, le rapport marque donc ce texte comme IA. Examinez les preuves au niveau des phrases et les raisons des moteurs avant de prendre une décision finale.';
   }
 
   @override
@@ -1722,7 +1700,7 @@ class AppLocalizationsFr extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'La probabilité IA globale est de $aiPercent %, en dessous de votre seuil de signalement IA de $thresholdPercent %, le rapport ne marque donc pas formellement ce texte comme IA. La probabilité et les preuves sont tout de même affichées pour examen.';
+    return 'La probabilité IA globale est de $aiPercent %, en dessous du seuil fixe de signalement IA de $thresholdPercent %, le rapport ne marque donc pas formellement ce texte comme IA. La probabilité et les preuves sont tout de même affichées pour examen.';
   }
 
   @override
@@ -1969,7 +1947,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l\'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme d\'indice IA (probabilité IA ÷ seuil de signalement que vous fixez), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d\'origine du document et du nom de fichier à l\'import. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.';
+      'TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l\'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme de probabilité IA classée en cinq paliers fixes (moins de 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % et plus), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d\'origine du document et du nom de fichier à l\'import. Les seuils ne sont pas réglables : un même document tombe donc toujours dans le même palier. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.';
 
   @override
   String get helpComparisonTitle => 'Comparaison avec les outils leaders';
@@ -2102,7 +2080,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Vous pouvez activer/désactiver les moteurs individuellement et ajuster le seuil de confiance de détection IA dans les paramètres (l\'augmenter réduit la probabilité de classer à tort l\'écriture humaine comme IA).';
+      'Vous pouvez activer/désactiver les moteurs individuellement et ajuster leurs poids dans les paramètres. Les cinq paliers de verdict utilisent des seuils fixes (20 % / 40 % / 60 % / 80 %) et ne sont pas modifiables : un même document donne donc le même verdict pour tout le monde.';
 
   @override
   String get helpWorkflowStep3Title => 'Téléverser un document';

@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "Modelo importado com sucesso! Definido automaticamente como modelo ativo.",
   "modelImportFailedSnackbar": "Falha ao importar o modelo. Verifique as permissões ou os registros",
   "settingsAppBarTitle": "Configurações",
-  "settingsThresholdTitle": "Limite de confiança para determinação de IA",
-  "settingsThresholdSubtitle": "Atual: {percent}% — aumentá-lo reduz falsos positivos (texto humano classificado incorretamente como IA)",
   "settingsEslTitle": "Correção de viés ESL (não nativo)",
   "settingsEslSubtitle": "Reduz automaticamente o peso do modelo estatístico ao detectar estilo de escrita de não nativo",
   "settingsEngineSectionTitle": "Configurações de submecanismos de detecção (Ensemble)",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "Este texto apresenta características mistas de humano e IA (probabilidade de IA {percent}%)",
   "composerHeadlineLikelyHuman": "Este texto tende a ter sido escrito por um humano (probabilidade de IA {percent}%)",
   "composerHeadlineHuman": "Este texto foi muito provavelmente escrito por um humano (probabilidade de IA {percent}%)",
-  "composerThresholdFlagged": "A probabilidade geral de IA excede o limite de {percent}% que você definiu e foi sinalizada como IA.",
-  "composerThresholdNotFlagged": "A probabilidade geral de IA está abaixo do limite de sinalização de {percent}% que você definiu.",
+  "composerThresholdFlagged": "A probabilidade geral de IA excede o limite fixo de {percent}% e foi sinalizada como IA.",
+  "composerThresholdNotFlagged": "A probabilidade geral de IA está abaixo do limite fixo de sinalização de {percent}%.",
   "composerNarrativeTitle": "Interpretação da análise",
   "composerParaphraseTitle": "Vestígios de paráfrase detectados",
   "composerParaphraseBody": "Este texto pode ter sido processado por uma ferramenta de paráfrase (ex.: QuillBot, Undetectable.ai) para evitar a detecção. Embora pareça natural frase por frase, sua impressão estatística geral ainda é diferente da escrita humana genuína — preste atenção especial a isso.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "conectivo genérico \"{word}\"",
   "helpAppBarTitle": "Guia do usuário",
   "helpAboutTitle": "Sobre o TruthLens",
-  "helpAboutBody": "O TruthLens é um detector de conteúdo de IA que roda **inteiramente dentro do seu navegador**. Quatro motores independentes — um classificador neural Transformer, análise estatística, estilometria e detecção de reescrita adversária — votam com pesos se o texto foi gerado por IA, e o seu documento nunca sai da máquina.\n\nO relatório expressa o veredicto como índice de IA (probabilidade de IA ÷ o limite de sinalização que você definir), junto às evidências por frase, à contribuição de cada motor, às evidências de origem do documento e ao nome do arquivo ao importar. Quando a evidência é rala — poucas frases ou palavras, ou motores discordando demais — ele diz isso claramente em vez de forçar uma pontuação.",
+  "helpAboutBody": "O TruthLens é um detector de conteúdo de IA que roda **inteiramente dentro do seu navegador**. Quatro motores independentes — um classificador neural Transformer, análise estatística, estilometria e detecção de reescrita adversária — votam com pesos se o texto foi gerado por IA, e o seu documento nunca sai da máquina.\n\nO relatório expressa o veredicto como probabilidade de IA classificada em cinco faixas fixas (abaixo de 20%, 20–40%, 40–60%, 60–80%, 80% ou mais), junto às evidências por frase, à contribuição de cada motor, às evidências de origem do documento e ao nome do arquivo ao importar. Os pontos de corte não são ajustáveis, então o mesmo documento cai sempre na mesma faixa. Quando a evidência é rala — poucas frases ou palavras, ou motores discordando demais — ele diz isso claramente em vez de forçar uma pontuação.",
   "helpComparisonTitle": "Comparação com ferramentas líderes",
   "helpComparisonDisclaimer": "Esta comparação foi compilada a partir de informações públicas de cada ferramenta e percepções gerais de mercado, apenas para referência de posicionamento funcional — não são dados de referência verificados por terceiros.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "Análise estilométrica (peso 20%): fluência semântica, padrões de frases repetitivos, uso de conectivos — a mais explicável, mais fácil de entender o \"porquê\".",
   "helpWorkflowStep2Bullet4": "Defesa adversarial (peso 15%): detecta texto que foi \"limpo\" por meio de ferramentas de paráfrase (ex.: QuillBot, Undetectable.ai).",
   "helpWorkflowStep2Bullet5": "LLM de redação de relatórios (opcional): uma vez instalado, o texto do relatório é redigido dinamicamente por um LLM no dispositivo; sem ele, o aplicativo recorre a um modelo fixo — a análise em si não é afetada.",
-  "helpWorkflowStep2Bullet6": "Você pode ativar/desativar mecanismos individualmente e ajustar o limite de confiança de detecção de IA nas Configurações (aumentá-lo reduz a probabilidade de classificar incorretamente a escrita humana como IA).",
+  "helpWorkflowStep2Bullet6": "Você pode ativar/desativar mecanismos individualmente e ajustar seus pesos nas Configurações. As cinco faixas do veredicto usam pontos de corte fixos (20% / 40% / 60% / 80%) e não podem ser alteradas, então o mesmo documento dá o mesmo veredicto para todos.",
   "helpWorkflowStep3Title": "Enviando um documento",
   "helpWorkflowStep3Body": "Três formas de entrada: colar texto, reconhecer uma imagem por OCR, ou importar um documento (txt / md / pdf / docx / doc / odt). A importação de PDF compara dois analisadores de camada de texto e descarta saída ilegível; PDFs digitalizados são reconhecidos página a página quando há OCR disponível. Ao importar, o nome do arquivo aparece sob o título de entrada e em linha própria no título do relatório; ao colar ou digitar, fica em branco.\n\nO OCR prefere o servidor local que você configurar e só usa a nuvem se você mesmo fornecer uma chave de API do Gemini.",
   "helpWorkflowStep4Title": "Executando a análise",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "Evidência selecionada",
   "workspaceNoEvidence": "As evidências por frase aparecem quando cada mecanismo termina.",
   "workspacePreliminaryVerdict": "Probabilidade preliminar de IA: {percent}%",
-  "composerThresholdFlaggedDetailed": "A probabilidade geral de IA é {aiPercent}%, o que atinge seu limite de sinalização de IA de {thresholdPercent}%, então o relatório marca este texto como IA. Revise as evidências em nível de frase e as razões dos mecanismos antes de tomar uma decisão final.",
-  "composerThresholdNotFlaggedDetailed": "A probabilidade geral de IA é {aiPercent}%, abaixo do seu limite de sinalização de IA de {thresholdPercent}%, então o relatório não marca formalmente este texto como IA. A probabilidade e as evidências ainda são exibidas para revisão.",
+  "composerThresholdFlaggedDetailed": "A probabilidade geral de IA é {aiPercent}%, o que atinge o limite fixo de sinalização de IA de {thresholdPercent}%, então o relatório marca este texto como IA. Revise as evidências em nível de frase e as razões dos mecanismos antes de tomar uma decisão final.",
+  "composerThresholdNotFlaggedDetailed": "A probabilidade geral de IA é {aiPercent}%, abaixo do limite fixo de sinalização de IA de {thresholdPercent}%, então o relatório não marca formalmente este texto como IA. A probabilidade e as evidências ainda são exibidas para revisão.",
   "engineReasonStatisticalSummaryAi": "Resumo estatístico geral: tende a características geradas por IA (probabilidade de IA {percent}%)",
   "engineReasonStatisticalSummaryHuman": "Resumo estatístico geral: tende a uma escrita humana natural (probabilidade de IA {percent}%)",
   "engineReasonStatisticalSummaryNeutral": "Resumo estatístico geral: os indicadores se equilibram, mostrando características neutras (probabilidade de IA {percent}%)",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "Probabilidade de IA {probability}% / limite de sinalização {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Evidência insuficiente para julgar",
   "abstentionTooFewSentences": "Apenas {count} frase(s) analisável(is), quando são necessárias pelo menos {required}. Nesse tamanho os sinais estatísticos e por frase não pesam nada, e forçar uma pontuação só enganaria.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "Probabilidade de IA < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "Probabilidade de IA {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "Probabilidade de IA ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "Locais de conteúdo suspeito",
   "reportVerdictAiLikelihood": "Tendência de IA",
   "reportVerdictHumanLikelihood": "Escrita Humana",
-  "settingsThresholdInfoBody": "Os mecanismos habilitados primeiro calculam a probabilidade geral de IA. Esta configuração não altera nenhuma pontuação do mecanismo ou essa probabilidade geral; ela altera qual conclusão é aplicada à pontuação. Um limite mais baixo torna mais provável que a mesma probabilidade seja concluída e marcada como IA, enquanto um limite mais alto exige uma probabilidade de IA mais forte e é mais provável que conclua escrita humana. O relatório sempre mantém a probabilidade original e as evidências de suporte.",
-  "settingsThresholdInfoTooltip": "Como o limite de sinalização de IA afeta a conclusão",
   "suspiciousCount": "{count} itens",
   "suspiciousEmpty": "Nenhum conteúdo suspeito",
   "suspiciousEvidenceLabel": "Evidência:",

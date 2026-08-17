@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "モデルのインポートに成功し、使用中モデルとして自動設定されました！",
   "modelImportFailedSnackbar": "モデルのインポートに失敗しました。権限またはログを確認してください",
   "settingsAppBarTitle": "設定",
-  "settingsThresholdTitle": "AI判定の信頼度しきい値",
-  "settingsThresholdSubtitle": "現在：{percent}% — 上げると誤検知（人間の文章をAIと誤判定）を減らせます",
   "settingsEslTitle": "ESL（非ネイティブ）バイアス補正",
   "settingsEslSubtitle": "非ネイティブの文体を検出すると、統計モデルの重みを自動的に下げます",
   "settingsEngineSectionTitle": "サブ検出エンジン設定（アンサンブル）",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "この文章は人間とAIの混合的な特徴を示しています（AI確率 {percent}%）",
   "composerHeadlineLikelyHuman": "この文章は人間が執筆した傾向があります（AI確率 {percent}%）",
   "composerHeadlineHuman": "この文章は人間によって執筆された可能性が非常に高いです（AI確率 {percent}%）",
-  "composerThresholdFlagged": "総合AI確率が設定した {percent}% のしきい値を超え、AIとしてフラグが立てられました。",
-  "composerThresholdNotFlagged": "総合AI確率は設定した {percent}% のフラグしきい値未満です。",
+  "composerThresholdFlagged": "総合AI確率が固定の {percent}% のしきい値を超え、AIとしてフラグが立てられました。",
+  "composerThresholdNotFlagged": "総合AI確率は固定の {percent}% のフラグしきい値未満です。",
   "composerNarrativeTitle": "分析の解釈",
   "composerParaphraseTitle": "言い換えの痕跡を検出",
   "composerParaphraseBody": "この文章は、検出を回避するために言い換えツール（QuillBot、Undetectable.aiなど）で処理された可能性があります。文単位では自然に読めても、全体の統計的特徴は本来の人間の文章とは異なります。特にご注意ください。",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "汎用的な接続詞「{word}」",
   "helpAppBarTitle": "使い方ガイド",
   "helpAboutTitle": "TruthLensについて",
-  "helpAboutBody": "TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI index（AI確率 ÷ 設定した判定しきい値）で示し、文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。",
+  "helpAboutBody": "TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI確率として示し、5つの固定区分（20%未満、20–40%、40–60%、60–80%、80%以上）に振り分けます。あわせて文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。区分の境界は調整できないため、同じ文書は誰の手元でも同じ区分になります。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。",
   "helpComparisonTitle": "主要ツールとの比較",
   "helpComparisonDisclaimer": "以下の比較は各ツールの公開情報と一般的な市場認識に基づいて整理したものであり、機能的な位置付けの参考のみを目的としています。第三者認証によるベンチマークデータではありません。",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "文体特徴分析（重み20%）：意味の流暢さ、繰り返し文型、接続詞の使用を分析し、説明可能性が最も高く「なぜ」が最も理解しやすいです。",
   "helpWorkflowStep2Bullet4": "敵対的防御（重み15%）：言い換えツール（QuillBot、Undetectable.aiなど）で処理された文章を検出します。",
   "helpWorkflowStep2Bullet5": "レポート生成LLM（任意）：インストールするとレポート文章がオンデバイスLLMによって動的に生成されます。未インストールの場合は固定テンプレートに自動フォールバックし、分析機能自体には影響しません。",
-  "helpWorkflowStep2Bullet6": "「設定」で各エンジンの有効／無効を個別に切り替えたり、AI判定の信頼度しきい値を調整したりできます（上げると人間の文章をAIと誤判定する確率を下げられます）。",
+  "helpWorkflowStep2Bullet6": "「設定」で各エンジンの有効／無効を個別に切り替えたり、エンジンの重みを調整したりできます。5つの判定区分は固定の境界（20%／40%／60%／80%）を使い、変更できません。したがって同じ文書は誰にとっても同じ判定になります。",
   "helpWorkflowStep3Title": "文書のアップロード",
   "helpWorkflowStep3Body": "入力方法は3つ：テキストを直接貼り付け、画像をOCRで認識、文書を読み込み（txt / md / pdf / docx / doc / odt）。PDF読み込みでは2種類のテキスト層解析結果を比較して文字化けを除外し、スキャンPDFはOCRが利用可能なら1ページずつ認識します。読み込み時はファイル名が入力欄の見出し下に表示され、レポート見出しにも独立した行として現れます。貼り付けや手入力の場合は空欄のままです。\n\nOCRは設定したローカルサーバーを優先し、ご自身でGemini APIキーを提供した場合にのみクラウドへフォールバックします。",
   "helpWorkflowStep4Title": "分析の開始",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "選択した証拠",
   "workspaceNoEvidence": "各エンジンの完了後、文ごとの証拠がここに表示されます。",
   "workspacePreliminaryVerdict": "暫定AI確率：{percent}%",
-  "composerThresholdFlaggedDetailed": "全体のAI確率は{aiPercent}%で、設定したAI判定しきい値{thresholdPercent}%に達しているため、レポートはこのテキストをAIとして判定します。最終判断の前に文単位の根拠と各エンジンの理由をご確認ください。",
-  "composerThresholdNotFlaggedDetailed": "全体のAI確率は{aiPercent}%で、設定したAI判定しきい値{thresholdPercent}%を下回っているため、レポートはこのテキストを正式にAIとして判定しません。確率と根拠は引き続き確認用に表示されます。",
+  "composerThresholdFlaggedDetailed": "全体のAI確率は{aiPercent}%で、固定のAI判定しきい値{thresholdPercent}%に達しているため、レポートはこのテキストをAIとして判定します。最終判断の前に文単位の根拠と各エンジンの理由をご確認ください。",
+  "composerThresholdNotFlaggedDetailed": "全体のAI確率は{aiPercent}%で、固定のAI判定しきい値{thresholdPercent}%を下回っているため、レポートはこのテキストを正式にAIとして判定しません。確率と根拠は引き続き確認用に表示されます。",
   "engineReasonStatisticalSummaryAi": "統計総合サマリー：AI生成的な特徴に偏っています（AI確率 {percent}%）",
   "engineReasonStatisticalSummaryHuman": "統計総合サマリー：自然な人間の文章に偏っています（AI確率 {percent}%）",
   "engineReasonStatisticalSummaryNeutral": "統計総合サマリー：各指標が拮抗し、中立的な特徴を示しています（AI確率 {percent}%）",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "AI確率 {probability}% / AI判定しきい値 {threshold}% ＝ AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "証拠が不十分なため判定しません",
   "abstentionTooFewSentences": "分析可能な文が{count}文しかありません（最低{required}文必要）。この長さでは統計的・文単位のシグナルに意味がなく、無理に点数を出せば誤解を招くだけです。",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "AI確率 < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI確率 {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "AI確率 ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "疑わしいコンテンツの位置",
   "reportVerdictAiLikelihood": "AI寄り",
   "reportVerdictHumanLikelihood": "人間による執筆",
-  "settingsThresholdInfoBody": "有効なエンジンはまず全体のAI確率を計算します。この設定はエンジンのスコアやその全体確率を変更するものではなく、そのスコアに適用される結論を変更します。しきい値を低くすると、同じ確率でもAIと判定・表示されやすくなり、しきい値を高くすると、より強いAI確率が必要となり人間による執筆と判定されやすくなります。レポートには常に元の確率と裏付けとなる根拠が保持されます。",
-  "settingsThresholdInfoTooltip": "AI判定しきい値が結論にどう影響するか",
   "suspiciousCount": "{count} 件",
   "suspiciousEmpty": "疑わしいコンテンツはありません",
   "suspiciousEvidenceLabel": "根拠：",

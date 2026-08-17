@@ -120,7 +120,7 @@ void main() {
       analyzedAt: DateTime(2026, 8, 13),
       inputText: 'A complete sentence is available for analysis.',
       aiProbability: overall,
-      verdict: Verdict.fromProbability(overall, 0.5),
+      verdict: Verdict.fromProbability(overall),
       engineScores: scores,
       sentences: const [],
     );

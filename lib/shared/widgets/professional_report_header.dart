@@ -282,14 +282,9 @@ class _VerdictSummaryCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 8),
-                // AI index ＝ AI 機率 ÷ 標記門檻閾值。同時列出兩個運算元與
-                // 結果，讓「離門檻多遠」可以直接讀出來，而非自行心算。
                 Text(
-                  l10n.reportAiIndexFormula(
-                    (result.aiProbability * 100).round(),
-                    (result.threshold * 100).round(),
-                    result.aiIndexPercent,
-                  ),
+                  '${l10n.reportAiProbabilityPrefix}'
+                  '${(result.aiProbability * 100).round()}%',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -318,8 +313,9 @@ class _VerdictTierList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 切點同樣換算成 AI index，與上方公式的單位一致
-    final cutPercents = Verdict.cutPointIndexPercents(result.threshold);
+    // 固定切點，直接以 AI 機率百分比呈現
+    final cutPercents =
+        Verdict.cutPoints.map((c) => (c * 100).round()).toList();
 
     final ranges = <Verdict, String>{
       Verdict.human: l10n.reportVerdictRangeBelow(cutPercents[0]),

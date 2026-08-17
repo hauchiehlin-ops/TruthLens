@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "모델을 성공적으로 가져왔으며 사용 중인 모델로 자동 설정되었습니다!",
   "modelImportFailedSnackbar": "모델 가져오기에 실패했습니다. 권한 또는 로그를 확인해 주세요",
   "settingsAppBarTitle": "설정",
-  "settingsThresholdTitle": "AI 판정 신뢰도 임계값",
-  "settingsThresholdSubtitle": "현재: {percent}% — 높이면 오탐（사람 글을 AI로 오판）을 줄일 수 있습니다",
   "settingsEslTitle": "ESL（비원어민） 편향 보정",
   "settingsEslSubtitle": "비원어민 문체가 감지되면 통계 모델의 가중치를 자동으로 낮춥니다",
   "settingsEngineSectionTitle": "하위 감지 엔진 설정（앙상블）",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "이 텍스트는 사람과 AI가 혼합된 특징을 보입니다（AI 확률 {percent}%）",
   "composerHeadlineLikelyHuman": "이 텍스트는 사람이 작성한 경향이 있습니다（AI 확률 {percent}%）",
   "composerHeadlineHuman": "이 텍스트는 사람이 작성했을 가능성이 매우 높습니다（AI 확률 {percent}%）",
-  "composerThresholdFlagged": "종합 AI 확률이 설정한 {percent}% 임계값을 초과하여 AI로 표시되었습니다.",
-  "composerThresholdNotFlagged": "종합 AI 확률이 설정한 {percent}% 표시 임계값 미만입니다.",
+  "composerThresholdFlagged": "종합 AI 확률이 고정 {percent}% 임계값을 초과하여 AI로 표시되었습니다.",
+  "composerThresholdNotFlagged": "종합 AI 확률이 고정 {percent}% 표시 임계값 미만입니다.",
   "composerNarrativeTitle": "분석 해석",
   "composerParaphraseTitle": "패러프레이즈 흔적 감지됨",
   "composerParaphraseBody": "이 텍스트는 감지를 회피하기 위해 패러프레이징 도구（QuillBot, Undetectable.ai 등）로 처리되었을 수 있습니다. 문장 단위로는 자연스럽게 읽히더라도 전체 통계적 특징은 순수한 사람의 글과 다릅니다. 특히 주의해 주세요.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "일반적인 접속어 \"{word}\"",
   "helpAppBarTitle": "사용 안내",
   "helpAboutTitle": "TruthLens 소개",
-  "helpAboutBody": "TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI index(AI 확률 ÷ 설정한 표시 기준값)로 제시하고, 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 '판정하지 않습니다'라고 분명히 밝힙니다.",
+  "helpAboutBody": "TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI 확률로 제시하며 다섯 개의 고정 구간(20% 미만, 20–40%, 40–60%, 60–80%, 80% 이상)으로 분류합니다. 여기에 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 구간 경계는 조정할 수 없으므로 같은 문서는 누구에게나 같은 구간에 들어갑니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 '판정하지 않습니다'라고 분명히 밝힙니다.",
   "helpComparisonTitle": "주요 도구와의 비교",
   "helpComparisonDisclaimer": "아래 비교는 각 도구의 공개 정보와 일반적인 시장 인식을 바탕으로 정리한 것으로, 기능적 포지셔닝 참고용일 뿐이며 제3자가 인증한 성능 벤치마크 데이터가 아닙니다.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "문체 특징 분석（가중치 20%）: 의미적 유창성, 반복 문형, 접속어 사용을 분석하며, 설명 가능성이 가장 높아 \"왜\"를 가장 쉽게 이해할 수 있습니다.",
   "helpWorkflowStep2Bullet4": "적대적 방어（가중치 15%）: 패러프레이징 도구（QuillBot, Undetectable.ai 등）로 처리된 텍스트를 감지합니다.",
   "helpWorkflowStep2Bullet5": "리포트 생성 LLM（선택 사항）: 설치하면 리포트 텍스트가 기기 내 LLM에 의해 동적으로 생성됩니다. 미설치 시 고정 템플릿으로 자동 대체되며 분석 기능 자체에는 영향이 없습니다.",
-  "helpWorkflowStep2Bullet6": "\"설정\"에서 각 엔진을 개별적으로 켜거나 끌 수 있고, AI 판정 신뢰도 임계값을 조정할 수 있습니다（높이면 사람의 글을 AI로 오판할 확률을 낮출 수 있습니다）.",
+  "helpWorkflowStep2Bullet6": "\"설정\"에서 각 엔진을 개별적으로 켜거나 끌 수 있고, 엔진 가중치를 조정할 수 있습니다. 다섯 개의 판정 구간은 고정 경계(20% / 40% / 60% / 80%)를 사용하며 변경할 수 없으므로, 같은 문서는 누구에게나 같은 판정이 나옵니다.",
   "helpWorkflowStep3Title": "문서 업로드",
   "helpWorkflowStep3Body": "입력 방법은 세 가지입니다: 텍스트 직접 붙여넣기, 이미지 OCR 인식, 문서 가져오기(txt / md / pdf / docx / doc / odt). PDF 가져오기는 두 가지 텍스트 층 파서 결과를 비교해 깨진 문자를 걸러내며, 스캔 PDF는 OCR을 쓸 수 있을 때 쪽 단위로 인식합니다. 가져오면 파일명이 입력 제목 아래에 표시되고 보고서 제목에도 별도 줄로 나타납니다. 붙여넣거나 직접 입력하면 비어 있습니다.\n\nOCR은 설정한 로컬 서버를 우선하며, 직접 Gemini API 키를 제공한 경우에만 클라우드로 대체합니다.",
   "helpWorkflowStep4Title": "분석 시작",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "선택한 근거",
   "workspaceNoEvidence": "각 엔진이 완료되면 문장 근거가 여기에 표시됩니다.",
   "workspacePreliminaryVerdict": "예비 AI 확률: {percent}%",
-  "composerThresholdFlaggedDetailed": "전체 AI 확률은 {aiPercent}%로, 설정한 AI 표시 임계값 {thresholdPercent}%에 도달하여 보고서가 이 텍스트를 AI로 표시합니다. 최종 결정을 내리기 전에 문장 단위 증거와 엔진 이유를 검토하세요.",
-  "composerThresholdNotFlaggedDetailed": "전체 AI 확률은 {aiPercent}%로, 설정한 AI 표시 임계값 {thresholdPercent}%보다 낮아 보고서가 이 텍스트를 공식적으로 AI로 표시하지 않습니다. 확률과 증거는 검토를 위해 계속 표시됩니다.",
+  "composerThresholdFlaggedDetailed": "전체 AI 확률은 {aiPercent}%로, 고정 AI 표시 임계값 {thresholdPercent}%에 도달하여 보고서가 이 텍스트를 AI로 표시합니다. 최종 결정을 내리기 전에 문장 단위 증거와 엔진 이유를 검토하세요.",
+  "composerThresholdNotFlaggedDetailed": "전체 AI 확률은 {aiPercent}%로, 고정 AI 표시 임계값 {thresholdPercent}%보다 낮아 보고서가 이 텍스트를 공식적으로 AI로 표시하지 않습니다. 확률과 증거는 검토를 위해 계속 표시됩니다.",
   "engineReasonStatisticalSummaryAi": "전체 통계 요약: AI 생성 특성 쪽으로 기울어짐（AI 확률 {percent}%）",
   "engineReasonStatisticalSummaryHuman": "전체 통계 요약: 자연스러운 인간 글쓰기 쪽으로 기울어짐（AI 확률 {percent}%）",
   "engineReasonStatisticalSummaryNeutral": "전체 통계 요약: 지표가 균형을 이루어 중립적 특성을 보임（AI 확률 {percent}%）",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "AI 확률 {probability}% / AI 표시 기준값 {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "증거가 부족하여 판정하지 않습니다",
   "abstentionTooFewSentences": "분석 가능한 문장이 {count}개뿐입니다(최소 {required}개 필요). 이 길이에서는 통계·문장 단위 신호가 의미를 갖지 못하며, 억지로 점수를 내면 오해만 부릅니다.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "AI 확률 < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI 확률 {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "AI 확률 ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "의심스러운 콘텐츠 위치",
   "reportVerdictAiLikelihood": "AI 경향",
   "reportVerdictHumanLikelihood": "인간 글쓰기",
-  "settingsThresholdInfoBody": "활성화된 엔진은 먼저 전체 AI 확률을 계산합니다. 이 설정은 엔진 점수나 전체 확률을 변경하지 않으며, 점수에 적용되는 결론을 변경합니다. 임계값이 낮을수록 동일한 확률이 AI로 결론지어져 표시될 가능성이 높아지고, 임계값이 높을수록 더 강한 AI 확률이 필요하여 인간의 글쓰기로 결론지어질 가능성이 높아집니다. 보고서는 항상 원래 확률과 근거를 유지합니다.",
-  "settingsThresholdInfoTooltip": "AI 표시 임계값이 결론에 미치는 영향",
   "suspiciousCount": "{count}개 항목",
   "suspiciousEmpty": "의심스러운 콘텐츠 없음",
   "suspiciousEvidenceLabel": "근거:",

@@ -431,22 +431,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppBarTitle => 'Settings';
 
   @override
-  String get settingsThresholdTitle => 'AI flagging threshold';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'How the AI flagging threshold affects the conclusion';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'The enabled engines first calculate the overall AI probability. This setting does not change any engine score or that overall probability; it changes which conclusion is applied to the score. A lower threshold makes the same probability more likely to be concluded and marked as AI, while a higher threshold requires stronger AI probability and is more likely to conclude human writing. The report always retains the original probability and supporting evidence.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Current: $percent% — overall AI probability must reach this line before the report marks the text as AI';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL non-native writer bias correction';
 
   @override
@@ -1167,11 +1151,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI probability $probability% / AI flag threshold $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'Not enough evidence to judge';
 
   @override
@@ -1319,17 +1298,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI probability < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI probability $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI probability ≥ $value%';
   }
 
   @override
@@ -1677,17 +1656,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'The overall AI probability exceeds your $percent% threshold and is flagged as AI.';
+    return 'The overall AI probability exceeds the fixed $percent% threshold and is flagged as AI.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'The overall AI probability is below your $percent% flagging threshold.';
+    return 'The overall AI probability is below the fixed $percent% flagging threshold.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Overall AI probability is $aiPercent%, which reaches your $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
+    return 'Overall AI probability is $aiPercent%, which reaches the fixed $thresholdPercent% AI flagging threshold, so the report marks this text as AI. Review sentence evidence and engine reasons before making a final decision.';
   }
 
   @override
@@ -1695,7 +1674,7 @@ class AppLocalizationsEn extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Overall AI probability is $aiPercent%, below your $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
+    return 'Overall AI probability is $aiPercent%, below the fixed $thresholdPercent% AI flagging threshold, so the report does not formally mark this text as AI. The probability and evidence are still shown for review.';
   }
 
   @override
@@ -1941,7 +1920,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI index (AI probability ÷ the flag threshold you set), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.';
+      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI probability sorted into five fixed bands (under 20%, 20–40%, 40–60%, 60–80%, 80% and above), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. The cut points are not adjustable, so the same document always lands in the same band. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.';
 
   @override
   String get helpComparisonTitle => 'Comparison with leading tools';
@@ -2072,7 +2051,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'You can individually enable/disable engines, adjust engine weights, and set the AI flagging threshold from 20% to 90% in Settings. This does not change engine scores; it changes the decision line for formally marking a report as AI.';
+      'You can individually enable/disable engines and adjust engine weights in Settings. The five verdict bands use fixed cut points (20% / 40% / 60% / 80%) and cannot be changed, so the same document always yields the same verdict for everyone.';
 
   @override
   String get helpWorkflowStep3Title => 'Adding content';
@@ -2196,7 +2175,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights and the 20%–90% AI flagging threshold from Settings.';
+      'If you already have, or have fine-tuned, a compatible .onnx model elsewhere, you can import it via \"Settings → Custom ONNX model import & test\" — you\'ll need to provide the model file, its matching tokenizer configuration (or choose \"none\"), and the AI class index. Before importing, the app automatically checks whether this exact file was already imported, to avoid accidental duplicates. You can also adjust engine weights from Settings.';
 
   @override
   String get helpOfficialLinksTitle => 'Official model download links';

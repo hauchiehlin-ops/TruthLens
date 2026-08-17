@@ -25,7 +25,6 @@ class PreferencesService extends ChangeNotifier {
     'stylometry': 0.20,
     'adversarial': 0.15,
   };
-  static const _kThreshold = 'confidence_threshold';
   static const _kThemeMode = 'theme_mode';
   static const _kEslCorrection = 'esl_correction';
   static const _kFirstRunHandled = 'first_run_handled';
@@ -35,13 +34,9 @@ class PreferencesService extends ChangeNotifier {
   static const _kLocale = 'app_locale';
   static const _kWorkspaceMode = 'workspace_mode';
   static const _kEngineWeightPrefix = 'engine_weight_';
-  static const minConfidenceThreshold = 0.2;
-  static const maxConfidenceThreshold = 0.9;
-  static const confidenceThresholdDivisions = 14;
 
   SharedPreferences? _prefs;
 
-  double confidenceThreshold = 0.5; // 判定為 AI 的信心閾值（可調，降低偽陽性）
   ThemeMode themeMode = ThemeMode.system;
   bool eslCorrectionEnabled = true;
   bool firstRunHandled = false; // 首次啟動的模型引導是否已處理（下載或略過）
@@ -62,9 +57,6 @@ class PreferencesService extends ChangeNotifier {
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
-    confidenceThreshold = _clampThreshold(
-      _prefs!.getDouble(_kThreshold) ?? 0.5,
-    );
     themeMode = ThemeMode.values.firstWhere(
       (mode) => mode.name == _prefs!.getString(_kThemeMode),
       orElse: () => ThemeMode.system,
@@ -180,14 +172,7 @@ class PreferencesService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setThreshold(double value) async {
-    confidenceThreshold = _clampThreshold(value);
-    await _prefs?.setDouble(_kThreshold, confidenceThreshold);
-    notifyListeners();
-  }
 
-  static double _clampThreshold(double value) =>
-      value.clamp(minConfidenceThreshold, maxConfidenceThreshold).toDouble();
 
   Future<void> setThemeMode(ThemeMode mode) async {
     themeMode = mode;

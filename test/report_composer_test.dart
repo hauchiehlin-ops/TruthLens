@@ -9,14 +9,12 @@ DetectionResult _result({
   required double ai,
   bool esl = false,
   bool paraphrase = false,
-  double threshold = 0.6,
 }) => DetectionResult(
   id: 'x',
   analyzedAt: DateTime(2026, 7, 3),
   inputText: 'a',
   aiProbability: ai,
-  verdict: Verdict.fromProbability(ai, threshold),
-  threshold: threshold,
+  verdict: Verdict.fromProbability(ai),
   eslAdjusted: esl,
   engineScores: [
     const EngineScore(
@@ -100,12 +98,9 @@ void main() {
     );
   });
 
-  test('閾值橫幅文字反映 flaggedAsAi', () {
-    final flagged = composer.compose(_result(ai: 0.9, threshold: 0.6), l10n);
-    final notFlagged = composer.compose(
-      _result(ai: 0.5, threshold: 0.95),
-      l10n,
-    );
+  test('閾值橫幅文字反映 flaggedAsAi（門檻為固定 60%）', () {
+    final flagged = composer.compose(_result(ai: 0.9), l10n);
+    final notFlagged = composer.compose(_result(ai: 0.5), l10n);
     final flaggedBanner = flagged.components.firstWhere(
       (c) => c.type == ReportComponentType.thresholdBanner,
     );
@@ -117,6 +112,6 @@ void main() {
     expect(flaggedBanner.body, contains('60%'));
     expect(notBanner.body, contains('below'));
     expect(notBanner.body, contains('50%'));
-    expect(notBanner.body, contains('95%'));
+    expect(notBanner.body, contains('60%'));
   });
 }

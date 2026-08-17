@@ -114,10 +114,6 @@
   "modelImportSuccessSnackbar": "模型匯入成功！已自動啟用為使用中模型。",
   "modelImportFailedSnackbar": "模型匯入失敗，請檢查權限或日誌",
   "settingsAppBarTitle": "設定",
-  "settingsThresholdTitle": "AI 標記門檻",
-  "settingsThresholdInfoTooltip": "了解 AI 標記門檻如何影響結論",
-  "settingsThresholdInfoBody": "啟用的各分析引擎會先計算整體 AI 機率。此設定不會改變任何引擎分數或整體 AI 機率，而是改變該分數所適配的結論：門檻較低時，同一機率較容易被判定並標記為 AI；門檻較高時，必須有更強的 AI 機率才會標記，因此較容易適配為人類撰寫。報告仍會完整保留原始機率與佐證。",
-  "settingsThresholdSubtitle": "目前：{percent}% — 整體 AI 機率達到此門檻時，報告才會正式標記為 AI",
   "settingsEslTitle": "ESL 非母語者偏差修正",
   "settingsEslSubtitle": "偵測到非母語寫作風格時，自動降低統計模型權重",
   "settingsEngineSectionTitle": "子偵測引擎啟用設定 (Ensemble)",
@@ -644,20 +640,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "AI 機率 {probability}% / AI 標記門檻閾值 {threshold}% ＝ AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "證據不足，不做判定",
   "abstentionTooFewSentences": "只有 {count} 個可分析的句子（至少需要 {required} 句）。句數這麼少時，統計與句級訊號都不具代表性，硬給分數只會誤導。",
   "@abstentionTooFewSentences": {
@@ -863,7 +845,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "AI 機率 < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -871,7 +853,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "AI 機率 {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -882,7 +864,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "AI 機率 ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -991,10 +973,10 @@
   "composerHeadlineMixed": "這段文字呈現人類與 AI 混合的特徵（AI 機率 {percent}%）",
   "composerHeadlineLikelyHuman": "這段文字傾向人類撰寫（AI 機率 {percent}%）",
   "composerHeadlineHuman": "這段文字極可能為人類撰寫（AI 機率 {percent}%）",
-  "composerThresholdFlagged": "整體 AI 機率越過你設定的 {percent}% 閾值，被標記為 AI。",
+  "composerThresholdFlagged": "整體 AI 機率越過固定的 {percent}% 閾值，被標記為 AI。",
   "composerThresholdNotFlagged": "整體 AI 機率未達 {percent}% 標記閾值。",
-  "composerThresholdFlaggedDetailed": "整體 AI 機率為 {aiPercent}%，已達你設定的 {thresholdPercent}% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。",
-  "composerThresholdNotFlaggedDetailed": "整體 AI 機率為 {aiPercent}%，低於你設定的 {thresholdPercent}% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。",
+  "composerThresholdFlaggedDetailed": "整體 AI 機率為 {aiPercent}%，已達固定的 {thresholdPercent}% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。",
+  "composerThresholdNotFlaggedDetailed": "整體 AI 機率為 {aiPercent}%，低於固定的 {thresholdPercent}% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。",
   "composerNarrativeTitle": "分析解讀",
   "composerParaphraseTitle": "偵測到改寫痕跡",
   "composerParaphraseBody": "本文可能經過改寫工具（如 QuillBot、Undetectable.ai）處理以規避偵測。此類文本即使逐句讀來自然，其整體統計特徵仍與原生人類寫作不同，請特別留意。",
@@ -1052,7 +1034,7 @@
   "patternGenericTransition": "通用過渡詞「{word}」",
   "helpAppBarTitle": "操作說明",
   "helpAboutTitle": "關於 TruthLens",
-  "helpAboutBody": "TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI index（AI 機率 ÷ 你設定的標記門檻）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。",
+  "helpAboutBody": "TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI 機率歸入五個固定級距（低於 20%、20–40%、40–60%、60–80%、80% 以上）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。切點固定不可調整，因此同一份文件在任何人手上都會落在同一級距。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。",
   "helpComparisonTitle": "與市面主流工具比較",
   "helpComparisonDisclaimer": "以下比較依各工具官方公開資訊與一般市場認知整理，僅供功能定位參考，非第三方認證的效能實測數據。",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -1094,7 +1076,7 @@
   "helpWorkflowStep2Bullet3": "風格特徵分析（權重 20%）：語意流暢度、重複句式、過渡詞使用，可解釋性最高，最容易看懂「為什麼」。",
   "helpWorkflowStep2Bullet4": "對抗式防禦（權重 15%）：辨識是否經改寫工具（如 QuillBot、Undetectable.ai）洗過的文本。",
   "helpWorkflowStep2Bullet5": "報告生成 LLM（選用）：安裝後報告文字由本地端 LLM 動態生成解說；未安裝時自動退回固定模板，分析功能不受影響。",
-  "helpWorkflowStep2Bullet6": "可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 標記門檻設為 20%–90%。這不會改變各引擎分數，而是改變報告正式標記為 AI 的決策線。",
+  "helpWorkflowStep2Bullet6": "可在「設定」個別啟用／停用引擎、調整引擎權重。五個判定級距採固定切點（20%／40%／60%／80%），不提供調整，因此同一份文件在任何人手上都會得到相同判定。",
   "helpWorkflowStep3Title": "加入內容",
   "helpWorkflowStep3Body": "三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並單獨成行出現在報告標題；貼上或手動輸入文字時，檔名維持空白。\n\nOCR 會優先使用你設定的本地伺服器，只有在你自行提供 Gemini API 金鑰時才使用雲端備援。",
   "helpWorkflowStep4Title": "開始分析",
@@ -1131,7 +1113,7 @@
   "helpTuningStep4Title": "更新模型",
   "helpTuningStep4Body": "之後若有新版本，「AI 模型管理」與設定齒輪圖示會出現紅點提示，回到此畫面即可看到新版本並下載更新（會保留原本安裝的版本，除非手動移除）。",
   "helpTuningStep5Title": "進階：匯入自訂模型",
-  "helpTuningStep5Body": "若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 標記門檻。",
+  "helpTuningStep5Body": "若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重。",
   "helpOfficialLinksTitle": "官方模型下載連結",
   "helpOfficialLinksHint": "點擊項目會以系統瀏覽器開啟該模型的官方頁面。",
   "helpLinkRoleTransformer": "多語言 AI 分類器（Transformer，權重 40%）",

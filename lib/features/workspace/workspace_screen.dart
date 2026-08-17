@@ -351,7 +351,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         sourceFileName: _sourceFileName,
         provenance: _sourceProvenance,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
-        threshold: prefs.confidenceThreshold,
         prefs: prefs,
         l10n: l10n,
         onEngineStarted: (id) {

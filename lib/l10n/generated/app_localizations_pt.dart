@@ -438,23 +438,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsAppBarTitle => 'Configurações';
 
   @override
-  String get settingsThresholdTitle =>
-      'Limite de confiança para determinação de IA';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Como o limite de sinalização de IA afeta a conclusão';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Os mecanismos habilitados primeiro calculam a probabilidade geral de IA. Esta configuração não altera nenhuma pontuação do mecanismo ou essa probabilidade geral; ela altera qual conclusão é aplicada à pontuação. Um limite mais baixo torna mais provável que a mesma probabilidade seja concluída e marcada como IA, enquanto um limite mais alto exige uma probabilidade de IA mais forte e é mais provável que conclua escrita humana. O relatório sempre mantém a probabilidade original e as evidências de suporte.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Atual: $percent% — aumentá-lo reduz falsos positivos (texto humano classificado incorretamente como IA)';
-  }
-
-  @override
   String get settingsEslTitle => 'Correção de viés ESL (não nativo)';
 
   @override
@@ -1186,11 +1169,6 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'Probabilidade de IA $probability% / limite de sinalização $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'Evidência insuficiente para julgar';
 
   @override
@@ -1337,17 +1315,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'Probabilidade de IA < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'Probabilidade de IA $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'Probabilidade de IA ≥ $value%';
   }
 
   @override
@@ -1698,17 +1676,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'A probabilidade geral de IA excede o limite de $percent% que você definiu e foi sinalizada como IA.';
+    return 'A probabilidade geral de IA excede o limite fixo de $percent% e foi sinalizada como IA.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'A probabilidade geral de IA está abaixo do limite de sinalização de $percent% que você definiu.';
+    return 'A probabilidade geral de IA está abaixo do limite fixo de sinalização de $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'A probabilidade geral de IA é $aiPercent%, o que atinge seu limite de sinalização de IA de $thresholdPercent%, então o relatório marca este texto como IA. Revise as evidências em nível de frase e as razões dos mecanismos antes de tomar uma decisão final.';
+    return 'A probabilidade geral de IA é $aiPercent%, o que atinge o limite fixo de sinalização de IA de $thresholdPercent%, então o relatório marca este texto como IA. Revise as evidências em nível de frase e as razões dos mecanismos antes de tomar uma decisão final.';
   }
 
   @override
@@ -1716,7 +1694,7 @@ class AppLocalizationsPt extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'A probabilidade geral de IA é $aiPercent%, abaixo do seu limite de sinalização de IA de $thresholdPercent%, então o relatório não marca formalmente este texto como IA. A probabilidade e as evidências ainda são exibidas para revisão.';
+    return 'A probabilidade geral de IA é $aiPercent%, abaixo do limite fixo de sinalização de IA de $thresholdPercent%, então o relatório não marca formalmente este texto como IA. A probabilidade e as evidências ainda são exibidas para revisão.';
   }
 
   @override
@@ -1963,7 +1941,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'O TruthLens é um detector de conteúdo de IA que roda **inteiramente dentro do seu navegador**. Quatro motores independentes — um classificador neural Transformer, análise estatística, estilometria e detecção de reescrita adversária — votam com pesos se o texto foi gerado por IA, e o seu documento nunca sai da máquina.\n\nO relatório expressa o veredicto como índice de IA (probabilidade de IA ÷ o limite de sinalização que você definir), junto às evidências por frase, à contribuição de cada motor, às evidências de origem do documento e ao nome do arquivo ao importar. Quando a evidência é rala — poucas frases ou palavras, ou motores discordando demais — ele diz isso claramente em vez de forçar uma pontuação.';
+      'O TruthLens é um detector de conteúdo de IA que roda **inteiramente dentro do seu navegador**. Quatro motores independentes — um classificador neural Transformer, análise estatística, estilometria e detecção de reescrita adversária — votam com pesos se o texto foi gerado por IA, e o seu documento nunca sai da máquina.\n\nO relatório expressa o veredicto como probabilidade de IA classificada em cinco faixas fixas (abaixo de 20%, 20–40%, 40–60%, 60–80%, 80% ou mais), junto às evidências por frase, à contribuição de cada motor, às evidências de origem do documento e ao nome do arquivo ao importar. Os pontos de corte não são ajustáveis, então o mesmo documento cai sempre na mesma faixa. Quando a evidência é rala — poucas frases ou palavras, ou motores discordando demais — ele diz isso claramente em vez de forçar uma pontuação.';
 
   @override
   String get helpComparisonTitle => 'Comparação com ferramentas líderes';
@@ -2095,7 +2073,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Você pode ativar/desativar mecanismos individualmente e ajustar o limite de confiança de detecção de IA nas Configurações (aumentá-lo reduz a probabilidade de classificar incorretamente a escrita humana como IA).';
+      'Você pode ativar/desativar mecanismos individualmente e ajustar seus pesos nas Configurações. As cinco faixas do veredicto usam pontos de corte fixos (20% / 40% / 60% / 80%) e não podem ser alteradas, então o mesmo documento dá o mesmo veredicto para todos.';
 
   @override
   String get helpWorkflowStep3Title => 'Enviando um documento';

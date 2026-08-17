@@ -441,22 +441,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsAppBarTitle => 'Ajustes';
 
   @override
-  String get settingsThresholdTitle => 'Umbral de confianza para determinar IA';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Cómo afecta el umbral de marcado de IA a la conclusión';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Los motores habilitados calculan primero la probabilidad de IA global. Este ajuste no cambia ninguna puntuación de motor ni esa probabilidad global; cambia qué conclusión se aplica a la puntuación. Un umbral más bajo hace que sea más probable que la misma probabilidad se concluya y marque como IA, mientras que un umbral más alto requiere una probabilidad de IA más fuerte y es más probable que concluya escritura humana. El informe siempre conserva la probabilidad original y la evidencia de respaldo.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Actual: $percent% — aumentarlo reduce los falsos positivos (texto humano clasificado erróneamente como IA)';
-  }
-
-  @override
   String get settingsEslTitle => 'Corrección de sesgo ESL (no nativo)';
 
   @override
@@ -1189,11 +1173,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'Probabilidad de IA $probability% / umbral de marcado $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'No hay evidencia suficiente para juzgar';
 
   @override
@@ -1341,17 +1320,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'Probabilidad de IA < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'Probabilidad de IA $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'Probabilidad de IA ≥ $value%';
   }
 
   @override
@@ -1702,17 +1681,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'La probabilidad general de IA supera el umbral del $percent% que has establecido y se marcó como IA.';
+    return 'La probabilidad general de IA supera el umbral fijo del $percent% y se marcó como IA.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'La probabilidad general de IA está por debajo del umbral de marcado del $percent% que has establecido.';
+    return 'La probabilidad general de IA está por debajo del umbral de marcado fijo del $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'La probabilidad de IA global es $aiPercent%, lo que alcanza su umbral de marcado de IA del $thresholdPercent%, por lo que el informe marca este texto como IA. Revise la evidencia a nivel de oración y las razones de los motores antes de tomar una decisión final.';
+    return 'La probabilidad de IA global es $aiPercent%, lo que alcanza el umbral fijo de marcado de IA del $thresholdPercent%, por lo que el informe marca este texto como IA. Revise la evidencia a nivel de oración y las razones de los motores antes de tomar una decisión final.';
   }
 
   @override
@@ -1720,7 +1699,7 @@ class AppLocalizationsEs extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'La probabilidad de IA global es $aiPercent%, por debajo de su umbral de marcado de IA del $thresholdPercent%, por lo que el informe no marca formalmente este texto como IA. La probabilidad y la evidencia se muestran igualmente para su revisión.';
+    return 'La probabilidad de IA global es $aiPercent%, por debajo de el umbral fijo de marcado de IA del $thresholdPercent%, por lo que el informe no marca formalmente este texto como IA. La probabilidad y la evidencia se muestran igualmente para su revisión.';
   }
 
   @override
@@ -1967,7 +1946,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens es un detector de contenido de IA que funciona **enteramente dentro de tu navegador**. Cuatro motores independientes —un clasificador neuronal Transformer, análisis estadístico, estilometría y detección de reescritura adversaria— votan con pesos si un texto fue generado por IA, y tu documento nunca sale del equipo.\n\nEl informe expresa el veredicto como índice de IA (probabilidad de IA ÷ el umbral de marcado que fijes), junto a pruebas por frase, la contribución de cada motor, las pruebas de origen del documento y el nombre del archivo al importar. Cuando la evidencia es escasa —pocas frases o palabras, o motores demasiado en desacuerdo— lo dice claramente en lugar de forzar una puntuación.';
+      'TruthLens es un detector de contenido de IA que funciona **enteramente dentro de tu navegador**. Cuatro motores independientes —un clasificador neuronal Transformer, análisis estadístico, estilometría y detección de reescritura adversaria— votan con pesos si un texto fue generado por IA, y tu documento nunca sale del equipo.\n\nEl informe expresa el veredicto como probabilidad de IA clasificada en cinco tramos fijos (menos del 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % o más), junto a pruebas por frase, la contribución de cada motor, las pruebas de origen del documento y el nombre del archivo al importar. Los puntos de corte no son ajustables, así que el mismo documento cae siempre en el mismo tramo. Cuando la evidencia es escasa —pocas frases o palabras, o motores demasiado en desacuerdo— lo dice claramente en lugar de forzar una puntuación.';
 
   @override
   String get helpComparisonTitle => 'Comparación con herramientas líderes';
@@ -2098,7 +2077,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Puedes activar/desactivar motores individualmente y ajustar el umbral de confianza de detección de IA en Ajustes (aumentarlo reduce la probabilidad de clasificar erróneamente la escritura humana como IA).';
+      'Puedes activar/desactivar motores individualmente y ajustar sus pesos en Ajustes. Los cinco tramos del veredicto usan puntos de corte fijos (20 % / 40 % / 60 % / 80 %) y no se pueden cambiar, así que el mismo documento da el mismo veredicto para todo el mundo.';
 
   @override
   String get helpWorkflowStep3Title => 'Subir un documento';

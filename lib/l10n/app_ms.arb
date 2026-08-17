@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "Model berjaya diimport! Ditetapkan secara automatik sebagai model aktif.",
   "modelImportFailedSnackbar": "Import model gagal. Sila semak kebenaran atau log",
   "settingsAppBarTitle": "Tetapan",
-  "settingsThresholdTitle": "Ambang keyakinan penentuan AI",
-  "settingsThresholdSubtitle": "Semasa: {percent}% — meningkatkannya mengurangkan positif palsu (teks manusia disalah anggap sebagai AI)",
   "settingsEslTitle": "Pembetulan bias ESL (bukan penutur asli)",
   "settingsEslSubtitle": "Secara automatik mengurangkan pemberat model statistik apabila gaya penulisan bukan penutur asli dikesan",
   "settingsEngineSectionTitle": "Tetapan enjin sub-pengesanan (Ensemble)",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "Teks ini menunjukkan ciri campuran manusia dan AI (kebarangkalian AI {percent}%)",
   "composerHeadlineLikelyHuman": "Teks ini cenderung ditulis oleh manusia (kebarangkalian AI {percent}%)",
   "composerHeadlineHuman": "Teks ini berkemungkinan besar ditulis oleh manusia (kebarangkalian AI {percent}%)",
-  "composerThresholdFlagged": "Kebarangkalian AI keseluruhan melebihi ambang {percent}% yang anda tetapkan dan ditandakan sebagai AI.",
-  "composerThresholdNotFlagged": "Kebarangkalian AI keseluruhan di bawah ambang penandaan {percent}% yang anda tetapkan.",
+  "composerThresholdFlagged": "Kebarangkalian AI keseluruhan melebihi ambang tetap {percent}% dan ditandakan sebagai AI.",
+  "composerThresholdNotFlagged": "Kebarangkalian AI keseluruhan di bawah ambang penandaan tetap {percent}%.",
   "composerNarrativeTitle": "Interpretasi analisis",
   "composerParaphraseTitle": "Kesan parafrasa dikesan",
   "composerParaphraseBody": "Teks ini mungkin telah diproses oleh alat parafrasa (cth. QuillBot, Undetectable.ai) untuk mengelak pengesanan. Walaupun ia kelihatan semula jadi ayat demi ayat, cap jari statistik keseluruhannya masih berbeza daripada penulisan manusia yang tulen — sila beri perhatian khusus.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "kata hubung generik \"{word}\"",
   "helpAppBarTitle": "Panduan Pengguna",
   "helpAboutTitle": "Mengenai TruthLens",
-  "helpAboutBody": "TruthLens ialah pengesan kandungan AI yang berjalan **sepenuhnya dalam pelayar anda**. Empat enjin bebas — pengelas neural Transformer, analisis ciri statistik, stilometri, dan pengesanan penulisan semula adversarial — mengundi secara berpemberat sama ada teks dijana AI, dan dokumen anda tidak pernah meninggalkan mesin.\n\nLaporan menyatakan keputusannya sebagai indeks AI (kebarangkalian AI ÷ ambang penandaan yang anda tetapkan), berserta bukti setiap ayat, sumbangan setiap enjin, bukti asal dokumen, dan nama fail semasa mengimport. Apabila buktinya nipis — terlalu sedikit ayat atau perkataan, atau enjin terlalu berbeza pendapat — ia menyatakannya terus terang dan bukannya memaksa skor.",
+  "helpAboutBody": "TruthLens ialah pengesan kandungan AI yang berjalan **sepenuhnya dalam pelayar anda**. Empat enjin bebas — pengelas neural Transformer, analisis ciri statistik, stilometri, dan pengesanan penulisan semula adversarial — mengundi secara berpemberat sama ada teks dijana AI, dan dokumen anda tidak pernah meninggalkan mesin.\n\nLaporan menyatakan keputusannya sebagai kebarangkalian AI yang dikelaskan ke dalam lima jalur tetap (bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), berserta bukti setiap ayat, sumbangan setiap enjin, bukti asal dokumen, dan nama fail semasa mengimport. Titik pemisahnya tidak boleh dilaraskan, jadi dokumen yang sama sentiasa jatuh dalam jalur yang sama. Apabila buktinya nipis — terlalu sedikit ayat atau perkataan, atau enjin terlalu berbeza pendapat — ia menyatakannya terus terang dan bukannya memaksa skor.",
   "helpComparisonTitle": "Perbandingan dengan alat terkemuka",
   "helpComparisonDisclaimer": "Perbandingan ini disusun daripada maklumat awam setiap alat dan persepsi pasaran umum, hanya untuk rujukan kedudukan fungsi — bukan data penanda aras yang disahkan pihak ketiga.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "Analisis stilometrik (pemberat 20%): kelancaran semantik, corak ayat berulang, penggunaan kata hubung — paling boleh dijelaskan, paling mudah difahami \"mengapa\".",
   "helpWorkflowStep2Bullet4": "Pertahanan adversarial (pemberat 15%): mengesan teks yang telah dicuci melalui alat parafrasa (cth. QuillBot, Undetectable.ai).",
   "helpWorkflowStep2Bullet5": "LLM penulisan laporan (pilihan): setelah dipasang, teks laporan ditulis secara dinamik oleh LLM pada peranti; tanpanya, apl kembali kepada templat tetap — analisis itu sendiri tidak terjejas.",
-  "helpWorkflowStep2Bullet6": "Anda boleh mengaktifkan/menyahaktifkan enjin secara individu dan melaraskan ambang keyakinan pengesanan AI dalam Tetapan (meningkatkannya mengurangkan peluang salah anggap penulisan manusia sebagai AI).",
+  "helpWorkflowStep2Bullet6": "Anda boleh mengaktifkan/menyahaktifkan enjin secara individu dan melaraskan pemberat enjin dalam Tetapan. Lima jalur keputusan menggunakan titik pemisah tetap (20% / 40% / 60% / 80%) dan tidak boleh diubah, jadi dokumen yang sama memberi keputusan yang sama kepada semua orang.",
   "helpWorkflowStep3Title": "Memuat naik dokumen",
   "helpWorkflowStep3Body": "Tiga cara masuk: tampal teks terus, kenali imej dengan OCR, atau import dokumen (txt / md / pdf / docx / doc / odt). Import PDF membandingkan dua penghurai lapisan teks dan membuang keluaran yang kacau; PDF imbasan dikenali muka demi muka apabila OCR tersedia. Semasa mengimport, nama fail muncul di bawah tajuk input dan pada barisnya sendiri dalam tajuk laporan; semasa menampal atau menaip, ia kekal kosong.\n\nOCR mengutamakan pelayan setempat yang anda konfigurasikan dan hanya menggunakan awan jika anda sendiri membekalkan kunci API Gemini.",
   "helpWorkflowStep4Title": "Menjalankan analisis",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "Bukti dipilih",
   "workspaceNoEvidence": "Bukti ayat muncul apabila setiap enjin selesai.",
   "workspacePreliminaryVerdict": "Kebarangkalian AI awal: {percent}%",
-  "composerThresholdFlaggedDetailed": "Kebarangkalian AI keseluruhan ialah {aiPercent}%, yang mencapai ambang penandaan AI {thresholdPercent}% anda, jadi laporan menandakan teks ini sebagai AI. Semak bukti peringkat ayat dan sebab enjin sebelum membuat keputusan akhir.",
-  "composerThresholdNotFlaggedDetailed": "Kebarangkalian AI keseluruhan ialah {aiPercent}%, di bawah ambang penandaan AI {thresholdPercent}% anda, jadi laporan tidak menandakan teks ini sebagai AI secara rasmi. Kebarangkalian dan bukti masih dipaparkan untuk semakan.",
+  "composerThresholdFlaggedDetailed": "Kebarangkalian AI keseluruhan ialah {aiPercent}%, yang mencapai ambang penandaan AI tetap {thresholdPercent}%, jadi laporan menandakan teks ini sebagai AI. Semak bukti peringkat ayat dan sebab enjin sebelum membuat keputusan akhir.",
+  "composerThresholdNotFlaggedDetailed": "Kebarangkalian AI keseluruhan ialah {aiPercent}%, di bawah ambang penandaan AI tetap {thresholdPercent}%, jadi laporan tidak menandakan teks ini sebagai AI secara rasmi. Kebarangkalian dan bukti masih dipaparkan untuk semakan.",
   "engineReasonStatisticalSummaryAi": "Ringkasan statistik keseluruhan: Condong kepada ciri-ciri yang dijana AI (kebarangkalian AI {percent}%)",
   "engineReasonStatisticalSummaryHuman": "Ringkasan statistik keseluruhan: Condong kepada penulisan manusia semula jadi (kebarangkalian AI {percent}%)",
   "engineReasonStatisticalSummaryNeutral": "Ringkasan statistik keseluruhan: Penunjuk seimbang, menunjukkan ciri neutral (kebarangkalian AI {percent}%)",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "Kebarangkalian AI {probability}% / ambang penanda {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Bukti tidak mencukupi untuk menilai",
   "abstentionTooFewSentences": "Hanya {count} ayat yang boleh dianalisis, sedangkan sekurang-kurangnya {required} diperlukan. Pada panjang ini isyarat statistik dan setiap ayat tidak membawa berat, dan memaksa skor daripadanya hanya mengelirukan.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "Kebarangkalian AI < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "Kebarangkalian AI {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "Kebarangkalian AI ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "Lokasi kandungan mencurigakan",
   "reportVerdictAiLikelihood": "Kecenderungan AI",
   "reportVerdictHumanLikelihood": "Penulisan Manusia",
-  "settingsThresholdInfoBody": "Enjin yang diaktifkan mula-mula mengira kebarangkalian AI keseluruhan. Tetapan ini tidak mengubah sebarang skor enjin atau kebarangkalian keseluruhan itu; ia mengubah kesimpulan mana yang digunakan pada skor. Ambang yang lebih rendah menjadikan kebarangkalian yang sama lebih berkemungkinan disimpulkan dan ditandakan sebagai AI, manakala ambang yang lebih tinggi memerlukan kebarangkalian AI yang lebih kuat dan lebih berkemungkinan menyimpulkan penulisan manusia. Laporan sentiasa mengekalkan kebarangkalian asal dan bukti sokongan.",
-  "settingsThresholdInfoTooltip": "Bagaimana ambang penandaan AI menjejaskan kesimpulan",
   "suspiciousCount": "{count} item",
   "suspiciousEmpty": "Tiada kandungan mencurigakan",
   "suspiciousEvidenceLabel": "Bukti:",

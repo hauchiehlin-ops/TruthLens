@@ -51,7 +51,7 @@ class ReportLlmService {
       'human_sentences': r.humanSentenceCount,
       'dominant_patterns': r.dominantPatterns,
       'esl_adjusted': r.eslAdjusted,
-      'threshold': r.threshold,
+      'threshold': DetectionResult.aiFlagThreshold,
       'engine_findings': r.engineScores
           .where((e) => e.available)
           .map(

@@ -1,5 +1,36 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第九十二次更新）— 取消可調 AI 標記門檻，五級判定改為固定百分比切點
+
+**決策**：五級判定（人類撰寫／偏向人類／混合內容／可能 AI／AI 生成）改用固定切點
+**20% / 40% / 60% / 80%**，門檻不再由使用者調整。
+
+**為什麼**：門檻一旦可調，同一份文件在不同人手上會得到不同結論，跨使用者、跨時間的
+歷史紀錄也不再可比。先前為了讓五格隨門檻等比例縮放而引入的「AI index」（AI 機率 ÷ 門檻）
+更讓報告多了一層需要解釋的換算——為了保住一個不該存在的可調參數而增加認知負擔。
+直接顯示 AI 機率，門檻固定，判定就是可複製的。
+
+**程式面改動**
+- `Verdict.cutPoints` 改為 `static const [0.20, 0.40, 0.60, 0.80]`；`fromProbability` 收單一引數
+- 新增 `DetectionResult.aiFlagStatic`... 實際為 `static const aiFlagThreshold = 0.60`，
+  刻意等於「混合內容 → 可能 AI」的分界，讓「被標記為 AI」與判定級距不會各說各話
+- 移除 `DetectionResult.threshold` 欄位、`aiIndexPercent`、`cutPointIndexPercents`
+- 移除 `EnsembleOrchestrator.analyze` 的 `threshold` 參數
+- `PreferencesService` 移除 `confidenceThreshold`、`setThreshold`、`min/max/divisions` 常數與持久化鍵
+- 刪除三處門檻滑桿（設定頁 ×1、InputScreen 抽屜與完整設定面板 ×2）與
+  `lib/shared/widgets/threshold_setting_title.dart`
+
+**l10n（14 語系）**
+- `reportVerdictRangeBelow/Between/Above` 由英文未翻的「AI index」改回各語系的
+  「AI 機率」用詞（先前這三個 key 在所有語系都是英文，是個未被發現的漏翻）
+- 移除死鍵 `reportAiIndexFormula`、`settingsThresholdTitle/Subtitle/InfoTooltip/InfoBody`
+- `composerThreshold*` 四個字串移除「你設定的」等所有格，改為「固定的」門檻
+- 說明手冊 `helpAboutBody`、`helpWorkflowStep2Bullet6`、`helpTuningStep5Body`
+  改述為固定五級距，刪去「20%–90% 可調」的描述
+
+**狀態**：✅ `flutter analyze` 無問題、`flutter test` 330 項全通過、`flutter build web` 成功
+（照上次的教訓，l10n 改動一律跑到 build 為止，analyze/test 用的是舊的產生檔）
+
 ## 2026-08-17（第九十一次更新）— 全介面移除「學生」措辭，改為不預設使用對象
 
 **背景**：本工具同樣適用於編輯、審稿、人資、研究等情境，介面卻多處預設教育場景。

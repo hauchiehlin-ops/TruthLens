@@ -435,22 +435,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsAppBarTitle => 'Pengaturan';
 
   @override
-  String get settingsThresholdTitle => 'Ambang kepercayaan penentuan AI';
-
-  @override
-  String get settingsThresholdInfoTooltip =>
-      'Bagaimana ambang batas penandaan AI memengaruhi kesimpulan';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      'Mesin yang diaktifkan pertama-tama menghitung probabilitas AI keseluruhan. Pengaturan ini tidak mengubah skor mesin apa pun atau probabilitas keseluruhan tersebut; pengaturan ini mengubah kesimpulan mana yang diterapkan pada skor. Ambang batas yang lebih rendah membuat probabilitas yang sama lebih mungkin disimpulkan dan ditandai sebagai AI, sementara ambang batas yang lebih tinggi memerlukan probabilitas AI yang lebih kuat dan lebih mungkin menyimpulkan tulisan manusia. Laporan selalu mempertahankan probabilitas asli dan bukti pendukung.';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return 'Saat ini: $percent% — meningkatkannya mengurangi positif palsu (teks manusia salah dinilai sebagai AI)';
-  }
-
-  @override
   String get settingsEslTitle => 'Koreksi bias ESL (bukan penutur asli)';
 
   @override
@@ -1177,11 +1161,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'Probabilitas AI $probability% / ambang tanda $threshold% = AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => 'Bukti tidak cukup untuk menilai';
 
   @override
@@ -1329,17 +1308,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'Probabilitas AI < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'Probabilitas AI $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'Probabilitas AI ≥ $value%';
   }
 
   @override
@@ -1690,17 +1669,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return 'Probabilitas AI keseluruhan melebihi ambang $percent% yang Anda tetapkan dan ditandai sebagai AI.';
+    return 'Probabilitas AI keseluruhan melebihi ambang tetap $percent% dan ditandai sebagai AI.';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return 'Probabilitas AI keseluruhan di bawah ambang penandaan $percent% yang Anda tetapkan.';
+    return 'Probabilitas AI keseluruhan di bawah ambang penandaan tetap $percent%.';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return 'Probabilitas AI keseluruhan adalah $aiPercent%, yang mencapai ambang batas penandaan AI $thresholdPercent% Anda, sehingga laporan menandai teks ini sebagai AI. Tinjau bukti tingkat kalimat dan alasan mesin sebelum membuat keputusan akhir.';
+    return 'Probabilitas AI keseluruhan adalah $aiPercent%, yang mencapai ambang batas penandaan AI tetap $thresholdPercent%, sehingga laporan menandai teks ini sebagai AI. Tinjau bukti tingkat kalimat dan alasan mesin sebelum membuat keputusan akhir.';
   }
 
   @override
@@ -1708,7 +1687,7 @@ class AppLocalizationsId extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'Probabilitas AI keseluruhan adalah $aiPercent%, di bawah ambang batas penandaan AI $thresholdPercent% Anda, sehingga laporan tidak secara resmi menandai teks ini sebagai AI. Probabilitas dan bukti tetap ditampilkan untuk ditinjau.';
+    return 'Probabilitas AI keseluruhan adalah $aiPercent%, di bawah ambang batas penandaan AI tetap $thresholdPercent%, sehingga laporan tidak secara resmi menandai teks ini sebagai AI. Probabilitas dan bukti tetap ditampilkan untuk ditinjau.';
   }
 
   @override
@@ -1955,7 +1934,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai indeks AI (probabilitas AI ÷ ambang penandaan yang Anda tetapkan), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.';
+      'TruthLens adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai probabilitas AI yang digolongkan ke lima rentang tetap (di bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Titik potongnya tidak dapat diubah, sehingga dokumen yang sama selalu jatuh di rentang yang sama. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.';
 
   @override
   String get helpComparisonTitle => 'Perbandingan dengan alat terkemuka';
@@ -2086,7 +2065,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      'Anda dapat mengaktifkan/menonaktifkan mesin secara individual dan menyesuaikan ambang kepercayaan deteksi AI di Pengaturan (meningkatkannya mengurangi kemungkinan salah menilai tulisan manusia sebagai AI).';
+      'Anda dapat mengaktifkan/menonaktifkan mesin secara individual dan menyesuaikan bobot mesin di Pengaturan. Lima rentang putusan memakai titik potong tetap (20% / 40% / 60% / 80%) dan tidak dapat diubah, jadi dokumen yang sama memberi putusan yang sama bagi semua orang.';
 
   @override
   String get helpWorkflowStep3Title => 'Mengunggah dokumen';

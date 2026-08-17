@@ -56,11 +56,11 @@ class ReportComposer {
         body: r.flaggedAsAi
             ? l10n.composerThresholdFlaggedDetailed(
                 (r.aiProbability * 100).round(),
-                (r.threshold * 100).round(),
+                (DetectionResult.aiFlagThreshold * 100).round(),
               )
             : l10n.composerThresholdNotFlaggedDetailed(
                 (r.aiProbability * 100).round(),
-                (r.threshold * 100).round(),
+                (DetectionResult.aiFlagThreshold * 100).round(),
               ),
       ),
       ReportComponent(

@@ -108,8 +108,6 @@
   "modelImportSuccessSnackbar": "Modell erfolgreich importiert! Wurde automatisch als aktives Modell festgelegt.",
   "modelImportFailedSnackbar": "Modellimport fehlgeschlagen. Bitte Berechtigungen oder Protokolle prüfen",
   "settingsAppBarTitle": "Einstellungen",
-  "settingsThresholdTitle": "Vertrauensschwelle für KI-Bestimmung",
-  "settingsThresholdSubtitle": "Aktuell: {percent}% — eine Erhöhung reduziert Falschmeldungen (menschlicher Text fälschlich als KI eingestuft)",
   "settingsEslTitle": "ESL-Verzerrungskorrektur (Nicht-Muttersprachler)",
   "settingsEslSubtitle": "Verringert automatisch das Gewicht des statistischen Modells, wenn ein Schreibstil von Nicht-Muttersprachlern erkannt wird",
   "settingsEngineSectionTitle": "Einstellungen der Erkennungs-Untermodule (Ensemble)",
@@ -435,8 +433,8 @@
   "composerHeadlineMixed": "Dieser Text zeigt gemischte Merkmale von Mensch und KI (KI-Wahrscheinlichkeit {percent}%)",
   "composerHeadlineLikelyHuman": "Dieser Text tendiert dazu, von einem Menschen geschrieben zu sein (KI-Wahrscheinlichkeit {percent}%)",
   "composerHeadlineHuman": "Dieser Text wurde höchstwahrscheinlich von einem Menschen geschrieben (KI-Wahrscheinlichkeit {percent}%)",
-  "composerThresholdFlagged": "Die Gesamt-KI-Wahrscheinlichkeit überschreitet die von Ihnen festgelegte Schwelle von {percent}% und wurde als KI markiert.",
-  "composerThresholdNotFlagged": "Die Gesamt-KI-Wahrscheinlichkeit liegt unter der von Ihnen festgelegten Markierungsschwelle von {percent}%.",
+  "composerThresholdFlagged": "Die Gesamt-KI-Wahrscheinlichkeit überschreitet die feste Schwelle von {percent}% und wurde als KI markiert.",
+  "composerThresholdNotFlagged": "Die Gesamt-KI-Wahrscheinlichkeit liegt unter der festen Markierungsschwelle von {percent}%.",
   "composerNarrativeTitle": "Analyseinterpretation",
   "composerParaphraseTitle": "Paraphrasierungsspuren erkannt",
   "composerParaphraseBody": "Dieser Text wurde möglicherweise mit einem Paraphrasierungstool (z. B. QuillBot, Undetectable.ai) bearbeitet, um die Erkennung zu umgehen. Obwohl er Satz für Satz natürlich wirkt, unterscheidet sich sein statistischer Gesamtfingerabdruck dennoch von echtem menschlichem Schreiben — bitte besondere Aufmerksamkeit schenken.",
@@ -485,7 +483,7 @@
   "patternGenericTransition": "allgemeines Übergangswort \"{word}\"",
   "helpAppBarTitle": "Benutzerhandbuch",
   "helpAboutTitle": "Über TruthLens",
-  "helpAboutBody": "TruthLens ist ein KI-Inhaltsdetektor, der **vollständig in Ihrem Browser** läuft. Vier unabhängige Engines — ein neuronaler Transformer-Klassifikator, statistische Merkmalsanalyse, Stilometrie und Erkennung gegnerischer Umschreibungen — stimmen gewichtet darüber ab, ob ein Text von einer KI stammt; Ihr Dokument verlässt den Rechner nie.\n\nDer Bericht zeigt das Urteil als KI-Index (KI-Wahrscheinlichkeit ÷ von Ihnen gesetzte Kennzeichnungsschwelle), dazu Satzbelege, den Beitrag jeder Engine, Herkunftsnachweise des Dokuments und den Dateinamen beim Import. Ist die Beweislage zu dünn — zu wenige Sätze oder Wörter, oder zu stark uneinige Engines — sagt er das offen, statt einen Wert zu erzwingen.",
+  "helpAboutBody": "TruthLens ist ein KI-Inhaltsdetektor, der **vollständig in Ihrem Browser** läuft. Vier unabhängige Engines — ein neuronaler Transformer-Klassifikator, statistische Merkmalsanalyse, Stilometrie und Erkennung gegnerischer Umschreibungen — stimmen gewichtet darüber ab, ob ein Text von einer KI stammt; Ihr Dokument verlässt den Rechner nie.\n\nDer Bericht zeigt das Urteil als KI-Wahrscheinlichkeit, eingeordnet in fünf feste Stufen (unter 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % und mehr), dazu Satzbelege, den Beitrag jeder Engine, Herkunftsnachweise des Dokuments und den Dateinamen beim Import. Die Grenzwerte sind nicht einstellbar, dasselbe Dokument landet also immer in derselben Stufe. Ist die Beweislage zu dünn — zu wenige Sätze oder Wörter, oder zu stark uneinige Engines — sagt er das offen, statt einen Wert zu erzwingen.",
   "helpComparisonTitle": "Vergleich mit führenden Tools",
   "helpComparisonDisclaimer": "Dieser Vergleich wurde aus öffentlichen Informationen jedes Tools und allgemeinen Markteinschätzungen zusammengestellt, nur zur Referenz der funktionalen Positionierung — keine von Dritten verifizierten Benchmark-Daten.",
   "helpVsGptZeroTitle": "vs GPTZero",
@@ -527,7 +525,7 @@
   "helpWorkflowStep2Bullet3": "Stilometrische Analyse (Gewicht 20%): semantische Flüssigkeit, wiederkehrende Satzmuster, Verwendung von Übergangswörtern — am erklärbarsten, am leichtesten zu verstehen, \"warum\".",
   "helpWorkflowStep2Bullet4": "Adversariale Abwehr (Gewicht 15%): erkennt Text, der mit Paraphrasierungstools (z. B. QuillBot, Undetectable.ai) \"gereinigt\" wurde.",
   "helpWorkflowStep2Bullet5": "Bericht-LLM (optional): nach der Installation wird der Berichtstext dynamisch von einem LLM auf dem Gerät verfasst; ohne dieses greift die App auf eine feste Vorlage zurück — die Analyse selbst ist nicht betroffen.",
-  "helpWorkflowStep2Bullet6": "Sie können Engines einzeln aktivieren/deaktivieren und die Vertrauensschwelle der KI-Erkennung in den Einstellungen anpassen (eine Erhöhung verringert die Wahrscheinlichkeit, menschliches Schreiben fälschlicherweise als KI einzustufen).",
+  "helpWorkflowStep2Bullet6": "Sie können Engines einzeln aktivieren/deaktivieren und die Engine-Gewichte in den Einstellungen anpassen. Die fünf Urteilsstufen nutzen feste Grenzwerte (20 % / 40 % / 60 % / 80 %) und sind nicht änderbar, dasselbe Dokument ergibt also für jeden dasselbe Urteil.",
   "helpWorkflowStep3Title": "Ein Dokument hochladen",
   "helpWorkflowStep3Body": "Drei Wege hinein: Text direkt einfügen, ein Bild per OCR erkennen, oder ein Dokument importieren (txt / md / pdf / docx / doc / odt). Beim PDF-Import werden zwei Textebenen-Parser verglichen und unbrauchbare Ausgaben verworfen; gescannte PDFs werden Seite für Seite erkannt, sofern OCR verfügbar ist. Beim Import erscheint der Dateiname unter der Eingabeüberschrift und als eigene Zeile im Berichtstitel; beim Einfügen oder Tippen bleibt er leer.\n\nDie OCR bevorzugt den von Ihnen eingerichteten lokalen Server und nutzt die Cloud nur, wenn Sie selbst einen Gemini-API-Schlüssel hinterlegen.",
   "helpWorkflowStep4Title": "Analyse ausführen",
@@ -652,8 +650,8 @@
   "workspaceSelectedEvidence": "Ausgewählter Beleg",
   "workspaceNoEvidence": "Satzbelege erscheinen hier, sobald die Engines fertig sind.",
   "workspacePreliminaryVerdict": "Vorläufige KI-Wahrscheinlichkeit: {percent}%",
-  "composerThresholdFlaggedDetailed": "Die Gesamt-KI-Wahrscheinlichkeit beträgt {aiPercent}%, was Ihren Schwellenwert von {thresholdPercent}% für die KI-Kennzeichnung erreicht, sodass der Bericht diesen Text als KI markiert. Prüfen Sie die Satzbelege und Engine-Begründungen, bevor Sie eine endgültige Entscheidung treffen.",
-  "composerThresholdNotFlaggedDetailed": "Die Gesamt-KI-Wahrscheinlichkeit beträgt {aiPercent}%, unter Ihrem Schwellenwert von {thresholdPercent}% für die KI-Kennzeichnung, sodass der Bericht diesen Text nicht formell als KI markiert. Die Wahrscheinlichkeit und die Belege werden dennoch zur Überprüfung angezeigt.",
+  "composerThresholdFlaggedDetailed": "Die Gesamt-KI-Wahrscheinlichkeit beträgt {aiPercent}%, was den festen Schwellenwert von {thresholdPercent}% für die KI-Kennzeichnung erreicht, sodass der Bericht diesen Text als KI markiert. Prüfen Sie die Satzbelege und Engine-Begründungen, bevor Sie eine endgültige Entscheidung treffen.",
+  "composerThresholdNotFlaggedDetailed": "Die Gesamt-KI-Wahrscheinlichkeit beträgt {aiPercent}%, unter dem festen Schwellenwert von {thresholdPercent}% für die KI-Kennzeichnung, sodass der Bericht diesen Text nicht formell als KI markiert. Die Wahrscheinlichkeit und die Belege werden dennoch zur Überprüfung angezeigt.",
   "engineReasonStatisticalSummaryAi": "Statistische Gesamtübersicht: Tendiert zu KI-generierten Merkmalen ({percent}% KI-Wahrscheinlichkeit)",
   "engineReasonStatisticalSummaryHuman": "Statistische Gesamtübersicht: Tendiert zu natürlichem menschlichem Schreiben ({percent}% KI-Wahrscheinlichkeit)",
   "engineReasonStatisticalSummaryNeutral": "Statistische Gesamtübersicht: Indikatoren gleichen sich aus und zeigen neutrale Merkmale ({percent}% KI-Wahrscheinlichkeit)",
@@ -920,20 +918,6 @@
       }
     }
   },
-  "reportAiIndexFormula": "KI-Wahrscheinlichkeit {probability}% / KI-Kennzeichnungsschwelle {threshold}% = AI index {index}%",
-  "@reportAiIndexFormula": {
-    "placeholders": {
-      "probability": {
-        "type": "int"
-      },
-      "threshold": {
-        "type": "int"
-      },
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "abstentionHeadline": "Zu wenig Belege für ein Urteil",
   "abstentionTooFewSentences": "Nur {count} auswertbare(r) Satz/Sätze, nötig sind mindestens {required}. Bei dieser Länge tragen die statistischen und satzweisen Signale nichts, und ein daraus erzwungener Wert würde nur in die Irre führen.",
   "@abstentionTooFewSentences": {
@@ -1139,7 +1123,7 @@
       }
     }
   },
-  "reportVerdictRangeBelow": "AI index < {value}%",
+  "reportVerdictRangeBelow": "KI-Wahrscheinlichkeit < {value}%",
   "@reportVerdictRangeBelow": {
     "placeholders": {
       "value": {
@@ -1147,7 +1131,7 @@
       }
     }
   },
-  "reportVerdictRangeBetween": "AI index {low}%–{high}%",
+  "reportVerdictRangeBetween": "KI-Wahrscheinlichkeit {low}%–{high}%",
   "@reportVerdictRangeBetween": {
     "placeholders": {
       "low": {
@@ -1158,7 +1142,7 @@
       }
     }
   },
-  "reportVerdictRangeAbove": "AI index ≥ {value}%",
+  "reportVerdictRangeAbove": "KI-Wahrscheinlichkeit ≥ {value}%",
   "@reportVerdictRangeAbove": {
     "placeholders": {
       "value": {
@@ -1202,8 +1186,6 @@
   "reportSuspiciousLocationsTitle": "Verdächtige Inhaltsstellen",
   "reportVerdictAiLikelihood": "KI-Tendenz",
   "reportVerdictHumanLikelihood": "Menschliches Schreiben",
-  "settingsThresholdInfoBody": "Die aktivierten Engines berechnen zunächst die Gesamt-KI-Wahrscheinlichkeit. Diese Einstellung ändert keinen Engine-Score oder diese Gesamtwahrscheinlichkeit; sie ändert, welche Schlussfolgerung auf den Score angewendet wird. Ein niedrigerer Schwellenwert macht es wahrscheinlicher, dass dieselbe Wahrscheinlichkeit als KI eingestuft und markiert wird, während ein höherer Schwellenwert eine stärkere KI-Wahrscheinlichkeit erfordert und eher zu menschlichem Schreiben tendiert. Der Bericht behält immer die ursprüngliche Wahrscheinlichkeit und die Belege bei.",
-  "settingsThresholdInfoTooltip": "Wie der KI-Kennzeichnungsschwellenwert die Schlussfolgerung beeinflusst",
   "suspiciousCount": "{count} Einträge",
   "suspiciousEmpty": "Kein verdächtiger Inhalt",
   "suspiciousEvidenceLabel": "Beleg:",

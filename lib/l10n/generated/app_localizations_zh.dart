@@ -417,21 +417,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAppBarTitle => '設定';
 
   @override
-  String get settingsThresholdTitle => 'AI 標記門檻';
-
-  @override
-  String get settingsThresholdInfoTooltip => '了解 AI 標記門檻如何影響結論';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      '啟用的各分析引擎會先計算整體 AI 機率。此設定不會改變任何引擎分數或整體 AI 機率，而是改變該分數所適配的結論：門檻較低時，同一機率較容易被判定並標記為 AI；門檻較高時，必須有更強的 AI 機率才會標記，因此較容易適配為人類撰寫。報告仍會完整保留原始機率與佐證。';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 整體 AI 機率達到此門檻時，報告才會正式標記為 AI';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL 非母語者偏差修正';
 
   @override
@@ -1130,11 +1115,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI 機率 $probability% / AI 標記門檻閾值 $threshold% ＝ AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => '證據不足，不做判定';
 
   @override
@@ -1278,17 +1258,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI 機率 < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI 機率 $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI 機率 ≥ $value%';
   }
 
   @override
@@ -1624,7 +1604,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return '整體 AI 機率越過你設定的 $percent% 閾值，被標記為 AI。';
+    return '整體 AI 機率越過固定的 $percent% 閾值，被標記為 AI。';
   }
 
   @override
@@ -1634,7 +1614,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return '整體 AI 機率為 $aiPercent%，已達你設定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
+    return '整體 AI 機率為 $aiPercent%，已達固定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
   }
 
   @override
@@ -1642,7 +1622,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '整體 AI 機率為 $aiPercent%，低於你設定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
+    return '整體 AI 機率為 $aiPercent%，低於固定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
   }
 
   @override
@@ -1875,7 +1855,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI index（AI 機率 ÷ 你設定的標記門檻）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI 機率歸入五個固定級距（低於 20%、20–40%、40–60%、60–80%、80% 以上）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。切點固定不可調整，因此同一份文件在任何人手上都會落在同一級距。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2004,7 +1984,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 標記門檻設為 20%–90%。這不會改變各引擎分數，而是改變報告正式標記為 AI 的決策線。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重。五個判定級距採固定切點（20%／40%／60%／80%），不提供調整，因此同一份文件在任何人手上都會得到相同判定。';
 
   @override
   String get helpWorkflowStep3Title => '加入內容';
@@ -2124,7 +2104,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 標記門檻。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';
@@ -2883,21 +2863,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settingsAppBarTitle => '设置';
 
   @override
-  String get settingsThresholdTitle => 'AI 标记门槛';
-
-  @override
-  String get settingsThresholdInfoTooltip => '了解 AI 标记门槛如何影响结论';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      '启用的各分析引擎会先计算整体 AI 几率。此设置不会改变任何引擎分数或整体 AI 几率，而是改变该分数所适配的结论：门槛较低时，同一几率更容易被判定并标记为 AI；门槛较高时，必须有更强的 AI 几率才会标记，因此更容易适配为人类撰写。报告仍会完整保留原始几率与佐证。';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 整体 AI 几率达到此门槛时，报告才会正式标记为 AI';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL 非母语者偏差修正';
 
   @override
@@ -3596,11 +3561,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI 几率 $probability% / AI 标记门槛阈值 $threshold% ＝ AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => '证据不足，不做判定';
 
   @override
@@ -3744,17 +3704,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI 几率 < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI 几率 $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI 几率 ≥ $value%';
   }
 
   @override
@@ -4090,7 +4050,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return '整体 AI 几率越过你设置的 $percent% 阈值，被标记为 AI。';
+    return '整体 AI 几率越过固定的 $percent% 阈值，被标记为 AI。';
   }
 
   @override
@@ -4100,7 +4060,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return '整体 AI 几率为 $aiPercent%，已达你设置的 $thresholdPercent% AI 标记门槛，因此报告会标记为 AI。建议搭配句级证据与各引擎理由再做最终判断。';
+    return '整体 AI 几率为 $aiPercent%，已达固定的 $thresholdPercent% AI 标记门槛，因此报告会标记为 AI。建议搭配句级证据与各引擎理由再做最终判断。';
   }
 
   @override
@@ -4108,7 +4068,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '整体 AI 几率为 $aiPercent%，低于你设置的 $thresholdPercent% AI 标记门槛，因此报告不会正式标记为 AI；几率与证据仍会保留供你查看。';
+    return '整体 AI 几率为 $aiPercent%，低于固定的 $thresholdPercent% AI 标记门槛，因此报告不会正式标记为 AI；几率与证据仍会保留供你查看。';
   }
 
   @override
@@ -4341,7 +4301,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写检测——加权投票判定文字是否为 AI 生成，文件内容不会上传到任何服务器。\n\n报告以 AI index（AI 几率 ÷ 你设定的标记门槛）呈现判定，并附逐句证据、各引擎贡献、文件来源证据，以及导入时的来源档名。证据不足时（句数或字数太少、引擎分歧过大）会明确显示「不做判定」，而不是硬给一个分数。';
+      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写检测——加权投票判定文字是否为 AI 生成，文件内容不会上传到任何服务器。\n\n报告以 AI 几率归入五个固定级距（低于 20%、20–40%、40–60%、60–80%、80% 以上）呈现判定，并附逐句证据、各引擎贡献、文件来源证据，以及导入时的来源档名。切点固定不可调整，因此同一份文件在任何人手上都会落在同一级距。证据不足时（句数或字数太少、引擎分歧过大）会明确显示「不做判定」，而不是硬给一个分数。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -4470,7 +4430,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「设置」个别激活／停用引擎、调整引擎权重，并将 AI 标记门槛设为 20%–90%。这不会改变各引擎分数，而是改变报告正式标记为 AI 的决策线。';
+      '可在「设置」个别激活／停用引擎、调整引擎权重。五个判定级距采固定切点（20%／40%／60%／80%），不提供调整，因此同一份文件在任何人手上都会得到相同判定。';
 
   @override
   String get helpWorkflowStep3Title => '加入内容';
@@ -4590,7 +4550,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。也可在设置中调整四引擎权重与 20%–90% 的 AI 标记门槛。';
+      '若你已在其他地方取得或自行微调过兼容的 .onnx 模型，可通过「设置 → 自订 ONNX 模型导入与测试」导入——需提供模型档、对应的 Tokenizer 设置（或选择「不需要」）与 AI 类别索引；导入前会自动侦测是否为重复导入的相同文件，避免不小心重复安装。也可在设置中调整四引擎权重。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下载链接';
@@ -5349,21 +5309,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settingsAppBarTitle => '設定';
 
   @override
-  String get settingsThresholdTitle => 'AI 標記門檻';
-
-  @override
-  String get settingsThresholdInfoTooltip => '了解 AI 標記門檻如何影響結論';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      '啟用的各分析引擎會先計算整體 AI 機率。此設定不會改變任何引擎分數或整體 AI 機率，而是改變該分數所適配的結論：門檻較低時，同一機率較容易被判定並標記為 AI；門檻較高時，必須有更強的 AI 機率才會標記，因此較容易適配為人類撰寫。報告仍會完整保留原始機率與佐證。';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return '目前：$percent% — 整體 AI 機率達到此門檻時，報告才會正式標記為 AI';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL 非母語者偏差修正';
 
   @override
@@ -6062,11 +6007,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI 機率 $probability% / AI 標記門檻閾值 $threshold% ＝ AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => '證據不足，不做判定';
 
   @override
@@ -6210,17 +6150,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI 機率 < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI 機率 $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI 機率 ≥ $value%';
   }
 
   @override
@@ -6556,7 +6496,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return '整體 AI 機率越過你設定的 $percent% 閾值，被標記為 AI。';
+    return '整體 AI 機率越過固定的 $percent% 閾值，被標記為 AI。';
   }
 
   @override
@@ -6566,7 +6506,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return '整體 AI 機率為 $aiPercent%，已達你設定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
+    return '整體 AI 機率為 $aiPercent%，已達固定的 $thresholdPercent% AI 標記門檻，因此報告會標記為 AI。建議搭配句級證據與各引擎理由再做最終判斷。';
   }
 
   @override
@@ -6574,7 +6514,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '整體 AI 機率為 $aiPercent%，低於你設定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
+    return '整體 AI 機率為 $aiPercent%，低於固定的 $thresholdPercent% AI 標記門檻，因此報告不會正式標記為 AI；機率與證據仍會保留供你檢視。';
   }
 
   @override
@@ -6807,7 +6747,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI index（AI 機率 ÷ 你設定的標記門檻）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI 機率歸入五個固定級距（低於 20%、20–40%、40–60%、60–80%、80% 以上）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。切點固定不可調整，因此同一份文件在任何人手上都會落在同一級距。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -6936,7 +6876,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整引擎權重，並將 AI 標記門檻設為 20%–90%。這不會改變各引擎分數，而是改變報告正式標記為 AI 的決策線。';
+      '可在「設定」個別啟用／停用引擎、調整引擎權重。五個判定級距採固定切點（20%／40%／60%／80%），不提供調整，因此同一份文件在任何人手上都會得到相同判定。';
 
   @override
   String get helpWorkflowStep3Title => '加入內容';
@@ -7056,7 +6996,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpTuningStep5Body =>
-      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重與 20%–90% 的 AI 標記門檻。';
+      '若你已在其他地方取得或自行微調過相容的 .onnx 模型，可透過「設定 → 自訂 ONNX 模型匯入與測試」匯入——需提供模型檔、對應的 Tokenizer 設定（或選擇「不需要」）與 AI 類別索引；匯入前會自動偵測是否為重複匯入的相同檔案，避免不小心重複安裝。也可在設定中調整四引擎權重。';
 
   @override
   String get helpOfficialLinksTitle => '官方模型下載連結';

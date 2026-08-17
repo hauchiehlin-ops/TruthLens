@@ -420,21 +420,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAppBarTitle => '設定';
 
   @override
-  String get settingsThresholdTitle => 'AI判定の信頼度しきい値';
-
-  @override
-  String get settingsThresholdInfoTooltip => 'AI判定しきい値が結論にどう影響するか';
-
-  @override
-  String get settingsThresholdInfoBody =>
-      '有効なエンジンはまず全体のAI確率を計算します。この設定はエンジンのスコアやその全体確率を変更するものではなく、そのスコアに適用される結論を変更します。しきい値を低くすると、同じ確率でもAIと判定・表示されやすくなり、しきい値を高くすると、より強いAI確率が必要となり人間による執筆と判定されやすくなります。レポートには常に元の確率と裏付けとなる根拠が保持されます。';
-
-  @override
-  String settingsThresholdSubtitle(int percent) {
-    return '現在：$percent% — 上げると誤検知（人間の文章をAIと誤判定）を減らせます';
-  }
-
-  @override
   String get settingsEslTitle => 'ESL（非ネイティブ）バイアス補正';
 
   @override
@@ -1141,11 +1126,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String reportAiIndexFormula(int probability, int threshold, int index) {
-    return 'AI確率 $probability% / AI判定しきい値 $threshold% ＝ AI index $index%';
-  }
-
-  @override
   String get abstentionHeadline => '証拠が不十分なため判定しません';
 
   @override
@@ -1292,17 +1272,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String reportVerdictRangeBelow(int value) {
-    return 'AI index < $value%';
+    return 'AI確率 < $value%';
   }
 
   @override
   String reportVerdictRangeBetween(int low, int high) {
-    return 'AI index $low%–$high%';
+    return 'AI確率 $low%–$high%';
   }
 
   @override
   String reportVerdictRangeAbove(int value) {
-    return 'AI index ≥ $value%';
+    return 'AI確率 ≥ $value%';
   }
 
   @override
@@ -1639,17 +1619,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String composerThresholdFlagged(int percent) {
-    return '総合AI確率が設定した $percent% のしきい値を超え、AIとしてフラグが立てられました。';
+    return '総合AI確率が固定の $percent% のしきい値を超え、AIとしてフラグが立てられました。';
   }
 
   @override
   String composerThresholdNotFlagged(int percent) {
-    return '総合AI確率は設定した $percent% のフラグしきい値未満です。';
+    return '総合AI確率は固定の $percent% のフラグしきい値未満です。';
   }
 
   @override
   String composerThresholdFlaggedDetailed(int aiPercent, int thresholdPercent) {
-    return '全体のAI確率は$aiPercent%で、設定したAI判定しきい値$thresholdPercent%に達しているため、レポートはこのテキストをAIとして判定します。最終判断の前に文単位の根拠と各エンジンの理由をご確認ください。';
+    return '全体のAI確率は$aiPercent%で、固定のAI判定しきい値$thresholdPercent%に達しているため、レポートはこのテキストをAIとして判定します。最終判断の前に文単位の根拠と各エンジンの理由をご確認ください。';
   }
 
   @override
@@ -1657,7 +1637,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '全体のAI確率は$aiPercent%で、設定したAI判定しきい値$thresholdPercent%を下回っているため、レポートはこのテキストを正式にAIとして判定しません。確率と根拠は引き続き確認用に表示されます。';
+    return '全体のAI確率は$aiPercent%で、固定のAI判定しきい値$thresholdPercent%を下回っているため、レポートはこのテキストを正式にAIとして判定しません。確率と根拠は引き続き確認用に表示されます。';
   }
 
   @override
@@ -1896,7 +1876,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI index（AI確率 ÷ 設定した判定しきい値）で示し、文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。';
+      'TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI確率として示し、5つの固定区分（20%未満、20–40%、40–60%、60–80%、80%以上）に振り分けます。あわせて文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。区分の境界は調整できないため、同じ文書は誰の手元でも同じ区分になります。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。';
 
   @override
   String get helpComparisonTitle => '主要ツールとの比較';
@@ -2027,7 +2007,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '「設定」で各エンジンの有効／無効を個別に切り替えたり、AI判定の信頼度しきい値を調整したりできます（上げると人間の文章をAIと誤判定する確率を下げられます）。';
+      '「設定」で各エンジンの有効／無効を個別に切り替えたり、エンジンの重みを調整したりできます。5つの判定区分は固定の境界（20%／40%／60%／80%）を使い、変更できません。したがって同じ文書は誰にとっても同じ判定になります。';
 
   @override
   String get helpWorkflowStep3Title => '文書のアップロード';
