@@ -14,6 +14,21 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 樣本標籤的來源。決定它能不能進入共形預測的虛無分布。
+enum SampleOrigin {
+  /// 使用者手動標註
+  manual,
+
+  /// 由文件編輯紀錄（RSID／編輯時長／存檔次數）自動判定為人類撰寫。
+  /// 這個判斷**獨立於文字分類器**，因此不會造成循環論證，可安全納入虛無分布。
+  provenance,
+
+  /// 自動蒐集，但沒有任何獨立的標籤依據（例如貼上的純文字）。
+  /// **只用於描述性百分位，絕不進入共形預測**——把偵測器自己的判定拿來當
+  /// 虛無分布會讓它永遠無法發現自己錯了。
+  observed,
+}
+
 /// 一筆已知標籤的基準樣本
 @immutable
 class CalibrationSample {
@@ -29,6 +44,9 @@ class CalibrationSample {
   /// 各引擎當時的個別分數（engineId → 機率），供權重學習使用。
   /// 舊版樣本沒有此欄位，會是空 Map。
   final Map<String, double> engineScores;
+
+  /// 標籤來源，決定是否納入共形預測
+  final SampleOrigin origin;
 
   /// 樣本原文。**預設不保存**——只有使用者在設定中明確開啟「保留原文以供
   /// 離線驗證」時才會填入。共形預測本身只需要分數，原文純粹是為了能把
@@ -48,6 +66,7 @@ class CalibrationSample {
     this.isAi = false,
     this.engineScores = const {},
     this.text,
+    this.origin = SampleOrigin.manual,
   });
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +76,7 @@ class CalibrationSample {
     'isAi': isAi,
     'engineScores': engineScores,
     'addedAt': addedAt.toIso8601String(),
+    'origin': origin.name,
     if (text != null) 'text': text,
   };
 
@@ -79,6 +99,11 @@ class CalibrationSample {
             }
           : const {},
       text: json['text'] as String?,
+      // 舊版樣本沒有 origin 欄位，一律視為手動標註（當時只有這條路徑）
+      origin: SampleOrigin.values.firstWhere(
+        (o) => o.name == json['origin'],
+        orElse: () => SampleOrigin.manual,
+      ),
       addedAt: addedAt,
     );
   }
@@ -120,6 +145,7 @@ class CalibrationService extends ChangeNotifier {
   static const _kSamples = 'calibration_samples';
   static const _kAlpha = 'calibration_alpha';
   static const _kStoreText = 'calibration_store_text';
+  static const _kAutoCollect = 'calibration_auto_collect';
 
   /// 預設偽陽性率上限 5%
   static const double defaultAlpha = 0.05;
@@ -130,6 +156,11 @@ class CalibrationService extends ChangeNotifier {
   List<CalibrationSample> _samples = const [];
   double _alpha = defaultAlpha;
   bool _storeText = false;
+  bool _autoCollect = true;
+
+  /// 分析完成後是否自動蒐集校準樣本。預設開啟——這是讓基準集能靠日常使用
+  /// 自然累積的關鍵，且自動蒐集本身不會影響統計保證（標籤來源仍受把關）。
+  bool get autoCollectEnabled => _autoCollect;
 
   /// 是否連同原文一起保存。預設關閉：原文是敏感資料（多為學生作業），
   /// 只有在使用者明確要蒐集離線驗證語料時才該開啟。
@@ -140,9 +171,23 @@ class CalibrationService extends ChangeNotifier {
 
   List<CalibrationSample> get samples => List.unmodifiable(_samples);
 
-  /// 已知人類樣本，共形預測的虛無分布只用這些
-  List<CalibrationSample> get humanSamples =>
-      _samples.where((s) => !s.isAi).toList();
+  /// 進入共形虛無分布的人類樣本：**只收標籤來源獨立於文字分類器者**
+  /// （手動標註，或由文件編輯紀錄判定）。
+  ///
+  /// 刻意排除 [SampleOrigin.observed]：那些是靠偵測器自己的判定收進來的，
+  /// 拿來當虛無分布等於循環論證——被誤判為 AI 的真人文章永遠進不了基準集，
+  /// 分布會在低分端被人為壓緊、門檻偏低，反而標記更多真人作業。
+  List<CalibrationSample> get humanSamples => _samples
+      .where((s) => !s.isAi && s.origin != SampleOrigin.observed)
+      .toList();
+
+  /// 自動蒐集但無獨立標籤依據的樣本，只用於描述性百分位
+  List<CalibrationSample> get observedSamples =>
+      _samples.where((s) => s.origin == SampleOrigin.observed).toList();
+
+  /// 由文件編輯紀錄自動納入的份數，供介面說明「背景已收了多少」
+  int get autoAdmittedCount =>
+      _samples.where((s) => s.origin == SampleOrigin.provenance).length;
 
   /// 已知 AI 樣本，僅供權重學習
   List<CalibrationSample> get aiSamples =>
@@ -182,6 +227,7 @@ class CalibrationService extends ChangeNotifier {
       maxAlpha,
     );
     _storeText = _prefs!.getBool(_kStoreText) ?? false;
+    _autoCollect = _prefs!.getBool(_kAutoCollect) ?? true;
     notifyListeners();
   }
 
@@ -190,6 +236,12 @@ class CalibrationService extends ChangeNotifier {
       _kSamples,
       _samples.map((s) => jsonEncode(s.toJson())).toList(),
     );
+  }
+
+  Future<void> setAutoCollect(bool value) async {
+    _autoCollect = value;
+    await _prefs?.setBool(_kAutoCollect, value);
+    notifyListeners();
   }
 
   Future<void> setStoreText(bool value) async {
@@ -209,6 +261,7 @@ class CalibrationService extends ChangeNotifier {
           label: s.label,
           isAi: s.isAi,
           engineScores: s.engineScores,
+          origin: s.origin,
           addedAt: s.addedAt,
         ),
     ];
@@ -216,12 +269,29 @@ class CalibrationService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 使用者手動標註
   Future<void> addSample(
     double score, {
     String label = '',
     bool isAi = false,
     Map<String, double> engineScores = const {},
     String? text,
+  }) => _add(
+    score: score,
+    isAi: isAi,
+    engineScores: engineScores,
+    text: text,
+    label: label,
+    origin: SampleOrigin.manual,
+  );
+
+  Future<void> _add({
+    required double score,
+    required bool isAi,
+    required Map<String, double> engineScores,
+    required String? text,
+    required String label,
+    required SampleOrigin origin,
   }) async {
     _samples = [
       ..._samples,
@@ -232,6 +302,7 @@ class CalibrationService extends ChangeNotifier {
         isAi: isAi,
         engineScores: engineScores,
         text: _storeText ? text : null,
+        origin: origin,
         addedAt: DateTime.now(),
       ),
     ];
@@ -261,6 +332,39 @@ class CalibrationService extends ChangeNotifier {
   /// 會把分布往高分推，反而讓真正的 AI 文章更不容易被標記。
   ConformalResult evaluate(double score) =>
       conformal(score, humanSamples.map((s) => s.score).toList(), _alpha);
+
+  /// [score] 在**所有已分析文件**中的百分位。這是純描述性的參考值，
+  /// 不帶任何統計保證，因此與共形結果分開回傳、分開呈現。
+  int? observedPercentile(double score) {
+    final all = _samples.map((s) => s.score).toList();
+    if (all.length < 5) return null;
+    final below = all.where((s) => s < score).length;
+    return (below / all.length * 100).round();
+  }
+
+  /// 分析完成後由背景呼叫：依**獨立證據**決定要不要自動收進基準集。
+  ///
+  /// 回傳實際採用的來源，供介面誠實說明這一份是怎麼被分類的。
+  Future<SampleOrigin> autoCollect({
+    required double score,
+    required bool provenanceIndicatesHuman,
+    Map<String, double> engineScores = const {},
+    String? text,
+    String label = '',
+  }) async {
+    final origin = provenanceIndicatesHuman
+        ? SampleOrigin.provenance
+        : SampleOrigin.observed;
+    await _add(
+      score: score,
+      isAi: false,
+      engineScores: engineScores,
+      text: text,
+      label: label,
+      origin: origin,
+    );
+    return origin;
+  }
 
   /// 純函式版本，方便直接測試。
   ///

@@ -920,6 +920,35 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get calibrationAutoTitle => 'Coletando em segundo plano';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Os documentos que você analisa entram sozinhos na base — não é preciso rotular à mão.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Confirmados como humanos pelo registro de edição: $auto; amostras apenas de referência: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'Só entram na base com garantia estatística os documentos com registro de edição (tempo gasto, número de salvamentos, dispersão dos lotes), porque essa evidência é **independente do veredicto sobre o texto**. Rotular pelo próprio veredicto da ferramenta seria corrigir a própria prova: o que ela marcasse por engano nunca entraria na base, o limite se apertaria a cada passagem e mais trabalhos autênticos acabariam marcados. Texto colado não tem registro de edição, então conta apenas para o percentil de referência abaixo.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'Para referência: esta pontuação fica no percentil $percentile dos $count documentos que você analisou (sem garantia estatística)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Coletar amostras de calibração em segundo plano';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Adiciona automaticamente os documentos analisados à base. Os rótulos vêm do registro de edição, nunca do veredicto desta ferramenta.';
+
+  @override
   String get settingsStoreTextTitle => 'Guardar o texto para validação offline';
 
   @override

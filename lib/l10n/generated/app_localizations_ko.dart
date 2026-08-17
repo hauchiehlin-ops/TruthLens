@@ -883,6 +883,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get calibrationAutoTitle => '백그라운드에서 수집 중';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      '분석한 문서는 자동으로 기준 세트에 추가됩니다. 수동 라벨링이 필요 없습니다.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return '편집 기록으로 사람 작성 확인: $auto편 / 참고용 표본: $observed편';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      '통계적 보장이 있는 기준 세트에 들어가는 것은 편집 기록(편집 시간, 저장 횟수, 편집 배치 분산)을 가진 문서뿐입니다. 그것이 **본문 판정과 독립된** 증거이기 때문입니다. 이 도구 자신의 판정으로 라벨을 붙이면 제 답안을 제가 채점하는 셈입니다 — 잘못 표시된 글은 영영 기준 세트에 들어가지 못하고, 기준값은 갈수록 엄격해져 오히려 진짜 학생 글이 더 많이 표시됩니다. 붙여넣은 텍스트에는 편집 기록이 없으므로 아래 참고 백분위에만 반영됩니다.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return '참고: 이 점수는 분석한 $count편 중 $percentile번째 백분위에 있습니다(통계적 보장 없음)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => '백그라운드에서 보정 표본 수집';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      '분석한 문서를 자동으로 기준 세트에 추가합니다. 라벨은 문서의 편집 기록에서 오며, 이 도구의 판정은 쓰지 않습니다.';
+
+  @override
   String get settingsStoreTextTitle => '오프라인 검증용으로 원문 보관';
 
   @override

@@ -911,6 +911,35 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get calibrationAutoTitle => 'Mengumpulkan di latar belakang';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Dokumen yang Anda analisis masuk ke basis secara otomatis — tidak perlu memberi label manual.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Dipastikan ditulis manusia lewat catatan penyuntingan: $auto; sampel rujukan saja: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'Hanya dokumen dengan catatan penyuntingan (waktu yang dipakai, jumlah penyimpanan, sebaran sesi) yang masuk ke basis berjaminan statistik, sebab bukti itu **terlepas dari putusan atas teksnya**. Memberi label dari putusan alat ini sendiri sama saja memeriksa pekerjaan sendiri: tulisan yang salah ditandai tak akan pernah masuk basis, ambangnya mengetat tiap putaran, dan makin banyak tulisan siswa asli yang justru ditandai. Teks tempelan tidak punya catatan penyuntingan, jadi hanya dihitung untuk persentil rujukan di bawah.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'Sebagai rujukan: skor ini berada di persentil ke-$percentile dari $count dokumen yang telah Anda analisis (tanpa jaminan statistik)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Kumpulkan sampel kalibrasi di latar belakang';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Menambahkan dokumen yang dianalisis ke basis secara otomatis. Label berasal dari catatan penyuntingan dokumen, bukan dari putusan alat ini.';
+
+  @override
   String get settingsStoreTextTitle => 'Simpan teks untuk validasi luring';
 
   @override

@@ -671,6 +671,33 @@
   "privacyWebOverview2": "A página só lê um arquivo, imagem ou conteúdo da área de transferência quando você escolhe ativamente importar, digitalizar ou colar; ela nunca lê outras abas, dados de outros sites ou arquivos que você não selecionou.",
   "reportAiContentReportTitle": "Relatório de Detecção de Conteúdo de IA",
   "reportAiProbabilityPrefix": "Probabilidade de IA: ",
+  "calibrationAutoTitle": "Coletando em segundo plano",
+  "calibrationAutoSubtitle": "Os documentos que você analisa entram sozinhos na base — não é preciso rotular à mão.",
+  "calibrationAutoStatus": "Confirmados como humanos pelo registro de edição: {auto}; amostras apenas de referência: {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "Só entram na base com garantia estatística os documentos com registro de edição (tempo gasto, número de salvamentos, dispersão dos lotes), porque essa evidência é **independente do veredicto sobre o texto**. Rotular pelo próprio veredicto da ferramenta seria corrigir a própria prova: o que ela marcasse por engano nunca entraria na base, o limite se apertaria a cada passagem e mais trabalhos autênticos acabariam marcados. Texto colado não tem registro de edição, então conta apenas para o percentil de referência abaixo.",
+  "calibrationObservedPercentile": "Para referência: esta pontuação fica no percentil {percentile} dos {count} documentos que você analisou (sem garantia estatística)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Coletar amostras de calibração em segundo plano",
+  "settingsAutoCollectSubtitle": "Adiciona automaticamente os documentos analisados à base. Os rótulos vêm do registro de edição, nunca do veredicto desta ferramenta.",
   "settingsStoreTextTitle": "Guardar o texto para validação offline",
   "settingsStoreTextSubtitle": "Quando ativo, os textos adicionados à base ficam guardados localmente com o conteúdo completo, permitindo exportá-los depois como corpus para avaliação offline.",
   "settingsStoreTextWarning": "Esse texto costuma ser trabalho de alunos e portanto é sensível. Ative apenas enquanto estiver de fato reunindo um corpus de validação e use “Limpar o texto guardado” assim que exportar. Limpar não afeta a predição conforme: ela só precisa das pontuações.",

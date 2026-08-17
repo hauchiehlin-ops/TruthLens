@@ -671,6 +671,33 @@
   "privacyWebOverview2": "이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.",
   "reportAiContentReportTitle": "AI 콘텐츠 감지 보고서",
   "reportAiProbabilityPrefix": "AI 확률: ",
+  "calibrationAutoTitle": "백그라운드에서 수집 중",
+  "calibrationAutoSubtitle": "분석한 문서는 자동으로 기준 세트에 추가됩니다. 수동 라벨링이 필요 없습니다.",
+  "calibrationAutoStatus": "편집 기록으로 사람 작성 확인: {auto}편 / 참고용 표본: {observed}편",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "통계적 보장이 있는 기준 세트에 들어가는 것은 편집 기록(편집 시간, 저장 횟수, 편집 배치 분산)을 가진 문서뿐입니다. 그것이 **본문 판정과 독립된** 증거이기 때문입니다. 이 도구 자신의 판정으로 라벨을 붙이면 제 답안을 제가 채점하는 셈입니다 — 잘못 표시된 글은 영영 기준 세트에 들어가지 못하고, 기준값은 갈수록 엄격해져 오히려 진짜 학생 글이 더 많이 표시됩니다. 붙여넣은 텍스트에는 편집 기록이 없으므로 아래 참고 백분위에만 반영됩니다.",
+  "calibrationObservedPercentile": "참고: 이 점수는 분석한 {count}편 중 {percentile}번째 백분위에 있습니다(통계적 보장 없음)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "백그라운드에서 보정 표본 수집",
+  "settingsAutoCollectSubtitle": "분석한 문서를 자동으로 기준 세트에 추가합니다. 라벨은 문서의 편집 기록에서 오며, 이 도구의 판정은 쓰지 않습니다.",
   "settingsStoreTextTitle": "오프라인 검증용으로 원문 보관",
   "settingsStoreTextSubtitle": "켜면 기준 세트에 추가한 글이 원문과 함께 기기에 저장되어, 나중에 코퍼스 파일로 내보내 오프라인 평가에 쓸 수 있습니다.",
   "settingsStoreTextWarning": "원문은 대개 학생 과제이므로 민감한 자료입니다. 오프라인 검증용 코퍼스를 실제로 모을 때만 켜고, 내보낸 뒤에는 아래 ‘저장된 원문 지우기’로 즉시 삭제하세요. 지워도 공형 예측에는 영향이 없습니다(점수만 사용).",

@@ -671,6 +671,33 @@
   "privacyWebOverview2": "Halaman hanya membaca file, gambar, atau konten clipboard saat Anda secara aktif memilih untuk mengimpor, memindai, atau menempelkannya; halaman tidak pernah membaca tab lain, data situs lain, atau file yang belum Anda pilih.",
   "reportAiContentReportTitle": "Laporan Deteksi Konten AI",
   "reportAiProbabilityPrefix": "Probabilitas AI: ",
+  "calibrationAutoTitle": "Mengumpulkan di latar belakang",
+  "calibrationAutoSubtitle": "Dokumen yang Anda analisis masuk ke basis secara otomatis — tidak perlu memberi label manual.",
+  "calibrationAutoStatus": "Dipastikan ditulis manusia lewat catatan penyuntingan: {auto}; sampel rujukan saja: {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "Hanya dokumen dengan catatan penyuntingan (waktu yang dipakai, jumlah penyimpanan, sebaran sesi) yang masuk ke basis berjaminan statistik, sebab bukti itu **terlepas dari putusan atas teksnya**. Memberi label dari putusan alat ini sendiri sama saja memeriksa pekerjaan sendiri: tulisan yang salah ditandai tak akan pernah masuk basis, ambangnya mengetat tiap putaran, dan makin banyak tulisan siswa asli yang justru ditandai. Teks tempelan tidak punya catatan penyuntingan, jadi hanya dihitung untuk persentil rujukan di bawah.",
+  "calibrationObservedPercentile": "Sebagai rujukan: skor ini berada di persentil ke-{percentile} dari {count} dokumen yang telah Anda analisis (tanpa jaminan statistik)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Kumpulkan sampel kalibrasi di latar belakang",
+  "settingsAutoCollectSubtitle": "Menambahkan dokumen yang dianalisis ke basis secara otomatis. Label berasal dari catatan penyuntingan dokumen, bukan dari putusan alat ini.",
   "settingsStoreTextTitle": "Simpan teks untuk validasi luring",
   "settingsStoreTextSubtitle": "Bila aktif, tulisan yang Anda tambahkan ke basis disimpan di perangkat beserta teks lengkapnya, sehingga nanti bisa diekspor sebagai berkas korpus untuk evaluasi luring.",
   "settingsStoreTextWarning": "Teks itu umumnya tugas siswa sehingga bersifat sensitif. Aktifkan hanya selama Anda benar-benar mengumpulkan korpus validasi, dan gunakan “Hapus teks tersimpan” begitu selesai mengekspor. Menghapusnya tidak memengaruhi prediksi konformal — ia hanya perlu skornya.",

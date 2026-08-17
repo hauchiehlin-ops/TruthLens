@@ -871,6 +871,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get calibrationAutoTitle => '背景自動蒐集中';
+
+  @override
+  String get calibrationAutoSubtitle => '分析完成的文件會自動納入基準集，你不需要手動標註。';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return '已由編輯紀錄認定為人類撰寫：$auto 份；僅供參考的樣本：$observed 份';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      '只有帶編輯紀錄（編輯時長、存檔次數、編輯批次分散）的文件才會納入統計保證的基準集，因為那是**獨立於文字判定**的證據。若改用本工具自己的判定結果來自動標註，等於拿自己的答案當標準答案——被誤判的真人作業永遠進不了基準集，門檻會越調越嚴，反而標記更多真人作業。貼上的純文字沒有編輯紀錄，因此只計入下方的參考百分位。';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return '參考：本文分數落在你已分析的 $count 份文件中的第 $percentile 百分位（此數值無統計保證）';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => '背景自動蒐集校準樣本';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      '分析完成後自動納入基準集。標籤依據為文件編輯紀錄，不會使用本工具自己的判定結果。';
+
+  @override
   String get settingsStoreTextTitle => '保留原文以供離線驗證';
 
   @override
@@ -3255,6 +3282,33 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get calibrationAutoTitle => '后台自动收集中';
+
+  @override
+  String get calibrationAutoSubtitle => '分析完成的文件会自动纳入基准集，你不需要手动标注。';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return '已由编辑记录认定为人类撰写：$auto 份；仅供参考的样本：$observed 份';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      '只有带编辑记录（编辑时长、存档次数、编辑批次分散）的文件才会纳入统计保证的基准集，因为那是**独立于文字判定**的证据。若改用本工具自己的判定结果来自动标注，等于拿自己的答案当标准答案——被误判的真人作业永远进不了基准集，门槛会越调越严，反而标记更多真人作业。粘贴的纯文字没有编辑记录，因此只计入下方的参考百分位。';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return '参考：本文分数落在你已分析的 $count 份文件中的第 $percentile 百分位（此数值无统计保证）';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => '后台自动收集校准样本';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      '分析完成后自动纳入基准集。标签依据为文件编辑记录，不会使用本工具自己的判定结果。';
+
+  @override
   String get settingsStoreTextTitle => '保留原文以供离线验证';
 
   @override
@@ -5637,6 +5691,33 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get calibrationAutoTitle => '背景自動蒐集中';
+
+  @override
+  String get calibrationAutoSubtitle => '分析完成的文件會自動納入基準集，你不需要手動標註。';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return '已由編輯紀錄認定為人類撰寫：$auto 份；僅供參考的樣本：$observed 份';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      '只有帶編輯紀錄（編輯時長、存檔次數、編輯批次分散）的文件才會納入統計保證的基準集，因為那是**獨立於文字判定**的證據。若改用本工具自己的判定結果來自動標註，等於拿自己的答案當標準答案——被誤判的真人作業永遠進不了基準集，門檻會越調越嚴，反而標記更多真人作業。貼上的純文字沒有編輯紀錄，因此只計入下方的參考百分位。';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return '參考：本文分數落在你已分析的 $count 份文件中的第 $percentile 百分位（此數值無統計保證）';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => '背景自動蒐集校準樣本';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      '分析完成後自動納入基準集。標籤依據為文件編輯紀錄，不會使用本工具自己的判定結果。';
 
   @override
   String get settingsStoreTextTitle => '保留原文以供離線驗證';

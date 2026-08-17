@@ -922,6 +922,35 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get calibrationAutoTitle => 'Collecte en arrière-plan';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Les documents analysés rejoignent automatiquement la référence — aucun étiquetage manuel nécessaire.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Confirmés humains par le journal d\'édition : $auto ; échantillons indicatifs seulement : $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'Seuls les documents dotés d\'un journal d\'édition (temps passé, nombre d\'enregistrements, dispersion des sessions) entrent dans la référence à garantie statistique, car cette preuve est **indépendante du verdict sur le texte**. Étiqueter d\'après le propre verdict de l\'outil reviendrait à corriger sa propre copie : les textes signalés à tort n\'entreraient jamais dans la référence, le seuil se resserrerait à chaque passage, et davantage de travaux authentiques finiraient signalés. Le texte collé n\'a pas de journal d\'édition : il ne compte donc que pour le centile indicatif ci-dessous.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'À titre indicatif : ce score se situe au ${percentile}e centile des $count documents que vous avez analysés (sans garantie statistique)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Collecter les échantillons d\'étalonnage en arrière-plan';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Ajoute automatiquement les documents analysés à la référence. Les étiquettes viennent du journal d\'édition, jamais du verdict de cet outil.';
+
+  @override
   String get settingsStoreTextTitle =>
       'Conserver le texte pour la validation hors ligne';
 

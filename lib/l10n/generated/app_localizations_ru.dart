@@ -911,6 +911,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Вероятность ИИ: ';
 
   @override
+  String get calibrationAutoTitle => 'Сбор в фоновом режиме';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Проанализированные документы попадают в эталон автоматически — размечать вручную не нужно.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Подтверждено записью правок как написанное человеком: $auto; только для справки: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'В эталон со статистической гарантией попадают лишь документы с записью правок (затраченное время, число сохранений, разброс сеансов), поскольку это свидетельство **независимо от вердикта по тексту**. Размечать по собственному вердикту инструмента — всё равно что проверять свою же работу: ошибочно помеченные тексты никогда не попадут в эталон, порог будет ужесточаться с каждым проходом, и в итоге пометят больше подлинных ученических работ. У вставленного текста записи правок нет, поэтому он учитывается только в справочном процентиле ниже.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'Для справки: эта оценка находится в $percentile-м процентиле среди $count проанализированных вами документов (без статистической гарантии)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Собирать калибровочные образцы в фоне';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Автоматически добавляет проанализированные документы в эталон. Метки берутся из записи правок, а не из вердикта инструмента.';
+
+  @override
   String get settingsStoreTextTitle => 'Сохранять текст для офлайн-проверки';
 
   @override

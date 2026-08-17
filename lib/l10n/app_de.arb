@@ -671,6 +671,33 @@
   "privacyWebOverview2": "Die Seite liest eine Datei, ein Bild oder Zwischenablageinhalte nur, wenn Sie aktiv einen Import, Scan oder Einfügevorgang auslösen; sie liest niemals andere Tabs, Daten anderer Websites oder nicht ausgewählte Dateien.",
   "reportAiContentReportTitle": "KI-Inhaltserkennungsbericht",
   "reportAiProbabilityPrefix": "KI-Wahrscheinlichkeit: ",
+  "calibrationAutoTitle": "Sammelt im Hintergrund",
+  "calibrationAutoSubtitle": "Analysierte Dokumente wandern automatisch in die Referenz — kein manuelles Etikettieren nötig.",
+  "calibrationAutoStatus": "Per Bearbeitungsverlauf als menschlich bestätigt: {auto}; nur als Referenz: {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "In die statistisch abgesicherte Referenz gelangen nur Dokumente mit Bearbeitungsverlauf (Bearbeitungszeit, Speichervorgänge, Streuung der Bearbeitungsmarker), denn dieser Nachweis ist **unabhängig vom Texturteil**. Nach dem eigenen Urteil zu etikettieren hieße, die eigene Arbeit zu benoten: fälschlich markierte Texte kämen nie in die Referenz, die Schwelle würde mit jedem Durchgang strenger, und am Ende würden mehr echte Schülerarbeiten markiert. Eingefügter Text hat keinen Bearbeitungsverlauf und zählt daher nur für das Referenzperzentil unten.",
+  "calibrationObservedPercentile": "Zur Orientierung: Dieser Wert liegt im {percentile}. Perzentil der {count} von Ihnen analysierten Dokumente (ohne statistische Garantie)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Kalibrierungsproben im Hintergrund sammeln",
+  "settingsAutoCollectSubtitle": "Fügt analysierte Dokumente automatisch der Referenz hinzu. Die Etiketten stammen aus dem Bearbeitungsverlauf, nie aus dem Urteil dieses Werkzeugs.",
   "settingsStoreTextTitle": "Text für die Offline-Validierung behalten",
   "settingsStoreTextSubtitle": "Ist dies aktiv, werden zur Referenz hinzugefügte Texte samt Volltext lokal gespeichert, sodass Sie sie später als Korpusdatei für die Offline-Auswertung exportieren können.",
   "settingsStoreTextWarning": "Diese Texte sind meist Schülerarbeiten und damit sensibel. Schalten Sie das nur ein, solange Sie tatsächlich ein Validierungskorpus sammeln, und löschen Sie nach dem Export mit „Gespeicherte Texte löschen“. Das Löschen berührt die konforme Vorhersage nicht — sie braucht nur die Werte.",

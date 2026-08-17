@@ -16,6 +16,7 @@ import '../../core/detection/orchestrator.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/document_importer.dart';
+import '../../core/services/calibration_service.dart';
 import '../../core/services/document_provenance.dart';
 import '../../core/services/history_repository.dart';
 import '../../core/services/ocr_service.dart';
@@ -316,6 +317,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final manager = context.read<ModelManager>();
     final orchestrator = context.read<EnsembleOrchestrator>();
     final history = context.read<HistoryRepository>();
+    final calibration = context.read<CalibrationService>();
     await manager.refreshInstallStates();
     if (!manager.isInstalled('transformer') && !prefs.modelPromptSuppressed) {
       if (!mounted) return;
@@ -380,6 +382,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         return;
       }
       if (!mounted) return;
+
+      // 背景自動蒐集校準樣本。標籤依據是**文件編輯紀錄**（獨立於文字分類器），
+      // 而非本次的判定結果——用判定結果自我標註會造成循環論證，讓偵測器
+      // 永遠無法發現自己的偏差。無獨立依據時只收為描述性樣本，不進虛無分布。
+      if (calibration.autoCollectEnabled && !result.shouldAbstain) {
+        await calibration.autoCollect(
+          score: result.aiProbability,
+          provenanceIndicatesHuman:
+              result.provenance.indicatesHumanAuthorship,
+          engineScores: {
+            for (final e in result.engineScores)
+              if (e.available) e.engineId: e.aiProbability,
+          },
+          text: result.inputText,
+          label: result.sourceFileName,
+        );
+      }
+      if (!mounted) return;
+
       setState(() {
         _result = result;
         _phase = _WorkspacePhase.complete;

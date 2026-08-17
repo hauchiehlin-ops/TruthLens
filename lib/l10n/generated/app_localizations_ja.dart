@@ -879,6 +879,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get calibrationAutoTitle => 'バックグラウンドで収集中';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      '分析した文書は自動的に基準セットへ加わります。手動でのラベル付けは不要です。';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return '編集記録により人間の執筆と確認：$auto件／参考のみのサンプル：$observed件';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      '統計的保証のある基準セットに入るのは、編集記録（編集時間・保存回数・編集バッチの分散）を持つ文書だけです。それが**本文の判定とは独立した**証拠だからです。本ツール自身の判定でラベルを付ければ、自分の答案を自分で採点するのと同じ——誤判定された文章は永久に基準セットへ入れず、しきい値は回を追うごとに厳しくなり、かえって多くの本物の学生の文章が判定対象になってしまいます。貼り付けたテキストには編集記録がないため、下の参考パーセンタイルにのみ計上されます。';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return '参考：このスコアは分析済み$count件中の第$percentileパーセンタイルに位置します（統計的保証はありません）';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => 'バックグラウンドでキャリブレーション用サンプルを収集';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      '分析した文書を自動で基準セットに追加します。ラベルは文書の編集記録に基づき、本ツール自身の判定は使いません。';
+
+  @override
   String get settingsStoreTextTitle => 'オフライン検証用に本文を保存';
 
   @override

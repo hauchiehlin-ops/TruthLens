@@ -907,6 +907,34 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'ความน่าจะเป็น AI: ';
 
   @override
+  String get calibrationAutoTitle => 'กำลังเก็บในเบื้องหลัง';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'เอกสารที่คุณวิเคราะห์จะถูกเพิ่มเข้าชุดฐานเทียบโดยอัตโนมัติ ไม่ต้องติดป้ายเอง';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'ยืนยันว่าคนเขียนจากบันทึกการแก้ไข: $auto ชิ้น / ตัวอย่างสำหรับอ้างอิงเท่านั้น: $observed ชิ้น';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'เฉพาะเอกสารที่มีบันทึกการแก้ไข (เวลาที่ใช้ จำนวนครั้งที่บันทึก การกระจายของรอบแก้ไข) เท่านั้นที่จะเข้าชุดฐานเทียบซึ่งมีการรับประกันทางสถิติ เพราะนั่นเป็นหลักฐานที่**เป็นอิสระจากการตัดสินตัวข้อความ** หากใช้ผลตัดสินของเครื่องมือเองมาติดป้าย ก็เท่ากับตรวจข้อสอบตัวเอง งานที่ถูกตัดสินผิดจะไม่มีวันเข้าชุดฐาน เกณฑ์จะเข้มขึ้นทุกรอบ และสุดท้ายงานจริงของนักเรียนจะถูกทำเครื่องหมายมากขึ้น ข้อความที่วางมาไม่มีบันทึกการแก้ไข จึงนับเฉพาะในเปอร์เซ็นไทล์อ้างอิงด้านล่าง';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'อ้างอิง: คะแนนนี้อยู่ที่เปอร์เซ็นไทล์ที่ $percentile จากเอกสาร $count ชิ้นที่คุณวิเคราะห์ (ไม่มีการรับประกันทางสถิติ)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle => 'เก็บตัวอย่างปรับเทียบในเบื้องหลัง';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'เพิ่มเอกสารที่วิเคราะห์แล้วเข้าชุดฐานเทียบโดยอัตโนมัติ ป้ายกำกับมาจากบันทึกการแก้ไขของเอกสาร ไม่ใช่จากผลตัดสินของเครื่องมือนี้';
+
+  @override
   String get settingsStoreTextTitle =>
       'เก็บเนื้อความไว้สำหรับการตรวจสอบออฟไลน์';
 

@@ -395,6 +395,33 @@
   "reportSuspiciousLocationsTitle": "可疑內容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 機率：",
+  "calibrationAutoTitle": "背景自動蒐集中",
+  "calibrationAutoSubtitle": "分析完成的文件會自動納入基準集，你不需要手動標註。",
+  "calibrationAutoStatus": "已由編輯紀錄認定為人類撰寫：{auto} 份；僅供參考的樣本：{observed} 份",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "只有帶編輯紀錄（編輯時長、存檔次數、編輯批次分散）的文件才會納入統計保證的基準集，因為那是**獨立於文字判定**的證據。若改用本工具自己的判定結果來自動標註，等於拿自己的答案當標準答案——被誤判的真人作業永遠進不了基準集，門檻會越調越嚴，反而標記更多真人作業。貼上的純文字沒有編輯紀錄，因此只計入下方的參考百分位。",
+  "calibrationObservedPercentile": "參考：本文分數落在你已分析的 {count} 份文件中的第 {percentile} 百分位（此數值無統計保證）",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "背景自動蒐集校準樣本",
+  "settingsAutoCollectSubtitle": "分析完成後自動納入基準集。標籤依據為文件編輯紀錄，不會使用本工具自己的判定結果。",
   "settingsStoreTextTitle": "保留原文以供離線驗證",
   "settingsStoreTextSubtitle": "開啟後，加入基準集的文章會連同原文一起保存在本機，之後可匯出成語料檔進行離線評測。",
   "settingsStoreTextWarning": "原文多為學生作業，屬敏感資料。僅在你確實要蒐集離線驗證語料時開啟，匯出後可用下方「清除已保存的原文」立即移除；清除不影響共形預測（它只需要分數）。",

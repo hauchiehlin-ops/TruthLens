@@ -103,6 +103,29 @@ class DocumentProvenance {
       application != null ||
       distinctBodyRsids != null;
 
+  /// 是否構成「由人撰寫」的**獨立**證據，可據以自動納入基準集。
+  ///
+  /// 關鍵在於**獨立性**：這個判斷完全來自檔案的編輯紀錄，與文字分類器算出的
+  /// AI 機率無關。若改用分類器自己的判定來自動標註，虛無分布就會變成「分類器
+  /// 已經認為是人類的文章」——循環論證，而且被誤判的真人文章永遠進不了基準集，
+  /// 會讓分布在低分端被人為壓緊、門檻偏低，反而標記更多真人作業。
+  ///
+  /// 條件刻意訂得保守：寧可少收，也不要把來歷不明的樣本放進虛無分布。
+  bool get indicatesHumanAuthorship {
+    if (!hasMetadata || signals.isNotEmpty) return false;
+    if ((editingDuration?.inMinutes ?? 0) < minAutoAdmitMinutes) return false;
+    if ((revisionCount ?? 0) < minAutoAdmitRevisions) return false;
+    // ODT 沒有 RSID 欄位，該欄為 null 時不作為否決條件
+    final rsids = distinctBodyRsids;
+    if (rsids != null && rsids < minAutoAdmitRsids) return false;
+    return true;
+  }
+
+  /// 自動納入基準集的門檻：需有實質的編輯歷程，而非一次寫入
+  static const int minAutoAdmitMinutes = 20;
+  static const int minAutoAdmitRevisions = 3;
+  static const int minAutoAdmitRsids = 5;
+
   ProvenanceRisk get risk {
     if (!hasMetadata) return ProvenanceRisk.unknown;
     if (signals.isEmpty) return ProvenanceRisk.low;

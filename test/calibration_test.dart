@@ -143,6 +143,69 @@ void main() {
       expect(reloaded.samples.single.engineScores['statistical'], 0.3);
     });
 
+    test('observed 樣本不得進入共形虛無分布（防循環論證）', () async {
+      final service = CalibrationService();
+      await service.load();
+
+      // 25 份由編輯紀錄自動認定的人類樣本（獨立證據，可用）
+      for (var i = 0; i < 25; i++) {
+        await service.autoCollect(
+          score: 0.1 + i * 0.001,
+          provenanceIndicatesHuman: true,
+        );
+      }
+      // 50 份沒有獨立依據、僅靠偵測器判定收進來的樣本
+      for (var i = 0; i < 50; i++) {
+        await service.autoCollect(score: 0.05, provenanceIndicatesHuman: false);
+      }
+
+      expect(service.autoAdmittedCount, 25);
+      expect(service.observedSamples.length, 50);
+      // 虛無分布只認 25 份，不是 75 份
+      expect(service.size, 25);
+      expect(service.evaluate(0.9).calibrationSize, 25);
+    });
+
+    test('autoCollect 依獨立證據決定來源，並回報實際採用的分類', () async {
+      final service = CalibrationService();
+      await service.load();
+
+      expect(
+        await service.autoCollect(score: 0.2, provenanceIndicatesHuman: true),
+        SampleOrigin.provenance,
+      );
+      expect(
+        await service.autoCollect(score: 0.2, provenanceIndicatesHuman: false),
+        SampleOrigin.observed,
+      );
+      // 自動蒐集一律標為人類候選，不會憑判定結果自行標成 AI
+      expect(service.aiSamples, isEmpty);
+    });
+
+    test('描述性百分位涵蓋全部樣本，且樣本過少時不給數字', () async {
+      final service = CalibrationService();
+      await service.load();
+      expect(service.observedPercentile(0.5), isNull, reason: '不足 5 筆不應給百分位');
+
+      for (var i = 0; i < 10; i++) {
+        await service.autoCollect(score: i / 10, provenanceIndicatesHuman: false);
+      }
+      // 0.55 高於 0.0–0.5 這 6 筆
+      expect(service.observedPercentile(0.55), 60);
+    });
+
+    test('舊版樣本沒有 origin 欄位時視為手動標註，仍計入虛無分布', () async {
+      SharedPreferences.setMockInitialValues({
+        'calibration_samples': <String>[
+          '{"id":"old","score":0.3,"label":"","addedAt":"2026-08-17T00:00:00.000"}',
+        ],
+      });
+      final service = CalibrationService();
+      await service.load();
+      expect(service.samples.single.origin, SampleOrigin.manual);
+      expect(service.size, 1);
+    });
+
     test('α 設定會夾在合法範圍並持久化', () async {
       final service = CalibrationService();
       await service.load();

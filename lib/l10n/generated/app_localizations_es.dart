@@ -921,6 +921,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String get calibrationAutoTitle => 'Recopilando en segundo plano';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Los documentos que analizas se añaden solos a la base: no hace falta etiquetar a mano.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Confirmados como humanos por el registro de edición: $auto; muestras solo de referencia: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'A la base con garantía estadística solo entran los documentos con registro de edición (tiempo dedicado, número de guardados, dispersión de las tandas), porque esa prueba es **independiente del veredicto sobre el texto**. Etiquetar según el propio veredicto de la herramienta sería corregirse a sí misma: lo que marcara por error nunca entraría en la base, el umbral se estrecharía en cada pasada y acabaría marcando más escritura auténtica. El texto pegado no lleva registro de edición, así que solo cuenta para el percentil de referencia de abajo.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'Como referencia: esta puntuación cae en el percentil $percentile de los $count documentos que has analizado (sin garantía estadística)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Recopilar muestras de calibración en segundo plano';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Añade automáticamente los documentos analizados a la base. Las etiquetas salen del registro de edición, nunca del veredicto de esta herramienta.';
+
+  @override
   String get settingsStoreTextTitle =>
       'Conservar el texto para validación sin conexión';
 

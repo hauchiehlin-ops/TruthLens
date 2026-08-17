@@ -671,6 +671,33 @@
   "privacyWebOverview2": "La página solo lee un archivo, imagen o contenido del portapapeles cuando usted elige activamente importar, escanear o pegarlo; nunca lee otras pestañas, datos de otros sitios ni archivos que no haya seleccionado.",
   "reportAiContentReportTitle": "Informe de detección de contenido de IA",
   "reportAiProbabilityPrefix": "Probabilidad de IA: ",
+  "calibrationAutoTitle": "Recopilando en segundo plano",
+  "calibrationAutoSubtitle": "Los documentos que analizas se añaden solos a la base: no hace falta etiquetar a mano.",
+  "calibrationAutoStatus": "Confirmados como humanos por el registro de edición: {auto}; muestras solo de referencia: {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "A la base con garantía estadística solo entran los documentos con registro de edición (tiempo dedicado, número de guardados, dispersión de las tandas), porque esa prueba es **independiente del veredicto sobre el texto**. Etiquetar según el propio veredicto de la herramienta sería corregirse a sí misma: lo que marcara por error nunca entraría en la base, el umbral se estrecharía en cada pasada y acabaría marcando más escritura auténtica. El texto pegado no lleva registro de edición, así que solo cuenta para el percentil de referencia de abajo.",
+  "calibrationObservedPercentile": "Como referencia: esta puntuación cae en el percentil {percentile} de los {count} documentos que has analizado (sin garantía estadística)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Recopilar muestras de calibración en segundo plano",
+  "settingsAutoCollectSubtitle": "Añade automáticamente los documentos analizados a la base. Las etiquetas salen del registro de edición, nunca del veredicto de esta herramienta.",
   "settingsStoreTextTitle": "Conservar el texto para validación sin conexión",
   "settingsStoreTextSubtitle": "Al activarlo, los textos que añadas a la base se guardan localmente con su contenido completo, para poder exportarlos luego como corpus y evaluarlos sin conexión.",
   "settingsStoreTextWarning": "Ese texto suele ser trabajo de estudiantes y por tanto es sensible. Actívalo solo mientras reúnes de verdad un corpus de validación, y usa «Borrar el texto guardado» en cuanto hayas exportado. Borrarlo no afecta a la predicción conforme: esta solo necesita las puntuaciones.",

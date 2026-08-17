@@ -671,6 +671,33 @@
   "privacyWebOverview2": "Halaman hanya membaca fail, imej atau kandungan papan keratan apabila anda secara aktif memilih untuk mengimport, mengimbas atau menampalnya; ia tidak pernah membaca tab lain, data tapak lain, atau fail yang tidak anda pilih.",
   "reportAiContentReportTitle": "Laporan Pengesanan Kandungan AI",
   "reportAiProbabilityPrefix": "Kebarangkalian AI: ",
+  "calibrationAutoTitle": "Mengumpul di latar belakang",
+  "calibrationAutoSubtitle": "Dokumen yang anda analisis ditambah ke set asas secara automatik — tiada pelabelan manual diperlukan.",
+  "calibrationAutoStatus": "Disahkan ditulis manusia melalui rekod penyuntingan: {auto}; sampel rujukan sahaja: {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "Hanya dokumen yang membawa rekod penyuntingan (masa digunakan, bilangan simpanan, taburan kelompok suntingan) masuk ke set asas berjaminan statistik, kerana bukti itu **bebas daripada keputusan ke atas teks**. Melabel berdasarkan keputusan alat ini sendiri sama seperti menyemak kertas sendiri: tulisan yang tersilap ditanda tidak akan pernah masuk set asas, ambang akan makin ketat setiap pusingan, dan lebih banyak tulisan pelajar tulen akhirnya ditanda. Teks tampalan tiada rekod penyuntingan, jadi ia hanya dikira untuk persentil rujukan di bawah.",
+  "calibrationObservedPercentile": "Sebagai rujukan: skor ini berada pada persentil ke-{percentile} daripada {count} dokumen yang anda analisis (tanpa jaminan statistik)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Kumpul sampel penentukuran di latar belakang",
+  "settingsAutoCollectSubtitle": "Menambah dokumen yang dianalisis ke set asas secara automatik. Label datang daripada rekod penyuntingan dokumen, bukan daripada keputusan alat ini.",
   "settingsStoreTextTitle": "Simpan teks untuk pengesahan luar talian",
   "settingsStoreTextSubtitle": "Apabila dihidupkan, tulisan yang anda tambah ke set asas disimpan dalam peranti berserta teks penuhnya, supaya nanti boleh dieksport sebagai fail korpus untuk penilaian luar talian.",
   "settingsStoreTextWarning": "Teks itu lazimnya kerja pelajar dan bersifat sensitif. Hidupkan hanya semasa anda benar-benar mengumpul korpus pengesahan, dan gunakan “Kosongkan teks tersimpan” sebaik selesai mengeksport. Mengosongkannya tidak menjejaskan ramalan konformal — ia hanya perlukan skor.",

@@ -185,6 +185,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 // 離線驗證語料蒐集：讓實戰使用自然累積出評測語料
                 SwitchListTile(
+                  title: Text(l10n.settingsAutoCollectTitle),
+                  subtitle: Text(l10n.settingsAutoCollectSubtitle),
+                  value: calibration.autoCollectEnabled,
+                  onChanged: (v) => calibration.setAutoCollect(v),
+                ),
+                SwitchListTile(
                   title: Text(l10n.settingsStoreTextTitle),
                   subtitle: Text(l10n.settingsStoreTextSubtitle),
                   value: calibration.storeText,

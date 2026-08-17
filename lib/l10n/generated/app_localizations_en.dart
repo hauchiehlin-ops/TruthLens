@@ -903,6 +903,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get calibrationAutoTitle => 'Collecting in the background';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Documents you analyse are added to the baseline automatically — no manual labelling needed.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Confirmed human-written by editing record: $auto; reference-only samples: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'Only documents carrying an editing record (time spent, number of saves, spread of editing batches) enter the statistically guaranteed baseline, because that evidence is **independent of the text verdict**. Labelling automatically from this tool\'s own verdict would mean marking its own homework — work it wrongly flagged could never enter the baseline, the threshold would tighten with each pass, and more genuine student writing would end up flagged. Pasted text carries no editing record, so it only counts towards the reference percentile below.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'For reference: this score sits at the ${percentile}th percentile of the $count documents you have analysed (no statistical guarantee attached)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Collect calibration samples in the background';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Adds analysed documents to the baseline automatically. Labels come from the document\'s editing record, never from this tool\'s own verdict.';
+
+  @override
   String get settingsStoreTextTitle => 'Keep the text for offline validation';
 
   @override

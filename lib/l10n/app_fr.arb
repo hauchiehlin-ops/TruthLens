@@ -671,6 +671,33 @@
   "privacyWebOverview2": "La page ne lit un fichier, une image ou le contenu du presse-papiers que lorsque vous choisissez activement de l'importer, de le numériser ou de le coller ; elle ne lit jamais d'autres onglets, les données d'autres sites ou des fichiers que vous n'avez pas sélectionnés.",
   "reportAiContentReportTitle": "Rapport de détection de contenu IA",
   "reportAiProbabilityPrefix": "Probabilité IA : ",
+  "calibrationAutoTitle": "Collecte en arrière-plan",
+  "calibrationAutoSubtitle": "Les documents analysés rejoignent automatiquement la référence — aucun étiquetage manuel nécessaire.",
+  "calibrationAutoStatus": "Confirmés humains par le journal d'édition : {auto} ; échantillons indicatifs seulement : {observed}",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "Seuls les documents dotés d'un journal d'édition (temps passé, nombre d'enregistrements, dispersion des sessions) entrent dans la référence à garantie statistique, car cette preuve est **indépendante du verdict sur le texte**. Étiqueter d'après le propre verdict de l'outil reviendrait à corriger sa propre copie : les textes signalés à tort n'entreraient jamais dans la référence, le seuil se resserrerait à chaque passage, et davantage de travaux authentiques finiraient signalés. Le texte collé n'a pas de journal d'édition : il ne compte donc que pour le centile indicatif ci-dessous.",
+  "calibrationObservedPercentile": "À titre indicatif : ce score se situe au {percentile}e centile des {count} documents que vous avez analysés (sans garantie statistique)",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "Collecter les échantillons d'étalonnage en arrière-plan",
+  "settingsAutoCollectSubtitle": "Ajoute automatiquement les documents analysés à la référence. Les étiquettes viennent du journal d'édition, jamais du verdict de cet outil.",
   "settingsStoreTextTitle": "Conserver le texte pour la validation hors ligne",
   "settingsStoreTextSubtitle": "Une fois activé, les textes ajoutés à la référence sont conservés localement avec leur contenu intégral, ce qui permet de les exporter ensuite comme corpus pour l'évaluation hors ligne.",
   "settingsStoreTextWarning": "Ces textes sont le plus souvent des travaux d'élèves, donc sensibles. N'activez cette option que pendant la constitution effective d'un corpus de validation, et utilisez « Effacer les textes conservés » dès l'export terminé. L'effacement n'affecte pas la prédiction conforme : elle n'a besoin que des scores.",

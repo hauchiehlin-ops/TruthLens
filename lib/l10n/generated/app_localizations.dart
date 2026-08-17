@@ -1562,6 +1562,48 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @calibrationAutoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collecting in the background'**
+  String get calibrationAutoTitle;
+
+  /// No description provided for @calibrationAutoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents you analyse are added to the baseline automatically — no manual labelling needed.'**
+  String get calibrationAutoSubtitle;
+
+  /// No description provided for @calibrationAutoStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed human-written by editing record: {auto}; reference-only samples: {observed}'**
+  String calibrationAutoStatus(int auto, int observed);
+
+  /// No description provided for @calibrationAutoWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Only documents carrying an editing record (time spent, number of saves, spread of editing batches) enter the statistically guaranteed baseline, because that evidence is **independent of the text verdict**. Labelling automatically from this tool\'s own verdict would mean marking its own homework — work it wrongly flagged could never enter the baseline, the threshold would tighten with each pass, and more genuine student writing would end up flagged. Pasted text carries no editing record, so it only counts towards the reference percentile below.'**
+  String get calibrationAutoWhy;
+
+  /// No description provided for @calibrationObservedPercentile.
+  ///
+  /// In en, this message translates to:
+  /// **'For reference: this score sits at the {percentile}th percentile of the {count} documents you have analysed (no statistical guarantee attached)'**
+  String calibrationObservedPercentile(int percentile, int count);
+
+  /// No description provided for @settingsAutoCollectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect calibration samples in the background'**
+  String get settingsAutoCollectTitle;
+
+  /// No description provided for @settingsAutoCollectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds analysed documents to the baseline automatically. Labels come from the document\'s editing record, never from this tool\'s own verdict.'**
+  String get settingsAutoCollectSubtitle;
+
   /// No description provided for @settingsStoreTextTitle.
   ///
   /// In en, this message translates to:

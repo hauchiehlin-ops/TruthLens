@@ -21,6 +21,18 @@ class CalibrationCard extends StatelessWidget {
   final int humanCount;
   final int aiCount;
 
+  /// 由編輯紀錄自動納入的份數
+  final int autoAdmittedCount;
+
+  /// 僅供參考、未進入虛無分布的份數
+  final int observedCount;
+
+  /// 本文在所有已分析文件中的描述性百分位（無統計保證）
+  final int? observedPercentile;
+
+  /// 背景自動蒐集是否啟用
+  final bool autoCollectEnabled;
+
   const CalibrationCard({
     super.key,
     required this.result,
@@ -28,6 +40,10 @@ class CalibrationCard extends StatelessWidget {
     this.onAddAi,
     this.humanCount = 0,
     this.aiCount = 0,
+    this.autoAdmittedCount = 0,
+    this.observedCount = 0,
+    this.observedPercentile,
+    this.autoCollectEnabled = false,
   });
 
   /// p 值顯示：小數點後三位，並避免顯示成 0.000 造成「絕對確定」的錯覺
@@ -134,6 +150,67 @@ class CalibrationCard extends StatelessWidget {
               l10n.calibrationPercentile(result.percentile),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.grey[700],
+              ),
+            ),
+          ],
+
+          if (autoCollectEnabled) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.refreshCw,
+                        size: 14,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          l10n.calibrationAutoTitle,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.calibrationAutoStatus(autoAdmittedCount, observedCount),
+                    style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
+                  ),
+                  if (observedPercentile != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.calibrationObservedPercentile(
+                        observedPercentile!,
+                        humanCount + aiCount + observedCount,
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[700],
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.calibrationAutoWhy,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      height: 1.5,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

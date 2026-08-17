@@ -175,6 +175,12 @@ class ProfessionalReportHeader extends StatelessWidget {
                   result: calibration.evaluate(result.aiProbability),
                   humanCount: calibration.size,
                   aiCount: calibration.aiSamples.length,
+                  autoAdmittedCount: calibration.autoAdmittedCount,
+                  observedCount: calibration.observedSamples.length,
+                  observedPercentile: calibration.observedPercentile(
+                    result.aiProbability,
+                  ),
+                  autoCollectEnabled: calibration.autoCollectEnabled,
                   onAddHuman: () => add(false),
                   onAddAi: () => add(true),
                 );

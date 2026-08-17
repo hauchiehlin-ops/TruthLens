@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:truthlens/core/services/calibration_service.dart';
 import 'package:truthlens/core/detection/model_catalog_service.dart';
 import 'package:truthlens/core/detection/model_manager.dart';
 import 'package:truthlens/core/detection/detection_engine.dart';
@@ -189,6 +190,7 @@ Widget _testApp(
   providers: [
     ChangeNotifierProvider.value(value: prefs),
     ChangeNotifierProvider<ModelManager>.value(value: _FakeModelManager()),
+    ChangeNotifierProvider<CalibrationService>.value(value: CalibrationService()),
     ChangeNotifierProvider<EnsembleOrchestrator>.value(
       value: orchestrator ?? EnsembleOrchestrator(engines: const []),
     ),

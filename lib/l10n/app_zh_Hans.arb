@@ -395,6 +395,33 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "calibrationAutoTitle": "后台自动收集中",
+  "calibrationAutoSubtitle": "分析完成的文件会自动纳入基准集，你不需要手动标注。",
+  "calibrationAutoStatus": "已由编辑记录认定为人类撰写：{auto} 份；仅供参考的样本：{observed} 份",
+  "@calibrationAutoStatus": {
+    "placeholders": {
+      "auto": {
+        "type": "int"
+      },
+      "observed": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrationAutoWhy": "只有带编辑记录（编辑时长、存档次数、编辑批次分散）的文件才会纳入统计保证的基准集，因为那是**独立于文字判定**的证据。若改用本工具自己的判定结果来自动标注，等于拿自己的答案当标准答案——被误判的真人作业永远进不了基准集，门槛会越调越严，反而标记更多真人作业。粘贴的纯文字没有编辑记录，因此只计入下方的参考百分位。",
+  "calibrationObservedPercentile": "参考：本文分数落在你已分析的 {count} 份文件中的第 {percentile} 百分位（此数值无统计保证）",
+  "@calibrationObservedPercentile": {
+    "placeholders": {
+      "percentile": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAutoCollectTitle": "后台自动收集校准样本",
+  "settingsAutoCollectSubtitle": "分析完成后自动纳入基准集。标签依据为文件编辑记录，不会使用本工具自己的判定结果。",
   "settingsStoreTextTitle": "保留原文以供离线验证",
   "settingsStoreTextSubtitle": "开启后，加入基准集的文章会连同原文一起保存在本机，之后可导出成语料档进行离线评测。",
   "settingsStoreTextWarning": "原文多为学生作业，属敏感数据。仅在你确实要收集离线验证语料时开启，导出后可用下方「清除已保存的原文」立即移除；清除不影响共形预测（它只需要分数）。",

@@ -918,6 +918,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get calibrationAutoTitle => 'Sammelt im Hintergrund';
+
+  @override
+  String get calibrationAutoSubtitle =>
+      'Analysierte Dokumente wandern automatisch in die Referenz — kein manuelles Etikettieren nötig.';
+
+  @override
+  String calibrationAutoStatus(int auto, int observed) {
+    return 'Per Bearbeitungsverlauf als menschlich bestätigt: $auto; nur als Referenz: $observed';
+  }
+
+  @override
+  String get calibrationAutoWhy =>
+      'In die statistisch abgesicherte Referenz gelangen nur Dokumente mit Bearbeitungsverlauf (Bearbeitungszeit, Speichervorgänge, Streuung der Bearbeitungsmarker), denn dieser Nachweis ist **unabhängig vom Texturteil**. Nach dem eigenen Urteil zu etikettieren hieße, die eigene Arbeit zu benoten: fälschlich markierte Texte kämen nie in die Referenz, die Schwelle würde mit jedem Durchgang strenger, und am Ende würden mehr echte Schülerarbeiten markiert. Eingefügter Text hat keinen Bearbeitungsverlauf und zählt daher nur für das Referenzperzentil unten.';
+
+  @override
+  String calibrationObservedPercentile(int percentile, int count) {
+    return 'Zur Orientierung: Dieser Wert liegt im $percentile. Perzentil der $count von Ihnen analysierten Dokumente (ohne statistische Garantie)';
+  }
+
+  @override
+  String get settingsAutoCollectTitle =>
+      'Kalibrierungsproben im Hintergrund sammeln';
+
+  @override
+  String get settingsAutoCollectSubtitle =>
+      'Fügt analysierte Dokumente automatisch der Referenz hinzu. Die Etiketten stammen aus dem Bearbeitungsverlauf, nie aus dem Urteil dieses Werkzeugs.';
+
+  @override
   String get settingsStoreTextTitle =>
       'Text für die Offline-Validierung behalten';
 
