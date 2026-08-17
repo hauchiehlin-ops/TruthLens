@@ -2,12 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/models/detection_result.dart';
-import '../../core/services/calibration_service.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'calibration_card.dart';
 import 'provenance_card.dart';
 
 
@@ -144,58 +141,14 @@ class ProfessionalReportHeader extends StatelessWidget {
             child: _MetricsRow(result: result, l10n: l10n),
           ),
 
-          // 4. 本地基準校準卡（共形預測：把分數換成有偽陽性率保證的陳述）
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Consumer<CalibrationService>(
-              builder: (context, calibration, _) {
-                // 逐引擎分數一併存入，第 4 項的權重學習才有特徵可用
-                final engineScores = {
-                  for (final e in result.engineScores)
-                    if (e.available) e.engineId: e.aiProbability,
-                };
-                Future<void> add(bool isAi) async {
-                  await calibration.addSample(
-                    result.aiProbability,
-                    isAi: isAi,
-                    engineScores: engineScores,
-                    // 是否真的保存由 CalibrationService.storeText 決定，
-                    // 預設關閉；這裡一律傳入，由服務層統一把關。
-                    text: result.inputText,
-                  );
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.calibrationAdded(calibration.size)),
-                    ),
-                  );
-                }
-
-                return CalibrationCard(
-                  result: calibration.evaluate(result.aiProbability),
-                  humanCount: calibration.size,
-                  aiCount: calibration.aiSamples.length,
-                  autoAdmittedCount: calibration.autoAdmittedCount,
-                  observedCount: calibration.observedSamples.length,
-                  observedPercentile: calibration.observedPercentile(
-                    result.aiProbability,
-                  ),
-                  autoCollectEnabled: calibration.autoCollectEnabled,
-                  onAddHuman: () => add(false),
-                  onAddAi: () => add(true),
-                );
-              },
-            ),
-          ),
-
-          // 5. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
+          // 4. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
           //    仍顯示，明確告訴使用者「這份無從由來源判斷」而非默默略過）
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: ProvenanceCard(provenance: result.provenance),
           ),
 
-          // 6. 引擎貢獻度卡
+          // 5. 引擎貢獻度卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _EngineContributionCard(result: result, l10n: l10n),
@@ -203,7 +156,7 @@ class ProfessionalReportHeader extends StatelessWidget {
 
           const Divider(thickness: 1, height: 24),
 
-          // 7. 可疑句子清單標題
+          // 6. 可疑句子清單標題
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
