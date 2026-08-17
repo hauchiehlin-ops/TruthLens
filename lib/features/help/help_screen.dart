@@ -156,6 +156,11 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _ProseCard(title: l10n.helpShiftTitle, body: l10n.helpShiftBody),
           _ProseCard(title: l10n.helpPillarsTitle, body: l10n.helpPillarsBody),
+          _ProseCard(
+            title: l10n.helpFormatCoverageTitle,
+            body: l10n.helpFormatCoverage,
+            emphasize: true,
+          ),
           _ProseCard(title: l10n.helpCascadeTitle, body: l10n.helpCascadeBody),
           _ProseCard(
             title: l10n.helpRisksTitle,

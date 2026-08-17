@@ -922,6 +922,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get helpFormatCoverageTitle =>
+      '2a. Limites de format des indices d\'origine';
+
+  @override
+  String get helpFormatCoverage =>
+      '**Une limite importante : seuls .docx et .odt portent un journal d\'édition.**\n\n| Source | Journal d\'édition |\n|---|---|\n| .docx / .odt | ✅ oui |\n| .pdf | ❌ le format ne contient aucun historique |\n| .doc (ancien) | ❌ pas encore analysé |\n| .txt / .md | ❌ aucun conteneur |\n| OCR d\'image | ❌ il ne reste que des pixels |\n| Texte collé | ❌ aucun fichier |\n\nCela touche directement le pilier 3 : **seuls les documents dotés d\'un journal d\'édition rejoignent automatiquement la référence à garantie statistique.** Si vous ne recevez que des PDF, cette référence ne grandira jamais ; vous n\'accumulerez que des échantillons indicatifs, sans garantie.\n\nPour que les indices d\'origine et l\'étalonnage automatique fonctionnent réellement, collectez les originaux .docx ou .odt plutôt que des PDF imprimés ou exportés. C\'est une exigence d\'organisation, non une limite que le logiciel pourrait contourner : le PDF est un format de sortie et n\'enregistre tout simplement pas la façon dont le texte a été écrit.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'Le format $format ne transporte aucun historique d\'édition : le journal n\'a pas été effacé, il n\'a jamais existé. Seuls .docx et .odt consignent le temps d\'édition, le nombre d\'enregistrements et les sessions de travail.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'Ce format est pris en charge, mais aucun journal d\'édition n\'a été trouvé dans le fichier. Cela signifie généralement qu\'il a été enregistré sous un nouveau nom, converti en ligne ou exporté depuis Google Docs — autant d\'actions qui remettent le journal à zéro.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'Pour que les indices d\'origine servent à quelque chose, demandez aux élèves le **fichier .docx ou .odt d\'origine** plutôt qu\'un PDF imprimé ou exporté. Seul l\'original conserve l\'historique d\'édition, et lui seul peut rejoindre automatiquement la référence à garantie statistique.';
+
+  @override
   String get calibrationAutoTitle => 'Collecte en arrière-plan';
 
   @override

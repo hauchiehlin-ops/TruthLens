@@ -879,6 +879,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get helpFormatCoverageTitle => '2-a. 来歴証拠の形式上の制限';
+
+  @override
+  String get helpFormatCoverage =>
+      '**重要な制限：編集記録を持つのは .docx と .odt だけです。**\n\n| 入力元 | 編集記録 |\n|---|---|\n| .docx／.odt | ✅ あり |\n| .pdf | ❌ 形式上そもそも編集履歴を持たない |\n| .doc（旧版） | ❌ 現在は未解析 |\n| .txt／.md | ❌ コンテナなし |\n| 画像OCR | ❌ 画素しか残らない |\n| 貼り付け | ❌ ファイルが存在しない |\n\nこれは第3の柱に直接関わります。**編集記録を持つ文書だけが、統計的保証のある基準セットへ自動的に加わります。** 受け取るものがすべてPDFであれば、その基準セットは決して増えず、保証のない参考サンプルだけが溜まっていきます。\n\n来歴の証拠と自動キャリブレーションを実際に機能させるには、印刷・書き出しされたPDFではなく、学生から .docx または .odt の元ファイルを集めてください。これはソフトウェアで回避できる制限ではなく、運用上の要件です。PDFは出力形式であり、「どのように書かれたか」を記録しません。';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return '$format という形式はそもそも編集履歴を持ちません。したがって「記録が消された」のではなく、最初から存在しないということです。編集時間・保存回数・編集バッチを記録するのは .docx と .odt だけです。';
+  }
+
+  @override
+  String get provenanceStripped =>
+      '対応形式ですが、ファイル内に編集記録が見つかりません。別名保存、オンライン変換、Googleドキュメントからのエクスポートなど、記録をリセットする操作を経た可能性が高いです。';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      '来歴の証拠を活かすには、印刷・書き出しされたPDFではなく、学生から **.docx または .odt の元ファイル**を集めてください。編集履歴が残るのは元ファイルだけであり、統計的保証のある基準セットへ自動的に加われるのもそれだけです。';
+
+  @override
   String get calibrationAutoTitle => 'バックグラウンドで収集中';
 
   @override

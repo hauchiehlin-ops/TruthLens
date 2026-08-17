@@ -920,6 +920,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidade de IA: ';
 
   @override
+  String get helpFormatCoverageTitle =>
+      '2a. Limites de formato das evidências de origem';
+
+  @override
+  String get helpFormatCoverage =>
+      '**Um limite importante: apenas .docx e .odt carregam registro de edição.**\n\n| Origem | Registro de edição |\n|---|---|\n| .docx / .odt | ✅ sim |\n| .pdf | ❌ o formato não guarda histórico algum |\n| .doc (antigo) | ❌ ainda não analisado |\n| .txt / .md | ❌ sem contêiner |\n| OCR de imagem | ❌ só restam pixels |\n| Texto colado | ❌ não há arquivo |\n\nIsso afeta diretamente o pilar 3: **apenas documentos com registro de edição entram automaticamente na base com garantia estatística.** Se tudo o que você recebe é PDF, essa base nunca crescerá — você só acumulará amostras de referência sem garantia.\n\nPara que as evidências de origem e a calibração automática funcionem de fato, recolha originais .docx ou .odt em vez de PDFs impressos ou exportados. É uma exigência do fluxo de trabalho, não um limite que o software possa contornar: PDF é um formato de saída e simplesmente não registra como o texto foi escrito.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'O formato $format não carrega histórico de edição algum, portanto não é que o registro tenha sido apagado: nunca existiu. Apenas .docx e .odt registram tempo de edição, número de salvamentos e lotes de edição.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'O formato é compatível, mas não se encontrou registro de edição no arquivo. Isso costuma indicar que ele foi salvo como arquivo novo, convertido online ou exportado do Google Docs — qualquer dessas ações zera o registro.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'Para que as evidências de origem sirvam, peça aos alunos o **arquivo original .docx ou .odt**, e não um PDF impresso ou exportado. Só o original mantém o histórico de edição, e só ele pode entrar automaticamente na base com garantia estatística.';
+
+  @override
   String get calibrationAutoTitle => 'Coletando em segundo plano';
 
   @override

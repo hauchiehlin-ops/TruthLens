@@ -903,6 +903,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI probability: ';
 
   @override
+  String get helpFormatCoverageTitle => '2a. Format limits on origin evidence';
+
+  @override
+  String get helpFormatCoverage =>
+      '**An important limit: only .docx and .odt carry an editing record.**\n\n| Source | Editing record |\n|---|---|\n| .docx / .odt | ✅ yes |\n| .pdf | ❌ the format holds no editing history at all |\n| .doc (legacy) | ❌ not parsed yet |\n| .txt / .md | ❌ no container |\n| Image OCR | ❌ only pixels remain |\n| Pasted text | ❌ no file at all |\n\nThis bears directly on pillar 3: **only documents carrying an editing record are added automatically to the statistically guaranteed baseline.** If everything you receive is PDF, that baseline will never grow — you will only accumulate reference-only samples that carry no guarantee.\n\nTo make origin evidence and automatic calibration actually work, collect .docx or .odt originals from students rather than printed or exported PDFs. That is a workflow requirement, not something the software can work around: PDF is an output format and simply does not record how the text came to be written.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'The $format format does not carry an editing history at all, so this is not a case of the record being wiped — there never was one. Only .docx and .odt record editing time, save counts and editing batches.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'This format is supported, but no editing record was found in the file. That usually means it was saved as a new file, converted online, or exported from Google Docs — each of which resets the record.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'To make origin evidence useful, collect the **original .docx or .odt file** from students rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.';
+
+  @override
   String get calibrationAutoTitle => 'Collecting in the background';
 
   @override

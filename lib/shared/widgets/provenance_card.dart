@@ -113,6 +113,28 @@ class ProvenanceCard extends StatelessWidget {
               l10n.provenanceNoMetadata,
               style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
             ),
+            const SizedBox(height: 6),
+            // 「此格式本來就沒有」與「這份被清除了」的處置完全不同，
+            // 對 PDF 說「紀錄可能被清除」是誤導，正確建議是改收原始檔。
+            Text(
+              provenance.availability ==
+                      ProvenanceAvailability.unsupportedFormat
+                  ? l10n.provenanceUnsupportedFormat(
+                      provenance.sourceFormat.isEmpty
+                          ? '—'
+                          : '.${provenance.sourceFormat}',
+                    )
+                  : l10n.provenanceStripped,
+              style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.provenanceHowToGetRecord,
+              style: theme.textTheme.bodySmall?.copyWith(
+                height: 1.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ] else ...[
             if (facts.isNotEmpty) ...[
               const SizedBox(height: 10),

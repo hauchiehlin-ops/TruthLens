@@ -225,11 +225,118 @@ void main() {
     });
   });
 
+  _formatCoverageTests();
+
   group('字數計算', () {
     test('CJK 逐字計、拉丁語系以詞計', () {
       expect(DocumentProvenance.countWords('這是一份報告'), 6);
       expect(DocumentProvenance.countWords('hello world again'), 3);
       expect(DocumentProvenance.countWords('   '), 0);
+    });
+  });
+}
+
+void _formatCoverageTests() {
+  group('格式覆蓋率', () {
+    test('PDF／doc／txt 屬「格式本身不帶紀錄」，而非「被清除」', () {
+      for (final ext in ['pdf', 'doc', 'txt', 'md']) {
+        final p = DocumentProvenance.fromBytes(
+          const [1, 2, 3],
+          extension: ext,
+          bodyText: _body(500),
+        );
+        expect(
+          p.availability,
+          ProvenanceAvailability.unsupportedFormat,
+          reason: '$ext 應標為格式不支援',
+        );
+        expect(p.sourceFormat, ext, reason: '需保留格式名以便向使用者說明');
+        expect(p.hasMetadata, isFalse);
+      }
+    });
+
+    test('docx 是支援格式但無紀錄時，屬「被清除」', () {
+      // 有效 zip，但缺 docProps（模擬轉檔後被重置）
+      final archive = Archive()
+        ..addFile(_entry('word/document.xml', '<w:document/>'));
+      final p = DocumentProvenance.fromBytes(
+        ZipEncoder().encode(archive),
+        extension: 'docx',
+        bodyText: _body(500),
+      );
+      expect(p.availability, ProvenanceAvailability.stripped);
+    });
+
+    test('貼上文字／OCR 沒有副檔名，仍歸為格式不支援', () {
+      expect(
+        DocumentProvenance.none.availability,
+        ProvenanceAvailability.unsupportedFormat,
+      );
+      expect(DocumentProvenance.none.sourceFormat, isEmpty);
+    });
+
+    test('有完整紀錄時為 available，且格式名保留', () {
+      final p = DocumentProvenance.fromBytes(
+        _docx(totalMinutes: 120, revision: 9, rsids: const ['A1', 'B2', 'C3']),
+        extension: 'docx',
+        bodyText: _body(800),
+      );
+      expect(p.availability, ProvenanceAvailability.available);
+      expect(p.sourceFormat, 'docx');
+    });
+
+    test('只有 docx／odt 被視為帶編輯紀錄的容器格式', () {
+      expect(DocumentProvenance.formatsWithEditingRecord, {'docx', 'odt'});
+    });
+  });
+
+  group('自動納入基準集的獨立證據', () {
+    test('編輯歷程充足且無可疑訊號 → 可自動納入', () {
+      final p = DocumentProvenance.fromBytes(
+        _docx(
+          totalMinutes: 240,
+          revision: 18,
+          rsids: const ['A1', 'B2', 'C3', 'D4', 'E5', 'F6'],
+        ),
+        extension: 'docx',
+        bodyText: _body(2000),
+      );
+      expect(p.indicatesHumanAuthorship, isTrue);
+    });
+
+    test('任一可疑訊號存在即不納入', () {
+      final p = DocumentProvenance.fromBytes(
+        _docx(totalMinutes: 0, revision: 18, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        extension: 'docx',
+        bodyText: _body(2000),
+      );
+      expect(p.signals, isNotEmpty);
+      expect(p.indicatesHumanAuthorship, isFalse);
+    });
+
+    test('編輯時長或存檔次數不足即不納入', () {
+      final short = DocumentProvenance.fromBytes(
+        _docx(totalMinutes: 5, revision: 18, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        extension: 'docx',
+        bodyText: _body(300),
+      );
+      expect(short.indicatesHumanAuthorship, isFalse, reason: '5 分鐘不足 20 分門檻');
+
+      final fewSaves = DocumentProvenance.fromBytes(
+        _docx(totalMinutes: 240, revision: 2, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        extension: 'docx',
+        bodyText: _body(2000),
+      );
+      expect(fewSaves.indicatesHumanAuthorship, isFalse, reason: '2 次不足 3 次門檻');
+    });
+
+    test('無紀錄的格式一律不納入（PDF 不可能自動進基準集）', () {
+      final p = DocumentProvenance.fromBytes(
+        const [1, 2, 3],
+        extension: 'pdf',
+        bodyText: _body(2000),
+      );
+      expect(p.indicatesHumanAuthorship, isFalse);
     });
   });
 }

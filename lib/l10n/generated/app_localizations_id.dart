@@ -911,6 +911,26 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilitas AI: ';
 
   @override
+  String get helpFormatCoverageTitle => '2a. Batasan format pada bukti asal';
+
+  @override
+  String get helpFormatCoverage =>
+      '**Batasan penting: hanya .docx dan .odt yang membawa catatan penyuntingan.**\n\n| Sumber | Catatan penyuntingan |\n|---|---|\n| .docx / .odt | ✅ ada |\n| .pdf | ❌ formatnya memang tidak menyimpan riwayat |\n| .doc (lama) | ❌ belum diurai |\n| .txt / .md | ❌ tanpa kontainer |\n| OCR gambar | ❌ hanya tersisa piksel |\n| Teks tempelan | ❌ tidak ada berkas |\n\nIni berdampak langsung pada pilar 3: **hanya dokumen dengan catatan penyuntingan yang otomatis masuk ke basis berjaminan statistik.** Bila semua yang Anda terima berupa PDF, basis itu tidak akan pernah bertambah — yang menumpuk hanyalah sampel rujukan tanpa jaminan.\n\nAgar bukti asal dan kalibrasi otomatis benar-benar berfungsi, kumpulkan berkas asli .docx atau .odt, bukan PDF hasil cetak atau ekspor. Ini kebutuhan alur kerja, bukan batasan yang bisa diakali perangkat lunak: PDF adalah format keluaran dan memang tidak mencatat bagaimana teks itu ditulis.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'Format $format sama sekali tidak membawa riwayat penyuntingan, jadi ini bukan kasus catatannya dihapus — memang tidak pernah ada. Hanya .docx dan .odt yang mencatat waktu penyuntingan, jumlah penyimpanan, dan sesi penyuntingan.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'Format ini didukung, tetapi tidak ditemukan catatan penyuntingan di dalam berkas. Biasanya itu berarti berkas disimpan sebagai berkas baru, dikonversi daring, atau diekspor dari Google Dokumen — semuanya menolkan catatan.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'Agar bukti asal berguna, mintalah **berkas asli .docx atau .odt** dari siswa, bukan PDF hasil cetak atau ekspor. Hanya berkas asli yang menyimpan riwayat penyuntingan, dan hanya itu yang bisa masuk otomatis ke basis berjaminan statistik.';
+
+  @override
   String get calibrationAutoTitle => 'Mengumpulkan di latar belakang';
 
   @override

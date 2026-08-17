@@ -918,6 +918,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get helpFormatCoverageTitle =>
+      '2a. Formatgrenzen der Herkunftsnachweise';
+
+  @override
+  String get helpFormatCoverage =>
+      '**Eine wichtige Grenze: Nur .docx und .odt führen einen Bearbeitungsverlauf mit.**\n\n| Quelle | Bearbeitungsverlauf |\n|---|---|\n| .docx / .odt | ✅ vorhanden |\n| .pdf | ❌ das Format kennt überhaupt keinen Verlauf |\n| .doc (alt) | ❌ derzeit nicht ausgelesen |\n| .txt / .md | ❌ kein Container |\n| Bild-OCR | ❌ es bleiben nur Pixel |\n| Eingefügter Text | ❌ gar keine Datei |\n\nDas betrifft Säule 3 unmittelbar: **Nur Dokumente mit Bearbeitungsverlauf wandern automatisch in die statistisch abgesicherte Referenz.** Erhalten Sie ausschließlich PDFs, wächst diese Referenz nie — es sammeln sich lediglich Proben ohne Garantie an.\n\nDamit Herkunftsnachweise und automatische Kalibrierung wirklich greifen, sammeln Sie .docx- oder .odt-Originale statt gedruckter oder exportierter PDFs ein. Das ist eine Anforderung an den Ablauf, keine Softwaregrenze, die sich umgehen ließe: PDF ist ein Ausgabeformat und hält schlicht nicht fest, wie ein Text entstanden ist.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'Das Format $format führt überhaupt keinen Bearbeitungsverlauf mit. Es wurde also nichts gelöscht — es gab nie einen. Nur .docx und .odt halten Bearbeitungszeit, Speichervorgänge und Bearbeitungsmarker fest.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'Das Format wird unterstützt, doch in der Datei findet sich kein Bearbeitungsverlauf. Meist wurde sie neu gespeichert, online konvertiert oder aus Google Docs exportiert — all das setzt den Verlauf zurück.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'Damit Herkunftsnachweise etwas bringen, sammeln Sie die **Original-.docx- oder -.odt-Datei** ein statt eines gedruckten oder exportierten PDFs. Nur das Original behält den Bearbeitungsverlauf, und nur es kann automatisch in die statistisch abgesicherte Referenz aufgenommen werden.';
+
+  @override
   String get calibrationAutoTitle => 'Sammelt im Hintergrund';
 
   @override

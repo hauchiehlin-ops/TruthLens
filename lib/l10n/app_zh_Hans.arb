@@ -395,6 +395,18 @@
   "reportSuspiciousLocationsTitle": "可疑内容位置",
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
+  "helpFormatCoverageTitle": "二之一、来源证据的格式限制",
+  "helpFormatCoverage": "**重要限制：只有 .docx 与 .odt 带编辑记录。**\n\n| 来源 | 编辑记录 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本质上没有编辑历程 |\n| .doc（旧版） | ❌ 目前未解析 |\n| .txt／.md | ❌ 无容器 |\n| 图片 OCR | ❌ 只剩像素 |\n| 直接粘贴 | ❌ 没有文件 |\n\n这对第 3 支柱有直接影响：**只有带编辑记录的文件会自动累积进「有统计保证」的基准集**。若你的收件流程全是 PDF，有保证的基准集永远不会成长，只会累积无保证的参考样本。\n\n若要让来源证据与自动校准真正发挥作用，请向学生收 .docx 或 .odt 原始档，而不是打印或转存的 PDF。这是流程上的要求，不是软件能绕过的限制——PDF 是输出格式，本来就不记录「怎么写出来的」。",
+  "provenanceUnsupportedFormat": "{format} 这种格式本身就不携带编辑历程，因此不是「记录被清除」，而是从来就没有。只有 .docx 与 .odt 会记录编辑时长、存档次数与编辑批次。",
+  "@provenanceUnsupportedFormat": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceStripped": "这是支持的格式，但文件里找不到编辑记录——通常代表它被另存新档、在线转档，或从 Google 文档导出过，这些动作都会把记录重置。",
+  "provenanceHowToGetRecord": "若要让来源证据发挥作用，请向学生收 **.docx 或 .odt 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。",
   "calibrationAutoTitle": "后台自动收集中",
   "calibrationAutoSubtitle": "分析完成的文件会自动纳入基准集，你不需要手动标注。",
   "calibrationAutoStatus": "已由编辑记录认定为人类撰写：{auto} 份；仅供参考的样本：{observed} 份",

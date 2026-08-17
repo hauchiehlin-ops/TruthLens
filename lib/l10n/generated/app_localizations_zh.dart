@@ -871,6 +871,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get helpFormatCoverageTitle => '二之一、來源證據的格式限制';
+
+  @override
+  String get helpFormatCoverage =>
+      '**重要限制：只有 .docx 與 .odt 帶編輯紀錄。**\n\n| 來源 | 編輯紀錄 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本質上沒有編輯歷程 |\n| .doc（舊版） | ❌ 目前未解析 |\n| .txt／.md | ❌ 無容器 |\n| 圖片 OCR | ❌ 只剩像素 |\n| 直接貼上 | ❌ 沒有檔案 |\n\n這對第 3 支柱有直接影響：**只有帶編輯紀錄的文件會自動累積進「有統計保證」的基準集**。若你的收件流程全是 PDF，有保證的基準集永遠不會成長，只會累積無保證的參考樣本。\n\n若要讓來源證據與自動校準真正發揮作用，請向學生收 .docx 或 .odt 原始檔，而不是列印或轉存的 PDF。這是流程上的要求，不是軟體能繞過的限制——PDF 是輸出格式，本來就不記錄「怎麼寫出來的」。';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return '$format 這種格式本身就不攜帶編輯歷程，因此不是「紀錄被清除」，而是從來就沒有。只有 .docx 與 .odt 會記錄編輯時長、存檔次數與編輯批次。';
+  }
+
+  @override
+  String get provenanceStripped =>
+      '這是支援的格式，但檔案裡找不到編輯紀錄——通常代表它被另存新檔、線上轉檔，或從 Google 文件匯出過，這些動作都會把紀錄重置。';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      '若要讓來源證據發揮作用，請向學生收 **.docx 或 .odt 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
+
+  @override
   String get calibrationAutoTitle => '背景自動蒐集中';
 
   @override
@@ -3282,6 +3302,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get helpFormatCoverageTitle => '二之一、来源证据的格式限制';
+
+  @override
+  String get helpFormatCoverage =>
+      '**重要限制：只有 .docx 与 .odt 带编辑记录。**\n\n| 来源 | 编辑记录 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本质上没有编辑历程 |\n| .doc（旧版） | ❌ 目前未解析 |\n| .txt／.md | ❌ 无容器 |\n| 图片 OCR | ❌ 只剩像素 |\n| 直接粘贴 | ❌ 没有文件 |\n\n这对第 3 支柱有直接影响：**只有带编辑记录的文件会自动累积进「有统计保证」的基准集**。若你的收件流程全是 PDF，有保证的基准集永远不会成长，只会累积无保证的参考样本。\n\n若要让来源证据与自动校准真正发挥作用，请向学生收 .docx 或 .odt 原始档，而不是打印或转存的 PDF。这是流程上的要求，不是软件能绕过的限制——PDF 是输出格式，本来就不记录「怎么写出来的」。';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return '$format 这种格式本身就不携带编辑历程，因此不是「记录被清除」，而是从来就没有。只有 .docx 与 .odt 会记录编辑时长、存档次数与编辑批次。';
+  }
+
+  @override
+  String get provenanceStripped =>
+      '这是支持的格式，但文件里找不到编辑记录——通常代表它被另存新档、在线转档，或从 Google 文档导出过，这些动作都会把记录重置。';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      '若要让来源证据发挥作用，请向学生收 **.docx 或 .odt 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。';
+
+  @override
   String get calibrationAutoTitle => '后台自动收集中';
 
   @override
@@ -5691,6 +5731,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportAiProbabilityPrefix => 'AI 機率：';
+
+  @override
+  String get helpFormatCoverageTitle => '二之一、來源證據的格式限制';
+
+  @override
+  String get helpFormatCoverage =>
+      '**重要限制：只有 .docx 與 .odt 帶編輯紀錄。**\n\n| 來源 | 編輯紀錄 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本質上沒有編輯歷程 |\n| .doc（舊版） | ❌ 目前未解析 |\n| .txt／.md | ❌ 無容器 |\n| 圖片 OCR | ❌ 只剩像素 |\n| 直接貼上 | ❌ 沒有檔案 |\n\n這對第 3 支柱有直接影響：**只有帶編輯紀錄的文件會自動累積進「有統計保證」的基準集**。若你的收件流程全是 PDF，有保證的基準集永遠不會成長，只會累積無保證的參考樣本。\n\n若要讓來源證據與自動校準真正發揮作用，請向學生收 .docx 或 .odt 原始檔，而不是列印或轉存的 PDF。這是流程上的要求，不是軟體能繞過的限制——PDF 是輸出格式，本來就不記錄「怎麼寫出來的」。';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return '$format 這種格式本身就不攜帶編輯歷程，因此不是「紀錄被清除」，而是從來就沒有。只有 .docx 與 .odt 會記錄編輯時長、存檔次數與編輯批次。';
+  }
+
+  @override
+  String get provenanceStripped =>
+      '這是支援的格式，但檔案裡找不到編輯紀錄——通常代表它被另存新檔、線上轉檔，或從 Google 文件匯出過，這些動作都會把紀錄重置。';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      '若要讓來源證據發揮作用，請向學生收 **.docx 或 .odt 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
 
   @override
   String get calibrationAutoTitle => '背景自動蒐集中';

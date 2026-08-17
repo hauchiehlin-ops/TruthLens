@@ -31,6 +31,20 @@ enum ProvenanceSignalKind {
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
 enum ProvenanceSeverity { info, notable, strong }
 
+/// 為什麼沒有編輯紀錄可用。兩種情況的處置方式**完全不同**：
+/// 格式本身就不帶紀錄時，叫使用者「注意紀錄可能被清除」是誤導；
+/// 正確的建議是「改收 .docx／.odt 原檔」。
+enum ProvenanceAvailability {
+  /// 有可用的編輯紀錄
+  available,
+
+  /// 此格式本質上不攜帶編輯歷程（PDF／舊版 doc／純文字／OCR／貼上）
+  unsupportedFormat,
+
+  /// 格式支援，但這份檔案裡沒有紀錄——多半是另存、轉檔或匯出時被重置
+  stripped,
+}
+
 /// 綜合的來源可疑度，與 AI 機率完全獨立
 enum ProvenanceRisk {
   /// 沒有任何可用的中繼資料（純文字、PDF、或已被清除）
@@ -81,6 +95,10 @@ class DocumentProvenance {
 
   final List<ProvenanceSignal> signals;
 
+  /// 來源副檔名（小寫）。用來區分「格式不支援」與「紀錄被清除」，
+  /// 空字串代表貼上的文字或圖片 OCR，兩者都沒有檔案容器。
+  final String sourceFormat;
+
   const DocumentProvenance({
     this.editingDuration,
     this.revisionCount,
@@ -91,10 +109,21 @@ class DocumentProvenance {
     this.distinctBodyRsids,
     this.bodyWordCount = 0,
     this.signals = const [],
+    this.sourceFormat = '',
   });
 
   /// 完全沒有中繼資料可用（例如貼上的純文字、PDF、或紀錄已被清除）
   static const DocumentProvenance none = DocumentProvenance();
+
+  /// 帶有編輯歷程的容器格式。其餘格式不是「被清除」，而是**從來就沒有**。
+  static const Set<String> formatsWithEditingRecord = {'docx', 'odt'};
+
+  ProvenanceAvailability get availability {
+    if (hasMetadata) return ProvenanceAvailability.available;
+    return formatsWithEditingRecord.contains(sourceFormat)
+        ? ProvenanceAvailability.stripped
+        : ProvenanceAvailability.unsupportedFormat;
+  }
 
   bool get hasMetadata =>
       editingDuration != null ||
@@ -148,15 +177,19 @@ class DocumentProvenance {
     required String bodyText,
   }) {
     final ext = extension.toLowerCase();
+    if (!formatsWithEditingRecord.contains(ext)) {
+      // 非 zip 容器格式：直接標明來源，讓介面能說出「此格式不帶編輯紀錄」
+      return DocumentProvenance(sourceFormat: ext);
+    }
     try {
       final archive = ZipDecoder().decodeBytes(bytes);
       return switch (ext) {
-        'docx' => _fromDocx(archive, bodyText),
-        'odt' => _fromOdt(archive, bodyText),
-        _ => none,
+        'docx' => _fromDocx(archive, bodyText, ext),
+        'odt' => _fromOdt(archive, bodyText, ext),
+        _ => DocumentProvenance(sourceFormat: ext),
       };
     } catch (_) {
-      return none;
+      return DocumentProvenance(sourceFormat: ext);
     }
   }
 
@@ -170,7 +203,11 @@ class DocumentProvenance {
     }
   }
 
-  static DocumentProvenance _fromDocx(Archive archive, String bodyText) {
+  static DocumentProvenance _fromDocx(
+    Archive archive,
+    String bodyText,
+    String ext,
+  ) {
     final app = _read(archive, 'docProps/app.xml') ?? '';
     final core = _read(archive, 'docProps/core.xml') ?? '';
     final document = _read(archive, 'word/document.xml') ?? '';
@@ -205,11 +242,16 @@ class DocumentProvenance {
         declaredWordCount: declaredWords,
         distinctBodyRsids: rsids.isEmpty ? null : rsids.length,
         bodyWordCount: countWords(bodyText),
+        sourceFormat: ext,
       ),
     );
   }
 
-  static DocumentProvenance _fromOdt(Archive archive, String bodyText) {
+  static DocumentProvenance _fromOdt(
+    Archive archive,
+    String bodyText,
+    String ext,
+  ) {
     final meta = _read(archive, 'meta.xml') ?? '';
 
     final duration = parseIso8601Duration(
@@ -231,6 +273,7 @@ class DocumentProvenance {
             : generator,
         // ODT 沒有 RSID 這種逐批次標記，維持 null
         bodyWordCount: countWords(bodyText),
+        sourceFormat: ext,
       ),
     );
   }
@@ -346,6 +389,7 @@ class DocumentProvenance {
       declaredWordCount: base.declaredWordCount,
       distinctBodyRsids: base.distinctBodyRsids,
       bodyWordCount: base.bodyWordCount,
+      sourceFormat: base.sourceFormat,
       signals: signals,
     );
   }

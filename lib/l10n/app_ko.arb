@@ -671,6 +671,18 @@
   "privacyWebOverview2": "이 페이지는 사용자가 적극적으로 가져오기, 스캔 또는 붙여넣기를 선택할 때만 파일, 이미지 또는 클립보드 콘텐츠를 읽습니다. 다른 탭, 다른 사이트의 데이터 또는 선택하지 않은 파일은 절대 읽지 않습니다.",
   "reportAiContentReportTitle": "AI 콘텐츠 감지 보고서",
   "reportAiProbabilityPrefix": "AI 확률: ",
+  "helpFormatCoverageTitle": "2-a. 출처 증거의 형식 제한",
+  "helpFormatCoverage": "**중요한 한계: 편집 기록을 담는 것은 .docx와 .odt뿐입니다.**\n\n| 입력 | 편집 기록 |\n|---|---|\n| .docx / .odt | ✅ 있음 |\n| .pdf | ❌ 형식상 편집 이력이 아예 없음 |\n| .doc(구버전) | ❌ 아직 해석하지 않음 |\n| .txt / .md | ❌ 컨테이너 없음 |\n| 이미지 OCR | ❌ 픽셀만 남음 |\n| 붙여넣기 | ❌ 파일 자체가 없음 |\n\n이는 세 번째 기둥과 직결됩니다. **편집 기록을 가진 문서만 통계적 보장이 있는 기준 세트에 자동으로 추가됩니다.** 받는 것이 전부 PDF라면 그 기준 세트는 결코 늘지 않고, 보장 없는 참고용 표본만 쌓입니다.\n\n출처 증거와 자동 보정이 실제로 작동하게 하려면 인쇄하거나 내보낸 PDF가 아니라 학생에게서 .docx 또는 .odt 원본을 받으세요. 이는 소프트웨어가 우회할 수 있는 제약이 아니라 업무 절차상의 요구입니다. PDF는 출력 형식이며 '어떻게 쓰였는지'를 기록하지 않습니다.",
+  "provenanceUnsupportedFormat": "{format} 형식은 애초에 편집 이력을 담지 않습니다. 따라서 ‘기록이 지워진’ 것이 아니라 처음부터 없었던 것입니다. 편집 시간, 저장 횟수, 편집 배치를 기록하는 것은 .docx와 .odt뿐입니다.",
+  "@provenanceUnsupportedFormat": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceStripped": "지원되는 형식이지만 파일에서 편집 기록을 찾지 못했습니다. 대개 다른 이름으로 저장, 온라인 변환, Google 문서에서 내보내기 등을 거친 경우이며, 이런 동작은 기록을 초기화합니다.",
+  "provenanceHowToGetRecord": "출처 증거를 살리려면 인쇄하거나 내보낸 PDF가 아니라 학생에게서 **.docx 또는 .odt 원본 파일**을 받으세요. 편집 이력이 남는 것은 원본뿐이며, 통계적 보장이 있는 기준 세트에 자동으로 들어갈 수 있는 것도 원본뿐입니다.",
   "calibrationAutoTitle": "백그라운드에서 수집 중",
   "calibrationAutoSubtitle": "분석한 문서는 자동으로 기준 세트에 추가됩니다. 수동 라벨링이 필요 없습니다.",
   "calibrationAutoStatus": "편집 기록으로 사람 작성 확인: {auto}편 / 참고용 표본: {observed}편",

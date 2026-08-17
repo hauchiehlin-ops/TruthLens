@@ -921,6 +921,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String get helpFormatCoverageTitle =>
+      '2a. Límites de formato en las pruebas de origen';
+
+  @override
+  String get helpFormatCoverage =>
+      '**Un límite importante: solo .docx y .odt llevan registro de edición.**\n\n| Origen | Registro de edición |\n|---|---|\n| .docx / .odt | ✅ sí |\n| .pdf | ❌ el formato no guarda historial alguno |\n| .doc (antiguo) | ❌ aún no se analiza |\n| .txt / .md | ❌ sin contenedor |\n| OCR de imagen | ❌ solo quedan píxeles |\n| Texto pegado | ❌ no hay archivo |\n\nEsto afecta directamente al pilar 3: **solo los documentos con registro de edición entran automáticamente en la base con garantía estadística.** Si todo lo que recibes son PDF, esa base nunca crecerá: solo acumularás muestras de referencia sin garantía.\n\nPara que las pruebas de origen y la calibración automática funcionen de verdad, recoge originales .docx u .odt en lugar de PDF impresos o exportados. Es un requisito del flujo de trabajo, no un límite que el software pueda sortear: el PDF es un formato de salida y sencillamente no registra cómo se escribió el texto.';
+
+  @override
+  String provenanceUnsupportedFormat(String format) {
+    return 'El formato $format no lleva historial de edición en absoluto, así que no es que se haya borrado el registro: nunca lo hubo. Solo .docx y .odt registran tiempo de edición, número de guardados y tandas de edición.';
+  }
+
+  @override
+  String get provenanceStripped =>
+      'Es un formato compatible, pero no se encontró registro de edición en el archivo. Eso suele significar que se guardó como archivo nuevo, se convirtió en línea o se exportó desde Google Docs: cualquiera de esas acciones lo reinicia.';
+
+  @override
+  String get provenanceHowToGetRecord =>
+      'Para que las pruebas de origen sirvan, pide a los estudiantes el **archivo original .docx o .odt**, no un PDF impreso o exportado. Solo el original conserva el historial de edición, y solo él puede sumarse automáticamente a la base con garantía estadística.';
+
+  @override
   String get calibrationAutoTitle => 'Recopilando en segundo plano';
 
   @override
