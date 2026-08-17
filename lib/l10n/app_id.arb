@@ -699,7 +699,7 @@
     }
   },
   "provenanceStripped": "Format ini didukung, tetapi tidak ditemukan catatan penyuntingan di dalam berkas. Biasanya itu berarti berkas disimpan sebagai berkas baru, dikonversi daring, atau diekspor dari Google Dokumen — semuanya menolkan catatan.",
-  "provenanceHowToGetRecord": "Agar bukti asal berguna, mintalah **berkas asli .docx atau .odt** dari siswa, bukan PDF hasil cetak atau ekspor. Hanya berkas asli yang menyimpan riwayat penyuntingan, dan hanya itu yang bisa masuk otomatis ke basis berjaminan statistik.",
+  "provenanceHowToGetRecord": "Agar bukti asal berguna, dapatkan **berkas asli .docx, .odt, atau .doc**, bukan PDF hasil cetak atau ekspor. Hanya berkas asli yang menyimpan riwayat penyuntingan, dan hanya itu yang bisa masuk otomatis ke basis berjaminan statistik.",
   "calibrationAutoTitle": "Mengumpulkan di latar belakang",
   "calibrationAutoSubtitle": "Dokumen yang Anda analisis masuk ke basis secara otomatis — tidak perlu memberi label manual.",
   "calibrationAutoStatus": "Dipastikan ditulis manusia lewat catatan penyuntingan: {auto}; sampel rujukan saja: {observed}",

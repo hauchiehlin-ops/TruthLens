@@ -423,7 +423,7 @@
     }
   },
   "provenanceStripped": "这是支持的格式，但文件里找不到编辑记录——通常代表它被另存新档、在线转档，或从 Google 文档导出过，这些动作都会把记录重置。",
-  "provenanceHowToGetRecord": "若要让来源证据发挥作用，请向学生收 **.docx 或 .odt 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。",
+  "provenanceHowToGetRecord": "若要让来源证据发挥作用，请取得 **.docx、.odt 或 .doc 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。",
   "calibrationAutoTitle": "后台自动收集中",
   "calibrationAutoSubtitle": "分析完成的文件会自动纳入基准集，你不需要手动标注。",
   "calibrationAutoStatus": "已由编辑记录认定为人类撰写：{auto} 份；仅供参考的样本：{observed} 份",

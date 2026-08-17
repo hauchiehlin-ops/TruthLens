@@ -976,7 +976,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'Pour que les indices d\'origine servent à quelque chose, demandez aux élèves le **fichier .docx ou .odt d\'origine** plutôt qu\'un PDF imprimé ou exporté. Seul l\'original conserve l\'historique d\'édition, et lui seul peut rejoindre automatiquement la référence à garantie statistique.';
+      'Pour que les indices d\'origine servent à quelque chose, procurez-vous le **fichier .docx, .odt ou .doc d\'origine** plutôt qu\'un PDF imprimé ou exporté. Seul l\'original conserve l\'historique d\'édition, et lui seul peut rejoindre automatiquement la référence à garantie statistique.';
 
   @override
   String get calibrationAutoTitle => 'Collecte en arrière-plan';

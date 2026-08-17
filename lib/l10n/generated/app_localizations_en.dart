@@ -956,7 +956,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'To make origin evidence useful, collect the **original .docx or .odt file** from students rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.';
+      'To make origin evidence useful, obtain the **original .docx, .odt or .doc file** rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.';
 
   @override
   String get calibrationAutoTitle => 'Collecting in the background';

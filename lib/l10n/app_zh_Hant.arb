@@ -423,7 +423,7 @@
     }
   },
   "provenanceStripped": "這是支援的格式，但檔案裡找不到編輯紀錄——通常代表它被另存新檔、線上轉檔，或從 Google 文件匯出過，這些動作都會把紀錄重置。",
-  "provenanceHowToGetRecord": "若要讓來源證據發揮作用，請向學生收 **.docx 或 .odt 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。",
+  "provenanceHowToGetRecord": "若要讓來源證據發揮作用，請取得 **.docx、.odt 或 .doc 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。",
   "calibrationAutoTitle": "背景自動蒐集中",
   "calibrationAutoSubtitle": "分析完成的文件會自動納入基準集，你不需要手動標註。",
   "calibrationAutoStatus": "已由編輯紀錄認定為人類撰寫：{auto} 份；僅供參考的樣本：{observed} 份",

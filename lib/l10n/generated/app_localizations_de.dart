@@ -972,7 +972,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'Damit Herkunftsnachweise etwas bringen, sammeln Sie die **Original-.docx- oder -.odt-Datei** ein statt eines gedruckten oder exportierten PDFs. Nur das Original behält den Bearbeitungsverlauf, und nur es kann automatisch in die statistisch abgesicherte Referenz aufgenommen werden.';
+      'Damit Herkunftsnachweise etwas bringen, besorgen Sie die **Original-.docx-, -.odt- oder -.doc-Datei** statt eines gedruckten oder exportierten PDFs. Nur das Original behält den Bearbeitungsverlauf, und nur es kann automatisch in die statistisch abgesicherte Referenz aufgenommen werden.';
 
   @override
   String get calibrationAutoTitle => 'Sammelt im Hintergrund';

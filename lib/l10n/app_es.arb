@@ -699,7 +699,7 @@
     }
   },
   "provenanceStripped": "Es un formato compatible, pero no se encontró registro de edición en el archivo. Eso suele significar que se guardó como archivo nuevo, se convirtió en línea o se exportó desde Google Docs: cualquiera de esas acciones lo reinicia.",
-  "provenanceHowToGetRecord": "Para que las pruebas de origen sirvan, pide a los estudiantes el **archivo original .docx o .odt**, no un PDF impreso o exportado. Solo el original conserva el historial de edición, y solo él puede sumarse automáticamente a la base con garantía estadística.",
+  "provenanceHowToGetRecord": "Para que las pruebas de origen sirvan, consigue el **archivo original .docx, .odt o .doc**, no un PDF impreso o exportado. Solo el original conserva el historial de edición, y solo él puede sumarse automáticamente a la base con garantía estadística.",
   "calibrationAutoTitle": "Recopilando en segundo plano",
   "calibrationAutoSubtitle": "Los documentos que analizas se añaden solos a la base: no hace falta etiquetar a mano.",
   "calibrationAutoStatus": "Confirmados como humanos por el registro de edición: {auto}; muestras solo de referencia: {observed}",

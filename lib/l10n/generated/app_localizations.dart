@@ -1649,7 +1649,7 @@ abstract class AppLocalizations {
   /// No description provided for @provenanceHowToGetRecord.
   ///
   /// In en, this message translates to:
-  /// **'To make origin evidence useful, collect the **original .docx or .odt file** from students rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.'**
+  /// **'To make origin evidence useful, obtain the **original .docx, .odt or .doc file** rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.'**
   String get provenanceHowToGetRecord;
 
   /// No description provided for @calibrationAutoTitle.

@@ -965,7 +965,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'Agar bukti asal berguna, mintalah **berkas asli .docx atau .odt** dari siswa, bukan PDF hasil cetak atau ekspor. Hanya berkas asli yang menyimpan riwayat penyuntingan, dan hanya itu yang bisa masuk otomatis ke basis berjaminan statistik.';
+      'Agar bukti asal berguna, dapatkan **berkas asli .docx, .odt, atau .doc**, bukan PDF hasil cetak atau ekspor. Hanya berkas asli yang menyimpan riwayat penyuntingan, dan hanya itu yang bisa masuk otomatis ke basis berjaminan statistik.';
 
   @override
   String get calibrationAutoTitle => 'Mengumpulkan di latar belakang';

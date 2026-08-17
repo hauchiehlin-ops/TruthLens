@@ -931,7 +931,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      '来歴の証拠を活かすには、印刷・書き出しされたPDFではなく、学生から **.docx または .odt の元ファイル**を集めてください。編集履歴が残るのは元ファイルだけであり、統計的保証のある基準セットへ自動的に加われるのもそれだけです。';
+      '来歴の証拠を活かすには、印刷・書き出しされたPDFではなく、**.docx／.odt／.doc の元ファイル**を入手してください。編集履歴が残るのは元ファイルだけであり、統計的保証のある基準セットへ自動的に加われるのもそれだけです。';
 
   @override
   String get calibrationAutoTitle => 'バックグラウンドで収集中';

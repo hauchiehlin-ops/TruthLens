@@ -738,7 +738,7 @@
     }
   },
   "provenanceStripped": "This format is supported, but no editing record was found in the file. That usually means it was saved as a new file, converted online, or exported from Google Docs — each of which resets the record.",
-  "provenanceHowToGetRecord": "To make origin evidence useful, collect the **original .docx or .odt file** from students rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.",
+  "provenanceHowToGetRecord": "To make origin evidence useful, obtain the **original .docx, .odt or .doc file** rather than a printed or exported PDF. Only the original retains the editing history, and only it can be added automatically to the statistically guaranteed baseline.",
   "calibrationAutoTitle": "Collecting in the background",
   "calibrationAutoSubtitle": "Documents you analyse are added to the baseline automatically — no manual labelling needed.",
   "calibrationAutoStatus": "Confirmed human-written by editing record: {auto}; reference-only samples: {observed}",

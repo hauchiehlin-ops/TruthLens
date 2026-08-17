@@ -974,7 +974,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'Para que as evidências de origem sirvam, peça aos alunos o **arquivo original .docx ou .odt**, e não um PDF impresso ou exportado. Só o original mantém o histórico de edição, e só ele pode entrar automaticamente na base com garantia estatística.';
+      'Para que as evidências de origem sirvam, obtenha o **arquivo original .docx, .odt ou .doc**, e não um PDF impresso ou exportado. Só o original mantém o histórico de edição, e só ele pode entrar automaticamente na base com garantia estatística.';
 
   @override
   String get calibrationAutoTitle => 'Coletando em segundo plano';

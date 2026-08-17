@@ -699,7 +699,7 @@
     }
   },
   "provenanceStripped": "Format ini disokong, tetapi tiada rekod penyuntingan ditemui dalam fail. Lazimnya ini bermakna ia disimpan sebagai fail baharu, ditukar dalam talian, atau dieksport daripada Google Dokumen — semuanya mengosongkan rekod.",
-  "provenanceHowToGetRecord": "Agar bukti asal berguna, kumpulkan **fail asal .docx atau .odt** daripada pelajar, bukan PDF yang dicetak atau dieksport. Hanya fail asal mengekalkan sejarah penyuntingan, dan hanya ia boleh ditambah secara automatik ke set asas berjaminan statistik.",
+  "provenanceHowToGetRecord": "Agar bukti asal berguna, dapatkan **fail asal .docx, .odt atau .doc**, bukan PDF yang dicetak atau dieksport. Hanya fail asal mengekalkan sejarah penyuntingan, dan hanya ia boleh ditambah secara automatik ke set asas berjaminan statistik.",
   "calibrationAutoTitle": "Mengumpul di latar belakang",
   "calibrationAutoSubtitle": "Dokumen yang anda analisis ditambah ke set asas secara automatik — tiada pelabelan manual diperlukan.",
   "calibrationAutoStatus": "Disahkan ditulis manusia melalui rekod penyuntingan: {auto}; sampel rujukan sahaja: {observed}",

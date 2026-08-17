@@ -935,7 +935,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      '출처 증거를 살리려면 인쇄하거나 내보낸 PDF가 아니라 학생에게서 **.docx 또는 .odt 원본 파일**을 받으세요. 편집 이력이 남는 것은 원본뿐이며, 통계적 보장이 있는 기준 세트에 자동으로 들어갈 수 있는 것도 원본뿐입니다.';
+      '출처 증거를 살리려면 인쇄하거나 내보낸 PDF가 아니라 **.docx, .odt 또는 .doc 원본 파일**을 확보하세요. 편집 이력이 남는 것은 원본뿐이며, 통계적 보장이 있는 기준 세트에 자동으로 들어갈 수 있는 것도 원본뿐입니다.';
 
   @override
   String get calibrationAutoTitle => '백그라운드에서 수집 중';

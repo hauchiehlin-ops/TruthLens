@@ -1,5 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-17（第九十次更新）— 來源證據建議改為不預設使用對象
+
+`provenanceHowToGetRecord` 原本寫「請**向學生收** .docx 或 .odt 原始檔」，預設了
+教育場景。本工具同樣適用於編輯、審稿、人資、研究等情境，因此改為中性的
+「請**取得** .docx、.odt 或 .doc 原始檔」。
+
+順帶補上 `.doc`——上一版新增 OLE2 解析後它已支援，但這句話還停在只提 docx／odt。
+
+14 語系同步更新。`flutter test` 335 項全通過。
+
+**尚未處理**：另有 6 個字串仍提及「學生」（`calibrationEmpty`、`calibrationCaveat`、
+`settingsStoreTextWarning`、`helpFormatCoverage`、`helpPillarsBody`、`helpRisksBody`）。
+這些多為舉例說明而非指示性語句，是否一併中性化待確認。
+
+---
+
 ## 2026-08-17（第八十九次更新）— AI 樣本入口；操作說明全面校正
 
 ### 1. 學習式權重的資料入口（設定頁）

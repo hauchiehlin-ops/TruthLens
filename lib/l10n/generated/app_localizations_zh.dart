@@ -923,7 +923,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      '若要讓來源證據發揮作用，請向學生收 **.docx 或 .odt 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
+      '若要讓來源證據發揮作用，請取得 **.docx、.odt 或 .doc 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
 
   @override
   String get calibrationAutoTitle => '背景自動蒐集中';
@@ -3389,7 +3389,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get provenanceHowToGetRecord =>
-      '若要让来源证据发挥作用，请向学生收 **.docx 或 .odt 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。';
+      '若要让来源证据发挥作用，请取得 **.docx、.odt 或 .doc 原始档**（不是打印或转存的 PDF）。只有原始档才留有编辑历程，也才能自动累积进有统计保证的基准集。';
 
   @override
   String get calibrationAutoTitle => '后台自动收集中';
@@ -5855,7 +5855,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get provenanceHowToGetRecord =>
-      '若要讓來源證據發揮作用，請向學生收 **.docx 或 .odt 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
+      '若要讓來源證據發揮作用，請取得 **.docx、.odt 或 .doc 原始檔**（不是列印或轉存的 PDF）。只有原始檔才留有編輯歷程，也才能自動累積進有統計保證的基準集。';
 
   @override
   String get calibrationAutoTitle => '背景自動蒐集中';

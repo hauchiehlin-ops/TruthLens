@@ -962,7 +962,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get provenanceHowToGetRecord =>
-      'Agar bukti asal berguna, kumpulkan **fail asal .docx atau .odt** daripada pelajar, bukan PDF yang dicetak atau dieksport. Hanya fail asal mengekalkan sejarah penyuntingan, dan hanya ia boleh ditambah secara automatik ke set asas berjaminan statistik.';
+      'Agar bukti asal berguna, dapatkan **fail asal .docx, .odt atau .doc**, bukan PDF yang dicetak atau dieksport. Hanya fail asal mengekalkan sejarah penyuntingan, dan hanya ia boleh ditambah secara automatik ke set asas berjaminan statistik.';
 
   @override
   String get calibrationAutoTitle => 'Mengumpul di latar belakang';
