@@ -12,8 +12,8 @@
 
 **程式面改動**
 - `Verdict.cutPoints` 改為 `static const [0.20, 0.40, 0.60, 0.80]`；`fromProbability` 收單一引數
-- 新增 `DetectionResult.aiFlagStatic`... 實際為 `static const aiFlagThreshold = 0.60`，
-  刻意等於「混合內容 → 可能 AI」的分界，讓「被標記為 AI」與判定級距不會各說各話
+- 新增 `DetectionResult.aiFlagThreshold`（`static const 0.60`），刻意等於
+  「混合內容 → 可能 AI」的分界，讓「被標記為 AI」與判定級距不會各說各話
 - 移除 `DetectionResult.threshold` 欄位、`aiIndexPercent`、`cutPointIndexPercents`
 - 移除 `EnsembleOrchestrator.analyze` 的 `threshold` 參數
 - `PreferencesService` 移除 `confidenceThreshold`、`setThreshold`、`min/max/divisions` 常數與持久化鍵
