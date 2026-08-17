@@ -871,6 +871,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get helpAdvantage5 =>
+      '文件來源鑑識：讀取 .docx／.odt／.doc 的編輯紀錄（編輯時長、存檔次數、編輯批次分散度），這是獨立於文字判定的證據，與 AI 機率分開呈現。PDF 與圖片本身不帶編輯歷程，因此無法提供這類證據。';
+
+  @override
+  String get helpAdvantage6 =>
+      '證據不足時會誠實棄權：可分析句少於 5 句、字數少於 100、參與引擎少於 2 個、或引擎分歧超過 60 個百分點時，直接顯示「不做判定」。多數誤指控都源自對太短或訊號太弱的輸入給出自信的數字。';
+
+  @override
+  String get settingsAiSampleTitle => '新增 AI 產出樣本';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      '背景校準只會自動蒐集人類樣本。要啟用學習式引擎權重，需另外提供已知由 AI 產出的文章——貼上或匯入後會立即分析並標記為 AI 樣本。';
+
+  @override
+  String get settingsAiSampleFromClipboard => '從剪貼簿貼上';
+
+  @override
+  String get settingsAiSampleFromFile => '匯入文件';
+
+  @override
+  String get settingsAiSampleAnalyzing => '分析中…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return '已加入 AI 樣本，目前共 $count 份';
+  }
+
+  @override
+  String get settingsAiSampleTooShort => '內容太短，無法作為樣本（至少需 100 字）';
+
+  @override
+  String get settingsAiSampleFailed => '沒有取得可用的內容';
+
+  @override
   String get helpFormatCoverageTitle => '二之一、來源證據的格式限制';
 
   @override
@@ -1840,7 +1875,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成。報告會顯示逐句證據、各引擎貢獻、本次使用的判定信心閾值，以及匯入文件時的來源檔名。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI index（AI 機率 ÷ 你設定的標記門檻）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -1854,7 +1889,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在裝置端執行。';
+      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
 
   @override
   String get helpVsGptZero2 =>
@@ -1883,7 +1918,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在裝置端執行，無需持續付費使用偵測功能。';
+      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
 
   @override
   String get helpVsOriginality2 =>
@@ -1904,7 +1939,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 使用各平台原生框架（iOS／macOS 的 Vision、Android 的 ML Kit、Windows 的 Windows.Media.Ocr）在裝置端完成辨識。';
+      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
 
   @override
   String get helpVsWinston2 =>
@@ -1976,7 +2011,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並單獨成行出現在報告標題；貼上或手動輸入文字時，檔名維持空白。\n\nOCR 會優先使用你設定的本地伺服器，只有在你自行提供 Gemini API 金鑰時才使用雲端備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';
@@ -3302,6 +3337,41 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 几率：';
 
   @override
+  String get helpAdvantage5 =>
+      '文件来源鉴识：读取 .docx／.odt／.doc 的编辑记录（编辑时长、存档次数、编辑批次分散度），这是独立于文字判定的证据，与 AI 几率分开呈现。PDF 与图片本身不带编辑历程，因此无法提供这类证据。';
+
+  @override
+  String get helpAdvantage6 =>
+      '证据不足时会诚实弃权：可分析句少于 5 句、字数少于 100、参与引擎少于 2 个、或引擎分歧超过 60 个百分点时，直接显示「不做判定」。多数误指控都源自对太短或信号太弱的输入给出自信的数字。';
+
+  @override
+  String get settingsAiSampleTitle => '新增 AI 产出样本';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      '背景校准只会自动收集人类样本。要启用学习式引擎权重，需另外提供已知由 AI 产出的文章——粘贴或导入后会立即分析并标记为 AI 样本。';
+
+  @override
+  String get settingsAiSampleFromClipboard => '从剪贴板粘贴';
+
+  @override
+  String get settingsAiSampleFromFile => '导入文件';
+
+  @override
+  String get settingsAiSampleAnalyzing => '分析中…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return '已加入 AI 样本，目前共 $count 份';
+  }
+
+  @override
+  String get settingsAiSampleTooShort => '内容太短，无法作为样本（至少需 100 字）';
+
+  @override
+  String get settingsAiSampleFailed => '没有取得可用的内容';
+
+  @override
   String get helpFormatCoverageTitle => '二之一、来源证据的格式限制';
 
   @override
@@ -4271,7 +4341,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款内核 AI 推论完全在设备端运行的跨平台内容检测应用程序（iOS / Android / macOS / Windows）。通过四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写侦测——加权投票判定文本是否为 AI 生成。报告会显示逐句证据、各引擎贡献、本次使用的判定信心阈值，以及导入文档时的来源文件名。';
+      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写检测——加权投票判定文字是否为 AI 生成，文件内容不会上传到任何服务器。\n\n报告以 AI index（AI 几率 ÷ 你设定的标记门槛）呈现判定，并附逐句证据、各引擎贡献、文件来源证据，以及导入时的来源档名。证据不足时（句数或字数太少、引擎分歧过大）会明确显示「不做判定」，而不是硬给一个分数。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -4285,7 +4355,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的运算主要在云端进行、文档需上传；TruthLens 四个侦测引擎皆在设备端运行。';
+      'GPTZero 的运算主要在云端进行、文件需上传；TruthLens 四个检测引擎皆在你的浏览器内执行，文件内容不外传。';
 
   @override
   String get helpVsGptZero2 =>
@@ -4314,7 +4384,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 为按篇计费的订阅制，且需将文档上传云端；TruthLens 内核运算在设备端运行，无需持续付费使用侦测功能。';
+      'Originality.ai 为按篇计费的订阅制，且需将文件上传云端；TruthLens 核心运算在浏览器端完成，无需订阅也无使用次数限制。';
 
   @override
   String get helpVsOriginality2 =>
@@ -4335,7 +4405,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 图片辨识需上传图片至云端；TruthLens 使用各平台原生框架（iOS／macOS 的 Vision、Android 的 ML Kit、Windows 的 Windows.Media.Ocr）在设备端完成辨识。';
+      'Winston AI 的 OCR 图片识别需上传图片至云端；TruthLens 的 OCR 优先使用你自行设定的本地 OCR 服务器，只有在你主动提供 Gemini API 密钥时才会使用云端备援——用不用云端由你决定。';
 
   @override
   String get helpVsWinston2 =>
@@ -4407,7 +4477,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三种输入方式：直接粘贴文本、图片辨识 OCR、导入文档（txt / md / pdf / docx / doc / odt）。PDF 导入会比较两套文本层解析结果并排除乱码；扫描型 PDF 在 OCR 可用时会自动逐页识别。导入文档时，文件名会显示在输入页标题下方，并出现在报告标题；粘贴或手动输入文本时，文件名维持空白。安装版 App 使用平台原生 OCR；Web 版会优先使用您设置的本地 OCR 服务器，只有在您自行提供 Gemini API 密钥时才使用 Gemini 备用。';
+      '三种输入方式：直接粘贴文字、图片识别 OCR、导入文件（txt / md / pdf / docx / doc / odt）。PDF 导入会比较两套文字层解析结果并排除乱码；扫描型 PDF 在 OCR 可用时会自动逐页识别。导入文件时，档名会显示在输入页标题下方，并单独成行出现在报告标题；粘贴或手动输入文字时，档名维持空白。\n\nOCR 会优先使用你设定的本地服务器，只有在你自行提供 Gemini API 密钥时才使用云端备援。';
 
   @override
   String get helpWorkflowStep4Title => '开始分析';
@@ -5733,6 +5803,41 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportAiProbabilityPrefix => 'AI 機率：';
 
   @override
+  String get helpAdvantage5 =>
+      '文件來源鑑識：讀取 .docx／.odt／.doc 的編輯紀錄（編輯時長、存檔次數、編輯批次分散度），這是獨立於文字判定的證據，與 AI 機率分開呈現。PDF 與圖片本身不帶編輯歷程，因此無法提供這類證據。';
+
+  @override
+  String get helpAdvantage6 =>
+      '證據不足時會誠實棄權：可分析句少於 5 句、字數少於 100、參與引擎少於 2 個、或引擎分歧超過 60 個百分點時，直接顯示「不做判定」。多數誤指控都源自對太短或訊號太弱的輸入給出自信的數字。';
+
+  @override
+  String get settingsAiSampleTitle => '新增 AI 產出樣本';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      '背景校準只會自動蒐集人類樣本。要啟用學習式引擎權重，需另外提供已知由 AI 產出的文章——貼上或匯入後會立即分析並標記為 AI 樣本。';
+
+  @override
+  String get settingsAiSampleFromClipboard => '從剪貼簿貼上';
+
+  @override
+  String get settingsAiSampleFromFile => '匯入文件';
+
+  @override
+  String get settingsAiSampleAnalyzing => '分析中…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return '已加入 AI 樣本，目前共 $count 份';
+  }
+
+  @override
+  String get settingsAiSampleTooShort => '內容太短，無法作為樣本（至少需 100 字）';
+
+  @override
+  String get settingsAiSampleFailed => '沒有取得可用的內容';
+
+  @override
   String get helpFormatCoverageTitle => '二之一、來源證據的格式限制';
 
   @override
@@ -6702,7 +6807,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款核心 AI 推論完全在裝置端執行的跨平台內容檢測應用程式（iOS / Android / macOS / Windows）。透過四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成。報告會顯示逐句證據、各引擎貢獻、本次使用的判定信心閾值，以及匯入文件時的來源檔名。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI index（AI 機率 ÷ 你設定的標記門檻）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -6716,7 +6821,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在裝置端執行。';
+      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
 
   @override
   String get helpVsGptZero2 =>
@@ -6745,7 +6850,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在裝置端執行，無需持續付費使用偵測功能。';
+      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
 
   @override
   String get helpVsOriginality2 =>
@@ -6766,7 +6871,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 使用各平台原生框架（iOS／macOS 的 Vision、Android 的 ML Kit、Windows 的 Windows.Media.Ocr）在裝置端完成辨識。';
+      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
 
   @override
   String get helpVsWinston2 =>
@@ -6838,7 +6943,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep3Body =>
-      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並出現在報告標題；貼上或手動輸入文字時，檔名維持空白。安裝版 App 使用平台原生 OCR；Web 版會優先使用您設定的本地 OCR 伺服器，只有在您自行提供 Gemini API 金鑰時才使用 Gemini 備援。';
+      '三種輸入方式：直接貼上文字、圖片辨識 OCR、匯入文件（txt / md / pdf / docx / doc / odt）。PDF 匯入會比較兩套文字層解析結果並排除亂碼；掃描型 PDF 在 OCR 可用時會自動逐頁辨識。匯入文件時，檔名會顯示在輸入頁標題下方，並單獨成行出現在報告標題；貼上或手動輸入文字時，檔名維持空白。\n\nOCR 會優先使用你設定的本地伺服器，只有在你自行提供 Gemini API 金鑰時才使用雲端備援。';
 
   @override
   String get helpWorkflowStep4Title => '開始分析';

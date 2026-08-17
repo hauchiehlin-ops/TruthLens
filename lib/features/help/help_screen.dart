@@ -107,6 +107,8 @@ class HelpScreen extends StatelessWidget {
                   _Bullet(l10n.helpAdvantage2),
                   _Bullet(l10n.helpAdvantage3),
                   _Bullet(l10n.helpAdvantage4),
+                  _Bullet(l10n.helpAdvantage5),
+                  _Bullet(l10n.helpAdvantage6),
                 ],
               ),
             ),

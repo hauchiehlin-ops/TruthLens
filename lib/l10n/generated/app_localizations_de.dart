@@ -918,6 +918,42 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'KI-Wahrscheinlichkeit: ';
 
   @override
+  String get helpAdvantage5 =>
+      'Herkunftsforensik für Dateien: liest den Bearbeitungsverlauf in .docx-, .odt- und .doc-Dateien — aufgewendete Zeit, Zahl der Speichervorgänge, Streuung der Bearbeitungsmarker. Dieser Nachweis ist vom Texturteil unabhängig und wird getrennt von der KI-Wahrscheinlichkeit gezeigt. PDFs und Bilder führen keinen eigenen Bearbeitungsverlauf und können ihn daher nicht liefern.';
+
+  @override
+  String get helpAdvantage6 =>
+      'Bei dünner Beweislage verzichtet es ehrlich auf ein Urteil: weniger als 5 auswertbare Sätze, weniger als 100 Wörter, weniger als 2 beteiligte Engines oder mehr als 60 Prozentpunkte Abstand zwischen den Engines führen zu „Zu wenig Belege für ein Urteil“. Die meisten falschen Anschuldigungen beginnen mit einer selbstbewussten Zahl auf einer zu schwachen Eingabe.';
+
+  @override
+  String get settingsAiSampleTitle => 'KI-Probe hinzufügen';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      'Die Hintergrundkalibrierung sammelt von sich aus nur menschliche Proben. Für gelernte Engine-Gewichte brauchen Sie zusätzlich Texte, von denen bekannt ist, dass eine KI sie erzeugt hat — einfügen oder importieren, und der Text wird sofort analysiert und als KI-Probe erfasst.';
+
+  @override
+  String get settingsAiSampleFromClipboard => 'Aus Zwischenablage einfügen';
+
+  @override
+  String get settingsAiSampleFromFile => 'Dokument importieren';
+
+  @override
+  String get settingsAiSampleAnalyzing => 'Wird analysiert …';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'KI-Probe hinzugefügt — insgesamt $count';
+  }
+
+  @override
+  String get settingsAiSampleTooShort =>
+      'Zu kurz für eine Probe (mindestens 100 Wörter nötig)';
+
+  @override
+  String get settingsAiSampleFailed => 'Kein verwertbarer Inhalt gefunden';
+
+  @override
   String get helpFormatCoverageTitle =>
       '2a. Formatgrenzen der Herkunftsnachweise';
 
@@ -1933,7 +1969,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens ist eine plattformübergreifende Inhaltserkennungsanwendung (iOS / Android / macOS / Windows), deren Kern-KI-Inferenz vollständig auf dem Gerät läuft. Vier unabhängige Untermodelle — der neuronale Transformer-Klassifikator, die statistische Analyse, die stilometrische Analyse und die adversariale Paraphrasierungserkennung — stimmen gemeinsam ab, um zu bestimmen, ob der Text von KI generiert wurde, mit erklärbaren Gründen Satz für Satz: nicht nur ein \"sieht nach KI aus\"-Prozentsatz, sondern eine Erklärung des \"Warum\".';
+      'TruthLens ist ein KI-Inhaltsdetektor, der **vollständig in Ihrem Browser** läuft. Vier unabhängige Engines — ein neuronaler Transformer-Klassifikator, statistische Merkmalsanalyse, Stilometrie und Erkennung gegnerischer Umschreibungen — stimmen gewichtet darüber ab, ob ein Text von einer KI stammt; Ihr Dokument verlässt den Rechner nie.\n\nDer Bericht zeigt das Urteil als KI-Index (KI-Wahrscheinlichkeit ÷ von Ihnen gesetzte Kennzeichnungsschwelle), dazu Satzbelege, den Beitrag jeder Engine, Herkunftsnachweise des Dokuments und den Dateinamen beim Import. Ist die Beweislage zu dünn — zu wenige Sätze oder Wörter, oder zu stark uneinige Engines — sagt er das offen, statt einen Wert zu erzwingen.';
 
   @override
   String get helpComparisonTitle => 'Vergleich mit führenden Tools';
@@ -1947,7 +1983,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'Die Verarbeitung von GPTZero erfolgt hauptsächlich in der Cloud und erfordert das Hochladen Ihres Dokuments; alle vier Erkennungs-Engines von TruthLens laufen auf dem Gerät.';
+      'GPTZero arbeitet überwiegend in der Cloud und verlangt das Hochladen des Dokuments; alle vier TruthLens-Engines laufen in Ihrem eigenen Browser, der Inhalt wird nirgendwohin gesendet.';
 
   @override
   String get helpVsGptZero2 =>
@@ -1977,7 +2013,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai ist ein Abonnement pro Dokument, das das Hochladen Ihres Dokuments in die Cloud erfordert; die Kernverarbeitung von TruthLens läuft auf dem Gerät, ohne dass ein fortlaufendes Abonnement für die Erkennung erforderlich ist.';
+      'Originality.ai rechnet pro Text im Abo ab und verlangt den Upload in die Cloud; TruthLens erledigt die Kernarbeit im Browser, ohne Abo und ohne Nutzungsgrenze.';
 
   @override
   String get helpVsOriginality2 =>
@@ -1999,7 +2035,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'Die OCR-Bilderkennung von Winston AI erfordert das Hochladen von Bildern in die Cloud; TruthLens verwendet plattformspezifische native Frameworks (Vision auf iOS/macOS, ML Kit auf Android, Windows.Media.Ocr auf Windows), um Text auf dem Gerät zu erkennen.';
+      'Die Bild-OCR von Winston AI lädt das Bild in die Cloud. Die OCR von TruthLens bevorzugt einen von Ihnen eingerichteten lokalen OCR-Server und weicht nur dann in die Cloud aus, wenn Sie selbst einen Gemini-API-Schlüssel hinterlegen — ob überhaupt Cloud im Spiel ist, bleibt Ihre Entscheidung.';
 
   @override
   String get helpVsWinston2 =>
@@ -2071,7 +2107,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Drei Eingabemethoden: direktes Einfügen von Text, Bild-OCR (auf dem Gerät mit plattformspezifischen nativen Frameworks erkannt) oder Dateiimport (txt / md / pdf / docx / doc / odt). Der Text muss mindestens 40 Zeichen umfassen, um zur Analyse eingereicht zu werden.';
+      'Drei Wege hinein: Text direkt einfügen, ein Bild per OCR erkennen, oder ein Dokument importieren (txt / md / pdf / docx / doc / odt). Beim PDF-Import werden zwei Textebenen-Parser verglichen und unbrauchbare Ausgaben verworfen; gescannte PDFs werden Seite für Seite erkannt, sofern OCR verfügbar ist. Beim Import erscheint der Dateiname unter der Eingabeüberschrift und als eigene Zeile im Berichtstitel; beim Einfügen oder Tippen bleibt er leer.\n\nDie OCR bevorzugt den von Ihnen eingerichteten lokalen Server und nutzt die Cloud nur, wenn Sie selbst einen Gemini-API-Schlüssel hinterlegen.';
 
   @override
   String get helpWorkflowStep4Title => 'Analyse ausführen';

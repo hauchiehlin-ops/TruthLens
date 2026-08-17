@@ -879,6 +879,41 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI確率：';
 
   @override
+  String get helpAdvantage5 =>
+      '文書来歴の鑑識：.docx／.odt／.doc の編集記録（編集時間、保存回数、編集バッチの分散度）を読み取ります。これは本文の判定とは独立した証拠であり、AI確率とは分けて表示されます。PDFや画像はそもそも編集履歴を持たないため、この種の証拠は提供できません。';
+
+  @override
+  String get helpAdvantage6 =>
+      '根拠が乏しいときは誠実に判定を見送ります：分析可能な文が5文未満、本文が100語未満、参加エンジンが2個未満、エンジン間の差が60パーセントポイント超のいずれかで「証拠が不十分なため判定しません」と表示します。誤った告発の多くは、根拠の乏しい入力に自信ありげな数字を返すことから始まります。';
+
+  @override
+  String get settingsAiSampleTitle => 'AI生成サンプルを追加';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      'バックグラウンドのキャリブレーションが自動で集めるのは人間のサンプルだけです。学習によるエンジン重みを有効にするには、AI生成と分かっている文章も必要です。貼り付けまたは読み込むと、すぐに分析してAIサンプルとして登録します。';
+
+  @override
+  String get settingsAiSampleFromClipboard => 'クリップボードから貼り付け';
+
+  @override
+  String get settingsAiSampleFromFile => '文書を読み込む';
+
+  @override
+  String get settingsAiSampleAnalyzing => '分析中…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'AIサンプルを追加しました（現在$count件）';
+  }
+
+  @override
+  String get settingsAiSampleTooShort => 'サンプルにするには短すぎます（最低100語必要）';
+
+  @override
+  String get settingsAiSampleFailed => '利用できる内容が取得できませんでした';
+
+  @override
   String get helpFormatCoverageTitle => '2-a. 来歴証拠の形式上の制限';
 
   @override
@@ -1861,7 +1896,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLensは、コアAI推論を完全にデバイス上で実行するクロスプラットフォームのコンテンツ検出アプリです（iOS / Android / macOS / Windows）。Transformerニューラルネットワーク分類器、統計分析、文体分析、敵対的言い換え検出という4つの独立したサブモデルが加重投票を行い、テキストがAI生成かどうかを判定し、文単位で説明可能な分析理由を提供します。「AIらしい」というパーセンテージを示すだけでなく、「なぜ」なのかを説明します。';
+      'TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI index（AI確率 ÷ 設定した判定しきい値）で示し、文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。';
 
   @override
   String get helpComparisonTitle => '主要ツールとの比較';
@@ -1875,7 +1910,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZeroの処理は主にクラウドで行われ、文書のアップロードが必要です。TruthLensの4つの検出エンジンはすべてデバイス上で実行されます。';
+      'GPTZeroは処理の大半をクラウドで行い文書のアップロードが必要ですが、TruthLensは4つのエンジンすべてをご自身のブラウザ内で実行し、内容はどこにも送信しません。';
 
   @override
   String get helpVsGptZero2 =>
@@ -1905,7 +1940,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.aiは文書ごとの課金制サブスクリプションで、文書をクラウドにアップロードする必要があります。TruthLensのコア処理はデバイス上で実行され、検出機能の使用に継続的な支払いは不要です。';
+      'Originality.aiは従量課金のサブスクリプションでクラウドへのアップロードが必要ですが、TruthLensは中核処理をブラウザ内で完結し、サブスクリプションも利用回数制限もありません。';
 
   @override
   String get helpVsOriginality2 =>
@@ -1927,7 +1962,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'Winston AIのOCR画像認識は画像をクラウドにアップロードする必要があります。TruthLensは各プラットフォームのネイティブフレームワーク（iOS／macOSのVision、AndroidのML Kit、WindowsのWindows.Media.Ocr）を使用してデバイス上で認識を行います。';
+      'Winston AIの画像OCRは画像をクラウドへ送信します。TruthLensのOCRはご自身で設定したローカルOCRサーバーを優先し、ご自身でGemini APIキーを提供した場合にのみクラウドへフォールバックします。クラウドを使うかどうかは利用者の判断に委ねられます。';
 
   @override
   String get helpVsWinston2 =>
@@ -1999,7 +2034,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '3つの入力方法：テキストを直接貼り付け、画像OCR（各プラットフォームのネイティブフレームワークでオフライン認識）、ファイルの読み込み（txt / md / pdf / docx / doc / odt）。分析を送信するにはテキストが40文字以上必要です。';
+      '入力方法は3つ：テキストを直接貼り付け、画像をOCRで認識、文書を読み込み（txt / md / pdf / docx / doc / odt）。PDF読み込みでは2種類のテキスト層解析結果を比較して文字化けを除外し、スキャンPDFはOCRが利用可能なら1ページずつ認識します。読み込み時はファイル名が入力欄の見出し下に表示され、レポート見出しにも独立した行として現れます。貼り付けや手入力の場合は空欄のままです。\n\nOCRは設定したローカルサーバーを優先し、ご自身でGemini APIキーを提供した場合にのみクラウドへフォールバックします。';
 
   @override
   String get helpWorkflowStep4Title => '分析の開始';

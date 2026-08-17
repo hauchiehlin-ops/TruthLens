@@ -922,6 +922,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilité IA : ';
 
   @override
+  String get helpAdvantage5 =>
+      'Analyse de l\'origine du document : lit le journal d\'édition contenu dans les fichiers .docx / .odt / .doc — temps passé, nombre d\'enregistrements, dispersion des sessions de travail. Cette preuve est indépendante du verdict sur le texte et s\'affiche séparément de la probabilité IA. Les PDF et les images n\'ont pas d\'historique d\'édition propre et ne peuvent donc pas la fournir.';
+
+  @override
+  String get helpAdvantage6 =>
+      'Il s\'abstient honnêtement quand les éléments manquent : moins de 5 phrases analysables, moins de 100 mots, moins de 2 moteurs participants, ou des moteurs séparés de plus de 60 points de pourcentage donnent « pas assez d\'éléments pour trancher ». La plupart des accusations infondées commencent par un chiffre assuré rendu sur une entrée trop faible.';
+
+  @override
+  String get settingsAiSampleTitle => 'Ajouter un échantillon IA';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      'L\'étalonnage en arrière-plan ne recueille de lui-même que des échantillons humains. Pour activer les poids appris, il faut aussi des textes dont vous savez qu\'ils viennent d\'une IA : collez-en un ou importez-le, il sera analysé et étiqueté comme échantillon IA immédiatement.';
+
+  @override
+  String get settingsAiSampleFromClipboard => 'Coller depuis le presse-papiers';
+
+  @override
+  String get settingsAiSampleFromFile => 'Importer un document';
+
+  @override
+  String get settingsAiSampleAnalyzing => 'Analyse en cours…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'Échantillon IA ajouté — $count au total';
+  }
+
+  @override
+  String get settingsAiSampleTooShort =>
+      'Trop court pour servir d\'échantillon (au moins 100 mots requis)';
+
+  @override
+  String get settingsAiSampleFailed => 'Aucun contenu exploitable trouvé';
+
+  @override
   String get helpFormatCoverageTitle =>
       '2a. Limites de format des indices d\'origine';
 
@@ -1933,7 +1969,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens est une application de détection de contenu multiplateforme (iOS / Android / macOS / Windows) dont l\'inférence IA principale s\'exécute entièrement sur l\'appareil. Quatre sous-modèles indépendants — le classificateur neuronal Transformer, l\'analyse statistique, l\'analyse stylométrique et la détection de paraphrase adversariale — votent ensemble pour déterminer si le texte a été généré par IA, avec des raisons explicables phrase par phrase : pas seulement un pourcentage \"ressemble à de l\'IA\", mais une explication du \"pourquoi\".';
+      'TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l\'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme d\'indice IA (probabilité IA ÷ seuil de signalement que vous fixez), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d\'origine du document et du nom de fichier à l\'import. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.';
 
   @override
   String get helpComparisonTitle => 'Comparaison avec les outils leaders';
@@ -1947,7 +1983,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'Le traitement de GPTZero s\'effectue principalement dans le cloud et nécessite le téléchargement de votre document ; les quatre moteurs de détection de TruthLens s\'exécutent sur l\'appareil.';
+      'GPTZero effectue l\'essentiel du travail dans le cloud et exige l\'envoi du document ; les quatre moteurs de TruthLens s\'exécutent dans votre propre navigateur et le contenu n\'est envoyé nulle part.';
 
   @override
   String get helpVsGptZero2 =>
@@ -1977,7 +2013,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai est un abonnement par document qui nécessite le téléchargement de votre document dans le cloud ; le traitement principal de TruthLens s\'exécute sur l\'appareil sans nécessiter d\'abonnement continu pour la détection.';
+      'Originality.ai facture à la pièce sur abonnement et exige un envoi vers le cloud ; TruthLens réalise l\'essentiel dans le navigateur, sans abonnement ni limite d\'usage.';
 
   @override
   String get helpVsOriginality2 =>
@@ -1999,7 +2035,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'La reconnaissance d\'images OCR de Winston AI nécessite le téléchargement d\'images vers le cloud ; TruthLens utilise les frameworks natifs propres à chaque plateforme (Vision sur iOS/macOS, ML Kit sur Android, Windows.Media.Ocr sur Windows) pour reconnaître le texte sur l\'appareil.';
+      'L\'OCR d\'images de Winston AI envoie la photo dans le cloud ; l\'OCR de TruthLens privilégie un serveur local que vous configurez et ne bascule vers le cloud que si vous fournissez vous-même une clé d\'API Gemini — recourir ou non au cloud reste votre décision.';
 
   @override
   String get helpVsWinston2 =>
@@ -2073,7 +2109,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Trois méthodes de saisie : coller du texte directement, OCR d\'image (reconnu sur l\'appareil avec des frameworks natifs propres à chaque plateforme), ou importer un fichier (txt / md / pdf / docx / doc / odt). Le texte doit comporter au moins 40 caractères pour être soumis à l\'analyse.';
+      'Trois entrées possibles : coller du texte, reconnaître une image par OCR, ou importer un document (txt / md / pdf / docx / doc / odt). L\'import PDF compare deux analyseurs de couche texte et écarte les sorties illisibles ; les PDF numérisés sont reconnus page par page lorsque l\'OCR est disponible. À l\'import, le nom du fichier apparaît sous l\'intitulé de saisie et sur sa propre ligne dans le titre du rapport ; en cas de collage ou de saisie, il reste vide.\n\nL\'OCR privilégie le serveur local que vous configurez et n\'utilise le cloud que si vous fournissez vous-même une clé d\'API Gemini.';
 
   @override
   String get helpWorkflowStep4Title => 'Exécuter l\'analyse';

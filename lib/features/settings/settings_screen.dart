@@ -8,6 +8,11 @@ import '../../core/detection/model_provisioner.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../core/services/calibration_exporter.dart';
+import 'package:flutter/services.dart';
+import '../../core/detection/orchestrator.dart';
+import '../../core/models/detection_result.dart';
+import '../../core/services/document_importer.dart';
+import '../../core/services/document_provenance.dart';
 import '../../core/services/calibration_service.dart';
 import '../../core/services/weight_learner.dart';
 import '../../core/services/preferences_service.dart';
@@ -190,6 +195,7 @@ class SettingsScreen extends StatelessWidget {
                   value: calibration.autoCollectEnabled,
                   onChanged: (v) => calibration.setAutoCollect(v),
                 ),
+                const _AiSampleTile(),
                 SwitchListTile(
                   title: Text(l10n.settingsStoreTextTitle),
                   subtitle: Text(l10n.settingsStoreTextSubtitle),
@@ -548,5 +554,128 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
     );
     return '${device.platform.toUpperCase()} · ${device.processors} CPU · '
         '$ram GB RAM · ${device.tier.name.toUpperCase()}';
+  }
+}
+
+/// 手動新增「已知由 AI 產出」的樣本。
+///
+/// 背景自動蒐集刻意只收人類樣本——AI 標籤沒有任何獨立證據可依循，
+/// 靠判定結果自我標註會造成循環論證。因此 AI 樣本只能由使用者明確提供，
+/// 這也是**第 4 項學習式引擎權重**唯一的資料來源。
+///
+/// 放在設定頁而非報告頁：這是偶爾為之的建置動作，不該出現在日常判讀流程裡。
+class _AiSampleTile extends StatefulWidget {
+  const _AiSampleTile();
+
+  @override
+  State<_AiSampleTile> createState() => _AiSampleTileState();
+}
+
+class _AiSampleTileState extends State<_AiSampleTile> {
+  bool _busy = false;
+
+  Future<void> _addFrom(Future<String?> Function() source) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final calibration = context.read<CalibrationService>();
+    final orchestrator = context.read<EnsembleOrchestrator>();
+    final prefs = context.read<PreferencesService>();
+
+    setState(() => _busy = true);
+    try {
+      final text = (await source())?.trim() ?? '';
+      if (text.isEmpty) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.settingsAiSampleFailed)),
+        );
+        return;
+      }
+      // 與棄權門檻同一個標準：太短的樣本對權重學習沒有意義
+      if (DocumentProvenance.countWords(text) < DetectionResult.minWords) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.settingsAiSampleTooShort)),
+        );
+        return;
+      }
+
+      final result = await orchestrator.analyze(
+        text,
+        eslCorrectionEnabled: prefs.eslCorrectionEnabled,
+        threshold: prefs.confidenceThreshold,
+        prefs: prefs,
+        l10n: l10n,
+      );
+      await calibration.addSample(
+        result.aiProbability,
+        isAi: true,
+        engineScores: {
+          for (final e in result.engineScores)
+            if (e.available) e.engineId: e.aiProbability,
+        },
+        text: text,
+      );
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.settingsAiSampleAdded(calibration.aiSamples.length),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          title: Text(l10n.settingsAiSampleTitle),
+          subtitle: Text(l10n.settingsAiSampleSubtitle),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: _busy
+              ? Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(l10n.settingsAiSampleAnalyzing),
+                  ],
+                )
+              : Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () => _addFrom(() async {
+                        final data = await Clipboard.getData(
+                          Clipboard.kTextPlain,
+                        );
+                        return data?.text;
+                      }),
+                      icon: Icon(LucideIcons.clipboard, size: 16),
+                      label: Text(l10n.settingsAiSampleFromClipboard),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _addFrom(() async {
+                        final doc = await DocumentImporter.pick();
+                        return doc?.text;
+                      }),
+                      icon: Icon(LucideIcons.folderOpen, size: 16),
+                      label: Text(l10n.settingsAiSampleFromFile),
+                    ),
+                  ],
+                ),
+        ),
+      ],
+    );
   }
 }

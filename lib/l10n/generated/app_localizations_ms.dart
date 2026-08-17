@@ -908,6 +908,43 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Kebarangkalian AI: ';
 
   @override
+  String get helpAdvantage5 =>
+      'Forensik asal dokumen: membaca rekod penyuntingan dalam fail .docx / .odt / .doc — masa yang digunakan, bilangan simpanan, taburan kelompok suntingan. Bukti itu bebas daripada keputusan ke atas teks dan dipaparkan berasingan daripada kebarangkalian AI. PDF dan imej tiada sejarah penyuntingan sendiri, jadi tidak dapat membekalkannya.';
+
+  @override
+  String get helpAdvantage6 =>
+      'Ia berkecuali dengan jujur apabila buktinya nipis: ayat yang boleh dianalisis kurang daripada 5, perkataan kurang daripada 100, enjin yang menyertai kurang daripada 2, atau enjin berbeza lebih daripada 60 mata peratus semuanya menghasilkan “bukti tidak mencukupi untuk menilai”. Kebanyakan tuduhan palsu bermula dengan angka yang yakin dipulangkan atas input yang terlalu lemah.';
+
+  @override
+  String get settingsAiSampleTitle => 'Tambah sampel hasil AI';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      'Penentukuran latar belakang hanya mengumpul sampel manusia dengan sendirinya. Untuk mengaktifkan pemberat enjin yang dipelajari, anda juga memerlukan tulisan yang diketahui dihasilkan AI — tampal atau import satu, dan ia akan terus dianalisis serta dilabel sebagai sampel AI.';
+
+  @override
+  String get settingsAiSampleFromClipboard => 'Tampal dari papan keratan';
+
+  @override
+  String get settingsAiSampleFromFile => 'Import dokumen';
+
+  @override
+  String get settingsAiSampleAnalyzing => 'Menganalisis…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'Sampel AI ditambah — $count kesemuanya';
+  }
+
+  @override
+  String get settingsAiSampleTooShort =>
+      'Terlalu pendek untuk dijadikan sampel (sekurang-kurangnya 100 patah perkataan)';
+
+  @override
+  String get settingsAiSampleFailed =>
+      'Tiada kandungan yang boleh digunakan ditemui';
+
+  @override
   String get helpFormatCoverageTitle => '2a. Batasan format bagi bukti asal';
 
   @override
@@ -1918,7 +1955,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens ialah aplikasi pengesanan kandungan merentas platform (iOS / Android / macOS / Windows) yang mana inferens AI terasnya berjalan sepenuhnya pada peranti. Empat sub-model bebas — pengelas neural Transformer, analisis statistik, analisis stilometrik, dan pengesanan parafrasa adversarial — mengundi bersama untuk menentukan sama ada teks dijana AI, dengan sebab yang boleh dijelaskan ayat demi ayat: bukan sekadar peratusan \"kelihatan seperti AI\", tetapi penjelasan \"mengapa\".';
+      'TruthLens ialah pengesan kandungan AI yang berjalan **sepenuhnya dalam pelayar anda**. Empat enjin bebas — pengelas neural Transformer, analisis ciri statistik, stilometri, dan pengesanan penulisan semula adversarial — mengundi secara berpemberat sama ada teks dijana AI, dan dokumen anda tidak pernah meninggalkan mesin.\n\nLaporan menyatakan keputusannya sebagai indeks AI (kebarangkalian AI ÷ ambang penandaan yang anda tetapkan), berserta bukti setiap ayat, sumbangan setiap enjin, bukti asal dokumen, dan nama fail semasa mengimport. Apabila buktinya nipis — terlalu sedikit ayat atau perkataan, atau enjin terlalu berbeza pendapat — ia menyatakannya terus terang dan bukannya memaksa skor.';
 
   @override
   String get helpComparisonTitle => 'Perbandingan dengan alat terkemuka';
@@ -1932,7 +1969,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'Pemprosesan GPTZero berjalan terutamanya di awan dan memerlukan muat naik dokumen anda; keempat-empat enjin pengesanan TruthLens berjalan pada peranti.';
+      'GPTZero melakukan kebanyakan kerjanya di awan dan memerlukan muat naik dokumen; keempat-empat enjin TruthLens berjalan dalam pelayar anda sendiri dan kandungannya tidak dihantar ke mana-mana.';
 
   @override
   String get helpVsGptZero2 =>
@@ -1962,7 +1999,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai ialah langganan setiap dokumen yang memerlukan muat naik dokumen anda ke awan; pemprosesan teras TruthLens berjalan pada peranti tanpa langganan berterusan diperlukan untuk pengesanan.';
+      'Originality.ai mengenakan bayaran sekeping secara langganan dan memerlukan muat naik ke awan; TruthLens melakukan kerja terasnya dalam pelayar, tanpa langganan dan tanpa had penggunaan.';
 
   @override
   String get helpVsOriginality2 =>
@@ -1984,7 +2021,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'Pengecaman imej OCR Winston AI memerlukan muat naik imej ke awan; TruthLens menggunakan rangka kerja natif setiap platform (Vision pada iOS/macOS, ML Kit pada Android, Windows.Media.Ocr pada Windows) untuk mengecam teks pada peranti.';
+      'OCR imej Winston AI memuat naik gambar ke awan; OCR TruthLens mengutamakan pelayan OCR setempat yang anda konfigurasikan, dan hanya berundur ke awan jika anda sendiri membekalkan kunci API Gemini — sama ada awan terlibat langsung kekal keputusan anda.';
 
   @override
   String get helpVsWinston2 =>
@@ -2056,7 +2093,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Tiga kaedah input: tampal teks terus, OCR imej (dikenal pasti pada peranti dengan rangka kerja natif setiap platform), atau import fail (txt / md / pdf / docx / doc / odt). Teks mesti sekurang-kurangnya 40 aksara untuk dihantar untuk analisis.';
+      'Tiga cara masuk: tampal teks terus, kenali imej dengan OCR, atau import dokumen (txt / md / pdf / docx / doc / odt). Import PDF membandingkan dua penghurai lapisan teks dan membuang keluaran yang kacau; PDF imbasan dikenali muka demi muka apabila OCR tersedia. Semasa mengimport, nama fail muncul di bawah tajuk input dan pada barisnya sendiri dalam tajuk laporan; semasa menampal atau menaip, ia kekal kosong.\n\nOCR mengutamakan pelayan setempat yang anda konfigurasikan dan hanya menggunakan awan jika anda sendiri membekalkan kunci API Gemini.';
 
   @override
   String get helpWorkflowStep4Title => 'Menjalankan analisis';

@@ -883,6 +883,41 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'AI 확률: ';
 
   @override
+  String get helpAdvantage5 =>
+      '문서 출처 감식: .docx / .odt / .doc 안의 편집 기록(편집 시간, 저장 횟수, 편집 배치의 분산 정도)을 읽습니다. 이는 본문 판정과 독립된 증거이며 AI 확률과 분리해 표시합니다. PDF와 이미지는 자체 편집 이력이 없어 이런 증거를 제공할 수 없습니다.';
+
+  @override
+  String get helpAdvantage6 =>
+      '근거가 부족하면 정직하게 판정을 유보합니다: 분석 가능한 문장 5개 미만, 100단어 미만, 참여 엔진 2개 미만, 또는 엔진 간 차이가 60퍼센트포인트 초과이면 \'증거가 부족하여 판정하지 않습니다\'라고 표시합니다. 잘못된 지목의 대부분은 근거가 약한 입력에 자신 있는 숫자를 돌려주는 데서 시작됩니다.';
+
+  @override
+  String get settingsAiSampleTitle => 'AI 생성 표본 추가';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      '백그라운드 보정은 사람 표본만 자동으로 모읍니다. 학습된 엔진 가중치를 쓰려면 AI가 생성한 것이 확실한 글도 필요합니다. 붙여넣거나 가져오면 곧바로 분석해 AI 표본으로 등록합니다.';
+
+  @override
+  String get settingsAiSampleFromClipboard => '클립보드에서 붙여넣기';
+
+  @override
+  String get settingsAiSampleFromFile => '문서 가져오기';
+
+  @override
+  String get settingsAiSampleAnalyzing => '분석 중…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'AI 표본을 추가했습니다 — 현재 $count편';
+  }
+
+  @override
+  String get settingsAiSampleTooShort => '표본으로 쓰기에 너무 짧습니다(최소 100단어 필요)';
+
+  @override
+  String get settingsAiSampleFailed => '사용할 수 있는 내용을 찾지 못했습니다';
+
+  @override
   String get helpFormatCoverageTitle => '2-a. 출처 증거의 형식 제한';
 
   @override
@@ -1866,7 +1901,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens는 핵심 AI 추론이 완전히 기기 내에서 실행되는 크로스 플랫폼 콘텐츠 감지 앱입니다（iOS / Android / macOS / Windows）. Transformer 신경망 분류기, 통계적 특징 분석, 문체 특징 분석, 적대적 패러프레이즈 감지라는 4개의 독립적인 하위 모델이 가중 투표를 통해 텍스트가 AI로 생성되었는지 판정하며, 문장 단위로 설명 가능한 분석 근거를 제공합니다. 단순히 \"AI 같음\" 백분율만 제시하는 것이 아니라 \"왜\" 그런지 설명합니다.';
+      'TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI index(AI 확률 ÷ 설정한 표시 기준값)로 제시하고, 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 \'판정하지 않습니다\'라고 분명히 밝힙니다.';
 
   @override
   String get helpComparisonTitle => '주요 도구와의 비교';
@@ -1880,7 +1915,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero의 연산은 주로 클라우드에서 이루어지며 문서를 업로드해야 합니다. TruthLens의 4개 감지 엔진은 모두 기기 내에서 실행됩니다.';
+      'GPTZero는 연산 대부분을 클라우드에서 하고 문서 업로드가 필요하지만, TruthLens는 네 엔진 모두 사용자의 브라우저 안에서 실행되며 내용은 어디로도 전송되지 않습니다.';
 
   @override
   String get helpVsGptZero2 =>
@@ -1910,7 +1945,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai는 문서별 과금 구독제이며 문서를 클라우드에 업로드해야 합니다. TruthLens의 핵심 연산은 기기 내에서 실행되어 감지 기능 사용에 지속적인 비용이 필요 없습니다.';
+      'Originality.ai는 건당 과금 구독제이며 클라우드 업로드가 필요하지만, TruthLens는 핵심 연산을 브라우저에서 끝내고 구독도 사용 횟수 제한도 없습니다.';
 
   @override
   String get helpVsOriginality2 =>
@@ -1932,7 +1967,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI의 OCR 이미지 인식은 이미지를 클라우드에 업로드해야 합니다. TruthLens는 각 플랫폼의 네이티브 프레임워크（iOS／macOS의 Vision, Android의 ML Kit, Windows의 Windows.Media.Ocr）를 사용하여 기기 내에서 인식을 수행합니다.';
+      'Winston AI의 이미지 OCR은 사진을 클라우드로 올립니다. TruthLens의 OCR은 사용자가 설정한 로컬 OCR 서버를 우선 사용하며, 직접 Gemini API 키를 제공한 경우에만 클라우드로 대체합니다. 클라우드를 쓸지 여부는 사용자의 결정입니다.';
 
   @override
   String get helpVsWinston2 =>
@@ -2004,7 +2039,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      '세 가지 입력 방법: 텍스트 직접 붙여넣기, 이미지 OCR（각 플랫폼의 네이티브 프레임워크로 오프라인 인식）, 파일 가져오기（txt / md / pdf / docx / doc / odt）. 분석을 제출하려면 텍스트가 40자 이상이어야 합니다.';
+      '입력 방법은 세 가지입니다: 텍스트 직접 붙여넣기, 이미지 OCR 인식, 문서 가져오기(txt / md / pdf / docx / doc / odt). PDF 가져오기는 두 가지 텍스트 층 파서 결과를 비교해 깨진 문자를 걸러내며, 스캔 PDF는 OCR을 쓸 수 있을 때 쪽 단위로 인식합니다. 가져오면 파일명이 입력 제목 아래에 표시되고 보고서 제목에도 별도 줄로 나타납니다. 붙여넣거나 직접 입력하면 비어 있습니다.\n\nOCR은 설정한 로컬 서버를 우선하며, 직접 Gemini API 키를 제공한 경우에만 클라우드로 대체합니다.';
 
   @override
   String get helpWorkflowStep4Title => '분석 시작';

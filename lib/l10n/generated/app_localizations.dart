@@ -1562,6 +1562,66 @@ abstract class AppLocalizations {
   /// **'AI probability: '**
   String get reportAiProbabilityPrefix;
 
+  /// No description provided for @helpAdvantage5.
+  ///
+  /// In en, this message translates to:
+  /// **'Document origin forensics: reads the editing record inside .docx / .odt / .doc files — time spent editing, number of saves, how widely the editing batches are spread. That evidence is independent of the text verdict and is shown separately from the AI probability. PDFs and images carry no editing history of their own, so they cannot supply it.'**
+  String get helpAdvantage5;
+
+  /// No description provided for @helpAdvantage6.
+  ///
+  /// In en, this message translates to:
+  /// **'It abstains honestly when the evidence is thin: fewer than 5 analysable sentences, fewer than 100 words, fewer than 2 engines taking part, or engines more than 60 percentage points apart all produce \\u201cnot enough evidence to judge\\u201d. Most false accusations start with a confident number handed back on an input too weak to support one.'**
+  String get helpAdvantage6;
+
+  /// No description provided for @settingsAiSampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a known-AI sample'**
+  String get settingsAiSampleTitle;
+
+  /// No description provided for @settingsAiSampleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Background calibration only gathers human samples on its own. To enable learned engine weights you also need pieces known to be AI-generated — paste or import one and it will be analysed and labelled as an AI sample straight away.'**
+  String get settingsAiSampleSubtitle;
+
+  /// No description provided for @settingsAiSampleFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get settingsAiSampleFromClipboard;
+
+  /// No description provided for @settingsAiSampleFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a document'**
+  String get settingsAiSampleFromFile;
+
+  /// No description provided for @settingsAiSampleAnalyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing…'**
+  String get settingsAiSampleAnalyzing;
+
+  /// No description provided for @settingsAiSampleAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'AI sample added — {count} in total'**
+  String settingsAiSampleAdded(int count);
+
+  /// No description provided for @settingsAiSampleTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short to use as a sample (at least 100 words needed)'**
+  String get settingsAiSampleTooShort;
+
+  /// No description provided for @settingsAiSampleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'No usable content was found'**
+  String get settingsAiSampleFailed;
+
   /// No description provided for @helpFormatCoverageTitle.
   ///
   /// In en, this message translates to:
@@ -3011,7 +3071,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is a cross-platform content detection app (iOS / Android / macOS / Windows) whose core AI inference runs entirely on-device. Four independent engines — a Transformer neural classifier, statistical analysis, stylometric analysis, and adversarial paraphrase detection — vote together to judge whether text is AI-generated. Reports show sentence-level evidence, engine contributions, the confidence threshold used for the verdict, and the imported file name when a file was selected.'**
+  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI index (AI probability ÷ the flag threshold you set), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -3035,7 +3095,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsGptZero1.
   ///
   /// In en, this message translates to:
-  /// **'GPTZero\'s processing runs mainly in the cloud and requires uploading your document; all four of TruthLens\'s detection engines run on-device.'**
+  /// **'GPTZero does most of its work in the cloud and requires uploading your document; all four TruthLens engines run inside your own browser, and the content is never sent anywhere.'**
   String get helpVsGptZero1;
 
   /// No description provided for @helpVsGptZero2.
@@ -3083,7 +3143,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsOriginality1.
   ///
   /// In en, this message translates to:
-  /// **'Originality.ai is a per-document subscription that requires uploading your document to the cloud; TruthLens\'s core processing runs on-device with no ongoing subscription needed for detection.'**
+  /// **'Originality.ai charges per piece on a subscription and requires uploading to the cloud; TruthLens does its core work in the browser, with no subscription and no usage cap.'**
   String get helpVsOriginality1;
 
   /// No description provided for @helpVsOriginality2.
@@ -3119,7 +3179,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsWinston1.
   ///
   /// In en, this message translates to:
-  /// **'Winston AI\'s OCR image recognition requires uploading images to the cloud; TruthLens uses each platform\'s native framework (Vision on iOS/macOS, ML Kit on Android, Windows.Media.Ocr on Windows) to recognize text on-device.'**
+  /// **'Winston AI\'s image OCR uploads the picture to the cloud; TruthLens OCR prefers a local OCR server that you configure, and only falls back to the cloud if you supply a Gemini API key yourself — whether the cloud is involved at all stays your decision.'**
   String get helpVsWinston1;
 
   /// No description provided for @helpVsWinston2.
@@ -3233,7 +3293,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep3Body.
   ///
   /// In en, this message translates to:
-  /// **'Three input methods: paste text directly, image OCR, or import a file (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer extractors and rejects garbled output; scanned PDFs automatically fall back to page OCR when OCR is available. Imported files show their file name under the input title and later in the report title; pasted or manually typed text leaves the file name blank. Installed apps use platform-native OCR. Web uses your configured local OCR server first, with optional Gemini fallback only if you provide an API key.'**
+  /// **'Three ways in: paste text directly, recognise an image with OCR, or import a document (txt / md / pdf / docx / doc / odt). PDF import compares two text-layer parsers and discards garbled output; scanned PDFs are recognised page by page when OCR is available. When you import, the filename appears under the input heading and on its own line in the report title; when you paste or type, it stays blank.\n\nOCR prefers the local server you configure, and only uses the cloud fallback if you supply a Gemini API key yourself.'**
   String get helpWorkflowStep3Body;
 
   /// No description provided for @helpWorkflowStep4Title.

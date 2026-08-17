@@ -83,4 +83,44 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+  testWidgets('說明手冊不得殘留 Web-only 之前的跨平台原生描述', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: HelpScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    // Phase 6 已改為 Web-only，手冊不得再宣稱原生跨平台或平台原生 OCR
+    for (final text in [
+      l10n.helpAboutBody,
+      l10n.helpVsWinston1,
+      l10n.helpVsGptZero1,
+      l10n.helpWorkflowStep3Body,
+    ]) {
+      for (final stale in ['iOS', 'Android', 'Windows.Media', 'ML Kit']) {
+        expect(
+          text.contains(stale),
+          isFalse,
+          reason: '「$stale」是 Web-only 之前的過時描述',
+        );
+      }
+    }
+    expect(l10n.helpAboutBody, contains('inside your browser'));
+    // 新增的兩項優勢：來源鑑識與誠實棄權
+    expect(l10n.helpAdvantage5, contains('origin forensics'));
+    expect(l10n.helpAdvantage6, contains('abstains'));
+  });
 }

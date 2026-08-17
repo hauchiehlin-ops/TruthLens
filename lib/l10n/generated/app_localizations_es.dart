@@ -921,6 +921,42 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportAiProbabilityPrefix => 'Probabilidad de IA: ';
 
   @override
+  String get helpAdvantage5 =>
+      'Análisis forense del origen: lee el registro de edición dentro de archivos .docx / .odt / .doc —tiempo dedicado, número de guardados, dispersión de las tandas de edición—. Esa prueba es independiente del veredicto sobre el texto y se muestra aparte de la probabilidad de IA. Los PDF y las imágenes no llevan historial de edición propio, así que no pueden aportarla.';
+
+  @override
+  String get helpAdvantage6 =>
+      'Se abstiene con honestidad cuando la evidencia es escasa: menos de 5 frases analizables, menos de 100 palabras, menos de 2 motores participando, o motores separados por más de 60 puntos porcentuales dan «no hay evidencia suficiente para juzgar». La mayoría de las acusaciones falsas empiezan con un número seguro devuelto sobre una entrada demasiado débil.';
+
+  @override
+  String get settingsAiSampleTitle => 'Añadir una muestra de IA';
+
+  @override
+  String get settingsAiSampleSubtitle =>
+      'La calibración en segundo plano solo recoge muestras humanas por sí sola. Para activar los pesos aprendidos también hacen falta textos que sepas generados por IA: pega o importa uno y se analizará y etiquetará como muestra de IA al momento.';
+
+  @override
+  String get settingsAiSampleFromClipboard => 'Pegar del portapapeles';
+
+  @override
+  String get settingsAiSampleFromFile => 'Importar un documento';
+
+  @override
+  String get settingsAiSampleAnalyzing => 'Analizando…';
+
+  @override
+  String settingsAiSampleAdded(int count) {
+    return 'Muestra de IA añadida: $count en total';
+  }
+
+  @override
+  String get settingsAiSampleTooShort =>
+      'Demasiado corto para servir de muestra (hacen falta al menos 100 palabras)';
+
+  @override
+  String get settingsAiSampleFailed => 'No se encontró contenido utilizable';
+
+  @override
   String get helpFormatCoverageTitle =>
       '2a. Límites de formato en las pruebas de origen';
 
@@ -1931,7 +1967,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens es una aplicación de detección de contenido multiplataforma (iOS / Android / macOS / Windows) cuya inferencia de IA principal se ejecuta completamente en el dispositivo. Cuatro submodelos independientes —el clasificador neuronal Transformer, el análisis estadístico, el análisis estilométrico y la detección de paráfrasis adversarial— votan juntos para determinar si el texto fue generado por IA, con razones explicables oración por oración: no solo un porcentaje de \"parece IA\", sino una explicación del \"por qué\".';
+      'TruthLens es un detector de contenido de IA que funciona **enteramente dentro de tu navegador**. Cuatro motores independientes —un clasificador neuronal Transformer, análisis estadístico, estilometría y detección de reescritura adversaria— votan con pesos si un texto fue generado por IA, y tu documento nunca sale del equipo.\n\nEl informe expresa el veredicto como índice de IA (probabilidad de IA ÷ el umbral de marcado que fijes), junto a pruebas por frase, la contribución de cada motor, las pruebas de origen del documento y el nombre del archivo al importar. Cuando la evidencia es escasa —pocas frases o palabras, o motores demasiado en desacuerdo— lo dice claramente en lugar de forzar una puntuación.';
 
   @override
   String get helpComparisonTitle => 'Comparación con herramientas líderes';
@@ -1945,7 +1981,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'El procesamiento de GPTZero se realiza principalmente en la nube y requiere subir tu documento; los cuatro motores de detección de TruthLens se ejecutan en el dispositivo.';
+      'GPTZero hace casi todo en la nube y exige subir el documento; los cuatro motores de TruthLens se ejecutan en tu propio navegador y el contenido no se envía a ningún sitio.';
 
   @override
   String get helpVsGptZero2 =>
@@ -1975,7 +2011,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai es una suscripción por documento que requiere subir tu documento a la nube; el procesamiento principal de TruthLens se ejecuta en el dispositivo, sin necesidad de suscripción continua para la detección.';
+      'Originality.ai cobra por pieza mediante suscripción y exige subir a la nube; TruthLens hace el trabajo esencial en el navegador, sin suscripción ni límite de uso.';
 
   @override
   String get helpVsOriginality2 =>
@@ -1997,7 +2033,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpVsWinston1 =>
-      'El reconocimiento de imágenes OCR de Winston AI requiere subir imágenes a la nube; TruthLens usa los marcos nativos de cada plataforma (Vision en iOS/macOS, ML Kit en Android, Windows.Media.Ocr en Windows) para reconocer texto en el dispositivo.';
+      'El OCR de imágenes de Winston AI sube la foto a la nube; el OCR de TruthLens prefiere un servidor local que tú configuras y solo recurre a la nube si aportas tú mismo una clave de API de Gemini: que intervenga la nube sigue siendo decisión tuya.';
 
   @override
   String get helpVsWinston2 =>
@@ -2069,7 +2105,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep3Body =>
-      'Tres métodos de entrada: pegar texto directamente, OCR de imagen (reconocido en el dispositivo con marcos nativos de cada plataforma), o importar archivo (txt / md / pdf / docx / doc / odt). El texto debe tener al menos 40 caracteres para enviarse al análisis.';
+      'Tres formas de entrada: pegar texto, reconocer una imagen con OCR o importar un documento (txt / md / pdf / docx / doc / odt). La importación de PDF compara dos analizadores de capa de texto y descarta la salida ilegible; los PDF escaneados se reconocen página a página cuando hay OCR disponible. Al importar, el nombre del archivo aparece bajo el encabezado de entrada y en su propia línea del título del informe; al pegar o escribir, queda en blanco.\n\nEl OCR prefiere el servidor local que configures y solo usa la nube si aportas tú mismo una clave de API de Gemini.';
 
   @override
   String get helpWorkflowStep4Title => 'Ejecutar el análisis';
