@@ -396,7 +396,7 @@
   "reportSentenceCount": "共 {count} 句",
   "reportAiProbabilityPrefix": "AI 几率：",
   "helpFormatCoverageTitle": "二之一、来源证据的格式限制",
-  "helpFormatCoverage": "**重要限制：只有 .docx 与 .odt 带编辑记录。**\n\n| 来源 | 编辑记录 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本质上没有编辑历程 |\n| .doc（旧版） | ❌ 目前未解析 |\n| .txt／.md | ❌ 无容器 |\n| 图片 OCR | ❌ 只剩像素 |\n| 直接粘贴 | ❌ 没有文件 |\n\n这对第 3 支柱有直接影响：**只有带编辑记录的文件会自动累积进「有统计保证」的基准集**。若你的收件流程全是 PDF，有保证的基准集永远不会成长，只会累积无保证的参考样本。\n\n若要让来源证据与自动校准真正发挥作用，请向学生收 .docx 或 .odt 原始档，而不是打印或转存的 PDF。这是流程上的要求，不是软件能绕过的限制——PDF 是输出格式，本来就不记录「怎么写出来的」。",
+  "helpFormatCoverage": "**重要限制：只有 .docx、.odt 与旧版 .doc 带编辑记录。**\n\n| 来源 | 编辑记录 |\n|---|---|\n| .docx／.odt | ✅ 有 |\n| .pdf | ❌ 格式本质上没有编辑历程 |\n| .doc（旧版） | ✅ 有（OLE2 SummaryInformation） |\n| .txt／.md | ❌ 无容器 |\n| 图片 OCR | ❌ 只剩像素 |\n| 直接粘贴 | ❌ 没有文件 |\n\n这对第 3 支柱有直接影响：**只有带编辑记录的文件会自动累积进「有统计保证」的基准集**。若你的收件流程全是 PDF，有保证的基准集永远不会成长，只会累积无保证的参考样本。\n\n若要让来源证据与自动校准真正发挥作用，请向学生收 .docx 或 .odt 原始档，而不是打印或转存的 PDF。这是流程上的要求，不是软件能绕过的限制——PDF 是输出格式，本来就不记录「怎么写出来的」。",
   "provenanceUnsupportedFormat": "{format} 这种格式本身就不携带编辑历程，因此不是「记录被清除」，而是从来就没有。只有 .docx 与 .odt 会记录编辑时长、存档次数与编辑批次。",
   "@provenanceUnsupportedFormat": {
     "placeholders": {

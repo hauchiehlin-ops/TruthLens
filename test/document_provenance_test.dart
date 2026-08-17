@@ -226,6 +226,7 @@ void main() {
   });
 
   _formatCoverageTests();
+  _legacyDocTests();
 
   group('字數計算', () {
     test('CJK 逐字計、拉丁語系以詞計', () {
@@ -239,7 +240,7 @@ void main() {
 void _formatCoverageTests() {
   group('格式覆蓋率', () {
     test('PDF／doc／txt 屬「格式本身不帶紀錄」，而非「被清除」', () {
-      for (final ext in ['pdf', 'doc', 'txt', 'md']) {
+      for (final ext in ['pdf', 'txt', 'md']) {
         final p = DocumentProvenance.fromBytes(
           const [1, 2, 3],
           extension: ext,
@@ -285,8 +286,13 @@ void _formatCoverageTests() {
       expect(p.sourceFormat, 'docx');
     });
 
-    test('只有 docx／odt 被視為帶編輯紀錄的容器格式', () {
-      expect(DocumentProvenance.formatsWithEditingRecord, {'docx', 'odt'});
+    test('帶編輯紀錄的格式為 docx／odt／doc', () {
+      // .doc 走 OLE2 而非 zip，但同樣能取得編輯紀錄
+      expect(DocumentProvenance.formatsWithEditingRecord, {
+        'docx',
+        'odt',
+        'doc',
+      });
     });
   });
 
@@ -337,6 +343,38 @@ void _formatCoverageTests() {
         bodyText: _body(2000),
       );
       expect(p.indicatesHumanAuthorship, isFalse);
+    });
+  });
+}
+
+/// 舊版 .doc 走的是 OLE2 而非 zip，需確認它真的接進了同一條來源證據管線
+void _legacyDocTests() {
+  group('舊版 .doc（OLE2）', () {
+    test('.doc 已列入帶編輯紀錄的格式', () {
+      expect(DocumentProvenance.formatsWithEditingRecord, contains('doc'));
+    });
+
+    test('無法解析的 .doc 歸為「紀錄被清除」而非「格式不支援」', () {
+      // 已是支援格式，只是這份檔案讀不出紀錄
+      final p = DocumentProvenance.fromBytes(
+        List.filled(1024, 0x41),
+        extension: 'doc',
+        bodyText: _body(500),
+      );
+      expect(p.availability, ProvenanceAvailability.stripped);
+      expect(p.sourceFormat, 'doc');
+      expect(p.indicatesHumanAuthorship, isFalse);
+    });
+
+    test('壞掉的 .doc 不會讓匯入流程丟出例外', () {
+      expect(
+        () => DocumentProvenance.fromBytes(
+          const [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1, 0x00],
+          extension: 'doc',
+          bodyText: _body(300),
+        ),
+        returnsNormally,
+      );
     });
   });
 }

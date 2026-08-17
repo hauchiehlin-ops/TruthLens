@@ -13,6 +13,8 @@ import 'dart:convert';
 
 import 'package:archive/archive.dart';
 
+import 'ole_summary_information.dart';
+
 /// 單一來源訊號的種類
 enum ProvenanceSignalKind {
   /// 正文的編輯批次（RSID）過度集中 → 內容可能是單次一起寫入
@@ -116,7 +118,10 @@ class DocumentProvenance {
   static const DocumentProvenance none = DocumentProvenance();
 
   /// 帶有編輯歷程的容器格式。其餘格式不是「被清除」，而是**從來就沒有**。
-  static const Set<String> formatsWithEditingRecord = {'docx', 'odt'};
+  ///
+  /// `.doc` 走的是完全不同的路徑：它是 OLE2／CFB 二進位容器而非 zip，
+  /// 編輯紀錄放在 SummaryInformation 串流中（欄位與 docx 相同）。
+  static const Set<String> formatsWithEditingRecord = {'docx', 'odt', 'doc'};
 
   ProvenanceAvailability get availability {
     if (hasMetadata) return ProvenanceAvailability.available;
@@ -178,9 +183,11 @@ class DocumentProvenance {
   }) {
     final ext = extension.toLowerCase();
     if (!formatsWithEditingRecord.contains(ext)) {
-      // 非 zip 容器格式：直接標明來源，讓介面能說出「此格式不帶編輯紀錄」
+      // 非容器格式：直接標明來源，讓介面能說出「此格式不帶編輯紀錄」
       return DocumentProvenance(sourceFormat: ext);
     }
+    // 舊版 .doc 是 OLE2 二進位，不是 zip，需另一條解析路徑
+    if (ext == 'doc') return _fromLegacyDoc(bytes, bodyText, ext);
     try {
       final archive = ZipDecoder().decodeBytes(bytes);
       return switch (ext) {
@@ -191,6 +198,30 @@ class DocumentProvenance {
     } catch (_) {
       return DocumentProvenance(sourceFormat: ext);
     }
+  }
+
+  /// 舊版 `.doc`：從 OLE2 的 SummaryInformation 串流取出與 docx 相同的欄位。
+  /// 沒有 RSID 這種逐批次標記，因此 [distinctBodyRsids] 維持 null——
+  /// 自動納入基準集的判斷已設計為 null 時不否決。
+  static DocumentProvenance _fromLegacyDoc(
+    List<int> bytes,
+    String bodyText,
+    String ext,
+  ) {
+    final info = OleSummaryInformation.parse(bytes);
+    if (info == null) return DocumentProvenance(sourceFormat: ext);
+    return _withSignals(
+      DocumentProvenance(
+        editingDuration: info.totalEditTime,
+        revisionCount: info.revisionNumber,
+        createdAt: info.createdAt,
+        modifiedAt: info.modifiedAt,
+        application: info.application,
+        declaredWordCount: info.wordCount,
+        bodyWordCount: countWords(bodyText),
+        sourceFormat: ext,
+      ),
+    );
   }
 
   static String? _read(Archive archive, String path) {
