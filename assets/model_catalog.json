@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-07-04",
+  "catalog_version": "2026-08-18",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -7,12 +7,38 @@
       "name": "AI 文字偵測器",
       "variants": [
         {
+          "id": "truthlens-mbert-multilingual-int8",
+          "name": "多語言偵測器（英+中・INT8）",
+          "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
+          "languages": [
+            "en",
+            "zh",
+            "multi"
+          ],
+          "quant": "int8",
+          "size_bytes": 135729550,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_int8.onnx",
+          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_tokenizer.json",
+          "sha256": "89b69ba6b1cf7723d12737937405a31e34e807cb90b68198c7d01258db15af4d",
+          "version": "2.0",
+          "source": "training/ HC3 英+中微調 distilbert-base-multilingual-cased",
+          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.2-models-detector",
+          "license": "資料源 HC3（研究用途）",
+          "note": "HC3 驗證集逐語言 AUC 1.000（中文命中 100%／誤傷 7.5%，英文 100%／3.3%）。分布外手寫樣本 4 題對 3，英文論說文體裁會失手。取代 v0.1 的早期檢查點——後者中文 AUC 僅 0.776，在 0.6 閾值下中文命中率 0%，且 catalog 誤配 RoBERTa tokenizer。評測見 training/evaluate_detector.py"
+        },
+        {
           "id": "chatgpt-detector-roberta-onnx-int8",
           "name": "RoBERTa 偵測器（英文・ChatGPT 專用）",
           "backend": "transformer",
           "tokenizer": "roberta-bpe",
           "ai_label_index": 1,
-          "languages": ["en"],
+          "languages": [
+            "en"
+          ],
           "quant": "int8",
           "size_bytes": 125855419,
           "min_ram_mb": 2048,
@@ -25,26 +51,6 @@
           "source": "onnx-community/chatgpt-detector-roberta-ONNX (Hello-SimpleAI/chatgpt-detector-roberta 的 ONNX 轉換)",
           "license": "MIT",
           "note": "英文 Human/ChatGPT 二元分類器，opset 乾淨可直接下載使用（已實測 P(ChatGPT) 人類文本≈0、AI 風格文本明顯偏高）"
-        },
-        {
-          "id": "truthlens-multilingual-distil-int8",
-          "name": "多語言輕量偵測器（英+中・INT8）",
-          "backend": "transformer",
-          "tokenizer": "roberta-bpe",
-          "ai_label_index": 1,
-          "languages": ["en", "zh", "multi"],
-          "quant": "int8",
-          "size_bytes": 135266304,
-          "min_ram_mb": 2048,
-          "tier": "low",
-          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.1-models-detector/xlmr_detector_int8.onnx",
-          "tokenizer_url": "https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX/resolve/main/tokenizer.json",
-          "sha256": null,
-          "version": "1.0",
-          "source": "training/ HC3 fine-tune (xlm-roberta-base)",
-          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-detector",
-          "license": "資料源 HC3（研究用途）",
-          "note": "本專案以 HC3 英+中微調 XLM-RoBERTa（INT8 量化），體積小、支援多語言/中文。已發布至 GitHub Releases，可直接下載使用"
         }
       ]
     },
@@ -57,7 +63,10 @@
           "name": "DistilGPT2 困惑度模型（INT8）",
           "backend": "transformer",
           "tokenizer": "gpt2-bpe",
-          "languages": ["en", "multi"],
+          "languages": [
+            "en",
+            "multi"
+          ],
           "quant": "int8",
           "size_bytes": 82000000,
           "min_ram_mb": 2048,
@@ -83,7 +92,9 @@
           "backend": "transformer",
           "tokenizer": "bert-wordpiece",
           "ai_label_index": 1,
-          "languages": ["en"],
+          "languages": [
+            "en"
+          ],
           "quant": "int8",
           "size_bytes": 135729550,
           "min_ram_mb": 2048,
@@ -108,7 +119,9 @@
           "name": "Gemma 2 · 2B Instruct（Q4_K_M）",
           "backend": "languageModel",
           "tokenizer": "none",
-          "languages": ["multi"],
+          "languages": [
+            "multi"
+          ],
           "quant": "q4_k_m",
           "size_bytes": 1708582752,
           "min_ram_mb": 6144,

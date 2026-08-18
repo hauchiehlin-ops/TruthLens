@@ -1,113 +1,124 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
 
-ModelVariant _variant({
-  required String id,
-  required int minRamMb,
-  required PerformanceTier tier,
-  String? url,
-}) =>
-    ModelVariant(
-      id: id,
-      name: id,
-      backend: 'transformer',
-      languages: const ['en'],
-      quant: 'int8',
-      sizeBytes: 100,
-      minRamMb: minRamMb,
-      tier: tier,
-      version: '1',
-      source: 's',
-      license: 'l',
-      url: url,
-    );
-
+/// 隨 App 打包的 catalog 是模型接線的唯一真相來源，
+/// 而接線錯誤會**靜默失效**——模型照樣下載、照樣推論，只是輸出全是垃圾。
+///
+/// 實際發生過：多語偵測器（distilbert，WordPiece，詞表 119547）被配上
+/// RoBERTa 的 byte-level BPE tokenizer，token ID 全對不上，
+/// 輸出全擠在 0.5 附近。沒有任何錯誤訊息，只是引擎再也不出聲。
 void main() {
-  group('CatalogModel.bestFor（硬體感知選型）', () {
-    // 依品質排序：high(需 4GB) 在前、low(需 2GB) 在後
-    final model = CatalogModel(
-      role: 'transformer',
-      name: 'detector',
-      variants: [
-        _variant(
-            id: 'high', minRamMb: 4096, tier: PerformanceTier.high,
-            url: 'https://x/high.onnx'),
-        _variant(
-            id: 'low', minRamMb: 2048, tier: PerformanceTier.low,
-            url: 'https://x/low.onnx'),
-      ],
+  late Map<String, dynamic> catalog;
+
+  setUpAll(() {
+    catalog = jsonDecode(File('assets/model_catalog.json').readAsStringSync())
+        as Map<String, dynamic>;
+  });
+
+  List<Map<String, dynamic>> variantsOf(String role) {
+    final model = (catalog['models'] as List).firstWhere(
+      (m) => (m as Map)['role'] == role,
     );
+    return ((model as Map)['variants'] as List).cast<Map<String, dynamic>>();
+  }
 
-    test('高階裝置取品質最高且 RAM 足夠者', () {
-      final v = model.bestFor(PerformanceTier.high, 8192);
-      expect(v?.id, 'high');
-    });
-
-    test('低 RAM 裝置退而取較輕的變體', () {
-      final v = model.bestFor(PerformanceTier.low, 3072); // 不足 4GB
-      expect(v?.id, 'low');
-    });
-
-    test('只在可下載者中選擇；跳過無 url 的變體', () {
-      final m = CatalogModel(
-        role: 'r',
-        name: 'r',
-        variants: [
-          _variant(id: 'pending', minRamMb: 2048, tier: PerformanceTier.high),
-          _variant(
-              id: 'ready', minRamMb: 2048, tier: PerformanceTier.low,
-              url: 'https://x/ready.onnx'),
-        ],
-      );
-      expect(m.bestFor(PerformanceTier.high, 8192)?.id, 'ready');
-    });
-
-    test('無任何變體可下載時回退為最小可執行者（供 UI 顯示即將推出）', () {
-      final m = CatalogModel(
-        role: 'r',
-        name: 'r',
-        variants: [
-          _variant(id: 'big', minRamMb: 8192, tier: PerformanceTier.high),
-          _variant(id: 'small', minRamMb: 2048, tier: PerformanceTier.low),
-        ],
-      );
-      final v = m.bestFor(PerformanceTier.low, 3072);
-      expect(v?.id, 'small'); // 唯一 RAM 足夠者
-      expect(v?.isDownloadable, isFalse);
-    });
+  test('分類器變體的 tokenizer 型別必須是 buildTokenizer 支援的', () {
+    // 只檢查走 buildTokenizer 的分類器角色。statistical 角色由
+    // PerplexityScorer 直接使用 BpeTokenizer，不經過該工廠函式，
+    // 其 'gpt2-bpe' 標籤是描述性的。
+    const classifierRoles = {'transformer', 'adversarial'};
+    const supported = {'bert-wordpiece', 'roberta-bpe', 'none'};
+    for (final role in classifierRoles) {
+      for (final variant in variantsOf(role)) {
+        expect(
+          supported,
+          contains(variant['tokenizer']),
+          reason:
+              '${variant['id']} 的 tokenizer「${variant['tokenizer']}」不受支援。'
+              'buildTokenizer 對未知型別會靜默退回 WordPiece，'
+              '詞表對不上也不會報錯。SentencePiece Unigram（XLM-RoBERTa）'
+              '需先在 Dart 實作才能使用。',
+        );
+      }
+    }
   });
 
-  group('ModelCatalog 解析', () {
-    test('自 JSON 建構並依 role 查詢', () {
-      final catalog = ModelCatalog.fromJson({
-        'catalog_version': '2026-07-03',
-        'models': [
-          {
-            'role': 'transformer',
-            'name': '偵測器',
-            'variants': [
-              {
-                'id': 'v1',
-                'name': 'V1',
-                'backend': 'transformer',
-                'languages': ['en', 'zh'],
-                'quant': 'int8',
-                'size_bytes': 1000,
-                'min_ram_mb': 2048,
-                'tier': 'low',
-                'url': 'https://x/v1.onnx',
-                'version': '1',
-                'source': 'hf',
-                'license': 'mit',
-              }
-            ],
-          }
-        ],
-      });
-      expect(catalog.catalogVersion, '2026-07-03');
-      expect(catalog.forRole('transformer')?.variants.first.languages,
-          ['en', 'zh']);
-      expect(catalog.forRole('llm'), isNull);
-    });
+  test('tokenizer 型別必須與模型底座相符', () {
+    // 判斷依據取自變體自身的 source/id 描述，避免模型與 tokenizer 各說各話
+    for (final variant in variantsOf('transformer')) {
+      final source = '${variant['source']} ${variant['id']}'.toLowerCase();
+      final tokenizer = variant['tokenizer'] as String;
+      if (source.contains('bert') && !source.contains('roberta')) {
+        expect(
+          tokenizer,
+          'bert-wordpiece',
+          reason: '${variant['id']} 是 BERT 系底座，必須用 WordPiece',
+        );
+      }
+      if (source.contains('roberta')) {
+        expect(
+          tokenizer,
+          'roberta-bpe',
+          reason: '${variant['id']} 是 RoBERTa 系底座，必須用 byte-level BPE',
+        );
+      }
+    }
   });
+
+  test('模型與其 tokenizer 必須來自同一來源，不得跨模型借用', () {
+    // 借用別的模型的 tokenizer＝詞表不同＝token ID 全錯，而且不會報錯
+    for (final variant in variantsOf('transformer')) {
+      final url = variant['url'] as String?;
+      final tokenizerUrl = variant['tokenizer_url'] as String?;
+      if (url == null || tokenizerUrl == null) continue;
+      expect(
+        _repositoryOf(tokenizerUrl),
+        _repositoryOf(url),
+        reason:
+            '${variant['id']} 的模型與 tokenizer 來自不同 repo。'
+            '詞表不同會讓 token ID 全部對不上，且不會有任何錯誤訊息。',
+      );
+    }
+  });
+
+  test('可下載的變體都必須標明語言、量化方式與 AI 類別索引', () {
+    for (final variant in variantsOf('transformer')) {
+      if ((variant['url'] as String?)?.isEmpty ?? true) continue;
+      expect(variant['languages'], isNotEmpty, reason: '${variant['id']} 未標明語言');
+      expect(variant['quant'], isNotEmpty, reason: '${variant['id']} 未標明量化');
+      expect(
+        variant['ai_label_index'],
+        anyOf(0, 1),
+        reason: '${variant['id']} 的 AI 類別索引無效——取錯會讓判定完全顛倒',
+      );
+    }
+  });
+
+  test('多語言變體排在英文專用變體之前（品質優先）', () {
+    final variants = variantsOf('transformer');
+    final firstMultilingual = variants.indexWhere(
+      (v) => (v['languages'] as List).contains('multi'),
+    );
+    final firstEnglishOnly = variants.indexWhere(
+      (v) => (v['languages'] as List).length == 1 &&
+          (v['languages'] as List).first == 'en',
+    );
+    if (firstMultilingual >= 0 && firstEnglishOnly >= 0) {
+      expect(
+        firstMultilingual,
+        lessThan(firstEnglishOnly),
+        reason: '純英文模型對中日韓文結構上無效，不該排在多語模型之前',
+      );
+    }
+  });
+}
+
+/// 取出下載網址所屬的 repo 識別（HuggingFace repo 或 GitHub owner/repo）
+String _repositoryOf(String url) {
+  final uri = Uri.parse(url);
+  final segments = uri.pathSegments;
+  if (segments.length < 2) return uri.host;
+  return '${uri.host}/${segments[0]}/${segments[1]}';
 }

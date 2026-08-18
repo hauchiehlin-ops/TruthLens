@@ -1,5 +1,54 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-18（第一百次更新）— 多語偵測器上架，並修掉讓多語路徑從未生效的 tokenizer 錯配
+
+**根因找到了**：`assets/model_catalog.json` 裡的多語變體
+`truthlens-multilingual-distil-int8` 有三處錯誤：
+
+1. `tokenizer: "roberta-bpe"`——但模型是 distilbert 底座（WordPiece，詞表 119547）
+2. `tokenizer_url` 指向 **chatgpt-detector-roberta 的 tokenizer**，詞表完全不同
+3. `source` 寫「xlm-roberta-base」，實際上是 distilbert-base-multilingual-cased
+
+**即使使用者選了這個多語變體，token ID 也全部對不上，而且不會有任何錯誤訊息。**
+模型照樣下載、照樣推論，只是輸出全擠在 0.5 附近——`transformer_engine.dart` 裡
+那段「壓平 0.5 附近 softmax 噪音」的校準邏輯，處理的正是這個症狀。
+
+**而且它指向的產物本身就是未收斂的早期檢查點**：實測分布內 AUC 中文 0.776 /
+英文 0.832，在 0.6 強訊號閾值下對中文 AI 文本命中率 **0%**。
+
+**已上架** [v0.2-models-detector](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.2-models-detector)：
+`mbert_detector_int8.onnx`（135MB）+ 配對正確的 `mbert_detector_tokenizer.json`，
+SHA256 已填入 catalog。catalog 版本更新為 2026-08-18，多語變體排到英文專用變體之前
+（純英文模型對中日韓文結構上無效，不該排在前面）。catalog 由
+`raw.githubusercontent.com/.../main/assets/model_catalog.json` 抓取，提交即發布。
+
+**新增 `test/model_catalog_test.dart`**：這類接線錯誤會靜默失效，沒有測試就沒人會發現。
+五項檢查——tokenizer 型別受支援（`buildTokenizer` 對未知型別會**靜默退回 WordPiece**）、
+tokenizer 與底座相符、模型與 tokenizer 必須同源（跨 repo 借用＝詞表不同）、
+可下載變體須標明語言/量化/AI 索引、多語變體排序優先。
+
+（statistical 角色的 `gpt2-bpe` 標籤不在支援清單內但無誤：`PerplexityScorer`
+直接使用 `BpeTokenizer`，不經過 `buildTokenizer`。測試已排除該角色並註明原因。）
+
+**階段四推進**：改用 `onnx-community/Qwen2.5-0.5B` 的預量化 `model_int8.onnx`（512MB），
+繞開本地量化失敗的問題。`calibrate_multilingual_ppl.py` 新增 ONNX 路徑
+（transformers.js 建置會把 KV cache 攤成 48 個獨立輸入，單次前向餵空張量即可），
+**以 production 會實際執行的產物**量得門檻：
+
+| 語言 | 真人中位數 | AI 中位數 | AUC | 5% 偽陽性預算 |
+|---|---|---|---|---|
+| 中文 | 56.3 | 9.2 | **0.965** | `< 11.19` → 命中 75.0% |
+| 英文 | 30.6 | 4.9 | **0.988** | `< 11.45` → 命中 100% |
+
+校準表改為「模型 → 語言」兩層，Qwen 的門檻已寫入。切換模型時可直接生效，不需重測。
+
+**Qwen 尚未啟用的原因與門檻無關**：`web_js_bridge.dart` 的 `runBatch` 寫死只餵
+`input_ids` 與 `attention_mask`，而 Qwen 的 web 建置另需 `position_ids` 與
+48 個 KV cache 張量。要啟用需同時擴充 Dart 橋接與 `web/` 的 JS 側。
+
+**狀態**：✅ `flutter analyze` 無問題、`flutter test` 370 項全通過（新增 9 項）、
+`flutter build web` 成功、模型已上架、catalog 已修正
+
 ## 2026-08-18（第九十九次更新）— 階段四：多語困惑度模型可行性確認，匯出卡在量化
 
 **先量再下載**：新增 `training/calibrate_multilingual_ppl.py`，用與 DistilGPT2

@@ -7,9 +7,18 @@
 
 判準：AUC ≥ 0.65（PerplexityCalibration.minimumUsableAuc）才值得採用。
 
+**門檻必須用 production 實際會跑的產物量**：量化會位移困惑度尺度。
+production 的 DistilGPT2 對英文真人量到 304，fp32 只有 65.6，就是同一個現象。
+因此本腳本同時支援 HuggingFace（fp32，快速篩選候選）與 ONNX（production 產物，定案）。
+
 用法：
+    # fp32 快速篩選候選模型
     .venv/bin/python calibrate_multilingual_ppl.py --model Qwen/Qwen2.5-0.5B
-    .venv/bin/python calibrate_multilingual_ppl.py --model distilgpt2 --n 150
+
+    # 以 production 的 INT8 ONNX 定案門檻
+    .venv/bin/python calibrate_multilingual_ppl.py \\
+        --onnx artifacts/qwen05b_web/model_int8.onnx \\
+        --tokenizer artifacts/qwen05b_web
 """
 
 from __future__ import annotations
@@ -74,28 +83,84 @@ def operating_point(human: list[float], ai: list[float], budget: float):
     return best
 
 
+def onnx_scorer(onnx_path: str, tokenizer_path: str, max_length: int):
+    """ONNX causal LM 的困惑度計算。
+
+    transformers.js／onnxruntime-web 的建置會把 KV cache 攤成獨立輸入
+    （0.5B 模型為 24 層 × key/value，共 48 個）。單次前向不需要 cache，
+    餵入 past_sequence_length=0 的空張量即可。
+    """
+    import json as _json
+
+    import numpy as np
+    import onnxruntime as ort
+
+    sess = ort.InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+    tok = AutoTokenizer.from_pretrained(tokenizer_path)
+    cfg = _json.loads((Path(tokenizer_path) / "config.json").read_text())
+    layers = cfg["num_hidden_layers"]
+    kv_heads = cfg["num_key_value_heads"]
+    head_dim = cfg["hidden_size"] // cfg["num_attention_heads"]
+    names = {i.name for i in sess.get_inputs()}
+
+    def ppl(text: str) -> float:
+        ids = tok(
+            text, truncation=True, max_length=max_length, return_tensors="np"
+        ).input_ids.astype(np.int64)
+        n = ids.shape[1]
+        if n < 8:
+            return float("nan")
+        feed = {
+            "input_ids": ids,
+            "attention_mask": np.ones((1, n), dtype=np.int64),
+        }
+        if "position_ids" in names:
+            feed["position_ids"] = np.arange(n, dtype=np.int64)[None, :]
+        empty = np.zeros((1, kv_heads, 0, head_dim), dtype=np.float32)
+        for i in range(layers):
+            if f"past_key_values.{i}.key" in names:
+                feed[f"past_key_values.{i}.key"] = empty
+                feed[f"past_key_values.{i}.value"] = empty
+        logits = sess.run(["logits"], feed)[0][0]
+        shifted = logits[:-1]
+        shifted = shifted - shifted.max(-1, keepdims=True)
+        log_probs = shifted - np.log(np.exp(shifted).sum(-1, keepdims=True))
+        nll = -log_probs[np.arange(n - 1), ids[0, 1:]].mean()
+        return math.exp(float(nll))
+
+    return ppl
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="distilgpt2")
+    ap.add_argument("--model", default="distilgpt2", help="HuggingFace 模型 ID（fp32）")
+    ap.add_argument("--onnx", help="改用 ONNX 產物（production 尺度，定案用）")
+    ap.add_argument("--tokenizer", help="ONNX 模式的 tokenizer／config 目錄")
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--max-length", type=int, default=384)
     args = ap.parse_args()
 
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    tok = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model).to(device).eval()
-    params = sum(p.numel() for p in model.parameters())
-    print(f"模型：{args.model}　參數 {params/1e6:.0f}M　裝置 {device}")
+    if args.onnx:
+        if not args.tokenizer:
+            ap.error("--onnx 需同時指定 --tokenizer")
+        ppl = onnx_scorer(args.onnx, args.tokenizer, args.max_length)
+        print(f"模型：{Path(args.onnx).name}（ONNX・production 尺度）")
+    else:
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        tok = AutoTokenizer.from_pretrained(args.model)
+        model = AutoModelForCausalLM.from_pretrained(args.model).to(device).eval()
+        params = sum(p.numel() for p in model.parameters())
+        print(f"模型：{args.model}　參數 {params/1e6:.0f}M　{device}（fp32・僅供篩選）")
 
-    def ppl(text: str) -> float:
-        ids = tok(
-            text, return_tensors="pt", truncation=True, max_length=args.max_length
-        ).input_ids.to(device)
-        if ids.shape[1] < 8:
-            return float("nan")
-        with torch.no_grad():
-            loss = model(ids, labels=ids).loss
-        return math.exp(loss.item())
+        def ppl(text: str) -> float:
+            ids = tok(
+                text, return_tensors="pt", truncation=True, max_length=args.max_length
+            ).input_ids.to(device)
+            if ids.shape[1] < 8:
+                return float("nan")
+            with torch.no_grad():
+                loss = model(ids, labels=ids).loss
+            return math.exp(loss.item())
 
     cells = load_cells(args.n)
     print()

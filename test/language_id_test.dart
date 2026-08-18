@@ -129,12 +129,47 @@ void main() {
       }
     });
 
+    test('換模型後中文才有可用門檻，且與現行模型互不干擾', () {
+      // 現行 DistilGPT2 對中文的區別力為 0，Qwen 量到 0.965。
+      // 同一個語言、不同模型，門檻完全不同——這正是要用兩層表的原因。
+      expect(PerplexityCalibration.of('zh'), isNull);
+
+      final qwenZh = PerplexityCalibration.of(
+        'zh',
+        modelId: 'qwen05b_ppl_int8',
+      );
+      expect(qwenZh, isNotNull);
+      expect(qwenZh!.auc, greaterThan(PerplexityThresholds.minimumUsableAuc));
+      expect(qwenZh.aiCut, lessThan(qwenZh.humanCut));
+
+      expect(
+        PerplexityCalibration.usableLanguages(modelId: 'qwen05b_ppl_int8'),
+        containsAll(['zh', 'en']),
+      );
+    });
+
+    test('每組門檻的 aiCut 不得高於 humanCut（區間會顛倒）', () {
+      for (final model in PerplexityCalibration.calibratedModels) {
+        for (final lang in PerplexityCalibration.measuredLanguages(
+          modelId: model,
+        )) {
+          final t = PerplexityCalibration.of(lang, modelId: model);
+          if (t == null) continue;
+          expect(
+            t.aiCut,
+            lessThanOrEqualTo(t.humanCut),
+            reason: '$model/$lang 的 aiCut 高於 humanCut，兩條規則會互相打架',
+          );
+        }
+      }
+    });
+
     test('無法判定語言時同樣棄權', () {
       expect(PerplexityCalibration.of(DetectedLanguage.undetermined), isNull);
     });
 
-    test('可用語言清單目前只有英文', () {
-      expect(PerplexityCalibration.usableLanguages, ['en']);
+    test('現行模型的可用語言只有英文', () {
+      expect(PerplexityCalibration.usableLanguages(), ['en']);
     });
 
     test('門檻綁定模型：換模型後舊門檻一律失效，不得沿用', () {
