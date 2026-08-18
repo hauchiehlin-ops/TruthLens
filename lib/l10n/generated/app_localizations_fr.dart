@@ -2602,4 +2602,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return '$count échantillon(s) antérieurs ne portent pas d\'étiquette de langue et ne peuvent rejoindre la base d\'aucune langue : le texte original n\'est pas conservé, la langue est donc irrécupérable après coup. Ils seront remplacés au fil des nouvelles analyses.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'Pour ce document, « $variant » a été retenu : la variante que vous avez choisie n\'est pas validée pour $language, celle-ci l\'est.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '« $variant » est multilingue mais n\'a pas été validé sur $language ; son score constitue une preuve plus faible que pour une langue validée.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '« $variant » ne couvre pas $language. Son score est indiqué à titre indicatif et ne doit pas être lu comme une preuve.';
+  }
 }

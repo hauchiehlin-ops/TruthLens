@@ -462,8 +462,10 @@ class ModelManager extends ChangeNotifier {
         aiLabelIndex: variant.aiLabelIndex,
         version: variant.version,
         sizeBytes: variant.sizeBytes,
-        // 安裝當下記下推論所需的額外輸入規格，執行期不必再抓 catalog
+        // 安裝當下記下推論所需的額外輸入規格與語言涵蓋，
+        // 執行期不必再抓 catalog——離線也要能正確路由
         runtimeJson: variant.runtimeJson,
+        languages: variant.languages,
       );
       _roles[role] = r.copyWith(
         installed: installed,

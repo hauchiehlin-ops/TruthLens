@@ -2594,4 +2594,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return 'Há $count amostra(s) anteriores sem marcação de idioma que não podem entrar na base de nenhum idioma — o texto original não é guardado, portanto o idioma não pode ser recuperado depois. Serão substituídas conforme novas análises.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'Este documento passou a usar «$variant»: a variante que você escolheu não é validada para $language, e esta é.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '«$variant» é multilíngue mas não foi validado em $language; trate a pontuação como evidência mais fraca do que num idioma validado.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '«$variant» não cobre $language. A pontuação é apenas informativa e não deve ser lida como evidência em nenhum sentido.';
+  }
 }

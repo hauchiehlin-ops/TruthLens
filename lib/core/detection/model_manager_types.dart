@@ -20,6 +20,15 @@ class InstalledModel {
   final bool imported;
   final String? sha256; // 模型檔內容雜湊，供匯入前偵測重複檔案用
 
+  /// 此模型**經驗證**涵蓋的語言代碼（取自 catalog 的 languages）。
+  ///
+  /// 'multi' 代表「架構為多語言，但未逐語言驗證」——刻意與明確列出的語言碼
+  /// 分開對待：mBERT 架構支援 104 語言，我們只實測過英文與中文，
+  /// 拿它對泰文下結論是在宣稱沒有的證據。
+  ///
+  /// 安裝當下記下；舊版紀錄為空清單，視為涵蓋範圍未知。
+  final List<String> languages;
+
   /// 推論時需要的額外輸入規格（KV cache 的靜態維度），格式見
   /// [ModelVariant.runtimeJson]。安裝當下就記下來，執行期不必再抓 catalog——
   /// 離線也要能正確推論。不需要額外輸入的模型為 null。
@@ -38,7 +47,15 @@ class InstalledModel {
     this.imported = false,
     this.sha256,
     this.runtimeJson,
+    this.languages = const [],
   });
+
+  /// 是否**經驗證**涵蓋此語言
+  bool validatesLanguage(String language) => languages.contains(language);
+
+  /// 架構上可能支援但未逐語言驗證
+  bool plausiblySupports(String language) =>
+      !validatesLanguage(language) && languages.contains('multi');
 
   String get displayName => name ?? variantId;
 
@@ -55,6 +72,7 @@ class InstalledModel {
     'imported': imported,
     'sha256': sha256,
     'runtime_json': runtimeJson,
+    'languages': languages,
   };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) {
@@ -86,6 +104,7 @@ class InstalledModel {
       final sha256 = j['sha256'] as String?;
       // 舊版紀錄沒有此欄位；null 代表模型不需要額外輸入，正是既有模型的情況
       final runtimeJson = j['runtime_json'] as String?;
+      final languages = (j['languages'] as List?)?.whereType<String>().toList();
 
       return InstalledModel(
         role: role,
@@ -100,6 +119,7 @@ class InstalledModel {
         imported: imported,
         sha256: sha256,
         runtimeJson: runtimeJson,
+        languages: languages ?? const [],
       );
     } catch (e) {
       debugPrint('[InstalledModel] ❌ 解析失敗: $e');

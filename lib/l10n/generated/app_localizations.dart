@@ -4120,6 +4120,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} earlier sample(s) carry no language tag and cannot join any language\'s baseline — the original text is not kept, so the language cannot be recovered after the fact. They will be replaced as new documents are analysed.'**
   String settingsCalibrationLegacySamples(int count);
+
+  /// Model routing explanation shown in engine reasons
+  ///
+  /// In en, this message translates to:
+  /// **'Routed to “{variant}” for this document: the variant you selected is not validated for {language}, and this one is.'**
+  String engineRoutedToBetterVariant(String variant, String language);
+
+  /// Model routing explanation shown in engine reasons
+  ///
+  /// In en, this message translates to:
+  /// **'“{variant}” is a multilingual model but has not been validated on {language}, so treat its score as weaker evidence than a validated one.'**
+  String engineLanguageNotValidated(String variant, String language);
+
+  /// Model routing explanation shown in engine reasons
+  ///
+  /// In en, this message translates to:
+  /// **'“{variant}” does not cover {language}. Its score is shown for reference only and should not be read as evidence either way.'**
+  String engineLanguageUnsupported(String variant, String language);
 }
 
 class _AppLocalizationsDelegate

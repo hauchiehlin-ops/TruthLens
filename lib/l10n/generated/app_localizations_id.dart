@@ -2580,4 +2580,19 @@ class AppLocalizationsId extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return 'Ada $count sampel lama tanpa penanda bahasa yang tidak dapat masuk ke basis bahasa mana pun — teks asli tidak disimpan, sehingga bahasanya tidak dapat dipulihkan kemudian. Sampel ini akan tergantikan seiring analisis baru.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'Dokumen ini dialihkan ke \"$variant\": varian yang Anda pilih belum divalidasi untuk $language, sedangkan yang ini sudah.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '\"$variant\" adalah model multibahasa tetapi belum divalidasi pada $language, jadi anggap skornya bukti yang lebih lemah daripada bahasa yang sudah divalidasi.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '\"$variant\" tidak mencakup $language. Skornya hanya untuk rujukan dan tidak boleh dibaca sebagai bukti ke arah mana pun.';
+  }
 }

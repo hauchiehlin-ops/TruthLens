@@ -6,6 +6,7 @@ import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
 import '../model_file_exists.dart';
 import '../model_manager.dart';
+import '../variant_router.dart';
 import '../onnx_detector.dart';
 
 /// 子模型 D：對抗式防禦模組（改寫偵測），ONNX Runtime 端上推論。
@@ -35,16 +36,43 @@ class AdversarialEngine implements DetectionEngine {
   @override
   double get defaultWeight => 0.15;
 
-  InstalledModel? _resolveVariant() {
+  /// 本次分析選用的變體。呼叫端先以 [routeFor] 依文件語言決定，
+  /// 結果暫存於此供 [analyze] 期間的各步驟一致引用。
+  VariantChoice _choice = VariantChoice.none;
+
+  VariantChoice get choice => _choice;
+
+  /// 依文件語言在已安裝變體之間路由。
+  ///
+  /// [variantId] 明確指定時直接鎖定該變體（測試與特定流程用），
+  /// 不參與路由——呼叫端已經表達了確切意圖。
+  VariantChoice routeFor(String? language) {
+    final installed = modelManager.installedVariants('adversarial');
     if (variantId != null) {
-      final installed = modelManager.installedVariants('adversarial');
       for (final m in installed) {
-        if (m.variantId == variantId) return m;
+        if (m.variantId == variantId) {
+          return VariantChoice(
+            variant: m,
+            fit: language == null
+                ? LanguageFit.unknown
+                : fitFor(m, language),
+          );
+        }
       }
-      return null;
+      return VariantChoice.none;
     }
-    return modelManager.activeVariant('adversarial');
+    return chooseVariant(
+      installed: installed,
+      language: language,
+      userActiveVariantId: modelManager.activeVariant('adversarial')?.variantId,
+    );
   }
+
+  /// 本次選用的變體。[isAvailable] 會在 [analyze] 之前被呼叫，那時還沒有
+  /// 文件可供路由，因此退回語言無關的預設選擇（使用者的手動選擇）——
+  /// 「有沒有可用模型」與「哪一顆最適合這份文件」是兩個問題。
+  InstalledModel? _resolveVariant() =>
+      _choice.variant ?? routeFor(null).variant;
 
   Future<(String, String)?> _resolvePaths() async {
     final active = _resolveVariant();
@@ -111,6 +139,33 @@ class AdversarialEngine implements DetectionEngine {
     return null;
   }
 
+  /// 模型選用的說明。只在有話說的時候才產生：使用者選的變體已驗證且沒被
+  /// 覆寫時不必贅述，介面已經顯示「使用中」。
+  List<String> _routingNotes(AppLocalizations l10n, PreprocessedText text) {
+    final variant = _choice.variant;
+    if (variant == null) return const [];
+    final notes = <String>[];
+    if (_choice.overrodeUserChoice) {
+      notes.add(
+        l10n.engineRoutedToBetterVariant(variant.displayName, text.language.code),
+      );
+    }
+    switch (_choice.fit) {
+      case LanguageFit.plausible:
+        notes.add(
+          l10n.engineLanguageNotValidated(variant.displayName, text.language.code),
+        );
+      case LanguageFit.unsupported:
+        notes.add(
+          l10n.engineLanguageUnsupported(variant.displayName, text.language.code),
+        );
+      case LanguageFit.validated:
+      case LanguageFit.unknown:
+        break;
+    }
+    return notes;
+  }
+
   EngineScore _unavailable(AppLocalizations l10n) => EngineScore(
     engineId: id,
     engineName: name(l10n),
@@ -129,6 +184,10 @@ class AdversarialEngine implements DetectionEngine {
     PreprocessedText text,
     AppLocalizations l10n,
   ) async {
+    // 逐文件路由：語言不同，最適用的變體也不同。純英文模型對中文輸入
+    // 從未跨過強訊號閾值，等於權重空轉，而使用者看不出這件事。
+    _choice = routeFor(text.language.isUndetermined ? null : text.language.code);
+
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded(l10n);
@@ -192,6 +251,9 @@ class AdversarialEngine implements DetectionEngine {
         'calibrated_prob': calibratedProbability,
       },
       reasons: [
+        // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。
+        // 一份中文文件被純英文模型判為 0%，使用者有權知道原因出在模型選用。
+        ..._routingNotes(l10n, text),
         if (strongChunkCount == 0)
           l10n.engineReasonAdversarialNoStrongSentence(
             perSentence.length,

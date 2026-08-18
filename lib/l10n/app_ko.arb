@@ -1212,5 +1212,8 @@
   "telemetrySummarySilentEngines": "다른 {count}개 엔진은 실행되었으나 근거를 찾지 못해 투표에서 제외했습니다. '할 말이 없음'이 '사람이 쓴 것 같음'으로 잘못 계산되지 않도록 하기 위함입니다.",
   "engineReasonPplUncalibratedLanguage": "이 문서에는 언어 모델 혼란도를 반영하지 않았습니다. 혼란도 모델(DistilGPT2)은 영어로만 학습되어 중국어·일본어·한국어 텍스트에서는 언어의 예측 가능성이 아니라 바이트의 예측 가능성을 측정합니다. 라벨링된 데이터로 측정한 결과 이들 언어에서 사람과 AI를 구분하는 능력은 0%였으므로, 반영하면 거짓 양성만 늘어납니다.",
   "settingsCalibrationByLanguage": "언어별 기준 집합: {breakdown}",
-  "settingsCalibrationLegacySamples": "언어 표시가 없는 이전 표본이 {count}개 있어 어떤 언어의 기준 집합에도 넣을 수 없습니다. 원문을 보관하지 않으므로 나중에 언어를 알아낼 수 없기 때문입니다. 새 분석이 쌓이면서 교체됩니다."
+  "settingsCalibrationLegacySamples": "언어 표시가 없는 이전 표본이 {count}개 있어 어떤 언어의 기준 집합에도 넣을 수 없습니다. 원문을 보관하지 않으므로 나중에 언어를 알아낼 수 없기 때문입니다. 새 분석이 쌓이면서 교체됩니다.",
+  "engineRoutedToBetterVariant": "이 문서에는 \"{variant}\"을 사용했습니다. 선택한 변형은 {language}에 대해 검증되지 않았고, 이 모델은 검증되었습니다.",
+  "engineLanguageNotValidated": "\"{variant}\"은 다국어 모델이지만 {language}에서 검증되지 않았습니다. 검증된 언어보다 근거가 약한 점수로 보십시오.",
+  "engineLanguageUnsupported": "\"{variant}\"은 {language}를 포함하지 않습니다. 점수는 참고용이며 어느 방향의 근거도 되지 않습니다."
 }

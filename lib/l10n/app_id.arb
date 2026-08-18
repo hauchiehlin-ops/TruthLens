@@ -1212,5 +1212,8 @@
   "telemetrySummarySilentEngines": "{count} mesin lain berjalan tetapi tidak menemukan bukti, dan dikeluarkan dari pemungutan suara agar 'tidak ada yang dilaporkan' tidak salah dihitung sebagai 'tampak ditulis manusia'.",
   "engineReasonPplUncalibratedLanguage": "Perpleksitas tidak diperhitungkan untuk dokumen ini: model perpleksitas (DistilGPT2) hanya dilatih pada bahasa Inggris, dan pada teks Tionghoa, Jepang, atau Korea ia mengukur keterdugaan byte, bukan keterdugaan bahasa. Diukur pada data berlabel, kemampuannya memisahkan tulisan manusia dari AI adalah 0%, jadi memperhitungkannya hanya akan menghasilkan positif palsu.",
   "settingsCalibrationByLanguage": "Basis per bahasa: {breakdown}",
-  "settingsCalibrationLegacySamples": "Ada {count} sampel lama tanpa penanda bahasa yang tidak dapat masuk ke basis bahasa mana pun — teks asli tidak disimpan, sehingga bahasanya tidak dapat dipulihkan kemudian. Sampel ini akan tergantikan seiring analisis baru."
+  "settingsCalibrationLegacySamples": "Ada {count} sampel lama tanpa penanda bahasa yang tidak dapat masuk ke basis bahasa mana pun — teks asli tidak disimpan, sehingga bahasanya tidak dapat dipulihkan kemudian. Sampel ini akan tergantikan seiring analisis baru.",
+  "engineRoutedToBetterVariant": "Dokumen ini dialihkan ke \"{variant}\": varian yang Anda pilih belum divalidasi untuk {language}, sedangkan yang ini sudah.",
+  "engineLanguageNotValidated": "\"{variant}\" adalah model multibahasa tetapi belum divalidasi pada {language}, jadi anggap skornya bukti yang lebih lemah daripada bahasa yang sudah divalidasi.",
+  "engineLanguageUnsupported": "\"{variant}\" tidak mencakup {language}. Skornya hanya untuk rujukan dan tidak boleh dibaca sebagai bukti ke arah mana pun."
 }

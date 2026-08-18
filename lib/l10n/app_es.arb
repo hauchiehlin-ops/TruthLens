@@ -1212,5 +1212,8 @@
   "telemetrySummarySilentEngines": "Otros {count} motor(es) se ejecutaron pero no encontraron pruebas, y quedaron excluidos de la votación para que «nada que informar» no se cuente como «parece escrito por una persona».",
   "engineReasonPplUncalibratedLanguage": "La perplejidad no se tuvo en cuenta en este documento: el modelo de perplejidad (DistilGPT2) se entrenó solo en inglés y, con texto en chino, japonés o coreano, mide la previsibilidad de los bytes, no la del idioma. Medido con datos etiquetados, separa la escritura humana de la de IA un 0 % de las veces, así que contarlo solo generaría falsos positivos.",
   "settingsCalibrationByLanguage": "Base por idioma: {breakdown}",
-  "settingsCalibrationLegacySamples": "Hay {count} muestra(s) anteriores sin etiqueta de idioma que no pueden integrarse en la base de ningún idioma: el texto original no se conserva, así que el idioma no puede recuperarse después. Se irán reemplazando con nuevos análisis."
+  "settingsCalibrationLegacySamples": "Hay {count} muestra(s) anteriores sin etiqueta de idioma que no pueden integrarse en la base de ningún idioma: el texto original no se conserva, así que el idioma no puede recuperarse después. Se irán reemplazando con nuevos análisis.",
+  "engineRoutedToBetterVariant": "Para este documento se usó «{variant}»: la variante que elegiste no está validada para {language} y esta sí.",
+  "engineLanguageNotValidated": "«{variant}» es multilingüe pero no se ha validado en {language}; considera su puntuación una prueba más débil que en un idioma validado.",
+  "engineLanguageUnsupported": "«{variant}» no cubre {language}. Su puntuación se muestra solo como referencia y no debe leerse como prueba en ningún sentido."
 }

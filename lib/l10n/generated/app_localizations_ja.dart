@@ -2509,4 +2509,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return '言語タグのない以前のサンプルが $count 件あり、どの言語の基準集にも入れられません。原文は保存されないため、後から言語を判定できないためです。新しい分析が進むにつれて置き換わります。';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'この文書では「$variant」を使用しました。選択中のバリアントは $language で検証されておらず、こちらは検証済みです。';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '「$variant」は多言語モデルですが $language では検証されていません。検証済みの言語よりも根拠としては弱いものとしてお読みください。';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '「$variant」は $language をカバーしていません。スコアは参考値であり、どちらの方向の根拠にもなりません。';
+  }
 }

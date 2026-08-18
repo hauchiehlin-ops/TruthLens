@@ -2574,4 +2574,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return 'มีตัวอย่างเดิมอีก $count รายการที่ไม่มีการระบุภาษา จึงเข้าชุดฐานของภาษาใดไม่ได้ เนื่องจากไม่ได้เก็บข้อความต้นฉบับไว้ จึงย้อนกลับไปหาภาษาไม่ได้ ตัวอย่างเหล่านี้จะถูกแทนที่เมื่อมีการวิเคราะห์ใหม่';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'เอกสารนี้เปลี่ยนไปใช้ \"$variant\" เนื่องจากตัวเลือกที่คุณเลือกยังไม่ได้ตรวจสอบกับ $language แต่ตัวนี้ตรวจสอบแล้ว';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '\"$variant\" เป็นโมเดลหลายภาษาแต่ยังไม่ได้ตรวจสอบกับ $language จึงควรถือว่าคะแนนเป็นหลักฐานที่อ่อนกว่าภาษาที่ตรวจสอบแล้ว';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '\"$variant\" ไม่ครอบคลุม $language คะแนนแสดงไว้เพื่ออ้างอิงเท่านั้น และไม่ควรถือเป็นหลักฐานในทิศทางใด';
+  }
 }

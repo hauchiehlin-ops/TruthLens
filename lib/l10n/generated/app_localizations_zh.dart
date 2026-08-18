@@ -2477,6 +2477,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return '另有 $count 份較早的樣本沒有語言標記，無法歸入任何語言的基準集——原文預設不保存，事後無從補算語言。隨著新文件分析會逐步替換。';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return '本次改用「$variant」：你選用的變體未針對 $language 驗證，而這一顆有。';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '「$variant」是多語言模型，但未在 $language 上驗證過，其分數的證據強度應低於已驗證的語言。';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '「$variant」不涵蓋 $language。其分數僅供參考，不應被當成任何方向的證據。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4952,6 +4967,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String settingsCalibrationLegacySamples(int count) {
     return '另有 $count 份较早的样本没有语言标记，无法归入任何语言的基准集——原文默认不保存，事后无从补算语言。随着新文件分析会逐步替换。';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return '本次改用「$variant」：你选用的变体未针对 $language 验证，而这一颗有。';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '「$variant」是多语言模型，但未在 $language 上验证过，其分数的证据强度应低于已验证的语言。';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '「$variant」不涵盖 $language。其分数仅供参考，不应被当成任何方向的证据。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7426,5 +7456,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String settingsCalibrationLegacySamples(int count) {
     return '另有 $count 份較早的樣本沒有語言標記，無法歸入任何語言的基準集——原文預設不保存，事後無從補算語言。隨著新文件分析會逐步替換。';
+  }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return '本次改用「$variant」：你選用的變體未針對 $language 驗證，而這一顆有。';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '「$variant」是多語言模型，但未在 $language 上驗證過，其分數的證據強度應低於已驗證的語言。';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '「$variant」不涵蓋 $language。其分數僅供參考，不應被當成任何方向的證據。';
   }
 }

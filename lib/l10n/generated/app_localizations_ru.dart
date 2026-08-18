@@ -2585,4 +2585,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return 'Есть $count более ранних образцов без языковой метки — их нельзя отнести ни к одной языковой базе: исходный текст не сохраняется, поэтому язык уже не восстановить. Они будут вытеснены новыми анализами.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'Для этого документа выбран «$variant»: выбранный вами вариант не проверен для $language, а этот проверен.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '«$variant» — многоязычная модель, но она не проверена на $language; считайте её оценку более слабым свидетельством, чем для проверенного языка.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '«$variant» не охватывает $language. Оценка приводится только для справки и не является свидетельством в любую сторону.';
+  }
 }

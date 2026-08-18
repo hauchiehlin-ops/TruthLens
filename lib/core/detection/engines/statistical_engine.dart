@@ -51,7 +51,9 @@ class StatisticalEngine implements DetectionEngine {
     // 困惑度只在「這個語言有實測門檻」時採計。門檻來自 PerplexityCalibration
     // 查表，而不是寫死的常數：困惑度的尺度隨語言而變（同一顆 DistilGPT2，
     // production 量到英文真人 304、中文 41），套錯門檻就是製造偽陽性。
-    final language = detectLanguage(text.raw);
+    // 語言由 PreprocessedText 統一提供，不各自重算——各引擎若拿到不同的
+    // 語言判定，校準查表與模型路由就會互相矛盾。
+    final language = text.language;
     // 門檻綁定「模型 × 語言」，所以要查的是**目前使用中**那顆模型的門檻。
     // 使用者自行匯入的模型沒有校準資料，查不到就不採計此指標——
     // 沿用別顆模型的門檻等於在未知尺度上下結論。

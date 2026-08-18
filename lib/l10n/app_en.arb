@@ -2071,5 +2071,41 @@
         "type": "int"
       }
     }
+  },
+  "engineRoutedToBetterVariant": "Routed to “{variant}” for this document: the variant you selected is not validated for {language}, and this one is.",
+  "@engineRoutedToBetterVariant": {
+    "description": "Model routing explanation shown in engine reasons",
+    "placeholders": {
+      "variant": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "engineLanguageNotValidated": "“{variant}” is a multilingual model but has not been validated on {language}, so treat its score as weaker evidence than a validated one.",
+  "@engineLanguageNotValidated": {
+    "description": "Model routing explanation shown in engine reasons",
+    "placeholders": {
+      "variant": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "engineLanguageUnsupported": "“{variant}” does not cover {language}. Its score is shown for reference only and should not be read as evidence either way.",
+  "@engineLanguageUnsupported": {
+    "description": "Model routing explanation shown in engine reasons",
+    "placeholders": {
+      "variant": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

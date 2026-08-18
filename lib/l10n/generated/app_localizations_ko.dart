@@ -2518,4 +2518,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return '언어 표시가 없는 이전 표본이 $count개 있어 어떤 언어의 기준 집합에도 넣을 수 없습니다. 원문을 보관하지 않으므로 나중에 언어를 알아낼 수 없기 때문입니다. 새 분석이 쌓이면서 교체됩니다.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return '이 문서에는 \"$variant\"을 사용했습니다. 선택한 변형은 $language에 대해 검증되지 않았고, 이 모델은 검증되었습니다.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '\"$variant\"은 다국어 모델이지만 $language에서 검증되지 않았습니다. 검증된 언어보다 근거가 약한 점수로 보십시오.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '\"$variant\"은 $language를 포함하지 않습니다. 점수는 참고용이며 어느 방향의 근거도 되지 않습니다.';
+  }
 }

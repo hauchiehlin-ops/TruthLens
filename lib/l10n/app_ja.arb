@@ -1212,5 +1212,8 @@
   "telemetrySummarySilentEngines": "他に {count} 個のエンジンが実行されましたが根拠を見つけられず、投票から除外しました。「言うことがない」を「人が書いたように見える」と誤って数えないためです。",
   "engineReasonPplUncalibratedLanguage": "本件では言語モデルのパープレキシティを採用していません。パープレキシティモデル（DistilGPT2）は英語のみで学習されており、中国語・日本語・韓国語ではバイト列の予測しやすさを測っているだけで、言語としての予測しやすさではありません。ラベル付きデータでの実測では、これらの言語で人間とAIを区別できる割合は0%であり、採用しても誤検出を増やすだけです。",
   "settingsCalibrationByLanguage": "言語別の基準集：{breakdown}",
-  "settingsCalibrationLegacySamples": "言語タグのない以前のサンプルが {count} 件あり、どの言語の基準集にも入れられません。原文は保存されないため、後から言語を判定できないためです。新しい分析が進むにつれて置き換わります。"
+  "settingsCalibrationLegacySamples": "言語タグのない以前のサンプルが {count} 件あり、どの言語の基準集にも入れられません。原文は保存されないため、後から言語を判定できないためです。新しい分析が進むにつれて置き換わります。",
+  "engineRoutedToBetterVariant": "この文書では「{variant}」を使用しました。選択中のバリアントは {language} で検証されておらず、こちらは検証済みです。",
+  "engineLanguageNotValidated": "「{variant}」は多言語モデルですが {language} では検証されていません。検証済みの言語よりも根拠としては弱いものとしてお読みください。",
+  "engineLanguageUnsupported": "「{variant}」は {language} をカバーしていません。スコアは参考値であり、どちらの方向の根拠にもなりません。"
 }

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'language_id.dart';
+
 /// 輸入預處理：斷句、斷詞與基礎統計。
 /// 中日韓文字以標點斷句、逐字元計詞；其他語言以空白斷詞。
 class PreprocessedText {
@@ -12,16 +14,22 @@ class PreprocessedText {
   final List<String> analysisChunks;
   final List<int> sentenceChunkIndices;
 
+  /// 文件語言，於預處理時辨識一次。四個引擎、校準查表與模型路由都需要它，
+  /// 各自重算不但浪費，還可能因為傳入不同片段而得到不一致的結果。
+  final DetectedLanguage language;
+
   PreprocessedText._(
     this.raw,
     this.sentences,
     this.sentenceTokens,
     this.analysisChunks,
     this.sentenceChunkIndices,
+    this.language,
   );
 
   factory PreprocessedText.from(String raw) {
     final normalized = raw.trim();
+    final language = detectLanguage(normalized);
     final sentences = <String>[];
     final tokens = <List<String>>[];
     final analysisChunks = <String>[];
@@ -70,6 +78,7 @@ class PreprocessedText {
       tokens,
       analysisChunks,
       sentenceChunkIndices,
+      language,
     );
   }
 

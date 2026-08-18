@@ -2570,4 +2570,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String settingsCalibrationLegacySamples(int count) {
     return '$count earlier sample(s) carry no language tag and cannot join any language\'s baseline — the original text is not kept, so the language cannot be recovered after the fact. They will be replaced as new documents are analysed.';
   }
+
+  @override
+  String engineRoutedToBetterVariant(String variant, String language) {
+    return 'Routed to “$variant” for this document: the variant you selected is not validated for $language, and this one is.';
+  }
+
+  @override
+  String engineLanguageNotValidated(String variant, String language) {
+    return '“$variant” is a multilingual model but has not been validated on $language, so treat its score as weaker evidence than a validated one.';
+  }
+
+  @override
+  String engineLanguageUnsupported(String variant, String language) {
+    return '“$variant” does not cover $language. Its score is shown for reference only and should not be read as evidence either way.';
+  }
 }
