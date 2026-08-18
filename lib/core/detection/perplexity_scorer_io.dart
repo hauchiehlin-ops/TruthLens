@@ -53,6 +53,8 @@ class PerplexityScorer {
     required String modelPath,
     required String tokenizerJsonPath,
     int maxLen = 192,
+      // 原生路徑目前只跑不含 KV cache 的模型；保留參數以對齊 web 版介面。
+    String? runtimeJson,
   }) async {
     _initOrtEnv();
     final session = OrtSession.fromFile(File(modelPath), OrtSessionOptions());

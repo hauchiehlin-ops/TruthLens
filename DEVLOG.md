@@ -1,5 +1,51 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-18（第一百零一次更新）— JS 橋接支援 KV cache，多語困惑度模型上架
+
+**卡住的地方**：`web/ort_bridge.js` 的 `runBatch` 寫死只餵 `input_ids` 與
+`attention_mask`，而 transformers.js 匯出的 causal LM（Qwen2.5-0.5B）另外宣告
+`position_ids` 與逐層攤平的 KV cache——24 層 × key/value 共 48 個輸入。
+
+**JS 側**：`buildFeeds` 改為依 `session.inputNames` 決定要組哪些輸入。
+`position_ids` 自行以 arange 產生；KV cache 餵 `past_sequence_length = 0` 的空張量。
+但 `kv_heads` 與 `head_dim` 是**靜態維度**，必須與模型相符——
+**onnxruntime-web 1.19.2 的 `inputMetadata` 不保證提供形狀**
+（既有的 `resolveInputTypes` 已用 try/catch 包住，正是因為如此），
+所以這兩個數字由 catalog 明確宣告後從 Dart 帶入，不在執行期猜測。
+缺規格時拋出指名原因的錯誤，而不是讓推論在底層失敗。
+
+同時修掉一個潛在錯誤：帶 KV cache 的模型會同時輸出 `present.N.key/value`，
+原本 `Object.keys(results)[0]` 取第一個輸出，可能拿到某一層的 cache 而不是 logits。
+已改為依名稱取 `logits`。
+
+**Dart 側的接線**（catalog → 安裝紀錄 → 引擎 → 橋接）
+- `KvCacheSpec`（layers/heads/head_dim），欄位不齊時回傳 null——
+  半套規格會建出錯誤形狀的張量，比完全沒有規格更難除錯
+- `ModelVariant.runtimeJson`、`InstalledModel.runtimeJson`：
+  **安裝當下就記下來並持久化**，執行期不必再抓 catalog，離線也能正確推論
+- `WebOrtSession.run/runBatch` 新增 `runtimeJson` 具名參數
+- `PerplexityScorer.load` 接受並轉交；原生 io 版對齊介面以維持可編譯
+
+**校準表的鍵改為直接使用 catalog 的 variant id**（`qwen05b-ppl-int8`）。
+兩邊各取一套命名，遲早會出現「換了模型卻仍套用舊門檻」而沒人發現的情況；
+新增測試斷言表中每個模型 ID 都存在於 catalog。統計引擎改查**使用中變體**的門檻，
+使用者自行匯入的模型沒有校準資料則不採計——沿用別顆模型的門檻等於在未知尺度上下結論。
+
+**已上架** [v0.3-models-statistical](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.3-models-statistical)：
+`qwen05b_ppl_int8.onnx`（512MB）+ tokenizer，SHA256 已填入 catalog，
+並附完整的門檻量測依據。catalog 版本 2026-08-18b，多語模型排在 DistilGPT2 之前。
+
+**這條路現在是通的**：使用者在模型管理切換到多語困惑度模型後，
+中文的困惑度指標會以 `qwen05b-ppl-int8` 的門檻生效（AUC 0.965），
+不再因語言未校準而棄權。
+
+**尚未驗證**：以上皆為離線量測與靜態檢查。KV cache 空張量在 onnxruntime-web
+（WASM/WebGPU）實際執行的行為尚未在瀏覽器中確認——Python 端的 onnxruntime
+可行不保證 web 端相同。需實機下載模型後驗證。
+
+**狀態**：✅ `flutter analyze` 無問題、`flutter test` 378 項全通過（新增 8 項）、
+`flutter build web` 成功、`node --check` 通過、模型已上架
+
 ## 2026-08-18（第一百次更新）— 多語偵測器上架，並修掉讓多語路徑從未生效的 tokenizer 錯配
 
 **根因找到了**：`assets/model_catalog.json` 裡的多語變體

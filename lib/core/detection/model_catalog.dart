@@ -8,6 +8,44 @@ library;
 /// 裝置效能分層
 enum PerformanceTier { low, mid, high }
 
+/// 模型在推論時額外需要的輸入。
+///
+/// 分類器只要 input_ids / attention_mask，但 transformers.js 匯出的 causal LM
+/// 會另外宣告 position_ids 與逐層攤平的 KV cache。單次前向不需要 cache 內容，
+/// 但 kv_heads 與 head_dim 是**靜態維度**，必須與模型相符才能建出合法張量。
+///
+/// onnxruntime-web 1.19.2 的 inputMetadata 不保證提供形狀，所以這兩個數字
+/// 由 catalog 明確宣告，不在執行期猜測——猜錯會直接推論失敗。
+class KvCacheSpec {
+  final int layers;
+  final int heads;
+  final int headDim;
+
+  const KvCacheSpec({
+    required this.layers,
+    required this.heads,
+    required this.headDim,
+  });
+
+  static KvCacheSpec? fromJson(Map<String, dynamic>? j) {
+    if (j == null) return null;
+    final layers = (j['layers'] as num?)?.toInt();
+    final heads = (j['heads'] as num?)?.toInt();
+    final headDim = (j['head_dim'] as num?)?.toInt();
+    if (layers == null || heads == null || headDim == null) return null;
+    if (layers <= 0 || heads <= 0 || headDim <= 0) return null;
+    return KvCacheSpec(layers: layers, heads: heads, headDim: headDim);
+  }
+
+  /// 傳給 JS 橋接的表示法。JS 端依模型自己宣告的輸入名稱決定要不要用，
+  /// 這裡只負責提供它猜不到的維度。
+  Map<String, dynamic> toJson() => {
+    'layers': layers,
+    'heads': heads,
+    'headDim': headDim,
+  };
+}
+
 class ModelVariant {
   final String id;
   final String name;
@@ -28,6 +66,9 @@ class ModelVariant {
   final String tokenizer; // bert-wordpiece / roberta-bpe / none
   final int aiLabelIndex; // 輸出兩類中代表 AI 的索引（依模型 id2label）
 
+  /// 此模型需要的 KV cache 輸入規格；null 表示模型不宣告 KV cache
+  final KvCacheSpec? kvCache;
+
   const ModelVariant({
     required this.id,
     required this.name,
@@ -47,7 +88,15 @@ class ModelVariant {
     this.pageUrl,
     this.tokenizer = 'none',
     this.aiLabelIndex = 1,
+    this.kvCache,
   });
+
+  /// 傳給推論橋接的 runtime 規格；不需要額外輸入時為 null
+  String? get runtimeJson =>
+      kvCache == null ? null : '{"kvCache":${_encode(kvCache!.toJson())}}';
+
+  static String _encode(Map<String, dynamic> map) =>
+      '{${map.entries.map((e) => '"${e.key}":${e.value}').join(',')}}';
 
   bool get isDownloadable => url != null && url!.isNotEmpty;
 
@@ -74,6 +123,10 @@ class ModelVariant {
     pageUrl: j['page_url'] as String?,
     tokenizer: j['tokenizer'] as String? ?? 'none',
     aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
+    kvCache: KvCacheSpec.fromJson(
+      (j['runtime'] as Map<String, dynamic>?)?['kv_cache']
+          as Map<String, dynamic>?,
+    ),
   );
 }
 

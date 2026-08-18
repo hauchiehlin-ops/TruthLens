@@ -20,6 +20,11 @@ class InstalledModel {
   final bool imported;
   final String? sha256; // 模型檔內容雜湊，供匯入前偵測重複檔案用
 
+  /// 推論時需要的額外輸入規格（KV cache 的靜態維度），格式見
+  /// [ModelVariant.runtimeJson]。安裝當下就記下來，執行期不必再抓 catalog——
+  /// 離線也要能正確推論。不需要額外輸入的模型為 null。
+  final String? runtimeJson;
+
   const InstalledModel({
     required this.role,
     required this.variantId,
@@ -32,6 +37,7 @@ class InstalledModel {
     this.name,
     this.imported = false,
     this.sha256,
+    this.runtimeJson,
   });
 
   String get displayName => name ?? variantId;
@@ -48,6 +54,7 @@ class InstalledModel {
     'name': name,
     'imported': imported,
     'sha256': sha256,
+    'runtime_json': runtimeJson,
   };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) {
@@ -77,6 +84,8 @@ class InstalledModel {
       final name = j['name'] as String?;
       final imported = j['imported'] as bool? ?? false;
       final sha256 = j['sha256'] as String?;
+      // 舊版紀錄沒有此欄位；null 代表模型不需要額外輸入，正是既有模型的情況
+      final runtimeJson = j['runtime_json'] as String?;
 
       return InstalledModel(
         role: role,
@@ -90,6 +99,7 @@ class InstalledModel {
         name: name,
         imported: imported,
         sha256: sha256,
+        runtimeJson: runtimeJson,
       );
     } catch (e) {
       debugPrint('[InstalledModel] ❌ 解析失敗: $e');

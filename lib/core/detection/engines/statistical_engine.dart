@@ -52,7 +52,14 @@ class StatisticalEngine implements DetectionEngine {
     // 查表，而不是寫死的常數：困惑度的尺度隨語言而變（同一顆 DistilGPT2，
     // production 量到英文真人 304、中文 41），套錯門檻就是製造偽陽性。
     final language = detectLanguage(text.raw);
-    final calibration = PerplexityCalibration.of(language.code);
+    // 門檻綁定「模型 × 語言」，所以要查的是**目前使用中**那顆模型的門檻。
+    // 使用者自行匯入的模型沒有校準資料，查不到就不採計此指標——
+    // 沿用別顆模型的門檻等於在未知尺度上下結論。
+    final calibration = PerplexityCalibration.of(
+      language.code,
+      modelId: modelManager?.activeVariant('statistical')?.variantId ??
+          defaultPerplexityModelId,
+    );
     final ppl = calibration != null ? await _tryPerplexity(text.raw) : null;
     if (calibration == null) {
       reasons.add(l10n.engineReasonPplUncalibratedLanguage);
@@ -140,8 +147,11 @@ class StatisticalEngine implements DetectionEngine {
   /// 判斷完全交給 [PerplexityCalibration] 查表，不再由本引擎寫死語言清單：
   /// 新增一個語言＝跑一次 training/calibrate_perplexity.py 再加一列資料，
   /// 不必動判定邏輯。查不到就棄權——拿英文門檻去量中文，正是要杜絕的錯誤。
-  static bool supportsPerplexity(String raw) =>
-      PerplexityCalibration.of(detectLanguage(raw).code) != null;
+  static bool supportsPerplexity(
+    String raw, {
+    String modelId = defaultPerplexityModelId,
+  }) => PerplexityCalibration.of(detectLanguage(raw).code, modelId: modelId) !=
+      null;
 
   Future<double?> _tryPerplexity(String text) async {
     final mm = modelManager;
@@ -157,6 +167,9 @@ class StatisticalEngine implements DetectionEngine {
         _scorer = await PerplexityScorer.load(
           modelPath: modelPath,
           tokenizerJsonPath: tokPath,
+          // 多語 causal LM（Qwen 等）另需 KV cache 空張量的靜態維度；
+          // DistilGPT2 不宣告 KV cache，此欄為 null。
+          runtimeJson: active.runtimeJson,
         );
         _loadedPath = modelPath;
       }

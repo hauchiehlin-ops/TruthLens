@@ -131,17 +131,18 @@
     });
   }
 
-  async function run(modelId, inputIds, attentionMask, seqLen) {
-    return runBatch(modelId, inputIds, attentionMask, 1, seqLen);
+  async function run(modelId, inputIds, attentionMask, seqLen, runtimeJson) {
+    return runBatch(modelId, inputIds, attentionMask, 1, seqLen, runtimeJson);
   }
 
-  async function runBatch(modelId, inputIds, attentionMask, batchSize, seqLen) {
+  async function runBatch(modelId, inputIds, attentionMask, batchSize, seqLen, runtimeJson) {
     return enqueueOrtWork(async () => {
       const ort = window.ort;
       const entry = state.sessions.get(modelId);
       const session = entry && entry.session ? entry.session : entry;
       if (!session || !ort) throw new Error('模型尚未載入：' + modelId);
       const shape = [batchSize, seqLen];
+      const runtime = parseRuntime(runtimeJson);
       let results;
 
       const inputTypes = (entry && entry.inputTypes) || {};
@@ -151,7 +152,9 @@
 
       for (const tensorType of typeOrder) {
         try {
-          results = await session.run(buildFeeds(ort, tensorType, inputIds, attentionMask, shape));
+          results = await session.run(
+            buildFeeds(ort, tensorType, inputIds, attentionMask, shape, session, runtime),
+          );
           break;
         } catch (e) {
           lastError = e;
@@ -168,7 +171,9 @@
       if (!results) {
         throw lastError || new Error('ONNX 推論失敗');
       }
-      const outputName = Object.keys(results)[0];
+      // 帶 KV cache 的模型會同時輸出 present.N.key/value；logits 未必排在第一個，
+      // 依名稱取才不會誤把某一層的 cache 當成結果。
+      const outputName = results.logits ? 'logits' : Object.keys(results)[0];
       const output = results[outputName];
       return {
         data: Array.from(output.data, numberFromTensorValue),
@@ -182,25 +187,72 @@
     return Number(value);
   }
 
-  function buildFeeds(ort, tensorType, inputIds, attentionMask, shape) {
-    if (tensorType === 'int32') {
-      return {
-        input_ids: new ort.Tensor('int32', Int32Array.from(inputIds), shape),
-        attention_mask: new ort.Tensor('int32', Int32Array.from(attentionMask), shape),
-      };
+  function parseRuntime(runtimeJson) {
+    if (!runtimeJson) return null;
+    try {
+      return JSON.parse(runtimeJson);
+    } catch (e) {
+      console.warn('[truthlensOrt] runtime 規格解析失敗，忽略：', e);
+      return null;
     }
-    return {
-      input_ids: new ort.Tensor(
-        'int64',
-        BigInt64Array.from(Array.from(inputIds, (v) => BigInt(v))),
-        shape,
-      ),
-      attention_mask: new ort.Tensor(
-        'int64',
-        BigInt64Array.from(Array.from(attentionMask, (v) => BigInt(v))),
-        shape,
-      ),
+  }
+
+  function makeIntTensor(ort, tensorType, values, shape) {
+    if (tensorType === 'int32') {
+      return new ort.Tensor('int32', Int32Array.from(values), shape);
+    }
+    return new ort.Tensor(
+      'int64',
+      BigInt64Array.from(Array.from(values, (v) => BigInt(v))),
+      shape,
+    );
+  }
+
+  // 依模型實際宣告的輸入組裝 feeds。
+  //
+  // 分類器只要 input_ids / attention_mask，但 transformers.js 匯出的 causal LM
+  // （如 Qwen2.5-0.5B）另外宣告 position_ids 與逐層攤平的 KV cache
+  // （24 層 × key/value 共 48 個輸入）。單次前向不需要 cache，餵入
+  // past_sequence_length = 0 的空張量即可，但 kv_heads 與 head_dim 是靜態維度，
+  // 必須與模型相符——onnxruntime-web 1.19.2 的 inputMetadata 不保證提供形狀，
+  // 因此這兩個數字由 Dart 依 catalog 的 runtime 規格帶入，不在此猜測。
+  function buildFeeds(ort, tensorType, inputIds, attentionMask, shape, session, runtime) {
+    const feeds = {
+      input_ids: makeIntTensor(ort, tensorType, inputIds, shape),
+      attention_mask: makeIntTensor(ort, tensorType, attentionMask, shape),
     };
+
+    const names = (session && session.inputNames) || [];
+    if (names.length === 0) return feeds;
+
+    const [batchSize, seqLen] = shape;
+
+    if (names.indexOf('position_ids') >= 0) {
+      const positions = new Array(batchSize * seqLen);
+      for (let b = 0; b < batchSize; b++) {
+        for (let i = 0; i < seqLen; i++) positions[b * seqLen + i] = i;
+      }
+      feeds.position_ids = makeIntTensor(ort, tensorType, positions, shape);
+    }
+
+    const cacheNames = names.filter((n) => n.indexOf('past_key_values.') === 0);
+    if (cacheNames.length > 0) {
+      const kv = runtime && runtime.kvCache;
+      if (!kv || !kv.heads || !kv.headDim) {
+        throw new Error(
+          '模型宣告了 ' + cacheNames.length + ' 個 KV cache 輸入，' +
+            '但 catalog 未提供 runtime.kv_cache 的 heads/head_dim。' +
+            '這兩個是靜態維度，猜錯會直接推論失敗。',
+        );
+      }
+      // past_sequence_length = 0：空張量，但 rank 與靜態維度仍須正確
+      const dims = [batchSize, kv.heads, 0, kv.headDim];
+      for (const name of cacheNames) {
+        feeds[name] = new ort.Tensor('float32', new Float32Array(0), dims);
+      }
+    }
+
+    return feeds;
   }
 
   function resolveInputTypes(session) {

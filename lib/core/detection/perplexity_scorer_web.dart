@@ -3,19 +3,31 @@ import 'dart:math' as math;
 import 'bpe_tokenizer.dart';
 import 'web_js_bridge.dart';
 
-/// 以 onnxruntime-web 執行 distilgpt2（causal LM）計算文本困惑度（統計引擎 B）。
+/// 以 onnxruntime-web 執行 causal LM 計算文本困惑度（統計引擎 B）。
 /// [modelPath]/[tokenizerJsonPath] 為 OPFS 儲存鍵，語意與 [onnx_detector_web.dart] 相同。
 class PerplexityScorer {
   final WebOrtSession _session;
   final BpeTokenizer _tokenizer;
   final int maxLen;
 
-  PerplexityScorer._(this._session, this._tokenizer, this.maxLen);
+  /// 帶給橋接層的 runtime 規格（KV cache 的靜態維度）。
+  /// DistilGPT2 這類不宣告 KV cache 的模型為 null。
+  final String? runtimeJson;
 
+  PerplexityScorer._(
+    this._session,
+    this._tokenizer,
+    this.maxLen,
+    this.runtimeJson,
+  );
+
+  /// [runtimeJson] 由 catalog 的 runtime 規格產生，供 transformers.js 匯出的
+  /// causal LM（Qwen 等）建立 KV cache 空張量；模型不需要時傳 null 即可。
   static Future<PerplexityScorer> load({
     required String modelPath,
     required String tokenizerJsonPath,
     int maxLen = 192,
+    String? runtimeJson,
   }) async {
     final bytes = await WebFs.readBytes(modelPath);
     if (bytes == null) {
@@ -25,7 +37,7 @@ class PerplexityScorer {
     final tokenizer = BpeTokenizer.fromTokenizerJson(tokenizerJson);
     final session = WebOrtSession(modelPath);
     await session.load(bytes);
-    return PerplexityScorer._(session, tokenizer, maxLen);
+    return PerplexityScorer._(session, tokenizer, maxLen, runtimeJson);
   }
 
   /// 計算困惑度；文本過短回傳 null。
@@ -34,7 +46,11 @@ class PerplexityScorer {
     if (ids.length < 2) return null;
 
     final mask = List.filled(ids.length, 1);
-    final (data, dims) = await _session.run(ids, mask);
+    final (data, dims) = await _session.run(
+      ids,
+      mask,
+      runtimeJson: runtimeJson,
+    );
     // logits 形狀 [1, seq, vocab] → data 為攤平陣列，依 dims 還原每個 token 位置的一列 vocab。
     final seq = dims.length >= 2 ? dims[dims.length - 2] : ids.length;
     final vocab = dims.isNotEmpty ? dims.last : (data.length ~/ seq);

@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-18",
+  "catalog_version": "2026-08-18b",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -58,6 +58,37 @@
       "role": "statistical",
       "name": "困惑度語言模型（統計分析）",
       "variants": [
+        {
+          "id": "qwen05b-ppl-int8",
+          "name": "多語言困惑度模型（Qwen2.5-0.5B・INT8）",
+          "backend": "transformer",
+          "tokenizer": "gpt2-bpe",
+          "languages": [
+            "en",
+            "zh",
+            "multi"
+          ],
+          "quant": "int8",
+          "size_bytes": 512096557,
+          "min_ram_mb": 4096,
+          "tier": "mid",
+          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.3-models-statistical/qwen05b_ppl_int8.onnx",
+          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.3-models-statistical/qwen05b_ppl_tokenizer.json",
+          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.3-models-statistical",
+          "sha256": "ee7722d911efa7f7a6e12a13680216793bd3e8a6cfa4ec7b4416cbf04dc727df",
+          "version": "1.0",
+          "source": "onnx-community/Qwen2.5-0.5B（onnxruntime-web 預量化建置）",
+          "license": "Apache-2.0",
+          "note": "HC3 實測中文 AUC 0.965、英文 0.988，取代 DistilGPT2（中文 AUC 僅 0.50，對真人文章 100% 誤判為偏 AI）。門檻已以本 INT8 產物量定，見 lib/core/detection/perplexity_calibration.dart 的 qwen05b_ppl_int8 條目",
+          "runtime": {
+            "position_ids": true,
+            "kv_cache": {
+              "layers": 24,
+              "heads": 2,
+              "head_dim": 64
+            }
+          }
+        },
         {
           "id": "distilgpt2-ppl-int8",
           "name": "DistilGPT2 困惑度模型（INT8）",

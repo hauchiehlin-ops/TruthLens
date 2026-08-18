@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/detection/perplexity_calibration.dart';
 import 'package:truthlens/core/utils/language_id.dart';
@@ -136,14 +139,14 @@ void main() {
 
       final qwenZh = PerplexityCalibration.of(
         'zh',
-        modelId: 'qwen05b_ppl_int8',
+        modelId: 'qwen05b-ppl-int8',
       );
       expect(qwenZh, isNotNull);
       expect(qwenZh!.auc, greaterThan(PerplexityThresholds.minimumUsableAuc));
       expect(qwenZh.aiCut, lessThan(qwenZh.humanCut));
 
       expect(
-        PerplexityCalibration.usableLanguages(modelId: 'qwen05b_ppl_int8'),
+        PerplexityCalibration.usableLanguages(modelId: 'qwen05b-ppl-int8'),
         containsAll(['zh', 'en']),
       );
     });
@@ -179,6 +182,25 @@ void main() {
         PerplexityCalibration.of('en', modelId: 'some_multilingual_lm_int8'),
         isNull,
       );
+    });
+
+    test('校準表的鍵必須存在於 catalog，否則永遠查不到', () {
+      // 兩邊各取一套命名，遲早會出現「換了模型卻仍套用舊門檻」而沒人發現
+      final catalog =
+          jsonDecode(File('assets/model_catalog.json').readAsStringSync())
+              as Map<String, dynamic>;
+      final ids = <String>{
+        for (final model in catalog['models'] as List)
+          for (final v in ((model as Map)['variants'] as List))
+            (v as Map)['id'] as String,
+      };
+      for (final modelId in PerplexityCalibration.calibratedModels) {
+        expect(
+          ids,
+          contains(modelId),
+          reason: '校準表的「$modelId」在 catalog 中不存在，這組門檻永遠不會被套用',
+        );
+      }
     });
   });
 }

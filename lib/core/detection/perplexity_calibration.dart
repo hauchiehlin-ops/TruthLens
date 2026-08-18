@@ -43,9 +43,11 @@ class PerplexityThresholds {
   static const double minimumUsableAuc = 0.65;
 }
 
-/// 目前使用的困惑度模型識別字串。換模型時整張表都必須重測——
-/// 門檻綁定的是「模型 × 語言」，不是語言本身。
-const String perplexityModelId = 'distilgpt2_ppl_int8';
+/// 沒有指定模型時採用的預設鍵，對應 catalog 中最早的困惑度模型。
+///
+/// 表的鍵**刻意直接使用 catalog 的 variant id**：兩邊各取一套命名，
+/// 遲早會出現「換了模型卻仍套用舊門檻」而沒人發現的情況。
+const String defaultPerplexityModelId = 'distilgpt2-ppl-int8';
 
 /// 校準表：模型 → 語言 → 門檻。
 ///
@@ -56,7 +58,7 @@ const String perplexityModelId = 'distilgpt2_ppl_int8';
 /// 未列出的語言不是「不支援」，是「尚未取得該語言的標註語料」。
 /// 模型本身照跑，只是我們沒有資格用它的數字下結論。
 const Map<String, Map<String, PerplexityThresholds>> _table = {
-  'distilgpt2_ppl_int8': {
+  'distilgpt2-ppl-int8': {
     'en': PerplexityThresholds(
       aiCut: 60,
       humanCut: 150,
@@ -87,7 +89,7 @@ const Map<String, Map<String, PerplexityThresholds>> _table = {
   // 尚未啟用的原因與門檻無關：Dart→JS 橋接目前只餵 input_ids 與
   // attention_mask，而 Qwen 的 web 建置另需 position_ids 與 48 個
   // KV cache 張量，需先擴充 web_js_bridge.dart 與 web/ 的 JS 側。
-  'qwen05b_ppl_int8': {
+  'qwen05b-ppl-int8': {
     'zh': PerplexityThresholds(
       aiCut: 11.19,
       humanCut: 18.67,
@@ -120,7 +122,7 @@ abstract final class PerplexityCalibration {
   /// 拿英文門檻量中文的同一種錯誤，只是換了個軸。
   static PerplexityThresholds? of(
     String languageCode, {
-    String modelId = perplexityModelId,
+    String modelId = defaultPerplexityModelId,
   }) {
     final entry = _table[modelId]?[languageCode];
     if (entry == null || !entry.isUsable) return null;
@@ -131,17 +133,17 @@ abstract final class PerplexityCalibration {
   /// 用於區分「量過但沒用」與「根本還沒量」，兩者要對使用者說不同的話。
   static bool hasRecord(
     String languageCode, {
-    String modelId = perplexityModelId,
+    String modelId = defaultPerplexityModelId,
   }) => _table[modelId]?.containsKey(languageCode) ?? false;
 
   /// 已量測過的語言代碼，供設定頁或說明手冊呈現涵蓋範圍
   static Iterable<String> measuredLanguages({
-    String modelId = perplexityModelId,
+    String modelId = defaultPerplexityModelId,
   }) => _table[modelId]?.keys ?? const [];
 
   /// 目前實際採用的語言代碼
   static Iterable<String> usableLanguages({
-    String modelId = perplexityModelId,
+    String modelId = defaultPerplexityModelId,
   }) =>
       (_table[modelId] ?? const {}).entries
           .where((e) => e.value.isUsable)

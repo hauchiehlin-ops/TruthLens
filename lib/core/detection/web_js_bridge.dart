@@ -105,6 +105,7 @@ external JSPromise<_OrtRunResult> _ortRunBatch(
   JSInt32Array attentionMask,
   JSNumber batchSize,
   JSNumber seqLen,
+  JSString? runtimeJson,
 );
 
 @JS('truthlensOrt.releaseModel')
@@ -134,15 +135,25 @@ class WebOrtSession {
   /// （分類器為 [1,2]，困惑度模型為 [1,seq,vocab]）。
   Future<(List<double>, List<int>)> run(
     List<int> inputIds,
-    List<int> attentionMask,
-  ) => runBatch(inputIds, attentionMask, 1, inputIds.length);
+    List<int> attentionMask, {
+    String? runtimeJson,
+  }) => runBatch(
+    inputIds,
+    attentionMask,
+    1,
+    inputIds.length,
+    runtimeJson: runtimeJson,
+  );
 
+  /// [runtimeJson] 提供 JS 端猜不到的靜態維度（KV cache 的 heads/head_dim）。
+  /// JS 端依模型自己宣告的輸入名稱決定要不要用；不需要時傳 null。
   Future<(List<double>, List<int>)> runBatch(
     List<int> inputIds,
     List<int> attentionMask,
     int batchSize,
-    int sequenceLength,
-  ) async {
+    int sequenceLength, {
+    String? runtimeJson,
+  }) async {
     final ids = Int32List.fromList(inputIds).toJS;
     final mask = Int32List.fromList(attentionMask).toJS;
     final result = await _ortRunBatch(
@@ -151,6 +162,7 @@ class WebOrtSession {
       mask,
       batchSize.toJS,
       sequenceLength.toJS,
+      runtimeJson?.toJS,
     ).toDart;
     final data = result.data.toDart.map((n) => n.toDartDouble).toList();
     final dims = result.dims.toDart.map((n) => n.toDartDouble.toInt()).toList();
