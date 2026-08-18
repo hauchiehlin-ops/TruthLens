@@ -9,6 +9,7 @@ import '../../core/detection/model_catalog_service.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/services/document_importer.dart';
+import '../../core/services/document_provenance.dart';
 import '../../core/services/ocr_config_notifier.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
@@ -47,6 +48,11 @@ class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
   double _rightPanelWidth = 400; // 右側面板預設寬度
   String _sourceFileName = '';
+
+  /// 匯入的格式是否不含編輯紀錄（PDF、圖片 OCR、純文字、直接貼上）。
+  /// 這個提醒必須在**分析之前**出現：等使用者看到報告才說「這種格式沒有
+  /// 來源證據」，他已經分析完了，而重新取得原始檔的成本遠低於重跑一次。
+  bool _importLacksEditingRecord = false;
 
   @override
   void initState() {
@@ -109,6 +115,7 @@ class _InputScreenState extends State<InputScreen> {
     if (data?.text != null && data!.text!.isNotEmpty) {
       _controller.text = data.text!;
       _sourceFileName = '';
+    _importLacksEditingRecord = false;
       setState(() {});
     }
   }
@@ -134,6 +141,7 @@ class _InputScreenState extends State<InputScreen> {
     final text = OcrPostProcessor.clean(rawText);
     _controller.text = text;
     _sourceFileName = '';
+    _importLacksEditingRecord = false;
     setState(() {});
     _showFloatingSnackBar(l10n.inputOcrRecognized(text.length));
   }
@@ -141,6 +149,7 @@ class _InputScreenState extends State<InputScreen> {
   void _clearInput() {
     _controller.clear();
     _sourceFileName = '';
+    _importLacksEditingRecord = false;
     setState(() {});
   }
 
@@ -179,11 +188,54 @@ class _InputScreenState extends State<InputScreen> {
     }
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
+    _importLacksEditingRecord =
+        doc.provenance.availability ==
+        ProvenanceAvailability.unsupportedFormat;
     setState(() {});
     _showFloatingSnackBar(
       doc.usedPdfOcr
           ? l10n.inputPdfOcrSuccess(doc.fileName, doc.text.length)
           : l10n.inputImportSuccess(doc.fileName, doc.text.length),
+    );
+  }
+
+  /// 匯入了不含編輯紀錄的格式時的持久提醒。
+  ///
+  /// 為什麼值得佔版面：對現代模型的輸出，文本統計的分辨力已相當有限
+  /// （實測 2026 世代 LLM 的中文散文困惑度落在真人分布內），
+  /// 而 .docx／.odt 的編輯歷程不受模型世代影響。能取得原始檔時，
+  /// 那條證據比整個文本分析都可靠——所以這個提醒要在分析之前出現。
+  Widget _missingEditingRecordBanner(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: scheme.secondaryContainer.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(LucideIcons.fileSearch, size: 18, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              l10n.inputNoEditingRecordHint,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.x, size: 16),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            visualDensity: VisualDensity.compact,
+            onPressed: () =>
+                setState(() => _importLacksEditingRecord = false),
+          ),
+        ],
+      ),
     );
   }
 
@@ -340,6 +392,7 @@ class _InputScreenState extends State<InputScreen> {
                                     onChanged: (value) {
                                       if (value.trim().isEmpty) {
                                         _sourceFileName = '';
+    _importLacksEditingRecord = false;
                                       }
                                       setState(() {});
                                     },
@@ -358,6 +411,8 @@ class _InputScreenState extends State<InputScreen> {
                               ),
                             ),
                             const SizedBox(height: 6),
+                            if (_importLacksEditingRecord)
+                              _missingEditingRecordBanner(context),
                             MergeSemantics(
                               child: Row(
                                 children: [
@@ -510,6 +565,7 @@ class _InputScreenState extends State<InputScreen> {
                               onChanged: (value) {
                                 if (value.trim().isEmpty) {
                                   _sourceFileName = '';
+    _importLacksEditingRecord = false;
                                 }
                                 setState(() {});
                               },
@@ -528,6 +584,8 @@ class _InputScreenState extends State<InputScreen> {
                         ),
                       ),
                       const SizedBox(height: 6),
+                      if (_importLacksEditingRecord)
+                        _missingEditingRecordBanner(context),
                       MergeSemantics(
                         child: Row(
                           children: [

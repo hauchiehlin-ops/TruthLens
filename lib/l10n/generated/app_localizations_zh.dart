@@ -2501,6 +2501,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return '本次未採計語言模型困惑度：目前使用的模型「$model」尚未量測過 $language 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      '這個格式不含編輯紀錄。PDF、圖片與直接貼上的文字都沒有「怎麼寫出來的」歷程，因此分析完全依賴文本統計。若能取得 .docx、.odt 或 .doc 原始檔，其編輯歷程是強得多的證據——而且不像文本統計，它不會隨語言模型進步而失效。';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      '低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5000,6 +5008,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return '本次未采计语言模型困惑度：目前使用的模型「$model」尚未量测过 $language 的门槛。没有校准尺度时，原始数值不代表任何意义，因此宁可不采计也不猜。';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      '这个格式不含编辑记录。PDF、图片与直接粘贴的文字都没有「怎么写出来的」历程，因此分析完全依赖文本统计。若能取得 .docx、.odt 或 .doc 原始档，其编辑历程是强得多的证据——而且不像文本统计，它不会随语言模型进步而失效。';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      '低分不等于确认由人撰写。本次没有可用的来源证据，判定仅来自文本统计；文本统计能稳定指认罐头式写作，但指认不了现代模型写得好的输出。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7499,4 +7515,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return '本次未採計語言模型困惑度：目前使用的模型「$model」尚未量測過 $language 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      '這個格式不含編輯紀錄。PDF、圖片與直接貼上的文字都沒有「怎麼寫出來的」歷程，因此分析完全依賴文本統計。若能取得 .docx、.odt 或 .doc 原始檔，其編輯歷程是強得多的證據——而且不像文本統計，它不會隨語言模型進步而失效。';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      '低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。';
 }

@@ -195,6 +195,20 @@ class ProfessionalReportHeader extends StatelessWidget {
   }
 }
 
+/// 低分是否需要附上「不等於確認由人撰寫」的警語。
+///
+/// 條件：判定偏向人類、且沒有來源證據支撐。有編輯紀錄時低分是有依據的；
+/// 沒有時，低分只代表「文本統計沒找到痕跡」，而文本統計對現代模型的輸出
+/// 分辨力有限。棄權時不加——報告已明說不做判定，再加一句只是重複。
+bool _lowScoreNeedsCaveat(DetectionResult result) {
+  if (result.shouldAbstain) return false;
+  if (result.verdict != Verdict.human &&
+      result.verdict != Verdict.likelyHuman) {
+    return false;
+  }
+  return !result.provenance.indicatesHumanAuthorship;
+}
+
 /// 判定摘要卡片（大）
 class _VerdictSummaryCard extends StatelessWidget {
   final DetectionResult result;
@@ -303,6 +317,48 @@ class _VerdictSummaryCard extends StatelessWidget {
                 if (!result.shouldAbstain) ...[
                   const SizedBox(height: 12),
                   _VerdictTierList(result: result, l10n: l10n),
+                ],
+                // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
+                // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
+                // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
+                // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
+                // 旁邊，塞進下方的說明卡等於沒說。
+                if (_lowScoreNeedsCaveat(result)) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.28),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          LucideIcons.info,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.reportLowScoreNotProofOfHuman,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.92),
+                                  height: 1.4,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ],
             ),

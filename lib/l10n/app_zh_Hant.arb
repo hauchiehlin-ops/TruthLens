@@ -1231,5 +1231,7 @@
   "engineLanguageNotValidated": "「{variant}」是多語言模型，但未在 {language} 上驗證過，其分數的證據強度應低於已驗證的語言。",
   "engineLanguageUnsupported": "「{variant}」不涵蓋 {language}。其分數僅供參考，不應被當成任何方向的證據。",
   "engineReasonPplLanguageUndetermined": "本次未採計語言模型困惑度：無法判定這份文件的語言，因此沒有可比對的校準門檻。猜一個語言就會套錯尺度，而那正是這道檢查要避免的錯誤。",
-  "engineReasonPplNoCalibrationForModel": "本次未採計語言模型困惑度：目前使用的模型「{model}」尚未量測過 {language} 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。"
+  "engineReasonPplNoCalibrationForModel": "本次未採計語言模型困惑度：目前使用的模型「{model}」尚未量測過 {language} 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。",
+  "inputNoEditingRecordHint": "這個格式不含編輯紀錄。PDF、圖片與直接貼上的文字都沒有「怎麼寫出來的」歷程，因此分析完全依賴文本統計。若能取得 .docx、.odt 或 .doc 原始檔，其編輯歷程是強得多的證據——而且不像文本統計，它不會隨語言模型進步而失效。",
+  "reportLowScoreNotProofOfHuman": "低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。"
 }

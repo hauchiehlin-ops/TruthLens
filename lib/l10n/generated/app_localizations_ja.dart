@@ -2533,4 +2533,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return '言語モデルのパープレキシティは採用していません。使用中のモデル「$model」には $language のしきい値がまだ測定されていません。校正済みの尺度がなければ生の値に意味はないため、推測せずに除外しています。';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'この形式には編集記録がありません。PDF・画像・貼り付けたテキストは「どう書かれたか」の履歴を持たないため、分析は文章統計だけに依存します。元の .docx / .odt / .doc を入手できるなら、その編集履歴のほうがはるかに強い根拠になります。しかも文章統計と違い、言語モデルの進歩によって弱まりません。';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'スコアが低いことは、人が書いたことの確認にはなりません。今回は来歴の根拠がなく、この判定は文章統計だけに基づいています。文章統計は型どおりの文章は確実に検出できますが、現行モデルのよく書けた出力は検出できません。';
 }

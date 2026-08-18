@@ -2604,4 +2604,12 @@ class AppLocalizationsId extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return 'Perpleksitas tidak diperhitungkan: model yang digunakan (\"$model\") belum memiliki ambang terukur untuk $language. Tanpa skala terkalibrasi, nilai mentahnya tidak bermakna, jadi diabaikan alih-alih ditebak.';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'Format ini tidak membawa catatan penyuntingan. PDF, gambar, dan teks yang ditempel tidak menyimpan riwayat cara penulisannya, sehingga analisis sepenuhnya bertumpu pada statistik teks. Jika Anda bisa memperoleh berkas .docx, .odt, atau .doc aslinya, riwayat suntingannya adalah bukti yang jauh lebih kuat — dan tidak seperti statistik teks, kekuatannya tidak menurun seiring membaiknya model bahasa.';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'Skor rendah bukan konfirmasi bahwa tulisan ini dibuat manusia. Tanpa bukti asal-usul, putusan ini hanya bertumpu pada statistik teks, yang andal menandai tulisan berpola baku tetapi tidak menandai keluaran model masa kini yang ditulis dengan baik.';
 }

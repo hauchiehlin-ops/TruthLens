@@ -2626,4 +2626,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return 'La perplexité n\'a pas été prise en compte : le modèle utilisé (« $model ») n\'a pas encore de seuil mesuré pour $language. Sans échelle calibrée, la valeur brute ne signifie rien ; elle est donc écartée plutôt que devinée.';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'Ce format ne comporte aucun historique d\'édition. Les PDF, les images et le texte collé ne conservent rien de la façon dont ils ont été écrits ; l\'analyse repose donc uniquement sur les statistiques textuelles. Si vous pouvez obtenir le .docx, .odt ou .doc d\'origine, son historique constitue une preuve bien plus solide — et contrairement aux statistiques, elle ne s\'affaiblit pas à mesure que les modèles progressent.';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'Un score faible ne prouve pas qu\'une personne a écrit ce texte. Faute de preuve d\'origine, ce verdict ne repose que sur les statistiques textuelles, qui repèrent de façon fiable l\'écriture stéréotypée mais pas les productions bien écrites des modèles actuels.';
 }

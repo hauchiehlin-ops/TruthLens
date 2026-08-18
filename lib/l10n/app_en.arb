@@ -2123,5 +2123,13 @@
         "type": "String"
       }
     }
+  },
+  "inputNoEditingRecordHint": "This format carries no editing record. PDFs, images and pasted text hold no history of how they were written, so the analysis rests entirely on text statistics. If you can obtain the original .docx, .odt or .doc, its editing history is far stronger evidence — and unlike text statistics, it does not weaken as language models improve.",
+  "@inputNoEditingRecordHint": {
+    "description": "Guidance shown when the imported format has no editing record"
+  },
+  "reportLowScoreNotProofOfHuman": "A low score is not confirmation that a person wrote this. With no origin evidence available, this verdict rests only on text statistics, which reliably flag formulaic writing but not well-written output from current-generation models.",
+  "@reportLowScoreNotProofOfHuman": {
+    "description": "Caveat shown beside a human-leaning verdict when no provenance evidence exists"
   }
 }

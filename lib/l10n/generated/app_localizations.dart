@@ -4150,6 +4150,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Perplexity was not used: the model in use (“{model}”) has no measured threshold for {language} yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.'**
   String engineReasonPplNoCalibrationForModel(String model, String language);
+
+  /// Guidance shown when the imported format has no editing record
+  ///
+  /// In en, this message translates to:
+  /// **'This format carries no editing record. PDFs, images and pasted text hold no history of how they were written, so the analysis rests entirely on text statistics. If you can obtain the original .docx, .odt or .doc, its editing history is far stronger evidence — and unlike text statistics, it does not weaken as language models improve.'**
+  String get inputNoEditingRecordHint;
+
+  /// Caveat shown beside a human-leaning verdict when no provenance evidence exists
+  ///
+  /// In en, this message translates to:
+  /// **'A low score is not confirmation that a person wrote this. With no origin evidence available, this verdict rests only on text statistics, which reliably flag formulaic writing but not well-written output from current-generation models.'**
+  String get reportLowScoreNotProofOfHuman;
 }
 
 class _AppLocalizationsDelegate

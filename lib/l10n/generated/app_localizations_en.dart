@@ -2594,4 +2594,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return 'Perplexity was not used: the model in use (“$model”) has no measured threshold for $language yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'This format carries no editing record. PDFs, images and pasted text hold no history of how they were written, so the analysis rests entirely on text statistics. If you can obtain the original .docx, .odt or .doc, its editing history is far stronger evidence — and unlike text statistics, it does not weaken as language models improve.';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'A low score is not confirmation that a person wrote this. With no origin evidence available, this verdict rests only on text statistics, which reliably flag formulaic writing but not well-written output from current-generation models.';
 }

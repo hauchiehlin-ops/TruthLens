@@ -2608,4 +2608,12 @@ class AppLocalizationsMs extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return 'Perplexity tidak dikira: model yang digunakan (\"$model\") belum mempunyai ambang terukur untuk $language. Tanpa skala terkalibrasi, nilai mentahnya tidak bermakna, jadi ia diabaikan dan bukan diteka.';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'Format ini tidak membawa rekod suntingan. PDF, imej dan teks yang ditampal tidak menyimpan sejarah cara ia ditulis, jadi analisis bergantung sepenuhnya pada statistik teks. Jika anda boleh mendapatkan fail .docx, .odt atau .doc asal, sejarah suntingannya ialah bukti yang jauh lebih kukuh — dan tidak seperti statistik teks, ia tidak melemah apabila model bahasa bertambah baik.';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'Skor rendah bukan pengesahan bahawa manusia menulisnya. Tanpa bukti asal usul, keputusan ini bersandar pada statistik teks sahaja, yang boleh menandakan penulisan berformula dengan yakin tetapi bukan keluaran model semasa yang ditulis dengan baik.';
 }

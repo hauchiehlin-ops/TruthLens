@@ -2622,4 +2622,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return 'Perplexität wurde nicht berücksichtigt: Für das verwendete Modell („$model“) liegt noch kein gemessener Schwellenwert für $language vor. Ohne kalibrierte Skala hat der Rohwert keine Bedeutung, daher wird er ausgelassen statt geschätzt.';
   }
+
+  @override
+  String get inputNoEditingRecordHint =>
+      'Dieses Format enthält keine Bearbeitungshistorie. PDFs, Bilder und eingefügter Text bewahren nichts darüber, wie sie entstanden sind, daher stützt sich die Analyse allein auf Textstatistik. Wenn Sie die Original-.docx, .odt oder .doc bekommen können, ist deren Bearbeitungsverlauf ein weit stärkerer Beleg — und anders als Textstatistik verliert er nicht an Kraft, wenn Sprachmodelle besser werden.';
+
+  @override
+  String get reportLowScoreNotProofOfHuman =>
+      'Ein niedriger Wert ist kein Nachweis dafür, dass ein Mensch dies geschrieben hat. Ohne Herkunftsnachweis stützt sich dieses Urteil nur auf Textstatistik, die formelhaftes Schreiben zuverlässig erkennt, gut geschriebene Ausgaben aktueller Modelle jedoch nicht.';
 }
