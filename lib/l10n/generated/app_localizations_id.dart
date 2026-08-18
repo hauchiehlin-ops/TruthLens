@@ -2570,4 +2570,14 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       'Perpleksitas tidak diperhitungkan untuk dokumen ini: model perpleksitas (DistilGPT2) hanya dilatih pada bahasa Inggris, dan pada teks Tionghoa, Jepang, atau Korea ia mengukur keterdugaan byte, bukan keterdugaan bahasa. Diukur pada data berlabel, kemampuannya memisahkan tulisan manusia dari AI adalah 0%, jadi memperhitungkannya hanya akan menghasilkan positif palsu.';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return 'Basis per bahasa: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return 'Ada $count sampel lama tanpa penanda bahasa yang tidak dapat masuk ke basis bahasa mana pun — teks asli tidak disimpan, sehingga bahasanya tidak dapat dipulihkan kemudian. Sampel ini akan tergantikan seiring analisis baru.';
+  }
 }

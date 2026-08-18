@@ -15,6 +15,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/detection/orchestrator.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
+import '../../core/utils/language_id.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/calibration_service.dart';
 import '../../core/services/document_provenance.dart';
@@ -390,6 +391,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           score: result.aiProbability,
           provenanceIndicatesHuman:
               result.provenance.indicatesHumanAuthorship,
+          // 語言必須在收樣當下記下：原文預設不保存，事後無從補算。
+          // 不同語言的分數分布不同，混在一起會讓共形預測的 α 失去意義。
+          language: detectLanguage(result.inputText).code,
           engineScores: {
             for (final e in result.engineScores)
               if (e.available) e.engineId: e.aiProbability,

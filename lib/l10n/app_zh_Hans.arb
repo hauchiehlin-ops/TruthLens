@@ -1224,5 +1224,7 @@
   "reportEngineRelationshipNoEvidence": "{engine} 本次没有找到证据，未参与投票（角色权重 {weight}%）。这代表它在自己负责的面向没有发现 AI 痕迹，不等于它认为本文是人类撰写。",
   "telemetrySummarySingleSource": "本次只有{engine}找到证据，其余引擎什么都没发现。结论仅由单一面向支撑，信心请相应打折。",
   "telemetrySummarySilentEngines": "另有 {count} 个引擎有跑但没找到证据，已排除在投票之外，避免把「没话说」误算成「看起来像人写的」。",
-  "engineReasonPplUncalibratedLanguage": "本次未采计语言模型困惑度：困惑度模型（DistilGPT2）只在英文语料上训练，对中日韩文而言它量到的是字节的可预测性，不是语言的可预测性。以标注语料实测，它在这些语言上区分真人与 AI 的能力为 0%，采计只会制造伪阳性。"
+  "engineReasonPplUncalibratedLanguage": "本次未采计语言模型困惑度：困惑度模型（DistilGPT2）只在英文语料上训练，对中日韩文而言它量到的是字节的可预测性，不是语言的可预测性。以标注语料实测，它在这些语言上区分真人与 AI 的能力为 0%，采计只会制造伪阳性。",
+  "settingsCalibrationByLanguage": "各语言基准集：{breakdown}",
+  "settingsCalibrationLegacySamples": "另有 {count} 份较早的样本没有语言标记，无法归入任何语言的基准集——原文默认不保存，事后无从补算语言。随着新文件分析会逐步替换。"
 }

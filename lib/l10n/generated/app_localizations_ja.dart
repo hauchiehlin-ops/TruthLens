@@ -2499,4 +2499,14 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       '本件では言語モデルのパープレキシティを採用していません。パープレキシティモデル（DistilGPT2）は英語のみで学習されており、中国語・日本語・韓国語ではバイト列の予測しやすさを測っているだけで、言語としての予測しやすさではありません。ラベル付きデータでの実測では、これらの言語で人間とAIを区別できる割合は0%であり、採用しても誤検出を増やすだけです。';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return '言語別の基準集：$breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '言語タグのない以前のサンプルが $count 件あり、どの言語の基準集にも入れられません。原文は保存されないため、後から言語を判定できないためです。新しい分析が進むにつれて置き換わります。';
+  }
 }

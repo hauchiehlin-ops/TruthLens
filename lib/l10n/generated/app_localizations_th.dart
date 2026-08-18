@@ -2564,4 +2564,14 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       'ไม่ได้นำค่าความสับสนของโมเดลภาษามาคิดในเอกสารนี้ เนื่องจากโมเดลความสับสน (DistilGPT2) ฝึกด้วยภาษาอังกฤษเท่านั้น และกับข้อความจีน ญี่ปุ่น หรือเกาหลี มันวัดความคาดเดาได้ของไบต์ ไม่ใช่ของภาษา จากการวัดด้วยข้อมูลที่มีป้ายกำกับ พบว่ามันแยกงานเขียนของมนุษย์ออกจาก AI ได้ 0% การนำมาคิดจึงมีแต่จะสร้างผลบวกลวง';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return 'ชุดฐานแยกตามภาษา: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return 'มีตัวอย่างเดิมอีก $count รายการที่ไม่มีการระบุภาษา จึงเข้าชุดฐานของภาษาใดไม่ได้ เนื่องจากไม่ได้เก็บข้อความต้นฉบับไว้ จึงย้อนกลับไปหาภาษาไม่ได้ ตัวอย่างเหล่านี้จะถูกแทนที่เมื่อมีการวิเคราะห์ใหม่';
+  }
 }

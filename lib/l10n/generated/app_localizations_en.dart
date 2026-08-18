@@ -2560,4 +2560,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       'Perplexity was not used for this document: the perplexity model (DistilGPT2) was trained on English only, and on Chinese, Japanese or Korean text it measures byte predictability rather than language predictability. Measured on labelled data, it separates human from AI writing in those languages 0% of the time, so counting it would only manufacture false positives.';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return 'Baseline by language: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '$count earlier sample(s) carry no language tag and cannot join any language\'s baseline — the original text is not kept, so the language cannot be recovered after the fact. They will be replaced as new documents are analysed.';
+  }
 }

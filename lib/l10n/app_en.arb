@@ -2053,5 +2053,23 @@
   "engineReasonPplUncalibratedLanguage": "Perplexity was not used for this document: the perplexity model (DistilGPT2) was trained on English only, and on Chinese, Japanese or Korean text it measures byte predictability rather than language predictability. Measured on labelled data, it separates human from AI writing in those languages 0% of the time, so counting it would only manufacture false positives.",
   "@engineReasonPplUncalibratedLanguage": {
     "description": "Shown when the perplexity metric is skipped because the model does not support the document's language"
+  },
+  "settingsCalibrationByLanguage": "Baseline by language: {breakdown}",
+  "settingsCalibrationLegacySamples": "{count} earlier sample(s) carry no language tag and cannot join any language's baseline — the original text is not kept, so the language cannot be recovered after the fact. They will be replaced as new documents are analysed.",
+  "@settingsCalibrationByLanguage": {
+    "description": "Per-language calibration sample counts",
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsCalibrationLegacySamples": {
+    "description": "Count of pre-language-tagging calibration samples",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -1,5 +1,33 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-18（第九十七次更新）— 階段二：本地基準集逐語言分開
+
+**修掉的 bug**：`CalibrationSample` 沒有語言欄位，全專案也沒有語言辨識，
+所以支柱 2 的本地基準把所有語言混在同一個分布裡——**一份中文文件正在拿去跟
+一個多半由英文文件構成的基準集比對**。
+
+這不只是不精確，是讓共形預測的保證失效。共形預測的 α（偽陽性率上限）建立在
+**可交換性**上：校準樣本與待測樣本必須來自同一分布。不同語言的分數分布本來就不同
+（引擎對各語言的靈敏度不一樣），混成一鍋之後 p 值不再對應任何偽陽性率。
+
+**改動**
+- `CalibrationSample.language`：收樣當下記錄，**不能事後補算**——原文預設不保存
+- `humanSamplesFor(language)` / `sizeFor(language)` / `evaluate(score, language)` /
+  `observedPercentile(score, language)`：全部改為逐語言
+- `autoCollect` 新增必填的 `language`，由 workspace 於分析後以 `detectLanguage` 帶入
+- `addSample` 的 `language` 可省略，有原文時就地辨識
+- `humanSampleCountByLanguage` / `unlabelledLanguageCount`：供設定頁逐語言呈現
+
+**舊樣本的處理**：沒有語言標記的既有樣本標為 `und`，**不歸入任何語言的基準集**。
+原文沒保存就無從補算語言，猜一個只會污染基準。設定頁會明說有幾份因此不算數，
+並說明會隨新分析逐步替換。這是這次改動的實際代價，寧可承認也不要假裝樣本還能用。
+
+**介面**：校準卡片改為逐語言列出「zh 3/30、en 5/30」。不逐語言列，
+使用者會誤以為收滿 30 份就全語言可用。
+
+**狀態**：✅ `flutter analyze` 無問題、`flutter test` 367 項全通過（新增 5 項）、
+`flutter build web` 成功
+
 ## 2026-08-18（第九十六次更新）— 階段一：語言辨識與逐語言校準表
 
 **目標**：讓「支援一個新語言」變成加一列資料，而不是改判定邏輯。

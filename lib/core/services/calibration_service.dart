@@ -12,6 +12,8 @@ library;
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+
+import '../utils/language_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 樣本標籤的來源。決定它能不能進入共形預測的虛無分布。
@@ -56,6 +58,13 @@ class CalibrationSample {
   /// 使用者自訂的標示（例如「三年二班 期中作業」），可留空
   final String label;
 
+  /// 樣本的語言代碼（見 detectLanguage）。共形預測的可交換性假設要求
+  /// 校準集與待測樣本來自同一分布——不同語言的分數分布並不相同，
+  /// 拿中文文件去跟一個多半由英文文件構成的基準集比對，p 值不具意義。
+  /// 舊版樣本沒有此欄位，會是 [DetectedLanguage.undetermined]，
+  /// 不歸入任何語言的基準集。
+  final String language;
+
   final DateTime addedAt;
 
   const CalibrationSample({
@@ -63,6 +72,7 @@ class CalibrationSample {
     required this.score,
     required this.addedAt,
     this.label = '',
+    this.language = DetectedLanguage.undetermined,
     this.isAi = false,
     this.engineScores = const {},
     this.text,
@@ -73,6 +83,7 @@ class CalibrationSample {
     'id': id,
     'score': score,
     'label': label,
+    'language': language,
     'isAi': isAi,
     'engineScores': engineScores,
     'addedAt': addedAt.toIso8601String(),
@@ -90,6 +101,8 @@ class CalibrationSample {
       id: id,
       score: score.clamp(0.0, 1.0),
       label: json['label'] as String? ?? '',
+      // 舊版樣本沒有語言欄位；標為未定而不是猜一個，猜錯會污染基準集
+      language: json['language'] as String? ?? DetectedLanguage.undetermined,
       isAi: json['isAi'] as bool? ?? false,
       engineScores: rawEngines is Map
           ? {
@@ -181,6 +194,33 @@ class CalibrationService extends ChangeNotifier {
       .where((s) => !s.isAi && s.origin != SampleOrigin.observed)
       .toList();
 
+  /// 指定語言的人類樣本，也就是該語言真正的虛無分布。
+  ///
+  /// 共形預測的保證建立在可交換性上：校準樣本與待測樣本必須來自同一分布。
+  /// 不同語言的分數分布並不相同（引擎本身對各語言的靈敏度就不一樣），
+  /// 把它們混成一鍋，p 值就不再對應任何偽陽性率上限。語言未定的樣本
+  /// 不歸入任何語言——不知道它屬於哪個分布，就不能拿它當虛無分布。
+  List<CalibrationSample> humanSamplesFor(String language) {
+    if (language == DetectedLanguage.undetermined) return const [];
+    return humanSamples.where((s) => s.language == language).toList();
+  }
+
+  /// 各語言目前累積的人類樣本數，供設定頁誠實呈現「哪個語言已經夠了」
+  Map<String, int> get humanSampleCountByLanguage {
+    final counts = <String, int>{};
+    for (final sample in humanSamples) {
+      if (sample.language == DetectedLanguage.undetermined) continue;
+      counts[sample.language] = (counts[sample.language] ?? 0) + 1;
+    }
+    return counts;
+  }
+
+  /// 尚未帶語言標記的舊樣本數。這些樣本無法歸入任何語言的基準集，
+  /// 介面需要能說明它們為何不算數。
+  int get unlabelledLanguageCount => humanSamples
+      .where((s) => s.language == DetectedLanguage.undetermined)
+      .length;
+
   /// 自動蒐集但無獨立標籤依據的樣本，只用於描述性百分位
   List<CalibrationSample> get observedSamples =>
       _samples.where((s) => s.origin == SampleOrigin.observed).toList();
@@ -193,8 +233,13 @@ class CalibrationService extends ChangeNotifier {
   List<CalibrationSample> get aiSamples =>
       _samples.where((s) => s.isAi).toList();
 
-  /// 共形預測的樣本數＝人類樣本數（AI 樣本不屬於虛無分布）
+  /// 共形預測的樣本數＝人類樣本數（AI 樣本不屬於虛無分布）。
+  /// 這是跨語言的總數，僅供概覽；實際做共形預測時一律用
+  /// [humanSamplesFor] 取該語言自己的樣本。
   int get size => humanSamples.length;
+
+  /// 指定語言的共形樣本數
+  int sizeFor(String language) => humanSamplesFor(language).length;
   double get alpha => _alpha;
 
   /// 要讓 α 真的可達，最小 p 值 1/(n+1) 必須 ≤ α，因此 n ≥ 1/α − 1。
@@ -270,18 +315,22 @@ class CalibrationService extends ChangeNotifier {
   }
 
   /// 使用者手動標註
+  /// [language] 未指定時，若有原文則就地辨識，否則留為未定。
+  /// 未定的樣本不會進入任何語言的虛無分布——這是刻意的，見 [humanSamplesFor]。
   Future<void> addSample(
     double score, {
     String label = '',
     bool isAi = false,
     Map<String, double> engineScores = const {},
     String? text,
+    String? language,
   }) => _add(
     score: score,
     isAi: isAi,
     engineScores: engineScores,
     text: text,
     label: label,
+    language: language ?? (text == null ? null : detectLanguage(text).code),
     origin: SampleOrigin.manual,
   );
 
@@ -292,6 +341,7 @@ class CalibrationService extends ChangeNotifier {
     required String? text,
     required String label,
     required SampleOrigin origin,
+    String? language,
   }) async {
     _samples = [
       ..._samples,
@@ -301,6 +351,9 @@ class CalibrationService extends ChangeNotifier {
         label: label,
         isAi: isAi,
         engineScores: engineScores,
+        // 原文可能不保存（預設不存），但語言必須在收樣當下就記下來，
+        // 事後無從補算——這正是舊樣本沒有語言標記的原因。
+        language: language ?? DetectedLanguage.undetermined,
         text: _storeText ? text : null,
         origin: origin,
         addedAt: DateTime.now(),
@@ -328,15 +381,25 @@ class CalibrationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 以目前校準集評估 [score]。只拿人類樣本當虛無分布——把 AI 樣本混進去
-  /// 會把分布往高分推，反而讓真正的 AI 文章更不容易被標記。
-  ConformalResult evaluate(double score) =>
-      conformal(score, humanSamples.map((s) => s.score).toList(), _alpha);
+  /// 以 [language] 的校準集評估 [score]。
+  ///
+  /// 只拿人類樣本當虛無分布——把 AI 樣本混進去會把分布往高分推，
+  /// 反而讓真正的 AI 文章更不容易被標記。也只拿**同語言**的樣本：
+  /// 跨語言混用會破壞可交換性，讓 α 不再是偽陽性率上限。
+  ConformalResult evaluate(double score, String language) => conformal(
+    score,
+    humanSamplesFor(language).map((s) => s.score).toList(),
+    _alpha,
+  );
 
   /// [score] 在**所有已分析文件**中的百分位。這是純描述性的參考值，
   /// 不帶任何統計保證，因此與共形結果分開回傳、分開呈現。
-  int? observedPercentile(double score) {
-    final all = _samples.map((s) => s.score).toList();
+  int? observedPercentile(double score, String language) {
+    if (language == DetectedLanguage.undetermined) return null;
+    final all = _samples
+        .where((s) => s.language == language)
+        .map((s) => s.score)
+        .toList();
     if (all.length < 5) return null;
     final below = all.where((s) => s < score).length;
     return (below / all.length * 100).round();
@@ -348,6 +411,7 @@ class CalibrationService extends ChangeNotifier {
   Future<SampleOrigin> autoCollect({
     required double score,
     required bool provenanceIndicatesHuman,
+    required String language,
     Map<String, double> engineScores = const {},
     String? text,
     String label = '',
@@ -361,6 +425,7 @@ class CalibrationService extends ChangeNotifier {
       engineScores: engineScores,
       text: text,
       label: label,
+      language: language,
       origin: origin,
     );
     return origin;

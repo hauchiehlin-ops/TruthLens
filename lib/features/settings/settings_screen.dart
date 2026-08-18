@@ -279,11 +279,66 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(l10n.settingsCalibrationTitle),
-                  subtitle: Text(
-                    l10n.settingsCalibrationSubtitle(
-                      calibration.size,
-                      calibration.requiredSamples,
-                    ),
+                  isThreeLine: true,
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.settingsCalibrationSubtitle(
+                          calibration.size,
+                          calibration.requiredSamples,
+                        ),
+                      ),
+                      // 基準集逐語言分開，總數不代表任何一個語言已經夠用。
+                      // 不逐語言列出，使用者會誤以為收滿 30 份就全語言可用。
+                      Builder(
+                        builder: (context) {
+                          final byLanguage =
+                              calibration.humanSampleCountByLanguage;
+                          final legacy = calibration.unlabelledLanguageCount;
+                          if (byLanguage.isEmpty && legacy == 0) {
+                            return const SizedBox.shrink();
+                          }
+                          final entries = byLanguage.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value));
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (entries.isNotEmpty)
+                                  Text(
+                                    l10n.settingsCalibrationByLanguage(
+                                      entries
+                                          .map(
+                                            (e) =>
+                                                '${e.key} ${e.value}/'
+                                                '${calibration.requiredSamples}',
+                                          )
+                                          .join('、'),
+                                    ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                if (legacy > 0)
+                                  Text(
+                                    l10n.settingsCalibrationLegacySamples(
+                                      legacy,
+                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.outline,
+                                        ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   trailing: TextButton(
                     onPressed: calibration.size == 0

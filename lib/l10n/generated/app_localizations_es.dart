@@ -2590,4 +2590,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       'La perplejidad no se tuvo en cuenta en este documento: el modelo de perplejidad (DistilGPT2) se entrenó solo en inglés y, con texto en chino, japonés o coreano, mide la previsibilidad de los bytes, no la del idioma. Medido con datos etiquetados, separa la escritura humana de la de IA un 0 % de las veces, así que contarlo solo generaría falsos positivos.';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return 'Base por idioma: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return 'Hay $count muestra(s) anteriores sin etiqueta de idioma que no pueden integrarse en la base de ningún idioma: el texto original no se conserva, así que el idioma no puede recuperarse después. Se irán reemplazando con nuevos análisis.';
+  }
 }

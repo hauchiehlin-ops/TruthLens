@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/services/calibration_service.dart';
+import 'package:truthlens/core/utils/language_id.dart';
 
 void main() {
   group('共形 p 值', () {
@@ -113,18 +114,18 @@ void main() {
 
       // 25 份人類樣本（低分）
       for (var i = 0; i < 25; i++) {
-        await service.addSample(0.1 + i * 0.001);
+        await service.addSample(0.1 + i * 0.001, language: 'en');
       }
       // 10 份 AI 樣本（高分）
       for (var i = 0; i < 10; i++) {
-        await service.addSample(0.95, isAi: true);
+        await service.addSample(0.95, isAi: true, language: 'en');
       }
 
       expect(service.size, 25, reason: 'size 應只計人類樣本');
       expect(service.aiSamples.length, 10);
 
       // 若把 AI 樣本混進虛無分布，0.9 的 p 值會被推高而不再被標記
-      final r = service.evaluate(0.9);
+      final r = service.evaluate(0.9, 'en');
       expect(r.calibrationSize, 25);
       expect(r.isFlagged, isTrue);
     });
@@ -134,6 +135,7 @@ void main() {
       await service.load();
       await service.addSample(
         0.4,
+        language: 'en',
         engineScores: const {'transformer': 0.5, 'statistical': 0.3},
       );
 
@@ -152,18 +154,23 @@ void main() {
         await service.autoCollect(
           score: 0.1 + i * 0.001,
           provenanceIndicatesHuman: true,
+          language: 'en',
         );
       }
       // 50 份沒有獨立依據、僅靠偵測器判定收進來的樣本
       for (var i = 0; i < 50; i++) {
-        await service.autoCollect(score: 0.05, provenanceIndicatesHuman: false);
+        await service.autoCollect(
+          score: 0.05,
+          provenanceIndicatesHuman: false,
+          language: 'en',
+        );
       }
 
       expect(service.autoAdmittedCount, 25);
       expect(service.observedSamples.length, 50);
       // 虛無分布只認 25 份，不是 75 份
       expect(service.size, 25);
-      expect(service.evaluate(0.9).calibrationSize, 25);
+      expect(service.evaluate(0.9, 'en').calibrationSize, 25);
     });
 
     test('autoCollect 依獨立證據決定來源，並回報實際採用的分類', () async {
@@ -171,11 +178,19 @@ void main() {
       await service.load();
 
       expect(
-        await service.autoCollect(score: 0.2, provenanceIndicatesHuman: true),
+        await service.autoCollect(
+          score: 0.2,
+          provenanceIndicatesHuman: true,
+          language: 'en',
+        ),
         SampleOrigin.provenance,
       );
       expect(
-        await service.autoCollect(score: 0.2, provenanceIndicatesHuman: false),
+        await service.autoCollect(
+          score: 0.2,
+          provenanceIndicatesHuman: false,
+          language: 'en',
+        ),
         SampleOrigin.observed,
       );
       // 自動蒐集一律標為人類候選，不會憑判定結果自行標成 AI
@@ -185,13 +200,17 @@ void main() {
     test('描述性百分位涵蓋全部樣本，且樣本過少時不給數字', () async {
       final service = CalibrationService();
       await service.load();
-      expect(service.observedPercentile(0.5), isNull, reason: '不足 5 筆不應給百分位');
+      expect(service.observedPercentile(0.5, 'en'), isNull, reason: '不足 5 筆不應給百分位');
 
       for (var i = 0; i < 10; i++) {
-        await service.autoCollect(score: i / 10, provenanceIndicatesHuman: false);
+        await service.autoCollect(
+          score: i / 10,
+          provenanceIndicatesHuman: false,
+          language: 'en',
+        );
       }
       // 0.55 高於 0.0–0.5 這 6 筆
-      expect(service.observedPercentile(0.55), 60);
+      expect(service.observedPercentile(0.55, 'en'), 60);
     });
 
     test('舊版樣本沒有 origin 欄位時視為手動標註，仍計入虛無分布', () async {
@@ -233,6 +252,75 @@ void main() {
       await service.load();
       expect(service.size, 1);
       expect(service.samples.single.id, 'a');
+    });
+
+    test('基準集逐語言分開：中文文件不得拿英文樣本當虛無分布', () async {
+      final service = CalibrationService();
+      await service.load();
+
+      // 30 份英文人類樣本，分數集中在低分區
+      for (var i = 0; i < 30; i++) {
+        await service.addSample(0.10 + i * 0.001, language: 'en');
+      }
+
+      expect(service.sizeFor('en'), 30);
+      expect(service.sizeFor('zh'), 0);
+
+      // 同一個分數，在英文基準下會被標記；中文沒有基準，不得沿用英文的結論
+      expect(service.evaluate(0.9, 'en').isFlagged, isTrue);
+      final zh = service.evaluate(0.9, 'zh');
+      expect(zh.calibrationSize, 0);
+      expect(zh.hasEnoughSamples, isFalse);
+    });
+
+    test('各語言樣本數分開統計', () async {
+      final service = CalibrationService();
+      await service.load();
+      for (var i = 0; i < 3; i++) {
+        await service.addSample(0.2, language: 'zh');
+      }
+      for (var i = 0; i < 5; i++) {
+        await service.addSample(0.2, language: 'en');
+      }
+
+      expect(service.humanSampleCountByLanguage, {'zh': 3, 'en': 5});
+      expect(service.size, 8, reason: '總數仍為跨語言合計');
+    });
+
+    test('語言未定的樣本不歸入任何語言，且可被清點出來', () async {
+      final service = CalibrationService();
+      await service.load();
+      await service.addSample(0.2); // 無原文亦無語言
+      await service.addSample(0.2, language: 'en');
+
+      expect(service.unlabelledLanguageCount, 1);
+      expect(service.sizeFor('en'), 1);
+      expect(service.humanSamplesFor(DetectedLanguage.undetermined), isEmpty);
+    });
+
+    test('有原文時自動辨識語言，不必呼叫端指定', () async {
+      final service = CalibrationService();
+      await service.load();
+      await service.addSample(
+        0.2,
+        text: '本研究採用泰勒庫埃特流場作為實驗載體，透過改變內外圓筒的轉速比，'
+            '觀察環狀渦漩在臨界雷諾數附近的形態轉換過程與穩定性邊界的變化。',
+      );
+      expect(service.humanSampleCountByLanguage, {'zh': 1});
+    });
+
+    test('舊版樣本沒有語言欄位時標為未定，不污染任何語言的基準集', () async {
+      SharedPreferences.setMockInitialValues({
+        'calibration_samples': <String>[
+          '{"id":"old","score":0.3,"label":"","addedAt":"2026-08-17T00:00:00.000"}',
+        ],
+      });
+      final service = CalibrationService();
+      await service.load();
+
+      expect(service.size, 1);
+      expect(service.sizeFor('en'), 0);
+      expect(service.unlabelledLanguageCount, 1);
     });
   });
 }

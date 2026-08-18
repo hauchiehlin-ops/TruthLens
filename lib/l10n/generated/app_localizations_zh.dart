@@ -2467,6 +2467,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       '本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return '各語言基準集：$breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '另有 $count 份較早的樣本沒有語言標記，無法歸入任何語言的基準集——原文預設不保存，事後無從補算語言。隨著新文件分析會逐步替換。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4932,6 +4942,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       '本次未采计语言模型困惑度：困惑度模型（DistilGPT2）只在英文语料上训练，对中日韩文而言它量到的是字节的可预测性，不是语言的可预测性。以标注语料实测，它在这些语言上区分真人与 AI 的能力为 0%，采计只会制造伪阳性。';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return '各语言基准集：$breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '另有 $count 份较早的样本没有语言标记，无法归入任何语言的基准集——原文默认不保存，事后无从补算语言。随着新文件分析会逐步替换。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7397,4 +7417,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       '本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return '各語言基準集：$breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '另有 $count 份較早的樣本沒有語言標記，無法歸入任何語言的基準集——原文預設不保存，事後無從補算語言。隨著新文件分析會逐步替換。';
+  }
 }

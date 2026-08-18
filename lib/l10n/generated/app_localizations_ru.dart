@@ -2575,4 +2575,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       'Перплексия не учитывалась для этого документа: модель перплексии (DistilGPT2) обучена только на английском, а на китайском, японском или корейском тексте она измеряет предсказуемость байтов, а не языка. По размеченным данным она разделяет человеческое и ИИ-письмо в этих языках в 0 % случаев, поэтому её учёт лишь порождал бы ложные срабатывания.';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return 'База по языкам: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return 'Есть $count более ранних образцов без языковой метки — их нельзя отнести ни к одной языковой базе: исходный текст не сохраняется, поэтому язык уже не восстановить. Они будут вытеснены новыми анализами.';
+  }
 }

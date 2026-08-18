@@ -2508,4 +2508,14 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get engineReasonPplUncalibratedLanguage =>
       '이 문서에는 언어 모델 혼란도를 반영하지 않았습니다. 혼란도 모델(DistilGPT2)은 영어로만 학습되어 중국어·일본어·한국어 텍스트에서는 언어의 예측 가능성이 아니라 바이트의 예측 가능성을 측정합니다. 라벨링된 데이터로 측정한 결과 이들 언어에서 사람과 AI를 구분하는 능력은 0%였으므로, 반영하면 거짓 양성만 늘어납니다.';
+
+  @override
+  String settingsCalibrationByLanguage(String breakdown) {
+    return '언어별 기준 집합: $breakdown';
+  }
+
+  @override
+  String settingsCalibrationLegacySamples(int count) {
+    return '언어 표시가 없는 이전 표본이 $count개 있어 어떤 언어의 기준 집합에도 넣을 수 없습니다. 원문을 보관하지 않으므로 나중에 언어를 알아낼 수 없기 때문입니다. 새 분석이 쌓이면서 교체됩니다.';
+  }
 }
