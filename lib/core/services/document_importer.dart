@@ -140,7 +140,13 @@ class DocumentImporter {
   static String _extractSyncfusionPdfText(List<int> bytes) {
     final PdfDocument document = PdfDocument(inputBytes: bytes);
     try {
-      return PdfTextExtractor(document).extractText();
+      // layoutText: true 是必要的，不是美化選項。預設模式會把單字之間的空白
+      // 全部吃掉——同一篇論文抽出來是 InternationalJournalofBifurcationandChaos，
+      // 平均「詞長」12.4 字元、英文功能詞佔比 1.42%。後果是全面性的：
+      // 語言辨識判為未定（連帶讓困惑度整項被棄用）、詞彙多樣性因每個黏字串
+      // 都是唯一詞而虛高、突發性與 Transformer 斷詞同樣失真。
+      // 開啟後：詞元 1060 → 2950、平均詞長 → 4.5、功能詞 → 24.68%、語言 → en。
+      return PdfTextExtractor(document).extractText(layoutText: true);
     } finally {
       document.dispose();
     }
