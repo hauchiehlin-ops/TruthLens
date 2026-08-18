@@ -274,10 +274,18 @@ void _perplexityLanguageGate() {
       expect(
         StatisticalEngine.supportsPerplexity(
           'The lowest stability boundary on the flow of concentric rotating '
-          'cylinders was examined across a range of radius ratios.',
+          'cylinders was examined across a range of radius ratios, and the '
+          'results are compared with the predictions that follow from the '
+          'linear theory of the problem as it is usually stated.',
         ),
         isTrue,
       );
+    });
+
+    test('文字太短時寧可棄權也不猜語言', () {
+      // 語言判不準就會套錯門檻，那正是這套機制要杜絕的事。
+      // 應用程式本身的棄權門檻是 100 字，實際文件不會落到這裡。
+      expect(StatisticalEngine.supportsPerplexity('The flow was examined.'), isFalse);
     });
 
     test('英文本文夾雜少量中文專有名詞時仍採計', () {
