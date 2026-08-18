@@ -46,7 +46,7 @@ void main() {
       reason: '查不到門檻就會跳過困惑度，而困惑度在這份文件上是支持人類的證據',
     );
     expect(calibration!.aiCut, 60);
-    expect(calibration.humanCut, 150);
+    expect(calibration.humanCut, isNull);
   });
 
   test('換上多語模型後英文同樣有門檻，不因切換模型而失去指標', () {

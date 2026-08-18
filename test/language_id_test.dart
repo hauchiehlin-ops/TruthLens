@@ -117,7 +117,8 @@ void main() {
       final cal = PerplexityCalibration.of('en');
       expect(cal, isNotNull);
       expect(cal!.aiCut, 60);
-      expect(cal.humanCut, 150);
+      // humanCut 已停用：高困惑度不再作為人類證據
+      expect(cal.humanCut, isNull);
     });
 
     test('中文量測過但可分性不足，不得採用', () {
@@ -143,7 +144,10 @@ void main() {
       );
       expect(qwenZh, isNotNull);
       expect(qwenZh!.auc, greaterThan(PerplexityThresholds.minimumUsableAuc));
-      expect(qwenZh.aiCut, lessThan(qwenZh.humanCut));
+      // 人類側已停用（見「高困惑度不得再充當人類證據」），
+      // 因此這裡只確認 AI 側的門檻仍在
+      expect(qwenZh.aiCut, greaterThan(0));
+      expect(qwenZh.hasHumanSideEvidence, isFalse);
 
       expect(
         PerplexityCalibration.usableLanguages(modelId: 'qwen05b-ppl-int8'),
@@ -151,7 +155,25 @@ void main() {
       );
     });
 
-    test('每組門檻的 aiCut 不得高於 humanCut（區間會顛倒）', () {
+    test('有人類側門檻時，aiCut 不得高於 humanCut（區間會顛倒）', () {
+      for (final model in PerplexityCalibration.calibratedModels) {
+        for (final lang in PerplexityCalibration.measuredLanguages(
+          modelId: model,
+        )) {
+          final t = PerplexityCalibration.of(lang, modelId: model);
+          if (t?.humanCut == null) continue;
+          expect(
+            t!.aiCut,
+            lessThanOrEqualTo(t.humanCut!),
+            reason: '$model/$lang 的 aiCut 高於 humanCut，兩條規則會互相打架',
+          );
+        }
+      }
+    });
+
+    test('高困惑度不得再充當人類證據——現代 AI 文本正落在那個區間', () {
+      // 2026 世代 LLM 的中文輸出困惑度中位數 72.3，遠高於 HC3 校準的 18.67。
+      // 若照舊給 −0.25，等於主動把 AI 文章往人類推。
       for (final model in PerplexityCalibration.calibratedModels) {
         for (final lang in PerplexityCalibration.measuredLanguages(
           modelId: model,
@@ -159,9 +181,9 @@ void main() {
           final t = PerplexityCalibration.of(lang, modelId: model);
           if (t == null) continue;
           expect(
-            t.aiCut,
-            lessThanOrEqualTo(t.humanCut),
-            reason: '$model/$lang 的 aiCut 高於 humanCut，兩條規則會互相打架',
+            t.hasHumanSideEvidence,
+            isFalse,
+            reason: '$model/$lang 仍以高困惑度作為人類證據，尚未以現代語料驗證過',
           );
         }
       }

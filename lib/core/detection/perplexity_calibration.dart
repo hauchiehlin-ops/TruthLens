@@ -15,7 +15,12 @@ class PerplexityThresholds {
   final double aiCut;
 
   /// 高於此值視為偏人類（文本不可預測）。介於兩者之間＝無證據。
-  final double humanCut;
+  ///
+  /// **null 代表「高困惑度不構成人類撰寫的證據」**，此時只有低於 [aiCut]
+  /// 的那一側會發言。這不是保守起見，是實測結論：2026 世代 LLM 的中文輸出
+  /// 困惑度中位數 72.3，遠高於 HC3 校準出的 18.67，若照舊給 −0.25，
+  /// 等於主動把 AI 文章往人類推——這與「沉默不等於人類證據」是同一個錯誤。
+  final double? humanCut;
 
   /// 實測可分性（AUC）。0.5 代表毫無鑑別力。
   final double auc;
@@ -35,8 +40,15 @@ class PerplexityThresholds {
   });
 
   /// 這組門檻是否值得採用。可分性太低時，採用只會製造偽陽性——
-  /// 中文就是這種情況：門檻 60 之下真人與 AI 各佔 100%，區別力 0。
+  /// DistilGPT2 對中文就是這種情況：門檻 60 之下真人與 AI 各佔 100%，區別力 0。
+  ///
+  /// 這個判準只擋「會製造偽陽性」的情況。低召回率但高精確度的指標仍然有用：
+  /// 它很少誤指，發言時就有意義。真正危險的是**反向**證據，
+  /// 那由 [humanCut] 是否為 null 控制，與本判準是兩回事。
   bool get isUsable => auc >= minimumUsableAuc;
+
+  /// 高困惑度是否可作為人類撰寫的證據
+  bool get hasHumanSideEvidence => humanCut != null;
 
   /// 低於此可分性的指標不採計。0.65 大致對應「最佳操作點下，
   /// 每命中一個 AI 就要誤傷一個真人」的量級，再低就沒有採用價值。
@@ -61,13 +73,16 @@ const Map<String, Map<String, PerplexityThresholds>> _table = {
   'distilgpt2-ppl-int8': {
     'en': PerplexityThresholds(
       aiCut: 60,
-      humanCut: 150,
+      // 人類側停用，理由同 qwen05b-ppl-int8：HC3 的 AI 樣本是 2022 年的罐頭
+      // 回覆，據此得出的「高困惑度＝人類」在現代 LLM 輸出上不成立。
+      humanCut: null,
       auc: 0.996,
       sampleCount: 600,
       provenance:
-          'HC3 英文語料 600 筆（fp32 distilgpt2）測得 AUC 0.996；門檻 60/150 沿用自'
-          ' production INT8 管線的既有值，於真人學術論文（困惑度 304 → 人類撰寫）'
-          '上行為正確。門檻本身未在 INT8 尺度上重新最佳化。',
+          'HC3 英文語料 600 筆（fp32 distilgpt2）測得 AUC 0.996；門檻 60 沿用自'
+          ' production INT8 管線的既有值。原本的 humanCut 150 已停用——'
+          '它曾讓一篇真人學術論文得到正確的 15%，但同一條規則也會把困惑度同樣'
+          '偏高的現代 AI 文本推向人類。低召回率可以接受，反向誤判不行。',
     ),
     'zh': PerplexityThresholds(
       // 保留量測值供追溯，但 AUC 未達採用標準，會被 isUsable 擋下
@@ -92,23 +107,32 @@ const Map<String, Map<String, PerplexityThresholds>> _table = {
   'qwen05b-ppl-int8': {
     'zh': PerplexityThresholds(
       aiCut: 11.19,
-      humanCut: 18.67,
+      // 刻意為 null：高困惑度不作為人類撰寫的證據
+      humanCut: null,
       auc: 0.965,
       sampleCount: 160,
       provenance:
-          'HC3 中文語料 160 筆，以 production 的 INT8 ONNX 量測。'
-          '偽陽性預算 5% 下切點 11.19 命中 75.0%、實際誤傷 5.0%。'
-          'humanCut 取 AI 樣本的 p95（僅 5% 的 AI 高於此值）。',
+          'HC3 中文語料 160 筆，以 production 的 INT8 ONNX 量測：'
+          '偽陽性預算 5% 下切點 11.19 命中 75.0%、實際誤傷 5.0%、AUC 0.965。'
+          '但 HC3 的 AI 樣本是 2022 年問答式的罐頭回覆。'
+          '以 18 篇 2026 世代 LLM 輸出（題材對齊、語域分散）重測：'
+          '困惑度中位數 72.3、AUC 僅 0.603、依此門檻無一被判為偏 AI。'
+          '因此低於 aiCut 仍是有效的 AI 證據（誤傷真人僅 2%），'
+          '但高於任何門檻都不再構成人類證據——現代 AI 文本正落在那個區間。'
+          '重測：training/binoculars/evaluate_modern_ai.py',
     ),
     'en': PerplexityThresholds(
       aiCut: 11.45,
-      humanCut: 11.45,
+      humanCut: null,
       auc: 0.988,
       sampleCount: 160,
       provenance:
-          'HC3 英文語料 160 筆，以 production 的 INT8 ONNX 量測。'
+          'HC3 英文語料 160 筆，以 production 的 INT8 ONNX 量測：'
           '偽陽性預算 5% 下切點 11.45 命中 100%、實際誤傷 2.5%。'
-          '兩類分離近乎完全（AI p95 為 8.07，低於切點），因此沒有灰帶。',
+          '人類側同樣停用：中文以現代語料重測後 AUC 由 0.965 掉到 0.603，'
+          '英文尚未以現代語料重測，但成因（HC3 的 AI 樣本是 2022 年罐頭回覆）'
+          '與語言無關，沒有理由假設英文不受影響。在取得英文現代語料量測前，'
+          '不讓高困惑度充當人類證據。',
     ),
   },
 };

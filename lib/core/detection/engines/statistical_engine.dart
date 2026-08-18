@@ -92,7 +92,8 @@ class StatisticalEngine implements DetectionEngine {
         score += 0.28;
         moved = true;
         reasons.add(l10n.engineReasonPplLow(ppl.toStringAsFixed(0)));
-      } else if (ppl > calibration.humanCut) {
+      } else if (calibration.humanCut != null &&
+          ppl > calibration.humanCut!) {
         score -= 0.25;
         moved = true;
         reasons.add(l10n.engineReasonPplHigh(ppl.toStringAsFixed(0)));

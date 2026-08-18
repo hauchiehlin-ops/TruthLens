@@ -150511,7 +150511,8 @@ else c.push(a3.oq(l,a))}}k=0.5
 if(m!=null&&n){b.h(0,"perplexity",m)
 if(m<o.a){c.push(a3.oo(B.o.az(m,0)))
 k=0.78
-j=!0}else{j=m>o.b
+j=!0}else{a=o.b
+j=a!=null&&m>a
 if(j){c.push(a3.om(B.o.az(m,0)))
 k=0.25}else c.push(a3.op(B.o.az(m,0)))}}else j=!1
 if(a2.b.length>=4){i=!0
@@ -178305,13 +178306,13 @@ B.bac={type:0}
 B.b8W=new A.ac(B.bac,["line"],t.w)
 B.ba7={"distilgpt2-ppl-int8":0,"qwen05b-ppl-int8":1}
 B.ba4={en:0,zh:1}
-B.bep=new A.tW(60,150,0.996)
-B.beq=new A.tW(14,22.8,0.5)
-B.b91=new A.ac(B.ba4,[B.bep,B.beq],t.WO)
+B.ber=new A.tW(60,null,0.996)
+B.bep=new A.tW(14,22.8,0.5)
+B.b91=new A.ac(B.ba4,[B.ber,B.bep],t.WO)
 B.bag={zh:0,en:1}
-B.beo=new A.tW(11.19,18.67,0.965)
-B.ber=new A.tW(11.45,11.45,0.988)
-B.b99=new A.ac(B.bag,[B.beo,B.ber],t.WO)
+B.beo=new A.tW(11.19,null,0.965)
+B.beq=new A.tW(11.45,null,0.988)
+B.b99=new A.ac(B.bag,[B.beo,B.beq],t.WO)
 B.TF=new A.ac(B.ba7,[B.b91,B.b99],A.af("ac<i,b_<i,tW>>"))
 B.b9_=new A.ac(B.cG,[],A.af("ac<kN,S>"))
 B.TI=new A.ac(B.cG,[],A.af("ac<M,FP>"))
