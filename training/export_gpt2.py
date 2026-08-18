@@ -1,7 +1,17 @@
-"""匯出 distilgpt2 為 ONNX（causal LM），供端上計算困惑度（統計引擎 B）。
+"""匯出 causal LM 為 ONNX，供端上計算困惑度（統計引擎 B）。
 
 困惑度低 = 文本高度可預測 = 偏 AI；高 = 偏人類。
-輸出 artifacts/distilgpt2.onnx（+ INT8）與 tokenizer.json，並印出參考困惑度。
+
+預設匯出 distilgpt2（現行 production 模型，純英文）。以 --model 指定其他模型
+即可匯出多語替代品——DistilGPT2 對中文的 AUC 僅 0.50（毫無鑑別力），
+Qwen2.5-0.5B 為 0.974，見 calibrate_multilingual_ppl.py。
+
+用法：
+    .venv/bin/python export_gpt2.py
+    .venv/bin/python export_gpt2.py --model Qwen/Qwen2.5-0.5B --name qwen05b_ppl
+
+匯出後**必須**用 INT8 產物重跑一次校準：量化會位移困惑度尺度，
+fp32 量到的門檻不能直接沿用（門檻綁定的是「模型 × 語言」）。
 """
 from __future__ import annotations
 
@@ -15,17 +25,16 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from config import OUTPUT_DIR
 
-MODEL = "distilgpt2"
 MAXLEN = 192
 
 
-def export() -> None:
+def export(model_id: str, name: str) -> None:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForCausalLM.from_pretrained(MODEL)
+    tok = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id)
     model.config.use_cache = False  # 避免 transformers 5.x cache 追蹤問題
     model.eval()
-    tok.save_pretrained(os.path.join(OUTPUT_DIR, "gpt2_tokenizer"))
+    tok.save_pretrained(os.path.join(OUTPUT_DIR, f"{name}_tokenizer"))
 
     # 包一層，強制 use_cache=False 且只回傳 logits（避開 transformers 5.x cache 追蹤問題）
     class LogitsOnly(torch.nn.Module):
@@ -43,8 +52,8 @@ def export() -> None:
     wrapped = LogitsOnly(model)
 
     dummy = tok("hello world", return_tensors="pt")
-    fp32 = os.path.join(OUTPUT_DIR, "distilgpt2.onnx")
-    int8 = os.path.join(OUTPUT_DIR, "distilgpt2_int8.onnx")
+    fp32 = os.path.join(OUTPUT_DIR, f"{name}.onnx")
+    int8 = os.path.join(OUTPUT_DIR, f"{name}_int8.onnx")
 
     print(f"匯出 ONNX → {fp32}")
     torch.onnx.export(
@@ -58,8 +67,12 @@ def export() -> None:
             "attention_mask": {0: "batch", 1: "seq"},
             "logits": {0: "batch", 1: "seq"},
         },
-        opset_version=14,
-        dynamo=False,
+        opset_version=18,
+        # Qwen 等使用 rotary embedding 的模型會在舊版 TorchScript 匯出器
+        # 觸發 "ScalarType ComplexDouble is an unexpected tensor scalar type"；
+        # dynamo 匯出器（torch.export）能正確處理複數運算。
+        # distilgpt2 兩者皆可，統一走 dynamo 以免維護兩條路徑。
+        dynamo=True,
     )
     print(f"INT8 量化 → {int8}")
     quantize_dynamic(fp32, int8, weight_type=QuantType.QInt8)
@@ -103,4 +116,10 @@ def _perplexity(sess, tok, text: str) -> float:
 
 
 if __name__ == "__main__":
-    export()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default="distilgpt2")
+    parser.add_argument("--name", default="distilgpt2")
+    args = parser.parse_args()
+    export(args.model, args.name)

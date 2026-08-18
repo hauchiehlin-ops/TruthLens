@@ -136,5 +136,14 @@ void main() {
     test('可用語言清單目前只有英文', () {
       expect(PerplexityCalibration.usableLanguages, ['en']);
     });
+
+    test('門檻綁定模型：換模型後舊門檻一律失效，不得沿用', () {
+      // 換模型後沿用舊門檻，就是「拿英文門檻量中文」的同一種錯誤換了個軸
+      expect(PerplexityCalibration.of('en'), isNotNull);
+      expect(
+        PerplexityCalibration.of('en', modelId: 'some_multilingual_lm_int8'),
+        isNull,
+      );
+    });
   });
 }

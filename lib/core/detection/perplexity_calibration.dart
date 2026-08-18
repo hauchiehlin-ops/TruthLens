@@ -26,12 +26,17 @@ class PerplexityThresholds {
   /// 校準來源與已知限制，寫給日後要重跑校準的人看
   final String provenance;
 
+  /// 這組門檻是用哪一顆模型量出來的。門檻綁定的是「模型 × 語言」——
+  /// 換模型後所有門檻一律失效，不能沿用。
+  final String modelId;
+
   const PerplexityThresholds({
     required this.aiCut,
     required this.humanCut,
     required this.auc,
     required this.sampleCount,
     required this.provenance,
+    required this.modelId,
   });
 
   /// 這組門檻是否值得採用。可分性太低時，採用只會製造偽陽性——
@@ -58,6 +63,7 @@ const Map<String, PerplexityThresholds> _table = {
     humanCut: 150,
     auc: 0.996,
     sampleCount: 600,
+    modelId: 'distilgpt2_ppl_int8',
     provenance:
         'HC3 英文語料 600 筆（fp32 distilgpt2）測得 AUC 0.996；門檻 60/150 沿用自'
         ' production INT8 管線的既有值，於真人學術論文（困惑度 304 → 人類撰寫）'
@@ -69,6 +75,7 @@ const Map<String, PerplexityThresholds> _table = {
     humanCut: 22.8,
     auc: 0.50,
     sampleCount: 600,
+    modelId: 'distilgpt2_ppl_int8',
     provenance:
         'DistilGPT2 未見過中文，量到的是 UTF-8 位元組的可預測性。HC3 中文語料'
         ' 600 筆實測：現行門檻 60 之下真人與 AI 各佔 100%，區別力 0.0 個百分點。'
@@ -79,10 +86,18 @@ const Map<String, PerplexityThresholds> _table = {
 
 /// 困惑度校準表的查詢入口
 abstract final class PerplexityCalibration {
-  /// 取得 [languageCode] 的可用門檻；未校準或可分性不足時回傳 null。
-  static PerplexityThresholds? of(String languageCode) {
+  /// 取得 [languageCode] 在目前使用中模型下的可用門檻。
+  ///
+  /// 未校準、可分性不足、或門檻是用別顆模型量的，一律回傳 null。
+  /// 最後這一項尤其重要：換模型之後沿用舊門檻，就是這個專案先前
+  /// 拿英文門檻量中文的同一種錯誤，只是換了個軸。
+  static PerplexityThresholds? of(
+    String languageCode, {
+    String modelId = perplexityModelId,
+  }) {
     final entry = _table[languageCode];
     if (entry == null || !entry.isUsable) return null;
+    if (entry.modelId != modelId) return null;
     return entry;
   }
 

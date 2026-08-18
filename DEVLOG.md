@@ -1,5 +1,43 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-18（第九十九次更新）— 階段四：多語困惑度模型可行性確認，匯出卡在量化
+
+**先量再下載**：新增 `training/calibrate_multilingual_ppl.py`，用與 DistilGPT2
+完全相同的語料與方法評估候選模型，避免「先下載 1GB 再說」。
+
+| 模型 | 中文 AUC | 英文 AUC |
+|---|---|---|
+| DistilGPT2（現行，494M→82M，純英文） | **0.50** ❌ | 0.996 |
+| Qwen2.5-0.5B（494M，多語） | **0.974** ✅ | 0.991 |
+
+中文從「完全無鑑別力」變成「幾乎完美」，英文持平。依偽陽性預算求得的操作點
+（fp32，僅供參考，不得直接寫進程式）：
+
+- 中文 5% 預算 → aiCut 9.78，命中 80.0%，實際誤傷 5.0%
+- 英文 5% 預算 → aiCut 10.18，命中 100.0%，實際誤傷 1.0%
+
+兩種語言的尺度也拉近了（真人中位數 48.9 vs 27.6），不再像 DistilGPT2 差 7 倍。
+
+**校準表新增 `modelId` 綁定**：`PerplexityCalibration.of()` 現在會比對模型 ID，
+**換模型後舊門檻一律失效**。沿用舊門檻就是「拿英文門檻量中文」的同一種錯誤換了個軸，
+用型別擋住比寫註解提醒可靠。
+
+**匯出遇到的兩道牆**
+1. 舊版 TorchScript 匯出器在 Qwen 的 rotary embedding 上炸掉
+   （`ScalarType ComplexDouble is an unexpected tensor scalar type`）。
+   已把 `export_gpt2.py` 參數化並改用 dynamo 匯出器（opset 18），fp32 匯出成功（990MB）。
+2. **本地 INT8 動態量化的產物 ONNX Runtime 跑不起來**
+   （`NOT_IMPLEMENTED: Could not find an implementation for Mul(14)`），
+   而且體積完全沒縮（992MB vs 990MB）。已刪除該無效產物。
+
+**下一步（不是繼續本地量化）**：改用社群已針對 onnxruntime-web 預先量化的 ONNX 建置
+（例如 onnx-community 的 Qwen2.5-0.5B 量化版），再用 `calibrate_multilingual_ppl.py`
+以**該 INT8 產物**重測門檻。量化會位移困惑度尺度——這正是 fp32 門檻不能直接沿用的原因，
+production 的 DistilGPT2 英文真人量到 304 而 fp32 只有 65.6，就是同一個現象。
+
+**狀態**：✅ 可行性已確認、`export_gpt2.py` 已支援任意 causal LM、校準表已綁模型 ID、
+`flutter test` 368 項全通過、`flutter build web` 成功；⏸️ INT8 產物與上架待續
+
 ## 2026-08-18（第九十八次更新）— 階段三：多語分類器已存在，但 XLM-R 之路被 tokenizer 擋住
 
 **先撞到的牆**：應用程式的 tokenizer 只支援 `bert-wordpiece` / `roberta-bpe` / `none`
