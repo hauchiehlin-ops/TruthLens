@@ -11,6 +11,7 @@ import '../../features/report/report_document.dart';
 import '../../features/report/bibliography_presentation.dart';
 import '../../features/report/summary_card.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/verdict_palette.dart';
 import '../models/detection_result.dart';
 import 'bibliography_verifier.dart';
 import '../utils/text_stats.dart';
@@ -187,13 +188,11 @@ class ReportExporter {
     final bold = pw.Font.ttf(boldFont);
     final theme = pw.ThemeData.withFont(base: regular, bold: bold);
 
-    PdfColor scoreColor(double p) {
-      if (p < 0.2) return PdfColor.fromInt(0xFF4CAF50);
-      if (p < 0.4) return PdfColor.fromInt(0xFFCDDC39);
-      if (p < 0.6) return PdfColor.fromInt(0xFFFF9800);
-      if (p < 0.8) return PdfColor.fromInt(0xFFFF5722);
-      return PdfColor.fromInt(0xFFF44336);
-    }
+    // 與畫面共用同一套判定色階，並經 Verdict.fromProbability 取級距——
+    // 原本這裡自己寫死 0.2/0.4/0.6/0.8 並用另一組顏色，切點一改就會與
+    // 畫面不一致，同一份判定在 PDF 與 App 裡看起來也是兩回事。
+    PdfColor scoreColor(double p) =>
+        PdfColor.fromInt(verdictColor(Verdict.fromProbability(p)).toARGB32());
 
     final analyzableSentences = _analyzableSentences(r);
     final privacySeal = _privacySealParts(l10n);

@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/models/detection_result.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
+import 'verdict_palette.dart';
 
 
 /// 報告區塊標題色。深色工作台主題（宇宙未來風／教育文柔風）的面板會以
@@ -203,28 +204,27 @@ class _VerdictSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAI = result.aiProbability > 0.5;
+    // 卡片底色跟著判定級距走，五級各有專屬色相。原本只分「AI/非 AI」兩色，
+    // 「可能人類」與「混合內容」看起來完全一樣，等級的差異在視覺上不存在。
+    // 棄權時不套判定色——那會讓「不做判定」看起來像某一級的結論。
+    final verdict = result.shouldAbstain ? null : result.verdict;
+    final base = verdict == null
+        ? const Color(0xFF37474F) // 中性石板灰，明確不屬於任何一級
+        : verdictColor(verdict);
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isAI
-              ? [
-                  const Color(0xFF6B5B95).withValues(alpha: 0.9),
-                  const Color(0xFF6B5B95),
-                ]
-              : [
-                  const Color(0xFF1E3A5F).withValues(alpha: 0.9),
-                  const Color(0xFF1E3A5F),
-                ],
-        ),
+        gradient: verdict == null
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color.lerp(base, Colors.white, 0.12)!, base],
+              )
+            : verdictGradient(verdict),
         boxShadow: [
           BoxShadow(
-            color: (isAI ? const Color(0xFF6B5B95) : const Color(0xFF1E3A5F))
-                .withValues(alpha: 0.3),
+            color: base.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -242,9 +242,19 @@ class _VerdictSummaryCard extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.15),
             ),
             child: Center(
-              child: isAI
-                  ? Icon(LucideIcons.fileText, size: 40, color: Colors.white)
-                  : Icon(LucideIcons.pencil, size: 40, color: Colors.white),
+              // 圖示與底色同步分級：只靠顏色分辨對色盲使用者不友善，
+              // 形狀是第二條獨立的辨識線索。
+              child: Icon(
+                switch (verdict) {
+                  null => LucideIcons.helpCircle, // 棄權
+                  Verdict.human || Verdict.likelyHuman => LucideIcons.pencil,
+                  Verdict.mixed => LucideIcons.layers,
+                  Verdict.likelyAi => LucideIcons.fileText,
+                  Verdict.ai => LucideIcons.cpu,
+                },
+                size: 40,
+                color: Colors.white,
+              ),
             ),
           ),
           const SizedBox(width: 20),
@@ -343,11 +353,16 @@ class _VerdictTierList extends StatelessWidget {
           constraints: const BoxConstraints(minWidth: 120),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: active ? 0.25 : 0.08),
+            // 每一級帶自己的色相，整條色階才讀得出「量表上的位置」；
+            // 作用中的一級提亮以浮出同色相的卡片背景，並加白框強調。
+            color: active
+                ? verdictActiveChipColor(verdict)
+                : verdictIdleChipColor(verdict),
             borderRadius: BorderRadius.circular(8),
-            border: active
-                ? Border.all(color: Colors.white.withValues(alpha: 0.6))
-                : null,
+            border: Border.all(
+              color: Colors.white.withValues(alpha: active ? 0.85 : 0.18),
+              width: active ? 2 : 1,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
