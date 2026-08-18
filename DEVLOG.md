@@ -1,5 +1,39 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-19（第一百零二次更新）— 修正 Release 資產檔名，並查出 GitHub Releases 的結構性 CORS 問題
+
+**直接原因**：`gh release create file#label` 的 `#` 是設**顯示標籤**，不是改檔名。
+v0.3 的資產實際上叫 `model_int8.onnx` 與 `tokenizer.json`，而 catalog 指向
+`qwen05b_ppl_int8.onnx` → 404 → App 顯示 `ClientException: Failed to fetch`。
+已刪除誤名資產並以正確檔名重新上傳，四個資產（v0.2 + v0.3）現在都能回 206
+並帶正確的 `content-range`。
+
+**查證過程中發現的結構性問題**：**GitHub Releases 的資產完全不回
+`access-control-allow-origin`**——最終由 Azure Blob 經 Fastly 提供，無任何 CORS 標頭。
+瀏覽器的 `fetch()` 一律被阻擋。對照 HuggingFace 會明確回
+`access-control-allow-origin` 並以 `access-control-expose-headers` 暴露
+`Content-Range`／`Accept-Ranges`。
+
+`model_manager_web.dart` 早已針對此點設計了三段候選（同源 Edge 代理 → 公用
+Vercel 代理 → 原始網址），註解也明確寫著 GitHub Releases 缺 CORS。但實測
+**公用代理備援 `truth-lens-band-b.vercel.app/api/proxy` 已失效**：
+回 307 轉址後給出一份 478KB 的 HTML（`data-dpl-id`，Vercel 部署保護頁），
+而非模型位元組。因此目前只有同源代理這條路可用——**在 `flutter run -d web-server`
+的本機開發環境下沒有 `/api/proxy`（那是 Vercel function），GitHub 來源會完全下載不了。**
+
+`web/api/proxy.js` 本身的實作是正確的（轉發 Range、貫穿 `content-range` 與狀態碼），
+問題純粹在那個備援網址背後的部署已受保護。
+
+**多語偵測器其實已生效**：使用者回報「沒出現」，但畫面上「多語言偵測器（英+中・INT8）
+129 MB · v2.0」正處於「使用中」——129 MiB 即 135,729,550 bytes，且 v2.0 是本次
+新增的條目（舊條目為 v1.0）。它已下載並啟用。
+
+**建議**：把模型改托管於 HuggingFace。直接支援 CORS 與 Range、不需代理跳轉、
+本機開發環境同樣可用，且 App 的下載邏輯對 `huggingface.co` 本來就優先直連。
+GitHub Releases 保留為封存鏡像。
+
+**狀態**：✅ Release 資產檔名已修正並驗證可回 206；⏸️ 托管遷移待授權
+
 ## 2026-08-18（第一百零一次更新）— JS 橋接支援 KV cache，多語困惑度模型上架
 
 **卡住的地方**：`web/ort_bridge.js` 的 `runBatch` 寫死只餵 `input_ids` 與
