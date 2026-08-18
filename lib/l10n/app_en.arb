@@ -2019,5 +2019,35 @@
   },
   "workspaceSentenceSignalTooltip": "This percentage is this sentence's own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.",
   "workspaceSentenceSignalHeader": "AI signal per sentence",
-  "workspaceSentenceColumnHeader": "Sentence"
+  "workspaceSentenceColumnHeader": "Sentence",
+  "reportEngineRelationshipNoEvidence": "{engine} found no evidence this time, so it did not take part in the vote (role weight {weight}%). This means it spotted no AI traces on its own axis — not that it considers the text human-written.",
+  "@reportEngineRelationshipNoEvidence": {
+    "description": "Shown for an engine that ran but found no evidence, so it did not vote",
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      }
+    }
+  },
+  "telemetrySummarySingleSource": "Only {engine} found anything; the other engines turned up nothing this time. The conclusion rests on a single line of evidence, so treat its confidence accordingly.",
+  "@telemetrySummarySingleSource": {
+    "description": "Telemetry summary line when exactly one engine found evidence",
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "telemetrySummarySilentEngines": "{count} further engine(s) ran but found no evidence, and were excluded from the vote so that 'nothing to report' is not miscounted as 'looks human-written'.",
+  "@telemetrySummarySilentEngines": {
+    "description": "Telemetry summary line counting engines that ran but found no evidence",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

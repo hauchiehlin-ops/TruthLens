@@ -1,0 +1,243 @@
+import 'package:flutter/widgets.dart' show Locale;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:truthlens/core/detection/detection_engine.dart';
+import 'package:truthlens/core/detection/engines/statistical_engine.dart';
+import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
+import 'package:truthlens/core/detection/orchestrator.dart';
+import 'package:truthlens/core/models/detection_result.dart';
+import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:truthlens/features/workspace/telemetry_summary.dart';
+import 'package:truthlens/l10n/generated/app_localizations.dart';
+
+/// 假引擎：可指定分數與「有沒有找到證據」
+class _Engine implements DetectionEngine {
+  @override
+  final String id;
+  final double probability;
+  final bool evidence;
+  final bool installed;
+
+  const _Engine(
+    this.id,
+    this.probability, {
+    this.evidence = true,
+    this.installed = true,
+  });
+
+  @override
+  double get defaultWeight => const {
+    'transformer': 0.40,
+    'statistical': 0.25,
+    'stylometry': 0.20,
+    'adversarial': 0.15,
+  }[id]!;
+
+  @override
+  Future<bool> isAvailable() async => installed;
+
+  @override
+  String name(AppLocalizations l10n) => id;
+
+  @override
+  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async =>
+      EngineScore(
+        engineId: id,
+        engineName: id,
+        aiProbability: probability,
+        weight: defaultWeight,
+        hasEvidence: evidence,
+      );
+}
+
+/// 重現回報案例：Transformer/風格/對抗三個引擎沉默（0%），
+/// 只有統計引擎找到證據（78%）
+List<EngineScore> _reportedCase() => const [
+  EngineScore(
+    engineId: 'transformer',
+    engineName: 'Transformer',
+    aiProbability: 0,
+    weight: 0.40,
+    hasEvidence: false,
+  ),
+  EngineScore(
+    engineId: 'statistical',
+    engineName: 'Statistical',
+    aiProbability: 0.78,
+    weight: 0.25,
+  ),
+  EngineScore(
+    engineId: 'stylometry',
+    engineName: 'Stylometry',
+    aiProbability: 0,
+    weight: 0.20,
+    hasEvidence: false,
+  ),
+  EngineScore(
+    engineId: 'adversarial',
+    engineName: 'Adversarial',
+    aiProbability: 0,
+    weight: 0.15,
+    hasEvidence: false,
+  ),
+];
+
+DetectionResult _result(List<EngineScore> scores, double overall) =>
+    DetectionResult(
+      id: 'e',
+      analyzedAt: DateTime(2026, 8, 18),
+      inputText: List.filled(400, 'alpha').join(' '),
+      aiProbability: overall,
+      verdict: Verdict.fromProbability(overall),
+      engineScores: scores,
+      sentences: [
+        for (var i = 0; i < 10; i++)
+          SentenceScore(
+            index: i,
+            text:
+                'This is a complete and sufficiently long analysable sentence '
+                'numbered $i for the purposes of this test.',
+            aiProbability: 0.3,
+          ),
+      ],
+      availableEngineCount: scores.where((s) => s.available).length,
+      totalEngineCount: scores.length,
+    );
+
+const _text =
+    'This complete sentence provides enough content for a reliable analysis. '
+    'A second sentence keeps the paragraph intact for the engines to read.';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  final l10n = lookupAppLocalizations(const Locale('en'));
+
+  group('沉默的引擎不投票', () {
+    test('三個引擎沒有證據時，不稀釋唯一有證據的引擎', () async {
+      final result = await EnsembleOrchestrator(
+        engines: const [
+          _Engine('transformer', 0, evidence: false),
+          _Engine('statistical', 0.78),
+          _Engine('stylometry', 0, evidence: false),
+          _Engine('adversarial', 0, evidence: false),
+        ],
+      ).analyze(_text, eslCorrectionEnabled: false);
+
+      // 舊的加權平均會得到 0.78×0.25 = 0.195（回報案例中的 20%）
+      expect(result.aiProbability, closeTo(0.78, 0.0001));
+      expect(result.verdict, Verdict.likelyAi);
+    });
+
+    test('多個引擎都有證據時，仍照設定權重投票', () async {
+      final result = await EnsembleOrchestrator(
+        engines: const [
+          _Engine('transformer', 0.80),
+          _Engine('statistical', 0.60),
+          _Engine('stylometry', 0, evidence: false),
+          _Engine('adversarial', 0, evidence: false),
+        ],
+      ).analyze(_text, eslCorrectionEnabled: false);
+
+      // (0.80×0.40 + 0.60×0.25) / 0.65
+      expect(result.aiProbability, closeTo(0.7231, 0.0005));
+    });
+
+    test('四個引擎全部沉默時退回全體平均，不會除以零', () async {
+      final result = await EnsembleOrchestrator(
+        engines: const [
+          _Engine('transformer', 0, evidence: false),
+          _Engine('statistical', 0.5, evidence: false),
+          _Engine('stylometry', 0, evidence: false),
+          _Engine('adversarial', 0, evidence: false),
+        ],
+      ).analyze(_text, eslCorrectionEnabled: false);
+
+      expect(result.aiProbability, closeTo(0.125, 0.0001));
+      expect(result.verdict, Verdict.human);
+    });
+  });
+
+  group('棄權：沉默不是分歧', () {
+    test('回報案例不再因「引擎分歧」棄權', () {
+      final result = _result(_reportedCase(), 0.78);
+      expect(result.engineSpreadPoints, 0);
+      expect(result.abstention, AbstentionReason.none);
+      expect(result.shouldAbstain, isFalse);
+      expect(result.singleEvidenceSource, isTrue);
+      expect(result.evidenceEngineCount, 1);
+    });
+
+    test('兩個引擎都有證據且真的對立時，仍要棄權', () {
+      final result = _result(const [
+        EngineScore(
+          engineId: 'transformer',
+          engineName: 'Transformer',
+          aiProbability: 0.95,
+          weight: 0.40,
+        ),
+        EngineScore(
+          engineId: 'statistical',
+          engineName: 'Statistical',
+          aiProbability: 0.05,
+          weight: 0.25,
+        ),
+      ], 0.60);
+
+      expect(result.engineSpreadPoints, 90);
+      expect(result.abstention, AbstentionReason.enginesConflict);
+    });
+  });
+
+  test('各引擎貢獻點數加總仍等於整體百分比', () {
+    final result = _result(_reportedCase(), 0.78);
+    final points = result.roundedEngineContributionPoints;
+    expect(points.keys, ['statistical']);
+    expect(points.values.fold<int>(0, (a, b) => a + b), 78);
+  });
+
+  test('遙測總結講明單一證據來源與沉默的引擎', () {
+    final lines = buildTelemetrySummary(_result(_reportedCase(), 0.78), l10n);
+    final text = lines.join(' ');
+
+    expect(text, contains('Only'));
+    expect(text, contains('single line of evidence'));
+    expect(text, contains('found no evidence'));
+    expect(text, isNot(contains('Not enough evidence to judge')));
+  });
+
+  group('各引擎自陳有無證據', () {
+    test('風格引擎沒命中任何特徵時視為沉默', () async {
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(
+          'The committee reviewed evidence from several sources. '
+          'Members then discussed the findings during a public meeting.',
+        ),
+        l10n,
+      );
+      expect(score.aiProbability, 0);
+      expect(score.hasEvidence, isFalse);
+    });
+
+    test('風格引擎命中特徵時算有證據', () async {
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(
+          'Moreover, the system is efficient. Furthermore, it is reliable. '
+          'In addition, it is scalable. Additionally, it is maintainable. '
+          'Moreover, the design is elegant and consistent throughout.',
+        ),
+        l10n,
+      );
+      expect(score.hasEvidence, isTrue);
+      expect(score.aiProbability, greaterThan(0));
+    });
+
+    test('統計引擎所有指標都落在中間帶時視為沉默', () async {
+      final score = await StatisticalEngine().analyze(
+        PreprocessedText.from('Short text. Another one.'),
+        l10n,
+      );
+      expect(score.aiProbability, 0.5);
+      expect(score.hasEvidence, isFalse);
+    });
+
+  });
+}

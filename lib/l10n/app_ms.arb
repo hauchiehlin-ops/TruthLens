@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "Pilihan lain",
   "workspaceSentenceColumnHeader": "Ayat",
   "workspaceSentenceSignalHeader": "Isyarat AI setiap ayat",
-  "workspaceSentenceSignalTooltip": "Peratusan ini ialah isyarat AI ayat ini sendiri, bukan keputusan keseluruhan dokumen. Lebih tinggi bermakna corak perkataan kelihatan lebih dijana AI; lebih rendah bermakna ia lebih menyerupai penulisan manusia biasa. Laporan akhir menggabungkan setiap ayat dengan pemberatan enjin."
+  "workspaceSentenceSignalTooltip": "Peratusan ini ialah isyarat AI ayat ini sendiri, bukan keputusan keseluruhan dokumen. Lebih tinggi bermakna corak perkataan kelihatan lebih dijana AI; lebih rendah bermakna ia lebih menyerupai penulisan manusia biasa. Laporan akhir menggabungkan setiap ayat dengan pemberatan enjin.",
+  "reportEngineRelationshipNoEvidence": "{engine} tidak menemui bukti kali ini, jadi ia tidak menyertai undian (pemberat peranan {weight}%). Ini bermakna tiada kesan AI pada paksinya sendiri — bukan bermakna ia menganggap teks ini ditulis manusia.",
+  "telemetrySummarySingleSource": "Hanya {engine} menemui sesuatu; enjin lain tidak menemui apa-apa kali ini. Kesimpulan bersandar pada satu garis bukti sahaja, jadi laraskan keyakinan sewajarnya.",
+  "telemetrySummarySilentEngines": "{count} enjin lain berjalan tetapi tidak menemui bukti, dan dikecualikan daripada undian supaya 'tiada apa untuk dilaporkan' tidak tersalah kira sebagai 'nampak ditulis manusia'."
 }

@@ -2551,4 +2551,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Kalimat';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine tidak menemukan bukti kali ini, sehingga tidak ikut memilih (bobot peran $weight%). Artinya tidak ada jejak AI pada sumbunya sendiri — bukan berarti ia menilai teks ini ditulis manusia.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'Hanya $engine yang menemukan sesuatu; mesin lain tidak menemukan apa pun kali ini. Kesimpulan bertumpu pada satu jalur bukti saja, jadi sesuaikan tingkat keyakinannya.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '$count mesin lain berjalan tetapi tidak menemukan bukti, dan dikeluarkan dari pemungutan suara agar \'tidak ada yang dilaporkan\' tidak salah dihitung sebagai \'tampak ditulis manusia\'.';
+  }
 }

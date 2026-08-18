@@ -1114,6 +1114,10 @@ class EngineGroup {
   final double contribution;
   final int contributionPoints;
   final bool available;
+
+  /// 這個引擎本次是否真的找到證據。false 代表它可用但沒有發言——
+  /// 不參與投票，也不算在引擎分歧裡。
+  final bool hasEvidence;
   final int variantCount;
   final List<String> reasons;
   final AppLocalizations l10n;
@@ -1127,6 +1131,7 @@ class EngineGroup {
     required this.contribution,
     required this.contributionPoints,
     required this.available,
+    required this.hasEvidence,
     required this.variantCount,
     required this.reasons,
     required this.l10n,
@@ -1139,6 +1144,9 @@ class EngineGroup {
         label,
         _resolutionHint(role, l10n),
       );
+    }
+    if (!hasEvidence) {
+      return l10n.reportEngineRelationshipNoEvidence(label, weightPercent);
     }
     final variantText = variantCount > 1
         ? l10n.reportEngineVariantMerged(variantCount)
@@ -1174,10 +1182,18 @@ class EngineGroup {
           : configured;
     }
 
-    final availableWeight = order.fold<double>(0, (sum, role) {
-      if (!grouped[role]!.any((s) => s.available)) return sum;
-      return sum + effectiveWeight(role);
-    });
+    // 與 DetectionResult.votingEngines 同步：有證據的角色才分配權重；
+    // 全體沉默時退回全體可用角色，否則貢獻度會全部變成 0。
+    bool roleVotes(String role) =>
+        grouped[role]!.any((s) => s.available && s.hasEvidence);
+    final anyEvidence = order.any(roleVotes);
+    bool counts(String role) => anyEvidence
+        ? roleVotes(role)
+        : grouped[role]!.any((s) => s.available);
+    final availableWeight = order.fold<double>(
+      0,
+      (sum, role) => counts(role) ? sum + effectiveWeight(role) : sum,
+    );
 
     return [
       for (final role in order)
@@ -1186,6 +1202,7 @@ class EngineGroup {
           grouped[role]!,
           availableWeight: availableWeight,
           effectiveWeight: effectiveWeight(role),
+          counted: counts(role),
           contributionPoints: grouped[role]!.fold<int>(
             0,
             (sum, score) =>
@@ -1201,6 +1218,7 @@ class EngineGroup {
     List<EngineScore> scores, {
     required double availableWeight,
     required double effectiveWeight,
+    required bool counted,
     required int contributionPoints,
     required AppLocalizations l10n,
   }) {
@@ -1211,7 +1229,7 @@ class EngineGroup {
               availableScores.length
         : 0.0;
     final weight = scores.isNotEmpty ? scores.first.weight : _roleWeight(role);
-    final contribution = available && availableWeight > 0
+    final contribution = counted && availableWeight > 0
         ? probability * effectiveWeight / availableWeight
         : 0.0;
     final reasons = <String>[
@@ -1231,6 +1249,7 @@ class EngineGroup {
       contribution: contribution,
       contributionPoints: contributionPoints,
       available: available,
+      hasEvidence: availableScores.any((s) => s.hasEvidence),
       variantCount: math.max(scores.length, 1),
       reasons: uniqueReasons.isEmpty
           ? [_fallbackReason(role, available, l10n)]

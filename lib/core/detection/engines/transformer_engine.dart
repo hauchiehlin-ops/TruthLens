@@ -189,12 +189,21 @@ class TransformerEngine implements DetectionEngine {
     }
     calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
 
+    // 沒有任何區塊跨過強 AI 閾值時，上面的校準把輸出壓進 [0, 0.10]，
+    // 目的是抑制 Softmax 在 0.5 附近的浮動——那是消噪，不是機率估計。
+    // 更關鍵的是：低於 0.5 的原始分數會被 clamp 成 0，所以「模型很確定是人寫的」
+    // 和「模型根本沒意見」在輸出上完全無法區分。既然分不出來，就不能拿它
+    // 當作支持人類撰寫的證據，只能誠實標記為「本次沒有證據」。
+    // TODO: 未來替這個引擎補一條負向證據通道，讓確信的人類判斷也能發聲。
+    final hasEvidence = strongChunkCount > 0;
+
     final variant = _resolveVariant();
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
       aiProbability: calibratedProbability,
       weight: defaultWeight,
+      hasEvidence: hasEvidence,
       features: {
         'ai_sentence_ratio': strongSentenceRatio,
         'ai_analysis_chunk_ratio': strongChunkRatio,

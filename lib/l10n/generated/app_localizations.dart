@@ -4084,6 +4084,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sentence'**
   String get workspaceSentenceColumnHeader;
+
+  /// Shown for an engine that ran but found no evidence, so it did not vote
+  ///
+  /// In en, this message translates to:
+  /// **'{engine} found no evidence this time, so it did not take part in the vote (role weight {weight}%). This means it spotted no AI traces on its own axis — not that it considers the text human-written.'**
+  String reportEngineRelationshipNoEvidence(String engine, int weight);
+
+  /// Telemetry summary line when exactly one engine found evidence
+  ///
+  /// In en, this message translates to:
+  /// **'Only {engine} found anything; the other engines turned up nothing this time. The conclusion rests on a single line of evidence, so treat its confidence accordingly.'**
+  String telemetrySummarySingleSource(String engine);
+
+  /// Telemetry summary line counting engines that ran but found no evidence
+  ///
+  /// In en, this message translates to:
+  /// **'{count} further engine(s) ran but found no evidence, and were excluded from the vote so that \'nothing to report\' is not miscounted as \'looks human-written\'.'**
+  String telemetrySummarySilentEngines(int count);
 }
 
 class _AppLocalizationsDelegate

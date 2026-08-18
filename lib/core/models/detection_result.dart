@@ -66,6 +66,18 @@ class EngineScore {
   final List<String> reasons; // 人類可讀的判定理由
   final List<double>? sentenceScores; // 句子級 AI 機率（有神經模型時提供）
 
+  /// 這個分數是否代表引擎「真的找到了東西」。
+  ///
+  /// 四個引擎的中性點並不相同：統計引擎從 0.5 出發、可正可負，
+  /// 風格／Transformer／對抗三個引擎則從 0 出發、只在命中特徵時加分。
+  /// 對後三者而言 0 的意思是「我沒有話說」，不是「我確定這是人寫的」。
+  /// 若不區分這兩件事，三個沉默的引擎會以 75% 的權重否決唯一有證據的引擎——
+  /// 一篇通篇 AI 的短文因此得到 20% 並被判為「引擎分歧、不做判定」。
+  ///
+  /// 為 false 時該引擎不參與加權投票，也不列入分歧計算：沒有發言的證人
+  /// 不能算成反對票，更不能算成證人之間的矛盾。
+  final bool hasEvidence;
+
   const EngineScore({
     required this.engineId,
     required this.engineName,
@@ -75,6 +87,7 @@ class EngineScore {
     this.features = const {},
     this.reasons = const [],
     this.sentenceScores,
+    this.hasEvidence = true,
   });
 
   EngineScore copyWith({double? weight}) => EngineScore(
@@ -86,7 +99,11 @@ class EngineScore {
     features: features,
     reasons: reasons,
     sentenceScores: sentenceScores,
+    hasEvidence: hasEvidence,
   );
+
+  /// 實際參與投票：可用、且確實握有證據
+  bool get votes => available && hasEvidence;
 }
 
 /// 句子級分析結果
@@ -185,9 +202,13 @@ class DetectionResult {
   int get effectiveTotalEngineCount =>
       engineScores.isEmpty ? totalEngineCount : engineScores.length;
 
-  /// 可用引擎之間分數全距，換算為整數百分點（0 表示不足兩個引擎可比）
+  /// 握有證據的引擎之間分數全距，換算為整數百分點（0 表示不足兩個引擎可比）。
+  ///
+  /// 刻意只看有證據的引擎。沉默的引擎輸出的是自己的中性點，把它和一個
+  /// 78% 的正向訊號相減會得到 78 個百分點的「分歧」——但沒有任何引擎說過
+  /// 反話，那不是矛盾，只是三個證人沒有發言。
   int get engineSpreadPoints {
-    final active = engineScores.where((e) => e.available).toList();
+    final active = votingEngines.where((e) => e.hasEvidence).toList();
     if (active.length < 2) return 0;
     final probabilities = active.map((e) => e.aiProbability);
     final high = probabilities.reduce((a, b) => a > b ? a : b);
@@ -206,8 +227,8 @@ class DetectionResult {
       return AbstentionReason.tooFewSentences;
     }
 
-    final active = engineScores.where((e) => e.available).toList();
-    if (active.length >= 2) {
+    final evidential = votingEngines.where((e) => e.hasEvidence).toList();
+    if (evidential.length >= 2) {
       // 以整數百分點比較：浮點相減會讓 0.80-0.20 變成 0.6000000000000001，
       // 使恰好落在門檻上的情形被誤判為超標。這裡也與畫面顯示的單位一致。
       if (engineSpreadPoints > (maxEngineSpread * 100).round()) {
@@ -216,6 +237,16 @@ class DetectionResult {
     }
     return AbstentionReason.none;
   }
+
+  /// 只有單一引擎握有證據。證據來源單一，信心該打折，但仍是有證據——
+  /// 這種情況要給判定並附註來源單一，不能拿「不做判定」搪塞：
+  /// 單一證人不等於沒有證人。
+  bool get singleEvidenceSource =>
+      votingEngines.where((e) => e.hasEvidence).length == 1;
+
+  /// 本次分析中真正找到東西的引擎數
+  int get evidenceEngineCount =>
+      engineScores.where((e) => e.available && e.hasEvidence).length;
 
   /// 證據不足以支撐任何判定時為 true。此時介面必須以棄權取代判定標題，
   /// 但仍保留底下的數字供人工參考——隱藏數字只會讓使用者更困惑。
@@ -244,20 +275,30 @@ class DetectionResult {
     return eslAdjusted && statistical ? score.weight * 0.5 : score.weight;
   }
 
-  double get _activeEffectiveWeight => engineScores
-      .where((score) => score.available)
-      .fold<double>(0, (sum, score) => sum + effectiveWeightFor(score));
+  /// 實際參與投票的引擎，與 EnsembleOrchestrator._weightedVote 的取法一致：
+  /// 可用且握有證據者投票；全體都沉默時退回全體可用引擎。
+  /// 兩邊若不同步，報告的「各引擎貢獻」加總就會對不上整體百分比。
+  List<EngineScore> get votingEngines {
+    final available = engineScores.where((s) => s.available).toList();
+    final evidential = available.where((s) => s.hasEvidence).toList();
+    return evidential.isNotEmpty ? evidential : available;
+  }
+
+  double get _activeEffectiveWeight => votingEngines.fold<double>(
+    0,
+    (sum, score) => sum + effectiveWeightFor(score),
+  );
 
   double contributionFor(EngineScore score) {
     final total = _activeEffectiveWeight;
-    if (!score.available || total <= 0) return 0;
+    if (!votingEngines.contains(score) || total <= 0) return 0;
     return score.aiProbability * effectiveWeightFor(score) / total;
   }
 
   /// 將各引擎的完整精度貢獻換算為整數百分點，同時保證加總恰好等於
   /// 畫面顯示的整體 AI 百分比，避免逐列四捨五入造成 20% 對 23% 的矛盾。
   Map<String, int> get roundedEngineContributionPoints {
-    final active = engineScores.where((score) => score.available).toList();
+    final active = votingEngines;
     if (active.isEmpty || _activeEffectiveWeight <= 0) return const {};
 
     final exact = <String, double>{

@@ -2545,4 +2545,19 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'ประโยค';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine ไม่พบหลักฐานในครั้งนี้ จึงไม่ได้ร่วมลงคะแนน (น้ำหนักบทบาท $weight%) หมายความว่าไม่พบร่องรอย AI ในแกนที่ตนรับผิดชอบ ไม่ได้แปลว่าเห็นว่าข้อความนี้เขียนโดยมนุษย์';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'ครั้งนี้มีเพียง $engine ที่พบหลักฐาน เอนจินอื่นไม่พบอะไรเลย ข้อสรุปจึงตั้งอยู่บนหลักฐานด้านเดียว กรุณาลดระดับความเชื่อมั่นตามนั้น';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return 'มีอีก $count เอนจินที่ทำงานแต่ไม่พบหลักฐาน จึงถูกตัดออกจากการลงคะแนน เพื่อไม่ให้ \'ไม่มีอะไรจะรายงาน\' ถูกนับผิดเป็น \'ดูเหมือนมนุษย์เขียน\'';
+  }
 }

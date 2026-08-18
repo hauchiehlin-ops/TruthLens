@@ -2541,4 +2541,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Sentence';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine found no evidence this time, so it did not take part in the vote (role weight $weight%). This means it spotted no AI traces on its own axis — not that it considers the text human-written.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'Only $engine found anything; the other engines turned up nothing this time. The conclusion rests on a single line of evidence, so treat its confidence accordingly.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '$count further engine(s) ran but found no evidence, and were excluded from the vote so that \'nothing to report\' is not miscounted as \'looks human-written\'.';
+  }
 }

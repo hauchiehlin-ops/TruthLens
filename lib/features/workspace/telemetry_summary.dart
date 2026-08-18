@@ -20,6 +20,9 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
   );
   final available = groups.where((g) => g.available).toList();
   if (available.isEmpty) return const [];
+  // 真正有話說的引擎。沉默的引擎不列入「引擎之間合不合」的比較——
+  // 它們沒有主張，拿它們的中性點去和正向訊號相減只會製造假分歧。
+  final speaking = available.where((g) => g.hasEvidence).toList();
 
   // 報告已棄權時，總結不能反過來給一個自信的判定，否則兩處自相矛盾
   if (result.shouldAbstain) {
@@ -40,16 +43,20 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
   ];
 
   // 引擎之間看法合不合：分數全距 30 個百分點以內視為一致
-  final highest = available.reduce(
+  final compared = speaking.isNotEmpty ? speaking : available;
+  final highest = compared.reduce(
     (a, b) => a.probability >= b.probability ? a : b,
   );
-  final lowest = available.reduce(
+  final lowest = compared.reduce(
     (a, b) => a.probability <= b.probability ? a : b,
   );
   final highPercent = (highest.probability * 100).round();
   final lowPercent = (lowest.probability * 100).round();
-  final enginesDisagree = available.length >= 2 && highPercent - lowPercent > 30;
-  if (available.length >= 2) {
+  final enginesDisagree = compared.length >= 2 && highPercent - lowPercent > 30;
+  if (speaking.length == 1) {
+    // 單一證人：要講清楚結論的支撐面很窄，但不能因此改口說「沒有證據」
+    lines.add(l10n.telemetrySummarySingleSource(speaking.single.label));
+  } else if (compared.length >= 2) {
     lines.add(
       enginesDisagree
           ? l10n.telemetrySummaryDisagreement(
@@ -92,6 +99,13 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
       l10n.telemetrySummaryAdviceMixed,
     Verdict.likelyAi || Verdict.ai => l10n.telemetrySummaryAdviceAi,
   });
+
+  // 可用但本次沒找到東西的引擎：說明它們為何不影響分數，
+  // 免得使用者看到「0%」以為它們投了「人類」一票。
+  final silent = available.length - speaking.length;
+  if (speaking.isNotEmpty && silent > 0) {
+    lines.add(l10n.telemetrySummarySilentEngines(silent));
+  }
 
   final missing = groups.length - available.length;
   if (missing > 0) {

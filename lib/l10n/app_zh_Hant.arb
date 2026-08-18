@@ -1220,5 +1220,8 @@
   },
   "workspaceSentenceSignalTooltip": "此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。",
   "workspaceSentenceSignalHeader": "逐句 AI 訊號",
-  "workspaceSentenceColumnHeader": "句子內容"
+  "workspaceSentenceColumnHeader": "句子內容",
+  "reportEngineRelationshipNoEvidence": "{engine} 本次沒有找到證據，未參與投票（角色權重 {weight}%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。",
+  "telemetrySummarySingleSource": "本次只有{engine}找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。",
+  "telemetrySummarySilentEngines": "另有 {count} 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。"
 }

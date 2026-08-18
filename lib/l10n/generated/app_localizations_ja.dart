@@ -2480,4 +2480,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => '文';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine は今回、根拠を見つけられなかったため投票に参加していません（役割重み $weight%）。これは自分の担当する観点でAIの痕跡がなかったという意味であり、人が書いたと判断したわけではありません。';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return '今回根拠を見つけたのは$engineだけで、他のエンジンは何も検出しませんでした。結論は単一の観点だけに支えられているため、確信度はその分割り引いてご覧ください。';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '他に $count 個のエンジンが実行されましたが根拠を見つけられず、投票から除外しました。「言うことがない」を「人が書いたように見える」と誤って数えないためです。';
+  }
 }

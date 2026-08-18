@@ -2555,4 +2555,19 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Ayat';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine tidak menemui bukti kali ini, jadi ia tidak menyertai undian (pemberat peranan $weight%). Ini bermakna tiada kesan AI pada paksinya sendiri — bukan bermakna ia menganggap teks ini ditulis manusia.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'Hanya $engine menemui sesuatu; enjin lain tidak menemui apa-apa kali ini. Kesimpulan bersandar pada satu garis bukti sahaja, jadi laraskan keyakinan sewajarnya.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '$count enjin lain berjalan tetapi tidak menemui bukti, dan dikecualikan daripada undian supaya \'tiada apa untuk dilaporkan\' tidak tersalah kira sebagai \'nampak ditulis manusia\'.';
+  }
 }

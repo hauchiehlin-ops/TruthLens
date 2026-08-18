@@ -2565,4 +2565,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Frase';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine não encontrou evidências desta vez, portanto não participou da votação (peso do papel $weight%). Isso significa nenhum rastro de IA no seu próprio eixo — não que ele considere o texto escrito por uma pessoa.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'Apenas $engine encontrou algo; os demais motores não acharam nada desta vez. A conclusão se apoia em uma única linha de evidência, então ajuste a confiança de acordo.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return 'Outros $count motor(es) rodaram mas não encontraram evidências, e foram excluídos da votação para que \'nada a relatar\' não seja contado como \'parece escrito por uma pessoa\'.';
+  }
 }

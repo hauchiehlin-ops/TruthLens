@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "Más opciones",
   "workspaceSentenceColumnHeader": "Oración",
   "workspaceSentenceSignalHeader": "Señal de IA por oración",
-  "workspaceSentenceSignalTooltip": "Este porcentaje es la señal de IA propia de esta oración, no el veredicto general del documento. Un valor más alto significa que el patrón de redacción parece más generado por IA; un valor más bajo significa que se lee más como una escritura humana típica. El informe final combina todas las oraciones con la ponderación de los motores."
+  "workspaceSentenceSignalTooltip": "Este porcentaje es la señal de IA propia de esta oración, no el veredicto general del documento. Un valor más alto significa que el patrón de redacción parece más generado por IA; un valor más bajo significa que se lee más como una escritura humana típica. El informe final combina todas las oraciones con la ponderación de los motores.",
+  "reportEngineRelationshipNoEvidence": "{engine} no encontró pruebas esta vez, así que no participó en la votación (peso de rol {weight} %). Significa que no halló rastros de IA en su propio eje, no que considere el texto escrito por una persona.",
+  "telemetrySummarySingleSource": "Solo {engine} encontró algo; los demás motores no hallaron nada esta vez. La conclusión se apoya en una única línea de evidencia, así que ajusta la confianza en consecuencia.",
+  "telemetrySummarySilentEngines": "Otros {count} motor(es) se ejecutaron pero no encontraron pruebas, y quedaron excluidos de la votación para que «nada que informar» no se cuente como «parece escrito por una persona»."
 }

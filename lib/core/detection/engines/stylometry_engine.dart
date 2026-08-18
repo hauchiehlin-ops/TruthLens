@@ -106,7 +106,10 @@ class StylometryEngine implements DetectionEngine {
       score += 0.15;
     }
 
-    if (reasons.isEmpty) {
+    // 本引擎只在命中 AI 風格特徵時加分，從不因「文筆像人」而扣分。
+    // 因此沒命中任何特徵時它是沉默，不是在投「人類」一票。
+    final foundMarkers = reasons.isNotEmpty;
+    if (!foundMarkers) {
       reasons.add(l10n.engineReasonNoStyleMarkers);
     }
 
@@ -117,6 +120,7 @@ class StylometryEngine implements DetectionEngine {
       weight: defaultWeight,
       features: features,
       reasons: reasons,
+      hasEvidence: foundMarkers,
     );
   }
 }

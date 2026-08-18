@@ -172,11 +172,17 @@ class AdversarialEngine implements DetectionEngine {
       calibratedProbability = (strongChunkRatio * 0.7) + (strongAverage * 0.3);
     }
     calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
+
+    // 本引擎問的是「這段文字有沒有被改寫工具動過」，不是「這段文字是不是 AI 寫的」。
+    // 一篇原生 AI 短文從未被改寫，得到 0% 是正確答案——但那是另一道題的正確答案，
+    // 不能當成「這是人寫的」的證據拿去投票。沒偵測到改寫時一律視為沉默。
+    final hasEvidence = strongChunkCount > 0;
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
       aiProbability: calibratedProbability,
       weight: defaultWeight,
+      hasEvidence: hasEvidence,
       sentenceScores: perSentence,
       features: {
         'strong_sentence_ratio': strongSentenceRatio,

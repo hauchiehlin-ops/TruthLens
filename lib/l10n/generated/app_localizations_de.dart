@@ -2569,4 +2569,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Satz';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine hat diesmal keine Belege gefunden und nahm daher nicht an der Abstimmung teil (Rollengewicht $weight %). Das heißt: keine KI-Spuren auf seiner eigenen Achse — nicht, dass er den Text für menschlich geschrieben hält.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'Nur $engine hat etwas gefunden; die übrigen Engines fanden diesmal nichts. Das Ergebnis stützt sich auf eine einzige Beweislinie — bewerten Sie die Sicherheit entsprechend.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '$count weitere Engine(s) liefen, fanden aber keine Belege und wurden von der Abstimmung ausgeschlossen, damit „nichts zu berichten“ nicht als „wirkt menschlich geschrieben“ gezählt wird.';
+  }
 }

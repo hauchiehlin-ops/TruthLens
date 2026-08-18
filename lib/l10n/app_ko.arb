@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "추가 옵션",
   "workspaceSentenceColumnHeader": "문장",
   "workspaceSentenceSignalHeader": "문장별 AI 신호",
-  "workspaceSentenceSignalTooltip": "이 백분율은 이 문장 자체의 AI 신호이며 문서 전체의 판정이 아닙니다. 값이 높을수록 문구 패턴이 AI가 생성한 것처럼 보이고, 낮을수록 일반적인 인간의 글쓰기처럼 읽힙니다. 최종 보고서는 모든 문장을 엔진 가중치와 결합합니다."
+  "workspaceSentenceSignalTooltip": "이 백분율은 이 문장 자체의 AI 신호이며 문서 전체의 판정이 아닙니다. 값이 높을수록 문구 패턴이 AI가 생성한 것처럼 보이고, 낮을수록 일반적인 인간의 글쓰기처럼 읽힙니다. 최종 보고서는 모든 문장을 엔진 가중치와 결합합니다.",
+  "reportEngineRelationshipNoEvidence": "{engine}은(는) 이번에 근거를 찾지 못해 투표에 참여하지 않았습니다(역할 가중치 {weight}%). 자신이 맡은 관점에서 AI 흔적이 없었다는 뜻이며, 사람이 썼다고 판단한 것은 아닙니다.",
+  "telemetrySummarySingleSource": "이번에는 {engine}만 근거를 찾았고 나머지 엔진은 아무것도 발견하지 못했습니다. 결론이 단일 관점에만 기대고 있으므로 신뢰도는 그만큼 낮춰 보십시오.",
+  "telemetrySummarySilentEngines": "다른 {count}개 엔진은 실행되었으나 근거를 찾지 못해 투표에서 제외했습니다. '할 말이 없음'이 '사람이 쓴 것 같음'으로 잘못 계산되지 않도록 하기 위함입니다."
 }

@@ -2556,4 +2556,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => 'Предложение';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine в этот раз не нашёл свидетельств и потому не участвовал в голосовании (вес роли $weight %). Это значит, что по своей оси он не обнаружил следов ИИ, а не что он считает текст написанным человеком.';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return 'В этот раз что-то нашёл только $engine; остальные движки не обнаружили ничего. Вывод опирается на единственную линию свидетельств — соответственно оценивайте уверенность.';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return 'Ещё $count движк(ов) отработали, но не нашли свидетельств и были исключены из голосования, чтобы «нечего сообщить» не засчиталось как «похоже на написанное человеком».';
+  }
 }

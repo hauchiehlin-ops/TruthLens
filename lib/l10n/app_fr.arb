@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "Plus d'options",
   "workspaceSentenceColumnHeader": "Phrase",
   "workspaceSentenceSignalHeader": "Signal IA par phrase",
-  "workspaceSentenceSignalTooltip": "Ce pourcentage est le signal IA propre à cette phrase, pas le verdict global du document. Plus il est élevé, plus le style d'écriture semble généré par IA ; plus il est bas, plus il ressemble à une écriture humaine typique. Le rapport final combine chaque phrase avec la pondération des moteurs."
+  "workspaceSentenceSignalTooltip": "Ce pourcentage est le signal IA propre à cette phrase, pas le verdict global du document. Plus il est élevé, plus le style d'écriture semble généré par IA ; plus il est bas, plus il ressemble à une écriture humaine typique. Le rapport final combine chaque phrase avec la pondération des moteurs.",
+  "reportEngineRelationshipNoEvidence": "{engine} n'a trouvé aucune preuve cette fois et n'a donc pas participé au vote (poids du rôle {weight} %). Cela signifie aucune trace d'IA sur son propre axe — pas qu'il juge le texte écrit par un humain.",
+  "telemetrySummarySingleSource": "Seul {engine} a trouvé quelque chose ; les autres moteurs n'ont rien relevé cette fois. La conclusion ne repose que sur une seule ligne de preuves : ajustez la confiance en conséquence.",
+  "telemetrySummarySilentEngines": "{count} autre(s) moteur(s) ont tourné sans rien trouver et ont été exclus du vote, pour que « rien à signaler » ne soit pas compté comme « semble écrit par un humain »."
 }

@@ -2448,6 +2448,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get workspaceSentenceColumnHeader => '句子內容';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine 本次沒有找到證據，未參與投票（角色權重 $weight%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return '本次只有$engine找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4894,6 +4909,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get workspaceSentenceColumnHeader => '句子内容';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine 本次没有找到证据，未参与投票（角色权重 $weight%）。这代表它在自己负责的面向没有发现 AI 痕迹，不等于它认为本文是人类撰写。';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return '本次只有$engine找到证据，其余引擎什么都没发现。结论仅由单一面向支撑，信心请相应打折。';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '另有 $count 个引擎有跑但没找到证据，已排除在投票之外，避免把「没话说」误算成「看起来像人写的」。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7340,4 +7370,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceSentenceColumnHeader => '句子內容';
+
+  @override
+  String reportEngineRelationshipNoEvidence(String engine, int weight) {
+    return '$engine 本次沒有找到證據，未參與投票（角色權重 $weight%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。';
+  }
+
+  @override
+  String telemetrySummarySingleSource(String engine) {
+    return '本次只有$engine找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。';
+  }
+
+  @override
+  String telemetrySummarySilentEngines(int count) {
+    return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
+  }
 }

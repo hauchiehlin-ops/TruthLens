@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "Mais opções",
   "workspaceSentenceColumnHeader": "Frase",
   "workspaceSentenceSignalHeader": "Sinal de IA por frase",
-  "workspaceSentenceSignalTooltip": "Esta porcentagem é o sinal de IA da própria frase, não o veredito geral do documento. Quanto maior, mais o padrão de redação parece gerado por IA; quanto menor, mais se assemelha à escrita humana típica. O relatório final combina todas as frases com a ponderação dos mecanismos."
+  "workspaceSentenceSignalTooltip": "Esta porcentagem é o sinal de IA da própria frase, não o veredito geral do documento. Quanto maior, mais o padrão de redação parece gerado por IA; quanto menor, mais se assemelha à escrita humana típica. O relatório final combina todas as frases com a ponderação dos mecanismos.",
+  "reportEngineRelationshipNoEvidence": "{engine} não encontrou evidências desta vez, portanto não participou da votação (peso do papel {weight}%). Isso significa nenhum rastro de IA no seu próprio eixo — não que ele considere o texto escrito por uma pessoa.",
+  "telemetrySummarySingleSource": "Apenas {engine} encontrou algo; os demais motores não acharam nada desta vez. A conclusão se apoia em uma única linha de evidência, então ajuste a confiança de acordo.",
+  "telemetrySummarySilentEngines": "Outros {count} motor(es) rodaram mas não encontraram evidências, e foram excluídos da votação para que 'nada a relatar' não seja contado como 'parece escrito por uma pessoa'."
 }

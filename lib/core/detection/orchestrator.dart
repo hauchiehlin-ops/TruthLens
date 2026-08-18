@@ -169,9 +169,21 @@ class EnsembleOrchestrator extends ChangeNotifier {
     return engineId;
   }
 
+  /// 加權投票。只有「可用且確實握有證據」的引擎參與，權重在這些引擎之間
+  /// 重新分配。
+  ///
+  /// 四個引擎的中性點不同（統計為 0.5，其餘三個為 0），不能直接丟進同一個
+  /// 平均。沒有證據的引擎輸出的 0 只是它的中性點，若照舊參與投票，等於用
+  /// 「我沒話說」去投「這是人寫的」，還帶著原本的權重——一篇統計引擎給
+  /// 78% 的 AI 短文會被三個沉默的引擎壓成 20%。
+  ///
+  /// 四個引擎全部沉默時退回舊的全體平均：這代表「哪個面向都沒找到 AI 痕跡」，
+  /// 本來就該落在低分區，不需要特別處理。
   double _weightedVote(List<EngineScore> scores, {required bool eslAdjusted}) {
-    final active = scores.where((s) => s.available).toList();
-    if (active.isEmpty) return 0.5;
+    final available = scores.where((s) => s.available).toList();
+    if (available.isEmpty) return 0.5;
+    final evidential = available.where((s) => s.hasEvidence).toList();
+    final voters = evidential.isNotEmpty ? evidential : available;
 
     double weightOf(EngineScore s) {
       // ESL 修正：統計模型權重減半（低困惑度/低突發性可能是語言能力，非 AI 特徵）
@@ -181,9 +193,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
       return s.weight;
     }
 
-    final totalWeight = active.fold(0.0, (sum, s) => sum + weightOf(s));
+    final totalWeight = voters.fold(0.0, (sum, s) => sum + weightOf(s));
     if (totalWeight == 0) return 0.5;
-    return active.fold(0.0, (sum, s) => sum + s.aiProbability * weightOf(s)) /
+    return voters.fold(0.0, (sum, s) => sum + s.aiProbability * weightOf(s)) /
         totalWeight;
   }
 

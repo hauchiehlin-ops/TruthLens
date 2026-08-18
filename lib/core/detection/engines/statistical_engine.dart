@@ -42,6 +42,9 @@ class StatisticalEngine implements DetectionEngine {
       'entropy': entropy,
     };
     var score = 0.5;
+    // 本引擎的中性點是 0.5，可正可負；moved 記錄有沒有任何指標真的把它推離中性。
+    // 三個指標全部落在中間帶時輸出的 0.5 是「沒有意見」，不是「一半像 AI」。
+    var moved = false;
 
     // 若真困惑度模型可用，優先納入（低困惑度 → 偏 AI）
     final ppl = await _tryPerplexity(text.raw);
@@ -50,9 +53,11 @@ class StatisticalEngine implements DetectionEngine {
       // 經 distilgpt2 校準：AI 風格文本 ~50、人類口語 ~500+。
       if (ppl < 60) {
         score += 0.28;
+        moved = true;
         reasons.add(l10n.engineReasonPplLow(ppl.toStringAsFixed(0)));
       } else if (ppl > 150) {
         score -= 0.25;
+        moved = true;
         reasons.add(l10n.engineReasonPplHigh(ppl.toStringAsFixed(0)));
       } else {
         reasons.add(l10n.engineReasonPplMid(ppl.toStringAsFixed(0)));
@@ -63,11 +68,13 @@ class StatisticalEngine implements DetectionEngine {
     if (text.sentences.length >= 4) {
       if (burstiness < 0.30) {
         score += 0.20;
+        moved = true;
         reasons.add(
           l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)),
         );
       } else if (burstiness > 0.55) {
         score -= 0.20;
+        moved = true;
         reasons.add(
           l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)),
         );
@@ -78,9 +85,11 @@ class StatisticalEngine implements DetectionEngine {
     if (text.allTokens.length >= 50) {
       if (ttr < 0.40) {
         score += 0.10;
+        moved = true;
         reasons.add(l10n.engineReasonTtrLow(ttr.toStringAsFixed(2)));
       } else if (ttr > 0.65) {
         score -= 0.10;
+        moved = true;
         reasons.add(l10n.engineReasonTtrHigh(ttr.toStringAsFixed(2)));
       }
     }
@@ -112,6 +121,7 @@ class StatisticalEngine implements DetectionEngine {
       engineName: name(l10n),
       aiProbability: clampedScore,
       weight: defaultWeight,
+      hasEvidence: moved,
       features: features,
       reasons: reasons,
     );

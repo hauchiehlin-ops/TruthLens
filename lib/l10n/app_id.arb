@@ -1206,5 +1206,8 @@
   "workspaceMoreMenuTooltip": "Opsi lainnya",
   "workspaceSentenceColumnHeader": "Kalimat",
   "workspaceSentenceSignalHeader": "Sinyal AI per kalimat",
-  "workspaceSentenceSignalTooltip": "Persentase ini adalah sinyal AI kalimat itu sendiri, bukan putusan keseluruhan dokumen. Semakin tinggi berarti pola kata terlihat lebih dihasilkan AI; semakin rendah berarti lebih mirip tulisan manusia biasa. Laporan akhir menggabungkan setiap kalimat dengan pembobotan mesin."
+  "workspaceSentenceSignalTooltip": "Persentase ini adalah sinyal AI kalimat itu sendiri, bukan putusan keseluruhan dokumen. Semakin tinggi berarti pola kata terlihat lebih dihasilkan AI; semakin rendah berarti lebih mirip tulisan manusia biasa. Laporan akhir menggabungkan setiap kalimat dengan pembobotan mesin.",
+  "reportEngineRelationshipNoEvidence": "{engine} tidak menemukan bukti kali ini, sehingga tidak ikut memilih (bobot peran {weight}%). Artinya tidak ada jejak AI pada sumbunya sendiri — bukan berarti ia menilai teks ini ditulis manusia.",
+  "telemetrySummarySingleSource": "Hanya {engine} yang menemukan sesuatu; mesin lain tidak menemukan apa pun kali ini. Kesimpulan bertumpu pada satu jalur bukti saja, jadi sesuaikan tingkat keyakinannya.",
+  "telemetrySummarySilentEngines": "{count} mesin lain berjalan tetapi tidak menemukan bukti, dan dikeluarkan dari pemungutan suara agar 'tidak ada yang dilaporkan' tidak salah dihitung sebagai 'tampak ditulis manusia'."
 }
