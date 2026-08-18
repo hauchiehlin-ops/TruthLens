@@ -2586,4 +2586,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return 'Otros $count motor(es) se ejecutaron pero no encontraron pruebas, y quedaron excluidos de la votación para que «nada que informar» no se cuente como «parece escrito por una persona».';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      'La perplejidad no se tuvo en cuenta en este documento: el modelo de perplejidad (DistilGPT2) se entrenó solo en inglés y, con texto en chino, japonés o coreano, mide la previsibilidad de los bytes, no la del idioma. Medido con datos etiquetados, separa la escritura humana de la de IA un 0 % de las veces, así que contarlo solo generaría falsos positivos.';
 }

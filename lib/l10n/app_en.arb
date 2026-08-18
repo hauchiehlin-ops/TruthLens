@@ -2049,5 +2049,9 @@
         "type": "int"
       }
     }
+  },
+  "engineReasonPplUncalibratedLanguage": "Perplexity was not used for this document: the perplexity model (DistilGPT2) was trained on English only, and on Chinese, Japanese or Korean text it measures byte predictability rather than language predictability. Measured on labelled data, it separates human from AI writing in those languages 0% of the time, so counting it would only manufacture false positives.",
+  "@engineReasonPplUncalibratedLanguage": {
+    "description": "Shown when the perplexity metric is skipped because the model does not support the document's language"
   }
 }

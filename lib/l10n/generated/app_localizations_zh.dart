@@ -2463,6 +2463,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      '本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4924,6 +4928,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String telemetrySummarySilentEngines(int count) {
     return '另有 $count 个引擎有跑但没找到证据，已排除在投票之外，避免把「没话说」误算成「看起来像人写的」。';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      '本次未采计语言模型困惑度：困惑度模型（DistilGPT2）只在英文语料上训练，对中日韩文而言它量到的是字节的可预测性，不是语言的可预测性。以标注语料实测，它在这些语言上区分真人与 AI 的能力为 0%，采计只会制造伪阳性。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7385,4 +7393,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String telemetrySummarySilentEngines(int count) {
     return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      '本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。';
 }

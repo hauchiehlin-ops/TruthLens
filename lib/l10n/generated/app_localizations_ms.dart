@@ -2570,4 +2570,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '$count enjin lain berjalan tetapi tidak menemui bukti, dan dikecualikan daripada undian supaya \'tiada apa untuk dilaporkan\' tidak tersalah kira sebagai \'nampak ditulis manusia\'.';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      'Perplexity tidak dikira untuk dokumen ini: model perplexity (DistilGPT2) hanya dilatih dalam bahasa Inggeris, dan bagi teks Cina, Jepun atau Korea ia mengukur kebolehramalan bait, bukan kebolehramalan bahasa. Diukur pada data berlabel, keupayaannya memisahkan tulisan manusia daripada AI ialah 0%, jadi mengiranya hanya akan menghasilkan positif palsu.';
 }

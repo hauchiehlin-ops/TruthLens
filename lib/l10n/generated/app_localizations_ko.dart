@@ -2504,4 +2504,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '다른 $count개 엔진은 실행되었으나 근거를 찾지 못해 투표에서 제외했습니다. \'할 말이 없음\'이 \'사람이 쓴 것 같음\'으로 잘못 계산되지 않도록 하기 위함입니다.';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      '이 문서에는 언어 모델 혼란도를 반영하지 않았습니다. 혼란도 모델(DistilGPT2)은 영어로만 학습되어 중국어·일본어·한국어 텍스트에서는 언어의 예측 가능성이 아니라 바이트의 예측 가능성을 측정합니다. 라벨링된 데이터로 측정한 결과 이들 언어에서 사람과 AI를 구분하는 능력은 0%였으므로, 반영하면 거짓 양성만 늘어납니다.';
 }

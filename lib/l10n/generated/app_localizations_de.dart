@@ -2584,4 +2584,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '$count weitere Engine(s) liefen, fanden aber keine Belege und wurden von der Abstimmung ausgeschlossen, damit „nichts zu berichten“ nicht als „wirkt menschlich geschrieben“ gezählt wird.';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      'Perplexität wurde für dieses Dokument nicht berücksichtigt: Das Perplexitätsmodell (DistilGPT2) wurde ausschließlich auf Englisch trainiert und misst bei chinesischem, japanischem oder koreanischem Text die Vorhersagbarkeit von Bytes statt von Sprache. An annotierten Daten gemessen trennt es dort menschliches von KI-Schreiben zu 0 %; eine Anrechnung würde nur Falschtreffer erzeugen.';
 }

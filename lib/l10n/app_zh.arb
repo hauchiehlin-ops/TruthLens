@@ -1223,5 +1223,6 @@
   "workspaceSentenceColumnHeader": "句子內容",
   "reportEngineRelationshipNoEvidence": "{engine} 本次沒有找到證據，未參與投票（角色權重 {weight}%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。",
   "telemetrySummarySingleSource": "本次只有{engine}找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。",
-  "telemetrySummarySilentEngines": "另有 {count} 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。"
+  "telemetrySummarySilentEngines": "另有 {count} 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。",
+  "engineReasonPplUncalibratedLanguage": "本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。"
 }

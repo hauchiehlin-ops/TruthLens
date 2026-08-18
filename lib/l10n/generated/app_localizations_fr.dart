@@ -2588,4 +2588,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '$count autre(s) moteur(s) ont tourné sans rien trouver et ont été exclus du vote, pour que « rien à signaler » ne soit pas compté comme « semble écrit par un humain ».';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      'La perplexité n\'a pas été prise en compte pour ce document : le modèle de perplexité (DistilGPT2) n\'a été entraîné qu\'en anglais et, sur du texte chinois, japonais ou coréen, il mesure la prévisibilité des octets et non celle de la langue. Mesuré sur données annotées, il sépare l\'écriture humaine de l\'IA dans 0 % des cas ; le compter ne produirait que des faux positifs.';
 }

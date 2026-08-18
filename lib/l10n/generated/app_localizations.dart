@@ -4102,6 +4102,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} further engine(s) ran but found no evidence, and were excluded from the vote so that \'nothing to report\' is not miscounted as \'looks human-written\'.'**
   String telemetrySummarySilentEngines(int count);
+
+  /// Shown when the perplexity metric is skipped because the model does not support the document's language
+  ///
+  /// In en, this message translates to:
+  /// **'Perplexity was not used for this document: the perplexity model (DistilGPT2) was trained on English only, and on Chinese, Japanese or Korean text it measures byte predictability rather than language predictability. Measured on labelled data, it separates human from AI writing in those languages 0% of the time, so counting it would only manufacture false positives.'**
+  String get engineReasonPplUncalibratedLanguage;
 }
 
 class _AppLocalizationsDelegate

@@ -240,4 +240,59 @@ void main() {
     });
 
   });
+
+  _perplexityLanguageGate();
+}
+
+/// 困惑度只在模型看得懂的語言上採計。
+/// 依據：HC3 中文語料實測，門檻 60 之下真人與 AI 各佔 100%，區別力 0.0%；
+/// production 管線量到中文真人 41、中文 AI 46，兩者皆低於 60 且順序相反。
+void _perplexityLanguageGate() {
+  group('困惑度的語言適用範圍', () {
+    test('中文文本不採計困惑度', () {
+      expect(
+        StatisticalEngine.supportsPerplexity(
+          '本研究採用泰勒庫埃特流場作為實驗載體，透過改變內外圓筒的轉速比，'
+          '觀察環狀渦漩在臨界雷諾數附近的形態轉換過程與穩定性邊界的變化。',
+        ),
+        isFalse,
+      );
+    });
+
+    test('日文與韓文同樣不採計', () {
+      expect(
+        StatisticalEngine.supportsPerplexity('これは日本語の文章です。かなり長い文章を書いています。'),
+        isFalse,
+      );
+      expect(
+        StatisticalEngine.supportsPerplexity('이것은 한국어 문장입니다. 꽤 긴 문장을 쓰고 있습니다.'),
+        isFalse,
+      );
+    });
+
+    test('英文本文採計困惑度', () {
+      expect(
+        StatisticalEngine.supportsPerplexity(
+          'The lowest stability boundary on the flow of concentric rotating '
+          'cylinders was examined across a range of radius ratios.',
+        ),
+        isTrue,
+      );
+    });
+
+    test('英文本文夾雜少量中文專有名詞時仍採計', () {
+      expect(
+        StatisticalEngine.supportsPerplexity(
+          'The Taylor-Couette apparatus described by Lin (林) and colleagues '
+          'was rebuilt for this study, with the outer cylinder held stationary '
+          'throughout every run reported in the following sections.',
+        ),
+        isTrue,
+      );
+    });
+
+    test('空字串不崩潰', () {
+      expect(StatisticalEngine.supportsPerplexity('   '), isFalse);
+    });
+  });
 }

@@ -2495,4 +2495,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String telemetrySummarySilentEngines(int count) {
     return '他に $count 個のエンジンが実行されましたが根拠を見つけられず、投票から除外しました。「言うことがない」を「人が書いたように見える」と誤って数えないためです。';
   }
+
+  @override
+  String get engineReasonPplUncalibratedLanguage =>
+      '本件では言語モデルのパープレキシティを採用していません。パープレキシティモデル（DistilGPT2）は英語のみで学習されており、中国語・日本語・韓国語ではバイト列の予測しやすさを測っているだけで、言語としての予測しやすさではありません。ラベル付きデータでの実測では、これらの言語で人間とAIを区別できる割合は0%であり、採用しても誤検出を増やすだけです。';
 }
