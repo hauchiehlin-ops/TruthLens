@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-18b",
+  "catalog_version": "2026-08-19",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -21,14 +21,14 @@
           "size_bytes": 135729550,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_int8.onnx",
-          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_tokenizer.json",
+          "url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/mbert_detector_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/mbert_detector_tokenizer.json",
           "sha256": "89b69ba6b1cf7723d12737937405a31e34e807cb90b68198c7d01258db15af4d",
           "version": "2.0",
           "source": "training/ HC3 英+中微調 distilbert-base-multilingual-cased",
-          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.2-models-detector",
+          "page_url": "https://huggingface.co/hauchieh/truthlens-models",
           "license": "資料源 HC3（研究用途）",
-          "note": "HC3 驗證集逐語言 AUC 1.000（中文命中 100%／誤傷 7.5%，英文 100%／3.3%）。分布外手寫樣本 4 題對 3，英文論說文體裁會失手。取代 v0.1 的早期檢查點——後者中文 AUC 僅 0.776，在 0.6 閾值下中文命中率 0%，且 catalog 誤配 RoBERTa tokenizer。評測見 training/evaluate_detector.py"
+          "note": "HC3 驗證集逐語言 AUC 1.000（中文命中 100%／誤傷 7.5%，英文 100%／3.3%）。分布外手寫樣本 4 題對 3，英文論說文體裁會失手。取代 v0.1 的早期檢查點——後者中文 AUC 僅 0.776，在 0.6 閾值下中文命中率 0%，且 catalog 誤配 RoBERTa tokenizer。評測見 training/evaluate_detector.py。托管於 HuggingFace 而非 GitHub Releases：後者資產不回 access-control-allow-origin，瀏覽器 fetch 會被 CORS 阻擋，本機開發環境（無 Edge 代理）完全無法下載。封存鏡像：https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_int8.onnx"
         },
         {
           "id": "chatgpt-detector-roberta-onnx-int8",
@@ -72,14 +72,14 @@
           "size_bytes": 512096557,
           "min_ram_mb": 4096,
           "tier": "mid",
-          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.3-models-statistical/qwen05b_ppl_int8.onnx",
-          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.3-models-statistical/qwen05b_ppl_tokenizer.json",
-          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.3-models-statistical",
+          "url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/qwen05b_ppl_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/qwen05b_ppl_tokenizer.json",
+          "page_url": "https://huggingface.co/hauchieh/truthlens-models",
           "sha256": "ee7722d911efa7f7a6e12a13680216793bd3e8a6cfa4ec7b4416cbf04dc727df",
           "version": "1.0",
           "source": "onnx-community/Qwen2.5-0.5B（onnxruntime-web 預量化建置）",
           "license": "Apache-2.0",
-          "note": "HC3 實測中文 AUC 0.965、英文 0.988，取代 DistilGPT2（中文 AUC 僅 0.50，對真人文章 100% 誤判為偏 AI）。門檻已以本 INT8 產物量定，見 lib/core/detection/perplexity_calibration.dart 的 qwen05b_ppl_int8 條目",
+          "note": "HC3 實測中文 AUC 0.965、英文 0.988，取代 DistilGPT2（中文 AUC 僅 0.50，對真人文章 100% 誤判為偏 AI）。門檻已以本 INT8 產物量定，見 lib/core/detection/perplexity_calibration.dart 的 qwen05b_ppl_int8 條目。托管於 HuggingFace 而非 GitHub Releases：後者資產不回 access-control-allow-origin，瀏覽器 fetch 會被 CORS 阻擋，本機開發環境（無 Edge 代理）完全無法下載。封存鏡像：https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.3-models-statistical/qwen05b_ppl_int8.onnx",
           "runtime": {
             "position_ids": true,
             "kv_cache": {
@@ -130,14 +130,14 @@
           "size_bytes": 135729550,
           "min_ram_mb": 2048,
           "tier": "low",
-          "url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/models-v1/adversarial_int8.onnx",
-          "tokenizer_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/download/models-v1/tokenizer.json",
+          "url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/adversarial_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/adversarial_tokenizer.json",
           "sha256": "fc179829645c4a2d7521d1ee09f929205003d51f77b0ebb245a7412fe701e41b",
           "version": "1.0",
           "source": "training/ HC3 + T5 改寫對抗訓練",
-          "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/models-v1",
+          "page_url": "https://huggingface.co/hauchieh/truthlens-models",
           "license": "資料源 HC3（研究用途）",
-          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練（本地已驗證 98.1% 驗證準確率，改寫規避測試通過）。已上架 GitHub Releases，可直接下載"
+          "note": "偵測經改寫工具洗過的 AI 文本；以原生+改寫 AI 對抗訓練（本地已驗證 98.1% 驗證準確率，改寫規避測試通過）。已上架 GitHub Releases，可直接下載。托管於 HuggingFace：GitHub Releases 的資產不回 access-control-allow-origin，瀏覽器 fetch 會被 CORS 阻擋。封存鏡像：https://github.com/hauchiehlin-ops/TruthLens/releases/download/models-v1/adversarial_int8.onnx"
         }
       ]
     },

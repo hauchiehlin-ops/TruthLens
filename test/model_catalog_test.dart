@@ -113,6 +113,30 @@ void main() {
       );
     }
   });
+
+  test('模型來源必須支援瀏覽器 CORS，不得使用 GitHub Releases', () {
+    // GitHub Releases 的資產最終由 Azure Blob 經 Fastly 提供，
+    // 完全不回 access-control-allow-origin，瀏覽器 fetch() 一律被阻擋。
+    // App 雖有 Edge 代理備援，但本機開發環境（flutter run -d web-server）
+    // 沒有 /api/proxy，等於完全下載不了——實測 2026-08-19 確認。
+    for (final model in catalog['models'] as List) {
+      for (final v in ((model as Map)['variants'] as List)) {
+        final variant = v as Map<String, dynamic>;
+        for (final key in ['url', 'tokenizer_url']) {
+          final url = variant[key] as String?;
+          if (url == null || url.isEmpty) continue;
+          expect(
+            Uri.parse(url).host,
+            isNot(anyOf('github.com', 'objects.githubusercontent.com')),
+            reason:
+                '${variant['id']} 的 $key 指向 GitHub Releases，'
+                '該來源無 CORS 標頭。請改用 HuggingFace 等支援 CORS 的主機，'
+                'GitHub Releases 只作封存鏡像。',
+          );
+        }
+      }
+    }
+  });
 }
 
 /// 取出下載網址所屬的 repo 識別（HuggingFace repo 或 GitHub owner/repo）

@@ -1,5 +1,41 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-19（第一百零三次更新）— 模型全數改托管 HuggingFace，解決 GitHub Releases 的 CORS 死路
+
+**已上架** [hauchieh/truthlens-models](https://huggingface.co/hauchieh/truthlens-models)：
+`mbert_detector_int8.onnx`、`qwen05b_ppl_int8.onnx`、`adversarial_int8.onnx`
+及三份對應 tokenizer，Apache-2.0，模型卡附完整評測與門檻依據。
+
+**為什麼一定要搬**（實測 2026-08-19）：
+
+| 來源 | Range | CORS | 瀏覽器可直連 |
+|---|---|---|---|
+| GitHub Releases | 206 ✓ | **無任何標頭** | ❌ |
+| HuggingFace | 206 ✓ | `access-control-allow-origin` + 暴露 `Content-Range` | ✅ |
+
+GitHub Releases 的資產最終由 Azure Blob 經 Fastly 提供，不回
+`access-control-allow-origin`。App 雖設計了三段候選（同源 Edge 代理 → 公用
+Vercel 代理 → 原始網址），但公用代理備援已失效（回 307 轉址後給出 478KB 的
+Vercel 部署保護頁 HTML），且**本機開發環境沒有 `/api/proxy`**，
+等於 GitHub 來源在開發時完全無法下載。
+
+HuggingFace 兩顆大模型實測回 206 並帶正確 `content-range`；tokenizer 為小檔走完整下載，
+CORS 同樣具備。App 的下載邏輯對 `huggingface.co` 本來就優先直連，不經代理。
+
+**catalog 全面遷移**（版本 2026-08-19）：transformer / statistical / adversarial
+三個角色的自有模型都改指 HuggingFace，GitHub Releases 降為封存鏡像並在 note 註明。
+遷移後 catalog 中已無任何 github.com 的模型來源。
+
+**新增測試**斷言所有 `url` / `tokenizer_url` 都不得指向 `github.com` 或
+`objects.githubusercontent.com`——這個錯誤的症狀是「下載失敗」而非「設定錯誤」，
+沒有測試會反覆重蹈。
+
+**順帶確認**：對抗式引擎的 tokenizer 配對本來就正確（與模型同一 release），
+只有主機需要更換，不像 transformer 那次是連 tokenizer 都借錯了 repo。
+
+**狀態**：✅ `flutter test` 379 項全通過（新增 1 項）、`flutter build web` 成功、
+四個模型 + 三份 tokenizer 已上架並驗證 CORS/Range
+
 ## 2026-08-19（第一百零二次更新）— 修正 Release 資產檔名，並查出 GitHub Releases 的結構性 CORS 問題
 
 **直接原因**：`gh release create file#label` 的 `#` 是設**顯示標籤**，不是改檔名。
