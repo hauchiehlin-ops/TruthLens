@@ -2600,4 +2600,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '«$variant» не охватывает $language. Оценка приводится только для справки и не является свидетельством в любую сторону.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'Перплексия не учитывалась: язык этого документа определить не удалось, поэтому нет калиброванного порога для сравнения. Угадывать язык означало бы применить неверную шкалу — именно ту ошибку, которую эта проверка и предотвращает.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'Перплексия не учитывалась: для используемой модели «$model» порог для $language ещё не измерен. Без калиброванной шкалы исходное значение ничего не означает, поэтому оно исключено, а не угадано.';
+  }
 }

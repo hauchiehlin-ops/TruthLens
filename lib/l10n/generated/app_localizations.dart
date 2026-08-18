@@ -4138,6 +4138,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'“{variant}” does not cover {language}. Its score is shown for reference only and should not be read as evidence either way.'**
   String engineLanguageUnsupported(String variant, String language);
+
+  /// Perplexity skipped because the document language could not be determined
+  ///
+  /// In en, this message translates to:
+  /// **'Perplexity was not used: the language of this document could not be determined, so there is no calibrated threshold to compare against. Guessing a language would mean applying the wrong scale — the mistake this check exists to prevent.'**
+  String get engineReasonPplLanguageUndetermined;
+
+  /// Perplexity skipped because no threshold has been measured for this model and language
+  ///
+  /// In en, this message translates to:
+  /// **'Perplexity was not used: the model in use (“{model}”) has no measured threshold for {language} yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.'**
+  String engineReasonPplNoCalibrationForModel(String model, String language);
 }
 
 class _AppLocalizationsDelegate

@@ -1215,5 +1215,7 @@
   "settingsCalibrationLegacySamples": "Terdapat {count} sampel terdahulu tanpa penanda bahasa yang tidak boleh masuk ke asas mana-mana bahasa — teks asal tidak disimpan, jadi bahasanya tidak dapat dipulihkan kemudian. Ia akan digantikan apabila analisis baharu bertambah.",
   "engineRoutedToBetterVariant": "Dokumen ini dialihkan ke \"{variant}\": varian yang anda pilih belum disahkan untuk {language}, manakala yang ini sudah.",
   "engineLanguageNotValidated": "\"{variant}\" ialah model berbilang bahasa tetapi belum disahkan pada {language}, jadi anggap skornya bukti yang lebih lemah daripada bahasa yang telah disahkan.",
-  "engineLanguageUnsupported": "\"{variant}\" tidak merangkumi {language}. Skornya hanya sebagai rujukan dan tidak boleh dibaca sebagai bukti ke arah mana pun."
+  "engineLanguageUnsupported": "\"{variant}\" tidak merangkumi {language}. Skornya hanya sebagai rujukan dan tidak boleh dibaca sebagai bukti ke arah mana pun.",
+  "engineReasonPplLanguageUndetermined": "Perplexity tidak dikira: bahasa dokumen ini tidak dapat ditentukan, jadi tiada ambang terkalibrasi untuk dibandingkan. Meneka bahasa bermakna menggunakan skala yang salah — justeru kesilapan yang ingin dicegah oleh pemeriksaan ini.",
+  "engineReasonPplNoCalibrationForModel": "Perplexity tidak dikira: model yang digunakan (\"{model}\") belum mempunyai ambang terukur untuk {language}. Tanpa skala terkalibrasi, nilai mentahnya tidak bermakna, jadi ia diabaikan dan bukan diteka."
 }

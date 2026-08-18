@@ -2585,4 +2585,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '“$variant” does not cover $language. Its score is shown for reference only and should not be read as evidence either way.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'Perplexity was not used: the language of this document could not be determined, so there is no calibrated threshold to compare against. Guessing a language would mean applying the wrong scale — the mistake this check exists to prevent.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'Perplexity was not used: the model in use (“$model”) has no measured threshold for $language yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.';
+  }
 }

@@ -2107,5 +2107,21 @@
         "type": "String"
       }
     }
+  },
+  "engineReasonPplLanguageUndetermined": "Perplexity was not used: the language of this document could not be determined, so there is no calibrated threshold to compare against. Guessing a language would mean applying the wrong scale — the mistake this check exists to prevent.",
+  "@engineReasonPplLanguageUndetermined": {
+    "description": "Perplexity skipped because the document language could not be determined"
+  },
+  "engineReasonPplNoCalibrationForModel": "Perplexity was not used: the model in use (“{model}”) has no measured threshold for {language} yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.",
+  "@engineReasonPplNoCalibrationForModel": {
+    "description": "Perplexity skipped because no threshold has been measured for this model and language",
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
   }
 }

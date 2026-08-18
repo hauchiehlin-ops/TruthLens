@@ -1215,5 +1215,7 @@
   "settingsCalibrationLegacySamples": "Há {count} amostra(s) anteriores sem marcação de idioma que não podem entrar na base de nenhum idioma — o texto original não é guardado, portanto o idioma não pode ser recuperado depois. Serão substituídas conforme novas análises.",
   "engineRoutedToBetterVariant": "Este documento passou a usar «{variant}»: a variante que você escolheu não é validada para {language}, e esta é.",
   "engineLanguageNotValidated": "«{variant}» é multilíngue mas não foi validado em {language}; trate a pontuação como evidência mais fraca do que num idioma validado.",
-  "engineLanguageUnsupported": "«{variant}» não cobre {language}. A pontuação é apenas informativa e não deve ser lida como evidência em nenhum sentido."
+  "engineLanguageUnsupported": "«{variant}» não cobre {language}. A pontuação é apenas informativa e não deve ser lida como evidência em nenhum sentido.",
+  "engineReasonPplLanguageUndetermined": "A perplexidade não foi considerada: não foi possível determinar o idioma deste documento, portanto não há limite calibrado para comparação. Adivinhar um idioma aplicaria a escala errada — exatamente o erro que esta verificação evita.",
+  "engineReasonPplNoCalibrationForModel": "A perplexidade não foi considerada: o modelo em uso («{model}») ainda não tem limite medido para {language}. Sem escala calibrada o valor bruto não significa nada, então é omitido em vez de adivinhado."
 }

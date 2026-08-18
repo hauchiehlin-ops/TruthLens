@@ -1215,5 +1215,7 @@
   "settingsCalibrationLegacySamples": "{count} échantillon(s) antérieurs ne portent pas d'étiquette de langue et ne peuvent rejoindre la base d'aucune langue : le texte original n'est pas conservé, la langue est donc irrécupérable après coup. Ils seront remplacés au fil des nouvelles analyses.",
   "engineRoutedToBetterVariant": "Pour ce document, « {variant} » a été retenu : la variante que vous avez choisie n'est pas validée pour {language}, celle-ci l'est.",
   "engineLanguageNotValidated": "« {variant} » est multilingue mais n'a pas été validé sur {language} ; son score constitue une preuve plus faible que pour une langue validée.",
-  "engineLanguageUnsupported": "« {variant} » ne couvre pas {language}. Son score est indiqué à titre indicatif et ne doit pas être lu comme une preuve."
+  "engineLanguageUnsupported": "« {variant} » ne couvre pas {language}. Son score est indiqué à titre indicatif et ne doit pas être lu comme une preuve.",
+  "engineReasonPplLanguageUndetermined": "La perplexité n'a pas été prise en compte : la langue de ce document n'a pu être déterminée, il n'existe donc aucun seuil calibré de référence. Deviner une langue appliquerait la mauvaise échelle — précisément l'erreur que ce contrôle évite.",
+  "engineReasonPplNoCalibrationForModel": "La perplexité n'a pas été prise en compte : le modèle utilisé (« {model} ») n'a pas encore de seuil mesuré pour {language}. Sans échelle calibrée, la valeur brute ne signifie rien ; elle est donc écartée plutôt que devinée."
 }

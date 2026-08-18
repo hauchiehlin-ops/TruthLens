@@ -2609,4 +2609,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '«$variant» não cobre $language. A pontuação é apenas informativa e não deve ser lida como evidência em nenhum sentido.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'A perplexidade não foi considerada: não foi possível determinar o idioma deste documento, portanto não há limite calibrado para comparação. Adivinhar um idioma aplicaria a escala errada — exatamente o erro que esta verificação evita.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'A perplexidade não foi considerada: o modelo em uso («$model») ainda não tem limite medido para $language. Sem escala calibrada o valor bruto não significa nada, então é omitido em vez de adivinhado.';
+  }
 }

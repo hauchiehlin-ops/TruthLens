@@ -2613,4 +2613,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '„$variant“ deckt $language nicht ab. Der Wert dient nur zur Information und ist in keine Richtung ein Beleg.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'Perplexität wurde nicht berücksichtigt: Die Sprache dieses Dokuments konnte nicht bestimmt werden, es gibt also keinen kalibrierten Schwellenwert zum Vergleich. Eine geratene Sprache würde die falsche Skala anlegen — genau den Fehler, den diese Prüfung verhindern soll.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'Perplexität wurde nicht berücksichtigt: Für das verwendete Modell („$model“) liegt noch kein gemessener Schwellenwert für $language vor. Ohne kalibrierte Skala hat der Rohwert keine Bedeutung, daher wird er ausgelassen statt geschätzt.';
+  }
 }

@@ -2615,4 +2615,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '«$variant» no cubre $language. Su puntuación se muestra solo como referencia y no debe leerse como prueba en ningún sentido.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'La perplejidad no se tuvo en cuenta: no se pudo determinar el idioma de este documento, así que no hay umbral calibrado con el que comparar. Adivinar un idioma aplicaría la escala equivocada, precisamente el error que esta comprobación evita.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'La perplejidad no se tuvo en cuenta: el modelo en uso («$model») aún no tiene un umbral medido para $language. Sin escala calibrada el valor bruto no significa nada, así que se omite en lugar de adivinarlo.';
+  }
 }

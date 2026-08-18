@@ -1229,5 +1229,7 @@
   "settingsCalibrationLegacySamples": "另有 {count} 份较早的样本没有语言标记，无法归入任何语言的基准集——原文默认不保存，事后无从补算语言。随着新文件分析会逐步替换。",
   "engineRoutedToBetterVariant": "本次改用「{variant}」：你选用的变体未针对 {language} 验证，而这一颗有。",
   "engineLanguageNotValidated": "「{variant}」是多语言模型，但未在 {language} 上验证过，其分数的证据强度应低于已验证的语言。",
-  "engineLanguageUnsupported": "「{variant}」不涵盖 {language}。其分数仅供参考，不应被当成任何方向的证据。"
+  "engineLanguageUnsupported": "「{variant}」不涵盖 {language}。其分数仅供参考，不应被当成任何方向的证据。",
+  "engineReasonPplLanguageUndetermined": "本次未采计语言模型困惑度：无法判定这份文件的语言，因此没有可比对的校准门槛。猜一个语言就会套错尺度，而那正是这道检查要避免的错误。",
+  "engineReasonPplNoCalibrationForModel": "本次未采计语言模型困惑度：目前使用的模型「{model}」尚未量测过 {language} 的门槛。没有校准尺度时，原始数值不代表任何意义，因此宁可不采计也不猜。"
 }

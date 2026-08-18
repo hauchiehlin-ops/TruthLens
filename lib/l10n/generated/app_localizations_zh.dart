@@ -2492,6 +2492,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '「$variant」不涵蓋 $language。其分數僅供參考，不應被當成任何方向的證據。';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      '本次未採計語言模型困惑度：無法判定這份文件的語言，因此沒有可比對的校準門檻。猜一個語言就會套錯尺度，而那正是這道檢查要避免的錯誤。';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return '本次未採計語言模型困惑度：目前使用的模型「$model」尚未量測過 $language 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4982,6 +4991,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String engineLanguageUnsupported(String variant, String language) {
     return '「$variant」不涵盖 $language。其分数仅供参考，不应被当成任何方向的证据。';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      '本次未采计语言模型困惑度：无法判定这份文件的语言，因此没有可比对的校准门槛。猜一个语言就会套错尺度，而那正是这道检查要避免的错误。';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return '本次未采计语言模型困惑度：目前使用的模型「$model」尚未量测过 $language 的门槛。没有校准尺度时，原始数值不代表任何意义，因此宁可不采计也不猜。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7471,5 +7489,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String engineLanguageUnsupported(String variant, String language) {
     return '「$variant」不涵蓋 $language。其分數僅供參考，不應被當成任何方向的證據。';
+  }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      '本次未採計語言模型困惑度：無法判定這份文件的語言，因此沒有可比對的校準門檻。猜一個語言就會套錯尺度，而那正是這道檢查要避免的錯誤。';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return '本次未採計語言模型困惑度：目前使用的模型「$model」尚未量測過 $language 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。';
   }
 }

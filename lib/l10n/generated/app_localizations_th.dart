@@ -2589,4 +2589,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '\"$variant\" ไม่ครอบคลุม $language คะแนนแสดงไว้เพื่ออ้างอิงเท่านั้น และไม่ควรถือเป็นหลักฐานในทิศทางใด';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'ไม่ได้นำค่าความสับสนของโมเดลภาษามาคิด เนื่องจากไม่สามารถระบุภาษาของเอกสารนี้ได้ จึงไม่มีเกณฑ์ที่ปรับเทียบไว้ให้เปรียบเทียบ การเดาภาษาจะทำให้ใช้มาตรวัดผิด ซึ่งเป็นความผิดพลาดที่การตรวจสอบนี้ต้องการป้องกัน';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'ไม่ได้นำค่าความสับสนของโมเดลภาษามาคิด เนื่องจากโมเดลที่ใช้ (\"$model\") ยังไม่ได้วัดเกณฑ์สำหรับ $language หากไม่มีมาตรวัดที่ปรับเทียบไว้ ค่าดิบก็ไม่มีความหมาย จึงไม่นำมาคิดแทนที่จะเดา';
+  }
 }

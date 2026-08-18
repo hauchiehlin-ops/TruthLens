@@ -64,7 +64,27 @@ class StatisticalEngine implements DetectionEngine {
     );
     final ppl = calibration != null ? await _tryPerplexity(text.raw) : null;
     if (calibration == null) {
-      reasons.add(l10n.engineReasonPplUncalibratedLanguage);
+      // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
+      // 先前一律套用中日韓文那段說明，結果一篇英文論文被告知
+      // 「對中日韓文而言……」——訊息本身就在誤導。
+      final modelId =
+          modelManager?.activeVariant('statistical')?.variantId ??
+          defaultPerplexityModelId;
+      if (language.isUndetermined) {
+        reasons.add(l10n.engineReasonPplLanguageUndetermined);
+      } else if (PerplexityCalibration.hasRecord(
+        language.code,
+        modelId: modelId,
+      )) {
+        // 量測過但鑑別力不足——DistilGPT2 對中文就是這種情況
+        reasons.add(l10n.engineReasonPplUncalibratedLanguage);
+      } else {
+        // 這個「模型 × 語言」組合根本還沒量過。點名兩者，
+        // 使用者才知道是換模型還是補語料才能恢復這項指標。
+        reasons.add(
+          l10n.engineReasonPplNoCalibrationForModel(modelId, language.code),
+        );
+      }
     }
     if (ppl != null && calibration != null) {
       features['perplexity'] = ppl;

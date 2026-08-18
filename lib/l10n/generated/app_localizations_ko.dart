@@ -2533,4 +2533,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '\"$variant\"은 $language를 포함하지 않습니다. 점수는 참고용이며 어느 방향의 근거도 되지 않습니다.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      '언어 모델 혼란도를 반영하지 않았습니다. 이 문서의 언어를 판정할 수 없어 비교할 보정 기준값이 없기 때문입니다. 언어를 추측하면 잘못된 척도를 적용하게 되며, 그것이 바로 이 검사가 막으려는 오류입니다.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return '언어 모델 혼란도를 반영하지 않았습니다. 사용 중인 모델 \"$model\"에는 $language의 기준값이 아직 측정되지 않았습니다. 보정된 척도가 없으면 원시 값은 아무 의미가 없으므로, 추측하지 않고 제외했습니다.';
+  }
 }

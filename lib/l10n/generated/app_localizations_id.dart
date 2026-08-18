@@ -2595,4 +2595,13 @@ class AppLocalizationsId extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '\"$variant\" tidak mencakup $language. Skornya hanya untuk rujukan dan tidak boleh dibaca sebagai bukti ke arah mana pun.';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      'Perpleksitas tidak diperhitungkan: bahasa dokumen ini tidak dapat ditentukan, jadi tidak ada ambang terkalibrasi untuk dibandingkan. Menebak bahasa berarti memakai skala yang salah — justru kesalahan yang ingin dicegah pemeriksaan ini.';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return 'Perpleksitas tidak diperhitungkan: model yang digunakan (\"$model\") belum memiliki ambang terukur untuk $language. Tanpa skala terkalibrasi, nilai mentahnya tidak bermakna, jadi diabaikan alih-alih ditebak.';
+  }
 }

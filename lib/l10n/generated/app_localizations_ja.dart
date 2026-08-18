@@ -2524,4 +2524,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String engineLanguageUnsupported(String variant, String language) {
     return '「$variant」は $language をカバーしていません。スコアは参考値であり、どちらの方向の根拠にもなりません。';
   }
+
+  @override
+  String get engineReasonPplLanguageUndetermined =>
+      '言語モデルのパープレキシティは採用していません。この文書の言語を判定できず、比較対象となる校正済みのしきい値がないためです。言語を推測すれば誤った尺度を当てることになり、それはこの検査が防ごうとしている誤りそのものです。';
+
+  @override
+  String engineReasonPplNoCalibrationForModel(String model, String language) {
+    return '言語モデルのパープレキシティは採用していません。使用中のモデル「$model」には $language のしきい値がまだ測定されていません。校正済みの尺度がなければ生の値に意味はないため、推測せずに除外しています。';
+  }
 }
