@@ -1,5 +1,48 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-18（第九十八次更新）— 階段三：多語分類器已存在，但 XLM-R 之路被 tokenizer 擋住
+
+**先撞到的牆**：應用程式的 tokenizer 只支援 `bert-wordpiece` / `roberta-bpe` / `none`
+（[text_tokenizer.dart:68](lib/core/detection/text_tokenizer.dart:68)），
+而 CLAUDE.md 指定的 **XLM-RoBERTa 用的是 SentencePiece Unigram**。直接換 XLM-R
+會在 tokenizer 這一層卡死，得先在 Dart 實作 Unigram（Viterbi 子詞切分）。
+
+**改走的路**：`distilbert-base-multilingual-cased`（mBERT，同樣涵蓋 104 語言，
+用 WordPiece，應用程式已支援）。這本來就是 `training/config.py` 的預設值。
+
+**意外發現：模型早就訓練好了。** `training/artifacts/` 裡已有
+`classifier/`（model_type distilbert、vocab 119547）與 `detector_int8.onnx`（135MB），
+2026-07-04 匯出。production 卻一直在跑外部取得的純英文 `chatgpt-detector-roberta`。
+
+**新增 `training/evaluate_detector.py`** 逐語言評測（總體準確率會被樣本多的語言蓋過去，
+正是先前踩到的坑），並同時報告分布內與分布外：
+
+| | 真人均值 | AI 均值 | AUC | 命中率 | 誤傷率 |
+|---|---|---|---|---|---|
+| 中文（HC3 驗證集） | 0.076 | 1.000 | 1.000 | 100.0% | 7.5% |
+| 英文（HC3 驗證集） | 0.040 | 1.000 | 1.000 | 100.0% | 3.3% |
+
+分布外（非 HC3 的手寫樣本）4 題對 3：中文真人 0.000 ✓、中文 AI 制式文 0.994 ✓、
+英文真人 0.000 ✓、**英文 AI 制式文 0.004 ✗**。
+
+**兩個必須說清楚的觀察**
+1. 長度效應很大：同一篇中文 AI 制式文，130 字時得 0.031、299 字時得 0.994。
+   應用程式以「最多 5 句」為分析區塊送進模型，區塊偏短會系統性低估。
+2. 英文分布外失手的原因是**體裁**不是語言：HC3 英文是問答，測試樣本是論說文。
+   分布內 AUC 1.000 是同分布的樂觀值，不能當成上線後的預期。
+
+**結論**：這顆模型對中文**確實有反應**（0.994），不像現行純英文模型結構上就不可能。
+換上去是實質改善，但不是萬靈丹。
+
+**尚未完成的部分**：把模型送進 production 需要上架到下載主機，那是對外動作，
+未經授權不自行執行。可立即驗證的路徑是設定頁的「自訂 ONNX 模型匯入與測試」，
+所需檔案都在本機：模型 `training/artifacts/detector_int8.onnx`、
+Tokenizer `training/artifacts/classifier/tokenizer.json`（型別 bert-wordpiece）、
+AI 類別索引 `1`。
+
+**待辦**：若要達到 CLAUDE.md 指定的 XLM-RoBERTa，需先在 Dart 實作 SentencePiece
+Unigram tokenizer。mBERT 是這之前的可行替代，不是最終目標。
+
 ## 2026-08-18（第九十七次更新）— 階段二：本地基準集逐語言分開
 
 **修掉的 bug**：`CalibrationSample` 沒有語言欄位，全專案也沒有語言辨識，
