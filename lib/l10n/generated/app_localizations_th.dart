@@ -2610,4 +2610,13 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'บันทึกการแก้ไขของไฟล์เองขัดแย้งกับคะแนนต่ำนี้ หลักฐานที่มาไม่อ่อนลงเมื่อโมเดลภาษาพัฒนาขึ้น ขณะที่สถิติข้อความชี้ไม่ได้กับผลลัพธ์ที่เขียนดีจากโมเดลรุ่นปัจจุบัน กรุณาดูหลักฐานที่มาด้านล่างก่อนสรุปจากคะแนนด้านบน';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs จาก $total ย่อหน้าอยู่ในชุดการแก้ไขเดียวกันและมีสัดส่วน $percent% ของคำทั้งหมด ซึ่งสอดคล้องกับการที่ส่วนนั้นถูกเขียนหรือวางในคราวเดียว แม้ไฟล์จะมีชุดการแก้ไขอื่นก็ตาม';
+  }
 }

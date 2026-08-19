@@ -2545,4 +2545,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'ファイル自身の編集記録が、この低いスコアと矛盾しています。来歴の根拠は言語モデルの進歩によって弱まりませんが、文章統計は現行モデルのよく書けた出力を見分けられません。上のスコアから結論を出す前に、下の来歴の根拠をご確認ください。';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$total 段落のうち $paragraphs 段落が同一の編集バッチに属し、全体の $percent% の語数を占めています。ファイルに他の編集バッチがあっても、その部分は一度に書かれた（または貼り付けられた）形跡と整合します。';
+  }
 }

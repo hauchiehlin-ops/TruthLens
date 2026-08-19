@@ -2616,4 +2616,13 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'Catatan penyuntingan berkas ini bertentangan dengan skor rendah tersebut. Bukti asal-usul tidak melemah seiring membaiknya model bahasa, sedangkan statistik teks tidak dapat mengenali keluaran model masa kini yang ditulis dengan baik. Baca dahulu bukti asal-usul di bawah sebelum menyimpulkan apa pun dari skor di atas.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs dari $total paragraf berada dalam satu batch penyuntingan dan memuat $percent% dari seluruh kata — sesuai dengan blok yang ditulis atau ditempel sekaligus, meskipun berkas ini memiliki batch penyuntingan lain.';
+  }
 }

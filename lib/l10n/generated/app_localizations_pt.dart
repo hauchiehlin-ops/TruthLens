@@ -2630,4 +2630,13 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'O próprio registo de edição do ficheiro contradiz esta pontuação baixa. As provas de origem não enfraquecem à medida que os modelos melhoram, ao passo que a estatística de texto não identifica textos bem escritos dos modelos atuais. Leia primeiro as provas de origem abaixo antes de concluir algo a partir da pontuação.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs de $total parágrafos pertencem a um único lote de edição e contêm $percent% das palavras — compatível com esse bloco ter sido escrito ou colado de uma só vez, ainda que o ficheiro tenha outros lotes de edição.';
+  }
 }

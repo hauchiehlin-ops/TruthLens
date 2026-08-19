@@ -2638,4 +2638,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'L\'historique d\'édition du fichier contredit ce score faible. Les preuves d\'origine ne s\'affaiblissent pas à mesure que les modèles progressent, alors que les statistiques textuelles ne repèrent pas les productions bien écrites des modèles actuels. Consultez d\'abord les preuves d\'origine ci-dessous avant de tirer une conclusion du score.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs paragraphes sur $total relèvent d\'un même lot d\'édition et représentent $percent % des mots — cohérent avec un bloc écrit ou collé en une seule fois, même si le fichier comporte d\'autres lots d\'édition.';
+  }
 }

@@ -2554,4 +2554,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       '파일 자체의 편집 기록이 이 낮은 점수와 모순됩니다. 출처 근거는 언어 모델이 발전해도 약해지지 않지만, 텍스트 통계는 현행 모델이 잘 쓴 결과물을 가려내지 못합니다. 위의 점수로 결론을 내리기 전에 아래의 출처 근거를 먼저 확인하십시오.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$total개 단락 중 $paragraphs개가 같은 편집 배치에 속하며 전체 단어의 $percent%를 차지합니다. 파일에 다른 편집 배치가 있더라도, 해당 부분은 한 번에 작성되었거나 붙여넣어진 형태와 일치합니다.';
+  }
 }

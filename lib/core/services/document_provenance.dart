@@ -9,6 +9,8 @@
 /// - 因此「有訊號」是佐證，「沒訊號」**不代表**文件必然由人撰寫。
 library;
 
+import 'rsid_map.dart';
+
 import 'dart:convert';
 
 import 'package:archive/archive.dart';
@@ -28,6 +30,10 @@ enum ProvenanceSignalKind {
 
   /// 整份文件只存檔過極少次數
   fewRevisions,
+
+  /// 文件有多個編輯批次，但字數高度集中於其中一批
+  /// → 該批對應的段落可能是一次貼上的
+  concentratedEditingBatch,
 }
 
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
@@ -87,6 +93,11 @@ class DocumentProvenance {
   /// 中繼資料自己宣稱的字數（DOCX `<Words>`）
   final int? declaredWordCount;
 
+  /// 段落級的編輯批次分佈（僅 DOCX）。比 [distinctBodyRsids] 的單一數字
+  /// 更能指認**哪幾段**屬於同一批——一份逐步寫成的文件會有許多小批次散在
+  /// 各段，一次貼上的內容則讓大量文字集中在單一批次。
+  final RsidMap rsidMap;
+
   /// 正文中出現的相異 RSID 數量（僅 DOCX）。RSID 是 Word 為每個編輯批次
   /// 產生的識別碼：正常寫作會散布在數十組，整篇只有一兩組通常代表
   /// 內容是一次寫入的。
@@ -109,6 +120,7 @@ class DocumentProvenance {
     this.application,
     this.declaredWordCount,
     this.distinctBodyRsids,
+    this.rsidMap = RsidMap.empty,
     this.bodyWordCount = 0,
     this.signals = const [],
     this.sourceFormat = '',
@@ -272,6 +284,7 @@ class DocumentProvenance {
             : application,
         declaredWordCount: declaredWords,
         distinctBodyRsids: rsids.isEmpty ? null : rsids.length,
+        rsidMap: buildRsidMap(document, countWords),
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
       ),
@@ -395,6 +408,22 @@ class DocumentProvenance {
             kind: ProvenanceSignalKind.singleEditingSession,
             severity: ProvenanceSeverity.strong,
             values: {'count': rsids, 'words': words},
+          ),
+        );
+      } else if (base.rsidMap.isHighlyConcentrated) {
+        // 相異批次數不算少，但字數高度集中在其中一批——這是「文件本身
+        // 有正常的編輯歷程，但某一大段內容是一次貼進來的」的形態。
+        // 只數相異 RSID 的舊做法完全看不到這種情況。
+        final map = base.rsidMap;
+        signals.add(
+          ProvenanceSignal(
+            kind: ProvenanceSignalKind.concentratedEditingBatch,
+            severity: ProvenanceSeverity.notable,
+            values: {
+              'paragraphs': map.batches.first.paragraphIndices.length,
+              'total': map.paragraphCount,
+              'percent': (map.largestBatchShare * 100).round(),
+            },
           ),
         );
       }

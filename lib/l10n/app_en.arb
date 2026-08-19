@@ -2135,5 +2135,20 @@
   "reportProvenanceContradictsLowScore": "The file's own editing record contradicts this low score. Origin evidence does not weaken as language models improve, whereas text statistics cannot identify well-written output from current-generation models. Read the origin evidence below before drawing any conclusion from the score above.",
   "@reportProvenanceContradictsLowScore": {
     "description": "Shown when origin evidence is suspicious but the text score leans human"
+  },
+  "provenanceSignalConcentratedBatch": "{paragraphs} of {total} paragraphs share a single editing batch and carry {percent}% of the words — consistent with that block being written or pasted in one sitting, even though the file has other editing batches.",
+  "@provenanceSignalConcentratedBatch": {
+    "description": "Provenance signal: words concentrated in one RSID editing batch",
+    "placeholders": {
+      "paragraphs": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -30,6 +30,12 @@ class ProvenanceCard extends StatelessWidget {
         l10n.provenanceSignalNoEditingTime(v['words'] ?? 0),
       ProvenanceSignalKind.fewRevisions =>
         l10n.provenanceSignalFewRevisions(v['count'] ?? 0, v['words'] ?? 0),
+      ProvenanceSignalKind.concentratedEditingBatch =>
+        l10n.provenanceSignalConcentratedBatch(
+          v['paragraphs'] ?? 0,
+          v['total'] ?? 0,
+          v['percent'] ?? 0,
+        ),
     };
   }
 

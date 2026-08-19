@@ -2513,6 +2513,15 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       '檔案自身的編輯紀錄與這個低分互相矛盾。來源證據不會隨語言模型進步而失效，而文本統計指認不了現代模型寫得好的輸出。請先看下方的來源證據，再決定要不要採信上面的分數。';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5024,6 +5033,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get reportProvenanceContradictsLowScore =>
       '档案自身的编辑记录与这个低分互相矛盾。来源证据不会随语言模型进步而失效，而文本统计指认不了现代模型写得好的输出。请先看下方的来源证据，再决定要不要采信上面的分数。';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$total 段中有 $paragraphs 段属于同一个编辑批次，占全文 $percent% 的字数——这与「该区块是一次写入或粘贴的」相符，即使档案本身另有其他编辑批次。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7535,4 +7553,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get reportProvenanceContradictsLowScore =>
       '檔案自身的編輯紀錄與這個低分互相矛盾。來源證據不會隨語言模型進步而失效，而文本統計指認不了現代模型寫得好的輸出。請先看下方的來源證據，再決定要不要採信上面的分數。';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
+  }
 }

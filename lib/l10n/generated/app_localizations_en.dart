@@ -2606,4 +2606,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'The file\'s own editing record contradicts this low score. Origin evidence does not weaken as language models improve, whereas text statistics cannot identify well-written output from current-generation models. Read the origin evidence below before drawing any conclusion from the score above.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs of $total paragraphs share a single editing batch and carry $percent% of the words — consistent with that block being written or pasted in one sitting, even though the file has other editing batches.';
+  }
 }

@@ -2620,4 +2620,13 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'Rekod suntingan fail ini bercanggah dengan skor rendah tersebut. Bukti asal usul tidak melemah apabila model bahasa bertambah baik, manakala statistik teks tidak dapat mengenal pasti keluaran model semasa yang ditulis dengan baik. Baca dahulu bukti asal usul di bawah sebelum membuat kesimpulan daripada skor di atas.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs daripada $total perenggan berada dalam satu kelompok suntingan dan mengandungi $percent% daripada jumlah perkataan — sepadan dengan blok yang ditulis atau ditampal sekali gus, walaupun fail ini mempunyai kelompok suntingan lain.';
+  }
 }

@@ -2634,4 +2634,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reportProvenanceContradictsLowScore =>
       'Die Bearbeitungshistorie der Datei widerspricht diesem niedrigen Wert. Herkunftsnachweise verlieren nicht an Kraft, wenn Sprachmodelle besser werden, während Textstatistik gut geschriebene Ausgaben aktueller Modelle nicht erkennt. Lesen Sie zuerst die Herkunftsnachweise unten, bevor Sie aus dem Wert oben etwas ableiten.';
+
+  @override
+  String provenanceSignalConcentratedBatch(
+    int paragraphs,
+    int total,
+    int percent,
+  ) {
+    return '$paragraphs von $total Absätzen gehören zu einem einzigen Bearbeitungsvorgang und enthalten $percent % der Wörter — passend dazu, dass dieser Block in einem Zug geschrieben oder eingefügt wurde, obwohl die Datei weitere Bearbeitungsvorgänge aufweist.';
+  }
 }
