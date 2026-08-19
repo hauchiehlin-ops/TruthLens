@@ -2646,4 +2646,14 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'แต่ละรายการด้านล่างตรวจสอบได้อย่างอิสระ ต่างจากค่าความน่าจะเป็น ตรงที่สิ่งเหล่านี้ไม่อ่อนลงเมื่อโมเดลภาษาพัฒนาขึ้น';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'ระหว่างการพิมพ์ มีการบันทึกการวางข้อความครั้งเดียวจำนวน $characters อักขระ โมเดลภาษาปลอมแปลงไม่ได้ว่าข้อความปรากฏในตัวแก้ไขอย่างไร ส่วนนี้ไม่ได้พิมพ์ขึ้นที่นี่';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'ข้อความถูกพิมพ์ในแอปนี้เป็นเวลา $minutes นาที และมีการแก้ไข $deleted อักขระระหว่างทาง การเขียนที่เกิดขึ้นที่นี่ทิ้งร่องรอยที่ไม่มีโมเดลภาษาใดสร้างซ้ำได้';
+  }
 }

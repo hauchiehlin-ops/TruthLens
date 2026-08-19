@@ -2657,4 +2657,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Каждый пункт ниже можно проверить независимо. В отличие от вероятности, они не слабеют по мере развития языковых моделей.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Во время ввода зафиксирована одна вставка объёмом $characters символов. Языковая модель не может подделать то, как текст появляется в редакторе — этот блок здесь не набирали.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'Текст набирался в этом приложении $minutes минут, при этом было исправлено $deleted символов. Написание, происходящее здесь, оставляет след, который не воспроизведёт ни одна языковая модель.';
+  }
 }

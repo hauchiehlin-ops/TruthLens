@@ -4,6 +4,7 @@ library;
 import '../../l10n/generated/app_localizations.dart';
 import '../detection/evasion_scanner.dart';
 import '../services/document_provenance.dart';
+import '../services/writing_session.dart';
 import '../utils/text_stats.dart';
 
 /// 五級分類（依整體 AI 機率與使用者可調的 AI 標記門檻閾值劃分）
@@ -138,6 +139,11 @@ class DetectionResult {
   final int availableEngineCount; // 本次參與投票的引擎數
   final int totalEngineCount; // 註冊的引擎總數
 
+  /// 寫作過程紀錄。只有使用者直接在應用程式內輸入時才有內容；
+  /// 匯入的檔案為空——那份文字不是在這裡寫的。
+  /// 同樣不併入 [aiProbability]：這是關於「怎麼產生的」，不是「像不像 AI」。
+  final WritingSession writingSession;
+
   /// 規避痕跡掃描結果（零寬字元、同形字等）。刻意不併入 [aiProbability]：
   /// 這是確定性的「有沒有」，不是機率。它指向的也不是「像不像 AI」，
   /// 而是「有人刻意規避偵測」——性質不同，混進分數會兩者都說不清楚。
@@ -164,6 +170,7 @@ class DetectionResult {
     this.totalEngineCount = 0,
     this.provenance = DocumentProvenance.none,
     this.evasion = EvasionScan.clean,
+    this.writingSession = WritingSession.empty,
   });
 
   /// 計算可用引擎數（available=true 的引擎）

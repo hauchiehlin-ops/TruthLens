@@ -2674,4 +2674,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s\'affaiblissent pas à mesure que les modèles progressent.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Un collage unique de $characters caractères a été enregistré pendant la saisie. Un modèle de langue ne peut pas falsifier la façon dont le texte apparaît dans un éditeur : ce bloc n\'a pas été tapé ici.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'Le texte a été saisi dans cette application pendant $minutes minutes, avec $deleted caractères révisés. L\'écriture qui se déroule ici laisse une trace qu\'aucun modèle ne peut reproduire.';
+  }
 }

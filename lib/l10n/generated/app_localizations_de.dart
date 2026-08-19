@@ -2670,4 +2670,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Jeder Punkt unten lässt sich unabhängig prüfen. Anders als eine Wahrscheinlichkeit verlieren diese nicht an Kraft, wenn Sprachmodelle besser werden.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Beim Eingeben wurde ein einzelner Einfügevorgang von $characters Zeichen aufgezeichnet. Ein Sprachmodell kann nicht fälschen, wie Text in einem Editor entsteht — dieser Block wurde hier nicht getippt.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'Der Text wurde über $minutes Minuten in dieser App getippt, mit $deleted überarbeiteten Zeichen. Hier entstandenes Schreiben hinterlässt eine Spur, die kein Sprachmodell nachbilden kann.';
+  }
 }

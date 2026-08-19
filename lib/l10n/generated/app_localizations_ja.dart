@@ -2581,4 +2581,14 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '以下の各項目は独立に確認できます。確率と違い、言語モデルが進歩しても弱まりません。';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return '入力中に $characters 文字の一括貼り付けが記録されました。テキストがエディタにどう現れるかを言語モデルは偽装できません。この部分はここで打たれたものではありません。';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'このアプリ内で $minutes 分かけて入力され、途中で $deleted 文字が修正されました。ここで行われた執筆は、言語モデルには再現できない記録を残します。';
+  }
 }

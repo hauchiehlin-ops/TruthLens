@@ -1241,5 +1241,7 @@
   "findingCitationsAllVerified": "引用的 {total} 篇文献全数在公开数据库中找到。",
   "findingEditingRecordNormal": "档案记录了 {minutes} 分钟的编辑时间、{revisions} 次存档，与「这份文字是在本文件中写成的」相符。",
   "reportVerifiableFindingsTitle": "可查证的事实",
-  "reportVerifiableFindingsSubtitle": "以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。"
+  "reportVerifiableFindingsSubtitle": "以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。",
+  "findingBulkPaste": "输入过程中记录到一次粘贴 {characters} 个字符。语言模型无法伪造文字如何出现在编辑器里——这一段不是在这里打出来的。",
+  "findingWrittenInApp": "这份文字在本应用程序内经过 {minutes} 分钟打成，过程中修改了 {deleted} 个字符。在这里发生的写作会留下语言模型无法重现的记录。"
 }

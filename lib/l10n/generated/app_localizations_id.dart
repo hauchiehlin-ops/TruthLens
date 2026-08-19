@@ -2652,4 +2652,14 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Saat teks diketik, tercatat satu kali tempel sebanyak $characters karakter. Model bahasa tidak dapat memalsukan cara teks muncul di editor — blok ini tidak diketik di sini.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'Teks diketik di aplikasi ini selama $minutes menit, dengan $deleted karakter yang direvisi. Penulisan yang terjadi di sini meninggalkan jejak yang tidak dapat ditiru model bahasa mana pun.';
+  }
 }

@@ -15,6 +15,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/detection/orchestrator.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
+import '../../core/services/writing_session.dart';
 import '../../core/utils/language_id.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/calibration_service.dart';
@@ -72,6 +73,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   double? _compactEvidenceDocumentHeight;
 
   String _sourceFileName = '';
+
+  /// 使用者直接輸入時的寫作過程紀錄，隨分析請求一併帶入
+  WritingSession _writingSession = WritingSession.empty;
   DocumentProvenance _sourceProvenance = DocumentProvenance.none;
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
@@ -91,6 +95,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     if (request != null) {
       _controller.text = request.text;
       _sourceFileName = request.sourceFileName;
+      _writingSession = request.writingSession;
       _phase = request.text.trim().isEmpty
           ? _WorkspacePhase.idle
           : _WorkspacePhase.ready;
@@ -351,6 +356,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         text,
         sourceFileName: _sourceFileName,
         provenance: _sourceProvenance,
+        writingSession: _writingSession,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         prefs: prefs,
         l10n: l10n,

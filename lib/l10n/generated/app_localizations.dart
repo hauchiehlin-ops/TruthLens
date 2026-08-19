@@ -4214,6 +4214,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.'**
   String get reportVerifiableFindingsSubtitle;
+
+  /// Verifiable finding: a large paste was recorded
+  ///
+  /// In en, this message translates to:
+  /// **'A single paste of {characters} characters was recorded while this text was being entered. A language model cannot fake how text arrives in an editor — this block was not typed here.'**
+  String findingBulkPaste(int characters);
+
+  /// Verifiable finding: text was typed in the app
+  ///
+  /// In en, this message translates to:
+  /// **'The text was typed in this app over {minutes} minutes, with {deleted} characters revised along the way. Writing that happens here leaves a record no language model can reproduce.'**
+  String findingWrittenInApp(int minutes, int deleted);
 }
 
 class _AppLocalizationsDelegate

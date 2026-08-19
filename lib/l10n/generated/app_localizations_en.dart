@@ -2642,4 +2642,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'A single paste of $characters characters was recorded while this text was being entered. A language model cannot fake how text arrives in an editor — this block was not typed here.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'The text was typed in this app over $minutes minutes, with $deleted characters revised along the way. Writing that happens here leaves a record no language model can reproduce.';
+  }
 }

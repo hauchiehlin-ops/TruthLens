@@ -2666,4 +2666,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Cada item abaixo pode ser verificado de forma independente. Ao contrário de uma probabilidade, não enfraquecem à medida que os modelos melhoram.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Durante a escrita foi registada uma única colagem de $characters caracteres. Um modelo de linguagem não pode falsificar como o texto surge num editor — este bloco não foi escrito aqui.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'O texto foi escrito nesta aplicação ao longo de $minutes minutos, com $deleted caracteres revistos. A escrita que acontece aqui deixa um registo que nenhum modelo consegue reproduzir.';
+  }
 }

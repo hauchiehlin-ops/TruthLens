@@ -1227,5 +1227,7 @@
   "findingCitationsAllVerified": "As {total} obras citadas foram todas localizadas em bases de dados públicas.",
   "findingEditingRecordNormal": "O ficheiro regista {minutes} minutos de edição ao longo de {revisions} gravações, compatível com o texto ter sido escrito neste documento.",
   "reportVerifiableFindingsTitle": "O que pode ser verificado",
-  "reportVerifiableFindingsSubtitle": "Cada item abaixo pode ser verificado de forma independente. Ao contrário de uma probabilidade, não enfraquecem à medida que os modelos melhoram."
+  "reportVerifiableFindingsSubtitle": "Cada item abaixo pode ser verificado de forma independente. Ao contrário de uma probabilidade, não enfraquecem à medida que os modelos melhoram.",
+  "findingBulkPaste": "Durante a escrita foi registada uma única colagem de {characters} caracteres. Um modelo de linguagem não pode falsificar como o texto surge num editor — este bloco não foi escrito aqui.",
+  "findingWrittenInApp": "O texto foi escrito nesta aplicação ao longo de {minutes} minutos, com {deleted} caracteres revistos. A escrita que acontece aqui deixa um registo que nenhum modelo consegue reproduzir."
 }

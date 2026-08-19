@@ -2656,4 +2656,14 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Setiap butiran di bawah boleh disemak secara bebas. Tidak seperti kebarangkalian, ia tidak melemah apabila model bahasa bertambah baik.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Semasa teks ditaip, satu tampalan sebanyak $characters aksara telah direkodkan. Model bahasa tidak boleh memalsukan cara teks muncul dalam penyunting — blok ini tidak ditaip di sini.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'Teks ditaip dalam apl ini selama $minutes minit, dengan $deleted aksara disunting sepanjang proses. Penulisan yang berlaku di sini meninggalkan rekod yang tidak dapat ditiru oleh mana-mana model bahasa.';
+  }
 }

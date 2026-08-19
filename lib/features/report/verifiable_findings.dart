@@ -69,7 +69,31 @@ List<VerifiableFinding> collectVerifiableFindings(
     }
   }
 
-  // 3. 檔案自身的編輯紀錄
+  // 3. 寫作過程——若文字是在應用程式內寫成的，過程本身就是最強的證據，
+  //    因為它記錄的不是文字，而是文字如何出現在編輯器裡
+  final session = result.writingSession;
+  if (session.hasData) {
+    if (session.hasBulkPaste) {
+      findings.add(
+        VerifiableFinding(
+          statement: l10n.findingBulkPaste(session.largestPaste),
+          isConcern: true,
+        ),
+      );
+    } else if (session.consistentWithLiveWriting) {
+      findings.add(
+        VerifiableFinding(
+          statement: l10n.findingWrittenInApp(
+            session.duration.inMinutes,
+            session.deletedCharacters,
+          ),
+          isConcern: false,
+        ),
+      );
+    }
+  }
+
+  // 4. 檔案自身的編輯紀錄
   final provenance = result.provenance;
   for (final signal in provenance.signals) {
     findings.add(

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart' show Locale;
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
 import '../services/document_provenance.dart';
+import '../services/writing_session.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
@@ -78,6 +79,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     String input, {
     String sourceFileName = '',
     DocumentProvenance provenance = DocumentProvenance.none,
+    WritingSession writingSession = WritingSession.empty,
     bool eslCorrectionEnabled = true,
     PreferencesService? prefs,
     AppLocalizations? l10n,
@@ -154,6 +156,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
       provenance: provenance,
       // 規避痕跡掃描是純本地的確定性檢查，成本近乎零，直接在分析當下完成
       evasion: scanForEvasion(input),
+      writingSession: writingSession,
       aiProbability: overall,
       verdict: Verdict.fromProbability(overall),
       engineScores: scores,

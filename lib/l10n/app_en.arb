@@ -2200,5 +2200,26 @@
   },
   "@reportVerifiableFindingsSubtitle": {
     "description": "Subtitle explaining that these facts do not decay"
+  },
+  "findingBulkPaste": "A single paste of {characters} characters was recorded while this text was being entered. A language model cannot fake how text arrives in an editor — this block was not typed here.",
+  "@findingBulkPaste": {
+    "description": "Verifiable finding: a large paste was recorded",
+    "placeholders": {
+      "characters": {
+        "type": "int"
+      }
+    }
+  },
+  "findingWrittenInApp": "The text was typed in this app over {minutes} minutes, with {deleted} characters revised along the way. Writing that happens here leaves a record no language model can reproduce.",
+  "@findingWrittenInApp": {
+    "description": "Verifiable finding: text was typed in the app",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "deleted": {
+        "type": "int"
+      }
+    }
   }
 }

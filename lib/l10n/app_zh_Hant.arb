@@ -1241,5 +1241,7 @@
   "findingCitationsAllVerified": "引用的 {total} 篇文獻全數在公開資料庫中找到。",
   "findingEditingRecordNormal": "檔案記錄了 {minutes} 分鐘的編輯時間、{revisions} 次存檔，與「這份文字是在本文件中寫成的」相符。",
   "reportVerifiableFindingsTitle": "可查證的事實",
-  "reportVerifiableFindingsSubtitle": "以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。"
+  "reportVerifiableFindingsSubtitle": "以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。",
+  "findingBulkPaste": "輸入過程中記錄到一次貼上 {characters} 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。",
+  "findingWrittenInApp": "這份文字在本應用程式內經過 {minutes} 分鐘打成，過程中修改了 {deleted} 個字元。在這裡發生的寫作會留下語言模型無法重現的紀錄。"
 }

@@ -2590,4 +2590,14 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '아래 각 항목은 독립적으로 확인할 수 있습니다. 확률과 달리 언어 모델이 발전해도 약해지지 않습니다.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return '입력 중 $characters자를 한 번에 붙여넣은 기록이 있습니다. 텍스트가 편집기에 어떻게 나타나는지는 언어 모델이 위조할 수 없습니다. 이 부분은 여기서 입력된 것이 아닙니다.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return '이 앱에서 $minutes분에 걸쳐 입력되었고, 그 과정에서 $deleted자를 수정했습니다. 여기서 이루어진 작성은 어떤 언어 모델도 재현할 수 없는 기록을 남깁니다.';
+  }
 }

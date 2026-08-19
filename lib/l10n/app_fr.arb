@@ -1227,5 +1227,7 @@
   "findingCitationsAllVerified": "Les {total} ouvrages cités ont tous été trouvés dans les bases publiques.",
   "findingEditingRecordNormal": "Le fichier enregistre {minutes} minutes d'édition sur {revisions} enregistrements, ce qui est cohérent avec un texte rédigé dans ce document.",
   "reportVerifiableFindingsTitle": "Ce qui est vérifiable",
-  "reportVerifiableFindingsSubtitle": "Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s'affaiblissent pas à mesure que les modèles progressent."
+  "reportVerifiableFindingsSubtitle": "Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s'affaiblissent pas à mesure que les modèles progressent.",
+  "findingBulkPaste": "Un collage unique de {characters} caractères a été enregistré pendant la saisie. Un modèle de langue ne peut pas falsifier la façon dont le texte apparaît dans un éditeur : ce bloc n'a pas été tapé ici.",
+  "findingWrittenInApp": "Le texte a été saisi dans cette application pendant {minutes} minutes, avec {deleted} caractères révisés. L'écriture qui se déroule ici laisse une trace qu'aucun modèle ne peut reproduire."
 }

@@ -2549,6 +2549,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return '輸入過程中記錄到一次貼上 $characters 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return '這份文字在本應用程式內經過 $minutes 分鐘打成，過程中修改了 $deleted 個字元。在這裡發生的寫作會留下語言模型無法重現的紀錄。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5096,6 +5106,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return '输入过程中记录到一次粘贴 $characters 个字符。语言模型无法伪造文字如何出现在编辑器里——这一段不是在这里打出来的。';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return '这份文字在本应用程序内经过 $minutes 分钟打成，过程中修改了 $deleted 个字符。在这里发生的写作会留下语言模型无法重现的记录。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7643,4 +7663,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return '輸入過程中記錄到一次貼上 $characters 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return '這份文字在本應用程式內經過 $minutes 分鐘打成，過程中修改了 $deleted 個字元。在這裡發生的寫作會留下語言模型無法重現的紀錄。';
+  }
 }

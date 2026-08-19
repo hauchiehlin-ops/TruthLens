@@ -10,6 +10,7 @@ import '../../core/detection/model_manager.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/document_provenance.dart';
+import '../../core/services/writing_session.dart';
 import '../../core/services/ocr_config_notifier.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
@@ -48,6 +49,11 @@ class _InputScreenState extends State<InputScreen> {
   final _controller = TextEditingController();
   double _rightPanelWidth = 400; // 右側面板預設寬度
   String _sourceFileName = '';
+
+  /// 寫作過程記錄器。使用者若直接在此輸入，過程本身就是證據——
+  /// 一次貼上 2000 字與打了三小時，任何語言模型都偽造不了這個差別。
+  /// 匯入檔案時會重設：那份文字不是在這裡寫的，過程紀錄無從談起。
+  final _writingRecorder = WritingSessionRecorder();
 
   /// 匯入的格式是否不含編輯紀錄（PDF、圖片 OCR、純文字、直接貼上）。
   /// 這個提醒必須在**分析之前**出現：等使用者看到報告才說「這種格式沒有
@@ -106,7 +112,12 @@ class _InputScreenState extends State<InputScreen> {
     if (!mounted) return;
     context.push(
       '/analysis',
-      extra: AnalysisRequest(text: text, sourceFileName: _sourceFileName),
+      extra: AnalysisRequest(
+        text: text,
+        sourceFileName: _sourceFileName,
+        // 過程紀錄只在使用者直接輸入時有內容；匯入時已重設
+        writingSession: _writingRecorder.session,
+      ),
     );
   }
 
@@ -191,6 +202,8 @@ class _InputScreenState extends State<InputScreen> {
     _importLacksEditingRecord =
         doc.provenance.availability ==
         ProvenanceAvailability.unsupportedFormat;
+    // 匯入的文字不是在這裡寫的，先前的過程紀錄與它無關
+    _writingRecorder.reset();
     setState(() {});
     _showFloatingSnackBar(
       doc.usedPdfOcr
@@ -390,9 +403,13 @@ class _InputScreenState extends State<InputScreen> {
                                       hintText: l10n.inputHint,
                                     ),
                                     onChanged: (value) {
+                                      // 以長度差推斷打字／貼上／刪除，
+                                      // 不接觸輸入的內容
+                                      _writingRecorder.record(value.length);
                                       if (value.trim().isEmpty) {
                                         _sourceFileName = '';
-    _importLacksEditingRecord = false;
+                                        _importLacksEditingRecord = false;
+                                        _writingRecorder.reset();
                                       }
                                       setState(() {});
                                     },
@@ -563,9 +580,11 @@ class _InputScreenState extends State<InputScreen> {
                                 hintText: l10n.inputHint,
                               ),
                               onChanged: (value) {
+                                _writingRecorder.record(value.length);
                                 if (value.trim().isEmpty) {
                                   _sourceFileName = '';
-    _importLacksEditingRecord = false;
+                                  _importLacksEditingRecord = false;
+                                  _writingRecorder.reset();
                                 }
                                 setState(() {});
                               },

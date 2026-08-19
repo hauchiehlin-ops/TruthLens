@@ -2672,4 +2672,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get reportVerifiableFindingsSubtitle =>
       'Cada punto siguiente puede comprobarse de forma independiente. A diferencia de una probabilidad, no se debilitan a medida que mejoran los modelos.';
+
+  @override
+  String findingBulkPaste(int characters) {
+    return 'Durante la escritura se registró un pegado único de $characters caracteres. Un modelo de lenguaje no puede falsificar cómo aparece el texto en un editor: este bloque no se escribió aquí.';
+  }
+
+  @override
+  String findingWrittenInApp(int minutes, int deleted) {
+    return 'El texto se escribió en esta aplicación a lo largo de $minutes minutos, con $deleted caracteres revisados. La escritura que ocurre aquí deja un rastro que ningún modelo puede reproducir.';
+  }
 }

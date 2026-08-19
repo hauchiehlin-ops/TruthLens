@@ -1227,5 +1227,7 @@
   "findingCitationsAllVerified": "Seluruh {total} karya yang dikutip ditemukan di basis data publik.",
   "findingEditingRecordNormal": "Berkas mencatat {minutes} menit penyuntingan dalam {revisions} kali penyimpanan, sesuai dengan teks yang ditulis di dokumen ini.",
   "reportVerifiableFindingsTitle": "Yang dapat diverifikasi",
-  "reportVerifiableFindingsSubtitle": "Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa."
+  "reportVerifiableFindingsSubtitle": "Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa.",
+  "findingBulkPaste": "Saat teks diketik, tercatat satu kali tempel sebanyak {characters} karakter. Model bahasa tidak dapat memalsukan cara teks muncul di editor — blok ini tidak diketik di sini.",
+  "findingWrittenInApp": "Teks diketik di aplikasi ini selama {minutes} menit, dengan {deleted} karakter yang direvisi. Penulisan yang terjadi di sini meninggalkan jejak yang tidak dapat ditiru model bahasa mana pun."
 }
