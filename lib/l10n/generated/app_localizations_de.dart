@@ -2643,4 +2643,31 @@ class AppLocalizationsDe extends AppLocalizations {
   ) {
     return '$paragraphs von $total Absätzen gehören zu einem einzigen Bearbeitungsvorgang und enthalten $percent % der Wörter — passend dazu, dass dieser Block in einem Zug geschrieben oder eingefügt wurde, obwohl die Datei weitere Bearbeitungsvorgänge aufweist.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '$count Ausweichspuren auf Zeichenebene gefunden (Nullbreiten-Zeichen, gleich aussehende Buchstaben oder Richtungssteuerzeichen). Übliche Schreibwerkzeuge erzeugen so etwas nicht — der Text wurde bearbeitet, um die Erkennung zu unterlaufen.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '$notFound von $total zitierten Werken waren in keiner der geprüften Literaturdatenbanken auffindbar. Erfundene Quellenangaben sind ein Verhalten von Sprachmodellen, und anders als der Schreibstil ist die Existenz einer Arbeit eine überprüfbare Tatsache.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'Alle $total zitierten Werke wurden in öffentlichen Literaturdatenbanken gefunden.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'Die Datei verzeichnet $minutes Minuten Bearbeitung über $revisions Speichervorgänge, was dazu passt, dass der Text in diesem Dokument entstanden ist.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'Was überprüfbar ist';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Jeder Punkt unten lässt sich unabhängig prüfen. Anders als eine Wahrscheinlichkeit verlieren diese nicht an Kraft, wenn Sprachmodelle besser werden.';
 }

@@ -2563,4 +2563,31 @@ class AppLocalizationsKo extends AppLocalizations {
   ) {
     return '$total개 단락 중 $paragraphs개가 같은 편집 배치에 속하며 전체 단어의 $percent%를 차지합니다. 파일에 다른 편집 배치가 있더라도, 해당 부분은 한 번에 작성되었거나 붙여넣어진 형태와 일치합니다.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '문자 수준의 회피 흔적이 $count건 발견되었습니다(폭 없는 문자, 모양이 같은 이체 문자, 방향 제어 문자). 일반적인 작성 도구는 이런 것을 만들지 않습니다. 탐지를 피하려고 누군가 텍스트를 가공했습니다.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '인용된 $total건 중 $notFound건이 조회한 어떤 문헌 데이터베이스에서도 발견되지 않았습니다. 없는 문헌을 인용하는 것은 언어 모델의 행동이며, 문체와 달리 논문의 존재 여부는 검증 가능한 사실입니다.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return '인용된 $total건 모두 공개 데이터베이스에서 확인되었습니다.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return '파일에는 $revisions회 저장에 걸쳐 $minutes분의 편집 시간이 기록되어 있어, 본문이 이 문서에서 작성되었다는 것과 일치합니다.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => '검증 가능한 사실';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      '아래 각 항목은 독립적으로 확인할 수 있습니다. 확률과 달리 언어 모델이 발전해도 약해지지 않습니다.';
 }

@@ -2615,4 +2615,31 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return '$paragraphs of $total paragraphs share a single editing batch and carry $percent% of the words — consistent with that block being written or pasted in one sitting, even though the file has other editing batches.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '$count character-level evasion marks were found (zero-width characters, look-alike letters, or direction controls). Ordinary writing tools do not produce these — someone processed the text to defeat detection.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '$notFound of $total cited works could not be found in any of the reference databases checked. Fabricated citations are a behaviour of language models, and unlike writing style, whether a paper exists is a verifiable fact.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'All $total cited works were located in public reference databases.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'The file records $minutes minutes of editing across $revisions saves, which is consistent with the text having been written in this document.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'What can be verified';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.';
 }

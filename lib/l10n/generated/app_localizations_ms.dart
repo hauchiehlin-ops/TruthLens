@@ -2629,4 +2629,31 @@ class AppLocalizationsMs extends AppLocalizations {
   ) {
     return '$paragraphs daripada $total perenggan berada dalam satu kelompok suntingan dan mengandungi $percent% daripada jumlah perkataan — sepadan dengan blok yang ditulis atau ditampal sekali gus, walaupun fail ini mempunyai kelompok suntingan lain.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return 'Ditemui $count kesan pengelakan pada peringkat aksara (aksara lebar sifar, huruf serupa, atau kawalan arah). Alat penulisan biasa tidak menghasilkan ini — seseorang telah memproses teks untuk mengelak pengesanan.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'Daripada $total karya yang dipetik, $notFound tidak dijumpai dalam mana-mana pangkalan data rujukan yang disemak. Petikan rekaan ialah perilaku model bahasa, dan tidak seperti gaya penulisan, sama ada sesuatu makalah wujud adalah fakta yang boleh disahkan.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'Kesemua $total karya yang dipetik dijumpai dalam pangkalan data awam.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'Fail merekodkan $minutes minit suntingan merentasi $revisions kali simpanan, sepadan dengan teks yang ditulis dalam dokumen ini.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'Yang boleh disahkan';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Setiap butiran di bawah boleh disemak secara bebas. Tidak seperti kebarangkalian, ia tidak melemah apabila model bahasa bertambah baik.';
 }

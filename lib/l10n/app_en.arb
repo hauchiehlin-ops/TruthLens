@@ -2150,5 +2150,55 @@
         "type": "int"
       }
     }
+  },
+  "findingEvasionDetected": "{count} character-level evasion marks were found (zero-width characters, look-alike letters, or direction controls). Ordinary writing tools do not produce these — someone processed the text to defeat detection.",
+  "@findingEvasionDetected": {
+    "description": "Verifiable finding: evasion marks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "findingCitationsNotFound": "{notFound} of {total} cited works could not be found in any of the reference databases checked. Fabricated citations are a behaviour of language models, and unlike writing style, whether a paper exists is a verifiable fact.",
+  "@findingCitationsNotFound": {
+    "description": "Verifiable finding: citations not located",
+    "placeholders": {
+      "notFound": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findingCitationsAllVerified": "All {total} cited works were located in public reference databases.",
+  "@findingCitationsAllVerified": {
+    "description": "Verifiable finding: all citations located",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findingEditingRecordNormal": "The file records {minutes} minutes of editing across {revisions} saves, which is consistent with the text having been written in this document.",
+  "@findingEditingRecordNormal": {
+    "description": "Verifiable finding: editing record looks normal",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "revisions": {
+        "type": "int"
+      }
+    }
+  },
+  "reportVerifiableFindingsTitle": "What can be verified",
+  "reportVerifiableFindingsSubtitle": "Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.",
+  "@reportVerifiableFindingsTitle": {
+    "description": "Heading of the verifiable-facts card shown above the verdict"
+  },
+  "@reportVerifiableFindingsSubtitle": {
+    "description": "Subtitle explaining that these facts do not decay"
   }
 }

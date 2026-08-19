@@ -2522,6 +2522,33 @@ class AppLocalizationsZh extends AppLocalizations {
   ) {
     return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '發現 $count 處字元層級的規避痕跡（零寬字元、外觀相同的異體字母、或方向控制字元）。正常的寫作工具不會產生這些——有人為了規避偵測而處理過這份文字。';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '引用的 $total 篇文獻中，有 $notFound 篇在所有查核的資料庫中都查無此文。捏造引用是語言模型的行為特徵，而且與文風不同，一篇文獻存不存在是可以查證的事實。';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return '引用的 $total 篇文獻全數在公開資料庫中找到。';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return '檔案記錄了 $minutes 分鐘的編輯時間、$revisions 次存檔，與「這份文字是在本文件中寫成的」相符。';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => '可查證的事實';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5042,6 +5069,33 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   ) {
     return '$total 段中有 $paragraphs 段属于同一个编辑批次，占全文 $percent% 的字数——这与「该区块是一次写入或粘贴的」相符，即使档案本身另有其他编辑批次。';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '发现 $count 处字符层级的规避痕迹（零宽字符、外观相同的异体字母、或方向控制字符）。正常的写作工具不会产生这些——有人为了规避检测而处理过这份文字。';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '引用的 $total 篇文献中，有 $notFound 篇在所有查核的数据库中都查无此文。捏造引用是语言模型的行为特征，而且与文风不同，一篇文献存不存在是可以查证的事实。';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return '引用的 $total 篇文献全数在公开数据库中找到。';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return '档案记录了 $minutes 分钟的编辑时间、$revisions 次存档，与「这份文字是在本文件中写成的」相符。';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => '可查证的事实';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      '以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7562,4 +7616,31 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   ) {
     return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '發現 $count 處字元層級的規避痕跡（零寬字元、外觀相同的異體字母、或方向控制字元）。正常的寫作工具不會產生這些——有人為了規避偵測而處理過這份文字。';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '引用的 $total 篇文獻中，有 $notFound 篇在所有查核的資料庫中都查無此文。捏造引用是語言模型的行為特徵，而且與文風不同，一篇文獻存不存在是可以查證的事實。';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return '引用的 $total 篇文獻全數在公開資料庫中找到。';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return '檔案記錄了 $minutes 分鐘的編輯時間、$revisions 次存檔，與「這份文字是在本文件中寫成的」相符。';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => '可查證的事實';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
 }

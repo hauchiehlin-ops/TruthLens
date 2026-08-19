@@ -1235,5 +1235,11 @@
   "inputNoEditingRecordHint": "这个格式不含编辑记录。PDF、图片与直接粘贴的文字都没有「怎么写出来的」历程，因此分析完全依赖文本统计。若能取得 .docx、.odt 或 .doc 原始档，其编辑历程是强得多的证据——而且不像文本统计，它不会随语言模型进步而失效。",
   "reportLowScoreNotProofOfHuman": "低分不等于确认由人撰写。本次没有可用的来源证据，判定仅来自文本统计；文本统计能稳定指认罐头式写作，但指认不了现代模型写得好的输出。",
   "reportProvenanceContradictsLowScore": "档案自身的编辑记录与这个低分互相矛盾。来源证据不会随语言模型进步而失效，而文本统计指认不了现代模型写得好的输出。请先看下方的来源证据，再决定要不要采信上面的分数。",
-  "provenanceSignalConcentratedBatch": "{total} 段中有 {paragraphs} 段属于同一个编辑批次，占全文 {percent}% 的字数——这与「该区块是一次写入或粘贴的」相符，即使档案本身另有其他编辑批次。"
+  "provenanceSignalConcentratedBatch": "{total} 段中有 {paragraphs} 段属于同一个编辑批次，占全文 {percent}% 的字数——这与「该区块是一次写入或粘贴的」相符，即使档案本身另有其他编辑批次。",
+  "findingEvasionDetected": "发现 {count} 处字符层级的规避痕迹（零宽字符、外观相同的异体字母、或方向控制字符）。正常的写作工具不会产生这些——有人为了规避检测而处理过这份文字。",
+  "findingCitationsNotFound": "引用的 {total} 篇文献中，有 {notFound} 篇在所有查核的数据库中都查无此文。捏造引用是语言模型的行为特征，而且与文风不同，一篇文献存不存在是可以查证的事实。",
+  "findingCitationsAllVerified": "引用的 {total} 篇文献全数在公开数据库中找到。",
+  "findingEditingRecordNormal": "档案记录了 {minutes} 分钟的编辑时间、{revisions} 次存档，与「这份文字是在本文件中写成的」相符。",
+  "reportVerifiableFindingsTitle": "可查证的事实",
+  "reportVerifiableFindingsSubtitle": "以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。"
 }

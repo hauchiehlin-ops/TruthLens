@@ -2639,4 +2639,31 @@ class AppLocalizationsPt extends AppLocalizations {
   ) {
     return '$paragraphs de $total parágrafos pertencem a um único lote de edição e contêm $percent% das palavras — compatível com esse bloco ter sido escrito ou colado de uma só vez, ainda que o ficheiro tenha outros lotes de edição.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return 'Foram encontradas $count marcas de evasão ao nível do carácter (caracteres de largura zero, letras de aparência idêntica ou controlos de direção). As ferramentas de escrita normais não produzem isto — alguém processou o texto para iludir a deteção.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'Das $total obras citadas, $notFound não foram encontradas em nenhuma das bases de dados consultadas. Citações inventadas são um comportamento dos modelos de linguagem e, ao contrário do estilo, a existência de um artigo é um facto verificável.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'As $total obras citadas foram todas localizadas em bases de dados públicas.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'O ficheiro regista $minutes minutos de edição ao longo de $revisions gravações, compatível com o texto ter sido escrito neste documento.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'O que pode ser verificado';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Cada item abaixo pode ser verificado de forma independente. Ao contrário de uma probabilidade, não enfraquecem à medida que os modelos melhoram.';
 }

@@ -2647,4 +2647,31 @@ class AppLocalizationsFr extends AppLocalizations {
   ) {
     return '$paragraphs paragraphes sur $total relèvent d\'un même lot d\'édition et représentent $percent % des mots — cohérent avec un bloc écrit ou collé en une seule fois, même si le fichier comporte d\'autres lots d\'édition.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '$count marques d\'évasion au niveau des caractères ont été trouvées (caractères de largeur nulle, lettres d\'apparence identique ou contrôles de direction). Les outils d\'écriture ordinaires n\'en produisent pas : le texte a été traité pour déjouer la détection.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'Sur $total ouvrages cités, $notFound n\'ont été trouvés dans aucune des bases bibliographiques consultées. Les citations inventées sont un comportement des modèles de langage et, contrairement au style, l\'existence d\'un article est un fait vérifiable.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'Les $total ouvrages cités ont tous été trouvés dans les bases publiques.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'Le fichier enregistre $minutes minutes d\'édition sur $revisions enregistrements, ce qui est cohérent avec un texte rédigé dans ce document.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'Ce qui est vérifiable';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s\'affaiblissent pas à mesure que les modèles progressent.';
 }

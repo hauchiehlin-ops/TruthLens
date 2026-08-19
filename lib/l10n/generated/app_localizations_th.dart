@@ -2619,4 +2619,31 @@ class AppLocalizationsTh extends AppLocalizations {
   ) {
     return '$paragraphs จาก $total ย่อหน้าอยู่ในชุดการแก้ไขเดียวกันและมีสัดส่วน $percent% ของคำทั้งหมด ซึ่งสอดคล้องกับการที่ส่วนนั้นถูกเขียนหรือวางในคราวเดียว แม้ไฟล์จะมีชุดการแก้ไขอื่นก็ตาม';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return 'พบร่องรอยการหลบเลี่ยงระดับอักขระ $count จุด (อักขระความกว้างศูนย์ ตัวอักษรหน้าตาเหมือนกัน หรืออักขระควบคุมทิศทาง) เครื่องมือเขียนทั่วไปไม่สร้างสิ่งเหล่านี้ มีผู้ประมวลผลข้อความเพื่อหลบการตรวจจับ';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'จากงานที่อ้างอิง $total ชิ้น มี $notFound ชิ้นที่ไม่พบในฐานข้อมูลอ้างอิงใดเลยที่ตรวจสอบ การอ้างอิงที่กุขึ้นเป็นพฤติกรรมของโมเดลภาษา และต่างจากสำนวน ตรงที่การมีอยู่จริงของบทความเป็นข้อเท็จจริงที่ตรวจสอบได้';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'งานที่อ้างอิงทั้ง $total ชิ้นพบในฐานข้อมูลสาธารณะครบถ้วน';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'ไฟล์บันทึกเวลาแก้ไข $minutes นาที จากการบันทึก $revisions ครั้ง ซึ่งสอดคล้องกับการที่ข้อความถูกเขียนขึ้นในเอกสารนี้';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'สิ่งที่ตรวจสอบได้';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'แต่ละรายการด้านล่างตรวจสอบได้อย่างอิสระ ต่างจากค่าความน่าจะเป็น ตรงที่สิ่งเหล่านี้ไม่อ่อนลงเมื่อโมเดลภาษาพัฒนาขึ้น';
 }

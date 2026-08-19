@@ -1221,5 +1221,11 @@
   "inputNoEditingRecordHint": "이 형식에는 편집 기록이 없습니다. PDF·이미지·붙여넣은 텍스트는 어떻게 작성되었는지의 이력을 남기지 않으므로, 분석은 전적으로 텍스트 통계에 의존합니다. 원본 .docx·.odt·.doc를 구할 수 있다면 그 편집 이력이 훨씬 강한 근거이며, 텍스트 통계와 달리 언어 모델이 발전해도 약해지지 않습니다.",
   "reportLowScoreNotProofOfHuman": "점수가 낮다고 해서 사람이 썼다는 확인은 아닙니다. 이번에는 출처 근거가 없어 이 판정은 텍스트 통계에만 기대고 있습니다. 텍스트 통계는 정형화된 글은 안정적으로 잡아내지만, 현행 모델이 잘 쓴 결과물은 잡아내지 못합니다.",
   "reportProvenanceContradictsLowScore": "파일 자체의 편집 기록이 이 낮은 점수와 모순됩니다. 출처 근거는 언어 모델이 발전해도 약해지지 않지만, 텍스트 통계는 현행 모델이 잘 쓴 결과물을 가려내지 못합니다. 위의 점수로 결론을 내리기 전에 아래의 출처 근거를 먼저 확인하십시오.",
-  "provenanceSignalConcentratedBatch": "{total}개 단락 중 {paragraphs}개가 같은 편집 배치에 속하며 전체 단어의 {percent}%를 차지합니다. 파일에 다른 편집 배치가 있더라도, 해당 부분은 한 번에 작성되었거나 붙여넣어진 형태와 일치합니다."
+  "provenanceSignalConcentratedBatch": "{total}개 단락 중 {paragraphs}개가 같은 편집 배치에 속하며 전체 단어의 {percent}%를 차지합니다. 파일에 다른 편집 배치가 있더라도, 해당 부분은 한 번에 작성되었거나 붙여넣어진 형태와 일치합니다.",
+  "findingEvasionDetected": "문자 수준의 회피 흔적이 {count}건 발견되었습니다(폭 없는 문자, 모양이 같은 이체 문자, 방향 제어 문자). 일반적인 작성 도구는 이런 것을 만들지 않습니다. 탐지를 피하려고 누군가 텍스트를 가공했습니다.",
+  "findingCitationsNotFound": "인용된 {total}건 중 {notFound}건이 조회한 어떤 문헌 데이터베이스에서도 발견되지 않았습니다. 없는 문헌을 인용하는 것은 언어 모델의 행동이며, 문체와 달리 논문의 존재 여부는 검증 가능한 사실입니다.",
+  "findingCitationsAllVerified": "인용된 {total}건 모두 공개 데이터베이스에서 확인되었습니다.",
+  "findingEditingRecordNormal": "파일에는 {revisions}회 저장에 걸쳐 {minutes}분의 편집 시간이 기록되어 있어, 본문이 이 문서에서 작성되었다는 것과 일치합니다.",
+  "reportVerifiableFindingsTitle": "검증 가능한 사실",
+  "reportVerifiableFindingsSubtitle": "아래 각 항목은 독립적으로 확인할 수 있습니다. 확률과 달리 언어 모델이 발전해도 약해지지 않습니다."
 }

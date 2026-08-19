@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
+import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
@@ -137,7 +138,31 @@ class ProfessionalReportHeader extends StatelessWidget {
           ),
           const Divider(thickness: 2),
 
-          // 2. 判定摘要卡片（大卡）
+          // 2. 可查證的事實 —— 刻意排在判定之前。
+          //    「三篇文獻查無此文」是事實，「AI 機率 32%」是推論；
+          //    事實該當頭條，推論退為輔助。
+          Builder(
+            builder: (context) {
+              final findings = collectVerifiableFindings(
+                result,
+                l10n,
+                citations: citations,
+              );
+              if (findings.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: _VerifiableFindingsCard(
+                  findings: findings,
+                  l10n: l10n,
+                ),
+              );
+            },
+          ),
+
+          // 3. 判定摘要卡片（大卡）
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _VerdictSummaryCard(
@@ -200,6 +225,98 @@ class ProfessionalReportHeader extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/// 可查證事實的清單，放在判定卡**之前**。
+///
+/// 原本的順序是反的：機率當頭條、事實在下方。但「三篇文獻查無此文」與
+/// 「編輯總時長 0 分鐘但正文 2462 字」都是可以獨立驗證的事實，而 AI 機率
+/// 是推論——今天已證實它對現代模型的輸出分辨力有限。
+///
+/// 一份報告若能說「這三篇文獻查無此文」，它的說服力不需要任何機率來支撐。
+class _VerifiableFindingsCard extends StatelessWidget {
+  final List<VerifiableFinding> findings;
+  final AppLocalizations l10n;
+
+  const _VerifiableFindingsCard({required this.findings, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final hasConcern = findings.any((f) => f.isConcern);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasConcern ? scheme.error : scheme.outlineVariant,
+          width: hasConcern ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                hasConcern
+                    ? LucideIcons.fileSearch
+                    : LucideIcons.checkCircle,
+                size: 20,
+                color: hasConcern ? scheme.error : scheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.reportVerifiableFindingsTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.reportVerifiableFindingsSubtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          for (final finding in findings)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    finding.isConcern
+                        ? LucideIcons.alertTriangle
+                        : LucideIcons.check,
+                    size: 16,
+                    color: finding.isConcern
+                        ? scheme.error
+                        : scheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      finding.statement,
+                      style: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(height: 1.45),
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

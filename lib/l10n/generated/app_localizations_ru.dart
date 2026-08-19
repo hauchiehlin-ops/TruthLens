@@ -2630,4 +2630,31 @@ class AppLocalizationsRu extends AppLocalizations {
   ) {
     return '$paragraphs из $total абзацев относятся к одному сеансу правки и содержат $percent % слов — это согласуется с тем, что данный блок написан или вставлен за один раз, даже если в файле есть другие сеансы правки.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return 'Обнаружено $count следов обхода на уровне символов (символы нулевой ширины, визуально идентичные буквы, управляющие символы направления). Обычные текстовые редакторы такого не создают — текст обрабатывали, чтобы обойти проверку.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'Из $total процитированных работ $notFound не найдены ни в одной из проверенных библиографических баз. Выдуманные ссылки — это поведение языковых моделей, и в отличие от стиля, существование статьи есть проверяемый факт.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'Все $total процитированных работ найдены в публичных базах.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'В файле записано $minutes минут правки за $revisions сохранений, что согласуется с тем, что текст создавался в этом документе.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'Что можно проверить';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Каждый пункт ниже можно проверить независимо. В отличие от вероятности, они не слабеют по мере развития языковых моделей.';
 }

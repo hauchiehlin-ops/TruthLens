@@ -2625,4 +2625,31 @@ class AppLocalizationsId extends AppLocalizations {
   ) {
     return '$paragraphs dari $total paragraf berada dalam satu batch penyuntingan dan memuat $percent% dari seluruh kata — sesuai dengan blok yang ditulis atau ditempel sekaligus, meskipun berkas ini memiliki batch penyuntingan lain.';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return 'Ditemukan $count jejak penghindaran pada tingkat karakter (karakter lebar nol, huruf serupa, atau kontrol arah). Alat tulis biasa tidak menghasilkan ini — seseorang memproses teks untuk mengelabui deteksi.';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return 'Dari $total karya yang dikutip, $notFound tidak ditemukan di basis data rujukan mana pun yang diperiksa. Kutipan fiktif adalah perilaku model bahasa, dan tidak seperti gaya tulisan, ada atau tidaknya sebuah makalah adalah fakta yang dapat diverifikasi.';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return 'Seluruh $total karya yang dikutip ditemukan di basis data publik.';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'Berkas mencatat $minutes menit penyuntingan dalam $revisions kali penyimpanan, sesuai dengan teks yang ditulis di dokumen ini.';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => 'Yang dapat diverifikasi';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      'Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa.';
 }

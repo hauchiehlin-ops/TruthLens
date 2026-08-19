@@ -4178,6 +4178,42 @@ abstract class AppLocalizations {
     int total,
     int percent,
   );
+
+  /// Verifiable finding: evasion marks
+  ///
+  /// In en, this message translates to:
+  /// **'{count} character-level evasion marks were found (zero-width characters, look-alike letters, or direction controls). Ordinary writing tools do not produce these — someone processed the text to defeat detection.'**
+  String findingEvasionDetected(int count);
+
+  /// Verifiable finding: citations not located
+  ///
+  /// In en, this message translates to:
+  /// **'{notFound} of {total} cited works could not be found in any of the reference databases checked. Fabricated citations are a behaviour of language models, and unlike writing style, whether a paper exists is a verifiable fact.'**
+  String findingCitationsNotFound(int notFound, int total);
+
+  /// Verifiable finding: all citations located
+  ///
+  /// In en, this message translates to:
+  /// **'All {total} cited works were located in public reference databases.'**
+  String findingCitationsAllVerified(int total);
+
+  /// Verifiable finding: editing record looks normal
+  ///
+  /// In en, this message translates to:
+  /// **'The file records {minutes} minutes of editing across {revisions} saves, which is consistent with the text having been written in this document.'**
+  String findingEditingRecordNormal(int minutes, int revisions);
+
+  /// Heading of the verifiable-facts card shown above the verdict
+  ///
+  /// In en, this message translates to:
+  /// **'What can be verified'**
+  String get reportVerifiableFindingsTitle;
+
+  /// Subtitle explaining that these facts do not decay
+  ///
+  /// In en, this message translates to:
+  /// **'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.'**
+  String get reportVerifiableFindingsSubtitle;
 }
 
 class _AppLocalizationsDelegate

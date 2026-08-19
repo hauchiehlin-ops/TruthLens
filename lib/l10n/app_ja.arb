@@ -1221,5 +1221,11 @@
   "inputNoEditingRecordHint": "この形式には編集記録がありません。PDF・画像・貼り付けたテキストは「どう書かれたか」の履歴を持たないため、分析は文章統計だけに依存します。元の .docx / .odt / .doc を入手できるなら、その編集履歴のほうがはるかに強い根拠になります。しかも文章統計と違い、言語モデルの進歩によって弱まりません。",
   "reportLowScoreNotProofOfHuman": "スコアが低いことは、人が書いたことの確認にはなりません。今回は来歴の根拠がなく、この判定は文章統計だけに基づいています。文章統計は型どおりの文章は確実に検出できますが、現行モデルのよく書けた出力は検出できません。",
   "reportProvenanceContradictsLowScore": "ファイル自身の編集記録が、この低いスコアと矛盾しています。来歴の根拠は言語モデルの進歩によって弱まりませんが、文章統計は現行モデルのよく書けた出力を見分けられません。上のスコアから結論を出す前に、下の来歴の根拠をご確認ください。",
-  "provenanceSignalConcentratedBatch": "{total} 段落のうち {paragraphs} 段落が同一の編集バッチに属し、全体の {percent}% の語数を占めています。ファイルに他の編集バッチがあっても、その部分は一度に書かれた（または貼り付けられた）形跡と整合します。"
+  "provenanceSignalConcentratedBatch": "{total} 段落のうち {paragraphs} 段落が同一の編集バッチに属し、全体の {percent}% の語数を占めています。ファイルに他の編集バッチがあっても、その部分は一度に書かれた（または貼り付けられた）形跡と整合します。",
+  "findingEvasionDetected": "文字レベルの回避痕跡が {count} 件見つかりました（ゼロ幅文字、見た目の同じ異体文字、方向制御文字）。通常の執筆ツールはこれらを生成しません。検出を逃れるために誰かが加工しています。",
+  "findingCitationsNotFound": "引用された {total} 件のうち {notFound} 件が、照会したどの文献データベースにも見つかりませんでした。存在しない文献の引用は言語モデルの挙動であり、文体と違って、論文が実在するかどうかは検証可能な事実です。",
+  "findingCitationsAllVerified": "引用された {total} 件はすべて公開データベースで確認できました。",
+  "findingEditingRecordNormal": "ファイルには {revisions} 回の保存にわたり {minutes} 分の編集時間が記録されており、本文がこの文書内で書かれたことと整合します。",
+  "reportVerifiableFindingsTitle": "検証できること",
+  "reportVerifiableFindingsSubtitle": "以下の各項目は独立に確認できます。確率と違い、言語モデルが進歩しても弱まりません。"
 }

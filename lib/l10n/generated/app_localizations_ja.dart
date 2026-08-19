@@ -2554,4 +2554,31 @@ class AppLocalizationsJa extends AppLocalizations {
   ) {
     return '$total 段落のうち $paragraphs 段落が同一の編集バッチに属し、全体の $percent% の語数を占めています。ファイルに他の編集バッチがあっても、その部分は一度に書かれた（または貼り付けられた）形跡と整合します。';
   }
+
+  @override
+  String findingEvasionDetected(int count) {
+    return '文字レベルの回避痕跡が $count 件見つかりました（ゼロ幅文字、見た目の同じ異体文字、方向制御文字）。通常の執筆ツールはこれらを生成しません。検出を逃れるために誰かが加工しています。';
+  }
+
+  @override
+  String findingCitationsNotFound(int notFound, int total) {
+    return '引用された $total 件のうち $notFound 件が、照会したどの文献データベースにも見つかりませんでした。存在しない文献の引用は言語モデルの挙動であり、文体と違って、論文が実在するかどうかは検証可能な事実です。';
+  }
+
+  @override
+  String findingCitationsAllVerified(int total) {
+    return '引用された $total 件はすべて公開データベースで確認できました。';
+  }
+
+  @override
+  String findingEditingRecordNormal(int minutes, int revisions) {
+    return 'ファイルには $revisions 回の保存にわたり $minutes 分の編集時間が記録されており、本文がこの文書内で書かれたことと整合します。';
+  }
+
+  @override
+  String get reportVerifiableFindingsTitle => '検証できること';
+
+  @override
+  String get reportVerifiableFindingsSubtitle =>
+      '以下の各項目は独立に確認できます。確率と違い、言語モデルが進歩しても弱まりません。';
 }
