@@ -2,6 +2,7 @@
 library;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../detection/evasion_scanner.dart';
 import '../services/document_provenance.dart';
 import '../utils/text_stats.dart';
 
@@ -137,6 +138,11 @@ class DetectionResult {
   final int availableEngineCount; // 本次參與投票的引擎數
   final int totalEngineCount; // 註冊的引擎總數
 
+  /// 規避痕跡掃描結果（零寬字元、同形字等）。刻意不併入 [aiProbability]：
+  /// 這是確定性的「有沒有」，不是機率。它指向的也不是「像不像 AI」，
+  /// 而是「有人刻意規避偵測」——性質不同，混進分數會兩者都說不清楚。
+  final EvasionScan evasion;
+
   /// 來源檔案自身攜帶的編輯紀錄證據。刻意不併入 [aiProbability]：
   /// 這是「檔案怎麼產生的」的來源證據，與「文字像不像 AI」的統計推論
   /// 性質不同，合併會讓使用者誤以為分數已把編輯紀錄計入。
@@ -157,6 +163,7 @@ class DetectionResult {
     this.availableEngineCount = 0,
     this.totalEngineCount = 0,
     this.provenance = DocumentProvenance.none,
+    this.evasion = EvasionScan.clean,
   });
 
   /// 計算可用引擎數（available=true 的引擎）

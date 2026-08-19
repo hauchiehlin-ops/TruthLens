@@ -7,6 +7,7 @@ import '../services/document_provenance.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
+import 'evasion_scanner.dart';
 import 'lexical_calibration.dart';
 import 'engines/adversarial_engine.dart';
 import 'engines/statistical_engine.dart';
@@ -151,6 +152,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
       inputText: input,
       sourceFileName: sourceFileName,
       provenance: provenance,
+      // 規避痕跡掃描是純本地的確定性檢查，成本近乎零，直接在分析當下完成
+      evasion: scanForEvasion(input),
       aiProbability: overall,
       verdict: Verdict.fromProbability(overall),
       engineScores: scores,

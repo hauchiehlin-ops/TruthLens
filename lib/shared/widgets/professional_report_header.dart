@@ -231,6 +231,13 @@ _LowScoreCaveat _lowScoreCaveat(
     return _LowScoreCaveat.none;
   }
 
+  // 刻意規避的痕跡是最直接的反證：它不談文風，而是有人動手腳。
+  // 不受 indicatesHumanAuthorship 抵銷——編輯歷程正常的檔案照樣可以被
+  // humanizer 工具處理過。
+  if (result.evasion.indicatesDeliberateEvasion) {
+    return _LowScoreCaveat.provenanceContradicts;
+  }
+
   // 捏造引用與可疑編輯紀錄同屬「可查證的事實」，任一成立都構成矛盾。
   // 引用證據刻意不被 indicatesHumanAuthorship 抵銷：一份編輯歷程正常的文件
   // 仍可能引用了不存在的文獻，那是獨立的問題。
