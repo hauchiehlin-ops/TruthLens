@@ -144,4 +144,41 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('單一 strong 訊號（實際檔案的形狀）即足以觸發矛盾警語', (tester) async {
+    // A1969-意見陳述書-211206.docx 的實際狀態：只有「編輯時長接近 0」一條訊號。
+    // risk 需 strong>=1 才到 medium，這裡確認邊界剛好涵蓋，
+    // 而不是要湊兩條訊號才會示警。
+    const oneSignal = DocumentProvenance(
+      sourceFormat: 'docx',
+      editingDuration: Duration.zero,
+      revisionCount: 3,
+      bodyWordCount: 2462,
+      application: 'Microsoft Office Word',
+      signals: [
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.negligibleEditingTime,
+          severity: ProvenanceSeverity.strong,
+          values: {'words': 2462, 'minutes': 0},
+        ),
+      ],
+    );
+
+    expect(oneSignal.risk, ProvenanceRisk.medium);
+    expect(oneSignal.indicatesHumanAuthorship, isFalse);
+
+    await tester.binding.setSurfaceSize(const Size(1200, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(app(result(ai: 0.32, provenance: oneSignal)));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('editing record contradicts this low score'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('With no origin evidence available'),
+      findsNothing,
+    );
+  });
 }
