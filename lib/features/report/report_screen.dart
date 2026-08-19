@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/bibliography_verifier.dart';
+import '../../core/services/citation_evidence.dart';
 import '../../core/services/link_verifier.dart';
 import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
@@ -309,6 +310,11 @@ class _ReportScreenState extends State<ReportScreen> {
                     ProfessionalReportHeader(
                       result: result,
                       onDownloadPdf: () => _export(ReportExporter.exportPdf),
+                      // 引用核實是可查證的事實，不是機率推論，
+                      // 因此獨立傳入而非併進 aiProbability
+                      citations: CitationEvidence.fromChecks(
+                        _bibChecks ?? const [],
+                      ),
                     ),
 
                     // 可疑句子清單

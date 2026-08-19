@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../core/services/citation_evidence.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
@@ -45,10 +46,15 @@ class ProfessionalReportHeader extends StatelessWidget {
   final DetectionResult result;
   final VoidCallback onDownloadPdf;
 
+  /// 引用核實的摘要。核實需要網路且在分析後才完成，因此不放進
+  /// [DetectionResult]，而由報告頁在結果到齊後傳入。
+  final CitationEvidence citations;
+
   const ProfessionalReportHeader({
     super.key,
     required this.result,
     required this.onDownloadPdf,
+    this.citations = CitationEvidence.none,
   });
 
   @override
@@ -134,7 +140,11 @@ class ProfessionalReportHeader extends StatelessWidget {
           // 2. 判定摘要卡片（大卡）
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: _VerdictSummaryCard(result: result, l10n: l10n),
+            child: _VerdictSummaryCard(
+              result: result,
+              l10n: l10n,
+              citations: citations,
+            ),
           ),
 
           // 3. 三列指標卡
@@ -204,18 +214,30 @@ enum _LowScoreCaveat {
   /// 沒有任何來源證據，低分只代表「文本統計沒找到痕跡」
   noProvenance,
 
-  /// **來源證據顯示可疑，卻得到偏人類的低分。**
-  /// 這是最該被放大的情況：兩類證據互相矛盾，而來源證據不隨模型世代失效，
-  /// 可信度高於文本統計。把它縮成一句「沒有來源證據」是錯的——有，而且在示警。
+  /// **可查證的證據顯示可疑，卻得到偏人類的低分。**
+  /// 這是最該被放大的情況：兩類證據互相矛盾，而可查證的證據
+  /// （檔案編輯紀錄、引用是否存在）不隨模型世代失效，可信度高於文本統計。
+  /// 把它縮成一句「沒有來源證據」是錯的——有，而且在示警。
   provenanceContradicts,
 }
 
-_LowScoreCaveat _lowScoreCaveat(DetectionResult result) {
+_LowScoreCaveat _lowScoreCaveat(
+  DetectionResult result, {
+  CitationEvidence citations = CitationEvidence.none,
+}) {
   if (result.shouldAbstain) return _LowScoreCaveat.none;
   if (result.verdict != Verdict.human &&
       result.verdict != Verdict.likelyHuman) {
     return _LowScoreCaveat.none;
   }
+
+  // 捏造引用與可疑編輯紀錄同屬「可查證的事實」，任一成立都構成矛盾。
+  // 引用證據刻意不被 indicatesHumanAuthorship 抵銷：一份編輯歷程正常的文件
+  // 仍可能引用了不存在的文獻，那是獨立的問題。
+  if (citations.contradictsHumanAuthorship) {
+    return _LowScoreCaveat.provenanceContradicts;
+  }
+
   if (result.provenance.indicatesHumanAuthorship) return _LowScoreCaveat.none;
 
   final risk = result.provenance.risk;
@@ -229,8 +251,13 @@ _LowScoreCaveat _lowScoreCaveat(DetectionResult result) {
 class _VerdictSummaryCard extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
+  final CitationEvidence citations;
 
-  const _VerdictSummaryCard({required this.result, required this.l10n});
+  const _VerdictSummaryCard({
+    required this.result,
+    required this.l10n,
+    this.citations = CitationEvidence.none,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +366,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                 // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
                 // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
                 // 旁邊，塞進下方的說明卡等於沒說。
-                if (_lowScoreCaveat(result) != _LowScoreCaveat.none) ...[
+                if (_lowScoreCaveat(result, citations: citations) != _LowScoreCaveat.none) ...[
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -351,7 +378,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                       // 是「別只看上面那個數字」的告誡
                       color: Colors.white.withValues(
                         alpha:
-                            _lowScoreCaveat(result) ==
+                            _lowScoreCaveat(result, citations: citations) ==
                                 _LowScoreCaveat.provenanceContradicts
                             ? 0.22
                             : 0.12,
@@ -360,7 +387,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                       border: Border.all(
                         color: Colors.white.withValues(
                           alpha:
-                              _lowScoreCaveat(result) ==
+                              _lowScoreCaveat(result, citations: citations) ==
                                   _LowScoreCaveat.provenanceContradicts
                               ? 0.70
                               : 0.28,
@@ -371,7 +398,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
-                          _lowScoreCaveat(result) ==
+                          _lowScoreCaveat(result, citations: citations) ==
                                   _LowScoreCaveat.provenanceContradicts
                               ? LucideIcons.alertTriangle
                               : LucideIcons.info,
@@ -381,7 +408,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            _lowScoreCaveat(result) ==
+                            _lowScoreCaveat(result, citations: citations) ==
                                     _LowScoreCaveat.provenanceContradicts
                                 ? l10n.reportProvenanceContradictsLowScore
                                 : l10n.reportLowScoreNotProofOfHuman,
