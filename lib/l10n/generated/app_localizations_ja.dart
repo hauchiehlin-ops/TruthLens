@@ -2541,4 +2541,8 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'スコアが低いことは、人が書いたことの確認にはなりません。今回は来歴の根拠がなく、この判定は文章統計だけに基づいています。文章統計は型どおりの文章は確実に検出できますが、現行モデルのよく書けた出力は検出できません。';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'ファイル自身の編集記録が、この低いスコアと矛盾しています。来歴の根拠は言語モデルの進歩によって弱まりませんが、文章統計は現行モデルのよく書けた出力を見分けられません。上のスコアから結論を出す前に、下の来歴の根拠をご確認ください。';
 }

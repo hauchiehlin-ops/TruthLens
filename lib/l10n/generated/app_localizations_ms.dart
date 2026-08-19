@@ -2616,4 +2616,8 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'Skor rendah bukan pengesahan bahawa manusia menulisnya. Tanpa bukti asal usul, keputusan ini bersandar pada statistik teks sahaja, yang boleh menandakan penulisan berformula dengan yakin tetapi bukan keluaran model semasa yang ditulis dengan baik.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'Rekod suntingan fail ini bercanggah dengan skor rendah tersebut. Bukti asal usul tidak melemah apabila model bahasa bertambah baik, manakala statistik teks tidak dapat mengenal pasti keluaran model semasa yang ditulis dengan baik. Baca dahulu bukti asal usul di bawah sebelum membuat kesimpulan daripada skor di atas.';
 }

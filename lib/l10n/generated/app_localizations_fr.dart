@@ -2634,4 +2634,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'Un score faible ne prouve pas qu\'une personne a écrit ce texte. Faute de preuve d\'origine, ce verdict ne repose que sur les statistiques textuelles, qui repèrent de façon fiable l\'écriture stéréotypée mais pas les productions bien écrites des modèles actuels.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'L\'historique d\'édition du fichier contredit ce score faible. Les preuves d\'origine ne s\'affaiblissent pas à mesure que les modèles progressent, alors que les statistiques textuelles ne repèrent pas les productions bien écrites des modèles actuels. Consultez d\'abord les preuves d\'origine ci-dessous avant de tirer une conclusion du score.';
 }

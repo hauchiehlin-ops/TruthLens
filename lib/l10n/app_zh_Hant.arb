@@ -1233,5 +1233,6 @@
   "engineReasonPplLanguageUndetermined": "本次未採計語言模型困惑度：無法判定這份文件的語言，因此沒有可比對的校準門檻。猜一個語言就會套錯尺度，而那正是這道檢查要避免的錯誤。",
   "engineReasonPplNoCalibrationForModel": "本次未採計語言模型困惑度：目前使用的模型「{model}」尚未量測過 {language} 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。",
   "inputNoEditingRecordHint": "這個格式不含編輯紀錄。PDF、圖片與直接貼上的文字都沒有「怎麼寫出來的」歷程，因此分析完全依賴文本統計。若能取得 .docx、.odt 或 .doc 原始檔，其編輯歷程是強得多的證據——而且不像文本統計，它不會隨語言模型進步而失效。",
-  "reportLowScoreNotProofOfHuman": "低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。"
+  "reportLowScoreNotProofOfHuman": "低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。",
+  "reportProvenanceContradictsLowScore": "檔案自身的編輯紀錄與這個低分互相矛盾。來源證據不會隨語言模型進步而失效，而文本統計指認不了現代模型寫得好的輸出。請先看下方的來源證據，再決定要不要採信上面的分數。"
 }

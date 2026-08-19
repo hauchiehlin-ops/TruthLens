@@ -4162,6 +4162,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A low score is not confirmation that a person wrote this. With no origin evidence available, this verdict rests only on text statistics, which reliably flag formulaic writing but not well-written output from current-generation models.'**
   String get reportLowScoreNotProofOfHuman;
+
+  /// Shown when origin evidence is suspicious but the text score leans human
+  ///
+  /// In en, this message translates to:
+  /// **'The file\'s own editing record contradicts this low score. Origin evidence does not weaken as language models improve, whereas text statistics cannot identify well-written output from current-generation models. Read the origin evidence below before drawing any conclusion from the score above.'**
+  String get reportProvenanceContradictsLowScore;
 }
 
 class _AppLocalizationsDelegate

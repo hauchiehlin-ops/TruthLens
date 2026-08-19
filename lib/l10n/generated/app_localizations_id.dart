@@ -2612,4 +2612,8 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'Skor rendah bukan konfirmasi bahwa tulisan ini dibuat manusia. Tanpa bukti asal-usul, putusan ini hanya bertumpu pada statistik teks, yang andal menandai tulisan berpola baku tetapi tidak menandai keluaran model masa kini yang ditulis dengan baik.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'Catatan penyuntingan berkas ini bertentangan dengan skor rendah tersebut. Bukti asal-usul tidak melemah seiring membaiknya model bahasa, sedangkan statistik teks tidak dapat mengenali keluaran model masa kini yang ditulis dengan baik. Baca dahulu bukti asal-usul di bawah sebelum menyimpulkan apa pun dari skor di atas.';
 }

@@ -104,4 +104,44 @@ void main() {
   testWidgets('混合內容不加：它本來就沒有宣稱偏人類', (tester) async {
     expect(await hasCaveat(tester, result(ai: 0.50)), isFalse);
   });
+
+  testWidgets('來源證據可疑卻得到低分時，改用矛盾警語而非「沒有來源證據」', (tester) async {
+    // 實際案例：一份 .docx，編輯總時長 0 分鐘、正文 2462 字、存檔 3 次，
+    // 文本統計卻給 32%「可能人類」。說成「沒有可用的來源證據」是錯的
+    // ——有證據，而且正在示警。
+    const suspicious = DocumentProvenance(
+      sourceFormat: 'docx',
+      editingDuration: Duration.zero,
+      revisionCount: 3,
+      bodyWordCount: 2462,
+      application: 'Microsoft Office Word',
+      signals: [
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.negligibleEditingTime,
+          severity: ProvenanceSeverity.strong,
+        ),
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.implausibleTypingSpeed,
+          severity: ProvenanceSeverity.strong,
+        ),
+      ],
+    );
+
+    await tester.binding.setSurfaceSize(const Size(1200, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      app(result(ai: 0.32, provenance: suspicious)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining("editing record contradicts this low score"),
+      findsOneWidget,
+    );
+    // 不得再宣稱沒有來源證據
+    expect(
+      find.textContaining('With no origin evidence available'),
+      findsNothing,
+    );
+  });
 }

@@ -2509,6 +2509,10 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       '低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      '檔案自身的編輯紀錄與這個低分互相矛盾。來源證據不會隨語言模型進步而失效，而文本統計指認不了現代模型寫得好的輸出。請先看下方的來源證據，再決定要不要採信上面的分數。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5016,6 +5020,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get reportLowScoreNotProofOfHuman =>
       '低分不等于确认由人撰写。本次没有可用的来源证据，判定仅来自文本统计；文本统计能稳定指认罐头式写作，但指认不了现代模型写得好的输出。';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      '档案自身的编辑记录与这个低分互相矛盾。来源证据不会随语言模型进步而失效，而文本统计指认不了现代模型写得好的输出。请先看下方的来源证据，再决定要不要采信上面的分数。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7523,4 +7531,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get reportLowScoreNotProofOfHuman =>
       '低分不等於確認由人撰寫。本次沒有可用的來源證據，判定僅來自文本統計；文本統計能穩定指認罐頭式寫作，但指認不了現代模型寫得好的輸出。';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      '檔案自身的編輯紀錄與這個低分互相矛盾。來源證據不會隨語言模型進步而失效，而文本統計指認不了現代模型寫得好的輸出。請先看下方的來源證據，再決定要不要採信上面的分數。';
 }

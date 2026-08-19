@@ -2550,4 +2550,8 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       '점수가 낮다고 해서 사람이 썼다는 확인은 아닙니다. 이번에는 출처 근거가 없어 이 판정은 텍스트 통계에만 기대고 있습니다. 텍스트 통계는 정형화된 글은 안정적으로 잡아내지만, 현행 모델이 잘 쓴 결과물은 잡아내지 못합니다.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      '파일 자체의 편집 기록이 이 낮은 점수와 모순됩니다. 출처 근거는 언어 모델이 발전해도 약해지지 않지만, 텍스트 통계는 현행 모델이 잘 쓴 결과물을 가려내지 못합니다. 위의 점수로 결론을 내리기 전에 아래의 출처 근거를 먼저 확인하십시오.';
 }

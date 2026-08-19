@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
 import 'verdict_palette.dart';
@@ -195,18 +196,33 @@ class ProfessionalReportHeader extends StatelessWidget {
   }
 }
 
-/// 低分是否需要附上「不等於確認由人撰寫」的警語。
-///
-/// 條件：判定偏向人類、且沒有來源證據支撐。有編輯紀錄時低分是有依據的；
-/// 沒有時，低分只代表「文本統計沒找到痕跡」，而文本統計對現代模型的輸出
-/// 分辨力有限。棄權時不加——報告已明說不做判定，再加一句只是重複。
-bool _lowScoreNeedsCaveat(DetectionResult result) {
-  if (result.shouldAbstain) return false;
+/// 偏人類的低分需要附上哪一種警語。
+enum _LowScoreCaveat {
+  /// 不需要：判定不偏人類、已棄權，或來源證據支持人類撰寫
+  none,
+
+  /// 沒有任何來源證據，低分只代表「文本統計沒找到痕跡」
+  noProvenance,
+
+  /// **來源證據顯示可疑，卻得到偏人類的低分。**
+  /// 這是最該被放大的情況：兩類證據互相矛盾，而來源證據不隨模型世代失效，
+  /// 可信度高於文本統計。把它縮成一句「沒有來源證據」是錯的——有，而且在示警。
+  provenanceContradicts,
+}
+
+_LowScoreCaveat _lowScoreCaveat(DetectionResult result) {
+  if (result.shouldAbstain) return _LowScoreCaveat.none;
   if (result.verdict != Verdict.human &&
       result.verdict != Verdict.likelyHuman) {
-    return false;
+    return _LowScoreCaveat.none;
   }
-  return !result.provenance.indicatesHumanAuthorship;
+  if (result.provenance.indicatesHumanAuthorship) return _LowScoreCaveat.none;
+
+  final risk = result.provenance.risk;
+  if (risk == ProvenanceRisk.medium || risk == ProvenanceRisk.high) {
+    return _LowScoreCaveat.provenanceContradicts;
+  }
+  return _LowScoreCaveat.noProvenance;
 }
 
 /// 判定摘要卡片（大）
@@ -323,7 +339,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                 // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
                 // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
                 // 旁邊，塞進下方的說明卡等於沒說。
-                if (_lowScoreNeedsCaveat(result)) ...[
+                if (_lowScoreCaveat(result) != _LowScoreCaveat.none) ...[
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -331,24 +347,44 @@ class _VerdictSummaryCard extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
+                      // 證據互相矛盾時加重底色與框線：這不是補充說明，
+                      // 是「別只看上面那個數字」的告誡
+                      color: Colors.white.withValues(
+                        alpha:
+                            _lowScoreCaveat(result) ==
+                                _LowScoreCaveat.provenanceContradicts
+                            ? 0.22
+                            : 0.12,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.28),
+                        color: Colors.white.withValues(
+                          alpha:
+                              _lowScoreCaveat(result) ==
+                                  _LowScoreCaveat.provenanceContradicts
+                              ? 0.70
+                              : 0.28,
+                        ),
                       ),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          LucideIcons.info,
+                        Icon(
+                          _lowScoreCaveat(result) ==
+                                  _LowScoreCaveat.provenanceContradicts
+                              ? LucideIcons.alertTriangle
+                              : LucideIcons.info,
                           size: 16,
                           color: Colors.white,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            l10n.reportLowScoreNotProofOfHuman,
+                            _lowScoreCaveat(result) ==
+                                    _LowScoreCaveat.provenanceContradicts
+                                ? l10n.reportProvenanceContradictsLowScore
+                                : l10n.reportLowScoreNotProofOfHuman,
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: Colors.white.withValues(alpha: 0.92),

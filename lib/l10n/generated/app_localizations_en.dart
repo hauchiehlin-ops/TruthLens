@@ -2602,4 +2602,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'A low score is not confirmation that a person wrote this. With no origin evidence available, this verdict rests only on text statistics, which reliably flag formulaic writing but not well-written output from current-generation models.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'The file\'s own editing record contradicts this low score. Origin evidence does not weaken as language models improve, whereas text statistics cannot identify well-written output from current-generation models. Read the origin evidence below before drawing any conclusion from the score above.';
 }

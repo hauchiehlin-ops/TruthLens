@@ -2630,4 +2630,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'Ein niedriger Wert ist kein Nachweis dafür, dass ein Mensch dies geschrieben hat. Ohne Herkunftsnachweis stützt sich dieses Urteil nur auf Textstatistik, die formelhaftes Schreiben zuverlässig erkennt, gut geschriebene Ausgaben aktueller Modelle jedoch nicht.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'Die Bearbeitungshistorie der Datei widerspricht diesem niedrigen Wert. Herkunftsnachweise verlieren nicht an Kraft, wenn Sprachmodelle besser werden, während Textstatistik gut geschriebene Ausgaben aktueller Modelle nicht erkennt. Lesen Sie zuerst die Herkunftsnachweise unten, bevor Sie aus dem Wert oben etwas ableiten.';
 }

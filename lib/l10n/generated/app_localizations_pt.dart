@@ -2626,4 +2626,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get reportLowScoreNotProofOfHuman =>
       'Uma pontuação baixa não confirma que uma pessoa escreveu isto. Sem provas de origem, este veredicto assenta apenas em estatística de texto, que sinaliza com fiabilidade a escrita formulaica mas não os textos bem escritos dos modelos atuais.';
+
+  @override
+  String get reportProvenanceContradictsLowScore =>
+      'O próprio registo de edição do ficheiro contradiz esta pontuação baixa. As provas de origem não enfraquecem à medida que os modelos melhoram, ao passo que a estatística de texto não identifica textos bem escritos dos modelos atuais. Leia primeiro as provas de origem abaixo antes de concluir algo a partir da pontuação.';
 }
