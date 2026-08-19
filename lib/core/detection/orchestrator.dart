@@ -7,6 +7,7 @@ import '../services/document_provenance.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
+import 'lexical_calibration.dart';
 import 'engines/adversarial_engine.dart';
 import 'engines/statistical_engine.dart';
 import 'engines/stylometry_engine.dart';
@@ -201,9 +202,20 @@ class EnsembleOrchestrator extends ChangeNotifier {
 
   /// ESL 風格偵測（簡化版）：詞彙多樣性低但句長變化大，
   /// 傾向為語言能力限制而非 AI 生成。正式版將以專用分類器實作。
+  ///
+  /// **只適用於已校準的語言。** 兩個理由：
+  /// 1. 這個修正處理的是「以英文為第二語言」的寫作偏差，對一篇中文文件
+  ///    談 ESL 本身就沒有意義
+  /// 2. 門檻 0.38 是英文詞級 TTR 的值。中文逐字計詞，TTR 隨長度崩塌
+  ///    （2000 字時降到 0.283），套用會讓長中文文件無差別觸發，
+  ///    使統計引擎的權重被砍半
+  ///
+  /// 改用長度不變的 MATTR，並以 [LexicalCalibration] 是否涵蓋該語言把關。
   bool _detectEslStyle(PreprocessedText text) {
     if (text.allTokens.length < 80) return false;
-    return text.typeTokenRatio < 0.38 && text.burstiness > 0.45;
+    if (text.language.isUndetermined) return false;
+    if (LexicalCalibration.of(text.language.code) == null) return false;
+    return text.movingAverageTypeTokenRatio < 0.60 && text.burstiness > 0.45;
   }
 
   /// 句子級評分：依使用者設定權重合併神經模型，再依風格模式微調。

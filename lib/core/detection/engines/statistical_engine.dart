@@ -2,6 +2,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/language_id.dart';
 import '../../utils/text_stats.dart';
+import '../lexical_calibration.dart';
 import '../perplexity_calibration.dart';
 import '../detection_engine.dart';
 import '../model_manager.dart';
@@ -119,16 +120,23 @@ class StatisticalEngine implements DetectionEngine {
       }
     }
 
-    // 詞彙多樣性：AI 文本 TTR 常偏低
-    if (text.allTokens.length >= 50) {
-      if (ttr < 0.40) {
+    // 詞彙多樣性：改用長度不變的 MATTR，門檻逐語言校準。
+    //
+    // 原本用原始 TTR 加固定門檻 0.40／0.65，有兩個獨立的缺陷：
+    // 1. TTR 隨文件長度下降（同一篇論文 0.584 → 0.405），判定會隨長度漂移
+    // 2. 門檻是英文詞級的值，套在中文字級上——`ttr < 0.40` 對中文真人的
+    //    誤觸率 42.5%，對英文是 0%
+    //
+    // 只保留 AI 側：現代 LLM 的中文輸出 MATTR 0.783–0.802，高於真人中位
+    // 0.669，把高多樣性當成人類證據會主動把 AI 推向人類。
+    final lexical = LexicalCalibration.of(language.code);
+    if (lexical != null && text.allTokens.length >= 50) {
+      final mattr = text.movingAverageTypeTokenRatio;
+      features['mattr'] = mattr;
+      if (mattr < lexical.aiCut) {
         score += 0.10;
         moved = true;
-        reasons.add(l10n.engineReasonTtrLow(ttr.toStringAsFixed(2)));
-      } else if (ttr > 0.65) {
-        score -= 0.10;
-        moved = true;
-        reasons.add(l10n.engineReasonTtrHigh(ttr.toStringAsFixed(2)));
+        reasons.add(l10n.engineReasonTtrLow(mattr.toStringAsFixed(2)));
       }
     }
 

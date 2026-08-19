@@ -287,11 +287,42 @@ class PreprocessedText {
   /// 句長列表（詞數）
   List<int> get sentenceLengths => sentenceTokens.map((t) => t.length).toList();
 
-  /// Type-Token Ratio：詞彙多樣性
+  /// Type-Token Ratio：詞彙多樣性。
+  ///
+  /// **強烈受長度影響**，不適合用固定門檻判讀：同一篇英文論文，
+  /// 取前 15% 時為 0.584、全文時為 0.405。文件愈長，重複用詞的機會愈多，
+  /// 比值必然下降。若拿固定門檻套用，判定會隨文件長度漂移而與內容無關。
+  /// 需要跨文件比較時請改用 [movingAverageTypeTokenRatio]。
   double get typeTokenRatio {
     final tokens = allTokens;
     if (tokens.isEmpty) return 0;
     return tokens.toSet().length / tokens.length;
+  }
+
+  /// MATTR 的滑動窗口長度（詞元數）。
+  ///
+  /// 取 100 是文獻上的常見值：夠長到能反映用詞多樣性，又夠短到讓多數
+  /// 可分析的文件都至少涵蓋一個完整窗口。
+  static const int mattrWindow = 100;
+
+  /// Moving-Average Type-Token Ratio：長度不變的詞彙多樣性。
+  ///
+  /// 在固定長度的窗口內計算 TTR 再取平均，因此與文件總長度無關——
+  /// 這是它能用固定門檻、而 [typeTokenRatio] 不能的原因。
+  ///
+  /// 詞元數不足一個窗口時退回 [typeTokenRatio]：此時兩者等價，
+  /// 但呼叫端仍應注意短文本的比值本來就偏高。
+  double get movingAverageTypeTokenRatio {
+    final tokens = allTokens;
+    if (tokens.length <= mattrWindow) return typeTokenRatio;
+    var sum = 0.0;
+    var windows = 0;
+    for (var start = 0; start + mattrWindow <= tokens.length; start++) {
+      final window = tokens.sublist(start, start + mattrWindow);
+      sum += window.toSet().length / mattrWindow;
+      windows++;
+    }
+    return windows == 0 ? typeTokenRatio : sum / windows;
   }
 
   /// Burstiness：句長變異係數（人類寫作節奏起伏大 → 值高；AI 均勻 → 值低）
