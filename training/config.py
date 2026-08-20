@@ -81,6 +81,23 @@ def adversarial() -> "TrainConfig":
     )
 
 
+def modern() -> "TrainConfig":
+    """現代、多供應商、人類化改寫語料的分類器設定。
+
+    資料須先由 prepare_modern_training_data.py 依題目群組切分，不能直接隨機切列。
+    """
+    return TrainConfig(
+        base_model="xlm-roberta-base",
+        epochs=2,
+        max_per_class=None,
+        use_chinese=True,
+        train_file="modern_train.jsonl",
+        val_file="modern_val.jsonl",
+        out_dir_name="modern_classifier",
+        onnx_name="modern_detector",
+    )
+
+
 def quick_smoke() -> "TrainConfig":
     """煙霧測試：小模型、小資料、1 epoch，驗證流程可端到端跑通。"""
     return TrainConfig(

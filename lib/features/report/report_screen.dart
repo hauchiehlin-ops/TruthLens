@@ -8,12 +8,14 @@ import '../../core/detection/report_llm_service.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/bibliography_verifier.dart';
 import '../../core/services/citation_evidence.dart';
+import '../../core/services/claim_audit.dart';
 import '../../core/services/link_verifier.dart';
 import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
+import '../../shared/widgets/authorship_challenge_card.dart';
 import '../../shared/widgets/professional_report_header.dart';
 import '../../shared/widgets/suspicious_sentences_list.dart';
 import 'bibliography_presentation.dart';
@@ -48,6 +50,7 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
+  late final ClaimAudit _claimAudit;
   ReportDocument? _doc;
 
   late final List<String> _detectedUrls = LinkVerifier.extractUrls(
@@ -77,6 +80,7 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
+    _claimAudit = ClaimAudit.analyze(result.inputText);
     // _generate() / _runVerification() 需讀取 AppLocalizations.of(context)，
     // 不可在 initState 同步階段呼叫（否則拋 dependOnInheritedWidgetOfExactType，
     // 報告永遠停在「正在生成報告…」）。延到首個 frame 之後、widget 已掛載時執行。
@@ -315,7 +319,16 @@ class _ReportScreenState extends State<ReportScreen> {
                       citations: CitationEvidence.fromChecks(
                         _bibChecks ?? const [],
                       ),
+                      claims: _claimAudit,
                     ),
+
+                    if (result.wordCount >= DetectionResult.minWords) ...[
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AuthorshipChallengeCard(result: result),
+                      ),
+                    ],
 
                     // 可疑句子清單
                     if (result.sentences.isNotEmpty) ...[

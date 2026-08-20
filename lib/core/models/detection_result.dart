@@ -175,6 +175,9 @@ class DetectionResult {
   final DateTime analyzedAt;
   final String inputText;
   final String sourceFileName;
+  final String taskPrompt;
+  final String previousDraftText;
+  final String previousDraftFileName;
   final double aiProbability; // 加權投票後的整體 AI 機率
   final Verdict verdict;
   final List<EngineScore> engineScores;
@@ -205,6 +208,9 @@ class DetectionResult {
     required this.analyzedAt,
     required this.inputText,
     this.sourceFileName = '',
+    this.taskPrompt = '',
+    this.previousDraftText = '',
+    this.previousDraftFileName = '',
     required this.aiProbability,
     required this.verdict,
     required this.engineScores,

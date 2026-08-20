@@ -12,6 +12,9 @@ library;
 
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/revision_evidence.dart';
+import '../../core/services/task_alignment.dart';
 import '../../shared/widgets/provenance_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -34,6 +37,7 @@ List<VerifiableFinding> collectVerifiableFindings(
   DetectionResult result,
   AppLocalizations l10n, {
   CitationEvidence citations = CitationEvidence.none,
+  ClaimAudit claims = ClaimAudit.none,
 }) {
   final findings = <VerifiableFinding>[];
 
@@ -69,7 +73,50 @@ List<VerifiableFinding> collectVerifiableFindings(
     }
   }
 
-  // 3. 寫作過程——若文字是在應用程式內寫成的，過程本身就是最強的證據，
+  // 3. 可查核主張缺少同句來源。這不是「內容為假」的結論，只是可重現地
+  //    指出哪一批主張應先查；因此只有達到中高覆蓋風險才列為警訊。
+  if (claims.risk == ClaimSourceRisk.medium ||
+      claims.risk == ClaimSourceRisk.high) {
+    findings.add(
+      VerifiableFinding(
+        statement: l10n.findingUnsupportedClaims(
+          claims.unsupported,
+          claims.total,
+        ),
+        isConcern: true,
+      ),
+    );
+  }
+
+  final revision = RevisionEvidence.compare(
+    result.previousDraftText,
+    result.inputText,
+  );
+  if (revision.indicatesLargeReplacement) {
+    findings.add(
+      VerifiableFinding(
+        statement: l10n.findingLargeDraftReplacement(
+          ((1 - revision.shingleSimilarity) * 100).round(),
+          result.previousDraftFileName,
+        ),
+        isConcern: true,
+      ),
+    );
+  }
+
+  final task = TaskAlignment.analyze(result.taskPrompt, result.inputText);
+  if (task.risk == TaskAlignmentRisk.high) {
+    findings.add(
+      VerifiableFinding(
+        statement: l10n.findingTaskMismatch(
+          (task.conceptCoverage * 100).round(),
+        ),
+        isConcern: true,
+      ),
+    );
+  }
+
+  // 4. 寫作過程——若文字是在應用程式內寫成的，過程本身就是最強的證據，
   //    因為它記錄的不是文字，而是文字如何出現在編輯器裡
   final session = result.writingSession;
   if (session.hasData) {
@@ -93,7 +140,7 @@ List<VerifiableFinding> collectVerifiableFindings(
     }
   }
 
-  // 4. 檔案自身的編輯紀錄
+  // 5. 檔案自身的編輯紀錄
   final provenance = result.provenance;
   for (final signal in provenance.signals) {
     findings.add(

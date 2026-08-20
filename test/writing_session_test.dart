@@ -148,6 +148,23 @@ void main() {
     expect(r.session.hasData, isFalse);
   });
 
+  test('匯入文件後以目前長度為起點，不把下一個字誤判成整篇貼上', () {
+    final r = recorder()..reset(initialLength: 1800);
+    r.record(1801, at: t0);
+    expect(r.session.typedCharacters, 1);
+    expect(r.session.pastedCharacters, 0);
+  });
+
+  test('切換工作台後可接續既有事件與目前文字長度', () {
+    final first = recorder();
+    first.record(3, at: t0);
+    final resumed = recorder()
+      ..resume(currentLength: 3, session: first.session);
+    resumed.record(5, at: t0.add(const Duration(seconds: 2)));
+    expect(resumed.session.events, hasLength(2));
+    expect(resumed.session.typedCharacters, 5);
+  });
+
   _reachesTheReport();
 }
 

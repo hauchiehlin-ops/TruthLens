@@ -38,6 +38,30 @@ python3.14 -m venv .venv
 .venv/bin/python verify_onnx.py
 ```
 
+## 現代 AI／人類化輸出更新流程
+
+HC3 的 ChatGPT 樣本來自 2022 年，不可再單獨代表現代模型。新一輪模型更新先用
+`binoculars/generate_ai_corpus.py` 從至少兩家供應商產生 `standard`、`nonnative`、
+`humanized`、`light_edit` 等語域，再與同題的人類文件合併。切分必須使用
+`prepare_modern_training_data.py`，它會按原始題目 `group_id` 分組，避免同題改寫
+同時落入訓練與驗證集。
+
+```bash
+.venv/bin/python binoculars/prepare_corpus.py \
+  --human-dir /path/to/controlled-human \
+  --ai-dir binoculars/data/ai_generated \
+  --out binoculars/data/modern_corpus.jsonl
+
+.venv/bin/python prepare_modern_training_data.py \
+  --corpus binoculars/data/modern_corpus.jsonl \
+  --out-dir data
+
+.venv/bin/python train_classifier.py --modern
+```
+
+模型不得只看整體 accuracy。發布前需按供應商、語域、語言分組回報召回率，並保留
+從未進入訓練的供應商作為真正的外部測試集；否則量到的只是模型記住生成器指紋。
+
 每個腳本都支援 `--quick`（小資料、1 epoch）用於快速驗證流程可跑通。
 
 ### 第一版 vs production 模型

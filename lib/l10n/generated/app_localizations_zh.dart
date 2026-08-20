@@ -2568,6 +2568,167 @@ class AppLocalizationsZh extends AppLocalizations {
   String findingWrittenInApp(int minutes, int deleted) {
     return '這份文字在本應用程式內經過 $minutes 分鐘打成，過程中修改了 $deleted 個字元。在這裡發生的寫作會留下語言模型無法重現的紀錄。';
   }
+
+  @override
+  String get evidenceMatrixTitle => '多證據鑑識矩陣';
+
+  @override
+  String get evidenceMatrixSubtitle =>
+      '四個獨立面向分開呈現。覆蓋率只表示本次能檢查哪些證據，不是另一個 AI 機率。';
+
+  @override
+  String evidenceMatrixCoverage(int available, int total) {
+    return '證據覆蓋：$available/$total 個面向';
+  }
+
+  @override
+  String get evidenceAxisText => '文本生成痕跡';
+
+  @override
+  String get evidenceAxisTextNote => '四個本機偵測引擎提供的機率型文字模式';
+
+  @override
+  String get evidenceAxisProcess => '寫作過程';
+
+  @override
+  String get evidenceAxisProcessNote => '不記錄內容的打字、修改與貼上事件';
+
+  @override
+  String get evidenceAxisOrigin => '文件來源';
+
+  @override
+  String get evidenceAxisOriginNote => '編輯時間、存檔次數與 DOCX／ODT／RSID 中繼資料';
+
+  @override
+  String get evidenceAxisSources => '主張與來源完整性';
+
+  @override
+  String get evidenceAxisSourcesNote => '可查核主張、引用錨點與文獻資料庫核實';
+
+  @override
+  String get evidenceStateUnavailable => '無法取得';
+
+  @override
+  String get evidenceStateInconclusive => '不足判斷';
+
+  @override
+  String get evidenceStateReassuring => '相符';
+
+  @override
+  String get evidenceStateConcern => '需檢視';
+
+  @override
+  String get evidenceStrengthNone => '沒有證據';
+
+  @override
+  String get evidenceStrengthLimited => '有限';
+
+  @override
+  String get evidenceStrengthModerate => '中等';
+
+  @override
+  String get evidenceStrengthStrong => '強';
+
+  @override
+  String get evidenceMatrixTextOnlyWarning =>
+      '本次只有文本模式可用。現代 AI 能模仿人類文風，因此不能只靠這個分數確認作者身分。';
+
+  @override
+  String get evidenceMatrixStrongConcern =>
+      '至少一個獨立面向出現強烈的檢視訊號。採信文本分數前，請先查看該項證據。';
+
+  @override
+  String findingUnsupportedClaims(int unsupported, int total) {
+    return '$total 個可查核主張中，有 $unsupported 個包含數字、比較或研究歸因，卻未在同一句提供來源錨點。這不代表內容必然錯誤，但指出了最該優先核實的主張。';
+  }
+
+  @override
+  String get taskPromptTitle => '作業題目或任務要求';
+
+  @override
+  String get taskPromptHint => '貼上題目、必須涵蓋的主題與最低字數。內容只留在本機。';
+
+  @override
+  String get taskPromptSave => '套用要求';
+
+  @override
+  String get taskPromptTooltip => '加入作業要求';
+
+  @override
+  String get previousDraftTooltip => '匯入前一版草稿以比較版本演化';
+
+  @override
+  String previousDraftSelected(String name) {
+    return '前一版草稿：$name';
+  }
+
+  @override
+  String previousDraftImported(String name) {
+    return '已匯入前一版草稿：$name';
+  }
+
+  @override
+  String get previousDraftUnreadable => '前一版草稿中找不到可讀文字。';
+
+  @override
+  String get evidenceAxisRevision => '草稿演化';
+
+  @override
+  String get evidenceAxisRevisionNote => '前一版內容在本版中被保留或替換的程度';
+
+  @override
+  String get evidenceAxisTask => '任務契合';
+
+  @override
+  String get evidenceAxisTaskNote => '必要概念與可機械檢查要求的涵蓋情況';
+
+  @override
+  String findingLargeDraftReplacement(int percent, String name) {
+    return '與「$name」相比，約有 $percent% 的五詞序列被替換。這是值得詢問的大幅修訂，但也可能來自正常重寫或協作編輯。';
+  }
+
+  @override
+  String findingTaskMismatch(int percent) {
+    return '本文約涵蓋題目所提取核心概念的 $percent%，或未達明示的最低字數。這是任務契合問題，不是 AI 作者身分證明。';
+  }
+
+  @override
+  String get challengeTitle => '監督式追問';
+
+  @override
+  String get challengeSubtitle => '請作者解釋本文中的具體主張';
+
+  @override
+  String get challengeCaveat =>
+      '請在作者本人在場時使用。本檢查只看回答是否具體回應本文、以及是否整段貼上；通過不代表身分或作者資格已獲證明。';
+
+  @override
+  String challengeExplainQuestion(String excerpt) {
+    return '請用自己的話解釋這段內容，並說明它為何重要：「$excerpt」';
+  }
+
+  @override
+  String challengeJustifyQuestion(String excerpt) {
+    return '這項主張有什麼證據或推理支持？什麼情況會削弱它？「$excerpt」';
+  }
+
+  @override
+  String get challengeAnswerHint => '請直接作答，不要貼上預先準備的文字';
+
+  @override
+  String get challengeEvaluate => '檢查回答';
+
+  @override
+  String get challengeStateUnanswered => '尚未檢查';
+
+  @override
+  String get challengeStateInsufficient => '需要更具體的回答';
+
+  @override
+  String get challengeStateGrounded => '有直接回應本文';
+
+  @override
+  String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5134,6 +5295,167 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String findingWrittenInApp(int minutes, int deleted) {
     return '这份文字在本应用程序内经过 $minutes 分钟打成，过程中修改了 $deleted 个字符。在这里发生的写作会留下语言模型无法重现的记录。';
   }
+
+  @override
+  String get evidenceMatrixTitle => '多证据鉴识矩阵';
+
+  @override
+  String get evidenceMatrixSubtitle =>
+      '四个独立方面分开呈现。覆盖率只表示本次能检查哪些证据，不是另一个 AI 概率。';
+
+  @override
+  String evidenceMatrixCoverage(int available, int total) {
+    return '证据覆盖：$available/$total 个方面';
+  }
+
+  @override
+  String get evidenceAxisText => '文本生成痕迹';
+
+  @override
+  String get evidenceAxisTextNote => '四个本地检测引擎提供的概率型文字模式';
+
+  @override
+  String get evidenceAxisProcess => '写作过程';
+
+  @override
+  String get evidenceAxisProcessNote => '不记录内容的输入、修改与粘贴事件';
+
+  @override
+  String get evidenceAxisOrigin => '文档来源';
+
+  @override
+  String get evidenceAxisOriginNote => '编辑时间、保存次数与 DOCX／ODT／RSID 元数据';
+
+  @override
+  String get evidenceAxisSources => '主张与来源完整性';
+
+  @override
+  String get evidenceAxisSourcesNote => '可核查主张、引用锚点与文献数据库核实';
+
+  @override
+  String get evidenceStateUnavailable => '无法取得';
+
+  @override
+  String get evidenceStateInconclusive => '不足判断';
+
+  @override
+  String get evidenceStateReassuring => '相符';
+
+  @override
+  String get evidenceStateConcern => '需检查';
+
+  @override
+  String get evidenceStrengthNone => '没有证据';
+
+  @override
+  String get evidenceStrengthLimited => '有限';
+
+  @override
+  String get evidenceStrengthModerate => '中等';
+
+  @override
+  String get evidenceStrengthStrong => '强';
+
+  @override
+  String get evidenceMatrixTextOnlyWarning =>
+      '本次只有文本模式可用。现代 AI 能模仿人类文风，因此不能只靠这个分数确认作者身份。';
+
+  @override
+  String get evidenceMatrixStrongConcern =>
+      '至少一个独立方面出现强烈的检查信号。采信文本分数前，请先查看该项证据。';
+
+  @override
+  String findingUnsupportedClaims(int unsupported, int total) {
+    return '$total 个可核查主张中，有 $unsupported 个包含数字、比较或研究归因，却未在同一句提供来源锚点。这不代表内容必然错误，但指出了最该优先核实的主张。';
+  }
+
+  @override
+  String get taskPromptTitle => '作业题目或任务要求';
+
+  @override
+  String get taskPromptHint => '粘贴题目、必须涵盖的主题与最低字数。内容只留在本机。';
+
+  @override
+  String get taskPromptSave => '应用要求';
+
+  @override
+  String get taskPromptTooltip => '加入作业要求';
+
+  @override
+  String get previousDraftTooltip => '导入前一版草稿以比较版本演化';
+
+  @override
+  String previousDraftSelected(String name) {
+    return '前一版草稿：$name';
+  }
+
+  @override
+  String previousDraftImported(String name) {
+    return '已导入前一版草稿：$name';
+  }
+
+  @override
+  String get previousDraftUnreadable => '前一版草稿中找不到可读文字。';
+
+  @override
+  String get evidenceAxisRevision => '草稿演化';
+
+  @override
+  String get evidenceAxisRevisionNote => '前一版内容在本版中被保留或替换的程度';
+
+  @override
+  String get evidenceAxisTask => '任务契合';
+
+  @override
+  String get evidenceAxisTaskNote => '必要概念与可机械检查要求的涵盖情况';
+
+  @override
+  String findingLargeDraftReplacement(int percent, String name) {
+    return '与「$name」相比，约有 $percent% 的五词序列被替换。这是值得询问的大幅修订，但也可能来自正常重写或协作编辑。';
+  }
+
+  @override
+  String findingTaskMismatch(int percent) {
+    return '本文约涵盖题目所提取核心概念的 $percent%，或未达明示的最低字数。这是任务契合问题，不是 AI 作者身份证明。';
+  }
+
+  @override
+  String get challengeTitle => '监督式追问';
+
+  @override
+  String get challengeSubtitle => '请作者解释本文中的具体主张';
+
+  @override
+  String get challengeCaveat =>
+      '请在作者本人在场时使用。本检查只看回答是否具体回应本文、以及是否整段粘贴；通过不代表身份或作者资格已获证明。';
+
+  @override
+  String challengeExplainQuestion(String excerpt) {
+    return '请用自己的话解释这段内容，并说明它为何重要：“$excerpt”';
+  }
+
+  @override
+  String challengeJustifyQuestion(String excerpt) {
+    return '这项主张有什么证据或推理支持？什么情况会削弱它？“$excerpt”';
+  }
+
+  @override
+  String get challengeAnswerHint => '请直接作答，不要粘贴预先准备的文字';
+
+  @override
+  String get challengeEvaluate => '检查回答';
+
+  @override
+  String get challengeStateUnanswered => '尚未检查';
+
+  @override
+  String get challengeStateInsufficient => '需要更具体的回答';
+
+  @override
+  String get challengeStateGrounded => '有直接回应本文';
+
+  @override
+  String get challengeStatePasted => '检测到大段粘贴，请在监督下重答';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7700,4 +8022,165 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String findingWrittenInApp(int minutes, int deleted) {
     return '這份文字在本應用程式內經過 $minutes 分鐘打成，過程中修改了 $deleted 個字元。在這裡發生的寫作會留下語言模型無法重現的紀錄。';
   }
+
+  @override
+  String get evidenceMatrixTitle => '多證據鑑識矩陣';
+
+  @override
+  String get evidenceMatrixSubtitle =>
+      '四個獨立面向分開呈現。覆蓋率只表示本次能檢查哪些證據，不是另一個 AI 機率。';
+
+  @override
+  String evidenceMatrixCoverage(int available, int total) {
+    return '證據覆蓋：$available/$total 個面向';
+  }
+
+  @override
+  String get evidenceAxisText => '文本生成痕跡';
+
+  @override
+  String get evidenceAxisTextNote => '四個本機偵測引擎提供的機率型文字模式';
+
+  @override
+  String get evidenceAxisProcess => '寫作過程';
+
+  @override
+  String get evidenceAxisProcessNote => '不記錄內容的打字、修改與貼上事件';
+
+  @override
+  String get evidenceAxisOrigin => '文件來源';
+
+  @override
+  String get evidenceAxisOriginNote => '編輯時間、存檔次數與 DOCX／ODT／RSID 中繼資料';
+
+  @override
+  String get evidenceAxisSources => '主張與來源完整性';
+
+  @override
+  String get evidenceAxisSourcesNote => '可查核主張、引用錨點與文獻資料庫核實';
+
+  @override
+  String get evidenceStateUnavailable => '無法取得';
+
+  @override
+  String get evidenceStateInconclusive => '不足判斷';
+
+  @override
+  String get evidenceStateReassuring => '相符';
+
+  @override
+  String get evidenceStateConcern => '需檢視';
+
+  @override
+  String get evidenceStrengthNone => '沒有證據';
+
+  @override
+  String get evidenceStrengthLimited => '有限';
+
+  @override
+  String get evidenceStrengthModerate => '中等';
+
+  @override
+  String get evidenceStrengthStrong => '強';
+
+  @override
+  String get evidenceMatrixTextOnlyWarning =>
+      '本次只有文本模式可用。現代 AI 能模仿人類文風，因此不能只靠這個分數確認作者身分。';
+
+  @override
+  String get evidenceMatrixStrongConcern =>
+      '至少一個獨立面向出現強烈的檢視訊號。採信文本分數前，請先查看該項證據。';
+
+  @override
+  String findingUnsupportedClaims(int unsupported, int total) {
+    return '$total 個可查核主張中，有 $unsupported 個包含數字、比較或研究歸因，卻未在同一句提供來源錨點。這不代表內容必然錯誤，但指出了最該優先核實的主張。';
+  }
+
+  @override
+  String get taskPromptTitle => '作業題目或任務要求';
+
+  @override
+  String get taskPromptHint => '貼上題目、必須涵蓋的主題與最低字數。內容只留在本機。';
+
+  @override
+  String get taskPromptSave => '套用要求';
+
+  @override
+  String get taskPromptTooltip => '加入作業要求';
+
+  @override
+  String get previousDraftTooltip => '匯入前一版草稿以比較版本演化';
+
+  @override
+  String previousDraftSelected(String name) {
+    return '前一版草稿：$name';
+  }
+
+  @override
+  String previousDraftImported(String name) {
+    return '已匯入前一版草稿：$name';
+  }
+
+  @override
+  String get previousDraftUnreadable => '前一版草稿中找不到可讀文字。';
+
+  @override
+  String get evidenceAxisRevision => '草稿演化';
+
+  @override
+  String get evidenceAxisRevisionNote => '前一版內容在本版中被保留或替換的程度';
+
+  @override
+  String get evidenceAxisTask => '任務契合';
+
+  @override
+  String get evidenceAxisTaskNote => '必要概念與可機械檢查要求的涵蓋情況';
+
+  @override
+  String findingLargeDraftReplacement(int percent, String name) {
+    return '與「$name」相比，約有 $percent% 的五詞序列被替換。這是值得詢問的大幅修訂，但也可能來自正常重寫或協作編輯。';
+  }
+
+  @override
+  String findingTaskMismatch(int percent) {
+    return '本文約涵蓋題目所提取核心概念的 $percent%，或未達明示的最低字數。這是任務契合問題，不是 AI 作者身分證明。';
+  }
+
+  @override
+  String get challengeTitle => '監督式追問';
+
+  @override
+  String get challengeSubtitle => '請作者解釋本文中的具體主張';
+
+  @override
+  String get challengeCaveat =>
+      '請在作者本人在場時使用。本檢查只看回答是否具體回應本文、以及是否整段貼上；通過不代表身分或作者資格已獲證明。';
+
+  @override
+  String challengeExplainQuestion(String excerpt) {
+    return '請用自己的話解釋這段內容，並說明它為何重要：「$excerpt」';
+  }
+
+  @override
+  String challengeJustifyQuestion(String excerpt) {
+    return '這項主張有什麼證據或推理支持？什麼情況會削弱它？「$excerpt」';
+  }
+
+  @override
+  String get challengeAnswerHint => '請直接作答，不要貼上預先準備的文字';
+
+  @override
+  String get challengeEvaluate => '檢查回答';
+
+  @override
+  String get challengeStateUnanswered => '尚未檢查';
+
+  @override
+  String get challengeStateInsufficient => '需要更具體的回答';
+
+  @override
+  String get challengeStateGrounded => '有直接回應本文';
+
+  @override
+  String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
 }

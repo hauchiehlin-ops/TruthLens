@@ -64,6 +64,16 @@ STYLES: dict[str, str] = {
         "Write it in a plainer, less formal register, as a student who is writing "
         "quickly and not worrying much about polish."
     ),
+    "humanized": (
+        "Write as a capable student who has deliberately revised away generic AI habits. "
+        "Use uneven paragraph lengths, concrete examples, occasional qualified uncertainty, "
+        "and natural changes of pace. Avoid stock transitions and tidy summary formulas."
+    ),
+    "light_edit": (
+        "Draft the answer with an AI assistant, then simulate a light human edit: shorten "
+        "some sentences, leave a few idiosyncratic word choices, merge or split paragraphs, "
+        "and remove obvious boilerplate without introducing artificial mistakes."
+    ),
 }
 
 PROMPT_TEMPLATE = """Write an original piece of academic writing on the following topic.

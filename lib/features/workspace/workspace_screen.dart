@@ -54,6 +54,7 @@ class WorkspaceScreen extends StatefulWidget {
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
+  final _taskPromptController = TextEditingController();
   final _done = <String>{};
   final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
@@ -76,7 +77,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   /// 使用者直接輸入時的寫作過程紀錄，隨分析請求一併帶入
   WritingSession _writingSession = WritingSession.empty;
+  final WritingSessionRecorder _writingRecorder = WritingSessionRecorder();
   DocumentProvenance _sourceProvenance = DocumentProvenance.none;
+  String _previousDraftText = '';
+  String _previousDraftFileName = '';
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
   int _selectedEvidence = 0;
@@ -96,6 +100,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _controller.text = request.text;
       _sourceFileName = request.sourceFileName;
       _writingSession = request.writingSession;
+      _sourceProvenance = request.provenance;
+      _taskPromptController.text = request.taskPrompt;
+      _previousDraftText = request.previousDraftText;
+      _previousDraftFileName = request.previousDraftFileName;
+      _writingRecorder.resume(
+        currentLength: request.text.length,
+        session: request.writingSession,
+      );
       _phase = request.text.trim().isEmpty
           ? _WorkspacePhase.idle
           : _WorkspacePhase.ready;
@@ -114,6 +126,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   void dispose() {
     _analysisTicker?.cancel();
     _controller.dispose();
+    _taskPromptController.dispose();
     super.dispose();
   }
 
@@ -236,12 +249,74 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     });
   }
 
+  void _recordWorkspaceEdit(String value) {
+    _writingRecorder.record(value.length);
+    _writingSession = _writingRecorder.session;
+    if (_sourceFileName.isNotEmpty) _sourceFileName = '';
+    // 一旦在匯入後修改文字，檔案內的中繼資料已不再精確描述目前內容。
+    _sourceProvenance = DocumentProvenance.none;
+    _markInputReady();
+  }
+
+  Future<void> _editTaskPrompt() async {
+    if (_isAnalyzing) return;
+    final l10n = AppLocalizations.of(context);
+    final draft = TextEditingController(text: _taskPromptController.text);
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.taskPromptTitle),
+        content: TextField(
+          controller: draft,
+          minLines: 4,
+          maxLines: 8,
+          autofocus: true,
+          decoration: InputDecoration(hintText: l10n.taskPromptHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.taskPromptSave),
+          ),
+        ],
+      ),
+    );
+    if (saved == true && mounted) {
+      _taskPromptController.text = draft.text;
+      _markInputReady();
+    }
+    draft.dispose();
+  }
+
+  Future<void> _importPreviousDraft() async {
+    if (_isAnalyzing) return;
+    final l10n = AppLocalizations.of(context);
+    final draft = await DocumentImporter.pick();
+    if (draft == null || !mounted) return;
+    if (draft.text.trim().isEmpty) {
+      _showMessage(l10n.previousDraftUnreadable);
+      return;
+    }
+    setState(() {
+      _previousDraftText = draft.text;
+      _previousDraftFileName = draft.fileName;
+    });
+    _showMessage(l10n.previousDraftImported(draft.fileName));
+  }
+
   Future<void> _pasteFromClipboard() async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     if (data?.text == null || data!.text!.isEmpty) return;
     _controller.text = data.text!;
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _writingRecorder.reset();
+    _writingRecorder.record(data.text!.length);
+    _writingSession = _writingRecorder.session;
     _markInputReady();
   }
 
@@ -265,6 +340,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.text = text;
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _writingRecorder.reset(initialLength: text.length);
+    _writingSession = WritingSession.empty;
     _markInputReady();
     _showMessage(l10n.inputOcrRecognized(text.length));
   }
@@ -303,6 +380,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
     _sourceProvenance = doc.provenance;
+    _writingRecorder.reset(initialLength: doc.text.length);
+    _writingSession = WritingSession.empty;
     _markInputReady();
     _showMessage(
       doc.usedPdfOcr
@@ -357,6 +436,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         sourceFileName: _sourceFileName,
         provenance: _sourceProvenance,
         writingSession: _writingSession,
+        taskPrompt: _taskPromptController.text.trim(),
+        previousDraftText: _previousDraftText,
+        previousDraftFileName: _previousDraftFileName,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         prefs: prefs,
         l10n: l10n,
@@ -395,8 +477,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       if (calibration.autoCollectEnabled && !result.shouldAbstain) {
         await calibration.autoCollect(
           score: result.aiProbability,
-          provenanceIndicatesHuman:
-              result.provenance.indicatesHumanAuthorship,
+          provenanceIndicatesHuman: result.provenance.indicatesHumanAuthorship,
           // 語言必須在收樣當下記下：原文預設不保存，事後無從補算。
           // 不同語言的分數分布不同，混在一起會讓共形預測的 α 失去意義。
           language: detectLanguage(result.inputText).code,
@@ -434,6 +515,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.clear();
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _writingRecorder.reset();
+    _writingSession = WritingSession.empty;
+    _taskPromptController.clear();
+    _previousDraftText = '';
+    _previousDraftFileName = '';
     setState(() {
       _phase = _WorkspacePhase.idle;
       _result = null;
@@ -458,6 +544,30 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         titleSpacing: 16,
         title: const AppIdentityTitle(),
         actions: [
+          IconButton(
+            onPressed: _isAnalyzing ? null : _editTaskPrompt,
+            tooltip: AppLocalizations.of(context).taskPromptTooltip,
+            icon: Icon(
+              LucideIcons.clipboardCheck,
+              color: _taskPromptController.text.trim().isEmpty
+                  ? null
+                  : Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          IconButton(
+            onPressed: _isAnalyzing ? null : _importPreviousDraft,
+            tooltip: _previousDraftFileName.isEmpty
+                ? AppLocalizations.of(context).previousDraftTooltip
+                : AppLocalizations.of(
+                    context,
+                  ).previousDraftSelected(_previousDraftFileName),
+            icon: Icon(
+              LucideIcons.files,
+              color: _previousDraftText.isEmpty
+                  ? null
+                  : Theme.of(context).colorScheme.primary,
+            ),
+          ),
           AppOverflowMenu(
             activeMode: prefs.workspaceMode,
             analysisActive: _isAnalyzing,
@@ -923,9 +1033,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       child: IconButton(
                         onPressed: _isAnalyzing
                             ? _confirmStopAnalysis
-                            : (_result != null
-                                  ? _newAnalysis
-                                  : _startAnalysis),
+                            : (_result != null ? _newAnalysis : _startAnalysis),
                         icon: Icon(
                           _isAnalyzing
                               ? LucideIcons.stopCircle
@@ -1040,11 +1148,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 hintText: l10n.inputHint,
                 contentPadding: const EdgeInsets.all(12),
               ),
-              onChanged: (_) {
-                if (_sourceFileName.isNotEmpty) _sourceFileName = '';
-    _sourceProvenance = DocumentProvenance.none;
-                _markInputReady();
-              },
+              onChanged: _recordWorkspaceEdit,
             ),
           ),
           const SizedBox(height: 8),
@@ -1452,7 +1556,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               expands: true,
               textAlignVertical: TextAlignVertical.top,
               decoration: InputDecoration(hintText: l10n.inputHint),
-              onChanged: (_) => _markInputReady(),
+              onChanged: _recordWorkspaceEdit,
             )
           : Column(
               children: [
@@ -2622,7 +2726,9 @@ class _EngineTelemetryRow extends StatelessWidget {
                       Text(
                         '${(score! * 100).round()}%',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: isOverlayTheme ? Colors.white : scheme.onSurface,
+                          color: isOverlayTheme
+                              ? Colors.white
+                              : scheme.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

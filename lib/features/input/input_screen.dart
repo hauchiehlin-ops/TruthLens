@@ -47,8 +47,12 @@ String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
 class _InputScreenState extends State<InputScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
+  final _taskPromptController = TextEditingController();
   double _rightPanelWidth = 400; // 右側面板預設寬度
   String _sourceFileName = '';
+  DocumentProvenance _sourceProvenance = DocumentProvenance.none;
+  String _previousDraftText = '';
+  String _previousDraftFileName = '';
 
   /// 寫作過程記錄器。使用者若直接在此輸入，過程本身就是證據——
   /// 一次貼上 2000 字與打了三小時，任何語言模型都偽造不了這個差別。
@@ -72,6 +76,7 @@ class _InputScreenState extends State<InputScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    _taskPromptController.dispose();
     super.dispose();
   }
 
@@ -117,8 +122,60 @@ class _InputScreenState extends State<InputScreen> {
         sourceFileName: _sourceFileName,
         // 過程紀錄只在使用者直接輸入時有內容；匯入時已重設
         writingSession: _writingRecorder.session,
+        provenance: _sourceProvenance,
+        taskPrompt: _taskPromptController.text.trim(),
+        previousDraftText: _previousDraftText,
+        previousDraftFileName: _previousDraftFileName,
       ),
     );
+  }
+
+  Future<void> _editTaskPrompt() async {
+    final l10n = AppLocalizations.of(context);
+    final draft = TextEditingController(text: _taskPromptController.text);
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.taskPromptTitle),
+        content: TextField(
+          controller: draft,
+          minLines: 4,
+          maxLines: 8,
+          autofocus: true,
+          decoration: InputDecoration(hintText: l10n.taskPromptHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.taskPromptSave),
+          ),
+        ],
+      ),
+    );
+    if (saved == true && mounted) {
+      _taskPromptController.text = draft.text;
+      setState(() {});
+    }
+    draft.dispose();
+  }
+
+  Future<void> _importPreviousDraft() async {
+    final l10n = AppLocalizations.of(context);
+    final draft = await DocumentImporter.pick();
+    if (draft == null || !mounted) return;
+    if (draft.text.trim().isEmpty) {
+      _showFloatingSnackBar(l10n.previousDraftUnreadable);
+      return;
+    }
+    setState(() {
+      _previousDraftText = draft.text;
+      _previousDraftFileName = draft.fileName;
+    });
+    _showFloatingSnackBar(l10n.previousDraftImported(draft.fileName));
   }
 
   Future<void> _pasteFromClipboard() async {
@@ -126,7 +183,11 @@ class _InputScreenState extends State<InputScreen> {
     if (data?.text != null && data!.text!.isNotEmpty) {
       _controller.text = data.text!;
       _sourceFileName = '';
-    _importLacksEditingRecord = false;
+      _sourceProvenance = DocumentProvenance.none;
+      _importLacksEditingRecord = false;
+      // 程式指定 controller.text 不會觸發 TextField.onChanged，需明確記下貼上。
+      _writingRecorder.reset();
+      _writingRecorder.record(data.text!.length);
       setState(() {});
     }
   }
@@ -152,7 +213,10 @@ class _InputScreenState extends State<InputScreen> {
     final text = OcrPostProcessor.clean(rawText);
     _controller.text = text;
     _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
     _importLacksEditingRecord = false;
+    // OCR 不是在編輯器內寫成，不得沿用前一份文字的受控寫作紀錄。
+    _writingRecorder.reset(initialLength: text.length);
     setState(() {});
     _showFloatingSnackBar(l10n.inputOcrRecognized(text.length));
   }
@@ -160,7 +224,9 @@ class _InputScreenState extends State<InputScreen> {
   void _clearInput() {
     _controller.clear();
     _sourceFileName = '';
+    _sourceProvenance = DocumentProvenance.none;
     _importLacksEditingRecord = false;
+    _writingRecorder.reset();
     setState(() {});
   }
 
@@ -199,11 +265,11 @@ class _InputScreenState extends State<InputScreen> {
     }
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
+    _sourceProvenance = doc.provenance;
     _importLacksEditingRecord =
-        doc.provenance.availability ==
-        ProvenanceAvailability.unsupportedFormat;
+        doc.provenance.availability == ProvenanceAvailability.unsupportedFormat;
     // 匯入的文字不是在這裡寫的，先前的過程紀錄與它無關
-    _writingRecorder.reset();
+    _writingRecorder.reset(initialLength: doc.text.length);
     setState(() {});
     _showFloatingSnackBar(
       doc.usedPdfOcr
@@ -232,7 +298,11 @@ class _InputScreenState extends State<InputScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(LucideIcons.fileSearch, size: 18, color: scheme.onSurfaceVariant),
+          Icon(
+            LucideIcons.fileSearch,
+            size: 18,
+            color: scheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -244,8 +314,7 @@ class _InputScreenState extends State<InputScreen> {
             icon: const Icon(LucideIcons.x, size: 16),
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
             visualDensity: VisualDensity.compact,
-            onPressed: () =>
-                setState(() => _importLacksEditingRecord = false),
+            onPressed: () => setState(() => _importLacksEditingRecord = false),
           ),
         ],
       ),
@@ -292,14 +361,18 @@ class _InputScreenState extends State<InputScreen> {
         LucideIcons.server,
         zh
             ? (notifier.localVerified ? '本地 OCR（已測試）' : '本地 OCR（未測試）')
-            : (notifier.localVerified ? 'Local OCR (verified)' : 'Local OCR (untested)'),
+            : (notifier.localVerified
+                  ? 'Local OCR (verified)'
+                  : 'Local OCR (untested)'),
         notifier.localVerified ? Colors.green.shade700 : Colors.amber.shade700,
       ),
       OcrEngineKind.gemini => (
         LucideIcons.sparkles,
         zh
             ? (notifier.geminiVerified ? 'Gemini（已測試）' : 'Gemini（未測試）')
-            : (notifier.geminiVerified ? 'Gemini (verified)' : 'Gemini (untested)'),
+            : (notifier.geminiVerified
+                  ? 'Gemini (verified)'
+                  : 'Gemini (untested)'),
         notifier.geminiVerified ? Colors.green.shade700 : Colors.amber.shade700,
       ),
       OcrEngineKind.none => (
@@ -349,6 +422,26 @@ class _InputScreenState extends State<InputScreen> {
       appBar: AppBar(
         title: const AppIdentityTitle(),
         actions: [
+          IconButton(
+            onPressed: _editTaskPrompt,
+            tooltip: l10n.taskPromptTooltip,
+            icon: Icon(
+              LucideIcons.clipboardCheck,
+              color: _taskPromptController.text.trim().isEmpty
+                  ? null
+                  : scheme.primary,
+            ),
+          ),
+          IconButton(
+            onPressed: _importPreviousDraft,
+            tooltip: _previousDraftFileName.isEmpty
+                ? l10n.previousDraftTooltip
+                : l10n.previousDraftSelected(_previousDraftFileName),
+            icon: Icon(
+              LucideIcons.files,
+              color: _previousDraftText.isEmpty ? null : scheme.primary,
+            ),
+          ),
           AppOverflowMenu(
             activeMode: workspaceMode,
             onSettings: isWideScreen
@@ -408,6 +501,8 @@ class _InputScreenState extends State<InputScreen> {
                                       _writingRecorder.record(value.length);
                                       if (value.trim().isEmpty) {
                                         _sourceFileName = '';
+                                        _sourceProvenance =
+                                            DocumentProvenance.none;
                                         _importLacksEditingRecord = false;
                                         _writingRecorder.reset();
                                       }
@@ -583,6 +678,7 @@ class _InputScreenState extends State<InputScreen> {
                                 _writingRecorder.record(value.length);
                                 if (value.trim().isEmpty) {
                                   _sourceFileName = '';
+                                  _sourceProvenance = DocumentProvenance.none;
                                   _importLacksEditingRecord = false;
                                   _writingRecorder.reset();
                                 }
@@ -723,7 +819,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             ),
           ),
           const Divider(),
-
 
           // ESL 糾正
           SwitchListTile(

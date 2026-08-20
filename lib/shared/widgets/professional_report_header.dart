@@ -5,10 +5,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/forensic_evidence.dart';
 import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
+import 'evidence_matrix_card.dart';
 import 'verdict_palette.dart';
 
 /// 報告區塊標題色。深色工作台主題（宇宙未來風／教育文柔風）的面板會以
@@ -53,12 +56,14 @@ class ProfessionalReportHeader extends StatelessWidget {
   /// 引用核實的摘要。核實需要網路且在分析後才完成，因此不放進
   /// [DetectionResult]，而由報告頁在結果到齊後傳入。
   final CitationEvidence citations;
+  final ClaimAudit claims;
 
   const ProfessionalReportHeader({
     super.key,
     required this.result,
     required this.onDownloadPdf,
     this.citations = CitationEvidence.none,
+    this.claims = ClaimAudit.none,
   });
 
   @override
@@ -151,6 +156,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 result,
                 l10n,
                 citations: citations,
+                claims: claims,
               );
               if (findings.isEmpty) return const SizedBox.shrink();
               return Padding(
@@ -163,7 +169,19 @@ class ProfessionalReportHeader extends StatelessWidget {
             },
           ),
 
-          // 3. 判定摘要卡片（大卡）
+          // 3. 四軸證據矩陣。覆蓋與證據方向分開呈現，不製造第二個總分。
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: EvidenceMatrixCard(
+              matrix: ForensicEvidenceMatrix.assess(
+                result,
+                citations: citations,
+                claims: claims,
+              ),
+            ),
+          ),
+
+          // 4. 判定摘要卡片（大卡）
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _VerdictSummaryCard(

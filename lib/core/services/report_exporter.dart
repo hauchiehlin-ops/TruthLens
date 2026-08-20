@@ -14,6 +14,11 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/verdict_palette.dart';
 import '../models/detection_result.dart';
 import 'bibliography_verifier.dart';
+import 'citation_evidence.dart';
+import 'claim_audit.dart';
+import 'forensic_evidence.dart';
+import 'revision_evidence.dart';
+import 'task_alignment.dart';
 import '../utils/text_stats.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
@@ -68,8 +73,19 @@ class ReportExporter {
     final orderedBibliographyChecks = bibliographyChecks == null
         ? null
         : orderBibliographyChecks(bibliographyChecks);
+    final citations = CitationEvidence.fromChecks(
+      orderedBibliographyChecks ?? const [],
+    );
+    final claims = ClaimAudit.analyze(r.inputText);
+    final matrix = ForensicEvidenceMatrix.assess(
+      r,
+      citations: citations,
+      claims: claims,
+    );
+    final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
+    final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final map = {
-      'version': 1,
+      'version': 2,
       'analyzed_at': r.analyzedAt.toIso8601String(),
       'source_file_name': r.sourceFileName,
       'headline': doc.headline,
@@ -93,6 +109,40 @@ class ReportExporter {
       'sentence_count': r.analyzableSentenceCount,
       'ai_sentences': r.aiSentenceCount,
       'human_sentences': r.humanSentenceCount,
+      'evidence_matrix': {
+        'available_axes': matrix.availableAxisCount,
+        'total_axes': matrix.totalAxisCount,
+        'axes': [
+          for (final axis in matrix.axes)
+            {
+              'id': axis.kind.name,
+              'state': axis.state.name,
+              'strength': axis.strength.name,
+            },
+        ],
+      },
+      'claim_source_audit': {
+        'total': claims.total,
+        'sourced': claims.sourced,
+        'unsupported': claims.unsupported,
+        'risk': claims.risk.name,
+      },
+      if (task.hasData)
+        'task_alignment': {
+          'concept_coverage': task.conceptCoverage,
+          'risk': task.risk.name,
+          'minimum_words': task.minimumWords,
+          'document_words': task.documentWords,
+          'missing_terms': task.missingTerms,
+        },
+      if (revision.hasData)
+        'revision_evidence': {
+          'previous_file_name': r.previousDraftFileName,
+          'pattern': revision.pattern.name,
+          'shingle_similarity': revision.shingleSimilarity,
+          'previous_words': revision.previousWords,
+          'current_words': revision.currentWords,
+        },
       'engines': [
         for (final e in r.engineScores)
           {
@@ -142,6 +192,9 @@ class ReportExporter {
 
   /// 逐句數據表。`#` 開頭為摘要註解列，方便試算表與程式兩用。
   static String buildCsv(DetectionResult r, AppLocalizations l10n) {
+    final claims = ClaimAudit.analyze(r.inputText);
+    final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
+    final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final buf = StringBuffer()
       ..writeln('# ${l10n.exportReportTitle}')
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
@@ -150,6 +203,14 @@ class ReportExporter {
       )
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
+      ..writeln('# checkable_claims,${claims.total}')
+      ..writeln('# unsupported_claims,${claims.unsupported}')
+      ..writeln(
+        '# task_concept_coverage,${task.hasData ? task.conceptCoverage.toStringAsFixed(4) : ''}',
+      )
+      ..writeln(
+        '# revision_pattern,${revision.hasData ? revision.pattern.name : ''}',
+      )
       ..writeln('index,sentence,ai_probability,patterns');
     for (final s in _analyzableSentences(r)) {
       buf.writeln(
@@ -184,6 +245,15 @@ class ReportExporter {
         ? null
         : orderBibliographyChecks(bibliographyChecks);
     final reportDoc = reportDocument ?? _composer.compose(r, l10n);
+    final claims = ClaimAudit.analyze(r.inputText);
+    final citations = CitationEvidence.fromChecks(
+      orderedBibliographyChecks ?? const [],
+    );
+    final evidenceMatrix = ForensicEvidenceMatrix.assess(
+      r,
+      citations: citations,
+      claims: claims,
+    );
     final regular = pw.Font.ttf(regularFont);
     final bold = pw.Font.ttf(boldFont);
     final theme = pw.ThemeData.withFont(base: regular, bold: bold);
@@ -298,6 +368,36 @@ class ReportExporter {
                 ),
               ],
             ),
+          ),
+          pw.SizedBox(height: 12),
+
+          pw.Text(
+            l10n.evidenceMatrixTitle,
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 3),
+          pw.Text(
+            '${l10n.evidenceMatrixSubtitle} ${l10n.evidenceMatrixCoverage(evidenceMatrix.availableAxisCount, evidenceMatrix.totalAxisCount)}',
+            style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey700),
+          ),
+          pw.SizedBox(height: 6),
+          pw.Table(
+            border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+            columnWidths: const {
+              0: pw.FlexColumnWidth(2.2),
+              1: pw.FlexColumnWidth(1.2),
+              2: pw.FlexColumnWidth(1.0),
+            },
+            children: [
+              for (final axis in evidenceMatrix.axes)
+                pw.TableRow(
+                  children: [
+                    _cell(_evidenceAxisLabel(axis.kind, l10n), bold: true),
+                    _cell(_evidenceStateLabel(axis.state, l10n)),
+                    _cell(_evidenceStrengthLabel(axis.strength, l10n)),
+                  ],
+                ),
+            ],
           ),
           pw.SizedBox(height: 12),
 
@@ -500,6 +600,38 @@ class ReportExporter {
       ),
     ),
   );
+
+  static String _evidenceAxisLabel(
+    EvidenceAxisKind kind,
+    AppLocalizations l10n,
+  ) => switch (kind) {
+    EvidenceAxisKind.textTrace => l10n.evidenceAxisText,
+    EvidenceAxisKind.writingProcess => l10n.evidenceAxisProcess,
+    EvidenceAxisKind.documentOrigin => l10n.evidenceAxisOrigin,
+    EvidenceAxisKind.revisionHistory => l10n.evidenceAxisRevision,
+    EvidenceAxisKind.taskAlignment => l10n.evidenceAxisTask,
+    EvidenceAxisKind.sourceIntegrity => l10n.evidenceAxisSources,
+  };
+
+  static String _evidenceStateLabel(
+    EvidenceAxisState state,
+    AppLocalizations l10n,
+  ) => switch (state) {
+    EvidenceAxisState.unavailable => l10n.evidenceStateUnavailable,
+    EvidenceAxisState.inconclusive => l10n.evidenceStateInconclusive,
+    EvidenceAxisState.reassuring => l10n.evidenceStateReassuring,
+    EvidenceAxisState.concern => l10n.evidenceStateConcern,
+  };
+
+  static String _evidenceStrengthLabel(
+    EvidenceStrength strength,
+    AppLocalizations l10n,
+  ) => switch (strength) {
+    EvidenceStrength.none => l10n.evidenceStrengthNone,
+    EvidenceStrength.limited => l10n.evidenceStrengthLimited,
+    EvidenceStrength.moderate => l10n.evidenceStrengthModerate,
+    EvidenceStrength.strong => l10n.evidenceStrengthStrong,
+  };
 
   static String _bibliographyStatus(
     BibliographyCheckResult check,

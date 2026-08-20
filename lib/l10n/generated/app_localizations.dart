@@ -4238,6 +4238,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The text was typed in this app over {minutes} minutes, with {deleted} characters revised along the way. Writing that happens here leaves a record no language model can reproduce.'**
   String findingWrittenInApp(int minutes, int deleted);
+
+  /// No description provided for @evidenceMatrixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-evidence assessment'**
+  String get evidenceMatrixTitle;
+
+  /// No description provided for @evidenceMatrixSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Four independent axes are kept separate. Coverage shows what could be examined; it is not another AI probability.'**
+  String get evidenceMatrixSubtitle;
+
+  /// No description provided for @evidenceMatrixCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence coverage: {available} of {total} axes'**
+  String evidenceMatrixCoverage(int available, int total);
+
+  /// No description provided for @evidenceAxisText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-generation traces'**
+  String get evidenceAxisText;
+
+  /// No description provided for @evidenceAxisTextNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Probabilistic patterns from the four local detectors'**
+  String get evidenceAxisTextNote;
+
+  /// No description provided for @evidenceAxisProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing process'**
+  String get evidenceAxisProcess;
+
+  /// No description provided for @evidenceAxisProcessNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Typing, revision and paste events recorded without storing their content'**
+  String get evidenceAxisProcessNote;
+
+  /// No description provided for @evidenceAxisOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'Document origin'**
+  String get evidenceAxisOrigin;
+
+  /// No description provided for @evidenceAxisOriginNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing time, saves and DOCX/ODT/RSID metadata'**
+  String get evidenceAxisOriginNote;
+
+  /// No description provided for @evidenceAxisSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim and source integrity'**
+  String get evidenceAxisSources;
+
+  /// No description provided for @evidenceAxisSourcesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkable claims, citation anchors and bibliographic verification'**
+  String get evidenceAxisSourcesNote;
+
+  /// No description provided for @evidenceStateUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get evidenceStateUnavailable;
+
+  /// No description provided for @evidenceStateInconclusive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inconclusive'**
+  String get evidenceStateInconclusive;
+
+  /// No description provided for @evidenceStateReassuring.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistent'**
+  String get evidenceStateReassuring;
+
+  /// No description provided for @evidenceStateConcern.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get evidenceStateConcern;
+
+  /// No description provided for @evidenceStrengthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence'**
+  String get evidenceStrengthNone;
+
+  /// No description provided for @evidenceStrengthLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited'**
+  String get evidenceStrengthLimited;
+
+  /// No description provided for @evidenceStrengthModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get evidenceStrengthModerate;
+
+  /// No description provided for @evidenceStrengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get evidenceStrengthStrong;
+
+  /// No description provided for @evidenceMatrixTextOnlyWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.'**
+  String get evidenceMatrixTextOnlyWarning;
+
+  /// No description provided for @evidenceMatrixStrongConcern.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.'**
+  String get evidenceMatrixStrongConcern;
+
+  /// No description provided for @findingUnsupportedClaims.
+  ///
+  /// In en, this message translates to:
+  /// **'{unsupported} of {total} checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.'**
+  String findingUnsupportedClaims(int unsupported, int total);
+
+  /// No description provided for @taskPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment or task requirements'**
+  String get taskPromptTitle;
+
+  /// No description provided for @taskPromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the prompt, required topics and any minimum word count. This stays on the device.'**
+  String get taskPromptHint;
+
+  /// No description provided for @taskPromptSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Use requirements'**
+  String get taskPromptSave;
+
+  /// No description provided for @taskPromptTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add assignment requirements'**
+  String get taskPromptTooltip;
+
+  /// No description provided for @previousDraftTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a previous draft for version comparison'**
+  String get previousDraftTooltip;
+
+  /// No description provided for @previousDraftSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous draft: {name}'**
+  String previousDraftSelected(String name);
+
+  /// No description provided for @previousDraftImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous draft imported: {name}'**
+  String previousDraftImported(String name);
+
+  /// No description provided for @previousDraftUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'No readable text was found in that previous draft.'**
+  String get previousDraftUnreadable;
+
+  /// No description provided for @evidenceAxisRevision.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft evolution'**
+  String get evidenceAxisRevision;
+
+  /// No description provided for @evidenceAxisRevisionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'How much of the previous draft was retained or replaced'**
+  String get evidenceAxisRevisionNote;
+
+  /// No description provided for @evidenceAxisTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Task alignment'**
+  String get evidenceAxisTask;
+
+  /// No description provided for @evidenceAxisTaskNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage of required concepts and mechanical constraints'**
+  String get evidenceAxisTaskNote;
+
+  /// No description provided for @findingLargeDraftReplacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Compared with “{name}”, about {percent}% of five-token sequences were replaced. This is a large revision event worth discussing, but it may also reflect legitimate rewriting or collaboration.'**
+  String findingLargeDraftReplacement(int percent, String name);
+
+  /// No description provided for @findingTaskMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The document covers about {percent}% of the task\'s extracted key concepts or misses a stated minimum length. This is a task-fit issue, not proof of AI authorship.'**
+  String findingTaskMismatch(int percent);
+
+  /// No description provided for @challengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervised follow-up'**
+  String get challengeTitle;
+
+  /// No description provided for @challengeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the writer to explain specific claims from this document'**
+  String get challengeSubtitle;
+
+  /// No description provided for @challengeCaveat.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this while the writer is present. The check only measures whether an answer engages with the document and whether it was pasted; passing is not proof of identity or authorship.'**
+  String get challengeCaveat;
+
+  /// No description provided for @challengeExplainQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain this passage in your own words and state why it matters: “{excerpt}”'**
+  String challengeExplainQuestion(String excerpt);
+
+  /// No description provided for @challengeJustifyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What evidence or reasoning supports this claim, and what would weaken it? “{excerpt}”'**
+  String challengeJustifyQuestion(String excerpt);
+
+  /// No description provided for @challengeAnswerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer here without pasting prepared text'**
+  String get challengeAnswerHint;
+
+  /// No description provided for @challengeEvaluate.
+  ///
+  /// In en, this message translates to:
+  /// **'Check response'**
+  String get challengeEvaluate;
+
+  /// No description provided for @challengeStateUnanswered.
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked'**
+  String get challengeStateUnanswered;
+
+  /// No description provided for @challengeStateInsufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a more specific answer'**
+  String get challengeStateInsufficient;
+
+  /// No description provided for @challengeStateGrounded.
+  ///
+  /// In en, this message translates to:
+  /// **'Directly engages with the passage'**
+  String get challengeStateGrounded;
+
+  /// No description provided for @challengeStatePasted.
+  ///
+  /// In en, this message translates to:
+  /// **'Large paste detected; repeat under supervision'**
+  String get challengeStatePasted;
 }
 
 class _AppLocalizationsDelegate

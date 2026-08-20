@@ -99,6 +99,16 @@ def collect(directory: Path, label: str, args) -> list[dict]:
     if not files:
         sys.exit(f"{directory} 底下沒有支援的檔案（{'/'.join(sorted(SUPPORTED))}）")
 
+    manifest_by_file: dict[str, dict] = {}
+    manifest_path = directory / "manifest.jsonl"
+    if manifest_path.exists():
+        for line in manifest_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("file"):
+                manifest_by_file[row["file"]] = row
+
     samples: list[dict] = []
     skipped: list[str] = []
     for path in files:
@@ -114,6 +124,10 @@ def collect(directory: Path, label: str, args) -> list[dict]:
             continue
 
         doc_id = hashlib.sha1(str(path).encode()).hexdigest()[:12]
+        manifest = manifest_by_file.get(path.name, {})
+        # 同一 human 題目產生的多個 AI 模型／語域版本必須共用 group_id。
+        # 後續切分依這個欄位分組，避免同題改寫同時進訓練與驗證造成洩漏。
+        group_id = str(manifest.get("topic_src") or doc_id)
         for index, chunk in enumerate(chunks):
             samples.append(
                 {
@@ -121,6 +135,10 @@ def collect(directory: Path, label: str, args) -> list[dict]:
                     "doc_id": doc_id,
                     "label": label,
                     "source": path.name,
+                    "group_id": group_id,
+                    "provider": manifest.get("provider", "human" if label == "human" else "unknown"),
+                    "model": manifest.get("model", ""),
+                    "style": manifest.get("style", "human" if label == "human" else "unknown"),
                     "words": len(chunk.split()),
                     "text": chunk,
                 }

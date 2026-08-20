@@ -19,7 +19,7 @@ from transformers import (
     set_seed,
 )
 
-from config import DATA_DIR, TrainConfig, adversarial, quick_smoke
+from config import DATA_DIR, TrainConfig, adversarial, modern, quick_smoke
 
 
 def _device() -> str:
@@ -115,7 +115,21 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true", help="煙霧測試（小模型/1 epoch）")
     ap.add_argument("--adversarial", action="store_true", help="訓練對抗防禦模組 D")
+    ap.add_argument(
+        "--modern",
+        action="store_true",
+        help="使用按題目分組切分的現代多模型／人類化語料",
+    )
     args = ap.parse_args()
-    cfg = quick_smoke() if args.quick else (
-        adversarial() if args.adversarial else TrainConfig())
+    if args.adversarial and args.modern:
+        ap.error("--adversarial 與 --modern 只能選一個")
+    cfg = (
+        quick_smoke()
+        if args.quick
+        else modern()
+        if args.modern
+        else adversarial()
+        if args.adversarial
+        else TrainConfig()
+    )
     train(cfg)

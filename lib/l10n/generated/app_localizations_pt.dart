@@ -2685,4 +2685,176 @@ class AppLocalizationsPt extends AppLocalizations {
   String findingWrittenInApp(int minutes, int deleted) {
     return 'O texto foi escrito nesta aplicação ao longo de $minutes minutos, com $deleted caracteres revistos. A escrita que acontece aqui deixa um registo que nenhum modelo consegue reproduzir.';
   }
+
+  @override
+  String get evidenceMatrixTitle => 'Multi-evidence assessment';
+
+  @override
+  String get evidenceMatrixSubtitle =>
+      'Four independent axes are kept separate. Coverage shows what could be examined; it is not another AI probability.';
+
+  @override
+  String evidenceMatrixCoverage(int available, int total) {
+    return 'Evidence coverage: $available of $total axes';
+  }
+
+  @override
+  String get evidenceAxisText => 'Text-generation traces';
+
+  @override
+  String get evidenceAxisTextNote =>
+      'Probabilistic patterns from the four local detectors';
+
+  @override
+  String get evidenceAxisProcess => 'Writing process';
+
+  @override
+  String get evidenceAxisProcessNote =>
+      'Typing, revision and paste events recorded without storing their content';
+
+  @override
+  String get evidenceAxisOrigin => 'Document origin';
+
+  @override
+  String get evidenceAxisOriginNote =>
+      'Editing time, saves and DOCX/ODT/RSID metadata';
+
+  @override
+  String get evidenceAxisSources => 'Claim and source integrity';
+
+  @override
+  String get evidenceAxisSourcesNote =>
+      'Checkable claims, citation anchors and bibliographic verification';
+
+  @override
+  String get evidenceStateUnavailable => 'Unavailable';
+
+  @override
+  String get evidenceStateInconclusive => 'Inconclusive';
+
+  @override
+  String get evidenceStateReassuring => 'Consistent';
+
+  @override
+  String get evidenceStateConcern => 'Review';
+
+  @override
+  String get evidenceStrengthNone => 'No evidence';
+
+  @override
+  String get evidenceStrengthLimited => 'Limited';
+
+  @override
+  String get evidenceStrengthModerate => 'Moderate';
+
+  @override
+  String get evidenceStrengthStrong => 'Strong';
+
+  @override
+  String get evidenceMatrixTextOnlyWarning =>
+      'Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.';
+
+  @override
+  String get evidenceMatrixStrongConcern =>
+      'At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.';
+
+  @override
+  String findingUnsupportedClaims(int unsupported, int total) {
+    return '$unsupported of $total checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.';
+  }
+
+  @override
+  String get taskPromptTitle => 'Assignment or task requirements';
+
+  @override
+  String get taskPromptHint =>
+      'Paste the prompt, required topics and any minimum word count. This stays on the device.';
+
+  @override
+  String get taskPromptSave => 'Use requirements';
+
+  @override
+  String get taskPromptTooltip => 'Add assignment requirements';
+
+  @override
+  String get previousDraftTooltip =>
+      'Import a previous draft for version comparison';
+
+  @override
+  String previousDraftSelected(String name) {
+    return 'Previous draft: $name';
+  }
+
+  @override
+  String previousDraftImported(String name) {
+    return 'Previous draft imported: $name';
+  }
+
+  @override
+  String get previousDraftUnreadable =>
+      'No readable text was found in that previous draft.';
+
+  @override
+  String get evidenceAxisRevision => 'Draft evolution';
+
+  @override
+  String get evidenceAxisRevisionNote =>
+      'How much of the previous draft was retained or replaced';
+
+  @override
+  String get evidenceAxisTask => 'Task alignment';
+
+  @override
+  String get evidenceAxisTaskNote =>
+      'Coverage of required concepts and mechanical constraints';
+
+  @override
+  String findingLargeDraftReplacement(int percent, String name) {
+    return 'Compared with “$name”, about $percent% of five-token sequences were replaced. This is a large revision event worth discussing, but it may also reflect legitimate rewriting or collaboration.';
+  }
+
+  @override
+  String findingTaskMismatch(int percent) {
+    return 'The document covers about $percent% of the task\'s extracted key concepts or misses a stated minimum length. This is a task-fit issue, not proof of AI authorship.';
+  }
+
+  @override
+  String get challengeTitle => 'Supervised follow-up';
+
+  @override
+  String get challengeSubtitle =>
+      'Ask the writer to explain specific claims from this document';
+
+  @override
+  String get challengeCaveat =>
+      'Use this while the writer is present. The check only measures whether an answer engages with the document and whether it was pasted; passing is not proof of identity or authorship.';
+
+  @override
+  String challengeExplainQuestion(String excerpt) {
+    return 'Explain this passage in your own words and state why it matters: “$excerpt”';
+  }
+
+  @override
+  String challengeJustifyQuestion(String excerpt) {
+    return 'What evidence or reasoning supports this claim, and what would weaken it? “$excerpt”';
+  }
+
+  @override
+  String get challengeAnswerHint => 'Answer here without pasting prepared text';
+
+  @override
+  String get challengeEvaluate => 'Check response';
+
+  @override
+  String get challengeStateUnanswered => 'Not checked';
+
+  @override
+  String get challengeStateInsufficient => 'Needs a more specific answer';
+
+  @override
+  String get challengeStateGrounded => 'Directly engages with the passage';
+
+  @override
+  String get challengeStatePasted =>
+      'Large paste detected; repeat under supervision';
 }

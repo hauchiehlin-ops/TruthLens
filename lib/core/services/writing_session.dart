@@ -55,11 +55,7 @@ class InputEvent {
     final characters = (j['c'] as num?)?.toInt();
     final elapsed = (j['t'] as num?)?.toInt();
     if (kind == null || characters == null || elapsed == null) return null;
-    return InputEvent(
-      kind: kind,
-      characters: characters,
-      elapsedMs: elapsed,
-    );
+    return InputEvent(kind: kind, characters: characters, elapsedMs: elapsed);
   }
 }
 
@@ -140,10 +136,26 @@ class WritingSessionRecorder {
 
   WritingSession get session => WritingSession(events: List.of(_events));
 
-  void reset() {
+  /// 清空紀錄，並把目前編輯器長度設為新的起點。
+  ///
+  /// 匯入文件或 OCR 結果時必須用 [initialLength] 建立起點，否則使用者下一次
+  /// 只輸入一個字，會被誤判成「一次貼上整份文件」。
+  void reset({int initialLength = 0}) {
     _events.clear();
     _startedAt = null;
-    _lastLength = 0;
+    _lastLength = initialLength;
+  }
+
+  /// 從既有工作階段繼續記錄。用於從原始輸入頁切到整合工作台後，保留先前
+  /// 已蒐集的事件，同時讓後續編修繼續接在同一條時間軸上。
+  void resume({required int currentLength, required WritingSession session}) {
+    _events
+      ..clear()
+      ..addAll(session.events);
+    _lastLength = currentLength;
+    _startedAt = session.hasData
+        ? DateTime.now().subtract(session.duration)
+        : null;
   }
 
   /// 記錄一次文字變動。[length] 為變動後的總字元數。

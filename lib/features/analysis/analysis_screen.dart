@@ -54,6 +54,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final result = await orchestrator.analyze(
       widget.request.text,
       sourceFileName: widget.request.sourceFileName,
+      provenance: widget.request.provenance,
+      writingSession: widget.request.writingSession,
+      taskPrompt: widget.request.taskPrompt,
+      previousDraftText: widget.request.previousDraftText,
+      previousDraftFileName: widget.request.previousDraftFileName,
       eslCorrectionEnabled: prefs.eslCorrectionEnabled,
       prefs: prefs,
       l10n: l10n,

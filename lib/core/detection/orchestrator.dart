@@ -78,6 +78,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
   Future<DetectionResult> analyze(
     String input, {
     String sourceFileName = '',
+    String taskPrompt = '',
+    String previousDraftText = '',
+    String previousDraftFileName = '',
     DocumentProvenance provenance = DocumentProvenance.none,
     WritingSession writingSession = WritingSession.empty,
     bool eslCorrectionEnabled = true,
@@ -153,6 +156,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
       analyzedAt: started,
       inputText: input,
       sourceFileName: sourceFileName,
+      taskPrompt: taskPrompt,
+      previousDraftText: previousDraftText,
+      previousDraftFileName: previousDraftFileName,
       provenance: provenance,
       // 規避痕跡掃描是純本地的確定性檢查，成本近乎零，直接在分析當下完成
       evasion: scanForEvasion(input),
