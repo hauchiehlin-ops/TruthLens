@@ -55,6 +55,14 @@ enum AbstentionReason {
 
   /// 引擎之間分歧過大，加權平均已不具意義
   enginesConflict,
+
+  /// 引擎都有執行，但沒有任何一個找到可用證據；低分只是沉默後的 fallback，
+  /// 不是人類撰寫的證據
+  noEvidenceFound,
+
+  /// 只有單一引擎握有證據，且整體分數落在人類側；此時低分更像是
+  /// 覆蓋不足造成的沉默，而不是人類撰寫的證據
+  singleWeakEvidenceSource,
 }
 
 /// 單一子模型（引擎）的評分結果
@@ -106,6 +114,44 @@ class EngineScore {
 
   /// 實際參與投票：可用、且確實握有證據
   bool get votes => available && hasEvidence;
+
+  /// 依本次文件的證據品質調整有效權重。
+  ///
+  /// 這不是用「分數高低」自我強化，而是看引擎是否有較完整的可用訊號：
+  /// 神經模型看強訊號區塊比例，統計模型看離中性點多遠，風格模型看命中特徵
+  /// 的累積強度。沉默引擎通常不參與投票；全沉默 fallback 時保留 1.0，
+  /// 讓診斷分數維持可讀。
+  double get evidenceWeightMultiplier {
+    if (!available || !hasEvidence) return 1.0;
+    final role = _roleOf(engineId);
+    return switch (role) {
+      'transformer' => _neuralEvidenceMultiplier(
+        features['ai_analysis_chunk_ratio'] ??
+            features['ai_sentence_ratio'] ??
+            0,
+      ),
+      'adversarial' => _neuralEvidenceMultiplier(
+        features['strong_analysis_chunk_ratio'] ??
+            features['strong_sentence_ratio'] ??
+            0,
+      ),
+      'statistical' =>
+        (0.75 + ((aiProbability - 0.5).abs() * 2.0 * 0.75)).clamp(0.70, 1.50),
+      'stylometry' => (0.75 + aiProbability * 1.25).clamp(0.70, 1.40),
+      _ => 1.0,
+    };
+  }
+
+  static String _roleOf(String engineId) {
+    const roles = ['transformer', 'statistical', 'stylometry', 'adversarial'];
+    for (final role in roles) {
+      if (engineId == role || engineId.startsWith('${role}_')) return role;
+    }
+    return engineId;
+  }
+
+  static double _neuralEvidenceMultiplier(double strongRatio) =>
+      (0.70 + strongRatio.clamp(0.0, 1.0) * 1.10).clamp(0.70, 1.80);
 }
 
 /// 句子級分析結果
@@ -242,12 +288,18 @@ class DetectionResult {
     }
 
     final evidential = votingEngines.where((e) => e.hasEvidence).toList();
+    if (evidential.isEmpty) {
+      return AbstentionReason.noEvidenceFound;
+    }
     if (evidential.length >= 2) {
       // 以整數百分點比較：浮點相減會讓 0.80-0.20 變成 0.6000000000000001，
       // 使恰好落在門檻上的情形被誤判為超標。這裡也與畫面顯示的單位一致。
       if (engineSpreadPoints > (maxEngineSpread * 100).round()) {
         return AbstentionReason.enginesConflict;
       }
+    }
+    if (evidential.length == 1 && !flaggedAsAi) {
+      return AbstentionReason.singleWeakEvidenceSource;
     }
     return AbstentionReason.none;
   }
@@ -286,7 +338,9 @@ class DetectionResult {
     final statistical =
         score.engineId == 'statistical' ||
         score.engineId.startsWith('statistical_');
-    return eslAdjusted && statistical ? score.weight * 0.5 : score.weight;
+    var weight = score.weight * score.evidenceWeightMultiplier;
+    if (eslAdjusted && statistical) weight *= 0.5;
+    return weight;
   }
 
   /// 實際參與投票的引擎，與 EnsembleOrchestrator._weightedVote 的取法一致：

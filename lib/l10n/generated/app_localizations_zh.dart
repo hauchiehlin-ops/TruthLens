@@ -1138,6 +1138,15 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get abstentionNoEvidenceFound =>
+      '所有引擎都有執行，但沒有任何一個找到可用證據。這個低分只是診斷用的 fallback 輸出，不是人類撰寫的證據。';
+
+  @override
+  String abstentionSingleWeakEvidenceSource(int count) {
+    return '只有 $count 個引擎找到可用證據，而且整體分數仍低於 AI 標記門檻。這代表本次證據覆蓋不足，不代表已證明由人類撰寫。';
+  }
+
+  @override
   String get abstentionScoreStillShown => '下方仍保留完整的分數與逐句證據供你自行參考，但請不要把它當成結論。';
 
   @override
@@ -3695,6 +3704,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String get abstentionNoEvidenceFound =>
+      '所有引擎都有执行，但没有任何一个找到可用证据。这个低分只是诊断用的 fallback 输出，不是人类撰写的证据。';
+
+  @override
+  String abstentionSingleWeakEvidenceSource(int count) {
+    return '只有 $count 个引擎找到可用证据，而且整体分数仍低于 AI 标记门槛。这代表本次证据覆盖不足，不代表已证明由人类撰写。';
+  }
+
+  @override
   String get abstentionScoreStillShown => '下方仍保留完整的分数与逐句证据供你自行参考，但请不要把它当成结论。';
 
   @override
@@ -6249,6 +6267,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String abstentionEnginesConflict(int spread) {
     return '各引擎的看法相差 $spread 個百分點，分歧大到加權平均已失去意義。請改用逐句證據與文件來源自行判讀。';
+  }
+
+  @override
+  String get abstentionNoEvidenceFound =>
+      '所有引擎都有執行，但沒有任何一個找到可用證據。這個低分只是診斷用的 fallback 輸出，不是人類撰寫的證據。';
+
+  @override
+  String abstentionSingleWeakEvidenceSource(int count) {
+    return '只有 $count 個引擎找到可用證據，而且整體分數仍低於 AI 標記門檻。這代表本次證據覆蓋不足，不代表已證明由人類撰寫。';
   }
 
   @override

@@ -1976,6 +1976,18 @@ abstract class AppLocalizations {
   /// **'The engines are {spread} percentage points apart — far enough that averaging them stops meaning anything. Read the sentence evidence and the document\'s origin instead, and judge for yourself.'**
   String abstentionEnginesConflict(int spread);
 
+  /// No description provided for @abstentionNoEvidenceFound.
+  ///
+  /// In en, this message translates to:
+  /// **'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.'**
+  String get abstentionNoEvidenceFound;
+
+  /// No description provided for @abstentionSingleWeakEvidenceSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.'**
+  String abstentionSingleWeakEvidenceSource(int count);
+
   /// No description provided for @abstentionScoreStillShown.
   ///
   /// In en, this message translates to:

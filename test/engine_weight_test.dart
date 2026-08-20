@@ -37,7 +37,7 @@ void main() {
       eslCorrectionEnabled: false,
     );
 
-    expect(result.aiProbability, closeTo(0.10, 0.0001));
+    expect(result.aiProbability, closeTo(0.08, 0.0001));
     expect(
       result.engineScores.firstWhere((s) => s.engineId == 'transformer').weight,
       0.10,

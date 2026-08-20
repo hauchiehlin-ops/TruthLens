@@ -184,8 +184,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
   /// 「我沒話說」去投「這是人寫的」，還帶著原本的權重——一篇統計引擎給
   /// 78% 的 AI 短文會被三個沉默的引擎壓成 20%。
   ///
-  /// 四個引擎全部沉默時退回舊的全體平均：這代表「哪個面向都沒找到 AI 痕跡」，
-  /// 本來就該落在低分區，不需要特別處理。
+  /// 四個引擎全部沉默時仍退回舊的全體平均以保留診斷分數，但
+  /// [DetectionResult.abstention] 會將它顯示為「證據不足」，避免把 fallback
+  /// 低分誤讀成人類撰寫證據。
   double _weightedVote(List<EngineScore> scores, {required bool eslAdjusted}) {
     final available = scores.where((s) => s.available).toList();
     if (available.isEmpty) return 0.5;
@@ -193,11 +194,12 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final voters = evidential.isNotEmpty ? evidential : available;
 
     double weightOf(EngineScore s) {
+      var weight = s.weight * s.evidenceWeightMultiplier;
       // ESL 修正：統計模型權重減半（低困惑度/低突發性可能是語言能力，非 AI 特徵）
       if (eslAdjusted && _roleOf(s.engineId) == 'statistical') {
-        return s.weight * 0.5;
+        weight *= 0.5;
       }
-      return s.weight;
+      return weight;
     }
 
     final totalWeight = voters.fold(0.0, (sum, s) => sum + weightOf(s));
@@ -231,7 +233,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     List<EngineScore> scores,
     AppLocalizations l10n,
   ) {
-    // 收集所有可用神經模型及其實際設定權重；句子級結果必須與文件級
+    // 收集所有可用神經模型及其本次有效權重；句子級結果必須與文件級
     // Ensemble 使用同一權重定義，不能再以簡單平均產生不同結論。
     final neuralScores = scores
         .where(
@@ -240,7 +242,12 @@ class EnsembleOrchestrator extends ChangeNotifier {
               s.sentenceScores != null &&
               s.sentenceScores!.isNotEmpty,
         )
-        .map((s) => (values: s.sentenceScores!, weight: s.weight))
+        .map(
+          (s) => (
+            values: s.sentenceScores!,
+            weight: s.weight * s.evidenceWeightMultiplier,
+          ),
+        )
         .toList();
 
     final result = <SentenceScore>[];

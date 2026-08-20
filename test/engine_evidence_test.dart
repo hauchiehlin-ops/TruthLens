@@ -15,13 +15,13 @@ class _Engine implements DetectionEngine {
   final String id;
   final double probability;
   final bool evidence;
-  final bool installed;
+  final Map<String, double> features;
 
   const _Engine(
     this.id,
     this.probability, {
     this.evidence = true,
-    this.installed = true,
+    this.features = const {},
   });
 
   @override
@@ -33,20 +33,23 @@ class _Engine implements DetectionEngine {
   }[id]!;
 
   @override
-  Future<bool> isAvailable() async => installed;
+  Future<bool> isAvailable() async => true;
 
   @override
   String name(AppLocalizations l10n) => id;
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) async =>
-      EngineScore(
-        engineId: id,
-        engineName: id,
-        aiProbability: probability,
-        weight: defaultWeight,
-        hasEvidence: evidence,
-      );
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n,
+  ) async => EngineScore(
+    engineId: id,
+    engineName: id,
+    aiProbability: probability,
+    weight: defaultWeight,
+    hasEvidence: evidence,
+    features: features,
+  );
 }
 
 /// 重現回報案例：Transformer/風格/對抗三個引擎沉默（0%），
@@ -107,6 +110,14 @@ const _text =
     'This complete sentence provides enough content for a reliable analysis. '
     'A second sentence keeps the paragraph intact for the engines to read.';
 
+final _longText = List.generate(
+  8,
+  (i) =>
+      'This complete sentence provides enough content for a reliable analysis '
+      'while keeping the prose ordinary and easy for the test harness to parse '
+      'as sentence number $i.',
+).join(' ');
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final l10n = lookupAppLocalizations(const Locale('en'));
@@ -127,21 +138,30 @@ void main() {
       expect(result.verdict, Verdict.likelyAi);
     });
 
-    test('多個引擎都有證據時，仍照設定權重投票', () async {
+    test('多個引擎都有證據時，依證據品質調整有效權重', () async {
       final result = await EnsembleOrchestrator(
         engines: const [
-          _Engine('transformer', 0.80),
+          _Engine(
+            'transformer',
+            0.80,
+            features: {'ai_analysis_chunk_ratio': 0.80},
+          ),
           _Engine('statistical', 0.60),
           _Engine('stylometry', 0, evidence: false),
           _Engine('adversarial', 0, evidence: false),
         ],
       ).analyze(_text, eslCorrectionEnabled: false);
 
-      // (0.80×0.40 + 0.60×0.25) / 0.65
-      expect(result.aiProbability, closeTo(0.7231, 0.0005));
+      // transformer: 0.40 × (0.70 + 0.80×1.10) = 0.632
+      // statistical: 0.25 × (0.75 + |0.60-0.50|×2×0.75) = 0.225
+      expect(result.aiProbability, closeTo(0.7475, 0.0005));
+      expect(
+        result.effectiveWeightFor(result.engineScores[0]),
+        greaterThan(result.effectiveWeightFor(result.engineScores[1])),
+      );
     });
 
-    test('四個引擎全部沉默時退回全體平均，不會除以零', () async {
+    test('四個引擎全部沉默時保留 fallback 分數但必須棄權', () async {
       final result = await EnsembleOrchestrator(
         engines: const [
           _Engine('transformer', 0, evidence: false),
@@ -149,10 +169,12 @@ void main() {
           _Engine('stylometry', 0, evidence: false),
           _Engine('adversarial', 0, evidence: false),
         ],
-      ).analyze(_text, eslCorrectionEnabled: false);
+      ).analyze(_longText, eslCorrectionEnabled: false);
 
       expect(result.aiProbability, closeTo(0.125, 0.0001));
       expect(result.verdict, Verdict.human);
+      expect(result.abstention, AbstentionReason.noEvidenceFound);
+      expect(result.shouldAbstain, isTrue);
     });
   });
 
@@ -164,6 +186,43 @@ void main() {
       expect(result.shouldAbstain, isFalse);
       expect(result.singleEvidenceSource, isTrue);
       expect(result.evidenceEngineCount, 1);
+    });
+
+    test('單一弱證據不得被顯示成人類側判定', () {
+      final result = _result(const [
+        EngineScore(
+          engineId: 'transformer',
+          engineName: 'Transformer',
+          aiProbability: 0.03,
+          weight: 0.40,
+          hasEvidence: false,
+        ),
+        EngineScore(
+          engineId: 'statistical',
+          engineName: 'Statistical',
+          aiProbability: 0.50,
+          weight: 0.25,
+          hasEvidence: false,
+        ),
+        EngineScore(
+          engineId: 'stylometry',
+          engineName: 'Stylometry',
+          aiProbability: 0,
+          weight: 0.20,
+          hasEvidence: false,
+        ),
+        EngineScore(
+          engineId: 'adversarial',
+          engineName: 'Adversarial',
+          aiProbability: 0.23,
+          weight: 0.15,
+        ),
+      ], 0.23);
+
+      expect(result.verdict, Verdict.likelyHuman);
+      expect(result.abstention, AbstentionReason.singleWeakEvidenceSource);
+      expect(result.shouldAbstain, isTrue);
+      expect(result.singleEvidenceSource, isTrue);
     });
 
     test('兩個引擎都有證據且真的對立時，仍要棄權', () {
@@ -204,6 +263,47 @@ void main() {
     expect(text, isNot(contains('Not enough evidence to judge')));
   });
 
+  test('遙測總結在全引擎沉默時不得回報人類判定', () {
+    final result = _result(const [
+      EngineScore(
+        engineId: 'transformer',
+        engineName: 'Transformer',
+        aiProbability: 0,
+        weight: 0.40,
+        hasEvidence: false,
+      ),
+      EngineScore(
+        engineId: 'statistical',
+        engineName: 'Statistical',
+        aiProbability: 0.50,
+        weight: 0.25,
+        hasEvidence: false,
+      ),
+      EngineScore(
+        engineId: 'stylometry',
+        engineName: 'Stylometry',
+        aiProbability: 0,
+        weight: 0.20,
+        hasEvidence: false,
+      ),
+      EngineScore(
+        engineId: 'adversarial',
+        engineName: 'Adversarial',
+        aiProbability: 0.02,
+        weight: 0.15,
+        hasEvidence: false,
+      ),
+    ], 0.13);
+
+    final text = buildTelemetrySummary(result, l10n).join(' ');
+
+    expect(result.verdict, Verdict.human);
+    expect(result.abstention, AbstentionReason.noEvidenceFound);
+    expect(text, contains('Not enough evidence to judge'));
+    expect(text, contains('none found usable evidence'));
+    expect(text, isNot(contains('Human-written')));
+  });
+
   group('各引擎自陳有無證據', () {
     test('風格引擎沒命中任何特徵時視為沉默', () async {
       final score = await StylometryEngine().analyze(
@@ -238,7 +338,6 @@ void main() {
       expect(score.aiProbability, 0.5);
       expect(score.hasEvidence, isFalse);
     });
-
   });
 
   _perplexityLanguageGate();
@@ -285,7 +384,10 @@ void _perplexityLanguageGate() {
     test('文字太短時寧可棄權也不猜語言', () {
       // 語言判不準就會套錯門檻，那正是這套機制要杜絕的事。
       // 應用程式本身的棄權門檻是 100 字，實際文件不會落到這裡。
-      expect(StatisticalEngine.supportsPerplexity('The flow was examined.'), isFalse);
+      expect(
+        StatisticalEngine.supportsPerplexity('The flow was examined.'),
+        isFalse,
+      );
     });
 
     test('英文本文夾雜少量中文專有名詞時仍採計', () {

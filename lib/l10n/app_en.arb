@@ -990,6 +990,15 @@
       }
     }
   },
+  "abstentionNoEvidenceFound": "All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.",
+  "abstentionSingleWeakEvidenceSource": "Only {count} engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.",
+  "@abstentionSingleWeakEvidenceSource": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "abstentionScoreStillShown": "The full score and sentence evidence are still shown below for your own reference. Please don't treat them as a conclusion.",
   "provenanceTitle": "Document origin evidence",
   "provenanceRiskHigh": "Editing history is clearly unusual",

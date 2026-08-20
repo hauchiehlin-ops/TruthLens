@@ -11,14 +11,12 @@ import '../../l10n/generated/app_localizations.dart';
 import 'provenance_card.dart';
 import 'verdict_palette.dart';
 
-
 /// 報告區塊標題色。深色工作台主題（宇宙未來風／教育文柔風）的面板會以
 /// [DefaultTextStyle] 指定白色文字，此時再套原本的深青色會變成深色疊深色而
 /// 幾乎看不見；因此改由繼承下來的文字色推測背景明暗再決定。
 Color headingColorFor(BuildContext context) {
   final inherited = DefaultTextStyle.of(context).style.color;
-  final onDarkSurface =
-      inherited != null && inherited.computeLuminance() > 0.5;
+  final onDarkSurface = inherited != null && inherited.computeLuminance() > 0.5;
   return onDarkSurface ? Colors.white : const Color(0xFF1E3A5F);
 }
 
@@ -38,7 +36,12 @@ String describeAbstention(DetectionResult result, AppLocalizations l10n) {
       result.effectiveAvailableEngineCount,
       result.effectiveTotalEngineCount,
     ),
-    AbstentionReason.enginesConflict => l10n.abstentionEnginesConflict(result.engineSpreadPoints),
+    AbstentionReason.enginesConflict => l10n.abstentionEnginesConflict(
+      result.engineSpreadPoints,
+    ),
+    AbstentionReason.noEvidenceFound => l10n.abstentionNoEvidenceFound,
+    AbstentionReason.singleWeakEvidenceSource =>
+      l10n.abstentionSingleWeakEvidenceSource(result.evidenceEngineCount),
   };
 }
 
@@ -91,8 +94,9 @@ class ProfessionalReportHeader extends StatelessWidget {
                         const SizedBox(height: 2),
                         Builder(
                           builder: (context) {
-                            final base =
-                                Theme.of(context).textTheme.headlineSmall;
+                            final base = Theme.of(
+                              context,
+                            ).textTheme.headlineSmall;
                             return Text(
                               result.sourceFileName,
                               style: base?.copyWith(
@@ -154,10 +158,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                child: _VerifiableFindingsCard(
-                  findings: findings,
-                  l10n: l10n,
-                ),
+                child: _VerifiableFindingsCard(findings: findings, l10n: l10n),
               );
             },
           ),
@@ -231,7 +232,6 @@ class ProfessionalReportHeader extends StatelessWidget {
   }
 }
 
-
 /// 可查證事實的清單，放在判定卡**之前**。
 ///
 /// 原本的順序是反的：機率當頭條、事實在下方。但「三篇文獻查無此文」與
@@ -266,9 +266,7 @@ class _VerifiableFindingsCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                hasConcern
-                    ? LucideIcons.fileSearch
-                    : LucideIcons.checkCircle,
+                hasConcern ? LucideIcons.fileSearch : LucideIcons.checkCircle,
                 size: 20,
                 color: hasConcern ? scheme.error : scheme.primary,
               ),
@@ -286,9 +284,9 @@ class _VerifiableFindingsCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             l10n.reportVerifiableFindingsSubtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 12),
           for (final finding in findings)
@@ -310,8 +308,9 @@ class _VerifiableFindingsCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       finding.statement,
-                      style: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(height: 1.45),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(height: 1.45),
                     ),
                   ),
                 ],
@@ -490,7 +489,8 @@ class _VerdictSummaryCard extends StatelessWidget {
                 // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
                 // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
                 // 旁邊，塞進下方的說明卡等於沒說。
-                if (_lowScoreCaveat(result, citations: citations) != _LowScoreCaveat.none) ...[
+                if (_lowScoreCaveat(result, citations: citations) !=
+                    _LowScoreCaveat.none) ...[
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -567,8 +567,9 @@ class _VerdictTierList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 固定切點，直接以 AI 機率百分比呈現
-    final cutPercents =
-        Verdict.cutPoints.map((c) => (c * 100).round()).toList();
+    final cutPercents = Verdict.cutPoints
+        .map((c) => (c * 100).round())
+        .toList();
 
     final ranges = <Verdict, String>{
       Verdict.human: l10n.reportVerdictRangeBelow(cutPercents[0]),
@@ -1445,9 +1446,8 @@ class EngineGroup {
     bool roleVotes(String role) =>
         grouped[role]!.any((s) => s.available && s.hasEvidence);
     final anyEvidence = order.any(roleVotes);
-    bool counts(String role) => anyEvidence
-        ? roleVotes(role)
-        : grouped[role]!.any((s) => s.available);
+    bool counts(String role) =>
+        anyEvidence ? roleVotes(role) : grouped[role]!.any((s) => s.available);
     final availableWeight = order.fold<double>(
       0,
       (sum, role) => counts(role) ? sum + effectiveWeight(role) : sum,

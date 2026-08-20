@@ -1196,6 +1196,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get abstentionNoEvidenceFound =>
+      'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.';
+
+  @override
+  String abstentionSingleWeakEvidenceSource(int count) {
+    return 'Only $count engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.';
+  }
+
+  @override
   String get abstentionScoreStillShown =>
       'Le score complet et les preuves par phrase restent affichés ci-dessous à titre indicatif. Ne les prenez pas pour une conclusion.';
 

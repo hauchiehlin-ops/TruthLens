@@ -1152,6 +1152,15 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get abstentionNoEvidenceFound =>
+      'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.';
+
+  @override
+  String abstentionSingleWeakEvidenceSource(int count) {
+    return 'Only $count engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.';
+  }
+
+  @override
   String get abstentionScoreStillShown =>
       '아래에 전체 점수와 문장별 근거를 참고용으로 남겨 두었습니다. 다만 결론으로 받아들이지는 마세요.';
 

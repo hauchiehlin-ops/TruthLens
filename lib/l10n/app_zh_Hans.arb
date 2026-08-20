@@ -682,6 +682,15 @@
       }
     }
   },
+  "abstentionNoEvidenceFound": "所有引擎都有执行，但没有任何一个找到可用证据。这个低分只是诊断用的 fallback 输出，不是人类撰写的证据。",
+  "abstentionSingleWeakEvidenceSource": "只有 {count} 个引擎找到可用证据，而且整体分数仍低于 AI 标记门槛。这代表本次证据覆盖不足，不代表已证明由人类撰写。",
+  "@abstentionSingleWeakEvidenceSource": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "abstentionScoreStillShown": "下方仍保留完整的分数与逐句证据供你自行参考，但请不要把它当成结论。",
   "provenanceTitle": "文件来源证据",
   "provenanceRiskHigh": "编辑记录明显不寻常",
