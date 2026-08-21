@@ -21,6 +21,8 @@ import '../../core/services/document_importer.dart';
 import '../../core/services/calibration_service.dart';
 import '../../core/services/document_provenance.dart';
 import '../../core/services/history_repository.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/ocr_post_processor.dart';
@@ -474,7 +476,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       // 背景自動蒐集校準樣本。標籤依據是**文件編輯紀錄**（獨立於文字分類器），
       // 而非本次的判定結果——用判定結果自我標註會造成循環論證，讓偵測器
       // 永遠無法發現自己的偏差。無獨立依據時只收為描述性樣本，不進虛無分布。
-      if (calibration.autoCollectEnabled && !result.shouldAbstain) {
+      if (calibration.autoCollectEnabled && !result.hasEvidenceLimitations) {
         await calibration.autoCollect(
           score: result.aiProbability,
           provenanceIndicatesHuman: result.provenance.indicatesHumanAuthorship,
@@ -1236,7 +1238,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _telemetryPanel({bool showTimeline = false}) {
     final l10n = AppLocalizations.of(context);
     final labels = _engineLabels(l10n);
-    final probability = _result?.aiProbability ?? _runningProbability ?? 0;
+    final completedAssessment = _result == null
+        ? null
+        : IntegratedAssessment.assess(
+            _result!,
+            claims: ClaimAudit.analyze(_result!.inputText),
+          );
+    final probability =
+        completedAssessment?.aiLikelihood ?? _runningProbability ?? 0;
     final activeNames = _activeEngines
         .map((role) => labels[role])
         .whereType<String>()

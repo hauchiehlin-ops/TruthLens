@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../app/theme.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/services/history_repository.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 歷史紀錄頁：列表 + 搜尋 + 重新分析 + 個別刪除（滑動）+ 清空全部
@@ -113,12 +114,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     itemCount: _entries.length,
                     itemBuilder: (context, i) {
                       final e = _entries[i];
-                      final color = AppTheme.verdictColor(e.aiProbability);
+                      final color = AppTheme.verdictColor(
+                        e.integratedAiLikelihood,
+                      );
                       final time = e.analyzedAt.toLocal().toString().substring(
                         0,
                         16,
                       );
-                      final verdictLabel = e.verdict.label(l10n);
+                      final verdictLabel =
+                          e.integratedDirection == IntegratedDirection.likelyAi
+                          ? l10n.integratedLikelyAi
+                          : l10n.integratedLikelyHuman;
+                      final integratedPercent = (e.integratedAiLikelihood * 100)
+                          .round();
                       return Dismissible(
                         key: ValueKey(e.id),
                         direction: DismissDirection.endToStart,
@@ -157,7 +165,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         child: Semantics(
                           label: l10n.historyEntrySemantics(
                             verdictLabel,
-                            (e.aiProbability * 100).round(),
+                            integratedPercent,
                             time,
                             e.inputText,
                           ),
@@ -166,7 +174,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               child: CircleAvatar(
                                 backgroundColor: color.withValues(alpha: 0.2),
                                 child: Text(
-                                  '${(e.aiProbability * 100).round()}',
+                                  '$integratedPercent',
                                   style: TextStyle(
                                     color: color,
                                     fontSize: 13,

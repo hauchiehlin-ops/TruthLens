@@ -1,4 +1,6 @@
 import '../../core/models/detection_result.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'report_document.dart';
 
@@ -7,22 +9,25 @@ import 'report_document.dart';
 /// 完全離線、無需 LLM，任何裝置都能產出報告。
 class ReportComposer {
   ReportDocument compose(DetectionResult r, AppLocalizations l10n) {
-    final templateId = _selectTemplate(r);
+    final assessment = IntegratedAssessment.assess(
+      r,
+      claims: ClaimAudit.analyze(r.inputText),
+    );
+    final templateId = _selectTemplate(r, assessment);
     return ReportDocument(
       templateId: templateId,
-      headline: _headline(r, l10n),
-      components: _components(r, templateId, l10n),
+      headline: _headline(assessment, l10n),
+      components: _components(r, assessment, templateId, l10n),
       source: ReportSource.template,
     );
   }
 
-  String _selectTemplate(DetectionResult r) {
+  String _selectTemplate(DetectionResult r, IntegratedAssessment assessment) {
     final paraphrase = _paraphraseDetected(r);
     if (paraphrase) return 'paraphrase_alert';
-    return switch (r.verdict) {
-      Verdict.ai || Verdict.likelyAi => 'ai_alert',
-      Verdict.mixed => 'mixed_detailed',
-      Verdict.likelyHuman || Verdict.human => 'human_clean',
+    return switch (assessment.direction) {
+      IntegratedDirection.likelyAi => 'ai_alert',
+      IntegratedDirection.likelyHuman => 'human_clean',
     };
   }
 
@@ -33,19 +38,17 @@ class ReportComposer {
     return adv.isNotEmpty && adv.first.aiProbability >= 0.6;
   }
 
-  String _headline(DetectionResult r, AppLocalizations l10n) {
-    final pct = (r.aiProbability * 100).round();
-    return switch (r.verdict) {
-      Verdict.ai => l10n.composerHeadlineAi(pct),
-      Verdict.likelyAi => l10n.composerHeadlineLikelyAi(pct),
-      Verdict.mixed => l10n.composerHeadlineMixed(pct),
-      Verdict.likelyHuman => l10n.composerHeadlineLikelyHuman(pct),
-      Verdict.human => l10n.composerHeadlineHuman(pct),
+  String _headline(IntegratedAssessment assessment, AppLocalizations l10n) {
+    final pct = (assessment.aiLikelihood * 100).round();
+    return switch (assessment.direction) {
+      IntegratedDirection.likelyAi => l10n.composerHeadlineLikelyAi(pct),
+      IntegratedDirection.likelyHuman => l10n.composerHeadlineLikelyHuman(pct),
     };
   }
 
   List<ReportComponent> _components(
     DetectionResult r,
+    IntegratedAssessment assessment,
     String templateId,
     AppLocalizations l10n,
   ) {
@@ -66,7 +69,7 @@ class ReportComposer {
       ReportComponent(
         type: ReportComponentType.narrative,
         title: l10n.composerNarrativeTitle,
-        body: _narrative(r, l10n),
+        body: _narrative(r, assessment, l10n),
       ),
     ];
 
@@ -114,7 +117,11 @@ class ReportComposer {
   }
 
   /// 規則式自然語言解讀：綜合分佈、主要特徵與可解釋引擎的理由
-  String _narrative(DetectionResult r, AppLocalizations l10n) {
+  String _narrative(
+    DetectionResult r,
+    IntegratedAssessment assessment,
+    AppLocalizations l10n,
+  ) {
     final parts = <String>[];
     final total = r.analyzableSentenceCount;
 
@@ -128,14 +135,10 @@ class ReportComposer {
       );
     }
 
-    switch (r.verdict) {
-      case Verdict.ai:
-      case Verdict.likelyAi:
+    switch (assessment.direction) {
+      case IntegratedDirection.likelyAi:
         parts.add(l10n.composerNarrativeAiPattern);
-      case Verdict.mixed:
-        parts.add(l10n.composerNarrativeMixedPattern);
-      case Verdict.likelyHuman:
-      case Verdict.human:
+      case IntegratedDirection.likelyHuman:
         parts.add(l10n.composerNarrativeHumanPattern);
     }
 

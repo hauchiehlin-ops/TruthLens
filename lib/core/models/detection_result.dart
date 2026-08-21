@@ -38,10 +38,10 @@ enum Verdict {
   };
 }
 
-/// 為什麼這次分析不給判定。棄權不是失敗，而是拒絕在證據不足時假裝有結論——
-/// 多數誤指控都來自對太短或訊號太弱的輸入給出自信的數字。
+/// 為什麼本次判讀必須降低信心。系統仍會輸出最可能方向，但不能把方向
+/// 包裝成高確定性結論。
 enum AbstentionReason {
-  /// 證據充足，正常出判定
+  /// 證據充足，可正常呈現判讀
   none,
 
   /// 可分析的句子太少，句級與統計訊號都不具代表性
@@ -320,9 +320,13 @@ class DetectionResult {
   int get evidenceEngineCount =>
       engineScores.where((e) => e.available && e.hasEvidence).length;
 
-  /// 證據不足以支撐任何判定時為 true。此時介面必須以棄權取代判定標題，
-  /// 但仍保留底下的數字供人工參考——隱藏數字只會讓使用者更困惑。
-  bool get shouldAbstain => abstention != AbstentionReason.none;
+  /// 本次證據有量體、覆蓋或一致性限制。介面仍提供最可能方向，但必須降低
+  /// 信心並顯示原因。
+  bool get hasEvidenceLimitations => abstention != AbstentionReason.none;
+
+  /// 舊名稱保留給既有資料流；新介面應使用 [hasEvidenceLimitations]。
+  @Deprecated('Use hasEvidenceLimitations; a direction is always provided.')
+  bool get shouldAbstain => hasEvidenceLimitations;
 
   /// 粗略字數：CJK 逐字計，其他語言以空白分詞
   int get wordCount {

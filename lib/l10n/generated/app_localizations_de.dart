@@ -2695,7 +2695,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Four independent axes are kept separate. Coverage shows what could be examined; it is not another AI probability.';
+      'Six axes are shown separately, then conservatively weighted in the integrated assessment. Coverage shows what could be examined.';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -2861,4 +2861,55 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get challengeStatePasted =>
       'Large paste detected; repeat under supervision';
+
+  @override
+  String get integratedAssessmentTitle => 'Integrated authorship assessment';
+
+  @override
+  String get integratedLikelyAi => 'More likely AI-generated';
+
+  @override
+  String get integratedLikelyHuman => 'More likely not AI-generated';
+
+  @override
+  String integratedLikelihoodLabel(int percent) {
+    return 'Integrated AI likelihood: $percent%';
+  }
+
+  @override
+  String integratedTextScoreLabel(int percent) {
+    return 'Text-model score: $percent%';
+  }
+
+  @override
+  String integratedConfidenceLabel(String confidence) {
+    return 'Confidence: $confidence';
+  }
+
+  @override
+  String get integratedConfidenceLow => 'Low';
+
+  @override
+  String get integratedConfidenceModerate => 'Moderate';
+
+  @override
+  String get integratedConfidenceHigh => 'High';
+
+  @override
+  String integratedQualifiedWarning(String reason) {
+    return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
+  }
+
+  @override
+  String get integratedIndexCaveat =>
+      'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.';
+
+  @override
+  String telemetryIntegratedVerdict(
+    String direction,
+    int percent,
+    String confidence,
+  ) {
+    return 'After weighting the available evidence, the document is “$direction” (AI likelihood index $percent%, $confidence confidence).';
+  }
 }

@@ -87,7 +87,8 @@ void main() {
     );
     final text = lines.join(' ');
 
-    expect(text, contains('4 of 4 engines finished'));
+    expect(text, contains('After weighting the available evidence'));
+    expect(text, contains('More likely not AI-generated'));
     expect(text, contains('broadly agree'));
     expect(text, isNot(contains('engines disagree')));
     expect(text, contains('not one crossed the strong-AI line'));
@@ -151,7 +152,7 @@ void main() {
     );
     final text = lines.join(' ');
 
-    expect(text, contains('2 of 4 engines finished'));
+    expect(text, contains('After weighting the available evidence'));
     expect(text, contains('2 engine(s) sat this one out'));
   });
 }

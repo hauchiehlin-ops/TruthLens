@@ -2,6 +2,8 @@
 library;
 
 import '../../core/models/detection_result.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/professional_report_header.dart'
     show EngineGroup, describeAbstention;
@@ -9,7 +11,10 @@ import '../../shared/widgets/professional_report_header.dart'
 /// 以白話文總結各引擎的分析結果：先講結論，再講引擎之間合不合、
 /// 分數主要被誰拉動、逐句掃出什麼，最後給一句「所以該怎麼辦」。
 /// 每一句都由本次實際數據組出，不是固定罐頭句；結果為 null 或無可用引擎時回傳空清單。
-List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10n) {
+List<String> buildTelemetrySummary(
+  DetectionResult? result,
+  AppLocalizations l10n,
+) {
   if (result == null) return const [];
 
   final groups = EngineGroup.fromScores(
@@ -23,23 +28,27 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
   // 真正有話說的引擎。沉默的引擎不列入「引擎之間合不合」的比較——
   // 它們沒有主張，拿它們的中性點去和正向訊號相減只會製造假分歧。
   final speaking = available.where((g) => g.hasEvidence).toList();
-
-  // 報告已棄權時，總結不能反過來給一個自信的判定，否則兩處自相矛盾
-  if (result.shouldAbstain) {
-    return [
-      l10n.abstentionHeadline,
-      describeAbstention(result, l10n),
-      l10n.abstentionScoreStillShown,
-    ];
-  }
+  final assessment = IntegratedAssessment.assess(
+    result,
+    claims: ClaimAudit.analyze(result.inputText),
+  );
+  final direction = assessment.direction == IntegratedDirection.likelyAi
+      ? l10n.integratedLikelyAi
+      : l10n.integratedLikelyHuman;
+  final confidence = switch (assessment.confidence) {
+    IntegratedConfidence.low => l10n.integratedConfidenceLow,
+    IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+    IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+  };
 
   final lines = <String>[
-    l10n.telemetrySummaryVerdict(
-      available.length,
-      groups.length,
-      (result.aiProbability * 100).round(),
-      result.verdict.label(l10n),
+    l10n.telemetryIntegratedVerdict(
+      direction,
+      (assessment.aiLikelihood * 100).round(),
+      confidence,
     ),
+    if (result.hasEvidenceLimitations)
+      l10n.integratedQualifiedWarning(describeAbstention(result, l10n)),
   ];
 
   // 引擎之間看法合不合：分數全距 30 個百分點以內視為一致
@@ -92,12 +101,11 @@ List<String> buildTelemetrySummary(DetectionResult? result, AppLocalizations l10
 
   // 所以該怎麼辦。引擎彼此不合時不給「沒什麼好查的」這種話，
   // 否則會和上面那句「別只看總分」自相矛盾，一律改用需要人工判讀的說法。
-  lines.add(switch (result.verdict) {
-    Verdict.human || Verdict.likelyHuman when !enginesDisagree =>
+  lines.add(switch (assessment.direction) {
+    IntegratedDirection.likelyHuman when !enginesDisagree =>
       l10n.telemetrySummaryAdviceHuman,
-    Verdict.human || Verdict.likelyHuman || Verdict.mixed =>
-      l10n.telemetrySummaryAdviceMixed,
-    Verdict.likelyAi || Verdict.ai => l10n.telemetrySummaryAdviceAi,
+    IntegratedDirection.likelyHuman => l10n.telemetrySummaryAdviceMixed,
+    IntegratedDirection.likelyAi => l10n.telemetrySummaryAdviceAi,
   });
 
   // 可用但本次沒找到東西的引擎：說明它們為何不影響分數，

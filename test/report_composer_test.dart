@@ -54,7 +54,9 @@ void main() {
     final doc = composer.compose(_result(ai: 0.9), l10n);
     expect(doc.templateId, 'ai_alert');
     expect(doc.headline, contains('AI'));
-    expect(doc.headline, contains('90%'));
+    // 只有一個可用引擎且文本極短，整合層會把原始 90% 依低可靠度
+    // 收斂至 66%，但仍提供偏 AI 的方向。
+    expect(doc.headline, contains('66%'));
   });
 
   test('人類文本選 human_clean 版面', () {

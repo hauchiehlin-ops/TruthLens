@@ -93,25 +93,23 @@ void main() {
   });
 
   group('遙測總結與報告一致', () {
-    test('棄權時總結改講棄權，不得再出現自信的判定句', () {
+    test('證據限制時仍給最可能方向，並明確降低信心', () {
       final r = _result(sentenceCount: 2);
       final lines = buildTelemetrySummary(r, l10n);
       final text = lines.join(' ');
 
-      expect(text, contains('Not enough evidence to judge'));
+      expect(text, contains('More likely'));
+      expect(text, contains('Low confidence'));
       expect(text, contains('analysable sentence'));
-      expect(text, contains("don't treat them as a conclusion"));
-      // 正常路徑的句子一律不得出現
-      expect(text, isNot(contains('engines finished')));
-      expect(text, isNot(contains('broadly agree')));
-      expect(text, isNot(contains('grey zone')));
+      expect(text, contains('screening result, not proof'));
+      expect(text, isNot(contains('Not enough evidence to judge')));
     });
 
     test('未棄權時維持原本的完整總結', () {
       final lines = buildTelemetrySummary(_result(), l10n);
       final text = lines.join(' ');
 
-      expect(text, contains('engines finished'));
+      expect(text, contains('After weighting the available evidence'));
       expect(text, isNot(contains('Not enough evidence')));
     });
   });

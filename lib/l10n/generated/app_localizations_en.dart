@@ -892,7 +892,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAdvantage6 =>
-      'It abstains honestly when the evidence is thin: fewer than 5 analysable sentences, fewer than 100 words, fewer than 2 engines taking part, or engines more than 60 percentage points apart all produce \\u201cnot enough evidence to judge\\u201d. Most false accusations start with a confident number handed back on an input too weak to support one.';
+      'It always gives the most likely AI / not-AI direction, while separating that direction from confidence. Short input, silent models, too few engines or sharp disagreement lower confidence instead of erasing the answer.';
 
   @override
   String get settingsAiSampleTitle => 'Add a known-AI sample';
@@ -1027,18 +1027,18 @@ class AppLocalizationsEn extends AppLocalizations {
       '1. Document origin forensics (live)\nReads the editing record inside DOCX and ODT containers: total editing time, number of saves, creation and modification times, and the editing-batch markers (RSIDs) in the body. One or two RSIDs across a whole essay usually means the text went in all at once; 3,000 words with four minutes of editing is harder evidence than any perplexity score. This counts as origin evidence and is shown separately from the AI probability — deliberately never folded into the score.\n\n2. Local baseline calibration and conformal prediction (live)\nAdd pieces you know the authors wrote themselves, and the system judges against this group\'s own distribution rather than a global threshold. Conformal prediction gives a distribution-free guarantee: provided baseline and tested samples are exchangeable, the false-positive rate stays under the alpha you set. This is the key to cutting misjudgements on non-native writing, and it is something commercial products cannot do — they do not have baseline writing from the people you are assessing.\n\n3. Learned engine weights (live)\nOnce the baseline holds both human and AI samples, the system measures how well each engine separates the two groups (Cohen\'s d effect size) and suggests weights accordingly, replacing the hand-set fixed ratios. Nothing changes until you press Apply — settings are never altered silently.\n\n4. Binoculars cross-perplexity (scoring core done, not yet live)\nRaw perplexity treats how predictable a text is as though that meant how AI-like it is, which is exactly why it produces systematic false positives on plain-spoken non-native writing. Binoculars measures predictability relative to how much two models disagree with each other. The scoring maths is implemented and tested, but switching it on still needs a pair of small language models that can run in a browser, plus validation against labelled data.\n\n5. Watermark detection (checked, not feasible, not built)\nSynthID-Text detection is key-bound: the detector must compute with the same keys used at generation, and Google\'s production keys are not public. Doing this in a browser would never fire on real output from ChatGPT, Claude or Gemini — it would only be a feature that never triggers while leaving you believing watermarks are being checked. So it was deliberately left out.';
 
   @override
-  String get helpCascadeTitle => '3. The tiered cascade and abstention';
+  String get helpCascadeTitle => '3. Tiered analysis and integrated assessment';
 
   @override
   String get helpCascadeBody =>
-      'To stay fast within a browser\'s limited compute budget, analysis runs in tiers: cheap signals first, expensive ones only when needed.\n\nTier 0  Document origin evidence (near-zero cost)\nTier 1  Statistical and stylometric features (existing engines, cheap)\nTier 2  Transformer sentence-level classifier\nTier 3  Cross-perplexity (most expensive, only if the picture is still unclear)\n\nThe result then passes to local calibration, which produces a conclusion carrying a false-positive guarantee — or an explicit abstention.\n\n[Why abstention matters]\nMost false accusations come from handing back a confident number on an input too short or too weak to support one. This tool shows \"Not enough evidence to judge\" outright, rather than forcing a score, when:\n\n- fewer than 5 analysable sentences\n- fewer than 100 words\n- fewer than 2 engines took part\n- engines disagree by more than 60 percentage points (averaging them has stopped meaning anything)\n\nWhen it abstains, the full score and sentence evidence remain below for your reference — but please do not treat them as a conclusion. A system willing to say \"I don\'t know\" deserves more trust than one that always hands you a number.';
+      'Analysis runs in tiers: document origin, statistical and stylometric features, Transformer sentence classification, then expensive cross-perplexity when needed.\n\nThe final assessment conservatively combines six axes: text traces, writing process, document origin, draft evolution, task alignment and source integrity. It always returns the more likely AI / not-AI direction.\n\nConfidence is calculated separately. Fewer than 5 analysable sentences, fewer than 100 words, fewer than 2 engines, silent models or sharp disagreement reduce confidence and trigger a visible limitation warning. The direction remains useful for screening, but low confidence must never be presented as proof.';
 
   @override
   String get helpRisksTitle => '4. Risks worth facing honestly';
 
   @override
   String get helpRisksBody =>
-      'Every item below is a real limitation of this tool. Please weigh them before acting on anything it reports.\n\n1. Origin evidence can be wiped or faked\nSaving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all reset the editing record. A signal here is supporting evidence only, and the absence of one certainly does not prove a person wrote it.\n\n2. The conformal guarantee rests on exchangeability\nIt holds only if the baseline samples and the text under test come from the same group of people doing the same kind of writing task. If an author\'s writing has clearly improved, or the kind of task has changed entirely, the premise fails and the baseline needs rebuilding.\n\n3. The baseline itself can be contaminated\nIf the work you used as a baseline was in fact ghost-written by AI, the whole calibration skews. Baseline samples must be gathered under controlled conditions — work produced under supervision, for instance.\n\n4. Small in-browser models are less accurate than large server-side ones\nThat is the unavoidable price the Web-only decision pays for privacy. This tool\'s value is not a more accurate single score, but being explainable, calibratable, and honest enough to abstain.\n\n5. No score should ever stand alone as grounds for an accusation\nAlways read it alongside the sentence-level evidence, the document\'s origin, and what you already know about this particular author. This tool is designed to support a conversation you have, not to deliver a verdict in your place.';
+      'Every item below is a real limitation of this tool. Please weigh them before acting on anything it reports.\n\n1. Origin evidence can be wiped or faked\nSaving as a new file, converting online, exporting from Google Docs, or copying into a fresh document all reset the editing record. A signal here is supporting evidence only, and the absence of one certainly does not prove a person wrote it.\n\n2. The conformal guarantee rests on exchangeability\nIt holds only if the baseline samples and the text under test come from the same group of people doing the same kind of writing task. If an author\'s writing has clearly improved, or the kind of task has changed entirely, the premise fails and the baseline needs rebuilding.\n\n3. The baseline itself can be contaminated\nIf the work you used as a baseline was in fact ghost-written by AI, the whole calibration skews. Baseline samples must be gathered under controlled conditions — work produced under supervision, for instance.\n\n4. Small in-browser models are less accurate than large server-side ones\nThat is the unavoidable price the Web-only decision pays for privacy. This tool\'s value is not a magically accurate score, but an explainable direction with explicit confidence and evidence limitations.\n\n5. No score should ever stand alone as grounds for an accusation\nAlways read it alongside the sentence-level evidence, the document\'s origin, and what you already know about this particular author. This tool is designed to support a conversation you have, not to deliver a verdict in your place.';
 
   @override
   String get calibrationAddHuman => 'Add as human-written baseline';
@@ -1929,7 +1929,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four independent engines — a Transformer neural classifier, statistical feature analysis, stylometry, and adversarial-rewrite detection — vote by weight on whether text was AI-generated, and your document never leaves the machine.\n\nThe report expresses its verdict as an AI probability sorted into five fixed bands (under 20%, 20–40%, 40–60%, 60–80%, 80% and above), alongside sentence-level evidence, each engine\'s contribution, the document\'s origin evidence, and the source filename when you import one. The cut points are not adjustable, so the same document always lands in the same band. When the evidence is too thin — too few sentences or words, or engines that disagree too sharply — it says so plainly instead of forcing out a score.';
+      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines are combined with writing process, document origin, draft evolution, task alignment and source-integrity evidence; your document never leaves the machine.\n\nThe report always gives a more-likely AI / not-AI direction, an integrated likelihood index and a separate confidence level. The original text-model score and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.';
 
   @override
   String get helpComparisonTitle => 'Comparison with leading tools';
@@ -2667,7 +2667,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Four independent axes are kept separate. Coverage shows what could be examined; it is not another AI probability.';
+      'Six axes are shown separately, then conservatively weighted in the integrated assessment. Coverage shows what could be examined.';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -2833,4 +2833,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get challengeStatePasted =>
       'Large paste detected; repeat under supervision';
+
+  @override
+  String get integratedAssessmentTitle => 'Integrated authorship assessment';
+
+  @override
+  String get integratedLikelyAi => 'More likely AI-generated';
+
+  @override
+  String get integratedLikelyHuman => 'More likely not AI-generated';
+
+  @override
+  String integratedLikelihoodLabel(int percent) {
+    return 'Integrated AI likelihood: $percent%';
+  }
+
+  @override
+  String integratedTextScoreLabel(int percent) {
+    return 'Text-model score: $percent%';
+  }
+
+  @override
+  String integratedConfidenceLabel(String confidence) {
+    return 'Confidence: $confidence';
+  }
+
+  @override
+  String get integratedConfidenceLow => 'Low';
+
+  @override
+  String get integratedConfidenceModerate => 'Moderate';
+
+  @override
+  String get integratedConfidenceHigh => 'High';
+
+  @override
+  String integratedQualifiedWarning(String reason) {
+    return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
+  }
+
+  @override
+  String get integratedIndexCaveat =>
+      'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.';
+
+  @override
+  String telemetryIntegratedVerdict(
+    String direction,
+    int percent,
+    String confidence,
+  ) {
+    return 'After weighting the available evidence, the document is “$direction” (AI likelihood index $percent%, $confidence confidence).';
+  }
 }

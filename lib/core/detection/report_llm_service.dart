@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../models/detection_result.dart';
+import '../services/claim_audit.dart';
+import '../services/integrated_assessment.dart';
 import '../../features/report/report_composer.dart';
 import '../../features/report/report_document.dart';
 import 'llm_manager.dart';
@@ -43,7 +45,15 @@ class ReportLlmService {
     DetectionResult r,
     AppLocalizations l10n,
   ) async {
+    final integrated = IntegratedAssessment.assess(
+      r,
+      claims: ClaimAudit.analyze(r.inputText),
+    );
     final payload = {
+      'integrated_ai_likelihood': integrated.aiLikelihood,
+      'integrated_direction': integrated.direction.name,
+      'integrated_confidence': integrated.confidence.name,
+      'text_model_reliability': integrated.textReliability,
       'overall_score': r.aiProbability,
       'classification': r.verdict.name,
       'sentence_count': r.analyzableSentenceCount,

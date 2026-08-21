@@ -1,8 +1,9 @@
 /// 多證據鑑識矩陣。
 ///
-/// 各軸回答不同問題，刻意不合併成另一個看似精確的「總 AI 分數」：
-/// 文本軸是統計推論；寫作過程與文件來源是行為／中繼資料；來源完整性則是
-/// 可查核主張與引用的品質。矩陣的作用是呈現覆蓋與矛盾，不是把異質證據硬平均。
+/// 各軸回答不同問題，因此矩陣本身不做簡單平均：文本軸是統計推論；
+/// 寫作過程與文件來源是行為／中繼資料；來源完整性是可查核主張與引用品質。
+/// 整合判讀服務會另外以保守似然權重融合可用訊號，矩陣則負責保留
+/// 每一軸的方向、強度與可追溯性。
 library;
 
 import '../models/detection_result.dart';
@@ -75,6 +76,13 @@ class ForensicEvidenceMatrix {
   );
 
   static EvidenceAxisAssessment _textAxis(DetectionResult result) {
+    if (result.evasion.indicatesDeliberateEvasion) {
+      return const EvidenceAxisAssessment(
+        kind: EvidenceAxisKind.textTrace,
+        state: EvidenceAxisState.concern,
+        strength: EvidenceStrength.strong,
+      );
+    }
     if (result.effectiveAvailableEngineCount == 0) {
       return const EvidenceAxisAssessment(
         kind: EvidenceAxisKind.textTrace,
@@ -82,7 +90,7 @@ class ForensicEvidenceMatrix {
         strength: EvidenceStrength.none,
       );
     }
-    if (result.shouldAbstain) {
+    if (result.hasEvidenceLimitations) {
       return const EvidenceAxisAssessment(
         kind: EvidenceAxisKind.textTrace,
         state: EvidenceAxisState.inconclusive,

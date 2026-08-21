@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../core/services/claim_audit.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 以 Canvas 繪製社群分享用的摘要卡並輸出 PNG（plan 第九節）。
@@ -29,8 +31,12 @@ class SummaryCard {
     final canvas = Canvas(recorder);
     canvas.scale(scale);
 
-    final color = _verdictColor(r.aiProbability);
-    final pct = (r.aiProbability * 100).round();
+    final assessment = IntegratedAssessment.assess(
+      r,
+      claims: ClaimAudit.analyze(r.inputText),
+    );
+    final color = _verdictColor(assessment.aiLikelihood);
+    final pct = (assessment.aiLikelihood * 100).round();
 
     // 背景
     final bgRect = RRect.fromRectAndRadius(
@@ -78,7 +84,7 @@ class SummaryCard {
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -1.5708,
-      6.2832 * r.aiProbability,
+      6.2832 * assessment.aiLikelihood,
       false,
       ringFg,
     );
@@ -93,7 +99,7 @@ class SummaryCard {
     );
     _textCentered(
       canvas,
-      l10n.reportAiProbabilityLabel,
+      l10n.integratedAssessmentTitle,
       center.translate(0, 24),
       14,
       Colors.white70,
@@ -101,7 +107,14 @@ class SummaryCard {
     );
 
     // 右側判定與統計
-    _pill(canvas, const Offset(280, 150), r.verdict.label(l10n), color);
+    _pill(
+      canvas,
+      const Offset(280, 150),
+      assessment.direction == IntegratedDirection.likelyAi
+          ? l10n.integratedLikelyAi
+          : l10n.integratedLikelyHuman,
+      color,
+    );
     _text(
       canvas,
       l10n.summaryCardStats(

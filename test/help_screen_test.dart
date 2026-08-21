@@ -33,7 +33,7 @@ void main() {
     expect(find.text('四引擎並列推論'), findsNothing);
     expect(find.text('AI 總覽儀表'), findsNothing);
   });
-  testWidgets('設計理念章節涵蓋定位轉換、五支柱、瀑布與棄權、以及風險', (tester) async {
+  testWidgets('設計理念章節涵蓋定位轉換、五支柱、整合判讀與風險', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 2400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -65,7 +65,7 @@ void main() {
     for (final title in [
       '1. The shift: not competing on score accuracy',
       '2. The five pillars',
-      '3. The tiered cascade and abstention',
+      '3. Tiered analysis and integrated assessment',
       '4. Risks worth facing honestly',
     ]) {
       await tester.dragUntilVisible(
@@ -119,8 +119,9 @@ void main() {
       }
     }
     expect(l10n.helpAboutBody, contains('inside your browser'));
-    // 新增的兩項優勢：來源鑑識與誠實棄權
+    // 新增的兩項優勢：來源鑑識與方向／信心分離
     expect(l10n.helpAdvantage5, contains('origin forensics'));
-    expect(l10n.helpAdvantage6, contains('abstains'));
+    expect(l10n.helpAdvantage6, contains('most likely AI / not-AI direction'));
+    expect(l10n.helpAdvantage6, contains('confidence'));
   });
 }

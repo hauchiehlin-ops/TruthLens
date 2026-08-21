@@ -17,6 +17,7 @@ import 'bibliography_verifier.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
+import 'integrated_assessment.dart';
 import 'revision_evidence.dart';
 import 'task_alignment.dart';
 import '../utils/text_stats.dart';
@@ -61,6 +62,47 @@ class ReportExporter {
     );
   }
 
+  static String _integratedDirectionLabel(
+    IntegratedAssessment assessment,
+    AppLocalizations l10n,
+  ) => assessment.direction == IntegratedDirection.likelyAi
+      ? l10n.integratedLikelyAi
+      : l10n.integratedLikelyHuman;
+
+  static String _integratedConfidenceLabel(
+    IntegratedAssessment assessment,
+    AppLocalizations l10n,
+  ) => switch (assessment.confidence) {
+    IntegratedConfidence.low => l10n.integratedConfidenceLow,
+    IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+    IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+  };
+
+  static String _pdfAbstentionReason(
+    DetectionResult result,
+    AppLocalizations l10n,
+  ) => switch (result.abstention) {
+    AbstentionReason.none => '',
+    AbstentionReason.tooFewSentences => l10n.abstentionTooFewSentences(
+      result.analyzableSentenceCount,
+      DetectionResult.minAnalyzableSentences,
+    ),
+    AbstentionReason.tooFewWords => l10n.abstentionTooFewWords(
+      result.wordCount,
+      DetectionResult.minWords,
+    ),
+    AbstentionReason.tooFewEngines => l10n.abstentionTooFewEngines(
+      result.effectiveAvailableEngineCount,
+      result.effectiveTotalEngineCount,
+    ),
+    AbstentionReason.enginesConflict => l10n.abstentionEnginesConflict(
+      result.engineSpreadPoints,
+    ),
+    AbstentionReason.noEvidenceFound => l10n.abstentionNoEvidenceFound,
+    AbstentionReason.singleWeakEvidenceSource =>
+      l10n.abstentionSingleWeakEvidenceSource(result.evidenceEngineCount),
+  };
+
   /// 結構化 JSON（plan 第九節：LMS / 系統整合）。欄位名稱為固定的英文 API schema，
   /// 不隨語系翻譯，僅 headline／reasons 等自然語言內容依 [l10n] 呈現。
   static String buildJson(
@@ -82,10 +124,15 @@ class ReportExporter {
       citations: citations,
       claims: claims,
     );
+    final integrated = IntegratedAssessment.assess(
+      r,
+      citations: citations,
+      claims: claims,
+    );
     final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
     final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final map = {
-      'version': 2,
+      'version': 3,
       'analyzed_at': r.analyzedAt.toIso8601String(),
       'source_file_name': r.sourceFileName,
       'headline': doc.headline,
@@ -100,6 +147,16 @@ class ReportExporter {
           },
       ],
       'overall': {
+        'integrated_ai_likelihood': integrated.aiLikelihood,
+        'integrated_direction': integrated.direction.name,
+        'integrated_confidence': integrated.confidence.name,
+        'integrated_confidence_score': integrated.confidenceScore,
+        'text_model_reliability': integrated.textReliability,
+        'evidence_contributions': [
+          for (final contribution in integrated.contributions)
+            {'axis': contribution.kind.name, 'log_odds': contribution.logOdds},
+        ],
+        'text_model_ai_probability': r.aiProbability,
         'ai_probability': r.aiProbability,
         'verdict': r.verdict.name,
         'flagged_as_ai': r.flaggedAsAi,
@@ -193,6 +250,7 @@ class ReportExporter {
   /// 逐句數據表。`#` 開頭為摘要註解列，方便試算表與程式兩用。
   static String buildCsv(DetectionResult r, AppLocalizations l10n) {
     final claims = ClaimAudit.analyze(r.inputText);
+    final integrated = IntegratedAssessment.assess(r, claims: claims);
     final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
     final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final buf = StringBuffer()
@@ -200,6 +258,14 @@ class ReportExporter {
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
       ..writeln(
         '# overall_ai_probability,${r.aiProbability.toStringAsFixed(4)}',
+      )
+      ..writeln(
+        '# integrated_ai_likelihood,${integrated.aiLikelihood.toStringAsFixed(4)}',
+      )
+      ..writeln('# integrated_direction,${integrated.direction.name}')
+      ..writeln('# integrated_confidence,${integrated.confidence.name}')
+      ..writeln(
+        '# text_model_reliability,${integrated.textReliability.toStringAsFixed(4)}',
       )
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
@@ -254,6 +320,11 @@ class ReportExporter {
       citations: citations,
       claims: claims,
     );
+    final integrated = IntegratedAssessment.assess(
+      r,
+      citations: citations,
+      claims: claims,
+    );
     final regular = pw.Font.ttf(regularFont);
     final bold = pw.Font.ttf(boldFont);
     final theme = pw.ThemeData.withFont(base: regular, bold: bold);
@@ -299,31 +370,51 @@ class ReportExporter {
           pw.Container(
             padding: const pw.EdgeInsets.all(12),
             decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: scoreColor(r.aiProbability)),
+              border: pw.Border.all(color: scoreColor(integrated.aiLikelihood)),
               borderRadius: pw.BorderRadius.circular(8),
             ),
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text(
-                  l10n.reportOverallVerdictLabel(r.verdict.label(l10n)),
+                  _integratedDirectionLabel(integrated, l10n),
                   style: pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
                 ),
                 pw.Text(
-                  '${l10n.reportAiProbabilityLabel} '
-                  '${(r.aiProbability * 100).round()}%'
-                  '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',
+                  '${l10n.integratedLikelihoodLabel((integrated.aiLikelihood * 100).round())}\n'
+                  '${l10n.integratedConfidenceLabel(_integratedConfidenceLabel(integrated, l10n))}',
                   style: pw.TextStyle(
                     fontSize: 14,
-                    color: scoreColor(r.aiProbability),
+                    color: scoreColor(integrated.aiLikelihood),
                   ),
                 ),
               ],
             ),
           ),
+          pw.SizedBox(height: 6),
+          pw.Text(
+            '${l10n.integratedTextScoreLabel((r.aiProbability * 100).round())} '
+            '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',
+            style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+          ),
+          pw.SizedBox(height: 3),
+          pw.Text(
+            l10n.integratedIndexCaveat,
+            style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey700),
+          ),
+          if (r.hasEvidenceLimitations) ...[
+            pw.SizedBox(height: 3),
+            pw.Text(
+              l10n.integratedQualifiedWarning(_pdfAbstentionReason(r, l10n)),
+              style: const pw.TextStyle(
+                fontSize: 8.5,
+                color: PdfColors.grey700,
+              ),
+            ),
+          ],
           pw.SizedBox(height: 6),
           pw.Text(
             l10n.pdfSentenceCounts(

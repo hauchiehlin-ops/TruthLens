@@ -861,7 +861,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAdvantage6 =>
-      '證據不足時會誠實棄權：可分析句少於 5 句、字數少於 100、參與引擎少於 2 個、或引擎分歧超過 60 個百分點時，直接顯示「不做判定」。多數誤指控都源自對太短或訊號太弱的輸入給出自信的數字。';
+      '永遠提供最可能的 AI／非 AI 方向，並把方向與信心分開。文字太短、模型沉默、引擎不足或分歧過大時會降低信心，而不是把答案整個拿掉。';
 
   @override
   String get settingsAiSampleTitle => '新增 AI 產出樣本';
@@ -991,18 +991,18 @@ class AppLocalizationsZh extends AppLocalizations {
       '1. 文件來源鑑識（已上線）\n讀取 DOCX／ODT 容器內的編輯紀錄：編輯總時長、存檔次數、建立與修改時間，以及正文的編輯批次標記（RSID）。整篇文章只有一兩組 RSID，通常代表內容是一次寫入的；3000 字卻只編輯 4 分鐘，這個證據比任何困惑度分數都硬。這屬於來源證據，與 AI 機率分開呈現，刻意不併入分數。\n\n2. 本地基準校準與共形預測（已上線）\n你可以把確定由作者本人撰寫的文章加入基準集，系統改以這個族群自己的分布判斷，而非全球通用門檻。共形預測提供分布無關的保證：若基準與待測樣本可交換，偽陽性率不超過你設定的 α。這是降低非母語寫作誤判的關鍵，也是商用產品做不到的——它們沒有這批作者的基準寫作。\n\n3. 學習式引擎權重（已上線）\n當基準集同時累積人類與 AI 兩類樣本後，系統以 Cohen\'s d 效果量衡量每個引擎分開這兩組的能力，據此建議權重，取代手調的固定比例。需你按下「套用」才會生效，不會靜默改動設定。\n\n4. 交叉困惑度 Binoculars（評分核心已完成，尚未上線）\n裸 perplexity 把「文字好不好預測」直接當成「像不像 AI」，因此對用詞平實的非母語寫作有系統性偽陽性。Binoculars 改以「好預測的程度相對於兩個模型彼此分歧的程度」來衡量。評分數學已實作並通過測試，但要真正啟用還需要一組能在瀏覽器執行的小型語言模型配對，以及標註資料的效果驗證。\n\n5. 浮水印偵測（經查證不可行，未實作）\nSynthID-Text 的偵測綁定金鑰：偵測器必須用與生成時相同的金鑰計算，而 Google 生產環境的金鑰並未公開。在瀏覽器端做這件事，對 ChatGPT、Claude、Gemini 的真實輸出永遠不會命中，只會變成永不觸發卻讓人誤以為有在檢查的假功能，因此主動不做。';
 
   @override
-  String get helpCascadeTitle => '三、分級瀑布與棄權機制';
+  String get helpCascadeTitle => '三、分級分析與整合判讀';
 
   @override
   String get helpCascadeBody =>
-      '為了在瀏覽器有限的運算預算下維持速度，分析採分層進行，便宜的訊號先跑，昂貴的只在必要時啟動：\n\n第 0 層　文件來源證據（幾乎零成本）\n第 1 層　統計與風格特徵（現有引擎，便宜）\n第 2 層　Transformer 句級分類器\n第 3 層　交叉困惑度（最昂貴，僅在前面仍模稜兩可時）\n\n最後把結果交給本地校準，輸出帶有偽陽性率保證的結論——或明確棄權。\n\n【棄權為什麼重要】\n多數誤指控都來自對太短或訊號太弱的輸入給出一個自信的數字。本工具在以下情況會直接顯示「證據不足，不做判定」，而不是硬給分數：\n\n・可分析的句子少於 5 句\n・內容少於 100 字\n・參與投票的引擎少於 2 個\n・引擎之間分歧超過 60 個百分點（此時加權平均已失去意義）\n\n棄權時下方仍保留完整分數與逐句證據供你自行參考，但請不要把它當成結論。會說「我不知道」的系統，比永遠給你一個數字的系統更值得信任。';
+      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n最終判讀以保守權重整合六個面向：文字痕跡、寫作過程、文件來源、草稿演進、任務契合與來源完整性，並固定輸出較可能是 AI 或較可能不是 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
 
   @override
   String get helpRisksTitle => '四、必須誠實面對的風險';
 
   @override
   String get helpRisksBody =>
-      '以下每一項都是本工具真實存在的限制，請在做出任何決定前一併考慮：\n\n1. 來源證據可以被清除或偽造\n另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案，都會讓編輯紀錄歸零。因此有訊號只是佐證，沒有訊號也絕不代表文件必然由人撰寫。\n\n2. 共形保證依賴「可交換性」\n保證成立的前提是基準樣本與待測文章出自同一群人、同一類寫作任務。作者寫作能力明顯進步、或換了完全不同的任務類型，前提就不再成立，需要重建基準集。\n\n3. 基準集本身可能被汙染\n如果拿來當基準的作業其實是 AI 代寫的，整個校準都會偏掉。基準樣本必須在可控環境下蒐集，例如在可控環境下當場完成的作品。\n\n4. 瀏覽器端小模型的原始準度不如伺服器端大模型\n這是 Web-only 決策換取隱私的必然代價。本工具的價值不在單一分數更準，而在可解釋、可校準、且會誠實棄權。\n\n5. 任何分數都不應單獨作為指控的依據\n請務必搭配逐句證據、文件來源，以及你對這位作者既有的了解一起判讀。本工具的設計目標是輔助你進行對話，不是代替你做出裁決。';
+      '以下每一項都是本工具真實存在的限制，請在做出任何決定前一併考慮：\n\n1. 來源證據可以被清除或偽造\n另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案，都會讓編輯紀錄歸零。因此有訊號只是佐證，沒有訊號也絕不代表文件必然由人撰寫。\n\n2. 共形保證依賴「可交換性」\n保證成立的前提是基準樣本與待測文章出自同一群人、同一類寫作任務。作者寫作能力明顯進步、或換了完全不同的任務類型，前提就不再成立，需要重建基準集。\n\n3. 基準集本身可能被汙染\n如果拿來當基準的作業其實是 AI 代寫的，整個校準都會偏掉。基準樣本必須在可控環境下蒐集，例如在可控環境下當場完成的作品。\n\n4. 瀏覽器端小模型的原始準度不如伺服器端大模型\n這是 Web-only 決策換取隱私的必然代價。本工具的價值不是神奇地給出精準單一分數，而是提供可解釋的方向、明確信心與證據限制。\n\n5. 任何分數都不應單獨作為指控的依據\n請務必搭配逐句證據、文件來源，以及你對這位作者既有的了解一起判讀。本工具的設計目標是輔助你進行對話，不是代替你做出裁決。';
 
   @override
   String get calibrationAddHuman => '加入為「人類撰寫」基準';
@@ -1864,7 +1864,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI 機率歸入五個固定級距（低於 20%、20–40%、40–60%、60–80%、80% 以上）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。切點固定不可調整，因此同一份文件在任何人手上都會落在同一級距。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎會與寫作過程、文件來源、草稿演進、任務契合及來源完整性一併整合，文件內容不會上傳到任何伺服器。\n\n報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2573,8 +2573,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get evidenceMatrixTitle => '多證據鑑識矩陣';
 
   @override
-  String get evidenceMatrixSubtitle =>
-      '四個獨立面向分開呈現。覆蓋率只表示本次能檢查哪些證據，不是另一個 AI 機率。';
+  String get evidenceMatrixSubtitle => '六個面向先分開呈現，再以保守權重納入整合判讀。覆蓋率表示本次能檢查哪些證據。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -2729,6 +2728,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
+
+  @override
+  String get integratedAssessmentTitle => '整合作者判讀';
+
+  @override
+  String get integratedLikelyAi => '較可能是 AI 生成';
+
+  @override
+  String get integratedLikelyHuman => '較可能不是 AI 生成';
+
+  @override
+  String integratedLikelihoodLabel(int percent) {
+    return '整合 AI 可能性：$percent%';
+  }
+
+  @override
+  String integratedTextScoreLabel(int percent) {
+    return '文字模型原始分數：$percent%';
+  }
+
+  @override
+  String integratedConfidenceLabel(String confidence) {
+    return '判讀信心：$confidence';
+  }
+
+  @override
+  String get integratedConfidenceLow => '低';
+
+  @override
+  String get integratedConfidenceModerate => '中';
+
+  @override
+  String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedQualifiedWarning(String reason) {
+    return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
+  }
+
+  @override
+  String get integratedIndexCaveat =>
+      '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+
+  @override
+  String telemetryIntegratedVerdict(
+    String direction,
+    int percent,
+    String confidence,
+  ) {
+    return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3588,7 +3638,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAdvantage6 =>
-      '证据不足时会诚实弃权：可分析句少于 5 句、字数少于 100、参与引擎少于 2 个、或引擎分歧超过 60 个百分点时，直接显示「不做判定」。多数误指控都源自对太短或信号太弱的输入给出自信的数字。';
+      '始终提供最可能的 AI／非 AI 方向，并把方向与信心分开。文字太短、模型沉默、引擎不足或分歧过大时会降低信心，而不是把答案整个拿掉。';
 
   @override
   String get settingsAiSampleTitle => '新增 AI 产出样本';
@@ -3718,18 +3768,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '1. 文件来源鉴识（已上线）\n读取 DOCX／ODT 容器内的编辑记录：编辑总时长、存档次数、创建与修改时间，以及正文的编辑批次标记（RSID）。整篇文章只有一两组 RSID，通常代表内容是一次写入的；3000 字却只编辑 4 分钟，这个证据比任何困惑度分数都硬。这属于来源证据，与 AI 几率分开呈现，刻意不并入分数。\n\n2. 本地基准校准与共形预测（已上线）\n你可以把确定由作者本人撰写的文章加入基准集，系统改以这个族群自己的分布判断，而非全球通用门槛。共形预测提供分布无关的保证：若基准与待测样本可交换，伪阳性率不超过你设定的 α。这是降低非母语写作误判的关键，也是商用产品做不到的——它们没有这批作者的基准写作。\n\n3. 学习式引擎权重（已上线）\n当基准集同时累积人类与 AI 两类样本后，系统以 Cohen\'s d 效果量衡量每个引擎分开这两组的能力，据此建议权重，取代手调的固定比例。需你按下「套用」才会生效，不会静默改动设定。\n\n4. 交叉困惑度 Binoculars（评分核心已完成，尚未上线）\n裸 perplexity 把「文字好不好预测」直接当成「像不像 AI」，因此对用词平实的非母语写作有系统性伪阳性。Binoculars 改以「好预测的程度相对于两个模型彼此分歧的程度」来衡量。评分数学已实作并通过测试，但要真正启用还需要一组能在浏览器执行的小型语言模型配对，以及标注数据的效果验证。\n\n5. 水印检测（经查证不可行，未实作）\nSynthID-Text 的检测绑定密钥：检测器必须用与生成时相同的密钥计算，而 Google 生产环境的密钥并未公开。在浏览器端做这件事，对 ChatGPT、Claude、Gemini 的真实输出永远不会命中，只会变成永不触发却让人误以为有在检查的假功能，因此主动不做。';
 
   @override
-  String get helpCascadeTitle => '三、分级瀑布与弃权机制';
+  String get helpCascadeTitle => '三、分级分析与整合判读';
 
   @override
   String get helpCascadeBody =>
-      '为了在浏览器有限的运算预算下维持速度，分析采分层进行，便宜的信号先跑，昂贵的只在必要时启动：\n\n第 0 层　文件来源证据（几乎零成本）\n第 1 层　统计与风格特征（现有引擎，便宜）\n第 2 层　Transformer 句级分类器\n第 3 层　交叉困惑度（最昂贵，仅在前面仍模棱两可时）\n\n最后把结果交给本地校准，输出带有伪阳性率保证的结论——或明确弃权。\n\n【弃权为什么重要】\n多数误指控都来自对太短或信号太弱的输入给出一个自信的数字。本工具在以下情况会直接显示「证据不足，不做判定」，而不是硬给分数：\n\n・可分析的句子少于 5 句\n・内容少于 100 字\n・参与投票的引擎少于 2 个\n・引擎之间分歧超过 60 个百分点（此时加权平均已失去意义）\n\n弃权时下方仍保留完整分数与逐句证据供你自行参考，但请不要把它当成结论。会说「我不知道」的系统，比永远给你一个数字的系统更值得信任。';
+      '分析依序执行文件来源、统计与风格特征、Transformer 句级分类，以及必要时才启动的交叉困惑度。\n\n最终判读以保守权重整合六个方面：文字痕迹、写作过程、文件来源、草稿演进、任务契合与来源完整性，并固定输出较可能是 AI 或较可能不是 AI。\n\n信心会独立计算。可分析句少于 5 句、内容少于 100 字、引擎少于 2 个、模型沉默或分歧过大时，都会降低信心并显示限制警告。方向仍可用于筛查，但低信心结果不得当成定案证明。';
 
   @override
   String get helpRisksTitle => '四、必须诚实面对的风险';
 
   @override
   String get helpRisksBody =>
-      '以下每一项都是本工具真实存在的限制，请在做出任何决定前一并考虑：\n\n1. 来源证据可以被清除或伪造\n另存新档、在线转档、从 Google 文档导出、或复制到新文件，都会让编辑记录归零。因此有信号只是佐证，没有信号也绝不代表文件必然由人撰写。\n\n2. 共形保证依赖「可交换性」\n保证成立的前提是基准样本与待测文章出自同一群人、同一类写作任务。作者写作能力明显进步、或换了完全不同的任务类型，前提就不再成立，需要重建基准集。\n\n3. 基准集本身可能被污染\n如果拿来当基准的作业其实是 AI 代写的，整个校准都会偏掉。基准样本必须在可控环境下收集，例如在可控环境下当场完成的作品。\n\n4. 浏览器端小模型的原始准度不如服务器端大模型\n这是 Web-only 决策换取隐私的必然代价。本工具的价值不在单一分数更准，而在可解释、可校准、且会诚实弃权。\n\n5. 任何分数都不应单独作为指控的依据\n请务必搭配逐句证据、文件来源，以及你对这位作者既有的了解一起判读。本工具的设计目标是辅助你进行对话，不是代替你做出裁决。';
+      '以下每一项都是本工具真实存在的限制，请在做出任何决定前一并考虑：\n\n1. 来源证据可以被清除或伪造\n另存新档、在线转档、从 Google 文档导出、或复制到新文件，都会让编辑记录归零。因此有信号只是佐证，没有信号也绝不代表文件必然由人撰写。\n\n2. 共形保证依赖「可交换性」\n保证成立的前提是基准样本与待测文章出自同一群人、同一类写作任务。作者写作能力明显进步、或换了完全不同的任务类型，前提就不再成立，需要重建基准集。\n\n3. 基准集本身可能被污染\n如果拿来当基准的作业其实是 AI 代写的，整个校准都会偏掉。基准样本必须在可控环境下收集，例如在可控环境下当场完成的作品。\n\n4. 浏览器端小模型的原始准度不如服务器端大模型\n这是 Web-only 决策换取隐私的必然代价。本工具的价值不是神奇地给出精准单一分数，而是提供可解释的方向、明确信心与证据限制。\n\n5. 任何分数都不应单独作为指控的依据\n请务必搭配逐句证据、文件来源，以及你对这位作者既有的了解一起判读。本工具的设计目标是辅助你进行对话，不是代替你做出裁决。';
 
   @override
   String get calibrationAddHuman => '加入为「人类撰写」基准';
@@ -4591,7 +4641,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个独立引擎——Transformer 神经网络分类器、统计特征分析、风格特征分析、对抗式改写检测——加权投票判定文字是否为 AI 生成，文件内容不会上传到任何服务器。\n\n报告以 AI 几率归入五个固定级距（低于 20%、20–40%、40–60%、60–80%、80% 以上）呈现判定，并附逐句证据、各引擎贡献、文件来源证据，以及导入时的来源档名。切点固定不可调整，因此同一份文件在任何人手上都会落在同一级距。证据不足时（句数或字数太少、引擎分歧过大）会明确显示「不做判定」，而不是硬给一个分数。';
+      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎会与写作过程、文件来源、草稿演进、任务契合及来源完整性一并整合，文件内容不会上传到任何服务器。\n\n报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。文字模型原始分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -5300,8 +5350,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get evidenceMatrixTitle => '多证据鉴识矩阵';
 
   @override
-  String get evidenceMatrixSubtitle =>
-      '四个独立方面分开呈现。覆盖率只表示本次能检查哪些证据，不是另一个 AI 概率。';
+  String get evidenceMatrixSubtitle => '六个方面先分开呈现，再以保守权重纳入整合判读。覆盖率表示本次能检查哪些证据。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -5456,6 +5505,57 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get challengeStatePasted => '检测到大段粘贴，请在监督下重答';
+
+  @override
+  String get integratedAssessmentTitle => '整合作者判读';
+
+  @override
+  String get integratedLikelyAi => '较可能是 AI 生成';
+
+  @override
+  String get integratedLikelyHuman => '较可能不是 AI 生成';
+
+  @override
+  String integratedLikelihoodLabel(int percent) {
+    return '整合 AI 可能性：$percent%';
+  }
+
+  @override
+  String integratedTextScoreLabel(int percent) {
+    return '文字模型原始分数：$percent%';
+  }
+
+  @override
+  String integratedConfidenceLabel(String confidence) {
+    return '判读信心：$confidence';
+  }
+
+  @override
+  String get integratedConfidenceLow => '低';
+
+  @override
+  String get integratedConfidenceModerate => '中';
+
+  @override
+  String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedQualifiedWarning(String reason) {
+    return '$reason 系统仍提供最可能方向，但已降低信心；请把它视为筛查结果，而不是定案证明。';
+  }
+
+  @override
+  String get integratedIndexCaveat =>
+      '本指数整合文字模型、写作过程、文件来源、草稿演进、任务契合与来源完整性；它是证据指数，不是经总体校准的统计概率。';
+
+  @override
+  String telemetryIntegratedVerdict(
+    String direction,
+    int percent,
+    String confidence,
+  ) {
+    return '依本次可用证据加权后，本文“$direction”（AI 可能性指数 $percent%，$confidence信心）。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6315,7 +6415,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAdvantage6 =>
-      '證據不足時會誠實棄權：可分析句少於 5 句、字數少於 100、參與引擎少於 2 個、或引擎分歧超過 60 個百分點時，直接顯示「不做判定」。多數誤指控都源自對太短或訊號太弱的輸入給出自信的數字。';
+      '永遠提供最可能的 AI／非 AI 方向，並把方向與信心分開。文字太短、模型沉默、引擎不足或分歧過大時會降低信心，而不是把答案整個拿掉。';
 
   @override
   String get settingsAiSampleTitle => '新增 AI 產出樣本';
@@ -6445,18 +6545,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '1. 文件來源鑑識（已上線）\n讀取 DOCX／ODT 容器內的編輯紀錄：編輯總時長、存檔次數、建立與修改時間，以及正文的編輯批次標記（RSID）。整篇文章只有一兩組 RSID，通常代表內容是一次寫入的；3000 字卻只編輯 4 分鐘，這個證據比任何困惑度分數都硬。這屬於來源證據，與 AI 機率分開呈現，刻意不併入分數。\n\n2. 本地基準校準與共形預測（已上線）\n你可以把確定由作者本人撰寫的文章加入基準集，系統改以這個族群自己的分布判斷，而非全球通用門檻。共形預測提供分布無關的保證：若基準與待測樣本可交換，偽陽性率不超過你設定的 α。這是降低非母語寫作誤判的關鍵，也是商用產品做不到的——它們沒有這批作者的基準寫作。\n\n3. 學習式引擎權重（已上線）\n當基準集同時累積人類與 AI 兩類樣本後，系統以 Cohen\'s d 效果量衡量每個引擎分開這兩組的能力，據此建議權重，取代手調的固定比例。需你按下「套用」才會生效，不會靜默改動設定。\n\n4. 交叉困惑度 Binoculars（評分核心已完成，尚未上線）\n裸 perplexity 把「文字好不好預測」直接當成「像不像 AI」，因此對用詞平實的非母語寫作有系統性偽陽性。Binoculars 改以「好預測的程度相對於兩個模型彼此分歧的程度」來衡量。評分數學已實作並通過測試，但要真正啟用還需要一組能在瀏覽器執行的小型語言模型配對，以及標註資料的效果驗證。\n\n5. 浮水印偵測（經查證不可行，未實作）\nSynthID-Text 的偵測綁定金鑰：偵測器必須用與生成時相同的金鑰計算，而 Google 生產環境的金鑰並未公開。在瀏覽器端做這件事，對 ChatGPT、Claude、Gemini 的真實輸出永遠不會命中，只會變成永不觸發卻讓人誤以為有在檢查的假功能，因此主動不做。';
 
   @override
-  String get helpCascadeTitle => '三、分級瀑布與棄權機制';
+  String get helpCascadeTitle => '三、分級分析與整合判讀';
 
   @override
   String get helpCascadeBody =>
-      '為了在瀏覽器有限的運算預算下維持速度，分析採分層進行，便宜的訊號先跑，昂貴的只在必要時啟動：\n\n第 0 層　文件來源證據（幾乎零成本）\n第 1 層　統計與風格特徵（現有引擎，便宜）\n第 2 層　Transformer 句級分類器\n第 3 層　交叉困惑度（最昂貴，僅在前面仍模稜兩可時）\n\n最後把結果交給本地校準，輸出帶有偽陽性率保證的結論——或明確棄權。\n\n【棄權為什麼重要】\n多數誤指控都來自對太短或訊號太弱的輸入給出一個自信的數字。本工具在以下情況會直接顯示「證據不足，不做判定」，而不是硬給分數：\n\n・可分析的句子少於 5 句\n・內容少於 100 字\n・參與投票的引擎少於 2 個\n・引擎之間分歧超過 60 個百分點（此時加權平均已失去意義）\n\n棄權時下方仍保留完整分數與逐句證據供你自行參考，但請不要把它當成結論。會說「我不知道」的系統，比永遠給你一個數字的系統更值得信任。';
+      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n最終判讀以保守權重整合六個面向：文字痕跡、寫作過程、文件來源、草稿演進、任務契合與來源完整性，並固定輸出較可能是 AI 或較可能不是 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
 
   @override
   String get helpRisksTitle => '四、必須誠實面對的風險';
 
   @override
   String get helpRisksBody =>
-      '以下每一項都是本工具真實存在的限制，請在做出任何決定前一併考慮：\n\n1. 來源證據可以被清除或偽造\n另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案，都會讓編輯紀錄歸零。因此有訊號只是佐證，沒有訊號也絕不代表文件必然由人撰寫。\n\n2. 共形保證依賴「可交換性」\n保證成立的前提是基準樣本與待測文章出自同一群人、同一類寫作任務。作者寫作能力明顯進步、或換了完全不同的任務類型，前提就不再成立，需要重建基準集。\n\n3. 基準集本身可能被汙染\n如果拿來當基準的作業其實是 AI 代寫的，整個校準都會偏掉。基準樣本必須在可控環境下蒐集，例如在可控環境下當場完成的作品。\n\n4. 瀏覽器端小模型的原始準度不如伺服器端大模型\n這是 Web-only 決策換取隱私的必然代價。本工具的價值不在單一分數更準，而在可解釋、可校準、且會誠實棄權。\n\n5. 任何分數都不應單獨作為指控的依據\n請務必搭配逐句證據、文件來源，以及你對這位作者既有的了解一起判讀。本工具的設計目標是輔助你進行對話，不是代替你做出裁決。';
+      '以下每一項都是本工具真實存在的限制，請在做出任何決定前一併考慮：\n\n1. 來源證據可以被清除或偽造\n另存新檔、線上轉檔、從 Google 文件匯出、或複製到新檔案，都會讓編輯紀錄歸零。因此有訊號只是佐證，沒有訊號也絕不代表文件必然由人撰寫。\n\n2. 共形保證依賴「可交換性」\n保證成立的前提是基準樣本與待測文章出自同一群人、同一類寫作任務。作者寫作能力明顯進步、或換了完全不同的任務類型，前提就不再成立，需要重建基準集。\n\n3. 基準集本身可能被汙染\n如果拿來當基準的作業其實是 AI 代寫的，整個校準都會偏掉。基準樣本必須在可控環境下蒐集，例如在可控環境下當場完成的作品。\n\n4. 瀏覽器端小模型的原始準度不如伺服器端大模型\n這是 Web-only 決策換取隱私的必然代價。本工具的價值不是神奇地給出精準單一分數，而是提供可解釋的方向、明確信心與證據限制。\n\n5. 任何分數都不應單獨作為指控的依據\n請務必搭配逐句證據、文件來源，以及你對這位作者既有的了解一起判讀。本工具的設計目標是輔助你進行對話，不是代替你做出裁決。';
 
   @override
   String get calibrationAddHuman => '加入為「人類撰寫」基準';
@@ -7318,7 +7418,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個獨立引擎——Transformer 神經網路分類器、統計特徵分析、風格特徵分析、對抗式改寫偵測——加權投票判定文字是否為 AI 生成，文件內容不會上傳到任何伺服器。\n\n報告以 AI 機率歸入五個固定級距（低於 20%、20–40%、40–60%、60–80%、80% 以上）呈現判定，並附逐句證據、各引擎貢獻、文件來源證據，以及匯入時的來源檔名。切點固定不可調整，因此同一份文件在任何人手上都會落在同一級距。證據不足時（句數或字數太少、引擎分歧過大）會明確顯示「不做判定」，而不是硬給一個分數。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎會與寫作過程、文件來源、草稿演進、任務契合及來源完整性一併整合，文件內容不會上傳到任何伺服器。\n\n報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -8027,8 +8127,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get evidenceMatrixTitle => '多證據鑑識矩陣';
 
   @override
-  String get evidenceMatrixSubtitle =>
-      '四個獨立面向分開呈現。覆蓋率只表示本次能檢查哪些證據，不是另一個 AI 機率。';
+  String get evidenceMatrixSubtitle => '六個面向先分開呈現，再以保守權重納入整合判讀。覆蓋率表示本次能檢查哪些證據。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -8183,4 +8282,55 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
+
+  @override
+  String get integratedAssessmentTitle => '整合作者判讀';
+
+  @override
+  String get integratedLikelyAi => '較可能是 AI 生成';
+
+  @override
+  String get integratedLikelyHuman => '較可能不是 AI 生成';
+
+  @override
+  String integratedLikelihoodLabel(int percent) {
+    return '整合 AI 可能性：$percent%';
+  }
+
+  @override
+  String integratedTextScoreLabel(int percent) {
+    return '文字模型原始分數：$percent%';
+  }
+
+  @override
+  String integratedConfidenceLabel(String confidence) {
+    return '判讀信心：$confidence';
+  }
+
+  @override
+  String get integratedConfidenceLow => '低';
+
+  @override
+  String get integratedConfidenceModerate => '中';
+
+  @override
+  String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedQualifiedWarning(String reason) {
+    return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
+  }
+
+  @override
+  String get integratedIndexCaveat =>
+      '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+
+  @override
+  String telemetryIntegratedVerdict(
+    String direction,
+    int percent,
+    String confidence,
+  ) {
+    return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
+  }
 }

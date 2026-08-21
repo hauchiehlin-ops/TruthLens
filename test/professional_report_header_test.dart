@@ -130,7 +130,7 @@ void main() {
   });
 
   testWidgets(
-    'verdict card shows AI probability and all five fixed tiers, no confidence badge, no overflow on a narrow screen',
+    '整合判讀卡同時顯示方向、指數、原始分數與信心，窄畫面不溢位',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(360, 1600));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -144,21 +144,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      // 標題列直接顯示 AI 機率，不再有門檻換算
-      expect(
-        find.textContaining('22%', findRichText: true),
-        findsWidgets,
-      );
-      // 五級區間為固定切點，第一個切點 20%
-      expect(find.text('AI probability < 20%'), findsOneWidget);
-      // "Likely human" is the active verdict, so it also appears as the
-      // headline label and in the radar-panel badge, not just the tier chip.
-      expect(find.text('Human-written'), findsOneWidget);
-      expect(find.text('Likely human'), findsWidgets);
-      expect(find.text('Mixed content'), findsOneWidget);
-      expect(find.text('Likely AI'), findsOneWidget);
-      expect(find.text('AI-generated'), findsOneWidget);
-      expect(find.textContaining('confidence'), findsNothing);
+      expect(find.text('Integrated authorship assessment'), findsOneWidget);
+      expect(find.text('More likely not AI-generated'), findsOneWidget);
+      expect(find.text('Integrated AI likelihood: 22%'), findsOneWidget);
+      expect(find.textContaining('Text-model score: 22%'), findsOneWidget);
+      expect(find.textContaining('Confidence: Moderate'), findsOneWidget);
+      expect(find.text('AI probability < 20%'), findsNothing);
     },
   );
 }

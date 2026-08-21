@@ -7,6 +7,7 @@ import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/forensic_evidence.dart';
+import '../../core/services/integrated_assessment.dart';
 import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -169,7 +170,8 @@ class ProfessionalReportHeader extends StatelessWidget {
             },
           ),
 
-          // 3. 四軸證據矩陣。覆蓋與證據方向分開呈現，不製造第二個總分。
+          // 3. 六軸證據矩陣。覆蓋與證據方向分開呈現，再由下方整合判讀
+          //    以可追溯權重輸出最可能方向。
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: EvidenceMatrixCard(
@@ -188,6 +190,7 @@ class ProfessionalReportHeader extends StatelessWidget {
               result: result,
               l10n: l10n,
               citations: citations,
+              claims: claims,
             ),
           ),
 
@@ -359,7 +362,6 @@ _LowScoreCaveat _lowScoreCaveat(
   DetectionResult result, {
   CitationEvidence citations = CitationEvidence.none,
 }) {
-  if (result.shouldAbstain) return _LowScoreCaveat.none;
   if (result.verdict != Verdict.human &&
       result.verdict != Verdict.likelyHuman) {
     return _LowScoreCaveat.none;
@@ -393,33 +395,36 @@ class _VerdictSummaryCard extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
   final CitationEvidence citations;
+  final ClaimAudit claims;
 
   const _VerdictSummaryCard({
     required this.result,
     required this.l10n,
     this.citations = CitationEvidence.none,
+    this.claims = ClaimAudit.none,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 卡片底色跟著判定級距走，五級各有專屬色相。原本只分「AI/非 AI」兩色，
-    // 「可能人類」與「混合內容」看起來完全一樣，等級的差異在視覺上不存在。
-    // 棄權時不套判定色——那會讓「不做判定」看起來像某一級的結論。
-    final verdict = result.shouldAbstain ? null : result.verdict;
-    final base = verdict == null
-        ? const Color(0xFF37474F) // 中性石板灰，明確不屬於任何一級
-        : verdictColor(verdict);
+    final assessment = IntegratedAssessment.assess(
+      result,
+      citations: citations,
+      claims: claims,
+    );
+    final verdict = assessment.direction == IntegratedDirection.likelyAi
+        ? Verdict.likelyAi
+        : Verdict.likelyHuman;
+    final base = verdictColor(verdict);
+    final confidence = switch (assessment.confidence) {
+      IntegratedConfidence.low => l10n.integratedConfidenceLow,
+      IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+      IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+    };
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: verdict == null
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color.lerp(base, Colors.white, 0.12)!, base],
-              )
-            : verdictGradient(verdict),
+        gradient: verdictGradient(verdict),
         boxShadow: [
           BoxShadow(
             color: base.withValues(alpha: 0.3),
@@ -443,13 +448,9 @@ class _VerdictSummaryCard extends StatelessWidget {
               // 圖示與底色同步分級：只靠顏色分辨對色盲使用者不友善，
               // 形狀是第二條獨立的辨識線索。
               child: Icon(
-                switch (verdict) {
-                  null => LucideIcons.helpCircle, // 棄權
-                  Verdict.human || Verdict.likelyHuman => LucideIcons.pencil,
-                  Verdict.mixed => LucideIcons.layers,
-                  Verdict.likelyAi => LucideIcons.fileText,
-                  Verdict.ai => LucideIcons.cpu,
-                },
+                assessment.direction == IntegratedDirection.likelyAi
+                    ? LucideIcons.cpu
+                    : LucideIcons.pencil,
                 size: 40,
                 color: Colors.white,
               ),
@@ -463,44 +464,73 @@ class _VerdictSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  result.shouldAbstain
-                      ? l10n.abstentionHeadline
-                      : result.verdict.label(l10n),
+                  l10n.integratedAssessmentTitle,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  assessment.direction == IntegratedDirection.likelyAi
+                      ? l10n.integratedLikelyAi
+                      : l10n.integratedLikelyHuman,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (result.shouldAbstain) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    describeAbstention(result, l10n),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    l10n.abstentionScoreStillShown,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.white70,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 8),
                 Text(
-                  '${l10n.reportAiProbabilityPrefix}'
-                  '${(result.aiProbability * 100).round()}%',
+                  l10n.integratedLikelihoodLabel(
+                    (assessment.aiLikelihood * 100).round(),
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (!result.shouldAbstain) ...[
-                  const SizedBox(height: 12),
-                  _VerdictTierList(result: result, l10n: l10n),
+                const SizedBox(height: 3),
+                Text(
+                  '${l10n.integratedTextScoreLabel((result.aiProbability * 100).round())} · '
+                  '${l10n.integratedConfidenceLabel(confidence)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.88),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.integratedIndexCaveat,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.white70,
+                    height: 1.4,
+                  ),
+                ),
+                if (result.hasEvidenceLimitations) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.integratedQualifiedWarning(
+                        describeAbstention(result, l10n),
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
                 ],
                 // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
                 // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
@@ -570,84 +600,6 @@ class _VerdictSummaryCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// 五個判定等級清單，標示各等級對應的 AI 機率區間，目前等級以高亮呈現。
-/// 使用 [Wrap] 讓區塊在窄螢幕自動換行，符合響應式設計。
-class _VerdictTierList extends StatelessWidget {
-  final DetectionResult result;
-  final AppLocalizations l10n;
-
-  const _VerdictTierList({required this.result, required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    // 固定切點，直接以 AI 機率百分比呈現
-    final cutPercents = Verdict.cutPoints
-        .map((c) => (c * 100).round())
-        .toList();
-
-    final ranges = <Verdict, String>{
-      Verdict.human: l10n.reportVerdictRangeBelow(cutPercents[0]),
-      Verdict.likelyHuman: l10n.reportVerdictRangeBetween(
-        cutPercents[0],
-        cutPercents[1],
-      ),
-      Verdict.mixed: l10n.reportVerdictRangeBetween(
-        cutPercents[1],
-        cutPercents[2],
-      ),
-      Verdict.likelyAi: l10n.reportVerdictRangeBetween(
-        cutPercents[2],
-        cutPercents[3],
-      ),
-      Verdict.ai: l10n.reportVerdictRangeAbove(cutPercents[3]),
-    };
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: Verdict.values.map((verdict) {
-        final active = verdict == result.verdict;
-        return Container(
-          constraints: const BoxConstraints(minWidth: 120),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            // 每一級帶自己的色相，整條色階才讀得出「量表上的位置」；
-            // 作用中的一級提亮以浮出同色相的卡片背景，並加白框強調。
-            color: active
-                ? verdictActiveChipColor(verdict)
-                : verdictIdleChipColor(verdict),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: active ? 0.85 : 0.18),
-              width: active ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                verdict.label(l10n),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                ranges[verdict]!,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.white.withValues(alpha: active ? 0.95 : 0.7),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 }
