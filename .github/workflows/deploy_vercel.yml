@@ -11,6 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -21,6 +22,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Validate Vercel secrets
+        run: |
+          missing=()
+          [[ -z "$VERCEL_TOKEN" ]] && missing+=(VERCEL_TOKEN)
+          [[ -z "$VERCEL_ORG_ID" ]] && missing+=(VERCEL_ORG_ID)
+          [[ -z "$VERCEL_PROJECT_ID" ]] && missing+=(VERCEL_PROJECT_ID)
+          if (( ${#missing[@]} )); then
+            echo "Missing GitHub Actions secrets: ${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Install and authenticate Vercel CLI
+        run: |
+          npm install --global vercel@latest
+          vercel whoami --token="$VERCEL_TOKEN"
 
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
@@ -34,17 +51,14 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --release
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
       - name: Link Vercel project
         working-directory: ./build/web
         run: >-
           vercel pull --yes --environment=production
-          --token="${{ secrets.VERCEL_TOKEN }}"
+          --token="$VERCEL_TOKEN"
 
       - name: Deploy to Vercel
         working-directory: ./build/web
         run: >-
           vercel deploy --prod --yes --archive=tgz
-          --token="${{ secrets.VERCEL_TOKEN }}"
+          --token="$VERCEL_TOKEN"

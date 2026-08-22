@@ -35,7 +35,9 @@ FPR 95% 上界、最低 recall、語言／領域 required coverage、provider／
 測試通過；Python 評測／資料切分工具 9 項測試通過；`flutter build web --no-pub`
 通過；`flutter analyze --no-pub` 僅保留 2 個既有測試警告。部署流程另以 Vercel
 官方 CLI 取代長時間停滯的 `amondnet/vercel-action@v25`，加入同分支取消舊執行與
-15 分鐘逾時，避免工作永久卡在部署步驟。
+15 分鐘逾時，避免工作永久卡在部署步驟；並在耗時建置前先檢查三個必要 secrets
+及 token 身分。首次執行已確認儲存庫仍缺 `VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`，
+現有 `VERCEL_TOKEN` 亦被 Vercel API 判為無效，須由帳戶持有人補正後重新執行。
 
 ## 2026-08-22（第一百二十五次更新）— 整合作者判讀置頂
 
