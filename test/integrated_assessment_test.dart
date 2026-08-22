@@ -140,7 +140,7 @@ void main() {
 
     expect(assessment.direction, IntegratedDirection.likelyAi);
     expect(assessment.aiLikelihood, greaterThan(0.85));
-    expect(assessment.textReliability, 0.90);
+    expect(assessment.textReliability, 0.95);
   });
 
   test('單一助理慣用語可能是正文引用，不足以自行產生 AI 結論', () {

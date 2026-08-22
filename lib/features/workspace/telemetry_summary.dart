@@ -32,9 +32,11 @@ List<String> buildTelemetrySummary(
     result,
     claims: ClaimAudit.analyze(result.inputText),
   );
-  final direction = assessment.direction == IntegratedDirection.likelyAi
-      ? l10n.integratedLikelyAi
-      : l10n.integratedLikelyHuman;
+  final direction = switch (assessment.direction) {
+    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+    IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+    IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+  };
   final confidence = switch (assessment.confidence) {
     IntegratedConfidence.low => l10n.integratedConfidenceLow,
     IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
@@ -105,6 +107,7 @@ List<String> buildTelemetrySummary(
     IntegratedDirection.likelyHuman when !enginesDisagree =>
       l10n.telemetrySummaryAdviceHuman,
     IntegratedDirection.likelyHuman => l10n.telemetrySummaryAdviceMixed,
+    IntegratedDirection.likelyMixed => l10n.telemetrySummaryAdviceMixed,
     IntegratedDirection.likelyAi => l10n.telemetrySummaryAdviceAi,
   });
 

@@ -2742,6 +2742,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedLikelyAi => '較可能是 AI 生成';
 
   @override
+  String get integratedLikelyMixed => '較可能是人機混合';
+
+  @override
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
@@ -2769,6 +2772,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedConfidenceHigh => '高';
 
   @override
+  String integratedEvidenceCoverage(int families, int coverage) {
+    return '獨立證據家族：$families/4 · 適用性覆蓋 $coverage%';
+  }
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
   }
@@ -2779,7 +2787,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下只呈現四個文字引擎；加權貢獻百分點合計為文字模型原始分數，不是整合 AI 可能性。「未偵測」表示低於 60% 強訊號閾值，不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，套用語言／領域適用性與校準可靠度，再要求獨立證據支持後才可跨越 AI 標記；「未偵測」不是人類撰寫的證明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -5555,6 +5563,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedLikelyAi => '较可能是 AI 生成';
 
   @override
+  String get integratedLikelyMixed => '较可能是人机混合';
+
+  @override
   String get integratedLikelyHuman => '较可能不是 AI 生成';
 
   @override
@@ -5582,6 +5593,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedConfidenceHigh => '高';
 
   @override
+  String integratedEvidenceCoverage(int families, int coverage) {
+    return '独立证据家族：$families/4 · 适用性覆盖 $coverage%';
+  }
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系统仍提供最可能方向，但已降低信心；请把它视为筛查结果，而不是定案证明。';
   }
@@ -5592,7 +5608,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下只呈现四个文字引擎；加权贡献百分点合计为文字模型原始分数，不是整合 AI 可能性。“未检测”表示低于 60% 强信号阈值，不是人类撰写的证明。';
+      '以下呈现四个文字引擎的诊断信号。最终文字分数会先把相关引擎合并为独立证据家族，套用语言／领域适用性与校准可靠度，再要求独立证据支持后才可跨越 AI 标记；“未检测”不是人类撰写的证明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -7495,7 +7511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -7624,7 +7640,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep2Bullet6 =>
-      '可在「設定」個別啟用／停用引擎、調整引擎權重。五個判定級距採固定切點（20%／40%／60%／80%），不提供調整，因此同一份文件在任何人手上都會得到相同判定。';
+      '可在「設定」個別啟用／停用引擎並調整證據家族的權重上限。模型若未經該語言或領域驗證、校準較弱或文字覆蓋不足，本次有效權重就會下修；相關引擎會先在同一家族內合併，不能重複放大相同訊號。';
 
   @override
   String get helpWorkflowStep3Title => '加入內容';
@@ -8368,6 +8384,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedLikelyAi => '較可能是 AI 生成';
 
   @override
+  String get integratedLikelyMixed => '較可能是人機混合';
+
+  @override
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
@@ -8395,6 +8414,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedConfidenceHigh => '高';
 
   @override
+  String integratedEvidenceCoverage(int families, int coverage) {
+    return '獨立證據家族：$families/4 · 適用性覆蓋 $coverage%';
+  }
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
   }
@@ -8405,7 +8429,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下只呈現四個文字引擎；加權貢獻百分點合計為文字模型原始分數，不是整合 AI 可能性。「未偵測」表示低於 60% 強訊號閾值，不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，套用語言／領域適用性與校準可靠度，再要求獨立證據支持後才可跨越 AI 標記；「未偵測」不是人類撰寫的證明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

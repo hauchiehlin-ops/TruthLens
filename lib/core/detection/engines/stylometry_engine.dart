@@ -152,6 +152,11 @@ class StylometryEngine implements DetectionEngine {
       features: features,
       reasons: reasons,
       hasEvidence: foundMarkers,
+      applicability: assistantArtifactHits >= 2
+          ? EngineApplicability.validated
+          : EngineApplicability.plausible,
+      // 規則式風格只作弱佐證；兩個完整聊天助理框架屬高特異性直接痕跡。
+      calibrationReliability: assistantArtifactHits >= 2 ? 0.95 : 0.42,
     );
   }
 }

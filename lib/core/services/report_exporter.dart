@@ -65,9 +65,11 @@ class ReportExporter {
   static String _integratedDirectionLabel(
     IntegratedAssessment assessment,
     AppLocalizations l10n,
-  ) => assessment.direction == IntegratedDirection.likelyAi
-      ? l10n.integratedLikelyAi
-      : l10n.integratedLikelyHuman;
+  ) => switch (assessment.direction) {
+    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+    IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+    IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+  };
 
   static String _integratedConfidenceLabel(
     IntegratedAssessment assessment,
@@ -152,6 +154,11 @@ class ReportExporter {
         'integrated_confidence': integrated.confidence.name,
         'integrated_confidence_score': integrated.confidenceScore,
         'text_model_reliability': integrated.textReliability,
+        'text_authorship_class': integrated.textAuthorshipClass.name,
+        'analysis_domain': integrated.analysisDomain.name,
+        'independent_evidence_families': integrated.independentEvidenceFamilies,
+        'applicability_coverage': integrated.applicabilityCoverage,
+        'evidence_coverage': integrated.evidenceCoverage,
         'evidence_contributions': [
           for (final contribution in integrated.contributions)
             {'axis': contribution.kind.name, 'log_odds': contribution.logOdds},
@@ -266,6 +273,19 @@ class ReportExporter {
       ..writeln('# integrated_confidence,${integrated.confidence.name}')
       ..writeln(
         '# text_model_reliability,${integrated.textReliability.toStringAsFixed(4)}',
+      )
+      ..writeln(
+        '# text_authorship_class,${integrated.textAuthorshipClass.name}',
+      )
+      ..writeln('# analysis_domain,${integrated.analysisDomain.name}')
+      ..writeln(
+        '# independent_evidence_families,${integrated.independentEvidenceFamilies}',
+      )
+      ..writeln(
+        '# applicability_coverage,${integrated.applicabilityCoverage.toStringAsFixed(4)}',
+      )
+      ..writeln(
+        '# evidence_coverage,${integrated.evidenceCoverage.toStringAsFixed(4)}',
       )
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')

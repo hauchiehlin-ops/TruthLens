@@ -60,10 +60,12 @@ class StatisticalEngine implements DetectionEngine {
     // 沿用別顆模型的門檻等於在未知尺度上下結論。
     final calibration = PerplexityCalibration.of(
       language.code,
-      modelId: modelManager?.activeVariant('statistical')?.variantId ??
+      modelId:
+          modelManager?.activeVariant('statistical')?.variantId ??
           defaultPerplexityModelId,
     );
     final ppl = calibration != null ? await _tryPerplexity(text.raw) : null;
+    features['perplexity_calibrated'] = ppl == null ? 0 : 1;
     if (calibration == null) {
       // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
       // 先前一律套用中日韓文那段說明，結果一篇英文論文被告知
@@ -93,8 +95,7 @@ class StatisticalEngine implements DetectionEngine {
         score += 0.28;
         moved = true;
         reasons.add(l10n.engineReasonPplLow(ppl.toStringAsFixed(0)));
-      } else if (calibration.humanCut != null &&
-          ppl > calibration.humanCut!) {
+      } else if (calibration.humanCut != null && ppl > calibration.humanCut!) {
         score -= 0.25;
         moved = true;
         reasons.add(l10n.engineReasonPplHigh(ppl.toStringAsFixed(0)));
@@ -130,6 +131,7 @@ class StatisticalEngine implements DetectionEngine {
     // 只保留 AI 側：現代 LLM 的中文輸出 MATTR 0.783–0.802，高於真人中位
     // 0.669，把高多樣性當成人類證據會主動把 AI 推向人類。
     final lexical = LexicalCalibration.of(language.code);
+    features['lexical_calibrated'] = lexical == null ? 0 : 1;
     if (lexical != null && text.allTokens.length >= 50) {
       final mattr = text.movingAverageTypeTokenRatio;
       features['mattr'] = mattr;
@@ -168,6 +170,18 @@ class StatisticalEngine implements DetectionEngine {
       aiProbability: clampedScore,
       weight: defaultWeight,
       hasEvidence: moved,
+      applicability: ppl != null
+          ? EngineApplicability.validated
+          : lexical != null
+          ? EngineApplicability.plausible
+          : EngineApplicability.unknown,
+      // 裸困惑度即使有逐語言門檻，跨領域穩健度仍有限；只有啟發式回退時
+      // 更不能和經驗證分類器等量齊觀。
+      calibrationReliability: ppl != null
+          ? 0.78
+          : lexical != null
+          ? 0.52
+          : 0.32,
       features: features,
       reasons: reasons,
     );
@@ -181,7 +195,8 @@ class StatisticalEngine implements DetectionEngine {
   static bool supportsPerplexity(
     String raw, {
     String modelId = defaultPerplexityModelId,
-  }) => PerplexityCalibration.of(detectLanguage(raw).code, modelId: modelId) !=
+  }) =>
+      PerplexityCalibration.of(detectLanguage(raw).code, modelId: modelId) !=
       null;
 
   Future<double?> _tryPerplexity(String text) async {

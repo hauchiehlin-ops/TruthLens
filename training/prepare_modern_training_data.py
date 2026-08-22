@@ -24,8 +24,13 @@ def load_rows(paths: list[Path]) -> list[dict]:
             label = row.get("label")
             if label in {"human", 0, "0"}:
                 row["label"] = 0
-            elif label in {"ai", 1, "1"}:
+                row["authorship_class"] = "human"
+            elif label in {"ai", "ai_generated", 1, "1"}:
                 row["label"] = 1
+                row["authorship_class"] = "ai_generated"
+            elif label == "ai_assisted":
+                row["label"] = 1
+                row["authorship_class"] = "ai_assisted"
             else:
                 raise ValueError(f"未知標籤 {label!r}：{path}")
             row["group_id"] = str(row.get("group_id") or row.get("doc_id") or row.get("id"))
@@ -34,22 +39,25 @@ def load_rows(paths: list[Path]) -> list[dict]:
 
 
 def grouped_split(rows: list[dict], val_ratio: float, seed: int) -> tuple[list[dict], list[dict]]:
-    groups: dict[tuple[int, str], list[dict]] = defaultdict(list)
+    groups: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
-        groups[(row["label"], row["group_id"])].append(row)
+        groups[row["group_id"]].append(row)
 
     rng = random.Random(seed)
-    val_keys: set[tuple[int, str]] = set()
-    for label in (0, 1):
-        keys = [key for key in groups if key[0] == label]
+    val_keys: set[str] = set()
+    by_signature: dict[tuple[int, ...], list[str]] = defaultdict(list)
+    for group_id, samples in groups.items():
+        signature = tuple(sorted({row["label"] for row in samples}))
+        by_signature[signature].append(group_id)
+    for keys in by_signature.values():
         rng.shuffle(keys)
         count = 0 if len(keys) < 2 else max(1, round(len(keys) * val_ratio))
         val_keys.update(keys[:count])
 
     train: list[dict] = []
     val: list[dict] = []
-    for key, samples in groups.items():
-        (val if key in val_keys else train).extend(samples)
+    for group_id, samples in groups.items():
+        (val if group_id in val_keys else train).extend(samples)
     rng.shuffle(train)
     rng.shuffle(val)
     return train, val
@@ -98,12 +106,22 @@ def assert_no_leakage(train: list[dict], val: list[dict]) -> None:
     if overlap:
         raise AssertionError(f"train/val group leakage: {sorted(overlap)[:5]}")
 
+    train_topics = {row["group_id"] for row in train}
+    val_topics = {row["group_id"] for row in val}
+    topic_overlap = train_topics & val_topics
+    if topic_overlap:
+        raise AssertionError(f"train/val prompt leakage: {sorted(topic_overlap)[:5]}")
+
 
 def summarize(name: str, rows: list[dict]) -> None:
     labels = Counter("human" if row["label"] == 0 else "ai" for row in rows)
     providers = Counter(row.get("provider", "unknown") for row in rows if row["label"] == 1)
     styles = Counter(row.get("style", "unknown") for row in rows if row["label"] == 1)
-    print(f"{name}: {dict(labels)} | AI providers={dict(providers)} | styles={dict(styles)}")
+    classes = Counter(row.get("authorship_class", "unknown") for row in rows)
+    print(
+        f"{name}: {dict(labels)} | classes={dict(classes)} | "
+        f"AI providers={dict(providers)} | styles={dict(styles)}"
+    )
 
 
 def main() -> None:

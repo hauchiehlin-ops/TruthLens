@@ -1,6 +1,6 @@
 """以獨立文件校準高特異性的 AI 判定操作點。
 
-輸入 JSONL 每列至少包含：doc_id、label（human/ai）、score（越高越像 AI）、
+輸入 JSONL 每列至少包含：doc_id、label（human/ai/ai_assisted/ai_generated）、score（越高越像 AI）、
 split（calibration/test）。可選 domain、language。校準集只負責選門檻；所有發布
 數字都由未參與選門檻的 test 文件計算，避免把調參資料當成成績。
 
@@ -21,7 +21,7 @@ from pathlib import Path
 
 
 def _label(value: object) -> int:
-    if value in {"ai", 1, "1"}:
+    if value in {"ai", "ai_assisted", "ai_generated", 1, "1"}:
         return 1
     if value in {"human", 0, "0"}:
         return 0
@@ -39,21 +39,51 @@ def load_documents(path: Path) -> list[dict]:
     documents: list[dict] = []
     for doc_id, rows in groups.items():
         labels = {_label(row["label"]) for row in rows}
+        label_classes = {str(row["label"]) for row in rows}
         splits = {str(row["split"]) for row in rows}
-        if len(labels) != 1 or len(splits) != 1:
-            raise ValueError(f"{doc_id}: chunks disagree on label or split")
+        if len(labels) != 1 or len(label_classes) != 1 or len(splits) != 1:
+            raise ValueError(
+                f"{doc_id}: chunks disagree on label class or split"
+            )
+        scores = [float(row["score"]) for row in rows]
+        if any(not 0 <= score <= 1 for score in scores):
+            raise ValueError(f"{doc_id}: scores must be between 0 and 1")
         documents.append(
             {
                 "doc_id": doc_id,
                 "label": labels.pop(),
+                "label_class": next(iter(label_classes)),
                 "split": splits.pop(),
-                "score": sum(float(row["score"]) for row in rows) / len(rows),
+                "score": sum(scores) / len(scores),
                 "domain": str(rows[0].get("domain") or "unknown"),
                 "language": str(rows[0].get("language") or "unknown"),
                 "source": str(rows[0].get("source") or ""),
+                "provider": str(rows[0].get("provider") or "unknown"),
+                "style": str(rows[0].get("style") or "standard"),
+                "attack": str(rows[0].get("attack") or "none"),
+                "group_id": str(rows[0].get("group_id") or doc_id),
+                "text": "\n".join(
+                    str(row.get("text") or "") for row in rows if row.get("text")
+                ),
             }
         )
     return documents
+
+
+def assert_split_isolation(documents: list[dict]) -> None:
+    """Reject source/prompt families shared by calibration and test."""
+    by_group: dict[str, set[str]] = defaultdict(set)
+    for row in documents:
+        by_group[row["group_id"]].add(row["split"])
+    overlap = sorted(
+        group_id
+        for group_id, splits in by_group.items()
+        if "calibration" in splits and "test" in splits
+    )
+    if overlap:
+        raise ValueError(
+            "calibration/test group leakage: " + ", ".join(overlap[:5])
+        )
 
 
 def select_threshold(rows: list[dict], target_fpr: float) -> float:
@@ -102,7 +132,9 @@ def evaluate(rows: list[dict], threshold: float) -> dict:
     }
 
 
-def grouped_evaluations(rows: list[dict], threshold: float) -> dict[str, dict]:
+def grouped_evaluations(
+    rows: list[dict], threshold: float, min_group_docs: int
+) -> dict[str, dict]:
     output: dict[str, dict] = {}
     for field in ("domain", "language"):
         values = sorted({row[field] for row in rows})
@@ -111,7 +143,31 @@ def grouped_evaluations(rows: list[dict], threshold: float) -> dict[str, dict]:
             if any(row["label"] == 0 for row in group) and any(
                 row["label"] == 1 for row in group
             ):
-                output[f"{field}:{value}"] = evaluate(group, threshold)
+                result = evaluate(group, threshold)
+                result["eligible_for_release_gate"] = (
+                    result["human_documents"] >= min_group_docs
+                    and result["ai_documents"] >= min_group_docs
+                )
+                output[f"{field}:{value}"] = result
+    return output
+
+
+def robustness_evaluations(
+    rows: list[dict], threshold: float, min_group_docs: int
+) -> dict[str, dict]:
+    """AI-only strata measure detector drift; FPR is governed by human strata."""
+    output: dict[str, dict] = {}
+    ai_rows = [row for row in rows if row["label"] == 1]
+    for field in ("provider", "style", "attack", "label_class"):
+        for value in sorted({row[field] for row in ai_rows}):
+            group = [row for row in ai_rows if row[field] == value]
+            detected = sum(float(row["score"]) >= threshold for row in group)
+            output[f"{field}:{value}"] = {
+                "ai_documents": len(group),
+                "true_positives": detected,
+                "recall": detected / len(group),
+                "eligible_for_release_gate": len(group) >= min_group_docs,
+            }
     return output
 
 
@@ -121,21 +177,80 @@ def main() -> None:
     parser.add_argument("--target-fpr", type=float, default=0.01)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--hard-negatives", type=Path)
+    parser.add_argument(
+        "--hard-positives",
+        type=Path,
+        help="輸出漏判的 AI 文件，供下一輪對抗訓練",
+    )
+    parser.add_argument("--min-group-docs", type=int, default=30)
+    parser.add_argument("--min-recall", type=float, default=0.50)
+    parser.add_argument("--required-language", action="append", default=[])
+    parser.add_argument("--required-domain", action="append", default=[])
     args = parser.parse_args()
     if not 0 < args.target_fpr < 1:
         parser.error("--target-fpr must be between 0 and 1")
+    if not 0 <= args.min_recall <= 1:
+        parser.error("--min-recall must be between 0 and 1")
 
     documents = load_documents(args.predictions)
+    assert_split_isolation(documents)
     calibration = [row for row in documents if row["split"] == "calibration"]
     test = [row for row in documents if row["split"] == "test"]
+    calibration_humans = sum(row["label"] == 0 for row in calibration)
+    minimum_calibration_humans = math.ceil(1 / args.target_fpr)
+    if calibration_humans < minimum_calibration_humans:
+        raise ValueError(
+            f"target FPR {args.target_fpr:.2%} requires at least "
+            f"{minimum_calibration_humans} independent calibration human documents; "
+            f"got {calibration_humans}"
+        )
     threshold = select_threshold(calibration, args.target_fpr)
     overall = evaluate(test, threshold)
+    fairness_groups = grouped_evaluations(test, threshold, args.min_group_docs)
+    robustness_groups = robustness_evaluations(
+        test, threshold, args.min_group_docs
+    )
+    fairness_gate = all(
+        (not result["eligible_for_release_gate"])
+        or (
+            result["fpr_upper_95"] <= args.target_fpr
+            and result["recall"] >= args.min_recall
+        )
+        for result in fairness_groups.values()
+    )
+    robustness_gate = all(
+        (not result["eligible_for_release_gate"])
+        or result["recall"] >= args.min_recall
+        for result in robustness_groups.values()
+    )
+    required_fairness_groups = {
+        *(f"language:{value}" for value in args.required_language),
+        *(f"domain:{value}" for value in args.required_domain),
+    }
+    missing_required_groups = sorted(
+        key
+        for key in required_fairness_groups
+        if key not in fairness_groups
+        or not fairness_groups[key]["eligible_for_release_gate"]
+    )
+    coverage_gate = not missing_required_groups
     report = {
         "threshold": threshold,
         "target_fpr": args.target_fpr,
         "test": overall,
-        "groups": grouped_evaluations(test, threshold),
-        "release_gate_passed": overall["fpr_upper_95"] <= args.target_fpr,
+        "minimum_recall": args.min_recall,
+        "minimum_group_documents": args.min_group_docs,
+        "fairness_groups": fairness_groups,
+        "robustness_groups": robustness_groups,
+        "required_fairness_groups": sorted(required_fairness_groups),
+        "missing_required_groups": missing_required_groups,
+        "release_gate_passed": (
+            overall["fpr_upper_95"] <= args.target_fpr
+            and overall["recall"] >= args.min_recall
+            and fairness_gate
+            and robustness_gate
+            and coverage_gate
+        ),
         "release_gate_note": (
             "Only an independent test set supports a confidence claim; accuracy alone does not."
         ),
@@ -151,6 +266,17 @@ def main() -> None:
         args.hard_negatives.parent.mkdir(parents=True, exist_ok=True)
         with args.hard_negatives.open("w", encoding="utf-8") as handle:
             for row in hard_negatives:
+                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    if args.hard_positives:
+        missed = [
+            row
+            for row in test
+            if row["label"] == 1 and float(row["score"]) < threshold
+        ]
+        args.hard_positives.parent.mkdir(parents=True, exist_ok=True)
+        with args.hard_positives.open("w", encoding="utf-8") as handle:
+            for row in missed:
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     print(json.dumps(report, ensure_ascii=False, indent=2))

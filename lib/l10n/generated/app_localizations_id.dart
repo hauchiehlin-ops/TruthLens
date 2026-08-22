@@ -2856,6 +2856,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get integratedLikelyAi => 'More likely AI-generated';
 
   @override
+  String get integratedLikelyMixed => 'More likely human-AI mixed';
+
+  @override
   String get integratedLikelyHuman => 'More likely not AI-generated';
 
   @override
@@ -2883,6 +2886,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get integratedConfidenceHigh => 'High';
 
   @override
+  String integratedEvidenceCoverage(int families, int coverage) {
+    return 'Independent evidence families: $families/4 · applicability coverage $coverage%';
+  }
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
   }
@@ -2893,7 +2901,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show only the four text engines. Their weighted contribution points add up to the text-model score, not the integrated AI likelihood. ‘Not detected’ means below the 60% strong-signal threshold, not proof of human authorship.';
+      'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families, applies language/domain applicability and calibration reliability, then requires independent support before crossing the AI marker. ‘Not detected’ is not proof of human authorship.';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

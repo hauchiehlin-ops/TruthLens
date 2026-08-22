@@ -27,6 +27,7 @@ class ReportComposer {
     if (paraphrase) return 'paraphrase_alert';
     return switch (assessment.direction) {
       IntegratedDirection.likelyAi => 'ai_alert',
+      IntegratedDirection.likelyMixed => 'mixed_detailed',
       IntegratedDirection.likelyHuman => 'human_clean',
     };
   }
@@ -42,6 +43,7 @@ class ReportComposer {
     final pct = (assessment.aiLikelihood * 100).round();
     return switch (assessment.direction) {
       IntegratedDirection.likelyAi => l10n.composerHeadlineLikelyAi(pct),
+      IntegratedDirection.likelyMixed => l10n.composerHeadlineMixed(pct),
       IntegratedDirection.likelyHuman => l10n.composerHeadlineLikelyHuman(pct),
     };
   }
@@ -138,6 +140,8 @@ class ReportComposer {
     switch (assessment.direction) {
       case IntegratedDirection.likelyAi:
         parts.add(l10n.composerNarrativeAiPattern);
+      case IntegratedDirection.likelyMixed:
+        parts.add(l10n.composerNarrativeMixedPattern);
       case IntegratedDirection.likelyHuman:
         parts.add(l10n.composerNarrativeHumanPattern);
     }

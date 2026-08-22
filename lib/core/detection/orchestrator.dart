@@ -9,6 +9,7 @@ import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
 import 'evasion_scanner.dart';
+import 'evidence_fusion.dart';
 import 'lexical_calibration.dart';
 import 'engines/adversarial_engine.dart';
 import 'engines/statistical_engine.dart';
@@ -16,10 +17,11 @@ import 'engines/stylometry_engine.dart';
 import 'engines/transformer_engine.dart';
 import 'model_manager.dart';
 
-/// 分析協調器：驅動四個子模型並執行加權投票。
-/// 權重（A 40% / B 25% / C 20% / D 15%）會在兩種情況下重新分配：
-/// 1. 引擎不可用（模型未下載或使用者關閉）→ 權重按比例分給可用引擎
-/// 2. ESL 偏差修正 → 降低統計模型 (B) 權重，避免誤判非母語者
+/// 分析協調器：驅動四個子模型，先依獨立證據家族去除重複訊號，再融合判讀。
+///
+/// 設定權重（A 40% / B 25% / C 20% / D 15%）只是家族上限；實際話語權還會
+/// 受語言、領域、模型校準可靠度、文件覆蓋率與 ESL 偏差修正限制。引擎分數高低
+/// 不會反過來提高自己的權重。
 class EnsembleOrchestrator extends ChangeNotifier {
   final List<DetectionEngine> engines;
 
@@ -110,6 +112,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
               aiProbability: 0.5,
               weight: configuredWeight,
               available: false,
+              applicability: EngineApplicability.unsupported,
+              calibrationReliability: 0,
               reasons: [
                 enabled
                     ? loc.engineReasonGenericNotInstalled
@@ -125,7 +129,12 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final scores = await Future.wait(futures);
 
     final eslAdjusted = eslCorrectionEnabled && _detectEslStyle(text);
-    final overall = _weightedVote(scores, eslAdjusted: eslAdjusted);
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: scores,
+      inputText: input,
+      eslAdjusted: eslAdjusted,
+    );
+    final overall = fusion.probability;
     final sentences = _scoreSentences(text, overall, scores, loc);
 
     // 統計引擎參與情況
@@ -180,38 +189,6 @@ class EnsembleOrchestrator extends ChangeNotifier {
       if (engineId == role || engineId.startsWith('${role}_')) return role;
     }
     return engineId;
-  }
-
-  /// 加權投票。只有「可用且確實握有證據」的引擎參與，權重在這些引擎之間
-  /// 重新分配。
-  ///
-  /// 四個引擎的中性點不同（統計為 0.5，其餘三個為 0），不能直接丟進同一個
-  /// 平均。沒有證據的引擎輸出的 0 只是它的中性點，若照舊參與投票，等於用
-  /// 「我沒話說」去投「這是人寫的」，還帶著原本的權重——一篇統計引擎給
-  /// 78% 的 AI 短文會被三個沉默的引擎壓成 20%。
-  ///
-  /// 四個引擎全部沉默時仍退回舊的全體平均以保留診斷分數，但
-  /// [DetectionResult.abstention] 會將它顯示為「證據不足」，避免把 fallback
-  /// 低分誤讀成人類撰寫證據。
-  double _weightedVote(List<EngineScore> scores, {required bool eslAdjusted}) {
-    final available = scores.where((s) => s.available).toList();
-    if (available.isEmpty) return 0.5;
-    final evidential = available.where((s) => s.hasEvidence).toList();
-    final voters = evidential.isNotEmpty ? evidential : available;
-
-    double weightOf(EngineScore s) {
-      var weight = s.weight * s.evidenceWeightMultiplier;
-      // ESL 修正：統計模型權重減半（低困惑度/低突發性可能是語言能力，非 AI 特徵）
-      if (eslAdjusted && _roleOf(s.engineId) == 'statistical') {
-        weight *= 0.5;
-      }
-      return weight;
-    }
-
-    final totalWeight = voters.fold(0.0, (sum, s) => sum + weightOf(s));
-    if (totalWeight == 0) return 0.5;
-    return voters.fold(0.0, (sum, s) => sum + s.aiProbability * weightOf(s)) /
-        totalWeight;
   }
 
   /// ESL 風格偵測（簡化版）：詞彙多樣性低但句長變化大，

@@ -57,9 +57,7 @@ class TransformerEngine implements DetectionEngine {
         if (m.variantId == variantId) {
           return VariantChoice(
             variant: m,
-            fit: language == null
-                ? LanguageFit.unknown
-                : fitFor(m, language),
+            fit: language == null ? LanguageFit.unknown : fitFor(m, language),
           );
         }
       }
@@ -167,7 +165,9 @@ class TransformerEngine implements DetectionEngine {
   ) async {
     // 逐文件路由：語言不同，最適用的變體也不同。純英文模型對中文輸入
     // 從未跨過強訊號閾值，等於權重空轉，而使用者看不出這件事。
-    _choice = routeFor(text.language.isUndetermined ? null : text.language.code);
+    _choice = routeFor(
+      text.language.isUndetermined ? null : text.language.code,
+    );
 
     OnnxDetector? detector;
     try {
@@ -236,6 +236,15 @@ class TransformerEngine implements DetectionEngine {
       aiProbability: calibratedProbability,
       weight: defaultWeight,
       hasEvidence: hasEvidence,
+      applicability: switch (_choice.fit) {
+        LanguageFit.validated => EngineApplicability.validated,
+        LanguageFit.plausible => EngineApplicability.plausible,
+        LanguageFit.unknown => EngineApplicability.unknown,
+        LanguageFit.unsupported => EngineApplicability.unsupported,
+      },
+      // 現行分類器已做語言驗證，但仍主要來自 HC3；保留跨領域折扣，
+      // 待 RAID／現代模型固定 FPR 報告通過後才能提高到 1。
+      calibrationReliability: _choice.isValidated ? 0.82 : 0.62,
       features: {
         'ai_sentence_ratio': strongSentenceRatio,
         'ai_analysis_chunk_ratio': strongChunkRatio,
@@ -272,17 +281,26 @@ class TransformerEngine implements DetectionEngine {
     final notes = <String>[];
     if (_choice.overrodeUserChoice) {
       notes.add(
-        l10n.engineRoutedToBetterVariant(variant.displayName, text.language.code),
+        l10n.engineRoutedToBetterVariant(
+          variant.displayName,
+          text.language.code,
+        ),
       );
     }
     switch (_choice.fit) {
       case LanguageFit.plausible:
         notes.add(
-          l10n.engineLanguageNotValidated(variant.displayName, text.language.code),
+          l10n.engineLanguageNotValidated(
+            variant.displayName,
+            text.language.code,
+          ),
         );
       case LanguageFit.unsupported:
         notes.add(
-          l10n.engineLanguageUnsupported(variant.displayName, text.language.code),
+          l10n.engineLanguageUnsupported(
+            variant.displayName,
+            text.language.code,
+          ),
         );
       case LanguageFit.validated:
       case LanguageFit.unknown:
@@ -297,6 +315,8 @@ class TransformerEngine implements DetectionEngine {
     aiProbability: 0.5,
     weight: defaultWeight,
     available: false,
+    applicability: EngineApplicability.unsupported,
+    calibrationReliability: 0,
     reasons: [
       _loadError == null
           ? l10n.engineReasonTransformerNotInstalled

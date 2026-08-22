@@ -121,10 +121,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         0,
                         16,
                       );
-                      final verdictLabel =
-                          e.integratedDirection == IntegratedDirection.likelyAi
-                          ? l10n.integratedLikelyAi
-                          : l10n.integratedLikelyHuman;
+                      final verdictLabel = switch (e.integratedDirection) {
+                        IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+                        IntegratedDirection.likelyMixed =>
+                          l10n.integratedLikelyMixed,
+                        IntegratedDirection.likelyHuman =>
+                          l10n.integratedLikelyHuman,
+                      };
                       final integratedPercent = (e.integratedAiLikelihood * 100)
                           .round();
                       return Dismissible(

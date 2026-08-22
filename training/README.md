@@ -74,13 +74,21 @@ HC3 的 ChatGPT 樣本來自 2022 年，不可再單獨代表現代模型。新�
   --predictions data/held_out_predictions.jsonl \
   --target-fpr 0.01 \
   --report data/operating_point.json \
-  --hard-negatives data/hard_negative_humans.jsonl
+  --hard-negatives data/hard_negative_humans.jsonl \
+  --hard-positives data/missed_ai.jsonl \
+  --min-recall 0.50 \
+  --required-language en --required-language zh \
+  --required-domain academic --required-domain general
 ```
 
-腳本會先把同一文件的多個切塊合併，避免把切塊數誤當獨立樣本；門檻只由 calibration
-選定，FPR、95% 上界與 AI recall 只在 test 計算，並按 domain／language 分組。
-`release_gate_passed` 只有在獨立測試集的 95% FPR 上界仍低於目標時才成立。被誤判的
-真人文件會輸出為 hard negatives，加入下一輪訓練後仍須用未見過的新 test 集重測。
+腳本會先把同一文件的多個切塊合併，避免把切塊數誤當獨立樣本，並拒絕任何
+`group_id` 跨越 calibration／test；門檻只由 calibration 選定，FPR、95% 上界與
+AI recall 只在 test 計算。公平性按 domain／language 檢查，
+韌性按 provider／style／attack／human-AI 混合類別檢查。`release_gate_passed` 必須同時
+通過整體、所有樣本量足夠的分組及明列的 required 語言／領域；缺少足量 required
+分組會直接失敗。calibration 中的獨立真人文件數也必須至少為
+`ceil(1 / target_fpr)`。被誤判的真人文件與漏判的 AI 文件都會保留原文輸出，供下一輪
+hard-negative／hard-positive 訓練；重訓後仍須換一批未見 test 文件重測。
 
 每個腳本都支援 `--quick`（小資料、1 epoch）用於快速驗證流程可跑通。
 

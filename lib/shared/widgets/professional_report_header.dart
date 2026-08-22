@@ -415,9 +415,11 @@ class _VerdictSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final verdict = assessment.direction == IntegratedDirection.likelyAi
-        ? Verdict.likelyAi
-        : Verdict.likelyHuman;
+    final verdict = switch (assessment.direction) {
+      IntegratedDirection.likelyAi => Verdict.likelyAi,
+      IntegratedDirection.likelyMixed => Verdict.mixed,
+      IntegratedDirection.likelyHuman => Verdict.likelyHuman,
+    };
     final base = verdictColor(verdict);
     final confidence = switch (assessment.confidence) {
       IntegratedConfidence.low => l10n.integratedConfidenceLow,
@@ -452,9 +454,11 @@ class _VerdictSummaryCard extends StatelessWidget {
               // 圖示與底色同步分級：只靠顏色分辨對色盲使用者不友善，
               // 形狀是第二條獨立的辨識線索。
               child: Icon(
-                assessment.direction == IntegratedDirection.likelyAi
-                    ? LucideIcons.cpu
-                    : LucideIcons.pencil,
+                switch (assessment.direction) {
+                  IntegratedDirection.likelyAi => LucideIcons.cpu,
+                  IntegratedDirection.likelyMixed => LucideIcons.layers,
+                  IntegratedDirection.likelyHuman => LucideIcons.pencil,
+                },
                 size: 40,
                 color: Colors.white,
               ),
@@ -476,9 +480,13 @@ class _VerdictSummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  assessment.direction == IntegratedDirection.likelyAi
-                      ? l10n.integratedLikelyAi
-                      : l10n.integratedLikelyHuman,
+                  switch (assessment.direction) {
+                    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+                    IntegratedDirection.likelyMixed =>
+                      l10n.integratedLikelyMixed,
+                    IntegratedDirection.likelyHuman =>
+                      l10n.integratedLikelyHuman,
+                  },
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -500,6 +508,17 @@ class _VerdictSummaryCard extends StatelessWidget {
                   '${l10n.integratedConfidenceLabel(confidence)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white.withValues(alpha: 0.88),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.integratedEvidenceCoverage(
+                    assessment.independentEvidenceFamilies,
+                    (assessment.applicabilityCoverage * 100).round(),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.88),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -990,9 +1009,11 @@ class _VerdictSignalBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final verdict = assessment.direction == IntegratedDirection.likelyAi
-        ? Verdict.likelyAi
-        : Verdict.likelyHuman;
+    final verdict = switch (assessment.direction) {
+      IntegratedDirection.likelyAi => Verdict.likelyAi,
+      IntegratedDirection.likelyMixed => Verdict.mixed,
+      IntegratedDirection.likelyHuman => Verdict.likelyHuman,
+    };
     final meta = _meta(verdict);
     final probability = (assessment.aiLikelihood * 100).round();
     final confidence = switch (assessment.confidence) {
@@ -1037,9 +1058,13 @@ class _VerdictSignalBadge extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      assessment.direction == IntegratedDirection.likelyAi
-                          ? l10n.integratedLikelyAi
-                          : l10n.integratedLikelyHuman,
+                      switch (assessment.direction) {
+                        IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+                        IntegratedDirection.likelyMixed =>
+                          l10n.integratedLikelyMixed,
+                        IntegratedDirection.likelyHuman =>
+                          l10n.integratedLikelyHuman,
+                      },
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: meta.color,
                         fontWeight: FontWeight.w800,
@@ -1293,9 +1318,11 @@ class _EngineSynthesisSummary extends StatelessWidget {
     }
     final hasModelGap = groups.any((g) => !g.available);
 
-    final direction = assessment.direction == IntegratedDirection.likelyAi
-        ? l10n.integratedLikelyAi
-        : l10n.integratedLikelyHuman;
+    final direction = switch (assessment.direction) {
+      IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+      IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+      IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+    };
     final confidence = switch (assessment.confidence) {
       IntegratedConfidence.low => l10n.integratedConfidenceLow,
       IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
@@ -1428,18 +1455,25 @@ class EngineGroup {
         : _roleWeight(role);
     double effectiveWeight(String role) {
       final configured = configuredWeight(role);
-      return eslAdjusted && role == 'statistical'
-          ? configured * 0.5
-          : configured;
+      final reliability = grouped[role]!
+          .where((score) => score.available)
+          .map((score) => score.evidenceWeightMultiplier)
+          .fold<double>(0, math.max);
+      final eslFactor = eslAdjusted && role == 'statistical' ? 0.5 : 1.0;
+      return configured * reliability * eslFactor;
     }
 
     // 與 DetectionResult.votingEngines 同步：有證據的角色才分配權重；
     // 全體沉默時退回全體可用角色，否則貢獻度會全部變成 0。
-    bool roleVotes(String role) =>
-        grouped[role]!.any((s) => s.available && s.hasEvidence);
+    bool roleVotes(String role) => grouped[role]!.any((s) => s.votes);
     final anyEvidence = order.any(roleVotes);
-    bool counts(String role) =>
-        anyEvidence ? roleVotes(role) : grouped[role]!.any((s) => s.available);
+    bool counts(String role) => anyEvidence
+        ? roleVotes(role)
+        : grouped[role]!.any(
+            (s) =>
+                s.available &&
+                s.applicability != EngineApplicability.unsupported,
+          );
     final availableWeight = order.fold<double>(
       0,
       (sum, role) => counts(role) ? sum + effectiveWeight(role) : sum,
@@ -1472,7 +1506,14 @@ class EngineGroup {
     required int contributionPoints,
     required AppLocalizations l10n,
   }) {
-    final availableScores = scores.where((s) => s.available).toList();
+    final availableScores = scores
+        .where(
+          (s) =>
+              s.available &&
+              s.applicability != EngineApplicability.unsupported &&
+              s.calibrationReliability > 0,
+        )
+        .toList();
     final available = availableScores.isNotEmpty;
     final probability = available
         ? availableScores.fold<double>(0, (sum, s) => sum + s.aiProbability) /

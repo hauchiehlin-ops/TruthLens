@@ -13,12 +13,14 @@ library;
 import 'dart:math' as math;
 
 import '../models/detection_result.dart';
+import '../detection/analysis_profile.dart';
+import '../detection/evidence_fusion.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
 import 'revision_evidence.dart';
 
-enum IntegratedDirection { likelyAi, likelyHuman }
+enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed }
 
 enum IntegratedConfidence { low, moderate, high }
 
@@ -43,6 +45,11 @@ class IntegratedAssessment {
   final IntegratedConfidence confidence;
   final double confidenceScore;
   final double textReliability;
+  final TextAuthorshipClass textAuthorshipClass;
+  final AnalysisDomain analysisDomain;
+  final int independentEvidenceFamilies;
+  final double applicabilityCoverage;
+  final double evidenceCoverage;
   final List<IntegratedEvidenceContribution> contributions;
 
   const IntegratedAssessment({
@@ -51,6 +58,11 @@ class IntegratedAssessment {
     required this.confidence,
     required this.confidenceScore,
     required this.textReliability,
+    required this.textAuthorshipClass,
+    required this.analysisDomain,
+    required this.independentEvidenceFamilies,
+    required this.applicabilityCoverage,
+    required this.evidenceCoverage,
     required this.contributions,
   });
 
@@ -79,16 +91,23 @@ class IntegratedAssessment {
       );
     }
 
-    final hasAssistantArtifact = result.engineScores.any(
-      (score) =>
-          score.available &&
-          score.hasEvidence &&
-          (score.features['assistant_response_artifacts'] ?? 0) >= 2,
+    final profile = AnalysisProfile.fromText(result.inputText);
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: result.engineScores,
+      inputText: result.inputText,
+      sentences: result.sentences,
+      profile: profile,
+      eslAdjusted: result.eslAdjusted,
     );
+    final hasAssistantArtifact = fusion.hasDirectTrace;
     final textReliability = hasAssistantArtifact
-        ? 0.90
-        : _textReliability(result);
-    final textProbability = result.aiProbability.clamp(0.02, 0.98);
+        ? 0.95
+        : fusion.passesAiEvidenceGate
+        ? math.max(0.80, fusion.reliability)
+        : result.evidenceEngineCount == 0
+        ? 0.12
+        : (0.25 + fusion.reliability * 0.50).clamp(0.25, 0.70);
+    final textProbability = fusion.probability.clamp(0.02, 0.98);
     final textLogOdds = math.log(textProbability / (1 - textProbability));
     add(
       EvidenceAxisKind.textTrace,
@@ -96,8 +115,8 @@ class IntegratedAssessment {
       information: textReliability,
     );
     if (result.evasion.indicatesDeliberateEvasion &&
-        result.evidenceEngineCount > 0 &&
-        result.aiProbability >= DetectionResult.aiFlagThreshold) {
+        fusion.passesAiEvidenceGate &&
+        fusion.probability >= DetectionResult.aiFlagThreshold) {
       // 規避字元本身不等於 AI；只有文字模型已找到 AI 訊號時才作弱佐證。
       add(EvidenceAxisKind.textTrace, 0.45, information: 0.45);
     }
@@ -140,18 +159,7 @@ class IntegratedAssessment {
       (sum, contribution) => sum + contribution.logOdds,
     );
     final fusedLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
-    final aiSupportingEngines = result.engineScores
-        .where(
-          (score) =>
-              score.available &&
-              score.hasEvidence &&
-              score.aiProbability >= DetectionResult.aiFlagThreshold,
-        )
-        .length;
-    final passesAiEvidenceGate =
-        hasAssistantArtifact ||
-        aiSupportingEngines >= 2 ||
-        (aiSupportingEngines == 1 && result.aiProbability >= 0.85);
+    final passesAiEvidenceGate = fusion.passesAiEvidenceGate;
 
     // 沒有越過高特異性證據門檻時，不允許弱訊號湊成 AI 判定。49% 不是另一個
     // 機率校準，而是讓「偏非 AI」方向與畫面上的指數保持語義一致。
@@ -173,7 +181,10 @@ class IntegratedAssessment {
       0,
       (sum, value) => sum + value,
     );
-    final informationQuality = (information / 2.4).clamp(0.0, 1.0);
+    final informationQuality = math.max(
+      (information / 2.4).clamp(0.0, 1.0),
+      fusion.reliability,
+    );
     final margin = ((aiLikelihood - 0.5).abs() * 2).clamp(0.0, 1.0);
     final confidenceScore =
         (informationQuality * 0.65 + margin * 0.35) *
@@ -183,36 +194,40 @@ class IntegratedAssessment {
         : confidenceScore >= 0.38
         ? IntegratedConfidence.moderate
         : IntegratedConfidence.low;
-    final confidence = result.evidenceEngineCount == 0
+    var confidence = result.evidenceEngineCount == 0
         ? IntegratedConfidence.low
         : rawConfidence == IntegratedConfidence.high &&
-              aiSupportingEngines < 2 &&
+              fusion.aiSupportingFamilies < 2 &&
               !provenance.indicatesHumanAuthorship &&
               !writing.consistentWithLiveWriting
         ? IntegratedConfidence.moderate
         : rawConfidence;
+    // 文字證據越過 AI 門檻，卻被可靠的真人寫作過程／來源推回人類方向時，
+    // 兩類證據存在實質衝突，不能顯示高信心。
+    if (passesAiEvidenceGate && aiLikelihood <= 0.5) {
+      confidence = confidence == IntegratedConfidence.high
+          ? IntegratedConfidence.moderate
+          : confidence;
+    }
+
+    final direction = aiLikelihood <= 0.5 || !passesAiEvidenceGate
+        ? IntegratedDirection.likelyHuman
+        : fusion.mixedAuthorship
+        ? IntegratedDirection.likelyMixed
+        : IntegratedDirection.likelyAi;
 
     return IntegratedAssessment(
       aiLikelihood: aiLikelihood,
-      direction: aiLikelihood > 0.5
-          ? IntegratedDirection.likelyAi
-          : IntegratedDirection.likelyHuman,
+      direction: direction,
       confidence: confidence,
       confidenceScore: confidenceScore,
       textReliability: textReliability,
+      textAuthorshipClass: fusion.authorshipClass,
+      analysisDomain: profile.domain,
+      independentEvidenceFamilies: fusion.families.length,
+      applicabilityCoverage: fusion.applicabilityCoverage,
+      evidenceCoverage: fusion.evidenceCoverage,
       contributions: contributions,
     );
-  }
-
-  static double _textReliability(DetectionResult result) {
-    if (result.effectiveAvailableEngineCount == 0) return 0.05;
-    return switch (result.abstention) {
-      AbstentionReason.none => result.singleEvidenceSource ? 0.55 : 1.0,
-      AbstentionReason.noEvidenceFound => 0.12,
-      AbstentionReason.singleWeakEvidenceSource => 0.35,
-      AbstentionReason.enginesConflict => 0.30,
-      AbstentionReason.tooFewEngines => 0.30,
-      AbstentionReason.tooFewSentences || AbstentionReason.tooFewWords => 0.25,
-    };
   }
 }

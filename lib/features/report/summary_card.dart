@@ -107,14 +107,11 @@ class SummaryCard {
     );
 
     // 右側判定與統計
-    _pill(
-      canvas,
-      const Offset(280, 150),
-      assessment.direction == IntegratedDirection.likelyAi
-          ? l10n.integratedLikelyAi
-          : l10n.integratedLikelyHuman,
-      color,
-    );
+    _pill(canvas, const Offset(280, 150), switch (assessment.direction) {
+      IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+      IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+      IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+    }, color);
     _text(
       canvas,
       l10n.summaryCardStats(

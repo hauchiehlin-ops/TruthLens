@@ -3059,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin, draft evolution, task alignment and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. The report always gives a more-likely AI / not-AI direction, an integrated likelihood index and a separate confidence level. The original text-model score and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
+  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin, draft evolution, task alignment and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -3269,7 +3269,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet6.
   ///
   /// In en, this message translates to:
-  /// **'You can individually enable/disable engines and adjust engine weights in Settings. The five verdict bands use fixed cut points (20% / 40% / 60% / 80%) and cannot be changed, so the same document always yields the same verdict for everyone.'**
+  /// **'You can individually enable/disable engines and adjust family weight ceilings in Settings. Actual weight is reduced when a model is unvalidated for the document\'s language or domain, has weak calibration, or covers too little text. Correlated engines are merged within one evidence family and cannot multiply the same signal.'**
   String get helpWorkflowStep2Bullet6;
 
   /// No description provided for @helpWorkflowStep3Title.
@@ -4539,6 +4539,12 @@ abstract class AppLocalizations {
   /// **'More likely AI-generated'**
   String get integratedLikelyAi;
 
+  /// No description provided for @integratedLikelyMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'More likely human-AI mixed'**
+  String get integratedLikelyMixed;
+
   /// No description provided for @integratedLikelyHuman.
   ///
   /// In en, this message translates to:
@@ -4581,6 +4587,12 @@ abstract class AppLocalizations {
   /// **'High'**
   String get integratedConfidenceHigh;
 
+  /// No description provided for @integratedEvidenceCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Independent evidence families: {families}/4 · applicability coverage {coverage}%'**
+  String integratedEvidenceCoverage(int families, int coverage);
+
   /// No description provided for @integratedQualifiedWarning.
   ///
   /// In en, this message translates to:
@@ -4596,7 +4608,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportTextEngineSignalExplanation.
   ///
   /// In en, this message translates to:
-  /// **'These bars show only the four text engines. Their weighted contribution points add up to the text-model score, not the integrated AI likelihood. ‘Not detected’ means below the 60% strong-signal threshold, not proof of human authorship.'**
+  /// **'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families, applies language/domain applicability and calibration reliability, then requires independent support before crossing the AI marker. ‘Not detected’ is not proof of human authorship.'**
   String get reportTextEngineSignalExplanation;
 
   /// No description provided for @reportSynthesisTextScoreContext.

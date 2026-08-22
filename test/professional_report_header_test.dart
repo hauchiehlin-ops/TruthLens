@@ -85,6 +85,8 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
       final result = sampleResult();
+      final assessment = IntegratedAssessment.assess(result);
+      final integratedPercent = (assessment.aiLikelihood * 100).round();
 
       await tester.pumpWidget(
         _testApp(
@@ -104,7 +106,10 @@ void main() {
       }
 
       expect(find.text('Overall verdict'), findsOneWidget);
-      expect(find.text('Integrated AI likelihood: 22%'), findsNWidgets(2));
+      expect(
+        find.text('Integrated AI likelihood: $integratedPercent%'),
+        findsNWidgets(2),
+      );
       expect(
         find.textContaining('After weighting the available evidence'),
         findsOneWidget,
@@ -285,6 +290,13 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final result = sampleResult();
+    final assessment = IntegratedAssessment.assess(result);
+    final integratedPercent = (assessment.aiLikelihood * 100).round();
+    final confidence = switch (assessment.confidence) {
+      IntegratedConfidence.low => 'Low',
+      IntegratedConfidence.moderate => 'Moderate',
+      IntegratedConfidence.high => 'High',
+    };
 
     await tester.pumpWidget(
       _testApp(ProfessionalReportHeader(result: result, onDownloadPdf: () {})),
@@ -294,9 +306,12 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Integrated authorship assessment'), findsOneWidget);
     expect(find.text('More likely not AI-generated'), findsNWidgets(2));
-    expect(find.text('Integrated AI likelihood: 22%'), findsNWidgets(2));
+    expect(
+      find.text('Integrated AI likelihood: $integratedPercent%'),
+      findsNWidgets(2),
+    );
     expect(find.textContaining('Text-model score: 22%'), findsOneWidget);
-    expect(find.textContaining('Confidence: Moderate'), findsNWidgets(2));
+    expect(find.textContaining('Confidence: $confidence'), findsNWidgets(2));
     expect(find.text('AI probability < 20%'), findsNothing);
   });
 }

@@ -123,7 +123,7 @@ void main() {
   final l10n = lookupAppLocalizations(const Locale('en'));
 
   group('沉默的引擎不投票', () {
-    test('三個引擎沒有證據時，不稀釋唯一有證據的引擎', () async {
+    test('單一家族不被沉默引擎稀釋，但不能冒充跨家族共識', () async {
       final result = await EnsembleOrchestrator(
         engines: const [
           _Engine('transformer', 0, evidence: false),
@@ -133,12 +133,12 @@ void main() {
         ],
       ).analyze(_text, eslCorrectionEnabled: false);
 
-      // 舊的加權平均會得到 0.78×0.25 = 0.195（回報案例中的 20%）
-      expect(result.aiProbability, closeTo(0.78, 0.0001));
-      expect(result.verdict, Verdict.likelyAi);
+      // 單一統計家族保留 AI 方向，但在通過高特異性證據閘門前封頂 59%。
+      expect(result.aiProbability, closeTo(0.59, 0.0001));
+      expect(result.verdict, Verdict.mixed);
     });
 
-    test('多個引擎都有證據時，依證據品質調整有效權重', () async {
+    test('兩個獨立家族同向時依預先設定可靠度融合', () async {
       final result = await EnsembleOrchestrator(
         engines: const [
           _Engine(
@@ -146,22 +146,19 @@ void main() {
             0.80,
             features: {'ai_analysis_chunk_ratio': 0.80},
           ),
-          _Engine('statistical', 0.60),
+          _Engine('statistical', 0.75),
           _Engine('stylometry', 0, evidence: false),
           _Engine('adversarial', 0, evidence: false),
         ],
       ).analyze(_text, eslCorrectionEnabled: false);
 
-      // transformer: 0.40 × (0.70 + 0.80×1.10) = 0.632
-      // statistical: 0.25 × (0.75 + |0.60-0.50|×2×0.75) = 0.225
-      expect(result.aiProbability, closeTo(0.7475, 0.0005));
-      expect(
-        result.effectiveWeightFor(result.engineScores[0]),
-        greaterThan(result.effectiveWeightFor(result.engineScores[1])),
-      );
+      expect(result.aiProbability, closeTo(0.782, 0.002));
+      // 強訊號比例不再提高自己的權重；差異只來自預先設定的家族權重。
+      expect(result.effectiveWeightFor(result.engineScores[0]), 0.40);
+      expect(result.effectiveWeightFor(result.engineScores[1]), 0.25);
     });
 
-    test('四個引擎全部沉默時保留 fallback 分數但必須棄權', () async {
+    test('四個引擎全部沉默時回到中性並標示證據限制', () async {
       final result = await EnsembleOrchestrator(
         engines: const [
           _Engine('transformer', 0, evidence: false),
@@ -171,8 +168,8 @@ void main() {
         ],
       ).analyze(_longText, eslCorrectionEnabled: false);
 
-      expect(result.aiProbability, closeTo(0.125, 0.0001));
-      expect(result.verdict, Verdict.human);
+      expect(result.aiProbability, closeTo(0.5, 0.0001));
+      expect(result.verdict, Verdict.mixed);
       expect(result.abstention, AbstentionReason.noEvidenceFound);
       expect(result.shouldAbstain, isTrue);
     });

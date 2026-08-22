@@ -65,6 +65,22 @@ enum AbstentionReason {
   singleWeakEvidenceSource,
 }
 
+/// 引擎所屬的獨立證據家族。
+///
+/// 同一家族的兩個模型通常共享訓練資料、機率特徵或架構假設，不能被當成兩份
+/// 獨立證據。整合層會先在家族內合併，再計算跨家族共識。
+enum EvidenceFamily {
+  supervisedClassifier,
+  distributional,
+  stylometric,
+  rewriteTrace,
+  unknown,
+}
+
+/// 模型對本次語言／文體的適用程度。它回答「這顆模型能不能在這裡發言」，
+/// 與模型輸出的 AI 分數是兩個不同問題。
+enum EngineApplicability { validated, plausible, unknown, unsupported }
+
 /// 單一子模型（引擎）的評分結果
 class EngineScore {
   final String engineId; // transformer / statistical / stylometry / adversarial
@@ -88,6 +104,16 @@ class EngineScore {
   /// 不能算成反對票，更不能算成證人之間的矛盾。
   final bool hasEvidence;
 
+  /// 本引擎屬於哪一個統計上相關的證據家族。
+  final EvidenceFamily evidenceFamily;
+
+  /// 本引擎對本次輸入語言／領域的適用程度。
+  final EngineApplicability applicability;
+
+  /// 由獨立驗證資料得到的可靠度；不能由本次分數高低反推。
+  /// 1 代表已有對應語言／用途驗證，0 代表不得參與作者判讀。
+  final double calibrationReliability;
+
   const EngineScore({
     required this.engineId,
     required this.engineName,
@@ -98,9 +124,16 @@ class EngineScore {
     this.reasons = const [],
     this.sentenceScores,
     this.hasEvidence = true,
+    this.evidenceFamily = EvidenceFamily.unknown,
+    this.applicability = EngineApplicability.validated,
+    this.calibrationReliability = 1.0,
   });
 
-  EngineScore copyWith({double? weight}) => EngineScore(
+  EngineScore copyWith({
+    double? weight,
+    EngineApplicability? applicability,
+    double? calibrationReliability,
+  }) => EngineScore(
     engineId: engineId,
     engineName: engineName,
     aiProbability: aiProbability,
@@ -110,36 +143,51 @@ class EngineScore {
     reasons: reasons,
     sentenceScores: sentenceScores,
     hasEvidence: hasEvidence,
+    evidenceFamily: evidenceFamily,
+    applicability: applicability ?? this.applicability,
+    calibrationReliability:
+        calibrationReliability ?? this.calibrationReliability,
   );
 
   /// 實際參與投票：可用、且確實握有證據
-  bool get votes => available && hasEvidence;
+  bool get votes =>
+      available &&
+      hasEvidence &&
+      applicability != EngineApplicability.unsupported &&
+      calibrationReliability > 0;
+
+  EvidenceFamily get resolvedEvidenceFamily =>
+      evidenceFamily == EvidenceFamily.unknown
+      ? _familyOf(engineId)
+      : evidenceFamily;
 
   /// 依本次文件的證據品質調整有效權重。
   ///
-  /// 這不是用「分數高低」自我強化，而是看引擎是否有較完整的可用訊號：
-  /// 神經模型看強訊號區塊比例，統計模型看離中性點多遠，風格模型看命中特徵
-  /// 的累積強度。沉默引擎通常不參與投票；全沉默 fallback 時保留 1.0，
-  /// 讓診斷分數維持可讀。
+  /// 權重只由適用性、獨立校準可靠度與可分析覆蓋率決定。不得再用
+  /// [aiProbability] 高低提高自己的權重，否則會形成「分數愈高，話語權愈大」
+  /// 的自我放大迴圈。
   double get evidenceWeightMultiplier {
     if (!available || !hasEvidence) return 1.0;
-    final role = _roleOf(engineId);
-    return switch (role) {
-      'transformer' => _neuralEvidenceMultiplier(
-        features['ai_analysis_chunk_ratio'] ??
-            features['ai_sentence_ratio'] ??
-            0,
-      ),
-      'adversarial' => _neuralEvidenceMultiplier(
-        features['strong_analysis_chunk_ratio'] ??
-            features['strong_sentence_ratio'] ??
-            0,
-      ),
-      'statistical' =>
-        (0.75 + ((aiProbability - 0.5).abs() * 2.0 * 0.75)).clamp(0.70, 1.50),
-      'stylometry' => (0.75 + aiProbability * 1.25).clamp(0.70, 1.40),
-      _ => 1.0,
+    final applicabilityFactor = switch (applicability) {
+      EngineApplicability.validated => 1.0,
+      EngineApplicability.plausible => 0.72,
+      EngineApplicability.unknown => 0.45,
+      EngineApplicability.unsupported => 0.0,
     };
+    final chunks = features['analysis_chunk_count'];
+    final coverageFactor = chunks == null
+        ? 1.0
+        : chunks >= 4
+        ? 1.0
+        : chunks >= 2
+        ? 0.82
+        : chunks > 0
+        ? 0.65
+        : 0.75;
+    return (applicabilityFactor *
+            calibrationReliability.clamp(0.0, 1.0) *
+            coverageFactor)
+        .clamp(0.0, 1.0);
   }
 
   static String _roleOf(String engineId) {
@@ -150,8 +198,16 @@ class EngineScore {
     return engineId;
   }
 
-  static double _neuralEvidenceMultiplier(double strongRatio) =>
-      (0.70 + strongRatio.clamp(0.0, 1.0) * 1.10).clamp(0.70, 1.80);
+  static EvidenceFamily _familyOf(String engineId) {
+    final role = _roleOf(engineId);
+    return switch (role) {
+      'transformer' => EvidenceFamily.supervisedClassifier,
+      'statistical' => EvidenceFamily.distributional,
+      'stylometry' => EvidenceFamily.stylometric,
+      'adversarial' => EvidenceFamily.rewriteTrace,
+      _ => EvidenceFamily.unknown,
+    };
+  }
 }
 
 /// 句子級分析結果
@@ -178,7 +234,7 @@ class DetectionResult {
   final String taskPrompt;
   final String previousDraftText;
   final String previousDraftFileName;
-  final double aiProbability; // 加權投票後的整體 AI 機率
+  final double aiProbability; // 證據家族融合後的文字 AI 訊號指數
   final Verdict verdict;
   final List<EngineScore> engineScores;
   final List<SentenceScore> sentences;
@@ -226,12 +282,23 @@ class DetectionResult {
   });
 
   /// 計算可用引擎數（available=true 的引擎）
-  int get _computeAvailableCount =>
-      engineScores.where((e) => e.available).length;
+  int get _computeAvailableCount => engineScores
+      .where(
+        (e) =>
+            e.available &&
+            e.applicability != EngineApplicability.unsupported &&
+            e.calibrationReliability > 0,
+      )
+      .length;
 
   /// 計算使用中的總權重（只計算 available 引擎的權重）
   double get _computeUsedWeight => engineScores
-      .where((e) => e.available)
+      .where(
+        (e) =>
+            e.available &&
+            e.applicability != EngineApplicability.unsupported &&
+            e.calibrationReliability > 0,
+      )
       .fold<double>(0, (sum, e) => sum + e.weight);
 
   /// 計算理想的總權重（所有引擎）
@@ -297,14 +364,17 @@ class DetectionResult {
     if (evidential.isEmpty) {
       return AbstentionReason.noEvidenceFound;
     }
-    if (evidential.length >= 2) {
+    final evidenceFamilies = evidential
+        .map((engine) => engine.resolvedEvidenceFamily)
+        .toSet();
+    if (evidenceFamilies.length >= 2) {
       // 以整數百分點比較：浮點相減會讓 0.80-0.20 變成 0.6000000000000001，
       // 使恰好落在門檻上的情形被誤判為超標。這裡也與畫面顯示的單位一致。
       if (engineSpreadPoints > (maxEngineSpread * 100).round()) {
         return AbstentionReason.enginesConflict;
       }
     }
-    if (evidential.length == 1 && !flaggedAsAi) {
+    if (evidenceFamilies.length == 1 && !flaggedAsAi) {
       return AbstentionReason.singleWeakEvidenceSource;
     }
     return AbstentionReason.none;
@@ -314,11 +384,15 @@ class DetectionResult {
   /// 這種情況要給判定並附註來源單一，不能拿「不做判定」搪塞：
   /// 單一證人不等於沒有證人。
   bool get singleEvidenceSource =>
-      votingEngines.where((e) => e.hasEvidence).length == 1;
+      votingEngines
+          .where((e) => e.hasEvidence)
+          .map((e) => e.resolvedEvidenceFamily)
+          .toSet()
+          .length ==
+      1;
 
   /// 本次分析中真正找到東西的引擎數
-  int get evidenceEngineCount =>
-      engineScores.where((e) => e.available && e.hasEvidence).length;
+  int get evidenceEngineCount => engineScores.where((e) => e.votes).length;
 
   /// 本次證據有量體、覆蓋或一致性限制。介面仍提供最可能方向，但必須降低
   /// 信心並顯示原因。
@@ -353,12 +427,18 @@ class DetectionResult {
     return weight;
   }
 
-  /// 實際參與投票的引擎，與 EnsembleOrchestrator._weightedVote 的取法一致：
-  /// 可用且握有證據者投票；全體都沉默時退回全體可用引擎。
-  /// 兩邊若不同步，報告的「各引擎貢獻」加總就會對不上整體百分比。
+  /// 實際提供診斷訊號的引擎。最終判讀會再按證據家族去除相關訊號；這份清單
+  /// 只供引擎明細與原始貢獻視覺化使用。
   List<EngineScore> get votingEngines {
-    final available = engineScores.where((s) => s.available).toList();
-    final evidential = available.where((s) => s.hasEvidence).toList();
+    final available = engineScores
+        .where(
+          (s) =>
+              s.available &&
+              s.applicability != EngineApplicability.unsupported &&
+              s.calibrationReliability > 0,
+        )
+        .toList();
+    final evidential = available.where((s) => s.votes).toList();
     return evidential.isNotEmpty ? evidential : available;
   }
 
