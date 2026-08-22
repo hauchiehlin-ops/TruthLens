@@ -33,7 +33,9 @@ FPR 95% 上界、最低 recall、語言／領域 required coverage、provider／
 **版本與狀態**：v4.4.0 / Build 1423。新增證據融合與訓練資料防洩漏回歸測試；移除
 用三篇樣本及 50% 混合 fallback 偽稱 90% 準確率的舊測試邏輯。✅ Flutter 525 項
 測試通過；Python 評測／資料切分工具 9 項測試通過；`flutter build web --no-pub`
-通過；`flutter analyze --no-pub` 僅保留 2 個既有測試警告。
+通過；`flutter analyze --no-pub` 僅保留 2 個既有測試警告。部署流程另以 Vercel
+官方 CLI 取代長時間停滯的 `amondnet/vercel-action@v25`，加入同分支取消舊執行與
+15 分鐘逾時，避免工作永久卡在部署步驟。
 
 ## 2026-08-22（第一百二十五次更新）— 整合作者判讀置頂
 
