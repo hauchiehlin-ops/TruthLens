@@ -57,11 +57,11 @@ class ReportComposer {
       ReportComponent(
         type: ReportComponentType.thresholdBanner,
         body: r.flaggedAsAi
-            ? l10n.composerThresholdFlaggedDetailed(
+            ? l10n.composerTextScoreThresholdReached(
                 (r.aiProbability * 100).round(),
                 (DetectionResult.aiFlagThreshold * 100).round(),
               )
-            : l10n.composerThresholdNotFlaggedDetailed(
+            : l10n.composerTextScoreThresholdNotReached(
                 (r.aiProbability * 100).round(),
                 (DetectionResult.aiFlagThreshold * 100).round(),
               ),

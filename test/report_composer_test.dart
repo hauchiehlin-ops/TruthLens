@@ -100,7 +100,7 @@ void main() {
     );
   });
 
-  test('閾值橫幅文字反映 flaggedAsAi（門檻為固定 60%）', () {
+  test('門檻橫幅把 60% 明確標成文字模型診斷值，不另作最終判定', () {
     final flagged = composer.compose(_result(ai: 0.9), l10n);
     final notFlagged = composer.compose(_result(ai: 0.5), l10n);
     final flaggedBanner = flagged.components.firstWhere(
@@ -109,10 +109,14 @@ void main() {
     final notBanner = notFlagged.components.firstWhere(
       (c) => c.type == ReportComponentType.thresholdBanner,
     );
-    expect(flaggedBanner.body, contains('marks this text as AI'));
+    expect(flaggedBanner.body, contains('text-model raw score'));
+    expect(flaggedBanner.body, contains('diagnostic marker'));
+    expect(flaggedBanner.body, contains('integrated assessment'));
+    expect(flaggedBanner.body, isNot(contains('marks this text as AI')));
     expect(flaggedBanner.body, contains('90%'));
     expect(flaggedBanner.body, contains('60%'));
     expect(notBanner.body, contains('below'));
+    expect(notBanner.body, contains('not evidence of human authorship'));
     expect(notBanner.body, contains('50%'));
     expect(notBanner.body, contains('60%'));
   });

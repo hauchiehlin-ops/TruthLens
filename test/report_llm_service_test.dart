@@ -11,12 +11,14 @@ import 'package:truthlens/l10n/generated/app_localizations.dart';
 class _FakeRemoteLlmProvider implements RemoteLlmProvider {
   final String response;
   int? lastMaxTokens;
+  String? lastPrompt;
 
   _FakeRemoteLlmProvider(this.response);
 
   @override
   Future<String> generate(String prompt, {int maxTokens = 256}) async {
     lastMaxTokens = maxTokens;
+    lastPrompt = prompt;
     return response;
   }
 
@@ -85,11 +87,15 @@ PATTERNS: Repeated transitional phrasing
     );
 
     expect(doc.source, ReportSource.llm);
-    expect(doc.headline, 'Likely AI-assisted text at 64% confidence.');
+    expect(doc.headline, contains('more likely AI-generated'));
+    expect(doc.headline, isNot(contains('64% confidence')));
     expect(narrative.body, contains('uneven sentence-level evidence'));
     expect(narrative.body, contains('Stylometry highlights'));
     expect(narrative.body, isNot(contains('2 sentences')));
     expect(provider.lastMaxTokens, greaterThan(256));
+    expect(provider.lastPrompt, contains('integrated_direction'));
+    expect(provider.lastPrompt, contains('text_model_raw_score'));
+    expect(provider.lastPrompt, contains('only authorship verdict'));
   });
 
   test('LLM paraphrase section overrides template warning body', () async {
@@ -133,7 +139,8 @@ The remaining lines become the generated report narrative.
       );
 
       expect(doc.source, ReportSource.llm);
-      expect(doc.headline, 'Likely mixed authorship.');
+      expect(doc.headline, contains('more likely AI-generated'));
+      expect(doc.headline, isNot(contains('mixed authorship')));
       expect(narrative.body, contains('remaining lines'));
     },
   );

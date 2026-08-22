@@ -4,7 +4,7 @@ import 'package:truthlens/core/services/integrated_assessment.dart';
 
 void main() {
   test('舊歷史資料沒有整合欄位時以原分數低信心回退', () {
-    final entry = HistoryEntry.fromRow({
+    final entry = HistoryEntry.fromMap({
       'id': 'legacy',
       'analyzed_at': 0,
       'input_text': 'legacy text',
@@ -19,7 +19,7 @@ void main() {
   });
 
   test('新歷史資料保留分析當下的整合方向與信心', () {
-    final entry = HistoryEntry.fromRow({
+    final entry = HistoryEntry.fromMap({
       'id': 'new',
       'analyzed_at': 0,
       'input_text': 'new text',

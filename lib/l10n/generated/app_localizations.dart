@@ -2660,7 +2660,7 @@ abstract class AppLocalizations {
   /// No description provided for @composerHeadlineLikelyAi.
   ///
   /// In en, this message translates to:
-  /// **'This text leans AI-generated; further review is recommended (AI probability {percent}%)'**
+  /// **'This text is more likely AI-generated; further review is recommended (integrated AI likelihood {percent}%)'**
   String composerHeadlineLikelyAi(int percent);
 
   /// No description provided for @composerHeadlineMixed.
@@ -2672,7 +2672,7 @@ abstract class AppLocalizations {
   /// No description provided for @composerHeadlineLikelyHuman.
   ///
   /// In en, this message translates to:
-  /// **'This text leans human-written (AI probability {percent}%)'**
+  /// **'This text is more likely not AI-generated (integrated AI likelihood {percent}%)'**
   String composerHeadlineLikelyHuman(int percent);
 
   /// No description provided for @composerHeadlineHuman.
@@ -4586,6 +4586,39 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.'**
   String get integratedIndexCaveat;
+
+  /// No description provided for @reportTextEngineSignalExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'These bars show only the four text engines. Their weighted contribution points add up to the text-model score, not the integrated AI likelihood. ‘Not detected’ means below the 60% strong-signal threshold, not proof of human authorship.'**
+  String get reportTextEngineSignalExplanation;
+
+  /// No description provided for @reportSynthesisTextScoreContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Four-engine text-model raw score: {percent}%. This is one input to the integrated assessment, not a second verdict.'**
+  String reportSynthesisTextScoreContext(int percent);
+
+  /// No description provided for @reportSynthesisStrongestTextSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongest text-engine signal: {label} ({percent}%). It can influence the text-model score but cannot override the integrated assessment by itself.'**
+  String reportSynthesisStrongestTextSignal(String label, int percent);
+
+  /// No description provided for @composerTextScoreThresholdReached.
+  ///
+  /// In en, this message translates to:
+  /// **'The text-model raw score is {aiPercent}%, reaching the {thresholdPercent}% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.'**
+  String composerTextScoreThresholdReached(int aiPercent, int thresholdPercent);
+
+  /// No description provided for @composerTextScoreThresholdNotReached.
+  ///
+  /// In en, this message translates to:
+  /// **'The text-model raw score is {aiPercent}%, below the {thresholdPercent}% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.'**
+  String composerTextScoreThresholdNotReached(
+    int aiPercent,
+    int thresholdPercent,
+  );
 
   /// No description provided for @telemetryIntegratedVerdict.
   ///

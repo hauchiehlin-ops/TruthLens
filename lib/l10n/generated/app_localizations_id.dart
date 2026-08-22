@@ -2887,6 +2887,36 @@ class AppLocalizationsId extends AppLocalizations {
       'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.';
 
   @override
+  String get reportTextEngineSignalExplanation =>
+      'These bars show only the four text engines. Their weighted contribution points add up to the text-model score, not the integrated AI likelihood. ‘Not detected’ means below the 60% strong-signal threshold, not proof of human authorship.';
+
+  @override
+  String reportSynthesisTextScoreContext(int percent) {
+    return 'Four-engine text-model raw score: $percent%. This is one input to the integrated assessment, not a second verdict.';
+  }
+
+  @override
+  String reportSynthesisStrongestTextSignal(String label, int percent) {
+    return 'Strongest text-engine signal: $label ($percent%). It can influence the text-model score but cannot override the integrated assessment by itself.';
+  }
+
+  @override
+  String composerTextScoreThresholdReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return 'The text-model raw score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
+  }
+
+  @override
+  String composerTextScoreThresholdNotReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return 'The text-model raw score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
+  }
+
+  @override
   String telemetryIntegratedVerdict(
     String direction,
     int percent,

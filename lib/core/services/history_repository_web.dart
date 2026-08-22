@@ -69,6 +69,10 @@ class HistoryEntry {
   });
 
   factory HistoryEntry.fromJson(Map<String, dynamic> j) {
+    return HistoryEntry.fromMap(j);
+  }
+
+  factory HistoryEntry.fromMap(Map<String, Object?> j) {
     final textProbability = (j['ai_probability'] as num).toDouble();
     final integratedProbability =
         (j['integrated_likelihood'] as num?)?.toDouble() ?? textProbability;

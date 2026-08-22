@@ -54,8 +54,8 @@ class ReportLlmService {
       'integrated_direction': integrated.direction.name,
       'integrated_confidence': integrated.confidence.name,
       'text_model_reliability': integrated.textReliability,
-      'overall_score': r.aiProbability,
-      'classification': r.verdict.name,
+      'text_model_raw_score': r.aiProbability,
+      'text_model_raw_classification': r.verdict.name,
       'sentence_count': r.analyzableSentenceCount,
       'ai_sentences': r.aiSentenceCount,
       'human_sentences': r.humanSentenceCount,
@@ -91,8 +91,8 @@ class ReportLlmService {
 
     final base = _fallback.compose(r, l10n);
     final llmSections = _parseLlmSections(raw);
-    final headline = _cleanHeadline(llmSections['HEADLINE'] ?? raw);
-    if (headline.isEmpty) return null;
+    final generatedHeadline = _cleanHeadline(llmSections['HEADLINE'] ?? raw);
+    if (generatedHeadline.isEmpty) return null;
 
     final components = _componentsFromLlm(
       base: base,
@@ -104,7 +104,8 @@ class ReportLlmService {
 
     return ReportDocument(
       templateId: base.templateId,
-      headline: headline,
+      // 作者方向屬確定性判讀，LLM 只負責解說，不能另造一個相反標題。
+      headline: base.headline,
       components: components,
       source: ReportSource.llm,
     );
@@ -292,13 +293,14 @@ ${const JsonEncoder.withIndent('  ').convert(payload)}
 
 Requirements:
 1. Return only the labeled sections below. Do not use Markdown bullets unless they are inside PATTERNS.
-2. HEADLINE is one sentence summarizing the verdict and confidence.
-3. NARRATIVE is two to four short paragraphs explaining the overall result, engine findings, and sentence distribution.
-4. PARAPHRASE_WARNING is required only when paraphrase evasion is suspected; otherwise omit it.
-5. PATTERNS is required only when dominant patterns exist; otherwise omit it.
-6. ESL_NOTICE is required only when esl_adjusted is true; otherwise omit it.
-7. Keep an objective, professional tone.
-8. Write the entire report in the language identified by BCP-47 tag "$targetLocale", not any other language.
+2. integrated_direction is the report's only authorship verdict. HEADLINE must summarize that direction, integrated_ai_likelihood, and integrated_confidence.
+3. text_model_raw_score and text_model_raw_classification are diagnostic inputs only. Never present them as a second or final verdict.
+4. NARRATIVE is two to four short paragraphs explaining the integrated result, evidence limitations, engine findings, and sentence distribution.
+5. PARAPHRASE_WARNING is required only when paraphrase evasion is suspected; otherwise omit it.
+6. PATTERNS is required only when dominant patterns exist; otherwise omit it.
+7. ESL_NOTICE is required only when esl_adjusted is true; otherwise omit it.
+8. Keep an objective, professional tone.
+9. Write the entire report in the language identified by BCP-47 tag "$targetLocale", not any other language.
 
 Format:
 HEADLINE: ...

@@ -520,7 +520,7 @@ class ReportExporter {
           ),
           pw.SizedBox(height: 3),
           pw.Text(
-            l10n.reportEngineSignalExplanation,
+            l10n.reportTextEngineSignalExplanation,
             style: const pw.TextStyle(
               fontSize: 8,
               color: PdfColors.grey700,

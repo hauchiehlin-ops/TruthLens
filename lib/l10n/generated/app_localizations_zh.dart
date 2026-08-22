@@ -1593,7 +1593,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String composerHeadlineLikelyAi(int percent) {
-    return '這段文字傾向 AI 生成，建議進一步檢視（AI 機率 $percent%）';
+    return '本文較可能是 AI 生成，建議進一步審查（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -1603,7 +1603,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String composerHeadlineLikelyHuman(int percent) {
-    return '這段文字傾向人類撰寫（AI 機率 $percent%）';
+    return '本文較可能不是 AI 生成（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -2770,6 +2770,36 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get integratedIndexCaveat =>
       '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+
+  @override
+  String get reportTextEngineSignalExplanation =>
+      '以下只呈現四個文字引擎；加權貢獻百分點合計為文字模型原始分數，不是整合 AI 可能性。「未偵測」表示低於 60% 強訊號閾值，不是人類撰寫的證明。';
+
+  @override
+  String reportSynthesisTextScoreContext(int percent) {
+    return '四引擎文字模型原始分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
+  }
+
+  @override
+  String reportSynthesisStrongestTextSignal(String label, int percent) {
+    return '最高文字引擎訊號是 $label（$percent%）；它可影響文字模型分數，但不能單獨覆蓋整合判讀。';
+  }
+
+  @override
+  String composerTextScoreThresholdReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
+  }
+
+  @override
+  String composerTextScoreThresholdNotReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
+  }
 
   @override
   String telemetryIntegratedVerdict(
@@ -4370,7 +4400,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String composerHeadlineLikelyAi(int percent) {
-    return '这段文本倾向 AI 生成，建议进一步查看（AI 几率 $percent%）';
+    return '本文较可能是 AI 生成，建议进一步审查（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -4380,7 +4410,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String composerHeadlineLikelyHuman(int percent) {
-    return '这段文本倾向人类撰写（AI 几率 $percent%）';
+    return '本文较可能不是 AI 生成（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -5547,6 +5577,36 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get integratedIndexCaveat =>
       '本指数整合文字模型、写作过程、文件来源、草稿演进、任务契合与来源完整性；它是证据指数，不是经总体校准的统计概率。';
+
+  @override
+  String get reportTextEngineSignalExplanation =>
+      '以下只呈现四个文字引擎；加权贡献百分点合计为文字模型原始分数，不是整合 AI 可能性。“未检测”表示低于 60% 强信号阈值，不是人类撰写的证明。';
+
+  @override
+  String reportSynthesisTextScoreContext(int percent) {
+    return '四引擎文字模型原始分数为 $percent%；它只是整合判读的一项输入，不是另一个综合判定。';
+  }
+
+  @override
+  String reportSynthesisStrongestTextSignal(String label, int percent) {
+    return '最高文字引擎信号是 $label（$percent%）；它可影响文字模型分数，但不能单独覆盖整合判读。';
+  }
+
+  @override
+  String composerTextScoreThresholdReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分数为 $aiPercent%，已达 $thresholdPercent% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。';
+  }
+
+  @override
+  String composerTextScoreThresholdNotReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分数为 $aiPercent%，低于 $thresholdPercent% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。';
+  }
 
   @override
   String telemetryIntegratedVerdict(
@@ -7147,7 +7207,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String composerHeadlineLikelyAi(int percent) {
-    return '這段文字傾向 AI 生成，建議進一步檢視（AI 機率 $percent%）';
+    return '本文較可能是 AI 生成，建議進一步審查（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -7157,7 +7217,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String composerHeadlineLikelyHuman(int percent) {
-    return '這段文字傾向人類撰寫（AI 機率 $percent%）';
+    return '本文較可能不是 AI 生成（整合 AI 可能性 $percent%）';
   }
 
   @override
@@ -8324,6 +8384,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get integratedIndexCaveat =>
       '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+
+  @override
+  String get reportTextEngineSignalExplanation =>
+      '以下只呈現四個文字引擎；加權貢獻百分點合計為文字模型原始分數，不是整合 AI 可能性。「未偵測」表示低於 60% 強訊號閾值，不是人類撰寫的證明。';
+
+  @override
+  String reportSynthesisTextScoreContext(int percent) {
+    return '四引擎文字模型原始分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
+  }
+
+  @override
+  String reportSynthesisStrongestTextSignal(String label, int percent) {
+    return '最高文字引擎訊號是 $label（$percent%）；它可影響文字模型分數，但不能單獨覆蓋整合判讀。';
+  }
+
+  @override
+  String composerTextScoreThresholdReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
+  }
+
+  @override
+  String composerTextScoreThresholdNotReached(
+    int aiPercent,
+    int thresholdPercent,
+  ) {
+    return '文字模型原始分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
+  }
 
   @override
   String telemetryIntegratedVerdict(

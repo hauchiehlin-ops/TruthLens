@@ -70,6 +70,11 @@ class ProfessionalReportHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final assessment = IntegratedAssessment.assess(
+      result,
+      citations: citations,
+      claims: claims,
+    );
 
     return SingleChildScrollView(
       child: Column(
@@ -189,8 +194,8 @@ class ProfessionalReportHeader extends StatelessWidget {
             child: _VerdictSummaryCard(
               result: result,
               l10n: l10n,
+              assessment: assessment,
               citations: citations,
-              claims: claims,
             ),
           ),
 
@@ -210,7 +215,11 @@ class ProfessionalReportHeader extends StatelessWidget {
           // 5. 引擎貢獻度卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: _EngineContributionCard(result: result, l10n: l10n),
+            child: _EngineContributionCard(
+              result: result,
+              assessment: assessment,
+              l10n: l10n,
+            ),
           ),
 
           const Divider(thickness: 1, height: 24),
@@ -394,23 +403,18 @@ _LowScoreCaveat _lowScoreCaveat(
 class _VerdictSummaryCard extends StatelessWidget {
   final DetectionResult result;
   final AppLocalizations l10n;
+  final IntegratedAssessment assessment;
   final CitationEvidence citations;
-  final ClaimAudit claims;
 
   const _VerdictSummaryCard({
     required this.result,
     required this.l10n,
-    this.citations = CitationEvidence.none,
-    this.claims = ClaimAudit.none,
+    required this.assessment,
+    required this.citations,
   });
 
   @override
   Widget build(BuildContext context) {
-    final assessment = IntegratedAssessment.assess(
-      result,
-      citations: citations,
-      claims: claims,
-    );
     final verdict = assessment.direction == IntegratedDirection.likelyAi
         ? Verdict.likelyAi
         : Verdict.likelyHuman;
@@ -733,9 +737,14 @@ class _MetricCard extends StatelessWidget {
 /// 引擎貢獻度卡
 class _EngineContributionCard extends StatelessWidget {
   final DetectionResult result;
+  final IntegratedAssessment assessment;
   final AppLocalizations l10n;
 
-  const _EngineContributionCard({required this.result, required this.l10n});
+  const _EngineContributionCard({
+    required this.result,
+    required this.assessment,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -775,13 +784,13 @@ class _EngineContributionCard extends StatelessWidget {
           if (engineGroups.isNotEmpty) ...[
             _RadarWithVerdict(
               engineGroups: engineGroups,
-              result: result,
+              assessment: assessment,
               l10n: l10n,
             ),
             _EngineSynthesisSummary(
               groups: engineGroups,
-              overallProbability: result.aiProbability,
-              verdictLabel: result.verdict.label(l10n),
+              assessment: assessment,
+              textModelProbability: result.aiProbability,
               l10n: l10n,
             ),
           ],
@@ -800,7 +809,7 @@ class _EngineContributionCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            l10n.reportEngineSignalExplanation,
+            l10n.reportTextEngineSignalExplanation,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.grey[500],
               height: 1.25,
@@ -923,12 +932,12 @@ class _EngineContributionCard extends StatelessWidget {
 
 class _RadarWithVerdict extends StatelessWidget {
   final List<EngineGroup> engineGroups;
-  final DetectionResult result;
+  final IntegratedAssessment assessment;
   final AppLocalizations l10n;
 
   const _RadarWithVerdict({
     required this.engineGroups,
-    required this.result,
+    required this.assessment,
     required this.l10n,
   });
 
@@ -946,7 +955,7 @@ class _RadarWithVerdict extends StatelessWidget {
                 child: _EngineRadarChart(engineGroups: engineGroups),
               ),
               const SizedBox(height: 8),
-              _VerdictSignalBadge(result: result, l10n: l10n),
+              _VerdictSignalBadge(assessment: assessment, l10n: l10n),
             ],
           );
         }
@@ -964,7 +973,7 @@ class _RadarWithVerdict extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               flex: 2,
-              child: _VerdictSignalBadge(result: result, l10n: l10n),
+              child: _VerdictSignalBadge(assessment: assessment, l10n: l10n),
             ),
           ],
         );
@@ -974,15 +983,23 @@ class _RadarWithVerdict extends StatelessWidget {
 }
 
 class _VerdictSignalBadge extends StatelessWidget {
-  final DetectionResult result;
+  final IntegratedAssessment assessment;
   final AppLocalizations l10n;
 
-  const _VerdictSignalBadge({required this.result, required this.l10n});
+  const _VerdictSignalBadge({required this.assessment, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
-    final meta = _meta(result.verdict);
-    final probability = (result.aiProbability * 100).round();
+    final verdict = assessment.direction == IntegratedDirection.likelyAi
+        ? Verdict.likelyAi
+        : Verdict.likelyHuman;
+    final meta = _meta(verdict);
+    final probability = (assessment.aiLikelihood * 100).round();
+    final confidence = switch (assessment.confidence) {
+      IntegratedConfidence.low => l10n.integratedConfidenceLow,
+      IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+      IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+    };
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1020,7 +1037,9 @@ class _VerdictSignalBadge extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      result.verdict.label(l10n),
+                      assessment.direction == IntegratedDirection.likelyAi
+                          ? l10n.integratedLikelyAi
+                          : l10n.integratedLikelyHuman,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: meta.color,
                         fontWeight: FontWeight.w800,
@@ -1033,7 +1052,7 @@ class _VerdictSignalBadge extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            l10n.reportVerdictBadgeProbability(probability),
+            l10n.integratedLikelihoodLabel(probability),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF1E3A5F),
               fontWeight: FontWeight.w700,
@@ -1041,7 +1060,7 @@ class _VerdictSignalBadge extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            _verdictHint(result.verdict, l10n),
+            l10n.integratedConfidenceLabel(confidence),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.grey[700],
               height: 1.3,
@@ -1074,15 +1093,6 @@ class _VerdictSignalBadge extends StatelessWidget {
       color: Color(0xFFC62828),
     ),
   };
-
-  static String _verdictHint(Verdict verdict, AppLocalizations l10n) =>
-      switch (verdict) {
-        Verdict.human => l10n.reportVerdictHintHuman,
-        Verdict.likelyHuman => l10n.reportVerdictHintLikelyHuman,
-        Verdict.mixed => l10n.reportVerdictHintMixed,
-        Verdict.likelyAi => l10n.reportVerdictHintLikelyAi,
-        Verdict.ai => l10n.reportVerdictHintAi,
-      };
 }
 
 class _VerdictMeta {
@@ -1252,14 +1262,14 @@ class _ReportRadarPainter extends CustomPainter {
 
 class _EngineSynthesisSummary extends StatelessWidget {
   final List<EngineGroup> groups;
-  final double overallProbability;
-  final String verdictLabel;
+  final IntegratedAssessment assessment;
+  final double textModelProbability;
   final AppLocalizations l10n;
 
   const _EngineSynthesisSummary({
     required this.groups,
-    required this.overallProbability,
-    required this.verdictLabel,
+    required this.assessment,
+    required this.textModelProbability,
     required this.l10n,
   });
 
@@ -1283,15 +1293,27 @@ class _EngineSynthesisSummary extends StatelessWidget {
     }
     final hasModelGap = groups.any((g) => !g.available);
 
+    final direction = assessment.direction == IntegratedDirection.likelyAi
+        ? l10n.integratedLikelyAi
+        : l10n.integratedLikelyHuman;
+    final confidence = switch (assessment.confidence) {
+      IntegratedConfidence.low => l10n.integratedConfidenceLow,
+      IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+      IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+    };
     final lines = <String>[
-      l10n.reportSynthesisOverall(
-        verdictLabel,
-        (overallProbability * 100).round(),
+      l10n.telemetryIntegratedVerdict(
+        direction,
+        (assessment.aiLikelihood * 100).round(),
+        confidence,
+      ),
+      l10n.reportSynthesisTextScoreContext(
+        (textModelProbability * 100).round(),
       ),
     ];
     if (strongestSignal != null) {
       lines.add(
-        l10n.reportSynthesisStrongestSignal(
+        l10n.reportSynthesisStrongestTextSignal(
           strongestSignal.label,
           (strongestSignal.probability * 100).round(),
         ),
@@ -1307,7 +1329,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
     }
     if (style != null &&
         style.probability < 0.45 &&
-        overallProbability >= 0.45) {
+        textModelProbability >= 0.45) {
       lines.add(l10n.reportSynthesisStyleCaveat);
     }
     if (hasModelGap) {

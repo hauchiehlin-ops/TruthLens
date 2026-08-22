@@ -978,9 +978,9 @@
   "pdfTruncationNotice": "为维持 PDF 可读性，仅显示前 {max} 句（共 {count} 句）；如需完整逐句数据，请改用「{csvLabel}」或「{jsonLabel}」。",
   "pdfSentenceColumnHeader": "句子（附命中模式）",
   "composerHeadlineAi": "这段文本极可能由 AI 生成（AI 几率 {percent}%）",
-  "composerHeadlineLikelyAi": "这段文本倾向 AI 生成，建议进一步查看（AI 几率 {percent}%）",
+  "composerHeadlineLikelyAi": "本文较可能是 AI 生成，建议进一步审查（整合 AI 可能性 {percent}%）",
   "composerHeadlineMixed": "这段文本呈现人类与 AI 混合的特征（AI 几率 {percent}%）",
-  "composerHeadlineLikelyHuman": "这段文本倾向人类撰写（AI 几率 {percent}%）",
+  "composerHeadlineLikelyHuman": "本文较可能不是 AI 生成（整合 AI 可能性 {percent}%）",
   "composerHeadlineHuman": "这段文本极可能为人类撰写（AI 几率 {percent}%）",
   "composerThresholdFlagged": "整体 AI 几率越过固定的 {percent}% 阈值，被标记为 AI。",
   "composerThresholdNotFlagged": "整体 AI 几率未达 {percent}% 标记阈值。",
@@ -1311,5 +1311,10 @@
   "integratedConfidenceHigh": "高",
   "integratedQualifiedWarning": "{reason} 系统仍提供最可能方向，但已降低信心；请把它视为筛查结果，而不是定案证明。",
   "integratedIndexCaveat": "本指数整合文字模型、写作过程、文件来源、草稿演进、任务契合与来源完整性；它是证据指数，不是经总体校准的统计概率。",
+  "reportTextEngineSignalExplanation": "以下只呈现四个文字引擎；加权贡献百分点合计为文字模型原始分数，不是整合 AI 可能性。“未检测”表示低于 60% 强信号阈值，不是人类撰写的证明。",
+  "reportSynthesisTextScoreContext": "四引擎文字模型原始分数为 {percent}%；它只是整合判读的一项输入，不是另一个综合判定。",
+  "reportSynthesisStrongestTextSignal": "最高文字引擎信号是 {label}（{percent}%）；它可影响文字模型分数，但不能单独覆盖整合判读。",
+  "composerTextScoreThresholdReached": "文字模型原始分数为 {aiPercent}%，已达 {thresholdPercent}% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。",
+  "composerTextScoreThresholdNotReached": "文字模型原始分数为 {aiPercent}%，低于 {thresholdPercent}% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。",
   "telemetryIntegratedVerdict": "依本次可用证据加权后，本文“{direction}”（AI 可能性指数 {percent}%，{confidence}信心）。"
 }

@@ -135,6 +135,10 @@ class HistoryEntry {
   });
 
   factory HistoryEntry.fromRow(Map<String, Object?> row) {
+    return HistoryEntry.fromMap(row);
+  }
+
+  factory HistoryEntry.fromMap(Map<String, Object?> row) {
     final textProbability = (row['ai_probability'] as num).toDouble();
     final integratedProbability =
         (row['integrated_likelihood'] as num?)?.toDouble() ?? textProbability;
