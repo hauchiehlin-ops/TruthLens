@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/services/calibration_service.dart';
 import 'package:truthlens/core/models/detection_result.dart';
+import 'package:truthlens/core/services/citation_evidence.dart';
 import 'package:truthlens/core/services/document_provenance.dart';
 import 'package:truthlens/core/services/integrated_assessment.dart';
 import 'package:truthlens/core/services/writing_session.dart';
@@ -250,6 +251,33 @@ void main() {
       fileName.style!.fontSize,
       closeTo(title.style!.fontSize! * 0.7, 0.01),
     );
+  });
+
+  testWidgets('整合作者判讀置於可查證事實與多證據矩陣之前', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _testApp(
+        ProfessionalReportHeader(
+          result: sampleResult(),
+          onDownloadPdf: () {},
+          citations: const CitationEvidence(total: 5, verified: 5),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final verdictTop = tester
+        .getTopLeft(find.text('Integrated authorship assessment'))
+        .dy;
+    final findingsTop = tester.getTopLeft(find.text('What can be verified')).dy;
+    final matrixTop = tester
+        .getTopLeft(find.text('Multi-evidence assessment'))
+        .dy;
+
+    expect(verdictTop, lessThan(findingsTop));
+    expect(findingsTop, lessThan(matrixTop));
   });
 
   testWidgets('整合判讀卡同時顯示方向、指數、原始分數與信心，窄畫面不溢位', (tester) async {

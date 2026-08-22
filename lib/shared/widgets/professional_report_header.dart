@@ -153,9 +153,20 @@ class ProfessionalReportHeader extends StatelessWidget {
           ),
           const Divider(thickness: 2),
 
-          // 2. 可查證的事實 —— 刻意排在判定之前。
-          //    「三篇文獻查無此文」是事實，「AI 機率 32%」是推論；
-          //    事實該當頭條，推論退為輔助。
+          // 2. 整合作者判讀置頂。使用者先取得本次最可能方向，再依序往下
+          //    核對可查證事實、證據覆蓋與各引擎細節。
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: _VerdictSummaryCard(
+              result: result,
+              l10n: l10n,
+              assessment: assessment,
+              citations: citations,
+            ),
+          ),
+
+          // 3. 可查證的事實。它們緊接主結論呈現，供使用者立即核對，
+          //    但不再搶在作者判讀之前。
           Builder(
             builder: (context) {
               final findings = collectVerifiableFindings(
@@ -175,7 +186,7 @@ class ProfessionalReportHeader extends StatelessWidget {
             },
           ),
 
-          // 3. 六軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性
+          // 4. 六軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性
           //    訊號進入下方作者判讀，其餘維持待核查事實。
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -188,31 +199,20 @@ class ProfessionalReportHeader extends StatelessWidget {
             ),
           ),
 
-          // 4. 判定摘要卡片（大卡）
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: _VerdictSummaryCard(
-              result: result,
-              l10n: l10n,
-              assessment: assessment,
-              citations: citations,
-            ),
-          ),
-
-          // 3. 三列指標卡
+          // 5. 三列指標卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _MetricsRow(result: result, l10n: l10n),
           ),
 
-          // 4. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
+          // 6. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
           //    仍顯示，明確告訴使用者「這份無從由來源判斷」而非默默略過）
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: ProvenanceCard(provenance: result.provenance),
           ),
 
-          // 5. 引擎貢獻度卡
+          // 7. 引擎貢獻度卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: _EngineContributionCard(
@@ -224,7 +224,7 @@ class ProfessionalReportHeader extends StatelessWidget {
 
           const Divider(thickness: 1, height: 24),
 
-          // 6. 可疑句子清單標題
+          // 8. 可疑句子清單標題
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
