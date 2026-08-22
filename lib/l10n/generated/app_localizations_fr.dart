@@ -2913,17 +2913,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get integratedEvidenceGatePassed => 'AI evidence gate: passed';
+
+  @override
+  String get integratedEvidenceGateNotPassed =>
+      'AI evidence gate: not passed · directional screening only';
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
   }
 
   @override
   String get integratedIndexCaveat =>
-      'This index uses direct text-model evidence and affirmative human process or origin evidence. Citation quality, task fit, paste behavior, and suspicious metadata remain separate review findings and cannot independently produce an AI verdict. It is an evidence score, not a calibrated statistical probability.';
+      'This continuous index shows the direction of the fused evidence without forcing an artificial 49% ceiling. The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families, applies language/domain applicability and calibration reliability, then requires independent support before crossing the AI marker. ‘Not detected’ is not proof of human authorship.';
+      'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families and applies language/domain applicability and calibration reliability. The separate AI evidence gate indicates whether support is strong enough for escalation; ‘not detected’ is not proof of human authorship.';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

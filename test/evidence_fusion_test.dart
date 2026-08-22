@@ -42,6 +42,7 @@ void main() {
     expect(fusion.aiSupportingFamilies, 1);
     expect(fusion.passesAiEvidenceGate, isFalse);
     expect(fusion.probability, 0.59);
+    expect(fusion.authorshipClass, TextAuthorshipClass.likelyAiGenerated);
   });
 
   test('分類器與分布鑑識同向才形成跨家族 AI 共識', () {

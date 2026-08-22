@@ -236,11 +236,11 @@ class TextEvidenceFusion {
                 diversity *
                 (1 - conflict * 0.65))
             .clamp(0.0, 1.0);
-    final authorshipClass = !passesGate
-        ? TextAuthorshipClass.likelyHuman
-        : mixed
+    final authorshipClass = mixed
         ? TextAuthorshipClass.likelyAiAssisted
-        : TextAuthorshipClass.likelyAiGenerated;
+        : probability > 0.5
+        ? TextAuthorshipClass.likelyAiGenerated
+        : TextAuthorshipClass.likelyHuman;
 
     return TextEvidenceFusion(
       probability: probability,

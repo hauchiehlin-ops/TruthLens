@@ -7,7 +7,8 @@
 /// 這裡刻意採不對稱證據規則：缺少引用、偏離任務、整段貼上、很少修訂或
 /// 檔案中繼資料異常，都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
 /// [ForensicEvidenceMatrix] 中列為待核查事項。AI 方向必須由文字引擎的直接訊號
-/// 與最低共識門檻支撐；真人寫作過程與完整來源紀錄則可以提供反向佐證。
+/// 提供方向；最低共識門檻另外標示該方向是否已有足夠獨立證據。真人寫作過程與
+/// 完整來源紀錄則可以提供反向佐證。
 library;
 
 import 'dart:math' as math;
@@ -50,6 +51,7 @@ class IntegratedAssessment {
   final int independentEvidenceFamilies;
   final double applicabilityCoverage;
   final double evidenceCoverage;
+  final bool passesAiEvidenceGate;
   final List<IntegratedEvidenceContribution> contributions;
 
   const IntegratedAssessment({
@@ -63,6 +65,7 @@ class IntegratedAssessment {
     required this.independentEvidenceFamilies,
     required this.applicabilityCoverage,
     required this.evidenceCoverage,
+    required this.passesAiEvidenceGate,
     required this.contributions,
   });
 
@@ -161,11 +164,9 @@ class IntegratedAssessment {
     final fusedLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
     final passesAiEvidenceGate = fusion.passesAiEvidenceGate;
 
-    // 沒有越過高特異性證據門檻時，不允許弱訊號湊成 AI 判定。49% 不是另一個
-    // 機率校準，而是讓「偏非 AI」方向與畫面上的指數保持語義一致。
-    final aiLikelihood = !passesAiEvidenceGate && fusedLikelihood > 0.49
-        ? 0.49
-        : fusedLikelihood;
+    // 保留實際融合值，不再把未通過證據門檻的結果一律截成 49%。方向、信心與
+    // 證據門檻分開呈現，避免政策性上限偽裝成精確機率。
+    final aiLikelihood = fusedLikelihood;
 
     final positive = contributions
         .where((item) => item.logOdds > 0)
@@ -210,11 +211,11 @@ class IntegratedAssessment {
           : confidence;
     }
 
-    final direction = aiLikelihood <= 0.5 || !passesAiEvidenceGate
-        ? IntegratedDirection.likelyHuman
-        : fusion.mixedAuthorship
+    final direction = aiLikelihood > 0.5 && fusion.mixedAuthorship
         ? IntegratedDirection.likelyMixed
-        : IntegratedDirection.likelyAi;
+        : aiLikelihood > 0.5
+        ? IntegratedDirection.likelyAi
+        : IntegratedDirection.likelyHuman;
 
     return IntegratedAssessment(
       aiLikelihood: aiLikelihood,
@@ -227,6 +228,7 @@ class IntegratedAssessment {
       independentEvidenceFamilies: fusion.families.length,
       applicabilityCoverage: fusion.applicabilityCoverage,
       evidenceCoverage: fusion.evidenceCoverage,
+      passesAiEvidenceGate: passesAiEvidenceGate,
       contributions: contributions,
     );
   }

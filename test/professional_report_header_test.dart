@@ -297,6 +297,14 @@ void main() {
       IntegratedConfidence.moderate => 'Moderate',
       IntegratedConfidence.high => 'High',
     };
+    final direction = switch (assessment.direction) {
+      IntegratedDirection.likelyAi => 'More likely AI-generated',
+      IntegratedDirection.likelyMixed => 'More likely human-AI mixed',
+      IntegratedDirection.likelyHuman => 'More likely not AI-generated',
+    };
+    final evidenceGate = assessment.passesAiEvidenceGate
+        ? 'AI evidence gate: passed'
+        : 'AI evidence gate: not passed · directional screening only';
 
     await tester.pumpWidget(
       _testApp(ProfessionalReportHeader(result: result, onDownloadPdf: () {})),
@@ -305,13 +313,14 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Integrated authorship assessment'), findsOneWidget);
-    expect(find.text('More likely not AI-generated'), findsNWidgets(2));
+    expect(find.text(direction), findsNWidgets(2));
     expect(
       find.text('Integrated AI likelihood: $integratedPercent%'),
       findsNWidgets(2),
     );
     expect(find.textContaining('Text-model score: 22%'), findsOneWidget);
     expect(find.textContaining('Confidence: $confidence'), findsNWidgets(2));
+    expect(find.text(evidenceGate), findsOneWidget);
     expect(find.text('AI probability < 20%'), findsNothing);
   });
 }

@@ -521,6 +521,16 @@ class _VerdictSummaryCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 3),
+                Text(
+                  assessment.passesAiEvidenceGate
+                      ? l10n.integratedEvidenceGatePassed
+                      : l10n.integratedEvidenceGateNotPassed,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.88),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   l10n.integratedIndexCaveat,

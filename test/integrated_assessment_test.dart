@@ -49,14 +49,14 @@ DetectionResult _result({
 );
 
 void main() {
-  test('全引擎沉默仍給最可能方向，但把 13% 拉回低信心中性附近', () {
+  test('全引擎沉默時回到 50% 中性點並標示低信心', () {
     final assessment = IntegratedAssessment.assess(_result());
 
     expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, greaterThan(0.40));
-    expect(assessment.aiLikelihood, lessThan(0.50));
+    expect(assessment.aiLikelihood, 0.50);
     expect(assessment.confidence, IntegratedConfidence.low);
     expect(assessment.textReliability, 0.12);
+    expect(assessment.passesAiEvidenceGate, isFalse);
   });
 
   test('整段貼上、可疑來源與查無引用不能把偏低文字訊號翻成 AI', () {
@@ -86,7 +86,7 @@ void main() {
     );
 
     expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, lessThan(0.50));
+    expect(assessment.aiLikelihood, lessThanOrEqualTo(0.50));
     expect(assessment.confidence, IntegratedConfidence.low);
   });
 
@@ -131,6 +131,7 @@ void main() {
     expect(assessment.direction, IntegratedDirection.likelyAi);
     expect(assessment.aiLikelihood, greaterThan(0.80));
     expect(assessment.confidence, isNot(IntegratedConfidence.low));
+    expect(assessment.passesAiEvidenceGate, isTrue);
   });
 
   test('單一引擎找到兩處聊天助理回覆殘留時可越過 AI 證據門檻', () {
@@ -141,9 +142,10 @@ void main() {
     expect(assessment.direction, IntegratedDirection.likelyAi);
     expect(assessment.aiLikelihood, greaterThan(0.85));
     expect(assessment.textReliability, 0.95);
+    expect(assessment.passesAiEvidenceGate, isTrue);
   });
 
-  test('單一助理慣用語可能是正文引用，不足以自行產生 AI 結論', () {
+  test('單一助理慣用語只呈現弱 AI 偏向，不會偽造 49% 或通過證據門檻', () {
     final result = DetectionResult(
       id: 'single-assistant-quote',
       analyzedAt: DateTime(2026, 8, 22),
@@ -170,8 +172,11 @@ void main() {
     );
 
     final assessment = IntegratedAssessment.assess(result);
-    expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, 0.49);
+    expect(assessment.direction, IntegratedDirection.likelyAi);
+    expect(assessment.aiLikelihood, greaterThan(0.50));
+    expect(assessment.aiLikelihood, isNot(0.49));
+    expect(assessment.confidence, IntegratedConfidence.low);
+    expect(assessment.passesAiEvidenceGate, isFalse);
   });
 
   test('受控逐步寫作與完整編輯歷程可推翻偏 AI 的文字模型', () {

@@ -159,6 +159,7 @@ class ReportExporter {
         'independent_evidence_families': integrated.independentEvidenceFamilies,
         'applicability_coverage': integrated.applicabilityCoverage,
         'evidence_coverage': integrated.evidenceCoverage,
+        'ai_evidence_gate_passed': integrated.passesAiEvidenceGate,
         'evidence_contributions': [
           for (final contribution in integrated.contributions)
             {'axis': contribution.kind.name, 'log_odds': contribution.logOdds},
@@ -287,6 +288,7 @@ class ReportExporter {
       ..writeln(
         '# evidence_coverage,${integrated.evidenceCoverage.toStringAsFixed(4)}',
       )
+      ..writeln('# ai_evidence_gate_passed,${integrated.passesAiEvidenceGate}')
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
       ..writeln('# checkable_claims,${claims.total}')

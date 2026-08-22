@@ -86,12 +86,13 @@ void main() {
     test('含摘要註解與逐句資料列', () {
       final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       final lines = csv.trim().split('\n');
-      expect(lines.where((l) => l.startsWith('#')).length, 18);
+      expect(lines.where((l) => l.startsWith('#')).length, 19);
       expect(lines, contains('index,sentence,ai_probability,patterns'));
       expect(lines.last, startsWith('1,'));
       expect(csv, contains('overall_ai_probability,0.5500'));
       expect(csv, contains('integrated_ai_likelihood'));
       expect(csv, contains('integrated_direction'));
+      expect(csv, contains('ai_evidence_gate_passed'));
     });
 
     test('逗號與引號正確跳脫', () {
@@ -116,6 +117,7 @@ void main() {
       expect(map['overall']['ai_probability'], 0.55);
       expect(map['overall']['integrated_direction'], isA<String>());
       expect(map['overall']['integrated_ai_likelihood'], isA<double>());
+      expect(map['overall']['ai_evidence_gate_passed'], isA<bool>());
       expect(map['evidence_matrix']['total_axes'], 6);
       expect(map['claim_source_audit'], isA<Map<String, dynamic>>());
       expect((map['engines'] as List).length, 2);

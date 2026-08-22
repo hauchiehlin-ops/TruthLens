@@ -2777,17 +2777,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get integratedEvidenceGatePassed => 'AI 證據門檻：已通過';
+
+  @override
+  String get integratedEvidenceGateNotPassed => 'AI 證據門檻：未通過・僅供方向篩查';
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
   }
 
   @override
   String get integratedIndexCaveat =>
-      '本指數採用直接文字模型證據，以及明確的真人寫作過程或來源佐證。引用品質、任務契合、貼上行為與異常中繼資料會另外列為待核查事項，不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '本連續指數呈現證據融合後的實際偏向，不再以 49% 人工封頂；獨立的 AI 證據門檻則表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，套用語言／領域適用性與校準可靠度，再要求獨立證據支持後才可跨越 AI 標記；「未偵測」不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，並套用語言／領域適用性與校準可靠度。獨立的 AI 證據門檻另行表示支持是否足以升級處理；「未偵測」不是人類撰寫的證明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -5598,17 +5604,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String get integratedEvidenceGatePassed => 'AI 证据门槛：已通过';
+
+  @override
+  String get integratedEvidenceGateNotPassed => 'AI 证据门槛：未通过・仅供方向筛查';
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系统仍提供最可能方向，但已降低信心；请把它视为筛查结果，而不是定案证明。';
   }
 
   @override
   String get integratedIndexCaveat =>
-      '本指数采用直接文字模型证据，以及明确的真人写作过程或来源佐证。引用质量、任务契合、贴上行为与异常元数据会另外列为待核查事项，不能单独产生 AI 判定。本指数是证据分数，不是经总体校准的统计概率。';
+      '本连续指数呈现证据融合后的实际偏向，不再以 49% 人工封顶；独立的 AI 证据门槛则表示是否已有足够跨来源支持可升级处理。引用质量、任务契合、贴上行为与异常元数据不能单独产生 AI 判定。本指数是证据分数，不是经总体校准的统计概率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈现四个文字引擎的诊断信号。最终文字分数会先把相关引擎合并为独立证据家族，套用语言／领域适用性与校准可靠度，再要求独立证据支持后才可跨越 AI 标记；“未检测”不是人类撰写的证明。';
+      '以下呈现四个文字引擎的诊断信号。最终文字分数会先把相关引擎合并为独立证据家族，并套用语言／领域适用性与校准可靠度。独立的 AI 证据门槛另行表示支持是否足以升级处理；“未检测”不是人类撰写的证明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -8419,17 +8431,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String get integratedEvidenceGatePassed => 'AI 證據門檻：已通過';
+
+  @override
+  String get integratedEvidenceGateNotPassed => 'AI 證據門檻：未通過・僅供方向篩查';
+
+  @override
   String integratedQualifiedWarning(String reason) {
     return '$reason 系統仍提供最可能方向，但已降低信心；請把它視為篩查結果，而不是定案證明。';
   }
 
   @override
   String get integratedIndexCaveat =>
-      '本指數採用直接文字模型證據，以及明確的真人寫作過程或來源佐證。引用品質、任務契合、貼上行為與異常中繼資料會另外列為待核查事項，不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '本連續指數呈現證據融合後的實際偏向，不再以 49% 人工封頂；獨立的 AI 證據門檻則表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，套用語言／領域適用性與校準可靠度，再要求獨立證據支持後才可跨越 AI 標記；「未偵測」不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，並套用語言／領域適用性與校準可靠度。獨立的 AI 證據門檻另行表示支持是否足以升級處理；「未偵測」不是人類撰寫的證明。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

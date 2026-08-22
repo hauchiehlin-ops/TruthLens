@@ -4593,6 +4593,18 @@ abstract class AppLocalizations {
   /// **'Independent evidence families: {families}/4 · applicability coverage {coverage}%'**
   String integratedEvidenceCoverage(int families, int coverage);
 
+  /// No description provided for @integratedEvidenceGatePassed.
+  ///
+  /// In en, this message translates to:
+  /// **'AI evidence gate: passed'**
+  String get integratedEvidenceGatePassed;
+
+  /// No description provided for @integratedEvidenceGateNotPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'AI evidence gate: not passed · directional screening only'**
+  String get integratedEvidenceGateNotPassed;
+
   /// No description provided for @integratedQualifiedWarning.
   ///
   /// In en, this message translates to:
@@ -4602,13 +4614,13 @@ abstract class AppLocalizations {
   /// No description provided for @integratedIndexCaveat.
   ///
   /// In en, this message translates to:
-  /// **'This index uses direct text-model evidence and affirmative human process or origin evidence. Citation quality, task fit, paste behavior, and suspicious metadata remain separate review findings and cannot independently produce an AI verdict. It is an evidence score, not a calibrated statistical probability.'**
+  /// **'This continuous index shows the direction of the fused evidence without forcing an artificial 49% ceiling. The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.'**
   String get integratedIndexCaveat;
 
   /// No description provided for @reportTextEngineSignalExplanation.
   ///
   /// In en, this message translates to:
-  /// **'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families, applies language/domain applicability and calibration reliability, then requires independent support before crossing the AI marker. ‘Not detected’ is not proof of human authorship.'**
+  /// **'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families and applies language/domain applicability and calibration reliability. The separate AI evidence gate indicates whether support is strong enough for escalation; ‘not detected’ is not proof of human authorship.'**
   String get reportTextEngineSignalExplanation;
 
   /// No description provided for @reportSynthesisTextScoreContext.
