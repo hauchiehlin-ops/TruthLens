@@ -123,7 +123,7 @@ void main() {
   );
 
   testWidgets(
-    'raw human-leaning text score cannot contradict an integrated AI direction',
+    'non-authorship concerns cannot flip a human-leaning text score to AI',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1500));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -198,7 +198,7 @@ void main() {
       );
       final assessment = IntegratedAssessment.assess(result);
       final integratedPercent = (assessment.aiLikelihood * 100).round();
-      expect(assessment.direction, IntegratedDirection.likelyAi);
+      expect(assessment.direction, IntegratedDirection.likelyHuman);
 
       await tester.pumpWidget(
         _testApp(
@@ -207,7 +207,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('More likely AI-generated'), findsNWidgets(2));
+      expect(find.text('More likely not AI-generated'), findsNWidgets(2));
       expect(
         find.text('Integrated AI likelihood: $integratedPercent%'),
         findsNWidgets(2),
@@ -216,6 +216,7 @@ void main() {
         find.textContaining('Four-engine text-model raw score: 13%'),
         findsOneWidget,
       );
+      expect(find.text('More likely AI-generated'), findsNothing);
       expect(find.text('Human-written'), findsNothing);
       expect(find.text('Overall AI probability 13%'), findsNothing);
       expect(

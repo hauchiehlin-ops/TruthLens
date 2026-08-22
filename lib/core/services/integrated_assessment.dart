@@ -1,8 +1,13 @@
-/// 將文字模型與文件鑑識證據整合成一個必定有方向的判讀。
+/// 將文字模型與作者來源證據整合成一個必定有方向的判讀。
 ///
 /// [aiLikelihood] 是證據融合後的「AI 可能性指數」，不是經母體校準的統計機率。
 /// 系統即使在證據稀薄時仍提供較可能方向，但會把 [confidence] 降為 low；
 /// [DetectionResult.abstention] 因此保留作為證據限制，而不再取代答案。
+///
+/// 這裡刻意採不對稱證據規則：缺少引用、偏離任務、整段貼上、很少修訂或
+/// 檔案中繼資料異常，都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
+/// [ForensicEvidenceMatrix] 中列為待核查事項。AI 方向必須由文字引擎的直接訊號
+/// 與最低共識門檻支撐；真人寫作過程與完整來源紀錄則可以提供反向佐證。
 library;
 
 import 'dart:math' as math;
@@ -10,10 +15,8 @@ import 'dart:math' as math;
 import '../models/detection_result.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
-import 'document_provenance.dart';
 import 'forensic_evidence.dart';
 import 'revision_evidence.dart';
-import 'task_alignment.dart';
 
 enum IntegratedDirection { likelyAi, likelyHuman }
 
@@ -76,7 +79,15 @@ class IntegratedAssessment {
       );
     }
 
-    final textReliability = _textReliability(result);
+    final hasAssistantArtifact = result.engineScores.any(
+      (score) =>
+          score.available &&
+          score.hasEvidence &&
+          (score.features['assistant_response_artifacts'] ?? 0) >= 2,
+    );
+    final textReliability = hasAssistantArtifact
+        ? 0.90
+        : _textReliability(result);
     final textProbability = result.aiProbability.clamp(0.02, 0.98);
     final textLogOdds = math.log(textProbability / (1 - textProbability));
     add(
@@ -84,35 +95,23 @@ class IntegratedAssessment {
       textLogOdds * textReliability,
       information: textReliability,
     );
-    if (result.evasion.indicatesDeliberateEvasion) {
-      add(EvidenceAxisKind.textTrace, 1.10, information: 1.0);
+    if (result.evasion.indicatesDeliberateEvasion &&
+        result.evidenceEngineCount > 0 &&
+        result.aiProbability >= DetectionResult.aiFlagThreshold) {
+      // 規避字元本身不等於 AI；只有文字模型已找到 AI 訊號時才作弱佐證。
+      add(EvidenceAxisKind.textTrace, 0.45, information: 0.45);
     }
 
     final writing = result.writingSession;
     if (writing.hasData) {
-      if (writing.hasBulkPaste) {
-        add(EvidenceAxisKind.writingProcess, 0.70, information: 0.75);
-      } else if (writing.consistentWithLiveWriting) {
+      if (writing.consistentWithLiveWriting) {
         add(EvidenceAxisKind.writingProcess, -1.15, information: 1.0);
-      } else {
-        add(EvidenceAxisKind.writingProcess, 0, information: 0.25);
       }
     }
 
     final provenance = result.provenance;
     if (provenance.indicatesHumanAuthorship) {
       add(EvidenceAxisKind.documentOrigin, -1.35, information: 1.0);
-    } else {
-      switch (provenance.risk) {
-        case ProvenanceRisk.high:
-          add(EvidenceAxisKind.documentOrigin, 1.00, information: 0.90);
-        case ProvenanceRisk.medium:
-          add(EvidenceAxisKind.documentOrigin, 0.55, information: 0.65);
-        case ProvenanceRisk.low:
-          add(EvidenceAxisKind.documentOrigin, 0, information: 0.30);
-        case ProvenanceRisk.unknown:
-          break;
-      }
     }
 
     final revision = RevisionEvidence.compare(
@@ -120,63 +119,17 @@ class IntegratedAssessment {
       result.inputText,
     );
     switch (revision.pattern) {
-      case RevisionPattern.largeReplacement:
-        add(EvidenceAxisKind.revisionHistory, 0.55, information: 0.60);
       case RevisionPattern.incremental:
         add(EvidenceAxisKind.revisionHistory, -0.65, information: 0.70);
+      case RevisionPattern.largeReplacement:
       case RevisionPattern.nearDuplicate:
-        add(EvidenceAxisKind.revisionHistory, 0, information: 0.25);
       case RevisionPattern.mixed:
-        add(EvidenceAxisKind.revisionHistory, 0, information: 0.30);
       case RevisionPattern.unavailable:
         break;
     }
 
-    final task = TaskAlignment.analyze(result.taskPrompt, result.inputText);
-    switch (task.risk) {
-      case TaskAlignmentRisk.high:
-        add(EvidenceAxisKind.taskAlignment, 0.18, information: 0.20);
-      case TaskAlignmentRisk.medium:
-        add(EvidenceAxisKind.taskAlignment, 0.08, information: 0.12);
-      case TaskAlignmentRisk.low:
-        add(EvidenceAxisKind.taskAlignment, 0, information: 0.10);
-      case TaskAlignmentRisk.unknown:
-        break;
-    }
-
-    var sourceLogOdds = 0.0;
-    var sourceInformation = 0.0;
-    switch (citations.risk) {
-      case CitationRisk.high:
-        sourceLogOdds += 0.90;
-        sourceInformation = 0.75;
-      case CitationRisk.medium:
-        sourceLogOdds += 0.45;
-        sourceInformation = 0.50;
-      case CitationRisk.low:
-        sourceInformation = 0.25;
-      case CitationRisk.unknown:
-        break;
-    }
-    switch (claims.risk) {
-      case ClaimSourceRisk.high:
-        sourceLogOdds += 0.28;
-        sourceInformation = math.max(sourceInformation, 0.30);
-      case ClaimSourceRisk.medium:
-        sourceLogOdds += 0.12;
-        sourceInformation = math.max(sourceInformation, 0.18);
-      case ClaimSourceRisk.low:
-        sourceInformation = math.max(sourceInformation, 0.12);
-      case ClaimSourceRisk.unknown:
-        break;
-    }
-    if (sourceInformation > 0) {
-      add(
-        EvidenceAxisKind.sourceIntegrity,
-        sourceLogOdds,
-        information: sourceInformation,
-      );
-    }
+    // [citations] 與 [claims] 仍保留在 API，因為呼叫端同時用它們建立六軸矩陣。
+    // 它們衡量來源品質，不衡量作者身分，因此不進入作者勝算。
 
     final contributions = [
       for (final entry in contributionByAxis.entries)
@@ -186,7 +139,25 @@ class IntegratedAssessment {
       0,
       (sum, contribution) => sum + contribution.logOdds,
     );
-    final aiLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
+    final fusedLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
+    final aiSupportingEngines = result.engineScores
+        .where(
+          (score) =>
+              score.available &&
+              score.hasEvidence &&
+              score.aiProbability >= DetectionResult.aiFlagThreshold,
+        )
+        .length;
+    final passesAiEvidenceGate =
+        hasAssistantArtifact ||
+        aiSupportingEngines >= 2 ||
+        (aiSupportingEngines == 1 && result.aiProbability >= 0.85);
+
+    // 沒有越過高特異性證據門檻時，不允許弱訊號湊成 AI 判定。49% 不是另一個
+    // 機率校準，而是讓「偏非 AI」方向與畫面上的指數保持語義一致。
+    final aiLikelihood = !passesAiEvidenceGate && fusedLikelihood > 0.49
+        ? 0.49
+        : fusedLikelihood;
 
     final positive = contributions
         .where((item) => item.logOdds > 0)
@@ -202,16 +173,24 @@ class IntegratedAssessment {
       0,
       (sum, value) => sum + value,
     );
-    final informationQuality = (information / 2.8).clamp(0.0, 1.0);
+    final informationQuality = (information / 2.4).clamp(0.0, 1.0);
     final margin = ((aiLikelihood - 0.5).abs() * 2).clamp(0.0, 1.0);
     final confidenceScore =
         (informationQuality * 0.65 + margin * 0.35) *
         (1 - conflictRatio * 0.55);
-    final confidence = confidenceScore >= 0.68
+    final rawConfidence = confidenceScore >= 0.68
         ? IntegratedConfidence.high
         : confidenceScore >= 0.38
         ? IntegratedConfidence.moderate
         : IntegratedConfidence.low;
+    final confidence = result.evidenceEngineCount == 0
+        ? IntegratedConfidence.low
+        : rawConfidence == IntegratedConfidence.high &&
+              aiSupportingEngines < 2 &&
+              !provenance.indicatesHumanAuthorship &&
+              !writing.consistentWithLiveWriting
+        ? IntegratedConfidence.moderate
+        : rawConfidence;
 
     return IntegratedAssessment(
       aiLikelihood: aiLikelihood,

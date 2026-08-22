@@ -995,7 +995,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpCascadeBody =>
-      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n最終判讀以保守權重整合六個面向：文字痕跡、寫作過程、文件來源、草稿演進、任務契合與來源完整性，並固定輸出較可能是 AI 或較可能不是 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
+      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n六個證據面向各自回答不同問題，因此分開呈現。作者判讀只接受直接文字痕跡，並可由確定的逐步寫作、文件來源或漸進草稿證據向非 AI 修正。缺少引用、偏離任務、整段貼上、修訂很少或中繼資料異常仍列為待核查事項，但不能單獨把文件判成 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
 
   @override
   String get helpRisksTitle => '四、必須誠實面對的風險';
@@ -1756,6 +1756,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
 
   @override
+  String engineReasonAssistantResponseArtifact(int count) {
+    return '偵測到 $count 處聊天助理回覆殘留，例如稱呼提問者或主動表示可修改受託文字';
+  }
+
+  @override
   String get engineReasonAdversarialNotInstalled => '改寫偵測模型尚未安裝，未參與本次投票';
 
   @override
@@ -1864,7 +1869,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎會與寫作過程、文件來源、草稿演進、任務契合及來源完整性一併整合，文件內容不會上傳到任何伺服器。\n\n報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2573,7 +2578,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get evidenceMatrixTitle => '多證據鑑識矩陣';
 
   @override
-  String get evidenceMatrixSubtitle => '六個面向先分開呈現，再以保守權重納入整合判讀。覆蓋率表示本次能檢查哪些證據。';
+  String get evidenceMatrixSubtitle =>
+      '六個面向分開呈現；只有具作者特異性的證據影響作者判讀，覆蓋率表示本次能檢查哪些證據。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -2769,7 +2775,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+      '本指數採用直接文字模型證據，以及明確的真人寫作過程或來源佐證。引用品質、任務契合、貼上行為與異常中繼資料會另外列為待核查事項，不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -3802,7 +3808,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpCascadeBody =>
-      '分析依序执行文件来源、统计与风格特征、Transformer 句级分类，以及必要时才启动的交叉困惑度。\n\n最终判读以保守权重整合六个方面：文字痕迹、写作过程、文件来源、草稿演进、任务契合与来源完整性，并固定输出较可能是 AI 或较可能不是 AI。\n\n信心会独立计算。可分析句少于 5 句、内容少于 100 字、引擎少于 2 个、模型沉默或分歧过大时，都会降低信心并显示限制警告。方向仍可用于筛查，但低信心结果不得当成定案证明。';
+      '分析依序执行文件来源、统计与风格特征、Transformer 句级分类，以及必要时才启动的交叉困惑度。\n\n六个证据方面各自回答不同问题，因此分开呈现。作者判读只接受直接文字痕迹，并可由确定的逐步写作、文件来源或渐进草稿证据向非 AI 修正。缺少引用、偏离任务、整段贴上、修订很少或元数据异常仍列为待核查事项，但不能单独把文件判成 AI。\n\n信心会独立计算。可分析句少于 5 句、内容少于 100 字、引擎少于 2 个、模型沉默或分歧过大时，都会降低信心并显示限制警告。方向仍可用于筛查，但低信心结果不得当成定案证明。';
 
   @override
   String get helpRisksTitle => '四、必须诚实面对的风险';
@@ -4563,6 +4569,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get engineReasonNoStyleMarkers => '未侦测到显著的 AI 写作风格模式';
 
   @override
+  String engineReasonAssistantResponseArtifact(int count) {
+    return '侦测到 $count 处聊天助理回复残留，例如称呼提问者或主动表示可修改受托文字';
+  }
+
+  @override
   String get engineReasonAdversarialNotInstalled => '改写侦测模型尚未安装，未参与本次投票';
 
   @override
@@ -4671,7 +4682,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎会与写作过程、文件来源、草稿演进、任务契合及来源完整性一并整合，文件内容不会上传到任何服务器。\n\n报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。文字模型原始分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
+      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎检查直接文字痕迹；写作过程、文件来源、草稿演进、任务契合及来源完整性则作为分开呈现的鉴识证据，文件内容不会上传到任何服务器。\n\n只有具作者特异性的信号能提高 AI 判定。报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。文字模型原始分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -5380,7 +5391,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get evidenceMatrixTitle => '多证据鉴识矩阵';
 
   @override
-  String get evidenceMatrixSubtitle => '六个方面先分开呈现，再以保守权重纳入整合判读。覆盖率表示本次能检查哪些证据。';
+  String get evidenceMatrixSubtitle =>
+      '六个方面分开呈现；只有具作者特异性的证据影响作者判读，覆盖率表示本次能检查哪些证据。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -5576,7 +5588,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get integratedIndexCaveat =>
-      '本指数整合文字模型、写作过程、文件来源、草稿演进、任务契合与来源完整性；它是证据指数，不是经总体校准的统计概率。';
+      '本指数采用直接文字模型证据，以及明确的真人写作过程或来源佐证。引用质量、任务契合、贴上行为与异常元数据会另外列为待核查事项，不能单独产生 AI 判定。本指数是证据分数，不是经总体校准的统计概率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -6609,7 +6621,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpCascadeBody =>
-      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n最終判讀以保守權重整合六個面向：文字痕跡、寫作過程、文件來源、草稿演進、任務契合與來源完整性，並固定輸出較可能是 AI 或較可能不是 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
+      '分析依序執行文件來源、統計與風格特徵、Transformer 句級分類，以及必要時才啟動的交叉困惑度。\n\n六個證據面向各自回答不同問題，因此分開呈現。作者判讀只接受直接文字痕跡，並可由確定的逐步寫作、文件來源或漸進草稿證據向非 AI 修正。缺少引用、偏離任務、整段貼上、修訂很少或中繼資料異常仍列為待核查事項，但不能單獨把文件判成 AI。\n\n信心會獨立計算。可分析句少於 5 句、內容少於 100 字、引擎少於 2 個、模型沉默或分歧過大時，都會降低信心並顯示限制警告。方向仍可用於篩查，但低信心結果不得當成定案證明。';
 
   @override
   String get helpRisksTitle => '四、必須誠實面對的風險';
@@ -7370,6 +7382,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
 
   @override
+  String engineReasonAssistantResponseArtifact(int count) {
+    return '偵測到 $count 處聊天助理回覆殘留，例如稱呼提問者或主動表示可修改受託文字';
+  }
+
+  @override
   String get engineReasonAdversarialNotInstalled => '改寫偵測模型尚未安裝，未參與本次投票';
 
   @override
@@ -7478,7 +7495,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎會與寫作過程、文件來源、草稿演進、任務契合及來源完整性一併整合，文件內容不會上傳到任何伺服器。\n\n報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -8187,7 +8204,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get evidenceMatrixTitle => '多證據鑑識矩陣';
 
   @override
-  String get evidenceMatrixSubtitle => '六個面向先分開呈現，再以保守權重納入整合判讀。覆蓋率表示本次能檢查哪些證據。';
+  String get evidenceMatrixSubtitle =>
+      '六個面向分開呈現；只有具作者特異性的證據影響作者判讀，覆蓋率表示本次能檢查哪些證據。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -8383,7 +8401,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get integratedIndexCaveat =>
-      '本指數整合文字模型、寫作過程、文件來源、草稿演進、任務契合與來源完整性；它是證據指數，不是經母體校準的統計機率。';
+      '本指數採用直接文字模型證據，以及明確的真人寫作過程或來源佐證。引用品質、任務契合、貼上行為與異常中繼資料會另外列為待核查事項，不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>

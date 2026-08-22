@@ -43,6 +43,24 @@ class StylometryEngine implements DetectionEngine {
     'tapestry',
   ];
 
+  /// 高特異性的聊天助理回覆殘留。這些不是「文風很像 AI」的弱線索，而是成品
+  /// 夾帶了回應使用者、主動提供後續修改等對話框架。規則刻意要求完整片語，避免
+  /// 將一般文章中的單一禮貌詞或第一人稱誤判為助理輸出。
+  static final assistantResponsePatterns = <RegExp>[
+    RegExp(r'以下(?:為|是)(?:您|你).{0,20}(?:撰寫|整理|提供|生成)'),
+    RegExp(r'如果您(?:原本|的原意).{0,30}(?:請|告訴|調整)'),
+    RegExp(r'若您(?:希望|需要).{0,30}(?:我可以|我會|告訴我)'),
+    RegExp(
+      r"(?:here(?:'s| is)|below is) (?:the|an?) .{0,40}(?:you requested|you asked for)",
+      caseSensitive: false,
+    ),
+    RegExp(
+      r"(?:if you(?:'d| would) like|let me know if you).{0,50}(?:i can|revise|adjust|expand)",
+      caseSensitive: false,
+    ),
+    RegExp(r'as an ai (?:language )?model', caseSensitive: false),
+  ];
+
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
@@ -53,6 +71,19 @@ class StylometryEngine implements DetectionEngine {
     // 規則式引擎的分數代表實際命中特徵；沒有命中時應為 0，不能把
     // 先驗基線誤當成 AI 證據。
     var score = 0.0;
+
+    // 特徵 0：聊天助理回覆框架殘留。單一片語可能只是正文引用，僅給 75%；
+    // 命中兩個獨立對話框架時才提高至近乎完整的規則分數。
+    final assistantArtifactHits = assistantResponsePatterns
+        .where((pattern) => pattern.hasMatch(text.raw))
+        .length;
+    features['assistant_response_artifacts'] = assistantArtifactHits.toDouble();
+    if (assistantArtifactHits > 0) {
+      score += assistantArtifactHits >= 2 ? 0.95 : 0.75;
+      reasons.add(
+        l10n.engineReasonAssistantResponseArtifact(assistantArtifactHits),
+      );
+    }
 
     // 特徵 1：通用過渡詞密度
     final lower = text.raw.toLowerCase();

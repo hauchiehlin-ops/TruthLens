@@ -1827,6 +1827,11 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tiada corak penulisan AI yang ketara dikesan';
 
   @override
+  String engineReasonAssistantResponseArtifact(int count) {
+    return 'Detected $count conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text';
+  }
+
+  @override
   String get engineReasonAdversarialNotInstalled =>
       'Model pengesanan parafrasa tidak dipasang; ia tidak mengambil bahagian dalam undian ini';
 
@@ -2681,7 +2686,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Six axes are shown separately, then conservatively weighted in the integrated assessment. Coverage shows what could be examined.';
+      'Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
@@ -2888,7 +2893,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.';
+      'This index uses direct text-model evidence and affirmative human process or origin evidence. Citation quality, task fit, paste behavior, and suspicious metadata remain separate review findings and cannot independently produce an AI verdict. It is an evidence score, not a calibrated statistical probability.';
 
   @override
   String get reportTextEngineSignalExplanation =>

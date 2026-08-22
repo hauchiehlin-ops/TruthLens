@@ -62,6 +62,26 @@ HC3 的 ChatGPT 樣本來自 2022 年，不可再單獨代表現代模型。新�
 模型不得只看整體 accuracy。發布前需按供應商、語域、語言分組回報召回率，並保留
 從未進入訓練的供應商作為真正的外部測試集；否則量到的只是模型記住生成器指紋。
 
+### 高特異性操作點與學術 hard negatives
+
+「95% 可信」不能由單篇分數或整體 accuracy 宣告。先把已知來源文件分成互斥的
+`calibration`／`test`，推論結果逐列保存 `doc_id`、`label`、`score`、`split`，並建議
+在 manifest 標示 `domain`（例如 `academic_stem`、`academic_humanities`、`essay`）與
+`language`。再以 1% 偽陽性率選操作點：
+
+```bash
+.venv/bin/python evaluate_operating_point.py \
+  --predictions data/held_out_predictions.jsonl \
+  --target-fpr 0.01 \
+  --report data/operating_point.json \
+  --hard-negatives data/hard_negative_humans.jsonl
+```
+
+腳本會先把同一文件的多個切塊合併，避免把切塊數誤當獨立樣本；門檻只由 calibration
+選定，FPR、95% 上界與 AI recall 只在 test 計算，並按 domain／language 分組。
+`release_gate_passed` 只有在獨立測試集的 95% FPR 上界仍低於目標時才成立。被誤判的
+真人文件會輸出為 hard negatives，加入下一輪訓練後仍須用未見過的新 test 集重測。
+
 每個腳本都支援 `--quick`（小資料、1 epoch）用於快速驗證流程可跑通。
 
 ### 第一版 vs production 模型

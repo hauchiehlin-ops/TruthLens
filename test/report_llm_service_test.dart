@@ -34,6 +34,13 @@ DetectionResult _result({bool paraphrase = false}) => DetectionResult(
   verdict: Verdict.likelyAi,
   engineScores: [
     const EngineScore(
+      engineId: 'transformer',
+      engineName: 'Transformer',
+      aiProbability: 0.72,
+      weight: 0.4,
+      reasons: ['Calibrated sentence-level signal'],
+    ),
+    const EngineScore(
       engineId: 'stylometry',
       engineName: 'Stylometry',
       aiProbability: 0.7,

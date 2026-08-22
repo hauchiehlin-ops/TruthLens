@@ -4,9 +4,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/services/forensic_evidence.dart';
 import '../../l10n/generated/app_localizations.dart';
 
-/// 六軸證據總覽。各軸保留自己的證據方向與強度，並由報告頁的整合判讀
-/// 以保守似然權重合成最可能方向。
-/// 「文本沒抓到」不會抵銷「整段貼上」或「引用查無此文」。
+/// 六軸證據總覽。各軸保留自己的證據方向與強度；其中只有作者特異性證據
+/// 進入作者判讀，其餘風險維持獨立的待核查事實。
+/// 「整段貼上」或「引用查無此文」不會被誤包裝成 AI 作者證據。
 class EvidenceMatrixCard extends StatelessWidget {
   final ForensicEvidenceMatrix matrix;
 

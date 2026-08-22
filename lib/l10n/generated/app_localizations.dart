@@ -1769,7 +1769,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpCascadeBody.
   ///
   /// In en, this message translates to:
-  /// **'Analysis runs in tiers: document origin, statistical and stylometric features, Transformer sentence classification, then expensive cross-perplexity when needed.\n\nThe final assessment conservatively combines six axes: text traces, writing process, document origin, draft evolution, task alignment and source integrity. It always returns the more likely AI / not-AI direction.\n\nConfidence is calculated separately. Fewer than 5 analysable sentences, fewer than 100 words, fewer than 2 engines, silent models or sharp disagreement reduce confidence and trigger a visible limitation warning. The direction remains useful for screening, but low confidence must never be presented as proof.'**
+  /// **'Analysis runs in tiers: document origin, statistical and stylometric features, Transformer sentence classification, then expensive cross-perplexity when needed.\n\nThe six evidence axes remain separate because they answer different questions. The authorship score uses direct text traces and may be reduced by affirmative live-writing, origin, or incremental-draft evidence. Missing citations, task mismatch, bulk paste, sparse revisions, and suspicious metadata remain review concerns but cannot by themselves turn a document into an AI verdict.\n\nConfidence is calculated separately. Fewer than 5 analysable sentences, fewer than 100 words, fewer than 2 engines, silent models or sharp disagreement reduce confidence and trigger a visible limitation warning. The direction remains useful for screening, but low confidence must never be presented as proof.'**
   String get helpCascadeBody;
 
   /// No description provided for @helpRisksTitle.
@@ -2888,6 +2888,12 @@ abstract class AppLocalizations {
   /// **'No significant AI writing style patterns detected'**
   String get engineReasonNoStyleMarkers;
 
+  /// No description provided for @engineReasonAssistantResponseArtifact.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {count} conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text'**
+  String engineReasonAssistantResponseArtifact(int count);
+
   /// No description provided for @engineReasonAdversarialNotInstalled.
   ///
   /// In en, this message translates to:
@@ -3053,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines are combined with writing process, document origin, draft evolution, task alignment and source-integrity evidence; your document never leaves the machine.\n\nThe report always gives a more-likely AI / not-AI direction, an integrated likelihood index and a separate confidence level. The original text-model score and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
+  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin, draft evolution, task alignment and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. The report always gives a more-likely AI / not-AI direction, an integrated likelihood index and a separate confidence level. The original text-model score and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -4248,7 +4254,7 @@ abstract class AppLocalizations {
   /// No description provided for @evidenceMatrixSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Six axes are shown separately, then conservatively weighted in the integrated assessment. Coverage shows what could be examined.'**
+  /// **'Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.'**
   String get evidenceMatrixSubtitle;
 
   /// No description provided for @evidenceMatrixCoverage.
@@ -4584,7 +4590,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedIndexCaveat.
   ///
   /// In en, this message translates to:
-  /// **'This index combines text models, writing process, file origin, draft evolution, task fit and source integrity. It is an evidence score, not a calibrated statistical probability.'**
+  /// **'This index uses direct text-model evidence and affirmative human process or origin evidence. Citation quality, task fit, paste behavior, and suspicious metadata remain separate review findings and cannot independently produce an AI verdict. It is an evidence score, not a calibrated statistical probability.'**
   String get integratedIndexCaveat;
 
   /// No description provided for @reportTextEngineSignalExplanation.

@@ -1,13 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/core/services/citation_evidence.dart';
+import 'package:truthlens/core/services/claim_audit.dart';
 import 'package:truthlens/core/services/document_provenance.dart';
+import 'package:truthlens/core/services/forensic_evidence.dart';
 import 'package:truthlens/core/services/integrated_assessment.dart';
 import 'package:truthlens/core/services/writing_session.dart';
 
 DetectionResult _result({
   double textScore = 0.13,
   bool enginesHaveEvidence = false,
+  bool assistantArtifact = false,
   WritingSession writing = WritingSession.empty,
   DocumentProvenance provenance = DocumentProvenance.none,
 }) => DetectionResult(
@@ -22,9 +25,10 @@ DetectionResult _result({
     EngineScore(
       engineId: 'transformer',
       engineName: 'Transformer',
-      aiProbability: textScore,
+      aiProbability: assistantArtifact ? 0.95 : textScore,
       weight: 0.4,
-      hasEvidence: enginesHaveEvidence,
+      hasEvidence: enginesHaveEvidence || assistantArtifact,
+      features: {if (assistantArtifact) 'assistant_response_artifacts': 2},
     ),
     EngineScore(
       engineId: 'statistical',
@@ -55,7 +59,7 @@ void main() {
     expect(assessment.textReliability, 0.12);
   });
 
-  test('整段貼上、可疑來源與查無引用可推翻偏低文字分數', () {
+  test('整段貼上、可疑來源與查無引用不能把偏低文字訊號翻成 AI', () {
     const writing = WritingSession(
       events: [
         InputEvent(kind: InputEventKind.paste, characters: 1800, elapsedMs: 0),
@@ -81,9 +85,93 @@ void main() {
       citations: const CitationEvidence(total: 10, verified: 5, notFound: 5),
     );
 
+    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.aiLikelihood, lessThan(0.50));
+    expect(assessment.confidence, IntegratedConfidence.low);
+  });
+
+  test('學術文獻缺同句引註只進品質稽核，不得重現 13% 被推成 51%', () {
+    final claims = ClaimAudit(
+      claims: [
+        for (var i = 0; i < 17; i++)
+          CheckableClaim(
+            sentenceIndex: i,
+            text: 'Checkable academic claim $i.',
+            signals: const {ClaimSignal.quantitative},
+            hasSourceAnchor: i >= 15,
+          ),
+      ],
+    );
+    const citations = CitationEvidence(total: 18, verified: 18);
+
+    final baseline = IntegratedAssessment.assess(_result());
+    final assessment = IntegratedAssessment.assess(
+      _result(),
+      citations: citations,
+      claims: claims,
+    );
+
+    expect(claims.risk, ClaimSourceRisk.high);
+    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.aiLikelihood, closeTo(baseline.aiLikelihood, 1e-9));
+    expect(assessment.confidence, IntegratedConfidence.low);
+    expect(
+      assessment.contributions.any(
+        (item) => item.kind == EvidenceAxisKind.sourceIntegrity,
+      ),
+      isFalse,
+    );
+  });
+
+  test('兩個文字引擎一致跨越強訊號門檻時可判為 AI', () {
+    final assessment = IntegratedAssessment.assess(
+      _result(textScore: 0.85, enginesHaveEvidence: true),
+    );
+
     expect(assessment.direction, IntegratedDirection.likelyAi);
-    expect(assessment.aiLikelihood, greaterThan(0.75));
+    expect(assessment.aiLikelihood, greaterThan(0.80));
     expect(assessment.confidence, isNot(IntegratedConfidence.low));
+  });
+
+  test('單一引擎找到兩處聊天助理回覆殘留時可越過 AI 證據門檻', () {
+    final assessment = IntegratedAssessment.assess(
+      _result(textScore: 0.95, assistantArtifact: true),
+    );
+
+    expect(assessment.direction, IntegratedDirection.likelyAi);
+    expect(assessment.aiLikelihood, greaterThan(0.85));
+    expect(assessment.textReliability, 0.90);
+  });
+
+  test('單一助理慣用語可能是正文引用，不足以自行產生 AI 結論', () {
+    final result = DetectionResult(
+      id: 'single-assistant-quote',
+      analyzedAt: DateTime(2026, 8, 22),
+      inputText: List.filled(180, 'word').join(' '),
+      aiProbability: 0.75,
+      verdict: Verdict.likelyAi,
+      engineScores: const [
+        EngineScore(
+          engineId: 'stylometry',
+          engineName: 'Stylometry',
+          aiProbability: 0.75,
+          weight: 0.2,
+          features: {'assistant_response_artifacts': 1},
+        ),
+      ],
+      sentences: [
+        for (var i = 0; i < 8; i++)
+          SentenceScore(
+            index: i,
+            text: 'A complete sentence numbered $i for a quoted phrase test.',
+            aiProbability: 0.75,
+          ),
+      ],
+    );
+
+    final assessment = IntegratedAssessment.assess(result);
+    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.aiLikelihood, 0.49);
   });
 
   test('受控逐步寫作與完整編輯歷程可推翻偏 AI 的文字模型', () {

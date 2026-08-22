@@ -139,6 +139,8 @@ def collect(directory: Path, label: str, args) -> list[dict]:
                     "provider": manifest.get("provider", "human" if label == "human" else "unknown"),
                     "model": manifest.get("model", ""),
                     "style": manifest.get("style", "human" if label == "human" else "unknown"),
+                    "domain": manifest.get("domain", "unknown"),
+                    "language": manifest.get("language", "unknown"),
                     "words": len(chunk.split()),
                     "text": chunk,
                 }

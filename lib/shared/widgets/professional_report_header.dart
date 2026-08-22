@@ -175,8 +175,8 @@ class ProfessionalReportHeader extends StatelessWidget {
             },
           ),
 
-          // 3. 六軸證據矩陣。覆蓋與證據方向分開呈現，再由下方整合判讀
-          //    以可追溯權重輸出最可能方向。
+          // 3. 六軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性
+          //    訊號進入下方作者判讀，其餘維持待核查事實。
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: EvidenceMatrixCard(

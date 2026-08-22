@@ -331,6 +331,21 @@ void main() {
       expect(score.aiProbability, greaterThan(0));
     });
 
+    test('聊天助理回覆殘留是高特異性文字證據', () async {
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(
+          '您好！以下為您撰寫一篇完整文章。文章正文會從歷史背景開始，'
+          '再討論區域安全與經濟發展。如果您的原意不同，請告訴我，我會調整內容。',
+        ),
+        l10n,
+      );
+
+      expect(score.hasEvidence, isTrue);
+      expect(score.aiProbability, greaterThanOrEqualTo(0.85));
+      expect(score.features['assistant_response_artifacts'], 2);
+      expect(score.reasons.join(' '), contains('assistant'));
+    });
+
     test('統計引擎所有指標都落在中間帶時視為沉默', () async {
       final score = await StatisticalEngine().analyze(
         PreprocessedText.from('Short text. Another one.'),
