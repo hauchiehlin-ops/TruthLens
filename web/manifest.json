@@ -1,12 +1,13 @@
 {
-    "name": "truthlens",
-    "short_name": "truthlens",
+    "name": "TruthLens AI 內容檢測與文件鑑識",
+    "short_name": "TruthLens",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#F7F7FF",
+    "theme_color": "#3E5C97",
+    "description": "本地優先的多語 AI 內容檢測與文件鑑識工具，整合文字模型、統計特徵、寫作風格、改寫防禦及來源證據。",
+    "lang": "zh-Hant",
+    "categories": ["education", "productivity", "utilities"],
     "prefer_related_applications": false,
     "icons": [
         {

@@ -51,11 +51,11 @@ void main() {
     await tester.pump();
 
     expect(find.text('Overall progress'), findsOneWidget);
-    expect(find.text('Four-engine analysis'), findsOneWidget);
+    expect(find.text('Document workspace'), findsOneWidget);
     expect(find.text('Analysis telemetry'), findsOneWidget);
   });
 
-  testWidgets('mobile manual modes retain distinct compact layouts', (
+  testWidgets('mobile modes converge on the responsive single-column flow', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -66,23 +66,39 @@ void main() {
     await tester.pumpWidget(_testApp(prefs));
     await tester.pumpAndSettle();
 
-    // 版權宣告列固定佔用視窗底部空間，Command grid 精簡版面的「即時發現」
-    // 區塊因此落在預設掛載範圍（視窗高度 + cacheExtent）之外，需先捲動。
-    await tester.dragUntilVisible(
-      find.text('Live findings'),
-      find.byType(Scrollable).first,
-      const Offset(0, -300),
-    );
-    expect(find.text('Live findings'), findsOneWidget);
-    expect(find.text('Overall progress'), findsNothing);
+    expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
+    expect(find.text('Overall progress'), findsOneWidget);
+    expect(find.text('Document workspace'), findsOneWidget);
+    expect(find.text('Analysis telemetry'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await prefs.setWorkspaceMode(WorkspaceMode.evidenceCanvas);
     await tester.pumpAndSettle();
 
-    expect(find.text('Evidence canvas'), findsWidgets);
+    expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
     expect(find.text('Overall progress'), findsOneWidget);
     expect(find.byTooltip('Import File'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('320px mobile workspace scrolls without clipped fixed cards', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+    await tester.pumpAndSettle();
+
+    final flow = find.byKey(const ValueKey('mobile-workspace-flow'));
+    expect(flow, findsOneWidget);
+    expect(find.byTooltip('Import File'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.drag(flow, const Offset(0, -500));
+    await tester.pumpAndSettle();
+    expect(find.text('Analysis telemetry'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

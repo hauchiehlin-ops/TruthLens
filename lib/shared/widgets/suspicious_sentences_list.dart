@@ -80,15 +80,21 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
         // 篩選按鈕
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              _buildFilterButton(widget.l10n.suspiciousFilterAll, 'all'),
-              const SizedBox(width: 8),
-              _buildFilterButton(widget.l10n.suspiciousFilterHigh, 'high'),
-              const SizedBox(width: 8),
-              _buildFilterButton(widget.l10n.suspiciousFilterMedium, 'medium'),
-              const Spacer(),
-              Tooltip(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final filters = Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildFilterButton(widget.l10n.suspiciousFilterAll, 'all'),
+                  _buildFilterButton(widget.l10n.suspiciousFilterHigh, 'high'),
+                  _buildFilterButton(
+                    widget.l10n.suspiciousFilterMedium,
+                    'medium',
+                  ),
+                ],
+              );
+              final count = Tooltip(
                 message: widget.l10n.suspiciousExcludedTooltip,
                 child: Text(
                   widget.l10n.suspiciousCount(filteredItems.length),
@@ -96,8 +102,27 @@ class _SuspiciousSentencesListState extends State<SuspiciousSentencesList> {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
-              ),
-            ],
+              );
+
+              if (constraints.maxWidth < 420) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    filters,
+                    const SizedBox(height: 8),
+                    Align(alignment: Alignment.centerRight, child: count),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: filters),
+                  const SizedBox(width: 12),
+                  count,
+                ],
+              );
+            },
           ),
         ),
 

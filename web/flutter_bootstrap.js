@@ -11,4 +11,9 @@ _flutter.loader.load({
     canvasKitBaseUrl: "canvaskit/",
     useLocalCanvasKit: true,
   },
+  onEntrypointLoaded: async function(engineInitializer) {
+    const appRunner = await engineInitializer.initializeEngine();
+    await appRunner.runApp();
+    document.getElementById("seo-shell")?.remove();
+  },
 });

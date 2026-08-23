@@ -523,6 +523,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
+                if (constraints.maxWidth < 600) {
+                  return _mobileWorkspace();
+                }
                 final mode = prefs.workspaceMode == WorkspaceMode.automatic
                     ? (constraints.maxWidth < 980
                           ? WorkspaceMode.missionTimeline
@@ -550,8 +553,284 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               },
             ),
           ),
-          const AppCopyrightFooter(),
+          if (!compact) const AppCopyrightFooter(),
         ],
+      ),
+    );
+  }
+
+  Widget _mobileWorkspace() {
+    if (_result != null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: Column(
+          children: [
+            _mobileProgressPanel(),
+            const SizedBox(height: 8),
+            Expanded(child: _reportPanel()),
+          ],
+        ),
+      );
+    }
+
+    return ListView(
+      key: const ValueKey('mobile-workspace-flow'),
+      padding: EdgeInsets.fromLTRB(
+        8,
+        8,
+        8,
+        16 + MediaQuery.paddingOf(context).bottom,
+      ),
+      children: [
+        _mobileProgressPanel(),
+        const SizedBox(height: 8),
+        _mobileSourcePanel(),
+        const SizedBox(height: 8),
+        _mobileTelemetryPanel(),
+        if (_evidenceRows().isNotEmpty) ...[
+          const SizedBox(height: 8),
+          _mobileEvidencePanel(),
+        ],
+        const AppCopyrightFooter(),
+      ],
+    );
+  }
+
+  Widget _mobileProgressPanel() {
+    final l10n = AppLocalizations.of(context);
+    final labels = [
+      l10n.workspaceStageImport,
+      l10n.workspaceStageParse,
+      l10n.workspaceStageAnalyze,
+      l10n.workspaceStageVerify,
+      l10n.workspaceStageReport,
+    ];
+    final active = switch (_phase) {
+      _WorkspacePhase.idle => 0,
+      _WorkspacePhase.ready => 1,
+      _WorkspacePhase.analyzing => 2,
+      _WorkspacePhase.complete => 4,
+    };
+    return _Panel(
+      title: l10n.workspaceOverallProgress,
+      icon: LucideIcons.map,
+      expandBody: false,
+      trailing: Text(
+        '${active + 1}/${labels.length}',
+        style: Theme.of(context).textTheme.labelMedium,
+      ),
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              for (var i = 0; i < labels.length; i++) ...[
+                if (i > 0)
+                  Expanded(
+                    child: Divider(
+                      color: i <= active
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).dividerColor,
+                      thickness: 2,
+                    ),
+                  ),
+                _MobileStageDot(index: i, active: active),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            labels[active],
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _mobileSourcePanel() {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return _Panel(
+      title: l10n.workspaceDocument,
+      icon: LucideIcons.fileText,
+      expandBody: false,
+      trailing: _sourceFileName.isEmpty
+          ? null
+          : ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 150),
+              child: Text(
+                _sourceFileName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _controller,
+            readOnly: _isAnalyzing,
+            minLines: 8,
+            maxLines: 14,
+            textAlignVertical: TextAlignVertical.top,
+            decoration: InputDecoration(
+              hintText: l10n.inputHint,
+              contentPadding: const EdgeInsets.all(12),
+            ),
+            onChanged: _recordWorkspaceEdit,
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: IconButton.filledTonal(
+                  onPressed: _isAnalyzing ? null : _importDocument,
+                  icon: Icon(LucideIcons.folderOpen),
+                  tooltip: l10n.inputImportButton,
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  onPressed: _isAnalyzing ? null : _pasteFromClipboard,
+                  icon: Icon(LucideIcons.clipboard, color: scheme.onSurface),
+                  tooltip: l10n.inputPasteButton,
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  onPressed: _isAnalyzing ? null : _scanImage,
+                  icon: Icon(LucideIcons.scanLine, color: scheme.onSurface),
+                  tooltip: l10n.inputOcrButton,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Text(
+                l10n.inputCharCount(_controller.text.trim().length),
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              const Spacer(),
+              if (_controller.text.trim().isNotEmpty)
+                Flexible(child: _analysisReadinessLine()),
+            ],
+          ),
+          const SizedBox(height: 8),
+          FilledButton.icon(
+            onPressed: _isAnalyzing
+                ? _confirmStopAnalysis
+                : (_controller.text.trim().isEmpty ? null : _startAnalysis),
+            icon: Icon(
+              _isAnalyzing ? LucideIcons.stopCircle : LucideIcons.play,
+            ),
+            label: Text(
+              _isAnalyzing ? l10n.workspaceStopAnalysis : l10n.inputStartButton,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _mobileTelemetryPanel() {
+    final l10n = AppLocalizations.of(context);
+    final labels = _engineLabels(l10n);
+    final probability = _runningProbability ?? 0;
+    return _Panel(
+      title: l10n.workspaceTelemetry,
+      icon: LucideIcons.activity,
+      expandBody: false,
+      trailing: Text(
+        _isAnalyzing
+            ? '${_done.length}/4 · ${_elapsedSeconds}s'
+            : '${(_overallProgress * 100).round()}%',
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _ProbabilityGauge(
+                probability: probability,
+                progress: _overallProgress,
+                analyzing: _isAnalyzing,
+                compact: true,
+                engineStates: [
+                  for (final role in PreferencesService.engineRoles)
+                    _done.contains(role)
+                        ? 2
+                        : _activeEngines.contains(role)
+                        ? 1
+                        : 0,
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _isAnalyzing
+                          ? l10n.workspaceAnalyzing
+                          : l10n.workspaceStageParse,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    LinearProgressIndicator(
+                      value: _isAnalyzing ? null : _overallProgress,
+                      minHeight: 6,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          for (var i = 0; i < labels.length; i++) ...[
+            if (i > 0) const Divider(height: 1),
+            _EngineTelemetryRow(
+              role: labels.keys.elementAt(i),
+              label: labels.values.elementAt(i),
+              active: _activeEngines.contains(labels.keys.elementAt(i)),
+              done: _done.contains(labels.keys.elementAt(i)),
+              score: _scores[labels.keys.elementAt(i)]?.aiProbability,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _mobileEvidencePanel() {
+    final l10n = AppLocalizations.of(context);
+    final evidence = _evidenceRows();
+    return _Panel(
+      title: l10n.workspaceLiveFindings,
+      icon: LucideIcons.target,
+      expandBody: false,
+      infoTooltip: l10n.workspaceSentenceSignalTooltip,
+      child: SelectionArea(
+        child: Column(
+          children: [
+            for (var i = 0; i < evidence.length; i++) ...[
+              if (i > 0) const Divider(height: 1),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(radius: 12, child: Text('${i + 1}')),
+                title: Text(evidence[i].$1),
+                trailing: Text('${(evidence[i].$2 * 100).round()}%'),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -1814,6 +2093,7 @@ class _Panel extends StatelessWidget {
   final Widget? trailing;
   final EdgeInsets padding;
   final String? infoTooltip;
+  final bool expandBody;
 
   const _Panel({
     required this.title,
@@ -1822,6 +2102,7 @@ class _Panel extends StatelessWidget {
     this.trailing,
     this.padding = const EdgeInsets.all(12),
     this.infoTooltip,
+    this.expandBody = true,
   });
 
   @override
@@ -1881,9 +2162,12 @@ class _Panel extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: scheme.outlineVariant),
-          Expanded(
-            child: Padding(padding: padding, child: child),
-          ),
+          if (expandBody)
+            Expanded(
+              child: Padding(padding: padding, child: child),
+            )
+          else
+            Padding(padding: padding, child: child),
         ],
       ),
     );
@@ -1974,15 +2258,24 @@ class _Panel extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(
-                child: Padding(
+              if (expandBody)
+                Expanded(
+                  child: Padding(
+                    padding: padding,
+                    child: DefaultTextStyle.merge(
+                      style: const TextStyle(color: Colors.white),
+                      child: child,
+                    ),
+                  ),
+                )
+              else
+                Padding(
                   padding: padding,
                   child: DefaultTextStyle.merge(
                     style: const TextStyle(color: Colors.white),
                     child: child,
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -2073,15 +2366,24 @@ class _Panel extends StatelessWidget {
                 ),
               ),
               Divider(height: 1, color: Colors.white.withValues(alpha: 0.14)),
-              Expanded(
-                child: Padding(
+              if (expandBody)
+                Expanded(
+                  child: Padding(
+                    padding: padding,
+                    child: DefaultTextStyle.merge(
+                      style: GoogleFonts.quicksand(color: Colors.white),
+                      child: child,
+                    ),
+                  ),
+                )
+              else
+                Padding(
                   padding: padding,
                   child: DefaultTextStyle.merge(
                     style: GoogleFonts.quicksand(color: Colors.white),
                     child: child,
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -2828,6 +3130,51 @@ class _StageNode extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _MobileStageDot extends StatelessWidget {
+  final int index;
+  final int active;
+
+  const _MobileStageDot({required this.index, required this.active});
+
+  @override
+  Widget build(BuildContext context) {
+    final complete = index < active;
+    final current = index == active;
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      selected: current,
+      label: '${index + 1}',
+      child: AnimatedContainer(
+        duration: MediaQuery.of(context).disableAnimations
+            ? Duration.zero
+            : const Duration(milliseconds: 180),
+        width: current ? 30 : 24,
+        height: current ? 30 : 24,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: complete || current
+              ? scheme.primary
+              : scheme.surfaceContainerHighest,
+          border: Border.all(
+            color: current ? scheme.onSurface : scheme.outlineVariant,
+            width: current ? 2 : 1,
+          ),
+        ),
+        child: complete
+            ? Icon(LucideIcons.check, size: 14, color: scheme.onPrimary)
+            : Text(
+                '${index + 1}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: current ? scheme.onPrimary : scheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }

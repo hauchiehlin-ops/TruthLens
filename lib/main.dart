@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/semantics.dart';
 import 'package:pdfrx/pdfrx.dart';
 import 'package:provider/provider.dart';
 
@@ -61,6 +63,7 @@ void main() async {
       initialLocation: needsOnboarding ? '/onboarding' : '/',
     ),
   );
+  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
 }
 
 class TruthLensApp extends StatelessWidget {

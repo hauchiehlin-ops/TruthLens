@@ -77,78 +77,89 @@ class ProfessionalReportHeader extends StatelessWidget {
     );
 
     return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
           // 1. 頂部工具欄
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 主題與檔名分行：檔名可能很長，接在主題後面會把兩者
-                      // 擠成一團而無法辨識何者為何。檔名再縮 30% 拉開層級。
-                      Text(
-                        l10n.reportAiContentReportTitle,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: headingColorFor(context),
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (result.sourceFileName.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Builder(
-                          builder: (context) {
-                            final base = Theme.of(
-                              context,
-                            ).textTheme.headlineSmall;
-                            return Text(
-                              result.sourceFileName,
-                              style: base?.copyWith(
-                                // 主題字級的 70%
-                                fontSize: (base.fontSize ?? 24) * 0.7,
-                                fontWeight: FontWeight.w600,
-                                color: headingColorFor(
-                                  context,
-                                ).withValues(alpha: 0.85),
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            );
-                          },
-                        ),
-                      ],
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.reportAnalysisTimeLabel(
-                          DateTime.now().toString().split('.')[0],
-                        ),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: headingColorFor(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final details = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 主題與檔名分行：檔名可能很長，接在主題後面會把兩者
+                    // 擠成一團而無法辨識何者為何。檔名再縮 30% 拉開層級。
+                    Text(
+                      l10n.reportAiContentReportTitle,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: headingColorFor(context),
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (result.sourceFileName.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Builder(
+                        builder: (context) {
+                          final base = Theme.of(
                             context,
-                          ).withValues(alpha: 0.65),
-                        ),
+                          ).textTheme.headlineSmall;
+                          return Text(
+                            result.sourceFileName,
+                            style: base?.copyWith(
+                              // 主題字級的 70%
+                              fontSize: (base.fontSize ?? 24) * 0.7,
+                              fontWeight: FontWeight.w600,
+                              color: headingColorFor(
+                                context,
+                              ).withValues(alpha: 0.85),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // 下載按鈕（簡約樣式）
-                FilledButton.icon(
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.reportAnalysisTimeLabel(
+                        DateTime.now().toString().split('.')[0],
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: headingColorFor(context).withValues(alpha: 0.65),
+                      ),
+                    ),
+                  ],
+                );
+                final download = FilledButton.icon(
                   onPressed: onDownloadPdf,
                   icon: Icon(LucideIcons.download),
                   label: Text(l10n.reportDownloadPdfButton),
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF6B5B95), // 紫
                   ),
-                ),
-              ],
+                );
+                if (constraints.maxWidth < 520) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      details,
+                      const SizedBox(height: 12),
+                      Align(alignment: Alignment.centerLeft, child: download),
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: details),
+                    const SizedBox(width: 16),
+                    download,
+                  ],
+                );
+              },
             ),
           ),
           const Divider(thickness: 2),
@@ -228,6 +239,7 @@ class ProfessionalReportHeader extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   LucideIcons.alertTriangle,
@@ -242,8 +254,6 @@ class ProfessionalReportHeader extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: headingColorFor(context),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -441,12 +451,12 @@ class _VerdictSummaryCard extends StatelessWidget {
         ],
       ),
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          // 左側圖示（實體化圖標）
-          Container(
-            width: 80,
-            height: 80,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 480;
+          final iconBadge = Container(
+            width: compact ? 56 : 80,
+            height: compact ? 56 : 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withValues(alpha: 0.15),
@@ -461,215 +471,222 @@ class _VerdictSummaryCard extends StatelessWidget {
                   IntegratedDirection.likelyHuman => LucideIcons.pencil,
                   IntegratedDirection.balanced => LucideIcons.scale,
                 },
-                size: 40,
+                size: compact ? 28 : 40,
                 color: Colors.white,
               ),
             ),
-          ),
-          const SizedBox(width: 20),
-
-          // 右側文字
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.integratedAssessmentTitle,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w600,
-                  ),
+          );
+          final content = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.integratedAssessmentTitle,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w600,
                 ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                switch (assessment.direction) {
+                  IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+                  IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+                  IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+                  IntegratedDirection.balanced => l10n.integratedBalanced,
+                },
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.integratedLikelihoodLabel(
+                  (assessment.aiLikelihood * 100).round(),
+                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                '${l10n.integratedTextScoreLabel((result.aiProbability * 100).round())} · '
+                '${l10n.integratedConfidenceLabel(confidence)}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.88),
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                l10n.integratedEvidenceCoverage(
+                  assessment.independentEvidenceFamilies,
+                  (assessment.applicabilityCoverage * 100).round(),
+                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.88),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                l10n.integratedStabilityLabel(
+                  (assessment.stabilityScore * 100).round(),
+                  (assessment.lowerBound * 100).round(),
+                  (assessment.upperBound * 100).round(),
+                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.88),
+                ),
+              ),
+              if (result.inputQuality.extractionQuality < 0.95) ...[
                 const SizedBox(height: 3),
                 Text(
-                  switch (assessment.direction) {
-                    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-                    IntegratedDirection.likelyMixed =>
-                      l10n.integratedLikelyMixed,
-                    IntegratedDirection.likelyHuman =>
-                      l10n.integratedLikelyHuman,
-                    IntegratedDirection.balanced => l10n.integratedBalanced,
-                  },
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  l10n.integratedInputQualityLabel(
+                    (result.inputQuality.extractionQuality * 100).round(),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.integratedLikelihoodLabel(
-                    (assessment.aiLikelihood * 100).round(),
-                  ),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${l10n.integratedTextScoreLabel((result.aiProbability * 100).round())} · '
-                  '${l10n.integratedConfidenceLabel(confidence)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white.withValues(alpha: 0.88),
                   ),
                 ),
+              ],
+              if (result.calibration.isApplicable) ...[
                 const SizedBox(height: 3),
                 Text(
-                  l10n.integratedEvidenceCoverage(
-                    assessment.independentEvidenceFamilies,
-                    (assessment.applicabilityCoverage * 100).round(),
+                  l10n.integratedCalibrationLabel(
+                    result.calibration.pValue.toStringAsFixed(3),
+                    result.calibration.calibrationSize,
                   ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white.withValues(alpha: 0.88),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  l10n.integratedStabilityLabel(
-                    (assessment.stabilityScore * 100).round(),
-                    (assessment.lowerBound * 100).round(),
-                    (assessment.upperBound * 100).round(),
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.88),
-                  ),
+              ],
+              const SizedBox(height: 3),
+              Text(
+                assessment.passesAiEvidenceGate
+                    ? l10n.integratedEvidenceGatePassed
+                    : l10n.integratedEvidenceGateNotPassed,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.88),
+                  fontWeight: FontWeight.w600,
                 ),
-                if (result.inputQuality.extractionQuality < 0.95) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    l10n.integratedInputQualityLabel(
-                      (result.inputQuality.extractionQuality * 100).round(),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.integratedIndexCaveat,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Colors.white70,
+                  height: 1.4,
+                ),
+              ),
+              if (result.hasEvidenceLimitations) ...[
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.integratedQualifiedWarning(
+                      describeAbstention(result, l10n),
                     ),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.88),
+                      color: Colors.white,
+                      height: 1.45,
                     ),
-                  ),
-                ],
-                if (result.calibration.isApplicable) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    l10n.integratedCalibrationLabel(
-                      result.calibration.pValue.toStringAsFixed(3),
-                      result.calibration.calibrationSize,
-                    ),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.88),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 3),
-                Text(
-                  assessment.passesAiEvidenceGate
-                      ? l10n.integratedEvidenceGatePassed
-                      : l10n.integratedEvidenceGateNotPassed,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.88),
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.integratedIndexCaveat,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Colors.white70,
-                    height: 1.4,
+              ],
+              // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
+              // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
+              // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
+              // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
+              // 旁邊，塞進下方的說明卡等於沒說。
+              if (_lowScoreCaveat(result, citations: citations) !=
+                  _LowScoreCaveat.none) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                ),
-                if (result.hasEvidenceLimitations) ...[
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                  decoration: BoxDecoration(
+                    // 證據互相矛盾時加重底色與框線：這不是補充說明，
+                    // 是「別只看上面那個數字」的告誡
+                    color: Colors.white.withValues(
+                      alpha:
+                          _lowScoreCaveat(result, citations: citations) ==
+                              _LowScoreCaveat.provenanceContradicts
+                          ? 0.22
+                          : 0.12,
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.35),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.integratedQualifiedWarning(
-                        describeAbstention(result, l10n),
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        height: 1.45,
-                      ),
-                    ),
-                  ),
-                ],
-                // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
-                // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
-                // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
-                // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
-                // 旁邊，塞進下方的說明卡等於沒說。
-                if (_lowScoreCaveat(result, citations: citations) !=
-                    _LowScoreCaveat.none) ...[
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      // 證據互相矛盾時加重底色與框線：這不是補充說明，
-                      // 是「別只看上面那個數字」的告誡
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
                       color: Colors.white.withValues(
                         alpha:
                             _lowScoreCaveat(result, citations: citations) ==
                                 _LowScoreCaveat.provenanceContradicts
-                            ? 0.22
-                            : 0.12,
+                            ? 0.70
+                            : 0.28,
                       ),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.white.withValues(
-                          alpha:
-                              _lowScoreCaveat(result, citations: citations) ==
-                                  _LowScoreCaveat.provenanceContradicts
-                              ? 0.70
-                              : 0.28,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          _lowScoreCaveat(result, citations: citations) ==
-                                  _LowScoreCaveat.provenanceContradicts
-                              ? LucideIcons.alertTriangle
-                              : LucideIcons.info,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _lowScoreCaveat(result, citations: citations) ==
-                                    _LowScoreCaveat.provenanceContradicts
-                                ? l10n.reportProvenanceContradictsLowScore
-                                : l10n.reportLowScoreNotProofOfHuman,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.92),
-                                  height: 1.4,
-                                ),
-                          ),
-                        ),
-                      ],
                     ),
                   ),
-                ],
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        _lowScoreCaveat(result, citations: citations) ==
+                                _LowScoreCaveat.provenanceContradicts
+                            ? LucideIcons.alertTriangle
+                            : LucideIcons.info,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _lowScoreCaveat(result, citations: citations) ==
+                                  _LowScoreCaveat.provenanceContradicts
+                              ? l10n.reportProvenanceContradictsLowScore
+                              : l10n.reportLowScoreNotProofOfHuman,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.92),
+                                height: 1.4,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
+            ],
+          );
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [iconBadge, const SizedBox(height: 14), content],
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconBadge,
+              const SizedBox(width: 20),
+              Expanded(child: content),
+            ],
+          );
+        },
       ),
     );
   }
@@ -688,51 +705,57 @@ class _MetricsRow extends StatelessWidget {
     final aiSentenceRatio = analyzableSentenceCount == 0
         ? 0.0
         : result.aiSentenceCount / analyzableSentenceCount;
-    return Row(
-      children: [
-        // 卡 1：AI 判定比例
-        Expanded(
-          child: _MetricCard(
-            icon: LucideIcons.barChart,
-            iconColor: const Color(0xFF6B5B95),
-            title: l10n.reportMetricAiSentenceRatio,
-            value: '${(aiSentenceRatio * 100).toStringAsFixed(1)}%',
-            subtitle: l10n.reportStrongAiSentenceCount(
-              result.aiSentenceCount,
-              analyzableSentenceCount,
-            ),
-          ),
+    final cards = [
+      _MetricCard(
+        icon: LucideIcons.barChart,
+        iconColor: const Color(0xFF6B5B95),
+        title: l10n.reportMetricAiSentenceRatio,
+        value: '${(aiSentenceRatio * 100).toStringAsFixed(1)}%',
+        subtitle: l10n.reportStrongAiSentenceCount(
+          result.aiSentenceCount,
+          analyzableSentenceCount,
         ),
-        const SizedBox(width: 12),
-
-        // 卡 2：分析耗時
-        Expanded(
-          child: _MetricCard(
-            icon: LucideIcons.clock,
-            iconColor: const Color(0xFF1E3A5F),
-            title: l10n.reportMetricElapsed,
-            value:
-                '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
-            subtitle: l10n.reportMetricElapsedNormal,
-          ),
-        ),
-        const SizedBox(width: 12),
-
-        // 卡 3：可信度
-        Expanded(
-          child: _MetricCard(
-            icon: LucideIcons.shieldCheck,
-            iconColor: const Color(0xFFD4AF37),
-            title: l10n.reportMetricReliability,
-            value: result.isLowConfidence
-                ? l10n.reportReliabilityLow
-                : l10n.reportReliabilityHigh,
-            subtitle: result.isLowConfidence
-                ? l10n.reportReliabilityNeedsReview
-                : l10n.reportReliabilityHighTrust,
-          ),
-        ),
-      ],
+      ),
+      _MetricCard(
+        icon: LucideIcons.clock,
+        iconColor: const Color(0xFF1E3A5F),
+        title: l10n.reportMetricElapsed,
+        value: '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
+        subtitle: l10n.reportMetricElapsedNormal,
+      ),
+      _MetricCard(
+        icon: LucideIcons.shieldCheck,
+        iconColor: const Color(0xFFD4AF37),
+        title: l10n.reportMetricReliability,
+        value: result.isLowConfidence
+            ? l10n.reportReliabilityLow
+            : l10n.reportReliabilityHigh,
+        subtitle: result.isLowConfidence
+            ? l10n.reportReliabilityNeedsReview
+            : l10n.reportReliabilityHighTrust,
+      ),
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 620) {
+          return Column(
+            children: [
+              for (var i = 0; i < cards.length; i++) ...[
+                if (i > 0) const SizedBox(height: 8),
+                SizedBox(width: double.infinity, child: cards[i]),
+              ],
+            ],
+          );
+        }
+        return Row(
+          children: [
+            for (var i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: 12),
+              Expanded(child: cards[i]),
+            ],
+          ],
+        );
+      },
     );
   }
 }
