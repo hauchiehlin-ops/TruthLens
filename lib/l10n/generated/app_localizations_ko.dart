@@ -2737,46 +2737,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get challengeTitle => 'Supervised follow-up';
-
-  @override
-  String get challengeSubtitle =>
-      'Ask the writer to explain specific claims from this document';
-
-  @override
-  String get challengeCaveat =>
-      'Use this while the writer is present. The check only measures whether an answer engages with the document and whether it was pasted; passing is not proof of identity or authorship.';
-
-  @override
-  String challengeExplainQuestion(String excerpt) {
-    return 'Explain this passage in your own words and state why it matters: “$excerpt”';
-  }
-
-  @override
-  String challengeJustifyQuestion(String excerpt) {
-    return 'What evidence or reasoning supports this claim, and what would weaken it? “$excerpt”';
-  }
-
-  @override
-  String get challengeAnswerHint => 'Answer here without pasting prepared text';
-
-  @override
-  String get challengeEvaluate => 'Check response';
-
-  @override
-  String get challengeStateUnanswered => 'Not checked';
-
-  @override
-  String get challengeStateInsufficient => 'Needs a more specific answer';
-
-  @override
-  String get challengeStateGrounded => 'Directly engages with the passage';
-
-  @override
-  String get challengeStatePasted =>
-      'Large paste detected; repeat under supervision';
-
-  @override
   String get integratedAssessmentTitle => 'Integrated authorship assessment';
 
   @override

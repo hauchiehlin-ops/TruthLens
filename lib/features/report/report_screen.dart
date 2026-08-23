@@ -16,7 +16,6 @@ import '../../core/services/publication_evidence.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
-import '../../shared/widgets/authorship_challenge_card.dart';
 import '../../shared/widgets/professional_report_header.dart';
 import '../../shared/widgets/suspicious_sentences_list.dart';
 import 'bibliography_presentation.dart';
@@ -353,14 +352,6 @@ class _ReportScreenState extends State<ReportScreen> {
                       claims: _claimAudit,
                       publication: _publicationEvidence,
                     ),
-
-                    if (result.wordCount >= DetectionResult.minWords) ...[
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: AuthorshipChallengeCard(result: result),
-                      ),
-                    ],
 
                     // 可疑句子清單
                     if (result.sentences.isNotEmpty) ...[

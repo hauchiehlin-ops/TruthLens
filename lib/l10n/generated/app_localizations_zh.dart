@@ -2691,44 +2691,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get challengeTitle => '監督式追問';
-
-  @override
-  String get challengeSubtitle => '請作者解釋本文中的具體主張';
-
-  @override
-  String get challengeCaveat =>
-      '請在作者本人在場時使用。本檢查只看回答是否具體回應本文、以及是否整段貼上；通過不代表身分或作者資格已獲證明。';
-
-  @override
-  String challengeExplainQuestion(String excerpt) {
-    return '請用自己的話解釋這段內容，並說明它為何重要：「$excerpt」';
-  }
-
-  @override
-  String challengeJustifyQuestion(String excerpt) {
-    return '這項主張有什麼證據或推理支持？什麼情況會削弱它？「$excerpt」';
-  }
-
-  @override
-  String get challengeAnswerHint => '請直接作答，不要貼上預先準備的文字';
-
-  @override
-  String get challengeEvaluate => '檢查回答';
-
-  @override
-  String get challengeStateUnanswered => '尚未檢查';
-
-  @override
-  String get challengeStateInsufficient => '需要更具體的回答';
-
-  @override
-  String get challengeStateGrounded => '有直接回應本文';
-
-  @override
-  String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
-
-  @override
   String get integratedAssessmentTitle => '整合作者判讀';
 
   @override
@@ -5582,44 +5544,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get challengeTitle => '监督式追问';
-
-  @override
-  String get challengeSubtitle => '请作者解释本文中的具体主张';
-
-  @override
-  String get challengeCaveat =>
-      '请在作者本人在场时使用。本检查只看回答是否具体回应本文、以及是否整段粘贴；通过不代表身份或作者资格已获证明。';
-
-  @override
-  String challengeExplainQuestion(String excerpt) {
-    return '请用自己的话解释这段内容，并说明它为何重要：“$excerpt”';
-  }
-
-  @override
-  String challengeJustifyQuestion(String excerpt) {
-    return '这项主张有什么证据或推理支持？什么情况会削弱它？“$excerpt”';
-  }
-
-  @override
-  String get challengeAnswerHint => '请直接作答，不要粘贴预先准备的文字';
-
-  @override
-  String get challengeEvaluate => '检查回答';
-
-  @override
-  String get challengeStateUnanswered => '尚未检查';
-
-  @override
-  String get challengeStateInsufficient => '需要更具体的回答';
-
-  @override
-  String get challengeStateGrounded => '有直接回应本文';
-
-  @override
-  String get challengeStatePasted => '检测到大段粘贴，请在监督下重答';
-
-  @override
   String get integratedAssessmentTitle => '整合作者判读';
 
   @override
@@ -8471,44 +8395,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String findingUnsupportedClaims(int unsupported, int total) {
     return '$total 個可查核主張中，有 $unsupported 個包含數字、比較或研究歸因，卻未在同一句提供來源錨點。這不代表內容必然錯誤，但指出了最該優先核實的主張。';
   }
-
-  @override
-  String get challengeTitle => '監督式追問';
-
-  @override
-  String get challengeSubtitle => '請作者解釋本文中的具體主張';
-
-  @override
-  String get challengeCaveat =>
-      '請在作者本人在場時使用。本檢查只看回答是否具體回應本文、以及是否整段貼上；通過不代表身分或作者資格已獲證明。';
-
-  @override
-  String challengeExplainQuestion(String excerpt) {
-    return '請用自己的話解釋這段內容，並說明它為何重要：「$excerpt」';
-  }
-
-  @override
-  String challengeJustifyQuestion(String excerpt) {
-    return '這項主張有什麼證據或推理支持？什麼情況會削弱它？「$excerpt」';
-  }
-
-  @override
-  String get challengeAnswerHint => '請直接作答，不要貼上預先準備的文字';
-
-  @override
-  String get challengeEvaluate => '檢查回答';
-
-  @override
-  String get challengeStateUnanswered => '尚未檢查';
-
-  @override
-  String get challengeStateInsufficient => '需要更具體的回答';
-
-  @override
-  String get challengeStateGrounded => '有直接回應本文';
-
-  @override
-  String get challengeStatePasted => '偵測到大段貼上，請在監督下重答';
 
   @override
   String get integratedAssessmentTitle => '整合作者判讀';
