@@ -66,7 +66,7 @@ void main() {
     expect(assessment.passesAiEvidenceGate, isFalse);
   });
 
-  test('50% 顯示訊號相當，不得標成較可能不是 AI', () {
+  test('真正沒有方向時保留中性狀態，不冒充真人結論', () {
     final assessment = IntegratedAssessment.assess(_result(textScore: 0.50));
 
     expect(assessment.aiLikelihood, 0.50);
@@ -75,6 +75,60 @@ void main() {
     expect(assessment.passesAiEvidenceGate, isFalse);
     expect(assessment.hasAuthorshipEvidence, isFalse);
     expect(assessment.stabilityAvailable, isFalse);
+  });
+
+  test('多個偏真人的方向性訊號即使未達強門檻也必須給出方向', () {
+    final result = DetectionResult(
+      id: 'directional-consensus',
+      analyzedAt: DateTime(2026, 8, 23),
+      inputText:
+          '摘要。本文採用研究方法比較不同條件，並依據實驗結果討論限制。'
+          '${List.filled(180, '研究資料顯示各組條件仍有明顯差異。').join()}',
+      aiProbability: 0.50,
+      verdict: Verdict.mixed,
+      engineScores: const [
+        EngineScore(
+          engineId: 'transformer',
+          engineName: 'Transformer',
+          aiProbability: 0.03,
+          weight: 0.40,
+          hasEvidence: false,
+          calibrationReliability: 0.82,
+          features: {'raw_avg_prob': 0.23, 'analysis_chunk_count': 20},
+        ),
+        EngineScore(
+          engineId: 'statistical',
+          engineName: 'Statistical',
+          aiProbability: 0.30,
+          weight: 0.25,
+          applicability: EngineApplicability.plausible,
+          calibrationReliability: 0.52,
+        ),
+        EngineScore(
+          engineId: 'stylometry',
+          engineName: 'Stylometry',
+          aiProbability: 0,
+          weight: 0.20,
+          hasEvidence: false,
+        ),
+        EngineScore(
+          engineId: 'adversarial',
+          engineName: 'Adversarial',
+          aiProbability: 0,
+          weight: 0.15,
+          hasEvidence: false,
+        ),
+      ],
+      sentences: const [],
+    );
+
+    final assessment = IntegratedAssessment.assess(result);
+    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.aiLikelihood, lessThan(0.50));
+    expect(assessment.aiLikelihood, greaterThan(0.40));
+    expect(assessment.independentEvidenceFamilies, 2);
+    expect(assessment.passesAiEvidenceGate, isFalse);
+    expect(assessment.confidence, IntegratedConfidence.low);
   });
 
   test('已核實的生成式 AI 前出版品可提供真人作者方向', () {

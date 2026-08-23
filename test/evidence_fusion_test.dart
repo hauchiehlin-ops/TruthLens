@@ -102,6 +102,47 @@ void main() {
     expect(fusion.upperBound, 1);
   });
 
+  test('分類器真人方向與統計弱訊號一致時不再被抹成 50%', () {
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: [
+        _score(
+          'transformer',
+          0.03,
+          evidence: false,
+          features: const {'raw_avg_prob': 0.23, 'analysis_chunk_count': 12},
+        ),
+        _score('statistical', 0.30),
+        _score('stylometry', 0, evidence: false),
+        _score('adversarial', 0, evidence: false),
+      ],
+      inputText: longGeneralText,
+    );
+
+    expect(fusion.families, hasLength(2));
+    expect(fusion.probability, lessThan(0.45));
+    expect(fusion.probability, isNot(0.5));
+    expect(fusion.passesAiEvidenceGate, isFalse);
+  });
+
+  test('分類器真正中性且其他單向引擎沉默時仍維持中性', () {
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: [
+        _score(
+          'transformer',
+          0,
+          evidence: false,
+          features: const {'raw_avg_prob': 0.50},
+        ),
+        _score('stylometry', 0, evidence: false),
+      ],
+      inputText: longGeneralText,
+    );
+
+    expect(fusion.families, isEmpty);
+    expect(fusion.probability, 0.5);
+    expect(fusion.humanSupportingFamilies, 0);
+  });
+
   test('AI 訊號集中於部分句子時標示人機混合', () {
     final windows = <double>[0.92, 0.88, 0.81, 0.12, 0.18, 0.20, 0.25, 0.30];
     final fusion = TextEvidenceFusion.evaluate(

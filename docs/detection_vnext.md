@@ -36,6 +36,10 @@ TruthLens 判讀的是「這份文字較可能由誰、以何種方式完成」�
 - [Practical Examination of AI-Generated Text Detectors, NAACL 2025](https://aclanthology.org/2025.findings-naacl.271/)
 - [DetectGPT, ICML 2023](https://proceedings.mlr.press/v202/mitchell23a.html)
 - [Binoculars, ICML 2024](https://proceedings.mlr.press/v235/hans24a.html)
+- [Fast-DetectGPT, ICLR 2024](https://openreview.net/forum?id=Bpcgcr8E8Z)
+- [Ghostbuster](https://arxiv.org/abs/2305.15047)
+- [BUST, NAACL 2024](https://aclanthology.org/2024.naacl-long.444/)
+- [M4, EACL 2024](https://aclanthology.org/2024.eacl-long.83/)
 - [Bias against non-native English writers](https://arxiv.org/abs/2304.02819)
 
 ## 融合契約
@@ -81,9 +85,34 @@ AI 方向至少符合一項：
 AI 與真人視窗各占至少 15%，避免用一兩句波動製造混合標籤。
 
 若所有引擎都未達正式證據門檻，整合層仍保留四引擎原始診斷分數的方向，
-但以低可靠度向中性點收縮。顯示值低於 50% 才能顯示「較可能真人」；精確 50%
-顯示「AI 與真人訊號相當」；高於 50% 才顯示「較可能 AI」。這些結果的信心仍為低，
-且不會因而通過 AI 證據門檻。
+但以低可靠度向中性點收縮。監督式分類器沒有跨過強 AI 區塊門檻時，會保留原始
+二元分類平均值作為折扣後的真人方向通道；風格與改寫規則仍是單向偵測器，沉默
+不得反推為真人證據。同一家族偏離中性的弱訊號可以參與連續方向，但只有跨過
+38%／62% 或直接痕跡者才計入強證據門檻。這避免多個 23%–30% 的同向輸出先被
+刪除、再把「沒有留下的票」錯寫成固定 50%。
+
+顯示值低於 50% 顯示「較可能真人」，高於 50% 顯示「較可能 AI」；真正沒有任何
+可用方向時顯示「未檢出明確 AI 主導訊號」，不再宣稱 AI 與真人證據相當。弱訊號
+結果的信心仍為低，且不會因而通過 AI 證據門檻。
+
+## 分析家族擴充路線
+
+擴充原則是增加**統計上不同的觀測方式**，不是把更多相似文風規則疊成多數票：
+
+1. **雙模型語言對照（Binoculars）**：數學核心已完成；待兩顆可在各平台本地執行
+   的模型、繁中／英文獨立校準集與固定 FPR 測試通過後，加入分布家族的獨立變體。
+2. **條件機率曲率（Fast-DetectGPT）**：列為高階裝置候選。它需要 scoring model
+   與 sampling model，必須先量測記憶體、延遲及跨語公平性，不能直接套論文門檻。
+3. **弱模型特徵集成（Ghostbuster 類）**：只在文件級未見測試集證明跨領域增益，
+   且不與現有統計特徵重複計票時，才可成為新家族。
+4. **生成來源與簽章**：可驗證 watermark、C2PA／供應商 provenance 或助理回覆
+   框架屬高特異性直接痕跡，優先級高於文風猜測；無公開驗證金鑰者不得假裝支援。
+5. **文件過程鑑識**：DOCX／ODT 的編輯時長、版本與 RSID 批次繼續獨立呈現。
+   批次集中只能說明一次匯入或組裝，不能單獨證明 AI，但可指引後續核查。
+
+RAID 顯示解碼策略、領域與改寫攻擊會讓既有偵測器顯著退化；BUST 與 M4 也指出
+任務、語言及未見生成器的分布轉移不可忽略。因此上列模組都必須通過相同發布閘門，
+不能用內部幾篇示例或單一整體 accuracy 宣稱改善。
 
 ## 發布閘門
 

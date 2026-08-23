@@ -111,24 +111,30 @@ class TextEvidenceFusion {
           .clamp(0.0, 1.0);
       final domainFactor = documentProfile.domainReliability(family);
       final availableReliability = engines
-          .map((score) => score.evidenceWeightMultiplier * domainFactor)
+          .map((score) => _directionalReliability(score) * domainFactor)
           .fold<double>(0, math.max)
           .clamp(0.0, 1.0);
       applicabilityWeight += cap * availableReliability;
 
-      final evidential = engines.where((score) => score.votes).toList();
-      if (evidential.isEmpty) continue;
+      final directional = <({EngineScore score, double probability})>[];
+      for (final score in engines) {
+        final probability = _directionalProbability(score);
+        if (probability != null) {
+          directional.add((score: score, probability: probability));
+        }
+      }
+      if (directional.isEmpty) continue;
       var weightedProbability = 0.0;
       var totalReliability = 0.0;
       var direct = false;
-      for (final score in evidential) {
+      for (final candidate in directional) {
+        final score = candidate.score;
         final eslFactor = eslAdjusted && family == EvidenceFamily.distributional
             ? 0.5
             : 1.0;
         final engineReliability =
-            score.evidenceWeightMultiplier * domainFactor * eslFactor;
-        weightedProbability +=
-            _normalizedProbability(score) * engineReliability;
+            _directionalReliability(score) * domainFactor * eslFactor;
+        weightedProbability += candidate.probability * engineReliability;
         totalReliability += engineReliability;
         direct =
             direct ||
@@ -138,7 +144,7 @@ class TextEvidenceFusion {
       }
       if (totalReliability <= 0) continue;
       final rawProbability = weightedProbability / totalReliability;
-      final familyReliability = (totalReliability / evidential.length).clamp(
+      final familyReliability = (totalReliability / directional.length).clamp(
         0.0,
         1.0,
       );
@@ -146,15 +152,20 @@ class TextEvidenceFusion {
           .clamp(0.0, 1.0);
       final supportsAi = probability >= 0.62;
       final supportsHuman = probability <= 0.38;
-      if (!supportsAi && !supportsHuman && !direct) continue;
-      evidenceWeight += cap * familyReliability;
+      // 強證據門檻與方向性篩查必須分開。即使一個家族尚未跨過
+      // 38%／62%，只要它確實偏離中性，就應保留其方向；否則多個
+      // 一致的弱訊號會被全部刪掉，最後錯誤回到固定 50%。
+      final deviation = (probability - 0.5).abs();
+      if (deviation < 0.015 && !direct) continue;
+      final directionalStrength = (deviation / 0.12).clamp(0.0, 1.0);
+      evidenceWeight += cap * familyReliability * directionalStrength;
       familyEvidence.add(
         FamilyEvidence(
           family: family,
           probability: direct ? math.max(probability, 0.98) : probability,
           reliability: familyReliability,
           configuredWeight: cap,
-          engineCount: evidential.length,
+          engineCount: directional.length,
           supportsAi: supportsAi || direct,
           supportsHuman: supportsHuman && !direct,
           directTrace: direct,
@@ -285,6 +296,62 @@ class TextEvidenceFusion {
         0.5 + score.aiProbability.clamp(0.0, 1.0) * 0.5,
       _ => score.aiProbability.clamp(0.0, 1.0),
     };
+  }
+
+  /// 取得可用於「方向性篩查」的雙向分數。
+  ///
+  /// Transformer 目前的公開分數在沒有強 AI 區塊時會被壓成 0–10%，那是
+  /// AI 痕跡強度而非作者機率；真正的二元分類方向保存在 raw_avg_prob。
+  /// 這條負向通道只以折扣後可靠度參與篩查，不會讓模型越過 AI 證據門檻。
+  /// 風格與改寫引擎仍是單向偵測器，沉默時不得反推為真人證據。
+  static double? _directionalProbability(EngineScore score) {
+    final direct =
+        (score.features['assistant_response_artifacts'] ?? 0) >= 2 ||
+        (score.features['verified_watermark'] ?? 0) >= 1 ||
+        (score.features['verified_ai_provenance'] ?? 0) >= 1;
+    if (direct) return 0.99;
+    return switch (score.resolvedEvidenceFamily) {
+      EvidenceFamily.supervisedClassifier =>
+        score.features['raw_avg_prob']?.clamp(0.0, 1.0) ??
+            (score.votes ? score.aiProbability.clamp(0.0, 1.0) : null),
+      EvidenceFamily.distributional =>
+        score.votes ? score.aiProbability.clamp(0.0, 1.0) : null,
+      EvidenceFamily.stylometric || EvidenceFamily.rewriteTrace =>
+        score.votes ? _normalizedProbability(score) : null,
+      EvidenceFamily.unknown =>
+        score.votes ? score.aiProbability.clamp(0.0, 1.0) : null,
+    };
+  }
+
+  /// 本次方向分數的事前可靠度。分類器的負向通道尚未完成固定 FPR 發布
+  /// 驗證，因此額外乘 0.55；這讓它能提供方向，卻不能冒充強證據。
+  static double _directionalReliability(EngineScore score) {
+    final applicability = switch (score.applicability) {
+      EngineApplicability.validated => 1.0,
+      EngineApplicability.plausible => 0.72,
+      EngineApplicability.unknown => 0.45,
+      EngineApplicability.unsupported => 0.0,
+    };
+    final chunks = score.features['analysis_chunk_count'];
+    final coverage = chunks == null
+        ? 1.0
+        : chunks >= 4
+        ? 1.0
+        : chunks >= 2
+        ? 0.82
+        : chunks > 0
+        ? 0.65
+        : 0.75;
+    final negativeChannelDiscount =
+        score.resolvedEvidenceFamily == EvidenceFamily.supervisedClassifier &&
+            !score.votes
+        ? 0.55
+        : 1.0;
+    return (applicability *
+            score.calibrationReliability.clamp(0.0, 1.0) *
+            coverage *
+            negativeChannelDiscount)
+        .clamp(0.0, 1.0);
   }
 
   static ({

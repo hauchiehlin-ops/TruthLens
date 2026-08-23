@@ -105,6 +105,8 @@ void main() {
       expect(provenance.createdAt, DateTime.utc(2026, 8, 1, 9));
       expect(provenance.modifiedAt, DateTime.utc(2026, 8, 3, 11, 30));
       expect(provenance.distinctBodyRsids, 3);
+      expect(provenance.rsidMap.paragraphCount, 3);
+      expect(provenance.rsidMap.batches, isNotEmpty);
       // 95 分鐘寫 800 字很正常，不該有任何訊號
       expect(provenance.signals, isEmpty);
       expect(provenance.risk, ProvenanceRisk.low);

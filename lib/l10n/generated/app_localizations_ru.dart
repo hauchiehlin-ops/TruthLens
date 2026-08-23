@@ -2681,7 +2681,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get integratedNeutralBaseline =>
-      'No authorship-specific evidence was found; 50% is a neutral baseline, not an equal-evidence result.';
+      'No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.';
 
   @override
   String get reportVerifiableFindingsTitle => 'Что можно проверить';
@@ -2830,7 +2830,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get integratedLikelyHuman => 'More likely not AI-generated';
 
   @override
-  String get integratedBalanced => 'AI and human signals are balanced';
+  String get integratedBalanced => 'No clear AI-dominant signal detected';
 
   @override
   String integratedLikelihoodLabel(int percent) {
@@ -2858,7 +2858,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return 'Independent evidence families: $families/4 · applicability coverage $coverage%';
+    return 'Directional signal families: $families/4 · applicability coverage $coverage%';
   }
 
   @override
@@ -2879,7 +2879,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families and applies language/domain applicability and calibration reliability. The separate AI evidence gate indicates whether support is strong enough for escalation; ‘not detected’ is not proof of human authorship.';
+      'These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

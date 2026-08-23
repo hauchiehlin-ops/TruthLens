@@ -129,8 +129,8 @@ class IntegratedAssessment {
         : result.evidenceEngineCount == 0
         ? 0.18
         : (0.25 + fusion.reliability * 0.50).clamp(0.25, 0.70);
-    // 引擎全部沉默時，家族融合本身只能回到 50% 中性值。此時保留四引擎原始
-    // 診斷分數的方向，但以低可靠度收縮，避免把「無正式證據」誤寫成固定 50%。
+    // 家族融合同時保留強證據與折扣後的方向性訊號。舊資料沒有方向性家族時，
+    // 才回退到當時保存的原始總分，避免歷史報告全被改寫成固定 50%。
     final textProbability =
         (fusion.families.isEmpty ? result.aiProbability : fusion.probability)
             .clamp(0.02, 0.98);
@@ -254,12 +254,11 @@ class IntegratedAssessment {
           : confidence;
     }
 
-    final displayedAiPercent = (aiLikelihood * 100).round();
-    final direction = displayedAiPercent > 50 && fusion.mixedAuthorship
+    final direction = aiLikelihood > 0.5 && fusion.mixedAuthorship
         ? IntegratedDirection.likelyMixed
-        : displayedAiPercent > 50
+        : aiLikelihood > 0.5
         ? IntegratedDirection.likelyAi
-        : displayedAiPercent < 50
+        : aiLikelihood < 0.5
         ? IntegratedDirection.likelyHuman
         : IntegratedDirection.balanced;
     final textAuthorshipClass = fusion.mixedAuthorship
@@ -281,7 +280,10 @@ class IntegratedAssessment {
       evidenceCoverage: fusion.evidenceCoverage,
       passesAiEvidenceGate: passesAiEvidenceGate,
       hasAuthorshipEvidence:
-          fusion.families.isNotEmpty ||
+          fusion.families.any(
+            (family) =>
+                family.supportsAi || family.supportsHuman || family.directTrace,
+          ) ||
           calibratedAiOutlier ||
           writing.consistentWithLiveWriting ||
           provenance.indicatesHumanAuthorship ||

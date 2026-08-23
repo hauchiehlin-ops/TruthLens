@@ -2572,7 +2572,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get integratedNeutralBaseline =>
-      '本次未找到作者特異性證據；50% 是中性基準，不代表 AI 與真人證據各半。';
+      '本次未找到足以升級處理的作者特異性證據；畫面呈現的是目前最佳方向性篩查，不代表 AI 與真人證據各半。';
 
   @override
   String get reportVerifiableFindingsTitle => '可查證的事實';
@@ -2715,7 +2715,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
-  String get integratedBalanced => 'AI 與真人訊號相當';
+  String get integratedBalanced => '未檢出明確 AI 主導訊號';
 
   @override
   String integratedLikelihoodLabel(int percent) {
@@ -2743,7 +2743,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return '獨立證據家族：$families/4 · 適用性覆蓋 $coverage%';
+    return '方向性訊號家族：$families/4 · 適用性覆蓋 $coverage%';
   }
 
   @override
@@ -2763,7 +2763,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，並套用語言／領域適用性與校準可靠度。獨立的 AI 證據門檻另行表示支持是否足以升級處理；「未偵測」不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。相關引擎會先按家族合併，納入保守折扣後的分類器真人方向，再套用語言／領域適用性與校準可靠度。方向結論回答哪一種解釋較受支持；獨立的 AI 證據門檻則回答支持是否已足以升級處理。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -5407,7 +5407,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get integratedNeutralBaseline =>
-      '本次未找到作者特异性证据；50% 是中性基准，不代表 AI 与真人证据各半。';
+      '本次未找到足以升级处理的作者特异性证据；画面呈现的是目前最佳方向性筛查，不代表 AI 与真人证据各半。';
 
   @override
   String get reportVerifiableFindingsTitle => '可查证的事实';
@@ -5550,7 +5550,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedLikelyHuman => '较可能不是 AI 生成';
 
   @override
-  String get integratedBalanced => 'AI 与真人信号相当';
+  String get integratedBalanced => '未检出明确 AI 主导信号';
 
   @override
   String integratedLikelihoodLabel(int percent) {
@@ -5578,7 +5578,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return '独立证据家族：$families/4 · 适用性覆盖 $coverage%';
+    return '方向性信号家族：$families/4 · 适用性覆盖 $coverage%';
   }
 
   @override
@@ -5598,7 +5598,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈现四个文字引擎的诊断信号。最终文字分数会先把相关引擎合并为独立证据家族，并套用语言／领域适用性与校准可靠度。独立的 AI 证据门槛另行表示支持是否足以升级处理；“未检测”不是人类撰写的证明。';
+      '以下呈现四个文字引擎的诊断信号。相关引擎会先按家族合并，纳入保守折扣后的分类器真人方向，再套用语言／领域适用性与校准可靠度。方向结论回答哪一种解释较受支持；独立的 AI 证据门槛则回答支持是否已足以升级处理。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
@@ -8242,7 +8242,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get integratedNeutralBaseline =>
-      '本次未找到作者特異性證據；50% 是中性基準，不代表 AI 與真人證據各半。';
+      '本次未找到足以升級處理的作者特異性證據；畫面呈現的是目前最佳方向性篩查，不代表 AI 與真人證據各半。';
 
   @override
   String get reportVerifiableFindingsTitle => '可查證的事實';
@@ -8385,7 +8385,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
-  String get integratedBalanced => 'AI 與真人訊號相當';
+  String get integratedBalanced => '未檢出明確 AI 主導訊號';
 
   @override
   String integratedLikelihoodLabel(int percent) {
@@ -8413,7 +8413,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return '獨立證據家族：$families/4 · 適用性覆蓋 $coverage%';
+    return '方向性訊號家族：$families/4 · 適用性覆蓋 $coverage%';
   }
 
   @override
@@ -8433,7 +8433,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportTextEngineSignalExplanation =>
-      '以下呈現四個文字引擎的診斷訊號。最終文字分數會先把相關引擎合併為獨立證據家族，並套用語言／領域適用性與校準可靠度。獨立的 AI 證據門檻另行表示支持是否足以升級處理；「未偵測」不是人類撰寫的證明。';
+      '以下呈現四個文字引擎的診斷訊號。相關引擎會先按家族合併，納入保守折扣後的分類器真人方向，再套用語言／領域適用性與校準可靠度。方向結論回答哪一種解釋較受支持；獨立的 AI 證據門檻則回答支持是否已足以升級處理。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {

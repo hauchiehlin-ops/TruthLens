@@ -448,6 +448,7 @@ class DocumentProvenance {
       distinctBodyRsids: base.distinctBodyRsids,
       bodyWordCount: base.bodyWordCount,
       sourceFormat: base.sourceFormat,
+      rsidMap: base.rsidMap,
       signals: signals,
     );
   }

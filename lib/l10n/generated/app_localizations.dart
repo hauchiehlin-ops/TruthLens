@@ -4242,7 +4242,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedNeutralBaseline.
   ///
   /// In en, this message translates to:
-  /// **'No authorship-specific evidence was found; 50% is a neutral baseline, not an equal-evidence result.'**
+  /// **'No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.'**
   String get integratedNeutralBaseline;
 
   /// Heading of the verifiable-facts card shown above the verdict
@@ -4494,7 +4494,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedBalanced.
   ///
   /// In en, this message translates to:
-  /// **'AI and human signals are balanced'**
+  /// **'No clear AI-dominant signal detected'**
   String get integratedBalanced;
 
   /// No description provided for @integratedLikelihoodLabel.
@@ -4536,7 +4536,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedEvidenceCoverage.
   ///
   /// In en, this message translates to:
-  /// **'Independent evidence families: {families}/4 · applicability coverage {coverage}%'**
+  /// **'Directional signal families: {families}/4 · applicability coverage {coverage}%'**
   String integratedEvidenceCoverage(int families, int coverage);
 
   /// No description provided for @integratedEvidenceGatePassed.
@@ -4566,7 +4566,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportTextEngineSignalExplanation.
   ///
   /// In en, this message translates to:
-  /// **'These bars show diagnostic signals from the four text engines. The final text score first merges correlated engines into independent evidence families and applies language/domain applicability and calibration reliability. The separate AI evidence gate indicates whether support is strong enough for escalation; ‘not detected’ is not proof of human authorship.'**
+  /// **'These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.'**
   String get reportTextEngineSignalExplanation;
 
   /// No description provided for @reportSynthesisTextScoreContext.
