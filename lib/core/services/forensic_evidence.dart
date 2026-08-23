@@ -124,11 +124,18 @@ class ForensicEvidenceMatrix {
         strength: EvidenceStrength.none,
       );
     }
+    if (session.isTransferOnly) {
+      return const EvidenceAxisAssessment(
+        kind: EvidenceAxisKind.writingProcess,
+        state: EvidenceAxisState.unavailable,
+        strength: EvidenceStrength.none,
+      );
+    }
     if (session.hasBulkPaste) {
       return const EvidenceAxisAssessment(
         kind: EvidenceAxisKind.writingProcess,
-        state: EvidenceAxisState.concern,
-        strength: EvidenceStrength.strong,
+        state: EvidenceAxisState.inconclusive,
+        strength: EvidenceStrength.limited,
       );
     }
     if (session.consistentWithLiveWriting) {

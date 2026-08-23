@@ -1,8 +1,8 @@
-/// 將文字模型與作者來源證據整合成一個必定有方向的判讀。
+/// 將文字模型與作者來源證據整合成可追溯的作者判讀。
 ///
 /// [aiLikelihood] 是證據融合後的「AI 可能性指數」，不是經母體校準的統計機率。
-/// 系統即使在證據稀薄時仍提供較可能方向，但會把 [confidence] 降為 low；
-/// [DetectionResult.abstention] 因此保留作為證據限制，而不再取代答案。
+/// 沒有方向性證據時不製造 49／50／51 的假精度；此時保留中性內部值，
+/// 並以 [pointEstimateAvailable] 告知呈現層不得輸出數字判定。
 ///
 /// 這裡刻意採不對稱證據規則：缺少引用、整段貼上或檔案中繼資料異常，
 /// 都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
@@ -26,6 +26,7 @@ enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed, balanced }
 enum IntegratedConfidence { low, moderate, high }
 
 enum IntegratedConclusion {
+  insufficientEvidence,
   preliminaryAi,
   preliminaryHuman,
   likelyAi,
@@ -96,6 +97,10 @@ class IntegratedAssessment {
 
   int get evidenceIndex => (aiLikelihood * 100).round();
 
+  /// 是否有足以產生數字點估計的作者特異性證據。
+  bool get pointEstimateAvailable =>
+      hasAuthorshipEvidence && contributions.isNotEmpty;
+
   int get evidenceSufficiency => (confidenceScore * 100).round();
 
   int get aiEscalationGap => math.max(
@@ -104,6 +109,9 @@ class IntegratedAssessment {
   );
 
   IntegratedConclusion get conclusion {
+    if (!pointEstimateAvailable) {
+      return IntegratedConclusion.insufficientEvidence;
+    }
     if (direction == IntegratedDirection.likelyMixed) {
       return IntegratedConclusion.likelyMixed;
     }
@@ -168,16 +176,14 @@ class IntegratedAssessment {
         : result.evidenceEngineCount == 0
         ? 0.18
         : (0.25 + fusion.reliability * 0.50).clamp(0.25, 0.70);
-    // 家族融合同時保留強證據與折扣後的方向性訊號。舊資料沒有方向性家族時，
-    // 才回退到當時保存的原始總分，避免歷史報告全被改寫成固定 50%。
+    // 只有本次實際形成方向的家族或校準離群值能建立文字票。歷史總分可能
+    // 只是多顆沉默引擎的 fallback，不能拿來填補證據空缺。
     final textProbability =
-        (fusion.families.isEmpty ? result.aiProbability : fusion.probability)
-            .clamp(0.02, 0.98);
-    // 精確中性值且沒有任何證據家族時，不建立一張假的「五五波文字票」。
-    // 非中性的舊引擎總分仍保留為低可靠度方向性篩查，兼顧既有報告需求。
-    if (fusion.families.isNotEmpty ||
-        calibratedAiOutlier ||
-        textProbability != 0.5) {
+        (calibratedAiOutlier ? result.aiProbability : fusion.probability).clamp(
+          0.02,
+          0.98,
+        );
+    if (fusion.families.isNotEmpty || calibratedAiOutlier) {
       final textLogOdds = math.log(textProbability / (1 - textProbability));
       add(
         EvidenceAxisKind.textTrace,
@@ -245,9 +251,17 @@ class IntegratedAssessment {
     final calibrationQuality = calibratedAiOutlier
         ? (1 - result.calibration.alpha).clamp(0.0, 1.0)
         : 0.0;
+    // 沒有句級輸出代表「無法量分段穩定性」，不是穩定性為零。已有兩個
+    // 獨立家族越過門檻時，以保守中性值代替，讓充分的文件級證據可達中信心；
+    // 高信心仍需要實際分段證據或可靠來源／寫作過程。
+    final stabilityQuality = fusion.stabilityAvailable
+        ? fusion.stabilityScore
+        : passesAiEvidenceGate && fusion.aiSupportingFamilies >= 2
+        ? 0.55
+        : 0.0;
     final rawConfidenceScore =
         (informationQuality * 0.42 +
-            fusion.stabilityScore * 0.30 +
+            stabilityQuality * 0.30 +
             margin * 0.18 +
             calibrationQuality * 0.10) *
         (1 - conflictRatio * 0.55);
@@ -267,7 +281,11 @@ class IntegratedAssessment {
     final confidenceCeiling = math.min(
       result.inputQuality.confidenceCeiling,
       math.min(
-        !fusion.stabilityAvailable && !provenanceSupportsHuman ? 0.45 : 1.0,
+        !fusion.stabilityAvailable && !provenanceSupportsHuman
+            ? passesAiEvidenceGate && fusion.aiSupportingFamilies >= 2
+                  ? 0.72
+                  : 0.45
+            : 1.0,
         evidenceConfidenceCeiling,
       ),
     );

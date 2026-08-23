@@ -122,7 +122,7 @@ void main() {
     expect(fusion.upperBound, 1);
   });
 
-  test('分類器真人方向與統計弱訊號一致時不再被抹成 50%', () {
+  test('未投票分類器原始值不參與方向，只保留真正投票的統計訊號', () {
     final fusion = TextEvidenceFusion.evaluate(
       scores: [
         _score(
@@ -138,8 +138,8 @@ void main() {
       inputText: longGeneralText,
     );
 
-    expect(fusion.families, hasLength(2));
-    expect(fusion.probability, lessThan(0.45));
+    expect(fusion.families, hasLength(1));
+    expect(fusion.probability, closeTo(0.30, 1e-9));
     expect(fusion.probability, isNot(0.5));
     expect(fusion.passesAiEvidenceGate, isFalse);
   });

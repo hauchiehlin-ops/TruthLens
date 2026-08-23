@@ -65,6 +65,8 @@ class ReportExporter {
     IntegratedAssessment assessment,
     AppLocalizations l10n,
   ) => switch (assessment.conclusion) {
+    IntegratedConclusion.insufficientEvidence =>
+      l10n.integratedInsufficientEvidence,
     IntegratedConclusion.preliminaryAi => l10n.integratedPreliminaryAi,
     IntegratedConclusion.preliminaryHuman => l10n.integratedPreliminaryHuman,
     IntegratedConclusion.likelyAi => l10n.integratedLikelyAi,
@@ -177,7 +179,9 @@ class ReportExporter {
       ],
       'overall': {
         'integrated_ai_likelihood': integrated.aiLikelihood,
-        'ai_evidence_index': integrated.evidenceIndex,
+        'ai_evidence_index': integrated.pointEstimateAvailable
+            ? integrated.evidenceIndex
+            : null,
         'integrated_direction': integrated.direction.name,
         'integrated_conclusion': integrated.conclusion.name,
         'integrated_confidence': integrated.confidence.name,
@@ -323,7 +327,10 @@ class ReportExporter {
         '# overall_ai_probability,${r.aiProbability.toStringAsFixed(4)}',
       )
       ..writeln(
-        '# integrated_ai_likelihood,${integrated.aiLikelihood.toStringAsFixed(4)}',
+        '# integrated_ai_likelihood,${integrated.pointEstimateAvailable ? integrated.aiLikelihood.toStringAsFixed(4) : ''}',
+      )
+      ..writeln(
+        '# integrated_point_estimate_available,${integrated.pointEstimateAvailable}',
       )
       ..writeln('# integrated_direction,${integrated.direction.name}')
       ..writeln('# integrated_confidence,${integrated.confidence.name}')
@@ -481,7 +488,7 @@ class ReportExporter {
                   ),
                 ),
                 pw.Text(
-                  '${l10n.integratedLikelihoodLabel((integrated.aiLikelihood * 100).round())}\n'
+                  '${integrated.pointEstimateAvailable ? l10n.integratedLikelihoodLabel(integrated.evidenceIndex) : l10n.integratedLikelihoodUnavailable}\n'
                   '${l10n.integratedConfidenceLabel(_integratedConfidenceLabel(integrated, l10n))}',
                   style: pw.TextStyle(
                     fontSize: 14,

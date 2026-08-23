@@ -1967,7 +1967,7 @@ abstract class AppLocalizations {
   /// No description provided for @abstentionTooFewSentences.
   ///
   /// In en, this message translates to:
-  /// **'Only {count} analysable sentence(s), where at least {required} are needed. At this length the statistical and sentence-level signals carry no weight, and forcing a score out of them would only mislead.'**
+  /// **'Only {count} analysable sentence(s), where at least {required} are needed to measure segment stability. Confidence is reduced, but eligible document-level signals may still contribute.'**
   String abstentionTooFewSentences(int count, int required);
 
   /// No description provided for @abstentionTooFewWords.
@@ -2911,6 +2911,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No significant AI writing style patterns detected'**
   String get engineReasonNoStyleMarkers;
+
+  /// No description provided for @engineReasonPan25LexicalAi.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN 2025 lexical fingerprint leans AI ({percent}/100); this independent English baseline detects word and phrase distributions that differ from its human corpus'**
+  String engineReasonPan25LexicalAi(int percent);
+
+  /// No description provided for @engineReasonPan25LexicalHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN 2025 lexical fingerprint leans human ({percent}/100); this remains model evidence, not proof of authorship'**
+  String engineReasonPan25LexicalHuman(int percent);
+
+  /// No description provided for @engineReasonPan25LexicalNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN 2025 lexical fingerprint is neutral ({percent}/100) and does not provide a direction'**
+  String engineReasonPan25LexicalNeutral(int percent);
+
+  /// No description provided for @engineReasonCompressionCoherence.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross-boundary compression coherence ({value}) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]'**
+  String engineReasonCompressionCoherence(String value);
 
   /// No description provided for @engineReasonAssistantResponseArtifact.
   ///
@@ -4443,6 +4467,12 @@ abstract class AppLocalizations {
   /// **'Integrated authorship assessment'**
   String get integratedAssessmentTitle;
 
+  /// No description provided for @integratedInsufficientEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'No quantifiable authorship signal'**
+  String get integratedInsufficientEvidence;
+
   /// No description provided for @integratedLikelyAi.
   ///
   /// In en, this message translates to:
@@ -4484,6 +4514,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI evidence index: {percent}/100'**
   String integratedLikelihoodLabel(int percent);
+
+  /// No description provided for @integratedLikelihoodUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'AI evidence index: not estimable'**
+  String get integratedLikelihoodUnavailable;
 
   /// No description provided for @integratedTextScoreLabel.
   ///
@@ -4624,6 +4660,12 @@ abstract class AppLocalizations {
     String confidence,
   );
 
+  /// No description provided for @telemetryIntegratedUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The available modules did not produce a quantifiable authorship direction (“{direction}”, {confidence} confidence); no numeric index was issued.'**
+  String telemetryIntegratedUnavailable(String direction, String confidence);
+
   /// No description provided for @integratedStabilityLabel.
   ///
   /// In en, this message translates to:
@@ -4645,7 +4687,7 @@ abstract class AppLocalizations {
   /// No description provided for @analysisReadinessLabel.
   ///
   /// In en, this message translates to:
-  /// **'Expected confidence ceiling: {level}'**
+  /// **'Pre-analysis confidence baseline: {level}'**
   String analysisReadinessLabel(String level);
 
   /// No description provided for @analysisReadinessShortText.

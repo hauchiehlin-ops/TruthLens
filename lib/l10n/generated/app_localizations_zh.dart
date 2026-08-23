@@ -1127,7 +1127,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String abstentionTooFewSentences(int count, int required) {
-    return '只有 $count 個可分析的句子（至少需要 $required 句）。句數這麼少時，統計與句級訊號都不具代表性，硬給分數只會誤導。';
+    return '只有 $count 個可分析句段（至少需要 $required 個才能衡量句段穩定度）。因此會降低信心，但符合條件的文件級訊號仍可參與判讀。';
   }
 
   @override
@@ -1772,6 +1772,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
+
+  @override
+  String engineReasonPan25LexicalAi(int percent) {
+    return 'PAN 2025 詞彙指紋偏向 AI（$percent/100）；這項獨立英文基準偵測到詞語與片語分布不同於其人類語料';
+  }
+
+  @override
+  String engineReasonPan25LexicalHuman(int percent) {
+    return 'PAN 2025 詞彙指紋偏向真人（$percent/100）；這仍是模型證據，不是作者身分證明';
+  }
+
+  @override
+  String engineReasonPan25LexicalNeutral(int percent) {
+    return 'PAN 2025 詞彙指紋落在中性區（$percent/100），不提供方向';
+  }
+
+  @override
+  String engineReasonCompressionCoherence(String value) {
+    return '跨半段壓縮一致性（$value）超過 PAN 2025 人類語料第 95 百分位篩線［弱 AI 方向訊號］';
+  }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
@@ -2694,6 +2714,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedAssessmentTitle => '整合作者判讀';
 
   @override
+  String get integratedInsufficientEvidence => '未取得可量化的作者訊號';
+
+  @override
   String get integratedLikelyAi => '較可能是 AI 生成';
 
   @override
@@ -2715,6 +2738,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String integratedLikelihoodLabel(int percent) {
     return 'AI 證據指數：$percent/100';
   }
+
+  @override
+  String get integratedLikelihoodUnavailable => 'AI 證據指數：無法估算';
 
   @override
   String integratedTextScoreLabel(int percent) {
@@ -2819,6 +2845,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String telemetryIntegratedUnavailable(String direction, String confidence) {
+    return '本次可用模組未形成可量化的作者方向（「$direction」、$confidence信心），因此不提供數字指數。';
+  }
+
+  @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
     return '分段穩定性 $percent% · 區間 $lower–$upper%';
   }
@@ -2835,7 +2866,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String analysisReadinessLabel(String level) {
-    return '預期信心上限：$level';
+    return '分析前信心基準：$level';
   }
 
   @override
@@ -3980,7 +4011,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String abstentionTooFewSentences(int count, int required) {
-    return '只有 $count 个可分析的句子（至少需要 $required 句）。句数这么少时，统计与句级信号都不具代表性，硬给分数只会误导。';
+    return '只有 $count 个可分析句段（至少需要 $required 个才能衡量句段稳定度）。因此会降低信心，但符合条件的文件级信号仍可参与判读。';
   }
 
   @override
@@ -4625,6 +4656,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get engineReasonNoStyleMarkers => '未侦测到显著的 AI 写作风格模式';
+
+  @override
+  String engineReasonPan25LexicalAi(int percent) {
+    return 'PAN 2025 词汇指纹偏向 AI（$percent/100）；这项独立英文基准检测到词语与短语分布不同于其人类语料';
+  }
+
+  @override
+  String engineReasonPan25LexicalHuman(int percent) {
+    return 'PAN 2025 词汇指纹偏向真人（$percent/100）；这仍是模型证据，不是作者身份的证明';
+  }
+
+  @override
+  String engineReasonPan25LexicalNeutral(int percent) {
+    return 'PAN 2025 词汇指纹落在中性区（$percent/100），不提供方向';
+  }
+
+  @override
+  String engineReasonCompressionCoherence(String value) {
+    return '跨半段压缩一致性（$value）超过 PAN 2025 人类语料第 95 百分位筛线［弱 AI 方向信号］';
+  }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
@@ -5547,6 +5598,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedAssessmentTitle => '整合作者判读';
 
   @override
+  String get integratedInsufficientEvidence => '未取得可量化的作者信号';
+
+  @override
   String get integratedLikelyAi => '较可能是 AI 生成';
 
   @override
@@ -5568,6 +5622,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String integratedLikelihoodLabel(int percent) {
     return 'AI 证据指数：$percent/100';
   }
+
+  @override
+  String get integratedLikelihoodUnavailable => 'AI 证据指数：无法估算';
 
   @override
   String integratedTextScoreLabel(int percent) {
@@ -5672,6 +5729,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String telemetryIntegratedUnavailable(String direction, String confidence) {
+    return '本次可用模块未形成可量化的作者方向（“$direction”、$confidence信心），因此不提供数字指数。';
+  }
+
+  @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
     return '分段稳定性 $percent% · 区间 $lower–$upper%';
   }
@@ -5688,7 +5750,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String analysisReadinessLabel(String level) {
-    return '预期信心上限：$level';
+    return '分析前信心基准：$level';
   }
 
   @override
@@ -6833,7 +6895,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String abstentionTooFewSentences(int count, int required) {
-    return '只有 $count 個可分析的句子（至少需要 $required 句）。句數這麼少時，統計與句級訊號都不具代表性，硬給分數只會誤導。';
+    return '只有 $count 個可分析句段（至少需要 $required 個才能衡量句段穩定度）。因此會降低信心，但符合條件的文件級訊號仍可參與判讀。';
   }
 
   @override
@@ -7478,6 +7540,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
+
+  @override
+  String engineReasonPan25LexicalAi(int percent) {
+    return 'PAN 2025 詞彙指紋偏向 AI（$percent/100）；這項獨立英文基準偵測到詞語與片語分布不同於其人類語料';
+  }
+
+  @override
+  String engineReasonPan25LexicalHuman(int percent) {
+    return 'PAN 2025 詞彙指紋偏向真人（$percent/100）；這仍是模型證據，不是作者身分證明';
+  }
+
+  @override
+  String engineReasonPan25LexicalNeutral(int percent) {
+    return 'PAN 2025 詞彙指紋落在中性區（$percent/100），不提供方向';
+  }
+
+  @override
+  String engineReasonCompressionCoherence(String value) {
+    return '跨半段壓縮一致性（$value）超過 PAN 2025 人類語料第 95 百分位篩線［弱 AI 方向訊號］';
+  }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
@@ -8400,6 +8482,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedAssessmentTitle => '整合作者判讀';
 
   @override
+  String get integratedInsufficientEvidence => '未取得可量化的作者訊號';
+
+  @override
   String get integratedLikelyAi => '較可能是 AI 生成';
 
   @override
@@ -8421,6 +8506,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String integratedLikelihoodLabel(int percent) {
     return 'AI 證據指數：$percent/100';
   }
+
+  @override
+  String get integratedLikelihoodUnavailable => 'AI 證據指數：無法估算';
 
   @override
   String integratedTextScoreLabel(int percent) {
@@ -8525,6 +8613,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String telemetryIntegratedUnavailable(String direction, String confidence) {
+    return '本次可用模組未形成可量化的作者方向（「$direction」、$confidence信心），因此不提供數字指數。';
+  }
+
+  @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
     return '分段穩定性 $percent% · 區間 $lower–$upper%';
   }
@@ -8541,7 +8634,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String analysisReadinessLabel(String level) {
-    return '預期信心上限：$level';
+    return '分析前信心基準：$level';
   }
 
   @override

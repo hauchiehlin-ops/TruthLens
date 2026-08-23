@@ -643,7 +643,7 @@
     }
   },
   "abstentionHeadline": "证据不足，不做判定",
-  "abstentionTooFewSentences": "只有 {count} 个可分析的句子（至少需要 {required} 句）。句数这么少时，统计与句级信号都不具代表性，硬给分数只会误导。",
+  "abstentionTooFewSentences": "只有 {count} 个可分析句段（至少需要 {required} 个才能衡量句段稳定度）。因此会降低信心，但符合条件的文件级信号仍可参与判读。",
   "@abstentionTooFewSentences": {
     "placeholders": {
       "count": {
@@ -1020,6 +1020,10 @@
   "engineReasonTransitionWords": "高频使用通用过渡词（{words}），每句平均 {density} 次，人类写作极少如此密集",
   "engineReasonRepeatedOpeners": "多个相邻句子以相同词语开头（{count} 处），句式重复",
   "engineReasonNoStyleMarkers": "未侦测到显著的 AI 写作风格模式",
+  "engineReasonPan25LexicalAi": "PAN 2025 词汇指纹偏向 AI（{percent}/100）；这项独立英文基准检测到词语与短语分布不同于其人类语料",
+  "engineReasonPan25LexicalHuman": "PAN 2025 词汇指纹偏向真人（{percent}/100）；这仍是模型证据，不是作者身份的证明",
+  "engineReasonPan25LexicalNeutral": "PAN 2025 词汇指纹落在中性区（{percent}/100），不提供方向",
+  "engineReasonCompressionCoherence": "跨半段压缩一致性（{value}）超过 PAN 2025 人类语料第 95 百分位筛线［弱 AI 方向信号］",
   "engineReasonAssistantResponseArtifact": "侦测到 {count} 处聊天助理回复残留，例如称呼提问者或主动表示可修改受托文字",
   "engineReasonAdversarialNotInstalled": "改写侦测模型尚未安装，未参与本次投票",
   "engineReasonTransformerNotInstalled": "模型尚未安装或使用中模型未支持，未参与本次投票",
@@ -1287,6 +1291,7 @@
   "evidenceMatrixStrongConcern": "至少一个独立方面出现强烈的检查信号。采信文本分数前，请先查看该项证据。",
   "findingUnsupportedClaims": "{total} 个可核查主张中，有 {unsupported} 个包含数字、比较或研究归因，却未在同一句提供来源锚点。这不代表内容必然错误，但指出了最该优先核实的主张。",
   "integratedAssessmentTitle": "整合作者判读",
+  "integratedInsufficientEvidence": "未取得可量化的作者信号",
   "integratedLikelyAi": "较可能是 AI 生成",
   "integratedLikelyMixed": "较可能是人机混合",
   "integratedLikelyHuman": "较可能不是 AI 生成",
@@ -1294,6 +1299,7 @@
   "integratedPreliminaryAi": "目前偏向 AI，但接近分界",
   "integratedPreliminaryHuman": "目前偏向真人，但接近分界",
   "integratedLikelihoodLabel": "AI 证据指数：{percent}/100",
+  "integratedLikelihoodUnavailable": "AI 证据指数：无法估算",
   "integratedTextScoreLabel": "文字模型原始分数：{percent}%",
   "integratedConfidenceLabel": "判读信心：{confidence}",
   "integratedConfidenceLow": "低",
@@ -1317,10 +1323,11 @@
   "composerTextScoreThresholdReached": "文字模型原始分数为 {aiPercent}%，已达 {thresholdPercent}% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。",
   "composerTextScoreThresholdNotReached": "文字模型原始分数为 {aiPercent}%，低于 {thresholdPercent}% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。",
   "telemetryIntegratedVerdict": "依本次可用证据加权后，本文“{direction}”（AI 证据指数 {percent}/100，{confidence}信心）。",
+  "telemetryIntegratedUnavailable": "本次可用模块未形成可量化的作者方向（“{direction}”、{confidence}信心），因此不提供数字指数。",
   "integratedStabilityLabel": "分段稳定性 {percent}% · 区间 {lower}–{upper}%",
   "integratedInputQualityLabel": "输入抽取质量：{percent}%",
   "integratedCalibrationLabel": "同条件本地基准：p={value} · n={count}"
-  ,"analysisReadinessLabel": "预期信心上限：{level}",
+  ,"analysisReadinessLabel": "分析前信心基准：{level}",
   "analysisReadinessShortText": "需要更多文字",
   "analysisReadinessFewSentences": "可分析句段不足",
   "analysisReadinessCoreModel": "核心分类模型不可用",

@@ -48,11 +48,13 @@ List<String> buildTelemetrySummary(
   };
 
   final lines = <String>[
-    l10n.telemetryIntegratedVerdict(
-      direction,
-      assessment.evidenceIndex,
-      confidence,
-    ),
+    assessment.pointEstimateAvailable
+        ? l10n.telemetryIntegratedVerdict(
+            direction,
+            assessment.evidenceIndex,
+            confidence,
+          )
+        : l10n.telemetryIntegratedUnavailable(direction, confidence),
     l10n.integratedEvidenceSufficiency(
       assessment.evidenceSufficiency,
       integratedEvidenceTierLabel(assessment, l10n),

@@ -13,20 +13,21 @@ import 'package:truthlens/l10n/generated/app_localizations.dart';
 import 'package:truthlens/shared/widgets/professional_report_header.dart';
 
 /// 報告頁頭內含共形校準卡，需要 CalibrationService provider 才能建構
-Widget _testApp(Widget child) => MultiProvider(
-  providers: [ChangeNotifierProvider.value(value: _calibration)],
-  child: MaterialApp(
-    locale: const Locale('en'),
-    supportedLocales: AppLocalizations.supportedLocales,
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    home: Scaffold(body: child),
-  ),
-);
+Widget _testApp(Widget child, {Locale locale = const Locale('en')}) =>
+    MultiProvider(
+      providers: [ChangeNotifierProvider.value(value: _calibration)],
+      child: MaterialApp(
+        locale: locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(body: child),
+      ),
+    );
 
 late CalibrationService _calibration;
 
@@ -203,8 +204,8 @@ void main() {
         ),
       );
       final assessment = IntegratedAssessment.assess(result);
-      final integratedPercent = (assessment.aiLikelihood * 100).round();
-      expect(assessment.direction, IntegratedDirection.likelyHuman);
+      expect(assessment.direction, IntegratedDirection.balanced);
+      expect(assessment.pointEstimateAvailable, isFalse);
 
       await tester.pumpWidget(
         _testApp(
@@ -213,11 +214,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('More likely not AI-generated'), findsNWidgets(2));
-      expect(
-        find.text('AI evidence index: $integratedPercent/100'),
-        findsNWidgets(2),
-      );
+      expect(find.text('No quantifiable authorship signal'), findsNWidgets(2));
+      expect(find.text('AI evidence index: not estimable'), findsNWidgets(2));
       expect(
         find.textContaining('Four-engine text-model raw score: 13%'),
         findsOneWidget,
@@ -256,6 +254,65 @@ void main() {
       fileName.style!.fontSize,
       closeTo(title.style!.fontSize! * 0.7, 0.01),
     );
+  });
+
+  testWidgets(
+    '320px report cards support long names and enlarged system text',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 720));
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+      addTearDown(() {
+        tester.binding.setSurfaceSize(null);
+        tester.platformDispatcher.clearTextScaleFactorTestValue();
+      });
+
+      await tester.pumpWidget(
+        _testApp(
+          SingleChildScrollView(
+            child: ProfessionalReportHeader(
+              result: sampleResult(
+                sourceFileName:
+                    'a-very-long-imported-document-name-for-mobile-review.pdf',
+              ),
+              onDownloadPdf: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('AI Content Detection Report'), findsOneWidget);
+      expect(find.text('Integrated authorship assessment'), findsOneWidget);
+      expect(find.text('Engine analysis layers'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('繁體中文報告在 320px 與放大字級下完整換行', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 720));
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(() {
+      tester.binding.setSurfaceSize(null);
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
+    });
+
+    await tester.pumpWidget(
+      _testApp(
+        SingleChildScrollView(
+          child: ProfessionalReportHeader(
+            result: sampleResult(sourceFileName: '行動裝置響應式版面完整檢閱測試文件名稱.pdf'),
+            onDownloadPdf: () {},
+          ),
+        ),
+        locale: const Locale('zh', 'TW'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('AI 內容檢測報告'), findsOneWidget);
+    expect(find.text('整合作者判讀'), findsOneWidget);
+    expect(find.text('引擎分析層級'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('整合作者判讀置於可查證事實與多證據矩陣之前', (tester) async {
@@ -298,6 +355,8 @@ void main() {
       IntegratedConfidence.high => 'High',
     };
     final direction = switch (assessment.conclusion) {
+      IntegratedConclusion.insufficientEvidence =>
+        'No quantifiable authorship signal',
       IntegratedConclusion.preliminaryAi =>
         'Currently leans AI, near the boundary',
       IntegratedConclusion.preliminaryHuman =>

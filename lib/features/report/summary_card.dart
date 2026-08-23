@@ -84,16 +84,18 @@ class SummaryCard {
       ..strokeWidth = 16
       ..strokeCap = StrokeCap.round
       ..color = color;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -1.5708,
-      6.2832 * assessment.aiLikelihood,
-      false,
-      ringFg,
-    );
+    if (assessment.pointEstimateAvailable) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        -1.5708,
+        6.2832 * assessment.aiLikelihood,
+        false,
+        ringFg,
+      );
+    }
     _textCentered(
       canvas,
-      '$pct%',
+      assessment.pointEstimateAvailable ? '$pct%' : '--',
       center.translate(0, -22),
       40,
       color,
@@ -110,12 +112,19 @@ class SummaryCard {
     );
 
     // 右側判定與統計
-    _pill(canvas, const Offset(280, 150), switch (assessment.direction) {
-      IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-      IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
-      IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
-      IntegratedDirection.balanced => l10n.integratedBalanced,
-    }, color);
+    _pill(
+      canvas,
+      const Offset(280, 150),
+      assessment.pointEstimateAvailable
+          ? switch (assessment.direction) {
+              IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
+              IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
+              IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+              IntegratedDirection.balanced => l10n.integratedBalanced,
+            }
+          : l10n.integratedInsufficientEvidence,
+      color,
+    );
     _text(
       canvas,
       l10n.summaryCardStats(

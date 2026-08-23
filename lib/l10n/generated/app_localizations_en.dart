@@ -1163,7 +1163,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String abstentionTooFewSentences(int count, int required) {
-    return 'Only $count analysable sentence(s), where at least $required are needed. At this length the statistical and sentence-level signals carry no weight, and forcing a score out of them would only mislead.';
+    return 'Only $count analysable sentence(s), where at least $required are needed to measure segment stability. Confidence is reduced, but eligible document-level signals may still contribute.';
   }
 
   @override
@@ -1829,6 +1829,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get engineReasonNoStyleMarkers =>
       'No significant AI writing style patterns detected';
+
+  @override
+  String engineReasonPan25LexicalAi(int percent) {
+    return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
+  }
+
+  @override
+  String engineReasonPan25LexicalHuman(int percent) {
+    return 'PAN 2025 lexical fingerprint leans human ($percent/100); this remains model evidence, not proof of authorship';
+  }
+
+  @override
+  String engineReasonPan25LexicalNeutral(int percent) {
+    return 'PAN 2025 lexical fingerprint is neutral ($percent/100) and does not provide a direction';
+  }
+
+  @override
+  String engineReasonCompressionCoherence(String value) {
+    return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
+  }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
@@ -2792,6 +2812,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get integratedAssessmentTitle => 'Integrated authorship assessment';
 
   @override
+  String get integratedInsufficientEvidence =>
+      'No quantifiable authorship signal';
+
+  @override
   String get integratedLikelyAi => 'More likely AI-generated';
 
   @override
@@ -2814,6 +2838,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String integratedLikelihoodLabel(int percent) {
     return 'AI evidence index: $percent/100';
   }
+
+  @override
+  String get integratedLikelihoodUnavailable =>
+      'AI evidence index: not estimable';
 
   @override
   String integratedTextScoreLabel(int percent) {
@@ -2919,6 +2947,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String telemetryIntegratedUnavailable(String direction, String confidence) {
+    return 'The available modules did not produce a quantifiable authorship direction (“$direction”, $confidence confidence); no numeric index was issued.';
+  }
+
+  @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
     return 'Segment stability $percent% · interval $lower–$upper%';
   }
@@ -2935,7 +2968,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String analysisReadinessLabel(String level) {
-    return 'Expected confidence ceiling: $level';
+    return 'Pre-analysis confidence baseline: $level';
   }
 
   @override

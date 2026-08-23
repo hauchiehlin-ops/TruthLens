@@ -58,7 +58,7 @@ DetectionResult _result({
 );
 
 void main() {
-  test('49 分低信心明示為真人側初篩，並距 AI 升級線 11 分', () {
+  test('沒有作者證據時不把 49 包裝成可用點估計', () {
     const assessment = IntegratedAssessment(
       aiLikelihood: 0.49,
       direction: IntegratedDirection.likelyHuman,
@@ -80,20 +80,22 @@ void main() {
       contributions: [],
     );
 
-    expect(assessment.conclusion, IntegratedConclusion.preliminaryHuman);
+    expect(assessment.conclusion, IntegratedConclusion.insufficientEvidence);
+    expect(assessment.pointEstimateAvailable, isFalse);
     expect(assessment.evidenceIndex, 49);
     expect(assessment.evidenceSufficiency, 24);
     expect(assessment.aiEscalationGap, 11);
   });
 
-  test('全引擎沉默時保留原始分數方向，不固定回到 50%', () {
+  test('全引擎沉默時不沿用 fallback 原始分數', () {
     final assessment = IntegratedAssessment.assess(_result());
 
-    expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, inInclusiveRange(0.40, 0.43));
+    expect(assessment.direction, IntegratedDirection.balanced);
+    expect(assessment.aiLikelihood, 0.50);
     expect(assessment.confidence, IntegratedConfidence.low);
     expect(assessment.textReliability, 0.18);
     expect(assessment.passesAiEvidenceGate, isFalse);
+    expect(assessment.pointEstimateAvailable, isFalse);
   });
 
   test('真正沒有方向時保留中性狀態，不冒充真人結論', () {
@@ -107,7 +109,7 @@ void main() {
     expect(assessment.stabilityAvailable, isFalse);
   });
 
-  test('多個偏真人的方向性訊號即使未達強門檻也必須給出方向', () {
+  test('未投票分類器原始值不再偽造第二個真人方向家族', () {
     final result = DetectionResult(
       id: 'directional-consensus',
       analyzedAt: DateTime(2026, 8, 23),
@@ -155,8 +157,8 @@ void main() {
     final assessment = IntegratedAssessment.assess(result);
     expect(assessment.direction, IntegratedDirection.likelyHuman);
     expect(assessment.aiLikelihood, lessThan(0.50));
-    expect(assessment.aiLikelihood, greaterThan(0.40));
-    expect(assessment.independentEvidenceFamilies, 2);
+    expect(assessment.aiLikelihood, lessThan(0.45));
+    expect(assessment.independentEvidenceFamilies, 1);
     expect(assessment.passesAiEvidenceGate, isFalse);
     expect(assessment.confidence, IntegratedConfidence.low);
   });
@@ -207,8 +209,9 @@ void main() {
       citations: const CitationEvidence(total: 10, verified: 5, notFound: 5),
     );
 
-    expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, lessThanOrEqualTo(0.50));
+    expect(assessment.direction, IntegratedDirection.balanced);
+    expect(assessment.aiLikelihood, 0.50);
+    expect(assessment.pointEstimateAvailable, isFalse);
     expect(assessment.confidence, IntegratedConfidence.low);
   });
 
@@ -234,7 +237,8 @@ void main() {
     );
 
     expect(claims.risk, ClaimSourceRisk.high);
-    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.direction, IntegratedDirection.balanced);
+    expect(assessment.pointEstimateAvailable, isFalse);
     expect(assessment.aiLikelihood, closeTo(baseline.aiLikelihood, 1e-9));
     expect(assessment.confidence, IntegratedConfidence.low);
     expect(

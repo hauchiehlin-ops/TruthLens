@@ -73,6 +73,7 @@ enum AbstentionReason {
 /// 獨立證據。整合層會先在家族內合併，再計算跨家族共識。
 enum EvidenceFamily {
   supervisedClassifier,
+  lexicalFingerprint,
   distributional,
   stylometric,
   rewriteTrace,

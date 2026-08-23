@@ -106,12 +106,24 @@ class WritingSession {
   /// 是否存在整段貼上的行為
   bool get hasBulkPaste => largestPaste >= bulkPasteThreshold;
 
+  /// 文字只是透過貼上移入工作區，沒有觀察到任何實際撰寫或修改過程。
+  ///
+  /// 這只能說明取得方式，不能說明作者身分。外部文件不論由人或 AI 撰寫，
+  /// 貼進編輯器時都會留下完全相同的事件，因此不得列為 AI 證據。
+  bool get isTransferOnly =>
+      hasBulkPaste && typedCharacters == 0 && deletedCharacters == 0;
+
+  /// 是否真的觀察到可用於作者判讀的逐步撰寫活動。
+  bool get hasObservedComposition =>
+      typedCharacters > 0 || deletedCharacters > 0;
+
   /// 過程是否與「在此逐步寫成」相符。
   ///
   /// 三個條件同時成立才算：沒有整段貼上、貼上佔比低、有實質的刪改。
   /// 缺任何一項都不宣稱——這個證據的價值來自它的嚴格。
   bool get consistentWithLiveWriting {
     if (!hasData) return false;
+    if (!hasObservedComposition) return false;
     if (hasBulkPaste) return false;
     if (pastedRatio > 0.20) return false;
     // 真正的寫作幾乎必然包含反覆修改；完全沒有刪除很可疑

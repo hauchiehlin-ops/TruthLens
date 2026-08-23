@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
+import '../pan25_tfidf_scorer.dart';
 
 /// 子模型 C：風格特徵分析器（Stylometry）。
 /// 以特徵工程偵測 AI 寫作模式；正式版將疊加 XGBoost 分類器，
@@ -71,6 +74,19 @@ class StylometryEngine implements DetectionEngine {
     // 規則式引擎的分數代表實際命中特徵；沒有命中時應為 0，不能把
     // 先驗基線誤當成 AI 證據。
     var score = 0.0;
+    double? lexicalProbability;
+    if (text.language.code == 'en' && text.allTokens.length >= 100) {
+      try {
+        final lexicalScore = await Pan25TfidfScorer.load().then(
+          (scorer) => scorer.score(text.raw),
+        );
+        lexicalProbability = lexicalScore;
+        features['pan25_tfidf_probability'] = lexicalScore;
+        features['bidirectional_probability'] = 1;
+      } catch (_) {
+        lexicalProbability = null;
+      }
+    }
 
     // 特徵 0：聊天助理回覆框架殘留。單一片語可能只是正文引用，僅給 75%；
     // 命中兩個獨立對話框架時才提高至近乎完整的規則分數。
@@ -140,23 +156,47 @@ class StylometryEngine implements DetectionEngine {
     // 本引擎只在命中 AI 風格特徵時加分，從不因「文筆像人」而扣分。
     // 因此沒命中任何特徵時它是沉默，不是在投「人類」一票。
     final foundMarkers = reasons.isNotEmpty;
-    if (!foundMarkers) {
+    final lexicalDirectional =
+        lexicalProbability != null && (lexicalProbability - 0.5).abs() >= 0.08;
+    if (lexicalProbability != null) {
+      final percent = (lexicalProbability * 100).round();
+      reasons.add(
+        lexicalProbability >= 0.58
+            ? l10n.engineReasonPan25LexicalAi(percent)
+            : lexicalProbability <= 0.42
+            ? l10n.engineReasonPan25LexicalHuman(percent)
+            : l10n.engineReasonPan25LexicalNeutral(percent),
+      );
+    } else if (!foundMarkers) {
       reasons.add(l10n.engineReasonNoStyleMarkers);
     }
+
+    final probability = lexicalProbability == null
+        ? score.clamp(0.0, 1.0)
+        : assistantArtifactHits >= 2
+        ? 0.99
+        : math.max(lexicalProbability, 0.5 + score.clamp(0.0, 1.0) * 0.35);
 
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
-      aiProbability: score.clamp(0.0, 1.0),
+      aiProbability: probability,
       weight: defaultWeight,
       features: features,
       reasons: reasons,
-      hasEvidence: foundMarkers,
+      hasEvidence: foundMarkers || lexicalDirectional,
+      evidenceFamily: lexicalProbability != null
+          ? EvidenceFamily.lexicalFingerprint
+          : EvidenceFamily.stylometric,
       applicability: assistantArtifactHits >= 2
           ? EngineApplicability.validated
           : EngineApplicability.plausible,
       // 規則式風格只作弱佐證；兩個完整聊天助理框架屬高特異性直接痕跡。
-      calibrationReliability: assistantArtifactHits >= 2 ? 0.95 : 0.42,
+      calibrationReliability: assistantArtifactHits >= 2
+          ? 0.95
+          : lexicalProbability != null
+          ? 0.76
+          : 0.42,
     );
   }
 }

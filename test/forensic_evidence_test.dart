@@ -49,7 +49,7 @@ void main() {
     expect(matrix.textOnly, isTrue);
   });
 
-  test('受控寫作的整段貼上成為獨立強警訊', () {
+  test('只有整段貼上的輸入方式不構成作者證據', () {
     final recorder = WritingSessionRecorder()..record(1800);
     final matrix = ForensicEvidenceMatrix.assess(
       result(writing: recorder.session),
@@ -57,8 +57,8 @@ void main() {
     final writing = matrix.axes.firstWhere(
       (axis) => axis.kind == EvidenceAxisKind.writingProcess,
     );
-    expect(writing.state, EvidenceAxisState.concern);
-    expect(writing.strength, EvidenceStrength.strong);
+    expect(writing.state, EvidenceAxisState.unavailable);
+    expect(writing.strength, EvidenceStrength.none);
   });
 
   test('查無大量引用可在低文本分數下形成另一條強證據', () {

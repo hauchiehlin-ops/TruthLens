@@ -85,6 +85,8 @@ void main() {
       r.record(2462, at: t0);
       final s = r.session;
       expect(s.hasBulkPaste, isTrue);
+      expect(s.isTransferOnly, isTrue);
+      expect(s.hasObservedComposition, isFalse);
       expect(s.largestPaste, 2462);
       expect(s.consistentWithLiveWriting, isFalse);
     });
@@ -187,9 +189,7 @@ void _reachesTheReport() {
     );
 
     final findings = collectVerifiableFindings(result, l10n);
-    expect(findings, hasLength(1));
-    expect(findings.single.isConcern, isTrue);
-    expect(findings.single.statement, contains('2462'));
+    expect(findings, isEmpty);
   });
 
   test('匯入的檔案沒有過程紀錄，不產生任何主張', () {

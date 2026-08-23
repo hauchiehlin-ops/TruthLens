@@ -298,10 +298,11 @@ void main() {
 
     expect(result.verdict, Verdict.human);
     expect(result.abstention, AbstentionReason.noEvidenceFound);
-    expect(text, contains('More likely not AI-generated'));
+    expect(text, contains('No quantifiable authorship signal'));
+    expect(text, contains('no numeric index was issued'));
+    expect(text, isNot(contains('More likely not AI-generated')));
     expect(text, contains('Low confidence'));
     expect(text, contains('none found usable evidence'));
-    expect(text, isNot(contains('Not enough evidence to judge')));
   });
 
   group('各引擎自陳有無證據', () {

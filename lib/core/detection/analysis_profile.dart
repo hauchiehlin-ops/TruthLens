@@ -54,10 +54,13 @@ class AnalysisProfile {
   /// 領域敏感度只會下修可靠度。學術文章的規律句式與過渡詞、新聞的固定
   /// 倒金字塔結構，以及創作文本的高變異，都不能套用同一組啟發式門檻。
   double domainReliability(EvidenceFamily family) => switch ((domain, family)) {
+    (AnalysisDomain.academic, EvidenceFamily.lexicalFingerprint) => 0.72,
     (AnalysisDomain.academic, EvidenceFamily.distributional) => 0.68,
     (AnalysisDomain.academic, EvidenceFamily.stylometric) => 0.55,
     (AnalysisDomain.news, EvidenceFamily.stylometric) => 0.72,
+    (AnalysisDomain.news, EvidenceFamily.lexicalFingerprint) => 0.90,
     (AnalysisDomain.creative, EvidenceFamily.distributional) => 0.72,
+    (AnalysisDomain.creative, EvidenceFamily.lexicalFingerprint) => 0.82,
     (AnalysisDomain.creative, EvidenceFamily.stylometric) => 0.70,
     (AnalysisDomain.codeHeavy, _) => 0.25,
     _ => 1.0,

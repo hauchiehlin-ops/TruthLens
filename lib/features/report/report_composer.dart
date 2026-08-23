@@ -41,6 +41,9 @@ class ReportComposer {
   }
 
   String _headline(IntegratedAssessment assessment, AppLocalizations l10n) {
+    if (!assessment.pointEstimateAvailable) {
+      return l10n.integratedInsufficientEvidence;
+    }
     final pct = (assessment.aiLikelihood * 100).round();
     return switch (assessment.direction) {
       IntegratedDirection.likelyAi => l10n.composerHeadlineLikelyAi(pct),

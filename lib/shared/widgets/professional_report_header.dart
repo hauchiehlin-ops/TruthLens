@@ -54,6 +54,8 @@ String integratedConclusionLabel(
   IntegratedAssessment assessment,
   AppLocalizations l10n,
 ) => switch (assessment.conclusion) {
+  IntegratedConclusion.insufficientEvidence =>
+    l10n.integratedInsufficientEvidence,
   IntegratedConclusion.preliminaryAi => l10n.integratedPreliminaryAi,
   IntegratedConclusion.preliminaryHuman => l10n.integratedPreliminaryHuman,
   IntegratedConclusion.likelyAi => l10n.integratedLikelyAi,
@@ -85,6 +87,13 @@ String? integratedBoundaryExplanation(
   ),
   _ => null,
 };
+
+String integratedLikelihoodText(
+  IntegratedAssessment assessment,
+  AppLocalizations l10n,
+) => assessment.pointEstimateAvailable
+    ? l10n.integratedLikelihoodLabel(assessment.evidenceIndex)
+    : l10n.integratedLikelihoodUnavailable;
 
 /// 專業級報告頁頭：判定摘要 + 詳細指標
 class ProfessionalReportHeader extends StatelessWidget {
@@ -545,9 +554,7 @@ class _VerdictSummaryCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                l10n.integratedLikelihoodLabel(
-                  (assessment.aiLikelihood * 100).round(),
-                ),
+                integratedLikelihoodText(assessment, l10n),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -959,11 +966,14 @@ class _EngineContributionCard extends StatelessWidget {
             children: [
               Icon(LucideIcons.layers, color: Color(0xFF6B5B95), size: 20),
               const SizedBox(width: 8),
-              Text(
-                l10n.reportEngineAnalysisLevelTitle,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[600],
+              Expanded(
+                child: Text(
+                  l10n.reportEngineAnalysisLevelTitle,
+                  softWrap: true,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                  ),
                 ),
               ),
             ],
@@ -1200,7 +1210,6 @@ class _VerdictSignalBadge extends StatelessWidget {
       IntegratedDirection.balanced => Verdict.mixed,
     };
     final meta = _meta(verdict);
-    final probability = (assessment.aiLikelihood * 100).round();
     final confidence = switch (assessment.confidence) {
       IntegratedConfidence.low => l10n.integratedConfidenceLow,
       IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
@@ -1256,7 +1265,7 @@ class _VerdictSignalBadge extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            l10n.integratedLikelihoodLabel(probability),
+            integratedLikelihoodText(assessment, l10n),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF1E3A5F),
               fontWeight: FontWeight.w700,
@@ -1530,11 +1539,13 @@ class _EngineSynthesisSummary extends StatelessWidget {
       IntegratedConfidence.high => l10n.integratedConfidenceHigh,
     };
     final lines = <String>[
-      l10n.telemetryIntegratedVerdict(
-        direction,
-        (assessment.aiLikelihood * 100).round(),
-        confidence,
-      ),
+      assessment.pointEstimateAvailable
+          ? l10n.telemetryIntegratedVerdict(
+              direction,
+              assessment.evidenceIndex,
+              confidence,
+            )
+          : l10n.telemetryIntegratedUnavailable(direction, confidence),
       l10n.reportSynthesisTextScoreContext(
         (textModelProbability * 100).round(),
       ),
@@ -1720,10 +1731,7 @@ class EngineGroup {
     final available = availableScores.isNotEmpty;
     double? directionalProbability(EngineScore score) {
       if (score.votes) return score.aiProbability;
-      if (role != 'transformer') return null;
-      final raw = score.features['raw_avg_prob'];
-      if (raw == null || (raw - 0.5).abs() < 0.015) return null;
-      return raw.clamp(0.0, 1.0);
+      return null;
     }
 
     final directionalProbabilities = availableScores

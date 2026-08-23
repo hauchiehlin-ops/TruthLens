@@ -42,6 +42,11 @@ import 'telemetry_summary.dart';
 
 enum _WorkspacePhase { idle, ready, analyzing, complete }
 
+@visibleForTesting
+bool usesSingleColumnWorkspace(BoxConstraints constraints) =>
+    constraints.maxWidth < 840 ||
+    (constraints.maxHeight < 620 && constraints.maxWidth < 1200);
+
 /// 單頁戰情中心：匯入、分析進度與完整報告共用同一份狀態。
 class WorkspaceScreen extends StatefulWidget {
   final AnalysisRequest? initialRequest;
@@ -502,8 +507,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   @override
   Widget build(BuildContext context) {
     final prefs = context.watch<PreferencesService>();
-    final width = MediaQuery.sizeOf(context).width;
-    final compact = width < 760;
+    final viewport = MediaQuery.sizeOf(context);
+    final compact =
+        viewport.width < 840 ||
+        (viewport.height < 700 && viewport.width < 1200);
     final reduceMotion = MediaQuery.of(context).disableAnimations;
 
     return Scaffold(
@@ -529,7 +536,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                if (constraints.maxWidth < 600) {
+                // 手機橫向的 CSS 寬度常達 844–915px；只看寬度會誤切成桌面
+                // 分割面板，將遙測與來源卡壓進固定高度。中型直向裝置與低高度
+                // 橫向裝置都改走單一外層捲動，確保每張卡可完整檢視。
+                if (usesSingleColumnWorkspace(constraints)) {
                   return _mobileWorkspace();
                 }
                 final mode = prefs.workspaceMode == WorkspaceMode.automatic
@@ -566,39 +576,35 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _mobileWorkspace() {
-    if (_result != null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-        child: Column(
-          children: [
-            _mobileProgressPanel(),
-            const SizedBox(height: 8),
-            Expanded(child: _reportPanel()),
-          ],
-        ),
-      );
-    }
-
-    return ListView(
-      key: const ValueKey('mobile-workspace-flow'),
-      padding: EdgeInsets.fromLTRB(
-        8,
-        8,
-        8,
-        16 + MediaQuery.paddingOf(context).bottom,
-      ),
-      children: [
-        _mobileProgressPanel(),
-        const SizedBox(height: 8),
-        _mobileSourcePanel(),
-        const SizedBox(height: 8),
-        _mobileTelemetryPanel(),
-        if (_evidenceRows().isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _mobileEvidencePanel(),
-        ],
-        const AppCopyrightFooter(),
-      ],
+    return SafeArea(
+      top: false,
+      child: _result != null
+          ? Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Column(
+                children: [
+                  _mobileProgressPanel(),
+                  const SizedBox(height: 8),
+                  Expanded(child: _reportPanel()),
+                ],
+              ),
+            )
+          : ListView(
+              key: const ValueKey('mobile-workspace-flow'),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
+              children: [
+                _mobileProgressPanel(),
+                const SizedBox(height: 8),
+                _mobileSourcePanel(),
+                const SizedBox(height: 8),
+                _mobileTelemetryPanel(),
+                if (_evidenceRows().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  _mobileEvidencePanel(),
+                ],
+                const AppCopyrightFooter(),
+              ],
+            ),
     );
   }
 
@@ -661,6 +667,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _mobileSourcePanel() {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final shortViewport = MediaQuery.sizeOf(context).height < 700;
     return _Panel(
       title: l10n.workspaceDocument,
       icon: LucideIcons.fileText,
@@ -682,8 +689,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           TextField(
             controller: _controller,
             readOnly: _isAnalyzing,
-            minLines: 8,
-            maxLines: 14,
+            minLines: shortViewport ? 4 : 8,
+            maxLines: shortViewport ? 8 : 14,
             textAlignVertical: TextAlignVertical.top,
             decoration: InputDecoration(
               hintText: l10n.inputHint,

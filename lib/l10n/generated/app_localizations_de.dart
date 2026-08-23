@@ -1859,6 +1859,26 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine auffälligen KI-Schreibmuster erkannt';
 
   @override
+  String engineReasonPan25LexicalAi(int percent) {
+    return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
+  }
+
+  @override
+  String engineReasonPan25LexicalHuman(int percent) {
+    return 'PAN 2025 lexical fingerprint leans human ($percent/100); this remains model evidence, not proof of authorship';
+  }
+
+  @override
+  String engineReasonPan25LexicalNeutral(int percent) {
+    return 'PAN 2025 lexical fingerprint is neutral ($percent/100) and does not provide a direction';
+  }
+
+  @override
+  String engineReasonCompressionCoherence(String value) {
+    return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
+  }
+
+  @override
   String engineReasonAssistantResponseArtifact(int count) {
     return 'Detected $count conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text';
   }
@@ -2820,6 +2840,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get integratedAssessmentTitle => 'Integrated authorship assessment';
 
   @override
+  String get integratedInsufficientEvidence =>
+      'No quantifiable authorship signal';
+
+  @override
   String get integratedLikelyAi => 'More likely AI-generated';
 
   @override
@@ -2842,6 +2866,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String integratedLikelihoodLabel(int percent) {
     return 'AI evidence index: $percent/100';
   }
+
+  @override
+  String get integratedLikelihoodUnavailable =>
+      'AI evidence index: not estimable';
 
   @override
   String integratedTextScoreLabel(int percent) {
@@ -2947,6 +2975,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String telemetryIntegratedUnavailable(String direction, String confidence) {
+    return 'The available modules did not produce a quantifiable authorship direction (“$direction”, $confidence confidence); no numeric index was issued.';
+  }
+
+  @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
     return 'Segment stability $percent% · interval $lower–$upper%';
   }
@@ -2963,7 +2996,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String analysisReadinessLabel(String level) {
-    return 'Expected confidence ceiling: $level';
+    return 'Pre-analysis confidence baseline: $level';
   }
 
   @override

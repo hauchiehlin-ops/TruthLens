@@ -23,6 +23,33 @@ import 'package:truthlens/l10n/generated/app_localizations.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('responsive workspace includes phone landscape and medium portrait', () {
+    expect(
+      usesSingleColumnWorkspace(
+        const BoxConstraints(maxWidth: 844, maxHeight: 326),
+      ),
+      isTrue,
+    );
+    expect(
+      usesSingleColumnWorkspace(
+        const BoxConstraints(maxWidth: 915, maxHeight: 348),
+      ),
+      isTrue,
+    );
+    expect(
+      usesSingleColumnWorkspace(
+        const BoxConstraints(maxWidth: 768, maxHeight: 960),
+      ),
+      isTrue,
+    );
+    expect(
+      usesSingleColumnWorkspace(
+        const BoxConstraints(maxWidth: 1024, maxHeight: 704),
+      ),
+      isFalse,
+    );
+  });
+
   testWidgets('desktop automatic mode uses command grid', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1400, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -97,6 +124,74 @@ void main() {
     expect(tester.takeException(), isNull);
 
     await tester.drag(flow, const Offset(0, -500));
+    await tester.pumpAndSettle();
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'phone landscape can scroll through the complete telemetry card',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(844, 390));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final prefs = await _preferences();
+
+      await tester.pumpWidget(_testApp(prefs));
+      await tester.pumpAndSettle();
+
+      final flow = find.byKey(const ValueKey('mobile-workspace-flow'));
+      expect(flow, findsOneWidget);
+      await tester.drag(flow, const Offset(0, -420));
+      await tester.pumpAndSettle();
+      expect(find.text('Analysis telemetry'), findsOneWidget);
+
+      final lastEngine = find.text('Adversarial defense');
+      await tester.ensureVisible(lastEngine);
+      await tester.pumpAndSettle();
+
+      final rect = tester.getRect(lastEngine);
+      expect(rect.top, greaterThanOrEqualTo(0));
+      expect(rect.bottom, lessThanOrEqualTo(390));
+      expect(find.text('Transformer classifier'), findsOneWidget);
+      expect(find.text('Statistical analysis'), findsOneWidget);
+      expect(find.text('Stylometry analysis'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('medium portrait uses the complete single-column card flow', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
+    expect(find.text('Document workspace'), findsOneWidget);
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('320px workspace remains scrollable with enlarged system text', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    tester.platformDispatcher.textScaleFactorTestValue = 1.4;
+    addTearDown(() {
+      tester.binding.setSurfaceSize(null);
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
+    });
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+    await tester.pumpAndSettle();
+
+    final flow = find.byKey(const ValueKey('mobile-workspace-flow'));
+    expect(flow, findsOneWidget);
+    await tester.drag(flow, const Offset(0, -560));
     await tester.pumpAndSettle();
     expect(find.text('Analysis telemetry'), findsOneWidget);
     expect(tester.takeException(), isNull);

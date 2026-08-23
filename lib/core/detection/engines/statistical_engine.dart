@@ -5,6 +5,7 @@ import '../../utils/text_stats.dart';
 import '../lexical_calibration.dart';
 import '../perplexity_calibration.dart';
 import '../detection_engine.dart';
+import '../compression_profile.dart';
 import '../model_manager.dart';
 import '../perplexity_scorer.dart';
 
@@ -162,6 +163,25 @@ class StatisticalEngine implements DetectionEngine {
             lexical.aiCut.toStringAsFixed(2),
           ),
         );
+      }
+    }
+
+    // PAN 2025 corpus-calibrated compression coherence. This is independent of
+    // vocabulary and logits, but intentionally one-sided and low weight.
+    if (language.code == 'en') {
+      final compression = CompressionProfile.analyze(text.raw);
+      if (compression != null) {
+        features['compression_coherence'] = compression.coherence;
+        features['compression_human_95_cut'] =
+            CompressionProfile.pan25Human95thPercentile;
+        if (compression.supportsAi) {
+          addSignal('compression', compression.aiRatio, 0.20);
+          reasons.add(
+            l10n.engineReasonCompressionCoherence(
+              compression.coherence.toStringAsFixed(3),
+            ),
+          );
+        }
       }
     }
 

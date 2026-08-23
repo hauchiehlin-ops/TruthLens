@@ -154,8 +154,10 @@ class TextEvidenceFusion {
         0.0,
         1.0,
       );
-      final probability = (0.5 + (rawProbability - 0.5) * familyReliability)
-          .clamp(0.0, 1.0);
+      // 機率與可靠度是兩個不同量：機率回答方向，可靠度只決定話語權。
+      // 先把分數折回 0.5、再以可靠度加權會重複懲罰同一項限制，並把所有
+      // 有用訊號人為擠在 49／51 附近。
+      final probability = rawProbability.clamp(0.0, 1.0);
       final supportsAi = probability >= 0.62;
       final supportsHuman = probability <= 0.38;
       // 強證據門檻與方向性篩查必須分開。即使一個家族尚未跨過
@@ -190,6 +192,7 @@ class TextEvidenceFusion {
           family.probability >= 0.90 &&
           family.reliability >= 0.80 &&
           (family.family == EvidenceFamily.supervisedClassifier ||
+              family.family == EvidenceFamily.lexicalFingerprint ||
               family.family == EvidenceFamily.distributional),
     );
     final passesGate =
@@ -306,10 +309,8 @@ class TextEvidenceFusion {
 
   /// 取得可用於「方向性篩查」的雙向分數。
   ///
-  /// Transformer 目前的公開分數在沒有強 AI 區塊時會被壓成 0–10%，那是
-  /// AI 痕跡強度而非作者機率；真正的二元分類方向保存在 raw_avg_prob。
-  /// 這條負向通道只以折扣後可靠度參與篩查，不會讓模型越過 AI 證據門檻。
-  /// 風格與改寫引擎仍是單向偵測器，沉默時不得反推為真人證據。
+  /// 只有真的找到證據並參與投票的引擎才能提供方向。診斷欄位
+  /// `raw_avg_prob` 不具有獨立校準，不得再把沉默模型的原始值包裝成人類票。
   static double? _directionalProbability(EngineScore score) {
     final direct =
         (score.features['assistant_response_artifacts'] ?? 0) >= 2 ||
@@ -317,9 +318,8 @@ class TextEvidenceFusion {
         (score.features['verified_ai_provenance'] ?? 0) >= 1;
     if (direct) return 0.99;
     return switch (score.resolvedEvidenceFamily) {
-      EvidenceFamily.supervisedClassifier =>
-        score.features['raw_avg_prob']?.clamp(0.0, 1.0) ??
-            (score.votes ? score.aiProbability.clamp(0.0, 1.0) : null),
+      EvidenceFamily.supervisedClassifier ||
+      EvidenceFamily.lexicalFingerprint ||
       EvidenceFamily.distributional =>
         score.votes ? score.aiProbability.clamp(0.0, 1.0) : null,
       EvidenceFamily.stylometric || EvidenceFamily.rewriteTrace =>
@@ -329,8 +329,7 @@ class TextEvidenceFusion {
     };
   }
 
-  /// 本次方向分數的事前可靠度。分類器的負向通道尚未完成固定 FPR 發布
-  /// 驗證，因此額外乘 0.55；這讓它能提供方向，卻不能冒充強證據。
+  /// 本次方向分數的事前可靠度，只由適用性、外部校準與覆蓋率決定。
   static double _directionalReliability(EngineScore score) {
     final applicability = switch (score.applicability) {
       EngineApplicability.validated => 1.0,
@@ -348,15 +347,9 @@ class TextEvidenceFusion {
         : chunks > 0
         ? 0.65
         : 0.75;
-    final negativeChannelDiscount =
-        score.resolvedEvidenceFamily == EvidenceFamily.supervisedClassifier &&
-            !score.votes
-        ? 0.55
-        : 1.0;
     return (applicability *
             score.calibrationReliability.clamp(0.0, 1.0) *
-            coverage *
-            negativeChannelDiscount)
+            coverage)
         .clamp(0.0, 1.0);
   }
 
