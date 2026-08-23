@@ -28,8 +28,10 @@ class ProvenanceCard extends StatelessWidget {
         ),
       ProvenanceSignalKind.negligibleEditingTime =>
         l10n.provenanceSignalNoEditingTime(v['words'] ?? 0),
-      ProvenanceSignalKind.fewRevisions =>
-        l10n.provenanceSignalFewRevisions(v['count'] ?? 0, v['words'] ?? 0),
+      ProvenanceSignalKind.fewRevisions => l10n.provenanceSignalFewRevisions(
+        v['count'] ?? 0,
+        v['words'] ?? 0,
+      ),
       ProvenanceSignalKind.concentratedEditingBatch =>
         l10n.provenanceSignalConcentratedBatch(
           v['paragraphs'] ?? 0,
@@ -54,8 +56,14 @@ class ProvenanceCard extends StatelessWidget {
     final risk = provenance.risk;
 
     final (accent, icon) = switch (risk) {
-      ProvenanceRisk.high => (const Color(0xFFC0392B), LucideIcons.alertTriangle),
-      ProvenanceRisk.medium => (const Color(0xFFD4AF37), LucideIcons.alertCircle),
+      ProvenanceRisk.high => (
+        const Color(0xFFC0392B),
+        LucideIcons.alertTriangle,
+      ),
+      ProvenanceRisk.medium => (
+        const Color(0xFFD4AF37),
+        LucideIcons.alertCircle,
+      ),
       ProvenanceRisk.low => (const Color(0xFF1E8449), LucideIcons.checkCircle),
       ProvenanceRisk.unknown => (Colors.grey.shade600, LucideIcons.helpCircle),
     };

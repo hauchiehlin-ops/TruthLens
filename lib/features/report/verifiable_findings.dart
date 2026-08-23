@@ -13,8 +13,6 @@ library;
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
-import '../../core/services/revision_evidence.dart';
-import '../../core/services/task_alignment.dart';
 import '../../shared/widgets/provenance_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -82,34 +80,6 @@ List<VerifiableFinding> collectVerifiableFindings(
         statement: l10n.findingUnsupportedClaims(
           claims.unsupported,
           claims.total,
-        ),
-        isConcern: true,
-      ),
-    );
-  }
-
-  final revision = RevisionEvidence.compare(
-    result.previousDraftText,
-    result.inputText,
-  );
-  if (revision.indicatesLargeReplacement) {
-    findings.add(
-      VerifiableFinding(
-        statement: l10n.findingLargeDraftReplacement(
-          ((1 - revision.shingleSimilarity) * 100).round(),
-          result.previousDraftFileName,
-        ),
-        isConcern: true,
-      ),
-    );
-  }
-
-  final task = TaskAlignment.analyze(result.taskPrompt, result.inputText);
-  if (task.risk == TaskAlignmentRisk.high) {
-    findings.add(
-      VerifiableFinding(
-        statement: l10n.findingTaskMismatch(
-          (task.conceptCoverage * 100).round(),
         ),
         isConcern: true,
       ),

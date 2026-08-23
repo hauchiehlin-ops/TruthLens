@@ -13,8 +13,9 @@ void main() {
   late Map<String, dynamic> catalog;
 
   setUpAll(() {
-    catalog = jsonDecode(File('assets/model_catalog.json').readAsStringSync())
-        as Map<String, dynamic>;
+    catalog =
+        jsonDecode(File('assets/model_catalog.json').readAsStringSync())
+            as Map<String, dynamic>;
   });
 
   List<Map<String, dynamic>> variantsOf(String role) {
@@ -86,7 +87,11 @@ void main() {
   test('可下載的變體都必須標明語言、量化方式與 AI 類別索引', () {
     for (final variant in variantsOf('transformer')) {
       if ((variant['url'] as String?)?.isEmpty ?? true) continue;
-      expect(variant['languages'], isNotEmpty, reason: '${variant['id']} 未標明語言');
+      expect(
+        variant['languages'],
+        isNotEmpty,
+        reason: '${variant['id']} 未標明語言',
+      );
       expect(variant['quant'], isNotEmpty, reason: '${variant['id']} 未標明量化');
       expect(
         variant['ai_label_index'],
@@ -102,7 +107,8 @@ void main() {
       (v) => (v['languages'] as List).contains('multi'),
     );
     final firstEnglishOnly = variants.indexWhere(
-      (v) => (v['languages'] as List).length == 1 &&
+      (v) =>
+          (v['languages'] as List).length == 1 &&
           (v['languages'] as List).first == 'en',
     );
     if (firstMultilingual >= 0 && firstEnglishOnly >= 0) {

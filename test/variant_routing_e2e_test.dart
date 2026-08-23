@@ -110,10 +110,7 @@ void main() {
 
   test('明確指定 variantId 時不參與路由，呼叫端的意圖優先', () async {
     final mm = await bothVariants();
-    final engine = TransformerEngine(
-      modelManager: mm,
-      variantId: 'roberta-en',
-    );
+    final engine = TransformerEngine(modelManager: mm, variantId: 'roberta-en');
 
     final choice = engine.routeFor(PreprocessedText.from(_zh).language.code);
 

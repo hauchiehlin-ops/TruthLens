@@ -51,7 +51,14 @@ class OleSummaryInformation {
 
   // ── MS-CFB 常數 ────────────────────────────────────────────────────
   static const List<int> _signature = [
-    0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1,
+    0xD0,
+    0xCF,
+    0x11,
+    0xE0,
+    0xA1,
+    0xB1,
+    0x1A,
+    0xE1,
   ];
   static const int _endOfChain = 0xFFFFFFFE;
 
@@ -257,7 +264,8 @@ class OleSummaryInformation {
       final entry = sectionOffset + 8 + i * 8;
       if (entry + 8 > stream.length) break;
       final id = data.getUint32(entry, Endian.little);
-      final valueOffset = sectionOffset + data.getUint32(entry + 4, Endian.little);
+      final valueOffset =
+          sectionOffset + data.getUint32(entry + 4, Endian.little);
       if (valueOffset + 4 > stream.length) continue;
 
       final type = data.getUint32(valueOffset, Endian.little);

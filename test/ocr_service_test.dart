@@ -24,10 +24,10 @@ void main() {
   test('原生就緒時透傳辨識結果', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      if (call.method == 'ping') return true;
-      if (call.method == 'recognize') return '辨識文字 recognized';
-      return null;
-    });
+          if (call.method == 'ping') return true;
+          if (call.method == 'recognize') return '辨識文字 recognized';
+          return null;
+        });
     expect(await service.isSupported, isTrue);
     expect(await service.recognize('/tmp/x.png'), '辨識文字 recognized');
   });
@@ -35,8 +35,8 @@ void main() {
   test('原生拋 PlatformException 時回傳 null', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      throw PlatformException(code: 'ocr_failed');
-    });
+          throw PlatformException(code: 'ocr_failed');
+        });
     expect(await service.recognize('/tmp/x.png'), isNull);
   });
 }

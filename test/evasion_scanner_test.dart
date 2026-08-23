@@ -37,10 +37,7 @@ void main() {
       final text = clean.replaceAll(' ', '​ ');
       final scan = scanForEvasion(text);
       expect(scan.indicatesDeliberateEvasion, isTrue);
-      expect(
-        scan.findings.any((f) => f.kind == EvasionKind.zeroWidth),
-        isTrue,
-      );
+      expect(scan.findings.any((f) => f.kind == EvasionKind.zeroWidth), isTrue);
     });
   });
 
@@ -51,10 +48,7 @@ void main() {
         'The flоw was exаmined with cаre across the range.',
       );
       expect(scan.indicatesDeliberateEvasion, isTrue);
-      expect(
-        scan.findings.any((f) => f.kind == EvasionKind.homoglyph),
-        isTrue,
-      );
+      expect(scan.findings.any((f) => f.kind == EvasionKind.homoglyph), isTrue);
     });
 
     test('俄文文件裡的西里爾字母不算規避', () {
@@ -72,7 +66,7 @@ void main() {
 
   group('雙向控制字元', () {
     test('出現即示警——正常寫作工具不會產生', () {
-      final scan = scanForEvasion('The flow‮was examined.');
+      final scan = scanForEvasion('The flow\u202Ewas examined.');
       expect(scan.indicatesDeliberateEvasion, isTrue);
     });
   });

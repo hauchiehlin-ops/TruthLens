@@ -43,10 +43,7 @@ void main() {
       final short = PreprocessedText.from(
         'This is a short passage with fewer tokens than the window.',
       );
-      expect(
-        short.movingAverageTypeTokenRatio,
-        short.typeTokenRatio,
-      );
+      expect(short.movingAverageTypeTokenRatio, short.typeTokenRatio);
       expect(PreprocessedText.from('').movingAverageTypeTokenRatio, 0);
     });
   });

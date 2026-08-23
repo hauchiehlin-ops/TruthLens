@@ -22,6 +22,12 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Validate external benchmark evidence
+        run: >-
+          python3 training/validate_release_evidence.py
+          --contract training/benchmark_contract.json
+          --report training/validation/current.json
+
       - name: Run analyzer
         run: flutter analyze
 

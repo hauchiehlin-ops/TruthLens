@@ -18,8 +18,6 @@ import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
 import 'integrated_assessment.dart';
-import 'revision_evidence.dart';
-import 'task_alignment.dart';
 import '../utils/text_stats.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
@@ -132,10 +130,8 @@ class ReportExporter {
       citations: citations,
       claims: claims,
     );
-    final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
-    final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final map = {
-      'version': 3,
+      'version': 4,
       'analyzed_at': r.analyzedAt.toIso8601String(),
       'source_file_name': r.sourceFileName,
       'headline': doc.headline,
@@ -161,6 +157,29 @@ class ReportExporter {
         'applicability_coverage': integrated.applicabilityCoverage,
         'evidence_coverage': integrated.evidenceCoverage,
         'ai_evidence_gate_passed': integrated.passesAiEvidenceGate,
+        'segment_stability': integrated.stabilityScore,
+        'segment_interval': {
+          'lower': integrated.lowerBound,
+          'upper': integrated.upperBound,
+        },
+        'confidence_ceiling': integrated.confidenceCeiling,
+        'input_quality': {
+          'method': r.inputQuality.method.name,
+          'extraction_quality': r.inputQuality.extractionQuality,
+          'limitations': r.inputQuality.limitations,
+        },
+        'local_calibration': {
+          'applicable': r.calibration.isApplicable,
+          'flagged': r.calibration.isFlagged,
+          'p_value': r.calibration.pValue,
+          'percentile': r.calibration.percentile,
+          'sample_count': r.calibration.calibrationSize,
+          'alpha': r.calibration.alpha,
+          'analysis_signature': r.calibration.analysisSignature,
+          'language': r.calibration.language,
+          'domain': r.calibration.domain,
+          'length_bucket': r.calibration.lengthBucket,
+        },
         'evidence_contributions': [
           for (final contribution in integrated.contributions)
             {'axis': contribution.kind.name, 'log_odds': contribution.logOdds},
@@ -193,22 +212,6 @@ class ReportExporter {
         'unsupported': claims.unsupported,
         'risk': claims.risk.name,
       },
-      if (task.hasData)
-        'task_alignment': {
-          'concept_coverage': task.conceptCoverage,
-          'risk': task.risk.name,
-          'minimum_words': task.minimumWords,
-          'document_words': task.documentWords,
-          'missing_terms': task.missingTerms,
-        },
-      if (revision.hasData)
-        'revision_evidence': {
-          'previous_file_name': r.previousDraftFileName,
-          'pattern': revision.pattern.name,
-          'shingle_similarity': revision.shingleSimilarity,
-          'previous_words': revision.previousWords,
-          'current_words': revision.currentWords,
-        },
       'engines': [
         for (final e in r.engineScores)
           {
@@ -260,8 +263,6 @@ class ReportExporter {
   static String buildCsv(DetectionResult r, AppLocalizations l10n) {
     final claims = ClaimAudit.analyze(r.inputText);
     final integrated = IntegratedAssessment.assess(r, claims: claims);
-    final task = TaskAlignment.analyze(r.taskPrompt, r.inputText);
-    final revision = RevisionEvidence.compare(r.previousDraftText, r.inputText);
     final buf = StringBuffer()
       ..writeln('# ${l10n.exportReportTitle}')
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
@@ -290,16 +291,22 @@ class ReportExporter {
         '# evidence_coverage,${integrated.evidenceCoverage.toStringAsFixed(4)}',
       )
       ..writeln('# ai_evidence_gate_passed,${integrated.passesAiEvidenceGate}')
+      ..writeln(
+        '# segment_stability,${integrated.stabilityScore.toStringAsFixed(4)}',
+      )
+      ..writeln(
+        '# segment_interval,${integrated.lowerBound.toStringAsFixed(4)}-${integrated.upperBound.toStringAsFixed(4)}',
+      )
+      ..writeln(
+        '# input_extraction_quality,${r.inputQuality.extractionQuality.toStringAsFixed(4)}',
+      )
+      ..writeln('# local_calibration_applicable,${r.calibration.isApplicable}')
+      ..writeln('# local_calibration_flagged,${r.calibration.isFlagged}')
+      ..writeln('# local_calibration_p_value,${r.calibration.pValue}')
       ..writeln('# verdict,${r.verdict.name}')
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
       ..writeln('# checkable_claims,${claims.total}')
       ..writeln('# unsupported_claims,${claims.unsupported}')
-      ..writeln(
-        '# task_concept_coverage,${task.hasData ? task.conceptCoverage.toStringAsFixed(4) : ''}',
-      )
-      ..writeln(
-        '# revision_pattern,${revision.hasData ? revision.pattern.name : ''}',
-      )
       ..writeln('index,sentence,ai_probability,patterns');
     for (final s in _analyzableSentences(r)) {
       buf.writeln(
@@ -423,6 +430,30 @@ class ReportExporter {
             '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',
             style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
+          pw.SizedBox(height: 3),
+          pw.Text(
+            l10n.integratedStabilityLabel(
+              (integrated.stabilityScore * 100).round(),
+              (integrated.lowerBound * 100).round(),
+              (integrated.upperBound * 100).round(),
+            ),
+            style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+          ),
+          if (r.inputQuality.extractionQuality < 0.95)
+            pw.Text(
+              l10n.integratedInputQualityLabel(
+                (r.inputQuality.extractionQuality * 100).round(),
+              ),
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+            ),
+          if (r.calibration.isApplicable)
+            pw.Text(
+              l10n.integratedCalibrationLabel(
+                r.calibration.pValue.toStringAsFixed(3),
+                r.calibration.calibrationSize,
+              ),
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+            ),
           pw.SizedBox(height: 3),
           pw.Text(
             l10n.integratedIndexCaveat,
@@ -722,8 +753,6 @@ class ReportExporter {
     EvidenceAxisKind.textTrace => l10n.evidenceAxisText,
     EvidenceAxisKind.writingProcess => l10n.evidenceAxisProcess,
     EvidenceAxisKind.documentOrigin => l10n.evidenceAxisOrigin,
-    EvidenceAxisKind.revisionHistory => l10n.evidenceAxisRevision,
-    EvidenceAxisKind.taskAlignment => l10n.evidenceAxisTask,
     EvidenceAxisKind.sourceIntegrity => l10n.evidenceAxisSources,
   };
 

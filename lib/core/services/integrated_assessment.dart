@@ -4,8 +4,8 @@
 /// 系統即使在證據稀薄時仍提供較可能方向，但會把 [confidence] 降為 low；
 /// [DetectionResult.abstention] 因此保留作為證據限制，而不再取代答案。
 ///
-/// 這裡刻意採不對稱證據規則：缺少引用、偏離任務、整段貼上、很少修訂或
-/// 檔案中繼資料異常，都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
+/// 這裡刻意採不對稱證據規則：缺少引用、整段貼上或檔案中繼資料異常，
+/// 都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
 /// [ForensicEvidenceMatrix] 中列為待核查事項。AI 方向必須由文字引擎的直接訊號
 /// 提供方向；最低共識門檻另外標示該方向是否已有足夠獨立證據。真人寫作過程與
 /// 完整來源紀錄則可以提供反向佐證。
@@ -19,7 +19,6 @@ import '../detection/evidence_fusion.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
-import 'revision_evidence.dart';
 
 enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed, balanced }
 
@@ -52,6 +51,10 @@ class IntegratedAssessment {
   final double applicabilityCoverage;
   final double evidenceCoverage;
   final bool passesAiEvidenceGate;
+  final double stabilityScore;
+  final double lowerBound;
+  final double upperBound;
+  final double confidenceCeiling;
   final List<IntegratedEvidenceContribution> contributions;
 
   const IntegratedAssessment({
@@ -66,6 +69,10 @@ class IntegratedAssessment {
     required this.applicabilityCoverage,
     required this.evidenceCoverage,
     required this.passesAiEvidenceGate,
+    required this.stabilityScore,
+    required this.lowerBound,
+    required this.upperBound,
+    required this.confidenceCeiling,
     required this.contributions,
   });
 
@@ -100,11 +107,17 @@ class IntegratedAssessment {
       inputText: result.inputText,
       sentences: result.sentences,
       profile: profile,
+      extractionQuality: result.inputQuality.extractionQuality,
       eslAdjusted: result.eslAdjusted,
     );
+    final calibratedAiOutlier = result.calibration.isFlagged;
+    final passesAiEvidenceGate =
+        fusion.passesAiEvidenceGate || calibratedAiOutlier;
     final hasAssistantArtifact = fusion.hasDirectTrace;
     final textReliability = hasAssistantArtifact
         ? 0.95
+        : calibratedAiOutlier
+        ? math.max(0.82, fusion.reliability)
         : fusion.passesAiEvidenceGate
         ? math.max(0.80, fusion.reliability)
         : result.evidenceEngineCount == 0
@@ -140,21 +153,7 @@ class IntegratedAssessment {
       add(EvidenceAxisKind.documentOrigin, -1.35, information: 1.0);
     }
 
-    final revision = RevisionEvidence.compare(
-      result.previousDraftText,
-      result.inputText,
-    );
-    switch (revision.pattern) {
-      case RevisionPattern.incremental:
-        add(EvidenceAxisKind.revisionHistory, -0.65, information: 0.70);
-      case RevisionPattern.largeReplacement:
-      case RevisionPattern.nearDuplicate:
-      case RevisionPattern.mixed:
-      case RevisionPattern.unavailable:
-        break;
-    }
-
-    // [citations] 與 [claims] 仍保留在 API，因為呼叫端同時用它們建立六軸矩陣。
+    // [citations] 與 [claims] 仍保留在 API，因為呼叫端同時用它們建立四軸矩陣。
     // 它們衡量來源品質，不衡量作者身分，因此不進入作者勝算。
 
     final contributions = [
@@ -166,8 +165,6 @@ class IntegratedAssessment {
       (sum, contribution) => sum + contribution.logOdds,
     );
     final fusedLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
-    final passesAiEvidenceGate = fusion.passesAiEvidenceGate;
-
     final aiLikelihood = fusedLikelihood;
 
     final positive = contributions
@@ -189,9 +186,35 @@ class IntegratedAssessment {
       fusion.reliability,
     );
     final margin = ((aiLikelihood - 0.5).abs() * 2).clamp(0.0, 1.0);
-    final confidenceScore =
-        (informationQuality * 0.65 + margin * 0.35) *
+    final calibrationQuality = calibratedAiOutlier
+        ? (1 - result.calibration.alpha).clamp(0.0, 1.0)
+        : 0.0;
+    final rawConfidenceScore =
+        (informationQuality * 0.42 +
+            fusion.stabilityScore * 0.30 +
+            margin * 0.18 +
+            calibrationQuality * 0.10) *
         (1 - conflictRatio * 0.55);
+    final provenanceSupportsHuman =
+        provenance.indicatesHumanAuthorship ||
+        writing.consistentWithLiveWriting;
+    final weakAiScreeningOnly =
+        aiLikelihood > 0.5 && !passesAiEvidenceGate && !provenanceSupportsHuman;
+    final evidenceConfidenceCeiling = weakAiScreeningOnly
+        ? 0.37
+        : hasAssistantArtifact || provenanceSupportsHuman
+        ? 1.0
+        : result.calibration.isApplicable
+        ? 0.90
+        : 0.67;
+    final confidenceCeiling = math.min(
+      result.inputQuality.confidenceCeiling,
+      math.min(
+        fusion.stabilitySegmentCount < 3 ? 0.45 : 1.0,
+        evidenceConfidenceCeiling,
+      ),
+    );
+    final confidenceScore = math.min(rawConfidenceScore, confidenceCeiling);
     final rawConfidence = confidenceScore >= 0.68
         ? IntegratedConfidence.high
         : confidenceScore >= 0.38
@@ -239,6 +262,10 @@ class IntegratedAssessment {
       applicabilityCoverage: fusion.applicabilityCoverage,
       evidenceCoverage: fusion.evidenceCoverage,
       passesAiEvidenceGate: passesAiEvidenceGate,
+      stabilityScore: fusion.stabilityScore,
+      lowerBound: fusion.lowerBound,
+      upperBound: fusion.upperBound,
+      confidenceCeiling: confidenceCeiling,
       contributions: contributions,
     );
   }

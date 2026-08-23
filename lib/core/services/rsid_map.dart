@@ -76,7 +76,9 @@ class RsidMap {
 }
 
 final _paragraph = RegExp(r'<w:p[ >].*?</w:p>', dotAll: true);
-final _rsidAttr = RegExp(r'w:rsid(?:R|RDefault|P|RPr|Tr|Del)?="([0-9A-Fa-f]+)"');
+final _rsidAttr = RegExp(
+  r'w:rsid(?:R|RDefault|P|RPr|Tr|Del)?="([0-9A-Fa-f]+)"',
+);
 final _textRun = RegExp(r'<w:t(?:\s[^>]*)?>(.*?)</w:t>', dotAll: true);
 
 /// 由 `word/document.xml` 的內容建立段落級批次分佈。
@@ -113,9 +115,9 @@ RsidMap buildRsidMap(String documentXml, int Function(String) countWords) {
       paragraphIndex++;
       continue;
     }
-    final dominant = counts.entries.reduce(
-      (a, b) => b.value > a.value ? b : a,
-    ).key;
+    final dominant = counts.entries
+        .reduce((a, b) => b.value > a.value ? b : a)
+        .key;
 
     final words = countWords(text);
     byRsid.putIfAbsent(dominant, () => <int>[]).add(paragraphIndex);

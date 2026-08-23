@@ -1869,7 +1869,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2648,56 +2648,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get taskPromptTitle => '作業題目或任務要求';
-
-  @override
-  String get taskPromptHint => '貼上題目、必須涵蓋的主題與最低字數。內容只留在本機。';
-
-  @override
-  String get taskPromptSave => '套用要求';
-
-  @override
-  String get taskPromptTooltip => '加入作業要求';
-
-  @override
-  String get previousDraftTooltip => '匯入前一版草稿以比較版本演化';
-
-  @override
-  String previousDraftSelected(String name) {
-    return '前一版草稿：$name';
-  }
-
-  @override
-  String previousDraftImported(String name) {
-    return '已匯入前一版草稿：$name';
-  }
-
-  @override
-  String get previousDraftUnreadable => '前一版草稿中找不到可讀文字。';
-
-  @override
-  String get evidenceAxisRevision => '草稿演化';
-
-  @override
-  String get evidenceAxisRevisionNote => '前一版內容在本版中被保留或替換的程度';
-
-  @override
-  String get evidenceAxisTask => '任務契合';
-
-  @override
-  String get evidenceAxisTaskNote => '必要概念與可機械檢查要求的涵蓋情況';
-
-  @override
-  String findingLargeDraftReplacement(int percent, String name) {
-    return '與「$name」相比，約有 $percent% 的五詞序列被替換。這是值得詢問的大幅修訂，但也可能來自正常重寫或協作編輯。';
-  }
-
-  @override
-  String findingTaskMismatch(int percent) {
-    return '本文約涵蓋題目所提取核心概念的 $percent%，或未達明示的最低字數。這是任務契合問題，不是 AI 作者身分證明。';
-  }
-
-  @override
   String get challengeTitle => '監督式追問';
 
   @override
@@ -2792,7 +2742,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -2832,6 +2782,44 @@ class AppLocalizationsZh extends AppLocalizations {
   ) {
     return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
   }
+
+  @override
+  String integratedStabilityLabel(int percent, int lower, int upper) {
+    return '分段穩定性 $percent% · 區間 $lower–$upper%';
+  }
+
+  @override
+  String integratedInputQualityLabel(int percent) {
+    return '輸入抽取品質：$percent%';
+  }
+
+  @override
+  String integratedCalibrationLabel(String value, int count) {
+    return '同條件本地基準：p=$value · n=$count';
+  }
+
+  @override
+  String analysisReadinessLabel(String level) {
+    return '預期信心上限：$level';
+  }
+
+  @override
+  String get analysisReadinessShortText => '需要更多文字';
+
+  @override
+  String get analysisReadinessFewSentences => '可分析句段不足';
+
+  @override
+  String get analysisReadinessCoreModel => '核心分類模型不可用';
+
+  @override
+  String get analysisReadinessFewEngines => '啟用引擎少於兩個';
+
+  @override
+  String get analysisReadinessExtraction => '文字抽取品質受限';
+
+  @override
+  String get analysisReadinessBaseline => '沒有同條件本地基準';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5478,56 +5466,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get taskPromptTitle => '作业题目或任务要求';
-
-  @override
-  String get taskPromptHint => '粘贴题目、必须涵盖的主题与最低字数。内容只留在本机。';
-
-  @override
-  String get taskPromptSave => '应用要求';
-
-  @override
-  String get taskPromptTooltip => '加入作业要求';
-
-  @override
-  String get previousDraftTooltip => '导入前一版草稿以比较版本演化';
-
-  @override
-  String previousDraftSelected(String name) {
-    return '前一版草稿：$name';
-  }
-
-  @override
-  String previousDraftImported(String name) {
-    return '已导入前一版草稿：$name';
-  }
-
-  @override
-  String get previousDraftUnreadable => '前一版草稿中找不到可读文字。';
-
-  @override
-  String get evidenceAxisRevision => '草稿演化';
-
-  @override
-  String get evidenceAxisRevisionNote => '前一版内容在本版中被保留或替换的程度';
-
-  @override
-  String get evidenceAxisTask => '任务契合';
-
-  @override
-  String get evidenceAxisTaskNote => '必要概念与可机械检查要求的涵盖情况';
-
-  @override
-  String findingLargeDraftReplacement(int percent, String name) {
-    return '与「$name」相比，约有 $percent% 的五词序列被替换。这是值得询问的大幅修订，但也可能来自正常重写或协作编辑。';
-  }
-
-  @override
-  String findingTaskMismatch(int percent) {
-    return '本文约涵盖题目所提取核心概念的 $percent%，或未达明示的最低字数。这是任务契合问题，不是 AI 作者身份证明。';
-  }
-
-  @override
   String get challengeTitle => '监督式追问';
 
   @override
@@ -5662,6 +5600,44 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   ) {
     return '依本次可用证据加权后，本文“$direction”（AI 可能性指数 $percent%，$confidence信心）。';
   }
+
+  @override
+  String integratedStabilityLabel(int percent, int lower, int upper) {
+    return '分段稳定性 $percent% · 区间 $lower–$upper%';
+  }
+
+  @override
+  String integratedInputQualityLabel(int percent) {
+    return '输入抽取质量：$percent%';
+  }
+
+  @override
+  String integratedCalibrationLabel(String value, int count) {
+    return '同条件本地基准：p=$value · n=$count';
+  }
+
+  @override
+  String analysisReadinessLabel(String level) {
+    return '预期信心上限：$level';
+  }
+
+  @override
+  String get analysisReadinessShortText => '需要更多文字';
+
+  @override
+  String get analysisReadinessFewSentences => '可分析句段不足';
+
+  @override
+  String get analysisReadinessCoreModel => '核心分类模型不可用';
+
+  @override
+  String get analysisReadinessFewEngines => '启用引擎少于两个';
+
+  @override
+  String get analysisReadinessExtraction => '文字抽取质量受限';
+
+  @override
+  String get analysisReadinessBaseline => '没有同条件本地基准';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7529,7 +7505,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源、草稿演進、任務契合及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -8308,56 +8284,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get taskPromptTitle => '作業題目或任務要求';
-
-  @override
-  String get taskPromptHint => '貼上題目、必須涵蓋的主題與最低字數。內容只留在本機。';
-
-  @override
-  String get taskPromptSave => '套用要求';
-
-  @override
-  String get taskPromptTooltip => '加入作業要求';
-
-  @override
-  String get previousDraftTooltip => '匯入前一版草稿以比較版本演化';
-
-  @override
-  String previousDraftSelected(String name) {
-    return '前一版草稿：$name';
-  }
-
-  @override
-  String previousDraftImported(String name) {
-    return '已匯入前一版草稿：$name';
-  }
-
-  @override
-  String get previousDraftUnreadable => '前一版草稿中找不到可讀文字。';
-
-  @override
-  String get evidenceAxisRevision => '草稿演化';
-
-  @override
-  String get evidenceAxisRevisionNote => '前一版內容在本版中被保留或替換的程度';
-
-  @override
-  String get evidenceAxisTask => '任務契合';
-
-  @override
-  String get evidenceAxisTaskNote => '必要概念與可機械檢查要求的涵蓋情況';
-
-  @override
-  String findingLargeDraftReplacement(int percent, String name) {
-    return '與「$name」相比，約有 $percent% 的五詞序列被替換。這是值得詢問的大幅修訂，但也可能來自正常重寫或協作編輯。';
-  }
-
-  @override
-  String findingTaskMismatch(int percent) {
-    return '本文約涵蓋題目所提取核心概念的 $percent%，或未達明示的最低字數。這是任務契合問題，不是 AI 作者身分證明。';
-  }
-
-  @override
   String get challengeTitle => '監督式追問';
 
   @override
@@ -8452,7 +8378,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get integratedIndexCaveat =>
-      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -8492,4 +8418,42 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   ) {
     return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
   }
+
+  @override
+  String integratedStabilityLabel(int percent, int lower, int upper) {
+    return '分段穩定性 $percent% · 區間 $lower–$upper%';
+  }
+
+  @override
+  String integratedInputQualityLabel(int percent) {
+    return '輸入抽取品質：$percent%';
+  }
+
+  @override
+  String integratedCalibrationLabel(String value, int count) {
+    return '同條件本地基準：p=$value · n=$count';
+  }
+
+  @override
+  String analysisReadinessLabel(String level) {
+    return '預期信心上限：$level';
+  }
+
+  @override
+  String get analysisReadinessShortText => '需要更多文字';
+
+  @override
+  String get analysisReadinessFewSentences => '可分析句段不足';
+
+  @override
+  String get analysisReadinessCoreModel => '核心分類模型不可用';
+
+  @override
+  String get analysisReadinessFewEngines => '啟用引擎少於兩個';
+
+  @override
+  String get analysisReadinessExtraction => '文字抽取品質受限';
+
+  @override
+  String get analysisReadinessBaseline => '沒有同條件本地基準';
 }

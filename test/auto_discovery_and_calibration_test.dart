@@ -26,15 +26,12 @@ void main() {
     test('成功解析 HuggingFace API 回傳之社群模型', () async {
       final mockClient = MockClient((request) async {
         if (request.url.toString().contains('huggingface.co/api/models')) {
-          return http.Response(
-            '''[
+          return http.Response('''[
               {
                 "id": "community/deberta-v3-detector",
                 "tags": ["onnx", "transformers", "truthlens-detector"]
               }
-            ]''',
-            200,
-          );
+            ]''', 200);
         }
         return http.Response('Not Found', 404);
       });
@@ -51,18 +48,14 @@ void main() {
     test('ModelCatalogService load 時支援 discoverCommunity 自動合併社群模型', () async {
       final mockClient = MockClient((request) async {
         if (request.url.toString().contains('huggingface.co/api/models')) {
-          return http.Response(
-            '''[
+          return http.Response('''[
               {
                 "id": "community/qwen-detector",
                 "tags": ["onnx", "truthlens-detector"]
               }
-            ]''',
-            200,
-          );
+            ]''', 200);
         }
-        return http.Response(
-          '''{
+        return http.Response('''{
             "catalog_version": "1.0.0",
             "models": [
               {
@@ -71,17 +64,20 @@ void main() {
                 "variants": []
               }
             ]
-          }''',
-          200,
-        );
+          }''', 200);
       });
 
       final service = ModelCatalogService(client: mockClient);
-      final catalog = await service.load(preferRemote: true, discoverCommunity: true);
+      final catalog = await service.load(
+        preferRemote: true,
+        discoverCommunity: true,
+      );
 
       final transformerModel = catalog.forRole('transformer');
       expect(transformerModel, isNotNull);
-      final hasCommunityVariant = transformerModel!.variants.any((v) => v.id.contains('qwen-detector'));
+      final hasCommunityVariant = transformerModel!.variants.any(
+        (v) => v.id.contains('qwen-detector'),
+      );
       expect(hasCommunityVariant, isTrue);
     });
   });

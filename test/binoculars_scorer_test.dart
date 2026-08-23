@@ -13,7 +13,10 @@ void main() {
       // log(1) = 0 → 困惑度 0
       expect(BinocularsScorer.logPerplexity([0.0, 0.0]), 0);
       // 每個位置 log p = -2 → 平均負對數機率 = 2
-      expect(BinocularsScorer.logPerplexity([-2.0, -2.0, -2.0]), closeTo(2, 1e-12));
+      expect(
+        BinocularsScorer.logPerplexity([-2.0, -2.0, -2.0]),
+        closeTo(2, 1e-12),
+      );
     });
 
     test('空輸入回傳 0 而非 NaN', () {
@@ -31,7 +34,12 @@ void main() {
     test('兩模型分歧越大交叉熵越高', () {
       final p = [0.9, 0.1];
       final agree = BinocularsScorer.crossPerplexity([p], [_log(p)]);
-      final disagree = BinocularsScorer.crossPerplexity([p], [_log([0.1, 0.9])]);
+      final disagree = BinocularsScorer.crossPerplexity(
+        [p],
+        [
+          _log([0.1, 0.9]),
+        ],
+      );
       expect(disagree, greaterThan(agree));
     });
 
@@ -50,12 +58,9 @@ void main() {
 
     test('位置數或詞彙維度不一致時明確報錯，不靜默對齊', () {
       expect(
-        () => BinocularsScorer.crossPerplexity(
-          [
-            [0.5, 0.5],
-          ],
-          const [],
-        ),
+        () => BinocularsScorer.crossPerplexity([
+          [0.5, 0.5],
+        ], const []),
         throwsArgumentError,
       );
       expect(
@@ -83,10 +88,7 @@ void main() {
 
     test('分母為 0 或非有限時回傳 null，讓呼叫端棄權', () {
       expect(
-        BinocularsScorer.score(
-          logPerplexityValue: 2,
-          crossPerplexityValue: 0,
-        ),
+        BinocularsScorer.score(logPerplexityValue: 2, crossPerplexityValue: 0),
         isNull,
       );
       expect(
@@ -110,9 +112,7 @@ void main() {
 
     test('恰在門檻上時為 0.5（不偏向任一方）', () {
       expect(
-        BinocularsScorer.toAiProbability(
-          BinocularsScorer.placeholderThreshold,
-        ),
+        BinocularsScorer.toAiProbability(BinocularsScorer.placeholderThreshold),
         closeTo(0.5, 1e-12),
       );
     });

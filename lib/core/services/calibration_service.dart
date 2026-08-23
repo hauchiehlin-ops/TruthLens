@@ -13,6 +13,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import '../models/calibration_evidence.dart';
+import '../models/detection_result.dart';
 import '../utils/language_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,6 +67,12 @@ class CalibrationSample {
   /// 不歸入任何語言的基準集。
   final String language;
 
+  /// 校準只可套用在同一分析管線、領域與長度級距。舊樣本沒有這些欄位，
+  /// 仍保留在設定頁，但不會被誤當成具統計保證的同分布基準。
+  final String analysisSignature;
+  final String domain;
+  final String lengthBucket;
+
   final DateTime addedAt;
 
   const CalibrationSample({
@@ -73,6 +81,9 @@ class CalibrationSample {
     required this.addedAt,
     this.label = '',
     this.language = DetectedLanguage.undetermined,
+    this.analysisSignature = '',
+    this.domain = 'unknown',
+    this.lengthBucket = 'unknown',
     this.isAi = false,
     this.engineScores = const {},
     this.text,
@@ -84,6 +95,9 @@ class CalibrationSample {
     'score': score,
     'label': label,
     'language': language,
+    'analysisSignature': analysisSignature,
+    'domain': domain,
+    'lengthBucket': lengthBucket,
     'isAi': isAi,
     'engineScores': engineScores,
     'addedAt': addedAt.toIso8601String(),
@@ -103,6 +117,9 @@ class CalibrationSample {
       label: json['label'] as String? ?? '',
       // 舊版樣本沒有語言欄位；標為未定而不是猜一個，猜錯會污染基準集
       language: json['language'] as String? ?? DetectedLanguage.undetermined,
+      analysisSignature: json['analysisSignature'] as String? ?? '',
+      domain: json['domain'] as String? ?? 'unknown',
+      lengthBucket: json['lengthBucket'] as String? ?? 'unknown',
       isAi: json['isAi'] as bool? ?? false,
       engineScores: rawEngines is Map
           ? {
@@ -204,6 +221,35 @@ class CalibrationService extends ChangeNotifier {
     if (language == DetectedLanguage.undetermined) return const [];
     return humanSamples.where((s) => s.language == language).toList();
   }
+
+  List<CalibrationSample> humanSamplesForContext({
+    required String language,
+    required String analysisSignature,
+    required String domain,
+    required String lengthBucket,
+  }) {
+    if (language == DetectedLanguage.undetermined ||
+        analysisSignature.isEmpty) {
+      return const [];
+    }
+    return humanSamples.where((sample) {
+      return sample.language == language &&
+          sample.analysisSignature == analysisSignature &&
+          sample.domain == domain &&
+          sample.lengthBucket == lengthBucket;
+    }).toList();
+  }
+
+  int potentialSampleCountFor({
+    required String language,
+    required String domain,
+    required String lengthBucket,
+  }) => humanSamples.where((sample) {
+    return sample.language == language &&
+        sample.domain == domain &&
+        sample.lengthBucket == lengthBucket &&
+        sample.analysisSignature.isNotEmpty;
+  }).length;
 
   /// 各語言目前累積的人類樣本數，供設定頁誠實呈現「哪個語言已經夠了」
   Map<String, int> get humanSampleCountByLanguage {
@@ -307,6 +353,10 @@ class CalibrationService extends ChangeNotifier {
           isAi: s.isAi,
           engineScores: s.engineScores,
           origin: s.origin,
+          language: s.language,
+          analysisSignature: s.analysisSignature,
+          domain: s.domain,
+          lengthBucket: s.lengthBucket,
           addedAt: s.addedAt,
         ),
     ];
@@ -324,6 +374,9 @@ class CalibrationService extends ChangeNotifier {
     Map<String, double> engineScores = const {},
     String? text,
     String? language,
+    String analysisSignature = '',
+    String domain = 'unknown',
+    String lengthBucket = 'unknown',
   }) => _add(
     score: score,
     isAi: isAi,
@@ -331,6 +384,9 @@ class CalibrationService extends ChangeNotifier {
     text: text,
     label: label,
     language: language ?? (text == null ? null : detectLanguage(text).code),
+    analysisSignature: analysisSignature,
+    domain: domain,
+    lengthBucket: lengthBucket,
     origin: SampleOrigin.manual,
   );
 
@@ -342,6 +398,9 @@ class CalibrationService extends ChangeNotifier {
     required String label,
     required SampleOrigin origin,
     String? language,
+    String analysisSignature = '',
+    String domain = 'unknown',
+    String lengthBucket = 'unknown',
   }) async {
     _samples = [
       ..._samples,
@@ -354,6 +413,9 @@ class CalibrationService extends ChangeNotifier {
         // 原文可能不保存（預設不存），但語言必須在收樣當下就記下來，
         // 事後無從補算——這正是舊樣本沒有語言標記的原因。
         language: language ?? DetectedLanguage.undetermined,
+        analysisSignature: analysisSignature,
+        domain: domain,
+        lengthBucket: lengthBucket,
         text: _storeText ? text : null,
         origin: origin,
         addedAt: DateTime.now(),
@@ -392,6 +454,53 @@ class CalibrationService extends ChangeNotifier {
     _alpha,
   );
 
+  CalibrationEvidence evaluateFor({
+    required double score,
+    required String language,
+    required String analysisSignature,
+    required String domain,
+    required String lengthBucket,
+  }) {
+    final samples = humanSamplesForContext(
+      language: language,
+      analysisSignature: analysisSignature,
+      domain: domain,
+      lengthBucket: lengthBucket,
+    );
+    final result = conformal(
+      score,
+      samples.map((s) => s.score).toList(),
+      _alpha,
+    );
+    return CalibrationEvidence(
+      pValue: result.pValue,
+      percentile: result.percentile,
+      calibrationSize: result.calibrationSize,
+      alpha: result.alpha,
+      hasEnoughSamples: result.hasEnoughSamples,
+      contextMatched: samples.isNotEmpty,
+      analysisSignature: analysisSignature,
+      language: language,
+      domain: domain,
+      lengthBucket: lengthBucket,
+    );
+  }
+
+  static String analysisSignatureFor(List<EngineScore> scores) {
+    final parts = scores.map((score) {
+      return '${score.engineId}:${score.applicability.name}:'
+          '${score.calibrationReliability.toStringAsFixed(3)}';
+    }).toList()..sort();
+    return 'fusion-v3|${parts.join('|')}';
+  }
+
+  static String lengthBucketFor(int wordCount) => switch (wordCount) {
+    < 100 => 'short',
+    < 250 => 'medium',
+    < 500 => 'long',
+    _ => 'extended',
+  };
+
   /// [score] 在**所有已分析文件**中的百分位。這是純描述性的參考值，
   /// 不帶任何統計保證，因此與共形結果分開回傳、分開呈現。
   int? observedPercentile(double score, String language) {
@@ -415,6 +524,9 @@ class CalibrationService extends ChangeNotifier {
     Map<String, double> engineScores = const {},
     String? text,
     String label = '',
+    String analysisSignature = '',
+    String domain = 'unknown',
+    String lengthBucket = 'unknown',
   }) async {
     final origin = provenanceIndicatesHuman
         ? SampleOrigin.provenance
@@ -426,6 +538,9 @@ class CalibrationService extends ChangeNotifier {
       text: text,
       label: label,
       language: language,
+      analysisSignature: analysisSignature,
+      domain: domain,
+      lengthBucket: lengthBucket,
       origin: origin,
     );
     return origin;

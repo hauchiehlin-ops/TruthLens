@@ -18,7 +18,8 @@ class OcrService {
   static const String _storageKeyServerUrl = 'ocr_local_server_url';
   // 記錄「上次測試成功」時的確切設定值；重新整理或重啟瀏覽器後，只要目前
   // 設定值與此相符，就代表該端點/金鑰已驗證過，不需要使用者每次都重新測試。
-  static const String _storageKeyServerVerified = 'ocr_local_server_verified_url';
+  static const String _storageKeyServerVerified =
+      'ocr_local_server_verified_url';
   static const String _storageKeyApiKeyVerified = 'ocr_gemini_api_key_verified';
 
   // 佇列與速率限制機制（Gemini Free Tier: 1500 req/day = ~2 req/min）
@@ -412,7 +413,8 @@ class OcrService {
         window.localStorage.setItem(_storageKeyApiKeyVerified, apiKey);
       } else {
         window.localStorage.removeItem(_storageKeyApiKeyVerified);
-        _lastErrorMessage = response.statusCode == 401 || response.statusCode == 400
+        _lastErrorMessage =
+            response.statusCode == 401 || response.statusCode == 400
             ? 'Gemini API 金鑰無效或未授權（HTTP ${response.statusCode}）。'
             : 'Gemini API 連線測試失敗（HTTP ${response.statusCode}）。';
       }

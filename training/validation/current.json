@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "contract_id": "truthlens-external-v1",
+  "status": "not_yet_externally_validated",
+  "release_gate_passed": false,
+  "detector_signature": null,
+  "benchmark_ids": [],
+  "note": "No independent external-distribution prediction report is committed. The app must not turn internal HC3 validation into a high-confidence population claim."
+}

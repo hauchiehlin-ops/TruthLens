@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/models/detection_result.dart';
+import 'package:truthlens/core/models/calibration_evidence.dart';
+import 'package:truthlens/core/models/input_quality.dart';
 import 'package:truthlens/core/services/citation_evidence.dart';
 import 'package:truthlens/core/services/claim_audit.dart';
 import 'package:truthlens/core/services/document_provenance.dart';
@@ -13,6 +15,8 @@ DetectionResult _result({
   bool assistantArtifact = false,
   WritingSession writing = WritingSession.empty,
   DocumentProvenance provenance = DocumentProvenance.none,
+  CalibrationEvidence calibration = CalibrationEvidence.unavailable,
+  InputQualityEvidence inputQuality = InputQualityEvidence.directText,
 }) => DetectionResult(
   id: 'integrated',
   analyzedAt: DateTime(2026, 8, 21),
@@ -21,6 +25,8 @@ DetectionResult _result({
   verdict: Verdict.fromProbability(textScore),
   writingSession: writing,
   provenance: provenance,
+  calibration: calibration,
+  inputQuality: inputQuality,
   engineScores: [
     EngineScore(
       engineId: 'transformer',
@@ -214,6 +220,57 @@ void main() {
     expect(assessment.direction, IntegratedDirection.likelyHuman);
     expect(assessment.aiLikelihood, lessThan(0.50));
     // 文字模型仍與兩條來源證據相反，因此方向可翻轉，但信心維持中等。
+    expect(assessment.confidence, IntegratedConfidence.moderate);
+  });
+
+  test('同條件且足量的共形異常可通過 AI 證據閘門但不重複加分', () {
+    const calibration = CalibrationEvidence(
+      pValue: 0.05,
+      percentile: 100,
+      calibrationSize: 19,
+      alpha: 0.05,
+      hasEnoughSamples: true,
+      contextMatched: true,
+      analysisSignature: 'fusion-v3|model-a',
+      language: 'en',
+      domain: 'general',
+      lengthBucket: 'medium',
+    );
+    final withoutCalibration = IntegratedAssessment.assess(
+      _result(textScore: 0.78, enginesHaveEvidence: false),
+    );
+    final calibrated = IntegratedAssessment.assess(
+      _result(
+        textScore: 0.78,
+        enginesHaveEvidence: false,
+        calibration: calibration,
+      ),
+    );
+
+    expect(withoutCalibration.passesAiEvidenceGate, isFalse);
+    expect(calibrated.passesAiEvidenceGate, isTrue);
+    expect(calibrated.contributions, hasLength(1));
+    expect(calibrated.aiLikelihood, lessThan(0.78));
+    expect(
+      calibrated.aiLikelihood,
+      greaterThan(withoutCalibration.aiLikelihood),
+      reason: '校準可確認原分數在本地真人基準中異常，但不得新增第二條勝算貢獻',
+    );
+  });
+
+  test('低抽取品質限制判讀信心上限', () {
+    final assessment = IntegratedAssessment.assess(
+      _result(
+        textScore: 0.90,
+        enginesHaveEvidence: true,
+        inputQuality: const InputQualityEvidence(
+          method: InputAcquisitionMethod.ocr,
+          extractionQuality: 0.60,
+        ),
+      ),
+    );
+
+    expect(assessment.confidenceCeiling, 0.45);
     expect(assessment.confidence, IntegratedConfidence.moderate);
   });
 }

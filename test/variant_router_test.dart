@@ -112,10 +112,7 @@ void main() {
 
     test('已驗證優於未知，未知優於明確不支援', () {
       expect(
-        chooseVariant(
-          installed: [_legacy, _enOnly],
-          language: 'zh',
-        ).variant,
+        chooseVariant(installed: [_legacy, _enOnly], language: 'zh').variant,
         _legacy,
         reason: '涵蓋範圍未知也好過明確不涵蓋中文的模型',
       );

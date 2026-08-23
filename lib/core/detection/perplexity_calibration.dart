@@ -168,10 +168,9 @@ abstract final class PerplexityCalibration {
   /// 目前實際採用的語言代碼
   static Iterable<String> usableLanguages({
     String modelId = defaultPerplexityModelId,
-  }) =>
-      (_table[modelId] ?? const {}).entries
-          .where((e) => e.value.isUsable)
-          .map((e) => e.key);
+  }) => (_table[modelId] ?? const {}).entries
+      .where((e) => e.value.isUsable)
+      .map((e) => e.key);
 
   /// 表中已有校準資料的模型，供評估「換上這顆模型能覆蓋哪些語言」
   static Iterable<String> get calibratedModels => _table.keys;

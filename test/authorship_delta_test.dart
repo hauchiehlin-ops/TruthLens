@@ -7,12 +7,6 @@ import 'package:truthlens/core/utils/text_stats.dart';
 StyleProfile _profile(String text) =>
     buildStyleProfile(PreprocessedText.from(text).allTokens);
 
-/// 樣本需達 StyleProfile.minimumTokens（200 詞）才可用，
-/// 因此測試語料重複兩段以達到長度——風格特徵不因重複而改變
-String _long(String Function(int) writer, int seed) => [
-  for (var i = 0; i < 4; i++) writer(seed + i * 1000),
-].join(' ');
-
 /// 同一位「作者」的六篇樣本：長句、大量使用 the／of／which／that，
 /// 題材各不相同——這正是功能詞剖面的重點，它反映習慣而非主題。
 const _authorA = <String>[
@@ -138,18 +132,25 @@ void main() {
     });
 
     test('待測文件太短時回傳 null', () {
-      final reference = [for (var i = 0; i < 6; i++) _profile(_text(_authorA, i))];
+      final reference = [
+        for (var i = 0; i < 6; i++) _profile(_text(_authorA, i)),
+      ];
       expect(compareAuthorship(_profile('Too short.'), reference), isNull);
     });
 
     test('沒有參考語料時 Delta 為 NaN，不是 0', () {
       // 回 0 會被誤讀成「完全相符」
-      expect(burrowsDelta(_profile(_text(_authorA, 0)), const []).isNaN, isTrue);
+      expect(
+        burrowsDelta(_profile(_text(_authorA, 0)), const []).isNaN,
+        isTrue,
+      );
     });
   });
 
   test('Delta 只在同一組參考語料內可解讀，因此回報的是百分位', () {
-    final reference = [for (var i = 0; i < 6; i++) _profile(_text(_authorA, i))];
+    final reference = [
+      for (var i = 0; i < 6; i++) _profile(_text(_authorA, i)),
+    ];
     final result = compareAuthorship(_profile(_text(_authorA, 3)), reference);
     expect(result!.percentile, inInclusiveRange(0, 100));
     expect(result.referenceCount, 6);

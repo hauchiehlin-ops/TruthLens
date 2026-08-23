@@ -71,8 +71,7 @@ void main() {
         kvCache: KvCacheSpec(layers: 24, heads: 2, headDim: 64),
       );
 
-      final decoded =
-          jsonDecode(variant.runtimeJson!) as Map<String, dynamic>;
+      final decoded = jsonDecode(variant.runtimeJson!) as Map<String, dynamic>;
       final kv = decoded['kvCache'] as Map<String, dynamic>;
       expect(kv['layers'], 24);
       expect(kv['heads'], 2);

@@ -133,9 +133,10 @@ void main() {
         ],
       ).analyze(_text, eslCorrectionEnabled: false);
 
-      // 單一統計家族保留 AI 方向，但在通過高特異性證據閘門前封頂 59%。
-      expect(result.aiProbability, closeTo(0.59, 0.0001));
-      expect(result.verdict, Verdict.mixed);
+      // 單一統計家族保留完整連續方向；是否足以升級由獨立證據閘門與
+      // 整合信心控制，不再把政策門檻偽裝成 59% 的量測值。
+      expect(result.aiProbability, closeTo(0.78, 0.0001));
+      expect(result.verdict, Verdict.likelyAi);
     });
 
     test('兩個獨立家族同向時依預先設定可靠度融合', () async {

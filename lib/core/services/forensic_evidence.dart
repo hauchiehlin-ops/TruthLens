@@ -10,15 +10,11 @@ import '../models/detection_result.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'document_provenance.dart';
-import 'revision_evidence.dart';
-import 'task_alignment.dart';
 
 enum EvidenceAxisKind {
   textTrace,
   writingProcess,
   documentOrigin,
-  revisionHistory,
-  taskAlignment,
   sourceIntegrity,
 }
 
@@ -54,8 +50,6 @@ class ForensicEvidenceMatrix {
       _textAxis(result),
       _writingAxis(result),
       _originAxis(result),
-      _revisionAxis(result),
-      _taskAxis(result),
       _sourceAxis(citations, claims),
     ],
   );
@@ -226,65 +220,5 @@ class ForensicEvidenceMatrix {
       state: EvidenceAxisState.inconclusive,
       strength: EvidenceStrength.limited,
     );
-  }
-
-  static EvidenceAxisAssessment _revisionAxis(DetectionResult result) {
-    final revision = RevisionEvidence.compare(
-      result.previousDraftText,
-      result.inputText,
-    );
-    return switch (revision.pattern) {
-      RevisionPattern.unavailable => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.revisionHistory,
-        state: EvidenceAxisState.unavailable,
-        strength: EvidenceStrength.none,
-      ),
-      RevisionPattern.largeReplacement => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.revisionHistory,
-        state: EvidenceAxisState.concern,
-        strength: EvidenceStrength.moderate,
-      ),
-      RevisionPattern.incremental => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.revisionHistory,
-        state: EvidenceAxisState.reassuring,
-        strength: EvidenceStrength.moderate,
-      ),
-      RevisionPattern.nearDuplicate => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.revisionHistory,
-        state: EvidenceAxisState.reassuring,
-        strength: EvidenceStrength.limited,
-      ),
-      RevisionPattern.mixed => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.revisionHistory,
-        state: EvidenceAxisState.inconclusive,
-        strength: EvidenceStrength.moderate,
-      ),
-    };
-  }
-
-  static EvidenceAxisAssessment _taskAxis(DetectionResult result) {
-    final task = TaskAlignment.analyze(result.taskPrompt, result.inputText);
-    return switch (task.risk) {
-      TaskAlignmentRisk.unknown => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.taskAlignment,
-        state: EvidenceAxisState.unavailable,
-        strength: EvidenceStrength.none,
-      ),
-      TaskAlignmentRisk.high => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.taskAlignment,
-        state: EvidenceAxisState.concern,
-        strength: EvidenceStrength.moderate,
-      ),
-      TaskAlignmentRisk.medium => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.taskAlignment,
-        state: EvidenceAxisState.concern,
-        strength: EvidenceStrength.limited,
-      ),
-      TaskAlignmentRisk.low => const EvidenceAxisAssessment(
-        kind: EvidenceAxisKind.taskAlignment,
-        state: EvidenceAxisState.reassuring,
-        strength: EvidenceStrength.moderate,
-      ),
-    };
   }
 }

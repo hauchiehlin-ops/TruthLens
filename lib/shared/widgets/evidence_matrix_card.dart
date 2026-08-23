@@ -4,7 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/services/forensic_evidence.dart';
 import '../../l10n/generated/app_localizations.dart';
 
-/// 六軸證據總覽。各軸保留自己的證據方向與強度；其中只有作者特異性證據
+/// 四軸證據總覽。各軸保留自己的證據方向與強度；其中只有作者特異性證據
 /// 進入作者判讀，其餘風險維持獨立的待核查事實。
 /// 「整段貼上」或「引用查無此文」不會被誤包裝成 AI 作者證據。
 class EvidenceMatrixCard extends StatelessWidget {
@@ -148,16 +148,6 @@ class _EvidenceAxisRow extends StatelessWidget {
         LucideIcons.fileClock,
         l10n.evidenceAxisOrigin,
         l10n.evidenceAxisOriginNote,
-      ),
-      EvidenceAxisKind.revisionHistory => (
-        LucideIcons.gitCompare,
-        l10n.evidenceAxisRevision,
-        l10n.evidenceAxisRevisionNote,
-      ),
-      EvidenceAxisKind.taskAlignment => (
-        LucideIcons.clipboardCheck,
-        l10n.evidenceAxisTask,
-        l10n.evidenceAxisTaskNote,
       ),
       EvidenceAxisKind.sourceIntegrity => (
         LucideIcons.bookOpenCheck,

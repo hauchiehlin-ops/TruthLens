@@ -14,6 +14,7 @@ split（calibration/test）。可選 domain、language。校準集只負責選�
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from collections import defaultdict
@@ -186,6 +187,14 @@ def main() -> None:
     parser.add_argument("--min-recall", type=float, default=0.50)
     parser.add_argument("--required-language", action="append", default=[])
     parser.add_argument("--required-domain", action="append", default=[])
+    parser.add_argument("--contract-id", default="truthlens-external-v1")
+    parser.add_argument("--benchmark-id", action="append", default=[])
+    parser.add_argument("--detector-signature", default="")
+    parser.add_argument(
+        "--independent-test",
+        action="store_true",
+        help="Assert that the reporting split is external to model training.",
+    )
     args = parser.parse_args()
     if not 0 < args.target_fpr < 1:
         parser.error("--target-fpr must be between 0 and 1")
@@ -234,7 +243,19 @@ def main() -> None:
         or not fairness_groups[key]["eligible_for_release_gate"]
     )
     coverage_gate = not missing_required_groups
+    evidence_identity_gate = bool(
+        args.independent_test and args.benchmark_id and args.detector_signature
+    )
     report = {
+        "schema_version": 1,
+        "contract_id": args.contract_id,
+        "status": "validated" if evidence_identity_gate else "not_yet_externally_validated",
+        "detector_signature": args.detector_signature or None,
+        "benchmark_ids": args.benchmark_id,
+        "predictions_sha256": hashlib.sha256(
+            args.predictions.read_bytes()
+        ).hexdigest(),
+        "independent_test_asserted": args.independent_test,
         "threshold": threshold,
         "target_fpr": args.target_fpr,
         "test": overall,
@@ -250,6 +271,7 @@ def main() -> None:
             and fairness_gate
             and robustness_gate
             and coverage_gate
+            and evidence_identity_gate
         ),
         "release_gate_note": (
             "Only an independent test set supports a confidence claim; accuracy alone does not."

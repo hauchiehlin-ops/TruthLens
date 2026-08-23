@@ -41,7 +41,8 @@ void main() {
     expect(fusion.families, hasLength(1));
     expect(fusion.aiSupportingFamilies, 1);
     expect(fusion.passesAiEvidenceGate, isFalse);
-    expect(fusion.probability, 0.59);
+    expect(fusion.probability, closeTo(0.885, 0.001));
+    expect(fusion.probability, isNot(0.59));
     expect(fusion.authorshipClass, TextAuthorshipClass.likelyAiGenerated);
   });
 
@@ -113,5 +114,40 @@ void main() {
       profile.domainReliability(EvidenceFamily.stylometric),
       lessThan(general.domainReliability(EvidenceFamily.stylometric)),
     );
+  });
+
+  test('分段結果一致時 bootstrap 區間較窄、穩定性較高', () {
+    final stable = TextEvidenceFusion.evaluate(
+      scores: [_score('transformer', 0.82, sentences: List.filled(12, 0.82))],
+      inputText: longGeneralText,
+    );
+    final variable = TextEvidenceFusion.evaluate(
+      scores: [
+        _score(
+          'transformer',
+          0.55,
+          sentences: [0.05, 0.95, 0.10, 0.90, 0.15, 0.85, 0.20, 0.80],
+        ),
+      ],
+      inputText: longGeneralText,
+    );
+
+    expect(stable.upperBound - stable.lowerBound, lessThan(0.02));
+    expect(stable.stabilityScore, greaterThan(variable.stabilityScore));
+  });
+
+  test('低品質文字抽取只降低可靠度，不竄改方向分數', () {
+    final clean = TextEvidenceFusion.evaluate(
+      scores: [_score('transformer', 0.84), _score('statistical', 0.79)],
+      inputText: longGeneralText,
+    );
+    final noisy = TextEvidenceFusion.evaluate(
+      scores: [_score('transformer', 0.84), _score('statistical', 0.79)],
+      inputText: longGeneralText,
+      extractionQuality: 0.62,
+    );
+
+    expect(noisy.probability, closeTo(clean.probability, 1e-9));
+    expect(noisy.reliability, lessThan(clean.reliability));
   });
 }

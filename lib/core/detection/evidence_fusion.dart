@@ -40,6 +40,10 @@ class TextEvidenceFusion {
   final double evidenceCoverage;
   final double conflictRatio;
   final double aiWindowRatio;
+  final double stabilityScore;
+  final double lowerBound;
+  final double upperBound;
+  final int stabilitySegmentCount;
   final int aiSupportingFamilies;
   final int humanSupportingFamilies;
   final bool passesAiEvidenceGate;
@@ -55,6 +59,10 @@ class TextEvidenceFusion {
     required this.evidenceCoverage,
     required this.conflictRatio,
     required this.aiWindowRatio,
+    required this.stabilityScore,
+    required this.lowerBound,
+    required this.upperBound,
+    required this.stabilitySegmentCount,
     required this.aiSupportingFamilies,
     required this.humanSupportingFamilies,
     required this.passesAiEvidenceGate,
@@ -69,6 +77,7 @@ class TextEvidenceFusion {
     required String inputText,
     List<SentenceScore> sentences = const [],
     AnalysisProfile? profile,
+    double extractionQuality = 1,
     bool eslAdjusted = false,
   }) {
     final documentProfile = profile ?? AnalysisProfile.fromText(inputText);
@@ -181,10 +190,6 @@ class TextEvidenceFusion {
         probability = 1 / (1 + math.exp(-(weightedLogOdds / totalWeight)));
       }
     }
-    if (!passesGate && probability >= DetectionResult.aiFlagThreshold) {
-      probability = 0.59;
-    }
-
     final positive = familyEvidence
         .where((family) => family.supportsAi)
         .fold<double>(0, (sum, family) => sum + family.reliability);
@@ -224,16 +229,19 @@ class TextEvidenceFusion {
       >= 50 => 0.42,
       _ => 0.18,
     };
-    final inputQuality = math.max(
+    final textualInputQuality = math.max(
       documentProfile.inputQuality,
       reportedSentenceQuality * reportedLengthQuality,
     );
+    final inputQuality =
+        textualInputQuality * extractionQuality.clamp(0.0, 1.0);
     final reliability =
         (inputQuality *
                 (0.45 +
                     applicabilityCoverage * 0.30 +
                     evidenceCoverage * 0.25) *
                 diversity *
+                (0.65 + window.stability * 0.35) *
                 (1 - conflict * 0.65))
             .clamp(0.0, 1.0);
     final authorshipClass = mixed
@@ -249,6 +257,10 @@ class TextEvidenceFusion {
       evidenceCoverage: evidenceCoverage,
       conflictRatio: conflict,
       aiWindowRatio: window.aiRatio,
+      stabilityScore: window.stability,
+      lowerBound: window.lowerBound,
+      upperBound: window.upperBound,
+      stabilitySegmentCount: window.analyzable,
       aiSupportingFamilies: aiFamilies.length,
       humanSupportingFamilies: humanFamilies.length,
       passesAiEvidenceGate: passesGate,
@@ -272,10 +284,15 @@ class TextEvidenceFusion {
     };
   }
 
-  static ({int analyzable, double aiRatio, double humanRatio}) _windowEvidence(
-    List<EngineScore> scores,
-    List<SentenceScore> fallback,
-  ) {
+  static ({
+    int analyzable,
+    double aiRatio,
+    double humanRatio,
+    double stability,
+    double lowerBound,
+    double upperBound,
+  })
+  _windowEvidence(List<EngineScore> scores, List<SentenceScore> fallback) {
     final perEngine = scores
         .where(
           (score) =>
@@ -289,10 +306,20 @@ class TextEvidenceFusion {
         : perEngine
               .map((score) => score.sentenceScores!.length)
               .reduce(math.max);
-    if (length == 0) return (analyzable: 0, aiRatio: 0, humanRatio: 0);
+    if (length == 0) {
+      return (
+        analyzable: 0,
+        aiRatio: 0,
+        humanRatio: 0,
+        stability: 0,
+        lowerBound: 0,
+        upperBound: 1,
+      );
+    }
     var ai = 0;
     var human = 0;
     var analyzable = 0;
+    final segmentProbabilities = <double>[];
     for (var i = 0; i < length; i++) {
       final values = <double>[];
       for (final score in perEngine) {
@@ -306,13 +333,56 @@ class TextEvidenceFusion {
       if (values.isEmpty) continue;
       analyzable++;
       final average = values.reduce((a, b) => a + b) / values.length;
+      segmentProbabilities.add(average);
       if (average >= 0.65) ai++;
       if (average <= 0.35) human++;
     }
+    final interval = _bootstrapInterval(segmentProbabilities);
     return (
       analyzable: analyzable,
       aiRatio: analyzable == 0 ? 0 : ai / analyzable,
       humanRatio: analyzable == 0 ? 0 : human / analyzable,
+      stability: interval.stability,
+      lowerBound: interval.lower,
+      upperBound: interval.upper,
     );
+  }
+
+  /// 以固定種子的分段 bootstrap 估計文件內部穩定性。固定種子讓同一份文件
+  /// 在任何平台都得到相同區間；重抽樣單位是句段，不把 token 當獨立樣本。
+  static ({double lower, double upper, double stability}) _bootstrapInterval(
+    List<double> values,
+  ) {
+    if (values.length < 3) {
+      return (lower: 0, upper: 1, stability: 0.15);
+    }
+    var state = 0x5f3759df ^ values.length;
+    int nextIndex() {
+      state = (1664525 * state + 1013904223) & 0x7fffffff;
+      return state % values.length;
+    }
+
+    final means = <double>[];
+    for (var replicate = 0; replicate < 240; replicate++) {
+      var sum = 0.0;
+      for (var i = 0; i < values.length; i++) {
+        sum += values[nextIndex()];
+      }
+      means.add(sum / values.length);
+    }
+    means.sort();
+    final lower = means[(means.length * 0.025).floor()].clamp(0.0, 1.0);
+    final upper = means[(means.length * 0.975).floor()].clamp(0.0, 1.0);
+    final width = upper - lower;
+    final directionalConsistency =
+        values.where((value) => value >= 0.5).length / values.length;
+    final majorityConsistency = math.max(
+      directionalConsistency,
+      1 - directionalConsistency,
+    );
+    final stability =
+        ((1 - width / 0.60).clamp(0.0, 1.0) * 0.70 + majorityConsistency * 0.30)
+            .clamp(0.0, 1.0);
+    return (lower: lower, upper: upper, stability: stability);
   }
 }

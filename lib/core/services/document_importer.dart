@@ -12,6 +12,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../detection/device_capabilities.dart';
 import '../detection/model_catalog.dart' show PerformanceTier;
+import '../models/input_quality.dart';
 import 'web_file_picker.dart' if (dart.library.io) 'web_file_picker_stub.dart';
 
 typedef PdfOcrRecognizer =
@@ -21,7 +22,13 @@ typedef PdfOcrRecognizer =
       int pageCount,
     );
 
-enum PdfImportIssue { none, needsOcr, tooManyPages, unreadable, legacyDocUnreadable }
+enum PdfImportIssue {
+  none,
+  needsOcr,
+  tooManyPages,
+  unreadable,
+  legacyDocUnreadable,
+}
 
 /// 文件匯入：支援 txt, md, pdf, docx, doc, odt；PDF 文字層失效時可選擇 OCR。
 class DocumentImporter {
@@ -82,6 +89,18 @@ class DocumentImporter {
       text: text,
       usedPdfOcr: parsed.usedOcr,
       pdfImportIssue: parsed.issue,
+      inputQuality: InputQualityEvidence(
+        method: _acquisitionMethod(extension, parsed.usedOcr),
+        extractionQuality: parsed.quality > 0
+            ? parsed.quality
+            : pdfTextQuality(text),
+        limitations: [
+          if (parsed.usedOcr) 'ocr_transcription',
+          if ((parsed.quality > 0 ? parsed.quality : pdfTextQuality(text)) <
+              0.75)
+            'low_extraction_quality',
+        ],
+      ),
       // 來源證據只有 zip 容器格式（docx/odt）帶得出來；其餘格式回傳 none
       provenance: DocumentProvenance.fromBytes(
         bytes,
@@ -89,6 +108,19 @@ class DocumentImporter {
         bodyText: text,
       ),
     );
+  }
+
+  static InputAcquisitionMethod _acquisitionMethod(
+    String extension,
+    bool usedOcr,
+  ) {
+    if (usedOcr) return InputAcquisitionMethod.ocr;
+    return switch (extension.toLowerCase()) {
+      'pdf' => InputAcquisitionMethod.pdfTextLayer,
+      'docx' || 'odt' => InputAcquisitionMethod.structuredDocument,
+      'doc' => InputAcquisitionMethod.legacyDocument,
+      _ => InputAcquisitionMethod.directText,
+    };
   }
 
   @visibleForTesting
@@ -134,7 +166,7 @@ class DocumentImporter {
     if (extension.toLowerCase() == 'doc' && text.isEmpty) {
       return const _PdfParseResult(issue: PdfImportIssue.legacyDocUnreadable);
     }
-    return _PdfParseResult(text: text);
+    return _PdfParseResult(text: text, quality: pdfTextQuality(text));
   }
 
   static String _extractSyncfusionPdfText(List<int> bytes) {
@@ -183,7 +215,10 @@ class DocumentImporter {
 
       final bestText = _bestPdfTextCandidate([pdfiumText, syncfusionText]);
       if (bestText.isNotEmpty) {
-        return _PdfParseResult(text: bestText);
+        return _PdfParseResult(
+          text: bestText,
+          quality: pdfTextQuality(bestText),
+        );
       }
 
       if (pdfOcr == null) {
@@ -232,12 +267,16 @@ class DocumentImporter {
       final recognized = ocrText.toString().trim();
       return recognized.isEmpty
           ? const _PdfParseResult(issue: PdfImportIssue.unreadable)
-          : _PdfParseResult(text: recognized, usedOcr: true);
+          : _PdfParseResult(
+              text: recognized,
+              usedOcr: true,
+              quality: pdfTextQuality(recognized) * 0.85,
+            );
     } catch (_) {
       final fallback = _bestPdfTextCandidate([syncfusionText]);
       return fallback.isEmpty
           ? const _PdfParseResult(issue: PdfImportIssue.unreadable)
-          : _PdfParseResult(text: fallback);
+          : _PdfParseResult(text: fallback, quality: pdfTextQuality(fallback));
     } finally {
       await document?.dispose();
     }
@@ -392,7 +431,6 @@ class DocumentImporter {
     return pdfTextQuality(text) >= _minimumPdfTextQuality;
   }
 
-  @visibleForTesting
   static double pdfTextQuality(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty || _looksLikeRawPdfStructure(trimmed)) return 0;
@@ -522,6 +560,7 @@ class ImportedDocument {
   final String text;
   final bool usedPdfOcr;
   final PdfImportIssue pdfImportIssue;
+  final InputQualityEvidence inputQuality;
 
   /// 檔案自身攜帶的編輯紀錄證據（僅 docx/odt 有；其餘為
   /// [DocumentProvenance.none]）
@@ -532,6 +571,7 @@ class ImportedDocument {
     required this.text,
     this.usedPdfOcr = false,
     this.pdfImportIssue = PdfImportIssue.none,
+    this.inputQuality = InputQualityEvidence.unknown,
     this.provenance = DocumentProvenance.none,
   });
 }
@@ -540,11 +580,13 @@ class _PdfParseResult {
   final String text;
   final bool usedOcr;
   final PdfImportIssue issue;
+  final double quality;
 
   const _PdfParseResult({
     this.text = '',
     this.usedOcr = false,
     this.issue = PdfImportIssue.none,
+    this.quality = 0,
   });
 }
 

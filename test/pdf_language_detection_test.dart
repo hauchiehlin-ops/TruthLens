@@ -24,7 +24,8 @@ void main() {
     expect(
       detected.code,
       'en',
-      reason: 'PDF 抽出的文字帶有字距損傷（BOUNDAR Y、ROTA TING、a n dW .M .Y A N G），'
+      reason:
+          'PDF 抽出的文字帶有字距損傷（BOUNDAR Y、ROTA TING、a n dW .M .Y A N G），'
           '功能詞剖面仍須撐得住',
     );
   });
@@ -40,11 +41,7 @@ void main() {
       text.language.code,
       modelId: defaultPerplexityModelId,
     );
-    expect(
-      calibration,
-      isNotNull,
-      reason: '查不到門檻就會跳過困惑度，而困惑度在這份文件上是支持人類的證據',
-    );
+    expect(calibration, isNotNull, reason: '查不到門檻就會跳過困惑度，而困惑度在這份文件上是支持人類的證據');
     expect(calibration!.aiCut, 60);
     expect(calibration.humanCut, isNull);
   });
@@ -52,10 +49,7 @@ void main() {
   test('換上多語模型後英文同樣有門檻，不因切換模型而失去指標', () {
     final text = PreprocessedText.from(paper);
     expect(
-      PerplexityCalibration.of(
-        text.language.code,
-        modelId: 'qwen05b-ppl-int8',
-      ),
+      PerplexityCalibration.of(text.language.code, modelId: 'qwen05b-ppl-int8'),
       isNotNull,
     );
   });

@@ -86,7 +86,7 @@ void main() {
     test('含摘要註解與逐句資料列', () {
       final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       final lines = csv.trim().split('\n');
-      expect(lines.where((l) => l.startsWith('#')).length, 19);
+      expect(lines.where((l) => l.startsWith('#')).length, 23);
       expect(lines, contains('index,sentence,ai_probability,patterns'));
       expect(lines.last, startsWith('1,'));
       expect(csv, contains('overall_ai_probability,0.5500'));
@@ -112,13 +112,17 @@ void main() {
     test('產生合法 JSON 且含關鍵欄位', () {
       final json = ReportExporter.buildJson(_sampleResult(), _l10n);
       final map = jsonDecode(json) as Map<String, dynamic>;
-      expect(map['version'], 3);
+      expect(map['version'], 4);
       expect(map['overall']['verdict'], 'mixed');
       expect(map['overall']['ai_probability'], 0.55);
       expect(map['overall']['integrated_direction'], isA<String>());
       expect(map['overall']['integrated_ai_likelihood'], isA<double>());
       expect(map['overall']['ai_evidence_gate_passed'], isA<bool>());
-      expect(map['evidence_matrix']['total_axes'], 6);
+      expect(map['overall']['segment_stability'], isA<double>());
+      expect(map['overall']['segment_interval'], isA<Map<String, dynamic>>());
+      expect(map['overall']['input_quality'], isA<Map<String, dynamic>>());
+      expect(map['overall']['local_calibration'], isA<Map<String, dynamic>>());
+      expect(map['evidence_matrix']['total_axes'], 4);
       expect(map['claim_source_audit'], isA<Map<String, dynamic>>());
       expect((map['engines'] as List).length, 2);
       expect((map['sentences'] as List).length, 2);

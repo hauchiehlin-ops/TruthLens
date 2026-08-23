@@ -12,30 +12,37 @@ void main() {
   setUp(() => tmp = Directory.systemTemp.createTempSync('tf_engine_'));
   tearDown(() => tmp.existsSync() ? tmp.deleteSync(recursive: true) : null);
 
-  void seed(String variantId, Map<String, dynamic> variant,
-      {bool writeModel = true, bool writeTokenizer = false}) {
+  void seed(
+    String variantId,
+    Map<String, dynamic> variant, {
+    bool writeModel = true,
+    bool writeTokenizer = false,
+  }) {
     if (writeModel) File('${tmp.path}/m.onnx').writeAsBytesSync([1, 2, 3]);
     if (writeTokenizer) File('${tmp.path}/t.json').writeAsStringSync('{}');
-    File('${tmp.path}/installed.json').writeAsStringSync(jsonEncode({
-      'transformer': {
-        'active': variantId,
-        'installed': {variantId: variant},
-      }
-    }));
+    File('${tmp.path}/installed.json').writeAsStringSync(
+      jsonEncode({
+        'transformer': {
+          'active': variantId,
+          'installed': {variantId: variant},
+        },
+      }),
+    );
   }
 
-  Map<String, dynamic> variant(String tokenizer,
-          {String? tokenizerFile = 't.json'}) =>
-      {
-        'role': 'transformer',
-        'variant_id': 'v',
-        'file_name': 'm.onnx',
-        'tokenizer_file_name': tokenizerFile,
-        'tokenizer': tokenizer,
-        'ai_label_index': 1,
-        'version': '1.0',
-        'size_bytes': 3,
-      };
+  Map<String, dynamic> variant(
+    String tokenizer, {
+    String? tokenizerFile = 't.json',
+  }) => {
+    'role': 'transformer',
+    'variant_id': 'v',
+    'file_name': 'm.onnx',
+    'tokenizer_file_name': tokenizerFile,
+    'tokenizer': tokenizer,
+    'ai_label_index': 1,
+    'version': '1.0',
+    'size_bytes': 3,
+  };
 
   Future<bool> availability(ModelManager mm) async {
     await mm.refreshInstallStates();

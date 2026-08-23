@@ -171,10 +171,7 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> repairActiveVariant(
-    String role,
-    AppLocalizations l10n,
-  ) async {
+  Future<String> repairActiveVariant(String role, AppLocalizations l10n) async {
     final active = activeVariant(role);
     if (active == null) {
       return l10n.modelRepairNoActiveVariant;

@@ -133,7 +133,10 @@ EvasionScan scanForEvasion(String raw) {
 
   add(EvasionKind.zeroWidth, _zeroWidth.allMatches(raw).map((m) => m[0]!));
   add(EvasionKind.bidiControl, _bidiControl.allMatches(raw).map((m) => m[0]!));
-  add(EvasionKind.unusualSpace, _unusualSpace.allMatches(raw).map((m) => m[0]!));
+  add(
+    EvasionKind.unusualSpace,
+    _unusualSpace.allMatches(raw).map((m) => m[0]!),
+  );
 
   final latin = RegExp(r'[A-Za-z]').allMatches(raw).length;
   if (latin / raw.length > 0.30) {

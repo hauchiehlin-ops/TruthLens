@@ -17,7 +17,9 @@ List<int> _docx({
 }) {
   final appXml = StringBuffer('<Properties>')
     ..write('<Application>$application</Application>');
-  if (totalMinutes != null) appXml.write('<TotalTime>$totalMinutes</TotalTime>');
+  if (totalMinutes != null) {
+    appXml.write('<TotalTime>$totalMinutes</TotalTime>');
+  }
   if (declaredWords != null) appXml.write('<Words>$declaredWords</Words>');
   appXml.write('</Properties>');
 
@@ -55,7 +57,9 @@ List<int> _odt({
   final meta = StringBuffer('<office:document-meta><office:meta>')
     ..write('<meta:generator>$generator</meta:generator>');
   if (editingDuration != null) {
-    meta.write('<meta:editing-duration>$editingDuration</meta:editing-duration>');
+    meta.write(
+      '<meta:editing-duration>$editingDuration</meta:editing-duration>',
+    );
   }
   if (cycles != null) {
     meta.write('<meta:editing-cycles>$cycles</meta:editing-cycles>');
@@ -117,7 +121,10 @@ void main() {
         bodyText: _body(600),
       );
 
-      expect(provenance.editingDuration, const Duration(hours: 1, minutes: 24, seconds: 30));
+      expect(
+        provenance.editingDuration,
+        const Duration(hours: 1, minutes: 24, seconds: 30),
+      );
       expect(provenance.revisionCount, 9);
       expect(provenance.application, 'LibreOffice/7.6');
       expect(provenance.signals, isEmpty);
@@ -312,7 +319,11 @@ void _formatCoverageTests() {
 
     test('任一可疑訊號存在即不納入', () {
       final p = DocumentProvenance.fromBytes(
-        _docx(totalMinutes: 0, revision: 18, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        _docx(
+          totalMinutes: 0,
+          revision: 18,
+          rsids: const ['A1', 'B2', 'C3', 'D4', 'E5', 'F6'],
+        ),
         extension: 'docx',
         bodyText: _body(2000),
       );
@@ -322,14 +333,22 @@ void _formatCoverageTests() {
 
     test('編輯時長或存檔次數不足即不納入', () {
       final short = DocumentProvenance.fromBytes(
-        _docx(totalMinutes: 5, revision: 18, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        _docx(
+          totalMinutes: 5,
+          revision: 18,
+          rsids: const ['A1', 'B2', 'C3', 'D4', 'E5', 'F6'],
+        ),
         extension: 'docx',
         bodyText: _body(300),
       );
       expect(short.indicatesHumanAuthorship, isFalse, reason: '5 分鐘不足 20 分門檻');
 
       final fewSaves = DocumentProvenance.fromBytes(
-        _docx(totalMinutes: 240, revision: 2, rsids: const ['A1','B2','C3','D4','E5','F6']),
+        _docx(
+          totalMinutes: 240,
+          revision: 2,
+          rsids: const ['A1', 'B2', 'C3', 'D4', 'E5', 'F6'],
+        ),
         extension: 'docx',
         bodyText: _body(2000),
       );

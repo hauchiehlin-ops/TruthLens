@@ -145,6 +145,26 @@ void main() {
       expect(reloaded.samples.single.engineScores['statistical'], 0.3);
     });
 
+    test('清除保存原文時保留語言與共形基準資格', () async {
+      final service = CalibrationService();
+      await service.load();
+      await service.setStoreText(true);
+      await service.addSample(
+        0.2,
+        language: 'zh',
+        text: '這是一份已知由真人撰寫並保留作為本地校準用途的中文樣本。',
+      );
+
+      expect(service.samples.single.text, isNotNull);
+      expect(service.sizeFor('zh'), 1);
+
+      await service.clearStoredText();
+
+      expect(service.samples.single.text, isNull);
+      expect(service.samples.single.language, 'zh');
+      expect(service.sizeFor('zh'), 1);
+    });
+
     test('observed 樣本不得進入共形虛無分布（防循環論證）', () async {
       final service = CalibrationService();
       await service.load();
@@ -200,7 +220,11 @@ void main() {
     test('描述性百分位涵蓋全部樣本，且樣本過少時不給數字', () async {
       final service = CalibrationService();
       await service.load();
-      expect(service.observedPercentile(0.5, 'en'), isNull, reason: '不足 5 筆不應給百分位');
+      expect(
+        service.observedPercentile(0.5, 'en'),
+        isNull,
+        reason: '不足 5 筆不應給百分位',
+      );
 
       for (var i = 0; i < 10; i++) {
         await service.autoCollect(
@@ -303,7 +327,8 @@ void main() {
       await service.load();
       await service.addSample(
         0.2,
-        text: '本研究採用泰勒庫埃特流場作為實驗載體，透過改變內外圓筒的轉速比，'
+        text:
+            '本研究採用泰勒庫埃特流場作為實驗載體，透過改變內外圓筒的轉速比，'
             '觀察環狀渦漩在臨界雷諾數附近的形態轉換過程與穩定性邊界的變化。',
       );
       expect(service.humanSampleCountByLanguage, {'zh': 1});
@@ -321,6 +346,47 @@ void main() {
       expect(service.size, 1);
       expect(service.sizeFor('en'), 0);
       expect(service.unlabelledLanguageCount, 1);
+    });
+
+    test('正式共形結果只採用同管線、領域與長度級距的樣本', () async {
+      final service = CalibrationService();
+      await service.load();
+      for (var i = 0; i < 19; i++) {
+        await service.addSample(
+          0.10 + i * 0.001,
+          language: 'en',
+          analysisSignature: 'fusion-v3|model-a',
+          domain: 'academic',
+          lengthBucket: 'long',
+        );
+      }
+      await service.addSample(
+        0.99,
+        language: 'en',
+        analysisSignature: 'fusion-v3|model-b',
+        domain: 'academic',
+        lengthBucket: 'long',
+      );
+
+      final matched = service.evaluateFor(
+        score: 0.95,
+        language: 'en',
+        analysisSignature: 'fusion-v3|model-a',
+        domain: 'academic',
+        lengthBucket: 'long',
+      );
+      final mismatched = service.evaluateFor(
+        score: 0.95,
+        language: 'en',
+        analysisSignature: 'fusion-v3|model-a',
+        domain: 'general',
+        lengthBucket: 'long',
+      );
+
+      expect(matched.calibrationSize, 19);
+      expect(matched.isFlagged, isTrue);
+      expect(mismatched.isApplicable, isFalse);
+      expect(mismatched.calibrationSize, 0);
     });
   });
 }

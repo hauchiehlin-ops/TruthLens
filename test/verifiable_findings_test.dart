@@ -69,9 +69,7 @@ void main() {
     final findings = collectVerifiableFindings(
       result(
         evasion: const EvasionScan(
-          findings: [
-            EvasionFinding(kind: EvasionKind.homoglyph, count: 7),
-          ],
+          findings: [EvasionFinding(kind: EvasionKind.homoglyph, count: 7)],
           characterCount: 1000,
         ),
         provenance: const DocumentProvenance(
@@ -130,9 +128,7 @@ void _orderMatters() {
         aiProbability: 0.30,
         verdict: Verdict.likelyHuman,
         evasion: const EvasionScan(
-          findings: [
-            EvasionFinding(kind: EvasionKind.bidiControl, count: 2),
-          ],
+          findings: [EvasionFinding(kind: EvasionKind.bidiControl, count: 2)],
           characterCount: 900,
         ),
         provenance: const DocumentProvenance(

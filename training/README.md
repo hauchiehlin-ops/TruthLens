@@ -77,6 +77,10 @@ HC3 的 ChatGPT 樣本來自 2022 年，不可再單獨代表現代模型。新�
   --hard-negatives data/hard_negative_humans.jsonl \
   --hard-positives data/missed_ai.jsonl \
   --min-recall 0.50 \
+  --independent-test \
+  --benchmark-id raid \
+  --benchmark-id semeval-2024-task8 \
+  --detector-signature truthlens-v4.5.0-fusion-v3 \
   --required-language en --required-language zh \
   --required-domain academic --required-domain general
 ```
@@ -89,6 +93,11 @@ AI recall 只在 test 計算。公平性按 domain／language 檢查，
 分組會直接失敗。calibration 中的獨立真人文件數也必須至少為
 `ceil(1 / target_fpr)`。被誤判的真人文件與漏判的 AI 文件都會保留原文輸出，供下一輪
 hard-negative／hard-positive 訓練；重訓後仍須換一批未見 test 文件重測。
+
+發布聲明另受 `training/benchmark_contract.json` 約束，CI 會以
+`training/validate_release_evidence.py` 驗證 `training/validation/current.json`。
+未提供 `--independent-test`、benchmark ID 與 detector signature 時，評測仍會產生
+診斷報告，但 `status` 保持 `not_yet_externally_validated`，不得用來宣稱產品已驗證。
 
 每個腳本都支援 `--quick`（小資料、1 epoch）用於快速驗證流程可跑通。
 

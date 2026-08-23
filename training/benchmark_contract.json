@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "contract_id": "truthlens-external-v1",
+  "policy": {
+    "selection_split": "calibration",
+    "reporting_split": "test",
+    "group_isolation_key": "group_id",
+    "target_fpr": 0.01,
+    "fpr_confidence_bound": "one-sided Wilson 95% upper",
+    "minimum_recall": 0.5,
+    "minimum_documents_per_label_per_group": 30,
+    "required_languages": ["en", "zh"],
+    "required_domains": ["academic", "general"],
+    "required_ai_strata": ["provider", "style", "attack", "label_class"]
+  },
+  "approved_external_sources": [
+    {
+      "id": "raid",
+      "url": "https://github.com/liamdugan/raid",
+      "purpose": ["generator", "domain", "decoding", "attack"]
+    },
+    {
+      "id": "semeval-2024-task8",
+      "url": "https://github.com/mbzuai-nlp/SemEval2024-task8",
+      "purpose": ["multilingual", "multidomain", "mixed_authorship"]
+    },
+    {
+      "id": "m4gt-bench",
+      "url": "https://github.com/mbzuai-nlp/m4gt-bench",
+      "purpose": ["multilingual", "multigenerator", "mixed_authorship"]
+    }
+  ],
+  "prohibited_shortcuts": [
+    "reporting calibration-split metrics as test metrics",
+    "splitting chunks from one document across calibration and test",
+    "using training-source test documents as external validation",
+    "claiming language or domain validation from an ineligible small group",
+    "treating accuracy alone as a false-positive guarantee"
+  ]
+}

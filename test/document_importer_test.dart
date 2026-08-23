@@ -164,10 +164,7 @@ for validating an imported academic document before content detection begins.
       test('舊版 .doc 二進位結構位元組不得被誤判為可用文字（避免亂碼進入分析）', () {
         // 模擬真實 OLE2/CFB 檔案的隨機結構性位元組（磁區表、屬性集等），
         // 而非任何有意義的文字內容。
-        final random = List<int>.generate(
-          4000,
-          (i) => (i * 2654435761) % 256,
-        );
+        final random = List<int>.generate(4000, (i) => (i * 2654435761) % 256);
 
         final text = DocumentImporter.parseBytes(random, extension: 'doc');
 

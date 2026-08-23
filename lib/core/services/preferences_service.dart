@@ -172,8 +172,6 @@ class PreferencesService extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   Future<void> setThemeMode(ThemeMode mode) async {
     themeMode = mode;
     await _prefs?.setString(_kThemeMode, mode.name);

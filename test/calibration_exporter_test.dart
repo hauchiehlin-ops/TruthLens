@@ -28,18 +28,25 @@ List<Map<String, dynamic>> _rows(ExportPayload payload) => utf8
 void main() {
   test('輸出格式與 prepare_corpus.py 一致，欄位齊備', () {
     final payload = CalibrationExporter.buildJsonl([
-      _s(id: 'a', text: 'The experiment measured torque values.', label: '三年二班'),
+      _s(
+        id: 'a',
+        text: 'The experiment measured torque values.',
+        label: '三年二班',
+      ),
       _s(id: 'b', isAi: true, text: 'An essay produced by a model.'),
     ]);
 
     final rows = _rows(payload);
     expect(rows, hasLength(2));
     for (final row in rows) {
-      expect(
-        row.keys.toSet(),
-        {'id', 'doc_id', 'label', 'source', 'words', 'text'},
-        reason: '欄位必須與離線端完全一致，否則要多做轉檔',
-      );
+      expect(row.keys.toSet(), {
+        'id',
+        'doc_id',
+        'label',
+        'source',
+        'words',
+        'text',
+      }, reason: '欄位必須與離線端完全一致，否則要多做轉檔');
       // 一筆校準樣本即一份獨立文件
       expect(row['doc_id'], row['id']);
     }
@@ -71,12 +78,22 @@ void main() {
   test('兩類皆達 30 份才視為可進行離線評測', () {
     List<CalibrationSample> build(int human, int ai) => [
       for (var i = 0; i < human; i++) _s(id: 'h$i', text: 'human sample text'),
-      for (var i = 0; i < ai; i++) _s(id: 'a$i', isAi: true, text: 'ai sample text'),
+      for (var i = 0; i < ai; i++)
+        _s(id: 'a$i', isAi: true, text: 'ai sample text'),
     ];
 
-    expect(CalibrationExporter.buildJsonl(build(30, 30)).readyForEvaluation, isTrue);
-    expect(CalibrationExporter.buildJsonl(build(30, 29)).readyForEvaluation, isFalse);
-    expect(CalibrationExporter.buildJsonl(build(29, 30)).readyForEvaluation, isFalse);
+    expect(
+      CalibrationExporter.buildJsonl(build(30, 30)).readyForEvaluation,
+      isTrue,
+    );
+    expect(
+      CalibrationExporter.buildJsonl(build(30, 29)).readyForEvaluation,
+      isFalse,
+    );
+    expect(
+      CalibrationExporter.buildJsonl(build(29, 30)).readyForEvaluation,
+      isFalse,
+    );
 
     final counted = CalibrationExporter.buildJsonl(build(31, 12));
     expect(counted.humanCount, 31);

@@ -6,6 +6,8 @@ import '../detection/evasion_scanner.dart';
 import '../services/document_provenance.dart';
 import '../services/writing_session.dart';
 import '../utils/text_stats.dart';
+import 'calibration_evidence.dart';
+import 'input_quality.dart';
 
 /// 五級分類（依整體 AI 機率與使用者可調的 AI 標記門檻閾值劃分）
 enum Verdict {
@@ -231,9 +233,6 @@ class DetectionResult {
   final DateTime analyzedAt;
   final String inputText;
   final String sourceFileName;
-  final String taskPrompt;
-  final String previousDraftText;
-  final String previousDraftFileName;
   final double aiProbability; // 證據家族融合後的文字 AI 訊號指數
   final Verdict verdict;
   final List<EngineScore> engineScores;
@@ -243,6 +242,8 @@ class DetectionResult {
   final Duration elapsed;
   final int availableEngineCount; // 本次參與投票的引擎數
   final int totalEngineCount; // 註冊的引擎總數
+  final InputQualityEvidence inputQuality;
+  final CalibrationEvidence calibration;
 
   /// 寫作過程紀錄。只有使用者直接在應用程式內輸入時才有內容；
   /// 匯入的檔案為空——那份文字不是在這裡寫的。
@@ -264,9 +265,6 @@ class DetectionResult {
     required this.analyzedAt,
     required this.inputText,
     this.sourceFileName = '',
-    this.taskPrompt = '',
-    this.previousDraftText = '',
-    this.previousDraftFileName = '',
     required this.aiProbability,
     required this.verdict,
     required this.engineScores,
@@ -276,6 +274,8 @@ class DetectionResult {
     this.elapsed = Duration.zero,
     this.availableEngineCount = 0,
     this.totalEngineCount = 0,
+    this.inputQuality = InputQualityEvidence.directText,
+    this.calibration = CalibrationEvidence.unavailable,
     this.provenance = DocumentProvenance.none,
     this.evasion = EvasionScan.clean,
     this.writingSession = WritingSession.empty,

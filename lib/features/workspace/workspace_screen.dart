@@ -11,11 +11,14 @@ import 'package:provider/provider.dart';
 
 import '../../app/theme.dart';
 import '../../core/detection/model_catalog_service.dart';
+import '../../core/detection/analysis_profile.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/orchestrator.dart';
 import '../../core/models/analysis_request.dart';
 import '../../core/models/detection_result.dart';
+import '../../core/models/input_quality.dart';
 import '../../core/services/writing_session.dart';
+import '../../core/services/analysis_readiness.dart';
 import '../../core/utils/language_id.dart';
 import '../../core/services/document_importer.dart';
 import '../../core/services/calibration_service.dart';
@@ -56,7 +59,6 @@ class WorkspaceScreen extends StatefulWidget {
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _controller = TextEditingController();
-  final _taskPromptController = TextEditingController();
   final _done = <String>{};
   final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
@@ -81,8 +83,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   WritingSession _writingSession = WritingSession.empty;
   final WritingSessionRecorder _writingRecorder = WritingSessionRecorder();
   DocumentProvenance _sourceProvenance = DocumentProvenance.none;
-  String _previousDraftText = '';
-  String _previousDraftFileName = '';
+  InputQualityEvidence _inputQuality = InputQualityEvidence.directText;
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
   int _selectedEvidence = 0;
@@ -103,9 +104,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _sourceFileName = request.sourceFileName;
       _writingSession = request.writingSession;
       _sourceProvenance = request.provenance;
-      _taskPromptController.text = request.taskPrompt;
-      _previousDraftText = request.previousDraftText;
-      _previousDraftFileName = request.previousDraftFileName;
+      _inputQuality = request.inputQuality;
       _writingRecorder.resume(
         currentLength: request.text.length,
         session: request.writingSession,
@@ -128,7 +127,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   void dispose() {
     _analysisTicker?.cancel();
     _controller.dispose();
-    _taskPromptController.dispose();
     super.dispose();
   }
 
@@ -257,57 +255,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     if (_sourceFileName.isNotEmpty) _sourceFileName = '';
     // 一旦在匯入後修改文字，檔案內的中繼資料已不再精確描述目前內容。
     _sourceProvenance = DocumentProvenance.none;
+    _inputQuality = InputQualityEvidence.directText;
     _markInputReady();
-  }
-
-  Future<void> _editTaskPrompt() async {
-    if (_isAnalyzing) return;
-    final l10n = AppLocalizations.of(context);
-    final draft = TextEditingController(text: _taskPromptController.text);
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.taskPromptTitle),
-        content: TextField(
-          controller: draft,
-          minLines: 4,
-          maxLines: 8,
-          autofocus: true,
-          decoration: InputDecoration(hintText: l10n.taskPromptHint),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.taskPromptSave),
-          ),
-        ],
-      ),
-    );
-    if (saved == true && mounted) {
-      _taskPromptController.text = draft.text;
-      _markInputReady();
-    }
-    draft.dispose();
-  }
-
-  Future<void> _importPreviousDraft() async {
-    if (_isAnalyzing) return;
-    final l10n = AppLocalizations.of(context);
-    final draft = await DocumentImporter.pick();
-    if (draft == null || !mounted) return;
-    if (draft.text.trim().isEmpty) {
-      _showMessage(l10n.previousDraftUnreadable);
-      return;
-    }
-    setState(() {
-      _previousDraftText = draft.text;
-      _previousDraftFileName = draft.fileName;
-    });
-    _showMessage(l10n.previousDraftImported(draft.fileName));
   }
 
   Future<void> _pasteFromClipboard() async {
@@ -316,6 +265,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.text = data.text!;
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _inputQuality = InputQualityEvidence.clipboard;
     _writingRecorder.reset();
     _writingRecorder.record(data.text!.length);
     _writingSession = _writingRecorder.session;
@@ -342,6 +292,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.text = text;
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _inputQuality = InputQualityEvidence(
+      method: InputAcquisitionMethod.ocr,
+      extractionQuality: DocumentImporter.pdfTextQuality(text) * 0.85,
+      limitations: const ['ocr_transcription'],
+    );
     _writingRecorder.reset(initialLength: text.length);
     _writingSession = WritingSession.empty;
     _markInputReady();
@@ -382,6 +337,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.text = doc.text;
     _sourceFileName = doc.fileName;
     _sourceProvenance = doc.provenance;
+    _inputQuality = doc.inputQuality;
     _writingRecorder.reset(initialLength: doc.text.length);
     _writingSession = WritingSession.empty;
     _markInputReady();
@@ -438,9 +394,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         sourceFileName: _sourceFileName,
         provenance: _sourceProvenance,
         writingSession: _writingSession,
-        taskPrompt: _taskPromptController.text.trim(),
-        previousDraftText: _previousDraftText,
-        previousDraftFileName: _previousDraftFileName,
+        inputQuality: _inputQuality,
+        calibration: calibration,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         prefs: prefs,
         l10n: l10n,
@@ -476,7 +431,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       // 背景自動蒐集校準樣本。標籤依據是**文件編輯紀錄**（獨立於文字分類器），
       // 而非本次的判定結果——用判定結果自我標註會造成循環論證，讓偵測器
       // 永遠無法發現自己的偏差。無獨立依據時只收為描述性樣本，不進虛無分布。
-      if (calibration.autoCollectEnabled && !result.hasEvidenceLimitations) {
+      final canCalibrate =
+          result.wordCount >= DetectionResult.minWords &&
+          result.analyzableSentenceCount >=
+              DetectionResult.minAnalyzableSentences &&
+          result.effectiveAvailableEngineCount >= 2;
+      if (calibration.autoCollectEnabled && canCalibrate) {
         await calibration.autoCollect(
           score: result.aiProbability,
           provenanceIndicatesHuman: result.provenance.indicatesHumanAuthorship,
@@ -489,6 +449,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           },
           text: result.inputText,
           label: result.sourceFileName,
+          analysisSignature: result.calibration.analysisSignature,
+          domain: result.calibration.domain,
+          lengthBucket: result.calibration.lengthBucket,
         );
       }
       if (!mounted) return;
@@ -517,11 +480,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _controller.clear();
     _sourceFileName = '';
     _sourceProvenance = DocumentProvenance.none;
+    _inputQuality = InputQualityEvidence.directText;
     _writingRecorder.reset();
     _writingSession = WritingSession.empty;
-    _taskPromptController.clear();
-    _previousDraftText = '';
-    _previousDraftFileName = '';
     setState(() {
       _phase = _WorkspacePhase.idle;
       _result = null;
@@ -546,30 +507,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         titleSpacing: 16,
         title: const AppIdentityTitle(),
         actions: [
-          IconButton(
-            onPressed: _isAnalyzing ? null : _editTaskPrompt,
-            tooltip: AppLocalizations.of(context).taskPromptTooltip,
-            icon: Icon(
-              LucideIcons.clipboardCheck,
-              color: _taskPromptController.text.trim().isEmpty
-                  ? null
-                  : Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          IconButton(
-            onPressed: _isAnalyzing ? null : _importPreviousDraft,
-            tooltip: _previousDraftFileName.isEmpty
-                ? AppLocalizations.of(context).previousDraftTooltip
-                : AppLocalizations.of(
-                    context,
-                  ).previousDraftSelected(_previousDraftFileName),
-            icon: Icon(
-              LucideIcons.files,
-              color: _previousDraftText.isEmpty
-                  ? null
-                  : Theme.of(context).colorScheme.primary,
-            ),
-          ),
           AppOverflowMenu(
             activeMode: prefs.workspaceMode,
             analysisActive: _isAnalyzing,
@@ -1097,6 +1034,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodySmall,
           ),
+          const SizedBox(height: 8),
+          _analysisReadinessLine(),
           const Spacer(),
           if (_isAnalyzing)
             FilledButton.tonalIcon(
@@ -1193,6 +1132,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             },
           ),
           const SizedBox(height: 6),
+          if (_controller.text.trim().isNotEmpty) ...[
+            _analysisReadinessLine(),
+            const SizedBox(height: 6),
+          ],
           SizedBox(
             width: double.infinity,
             child: _isAnalyzing
@@ -1217,6 +1160,73 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _analysisReadinessLine() {
+    final l10n = AppLocalizations.of(context);
+    final prefs = context.watch<PreferencesService>();
+    final manager = context.watch<ModelManager>();
+    final calibration = context.watch<CalibrationService>();
+    final profile = AnalysisProfile.fromText(_controller.text);
+    final matchingSamples = calibration.potentialSampleCountFor(
+      language: profile.language,
+      domain: profile.domain.name,
+      lengthBucket: CalibrationService.lengthBucketFor(profile.wordCount),
+    );
+    final enabled = PreferencesService.engineRoles
+        .where(prefs.isEngineEnabled)
+        .length;
+    final readiness = AnalysisReadiness.assess(
+      text: _controller.text,
+      inputQuality: _inputQuality,
+      coreModelInstalled: manager.isInstalled('transformer'),
+      enabledEngineCount: enabled,
+      matchingBaselineSamples: matchingSamples,
+      requiredBaselineSamples: calibration.requiredSamples,
+    );
+    final level = switch (readiness.ceiling) {
+      ReadinessLevel.low => l10n.integratedConfidenceLow,
+      ReadinessLevel.moderate => l10n.integratedConfidenceModerate,
+      ReadinessLevel.high => l10n.integratedConfidenceHigh,
+    };
+    final limitation = readiness.limitations.isEmpty
+        ? null
+        : switch (readiness.limitations.first) {
+            ReadinessLimitation.shortText => l10n.analysisReadinessShortText,
+            ReadinessLimitation.fewSentences =>
+              l10n.analysisReadinessFewSentences,
+            ReadinessLimitation.coreModelMissing =>
+              l10n.analysisReadinessCoreModel,
+            ReadinessLimitation.tooFewEngines =>
+              l10n.analysisReadinessFewEngines,
+            ReadinessLimitation.lowExtractionQuality =>
+              l10n.analysisReadinessExtraction,
+            ReadinessLimitation.localBaselineMissing =>
+              l10n.analysisReadinessBaseline,
+          };
+    final color = switch (readiness.ceiling) {
+      ReadinessLevel.low => Theme.of(context).colorScheme.error,
+      ReadinessLevel.moderate => Theme.of(context).colorScheme.tertiary,
+      ReadinessLevel.high => Theme.of(context).colorScheme.primary,
+    };
+    return Row(
+      children: [
+        Icon(LucideIcons.gauge, size: 14, color: color),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            '${l10n.analysisReadinessLabel(level)}'
+            '${limitation == null ? '' : ' · $limitation'}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -9,16 +9,19 @@ void main() {
     expect(LlamaFfi.isAvailable, isA<bool>());
   });
 
-  test('LlmManager initialization and loading fails gracefully when not installed', () async {
-    final modelManager = ModelManager();
-    final llmManager = LlmManager(modelManager: modelManager);
-    
-    expect(llmManager.isLoaded, isFalse);
-    expect(llmManager.isLoading, isFalse);
-    
-    // Attempting load should fail because model is not installed and dylib is missing
-    final success = await llmManager.loadIfAvailable();
-    expect(success, isFalse);
-    expect(llmManager.isLoaded, isFalse);
-  });
+  test(
+    'LlmManager initialization and loading fails gracefully when not installed',
+    () async {
+      final modelManager = ModelManager();
+      final llmManager = LlmManager(modelManager: modelManager);
+
+      expect(llmManager.isLoaded, isFalse);
+      expect(llmManager.isLoading, isFalse);
+
+      // Attempting load should fail because model is not installed and dylib is missing
+      final success = await llmManager.loadIfAvailable();
+      expect(success, isFalse);
+      expect(llmManager.isLoaded, isFalse);
+    },
+  );
 }

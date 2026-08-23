@@ -24,10 +24,8 @@ void main() {
       'cylinders was examined across a range of radius ratios, and the '
       'results are compared with the predictions of the linear theory.';
 
-  List<String> wordsOf(String text) => RegExp(r'[A-Za-zÀ-ÿĀ-ſ]+')
-      .allMatches(text)
-      .map((m) => m[0]!)
-      .toList();
+  List<String> wordsOf(String text) =>
+      RegExp(r'[A-Za-zÀ-ÿĀ-ſ]+').allMatches(text).map((m) => m[0]!).toList();
 
   double averageWordLength(String text) {
     final words = wordsOf(text);
@@ -72,8 +70,25 @@ void main() {
 
     test('英文功能詞佔比足以支撐語言辨識', () {
       const functionWords = {
-        'the', 'of', 'and', 'to', 'in', 'is', 'that', 'for', 'it', 'as',
-        'with', 'was', 'this', 'be', 'are', 'from', 'which', 'have', 'not',
+        'the',
+        'of',
+        'and',
+        'to',
+        'in',
+        'is',
+        'that',
+        'for',
+        'it',
+        'as',
+        'with',
+        'was',
+        'this',
+        'be',
+        'are',
+        'from',
+        'which',
+        'have',
+        'not',
         'on',
       };
       final words = wordsOf(paper).map((w) => w.toLowerCase()).toList();

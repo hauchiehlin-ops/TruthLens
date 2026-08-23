@@ -3,19 +3,19 @@ import 'package:truthlens/core/detection/model_catalog.dart';
 import 'package:truthlens/core/detection/model_provisioner.dart';
 
 ModelVariant _v(String id, int minRamMb, {String? url}) => ModelVariant(
-      id: id,
-      name: id,
-      backend: 'transformer',
-      languages: const ['en'],
-      quant: 'int8',
-      sizeBytes: 100,
-      minRamMb: minRamMb,
-      tier: PerformanceTier.mid,
-      version: '1',
-      source: 's',
-      license: 'l',
-      url: url,
-    );
+  id: id,
+  name: id,
+  backend: 'transformer',
+  languages: const ['en'],
+  quant: 'int8',
+  sizeBytes: 100,
+  minRamMb: minRamMb,
+  tier: PerformanceTier.mid,
+  version: '1',
+  source: 's',
+  license: 'l',
+  url: url,
+);
 
 void main() {
   final variants = [

@@ -8,13 +8,21 @@ import 'package:truthlens/core/services/link_verifier.dart';
 void main() {
   group('LinkVerifier.isDoiUrl', () {
     test('doi.org 網址判定為 DOI', () {
-      expect(LinkVerifier.isDoiUrl('https://doi.org/10.1038/nphys1170'), isTrue);
-      expect(LinkVerifier.isDoiUrl('https://dx.doi.org/10.1000/xyz123'), isTrue);
+      expect(
+        LinkVerifier.isDoiUrl('https://doi.org/10.1038/nphys1170'),
+        isTrue,
+      );
+      expect(
+        LinkVerifier.isDoiUrl('https://dx.doi.org/10.1000/xyz123'),
+        isTrue,
+      );
     });
 
     test('一般網址不判定為 DOI', () {
-      expect(LinkVerifier.isDoiUrl('https://example.com/10.1038/nphys1170'),
-          isFalse);
+      expect(
+        LinkVerifier.isDoiUrl('https://example.com/10.1038/nphys1170'),
+        isFalse,
+      );
       expect(LinkVerifier.isDoiUrl('https://doi.org/not-a-doi'), isFalse);
     });
   });
@@ -29,15 +37,14 @@ void main() {
             'message': {
               'title': ['Some Article Title'],
               'container-title': ['Nature Physics'],
-            }
+            },
           }),
           200,
         );
       });
-      final results = await LinkVerifier.verifyAll(
-        ['https://doi.org/10.1038/nphys1170'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://doi.org/10.1038/nphys1170',
+      ], client: client);
       final r = results.single;
       expect(r.isCitationVerified, isTrue);
       expect(r.status, LinkStatus.reachable);
@@ -47,10 +54,9 @@ void main() {
 
     test('Crossref 404 → 查無此 DOI 登記，判定為 notFound', () async {
       final client = MockClient((_) async => http.Response('', 404));
-      final results = await LinkVerifier.verifyAll(
-        ['https://doi.org/10.9999/does-not-exist'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://doi.org/10.9999/does-not-exist',
+      ], client: client);
       final r = results.single;
       expect(r.isCitationVerified, isTrue);
       expect(r.status, LinkStatus.notFound);
@@ -58,10 +64,9 @@ void main() {
 
     test('非 DOI 網址仍走一般連線可達性檢查（isCitationVerified 為 false）', () async {
       final client = MockClient((_) async => http.Response('', 200));
-      final results = await LinkVerifier.verifyAll(
-        ['https://example.com/page'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://example.com/page',
+      ], client: client);
       expect(results.single.isCitationVerified, isFalse);
     });
   });
@@ -90,28 +95,25 @@ void main() {
   group('LinkVerifier.verifyAll', () {
     test('200 回應判定為 reachable', () async {
       final client = MockClient((_) async => http.Response('', 200));
-      final results = await LinkVerifier.verifyAll(
-        ['https://example.com/ok'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://example.com/ok',
+      ], client: client);
       expect(results.single.status, LinkStatus.reachable);
     });
 
     test('404 回應判定為 notFound', () async {
       final client = MockClient((_) async => http.Response('', 404));
-      final results = await LinkVerifier.verifyAll(
-        ['https://example.com/missing'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://example.com/missing',
+      ], client: client);
       expect(results.single.status, LinkStatus.notFound);
     });
 
     test('連線例外判定為 unreachable', () async {
       final client = MockClient((_) async => throw Exception('network down'));
-      final results = await LinkVerifier.verifyAll(
-        ['https://example.com/down'],
-        client: client,
-      );
+      final results = await LinkVerifier.verifyAll([
+        'https://example.com/down',
+      ], client: client);
       expect(results.single.status, LinkStatus.unreachable);
     });
 

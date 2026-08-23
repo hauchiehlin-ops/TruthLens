@@ -45,6 +45,7 @@ void main() {
     final text = matrix.axes.first;
     expect(text.kind, EvidenceAxisKind.textTrace);
     expect(text.state, EvidenceAxisState.inconclusive);
+    expect(matrix.totalAxisCount, 4);
     expect(matrix.textOnly, isTrue);
   });
 

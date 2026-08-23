@@ -129,9 +129,7 @@ void main() {
 
     await tester.binding.setSurfaceSize(const Size(1200, 2000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(
-      app(result(ai: 0.32, provenance: suspicious)),
-    );
+    await tester.pumpWidget(app(result(ai: 0.32, provenance: suspicious)));
     await tester.pumpAndSettle();
 
     expect(

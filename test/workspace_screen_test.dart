@@ -35,6 +35,11 @@ void main() {
     expect(find.text(AppVersion.displayVersion), findsOneWidget);
     expect(find.text('Analysis telemetry'), findsOneWidget);
     expect(find.text('Live findings'), findsOneWidget);
+    expect(find.byTooltip('Add assignment requirements'), findsNothing);
+    expect(
+      find.byTooltip('Import a previous draft for version comparison'),
+      findsNothing,
+    );
   });
 
   testWidgets('mobile automatic mode uses mission timeline', (tester) async {
@@ -190,7 +195,9 @@ Widget _testApp(
   providers: [
     ChangeNotifierProvider.value(value: prefs),
     ChangeNotifierProvider<ModelManager>.value(value: _FakeModelManager()),
-    ChangeNotifierProvider<CalibrationService>.value(value: CalibrationService()),
+    ChangeNotifierProvider<CalibrationService>.value(
+      value: CalibrationService(),
+    ),
     ChangeNotifierProvider<EnsembleOrchestrator>.value(
       value: orchestrator ?? EnsembleOrchestrator(engines: const []),
     ),

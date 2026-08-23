@@ -236,8 +236,7 @@ class SettingsScreen extends StatelessWidget {
                                     return;
                                   }
                                   await FilePicker.saveFile(
-                                    dialogTitle:
-                                        l10n.settingsExportCorpusTitle,
+                                    dialogTitle: l10n.settingsExportCorpusTitle,
                                     fileName: 'truthlens_corpus.jsonl',
                                     bytes: payload.bytes,
                                   );
@@ -638,6 +637,7 @@ class _AiSampleTileState extends State<_AiSampleTile> {
 
       final result = await orchestrator.analyze(
         text,
+        calibration: calibration,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         prefs: prefs,
         l10n: l10n,
@@ -650,6 +650,9 @@ class _AiSampleTileState extends State<_AiSampleTile> {
             if (e.available) e.engineId: e.aiProbability,
         },
         text: text,
+        analysisSignature: result.calibration.analysisSignature,
+        domain: result.calibration.domain,
+        lengthBucket: result.calibration.lengthBucket,
       );
       messenger.showSnackBar(
         SnackBar(

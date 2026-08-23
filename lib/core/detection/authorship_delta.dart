@@ -129,10 +129,7 @@ StyleProfile buildStyleProfile(List<String> tokens) {
 ///
 /// z 分數以 [reference] 這組樣本的平均與標準差計算——這正是 Delta 必須
 /// 在同一組參考語料內解讀的原因。
-double burrowsDelta(
-  StyleProfile candidate,
-  List<StyleProfile> reference,
-) {
+double burrowsDelta(StyleProfile candidate, List<StyleProfile> reference) {
   if (reference.isEmpty) return double.nan;
 
   var sum = 0.0;

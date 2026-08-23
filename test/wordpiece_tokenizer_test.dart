@@ -21,20 +21,57 @@ void main() {
   final tok = WordPieceTokenizer(vocab);
 
   test('英文含標點：與原生 tokenizer 一致', () {
-    expect(tok.encode('Hello world, this is a test.').inputIds,
-        [101, 31178, 11356, 117, 10531, 10124, 169, 15839, 119, 102]);
+    expect(tok.encode('Hello world, this is a test.').inputIds, [
+      101,
+      31178,
+      11356,
+      117,
+      10531,
+      10124,
+      169,
+      15839,
+      119,
+      102,
+    ]);
   });
 
   test('中文逐字切分：與原生 tokenizer 一致', () {
-    expect(tok.encode('人工智慧正在改變世界').inputIds,
-        [101, 2179, 3584, 4413, 3930, 4791, 3031, 4282, 7292, 2087, 5621, 102]);
+    expect(tok.encode('人工智慧正在改變世界').inputIds, [
+      101,
+      2179,
+      3584,
+      4413,
+      3930,
+      4791,
+      3031,
+      4282,
+      7292,
+      2087,
+      5621,
+      102,
+    ]);
   });
 
   test('WordPiece 續接（##）：與原生 tokenizer 一致', () {
-    expect(tok.encode('Undetectable paraphrasing').inputIds,
-        [101, 41523, 14766, 24290, 11203, 10220, 28088, 47393, 10376, 102]);
-    expect(tok.encode('tokenization').inputIds,
-        [101, 18436, 18687, 27048, 102]);
+    expect(tok.encode('Undetectable paraphrasing').inputIds, [
+      101,
+      41523,
+      14766,
+      24290,
+      11203,
+      10220,
+      28088,
+      47393,
+      10376,
+      102,
+    ]);
+    expect(tok.encode('tokenization').inputIds, [
+      101,
+      18436,
+      18687,
+      27048,
+      102,
+    ]);
   });
 
   test('未知詞 → UNK', () {

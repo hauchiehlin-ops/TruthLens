@@ -79,7 +79,8 @@ abstract final class LexicalCalibration {
     return entry;
   }
 
-  static bool hasRecord(String languageCode) => _table.containsKey(languageCode);
+  static bool hasRecord(String languageCode) =>
+      _table.containsKey(languageCode);
 
   static Iterable<String> get calibratedLanguages => _table.keys;
 }

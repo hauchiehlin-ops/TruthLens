@@ -1934,7 +1934,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin, draft evolution, task alignment and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.';
+      'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.';
 
   @override
   String get helpComparisonTitle => 'Comparison with leading tools';
@@ -2745,61 +2745,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get taskPromptTitle => 'Assignment or task requirements';
-
-  @override
-  String get taskPromptHint =>
-      'Paste the prompt, required topics and any minimum word count. This stays on the device.';
-
-  @override
-  String get taskPromptSave => 'Use requirements';
-
-  @override
-  String get taskPromptTooltip => 'Add assignment requirements';
-
-  @override
-  String get previousDraftTooltip =>
-      'Import a previous draft for version comparison';
-
-  @override
-  String previousDraftSelected(String name) {
-    return 'Previous draft: $name';
-  }
-
-  @override
-  String previousDraftImported(String name) {
-    return 'Previous draft imported: $name';
-  }
-
-  @override
-  String get previousDraftUnreadable =>
-      'No readable text was found in that previous draft.';
-
-  @override
-  String get evidenceAxisRevision => 'Draft evolution';
-
-  @override
-  String get evidenceAxisRevisionNote =>
-      'How much of the previous draft was retained or replaced';
-
-  @override
-  String get evidenceAxisTask => 'Task alignment';
-
-  @override
-  String get evidenceAxisTaskNote =>
-      'Coverage of required concepts and mechanical constraints';
-
-  @override
-  String findingLargeDraftReplacement(int percent, String name) {
-    return 'Compared with “$name”, about $percent% of five-token sequences were replaced. This is a large revision event worth discussing, but it may also reflect legitimate rewriting or collaboration.';
-  }
-
-  @override
-  String findingTaskMismatch(int percent) {
-    return 'The document covers about $percent% of the task\'s extracted key concepts or misses a stated minimum length. This is a task-fit issue, not proof of AI authorship.';
-  }
-
-  @override
   String get challengeTitle => 'Supervised follow-up';
 
   @override
@@ -2897,7 +2842,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
+      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -2937,4 +2882,42 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return 'After weighting the available evidence, the document is “$direction” (AI likelihood index $percent%, $confidence confidence).';
   }
+
+  @override
+  String integratedStabilityLabel(int percent, int lower, int upper) {
+    return 'Segment stability $percent% · interval $lower–$upper%';
+  }
+
+  @override
+  String integratedInputQualityLabel(int percent) {
+    return 'Input extraction quality: $percent%';
+  }
+
+  @override
+  String integratedCalibrationLabel(String value, int count) {
+    return 'Matched local baseline: p=$value · n=$count';
+  }
+
+  @override
+  String analysisReadinessLabel(String level) {
+    return 'Expected confidence ceiling: $level';
+  }
+
+  @override
+  String get analysisReadinessShortText => 'more text needed';
+
+  @override
+  String get analysisReadinessFewSentences => 'too few segments';
+
+  @override
+  String get analysisReadinessCoreModel => 'core classifier unavailable';
+
+  @override
+  String get analysisReadinessFewEngines => 'fewer than two engines enabled';
+
+  @override
+  String get analysisReadinessExtraction => 'extraction quality is limited';
+
+  @override
+  String get analysisReadinessBaseline => 'no matched local baseline';
 }

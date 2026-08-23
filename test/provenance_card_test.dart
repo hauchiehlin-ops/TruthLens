@@ -15,9 +15,7 @@ Widget _app(DocumentProvenance provenance) => MaterialApp(
     GlobalCupertinoLocalizations.delegate,
   ],
   home: Scaffold(
-    body: SingleChildScrollView(
-      child: ProvenanceCard(provenance: provenance),
-    ),
+    body: SingleChildScrollView(child: ProvenanceCard(provenance: provenance)),
   ),
 );
 
@@ -66,7 +64,10 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Editing history is clearly unusual'), findsOneWidget);
     // 事實欄位
-    expect(find.textContaining('Editing time recorded in the file: 3'), findsOneWidget);
+    expect(
+      find.textContaining('Editing time recorded in the file: 3'),
+      findsOneWidget,
+    );
     expect(find.textContaining('Times saved: 1'), findsOneWidget);
     expect(find.textContaining('Microsoft Office Word'), findsOneWidget);
     // 兩條訊號的白話說明

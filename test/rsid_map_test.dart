@@ -36,7 +36,8 @@ void main() {
   });
 
   test('沒有 RSID 屬性時回傳空結果，不猜測', () {
-    const xml = '<w:p><w:r><w:t>No revision identifiers here at all.</w:t></w:r></w:p>';
+    const xml =
+        '<w:p><w:r><w:t>No revision identifiers here at all.</w:t></w:r></w:p>';
     expect(buildRsidMap(xml, _countWords).hasData, isFalse);
     expect(buildRsidMap('', _countWords).hasData, isFalse);
   });
@@ -69,15 +70,24 @@ void main() {
       ].join();
 
       final map = buildRsidMap(xml, _countWords);
-      expect(map.paragraphCount, greaterThanOrEqualTo(RsidMap.minimumParagraphs));
-      expect(map.largestBatchShare, greaterThan(RsidMap.concentrationThreshold));
+      expect(
+        map.paragraphCount,
+        greaterThanOrEqualTo(RsidMap.minimumParagraphs),
+      );
+      expect(
+        map.largestBatchShare,
+        greaterThan(RsidMap.concentrationThreshold),
+      );
       expect(map.isHighlyConcentrated, isTrue);
       expect(map.batches.first.paragraphIndices.length, 5);
     });
 
     test('段落太少時不下結論——短文件本來就只有一兩個批次', () {
       final xml = [
-        _paragraph('AAAA0001', 'One paragraph with a reasonable amount of text.'),
+        _paragraph(
+          'AAAA0001',
+          'One paragraph with a reasonable amount of text.',
+        ),
         _paragraph('AAAA0001', 'A second paragraph in the very same batch.'),
       ].join();
 

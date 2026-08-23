@@ -56,8 +56,10 @@ class BinocularsScorer {
       final p = observerProbs[i];
       final logQ = performerLogProbs[i];
       if (p.length != logQ.length) {
-        throw ArgumentError('第 $i 個位置的詞彙表維度不一致：'
-            '${p.length} vs ${logQ.length}');
+        throw ArgumentError(
+          '第 $i 個位置的詞彙表維度不一致：'
+          '${p.length} vs ${logQ.length}',
+        );
       }
       var h = 0.0;
       for (var v = 0; v < p.length; v++) {

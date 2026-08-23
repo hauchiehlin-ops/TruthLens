@@ -3059,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin, draft evolution, task alignment and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
+  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -4377,90 +4377,6 @@ abstract class AppLocalizations {
   /// **'{unsupported} of {total} checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.'**
   String findingUnsupportedClaims(int unsupported, int total);
 
-  /// No description provided for @taskPromptTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Assignment or task requirements'**
-  String get taskPromptTitle;
-
-  /// No description provided for @taskPromptHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste the prompt, required topics and any minimum word count. This stays on the device.'**
-  String get taskPromptHint;
-
-  /// No description provided for @taskPromptSave.
-  ///
-  /// In en, this message translates to:
-  /// **'Use requirements'**
-  String get taskPromptSave;
-
-  /// No description provided for @taskPromptTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Add assignment requirements'**
-  String get taskPromptTooltip;
-
-  /// No description provided for @previousDraftTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Import a previous draft for version comparison'**
-  String get previousDraftTooltip;
-
-  /// No description provided for @previousDraftSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'Previous draft: {name}'**
-  String previousDraftSelected(String name);
-
-  /// No description provided for @previousDraftImported.
-  ///
-  /// In en, this message translates to:
-  /// **'Previous draft imported: {name}'**
-  String previousDraftImported(String name);
-
-  /// No description provided for @previousDraftUnreadable.
-  ///
-  /// In en, this message translates to:
-  /// **'No readable text was found in that previous draft.'**
-  String get previousDraftUnreadable;
-
-  /// No description provided for @evidenceAxisRevision.
-  ///
-  /// In en, this message translates to:
-  /// **'Draft evolution'**
-  String get evidenceAxisRevision;
-
-  /// No description provided for @evidenceAxisRevisionNote.
-  ///
-  /// In en, this message translates to:
-  /// **'How much of the previous draft was retained or replaced'**
-  String get evidenceAxisRevisionNote;
-
-  /// No description provided for @evidenceAxisTask.
-  ///
-  /// In en, this message translates to:
-  /// **'Task alignment'**
-  String get evidenceAxisTask;
-
-  /// No description provided for @evidenceAxisTaskNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Coverage of required concepts and mechanical constraints'**
-  String get evidenceAxisTaskNote;
-
-  /// No description provided for @findingLargeDraftReplacement.
-  ///
-  /// In en, this message translates to:
-  /// **'Compared with “{name}”, about {percent}% of five-token sequences were replaced. This is a large revision event worth discussing, but it may also reflect legitimate rewriting or collaboration.'**
-  String findingLargeDraftReplacement(int percent, String name);
-
-  /// No description provided for @findingTaskMismatch.
-  ///
-  /// In en, this message translates to:
-  /// **'The document covers about {percent}% of the task\'s extracted key concepts or misses a stated minimum length. This is a task-fit issue, not proof of AI authorship.'**
-  String findingTaskMismatch(int percent);
-
   /// No description provided for @challengeTitle.
   ///
   /// In en, this message translates to:
@@ -4620,7 +4536,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedIndexCaveat.
   ///
   /// In en, this message translates to:
-  /// **'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.'**
+  /// **'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.'**
   String get integratedIndexCaveat;
 
   /// No description provided for @reportTextEngineSignalExplanation.
@@ -4665,6 +4581,66 @@ abstract class AppLocalizations {
     int percent,
     String confidence,
   );
+
+  /// No description provided for @integratedStabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Segment stability {percent}% · interval {lower}–{upper}%'**
+  String integratedStabilityLabel(int percent, int lower, int upper);
+
+  /// No description provided for @integratedInputQualityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Input extraction quality: {percent}%'**
+  String integratedInputQualityLabel(int percent);
+
+  /// No description provided for @integratedCalibrationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched local baseline: p={value} · n={count}'**
+  String integratedCalibrationLabel(String value, int count);
+
+  /// No description provided for @analysisReadinessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected confidence ceiling: {level}'**
+  String analysisReadinessLabel(String level);
+
+  /// No description provided for @analysisReadinessShortText.
+  ///
+  /// In en, this message translates to:
+  /// **'more text needed'**
+  String get analysisReadinessShortText;
+
+  /// No description provided for @analysisReadinessFewSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'too few segments'**
+  String get analysisReadinessFewSentences;
+
+  /// No description provided for @analysisReadinessCoreModel.
+  ///
+  /// In en, this message translates to:
+  /// **'core classifier unavailable'**
+  String get analysisReadinessCoreModel;
+
+  /// No description provided for @analysisReadinessFewEngines.
+  ///
+  /// In en, this message translates to:
+  /// **'fewer than two engines enabled'**
+  String get analysisReadinessFewEngines;
+
+  /// No description provided for @analysisReadinessExtraction.
+  ///
+  /// In en, this message translates to:
+  /// **'extraction quality is limited'**
+  String get analysisReadinessExtraction;
+
+  /// No description provided for @analysisReadinessBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'no matched local baseline'**
+  String get analysisReadinessBaseline;
 }
 
 class _AppLocalizationsDelegate

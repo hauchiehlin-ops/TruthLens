@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -43,9 +44,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     super.initState();
     final notifier = context.read<OcrConfigNotifier>();
     _apiKeyController = TextEditingController(text: notifier.geminiApiKey);
-    _serverUrlController = TextEditingController(
-      text: notifier.localServerUrl,
-    );
+    _serverUrlController = TextEditingController(text: notifier.localServerUrl);
   }
 
   @override
@@ -341,7 +340,13 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     final notifier = context.read<OcrConfigNotifier>();
     if (_apiKeyController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isZh(l10n) ? '請先輸入 Gemini API 金鑰。' : 'Enter a Gemini API key first.')),
+        SnackBar(
+          content: Text(
+            _isZh(l10n)
+                ? '請先輸入 Gemini API 金鑰。'
+                : 'Enter a Gemini API key first.',
+          ),
+        ),
       );
       return;
     }
@@ -351,8 +356,12 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       SnackBar(
         content: Text(
           connected
-              ? (_isZh(l10n) ? 'Gemini API 金鑰有效，可正常連線。' : 'Gemini API key is valid and reachable.')
-              : (_isZh(l10n) ? 'Gemini API 連線失敗，請確認金鑰是否正確。' : 'Could not reach Gemini API. Please check the key.'),
+              ? (_isZh(l10n)
+                    ? 'Gemini API 金鑰有效，可正常連線。'
+                    : 'Gemini API key is valid and reachable.')
+              : (_isZh(l10n)
+                    ? 'Gemini API 連線失敗，請確認金鑰是否正確。'
+                    : 'Could not reach Gemini API. Please check the key.'),
         ),
         backgroundColor: connected
             ? Theme.of(context).colorScheme.primary
@@ -427,25 +436,42 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   String _geminiStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
     final zh = _isZh(l10n);
     return switch (status) {
-      _LocalOcrStatus.notConfigured => zh ? 'Gemini：尚未設定金鑰' : 'Gemini: no key set',
-      _LocalOcrStatus.needsTest => zh ? 'Gemini：已填入金鑰，尚未測試' : 'Gemini: key set, not tested',
-      _LocalOcrStatus.checking => zh ? 'Gemini：正在驗證金鑰' : 'Gemini: verifying key',
+      _LocalOcrStatus.notConfigured =>
+        zh ? 'Gemini：尚未設定金鑰' : 'Gemini: no key set',
+      _LocalOcrStatus.needsTest =>
+        zh ? 'Gemini：已填入金鑰，尚未測試' : 'Gemini: key set, not tested',
+      _LocalOcrStatus.checking =>
+        zh ? 'Gemini：正在驗證金鑰' : 'Gemini: verifying key',
       _LocalOcrStatus.ready => zh ? 'Gemini：金鑰有效' : 'Gemini: key valid',
       _LocalOcrStatus.unavailable =>
         zh ? 'Gemini：金鑰無效或無法連線' : 'Gemini: invalid or unreachable',
     };
   }
 
-  String _activeEngineSummary(AppLocalizations l10n, OcrConfigNotifier notifier) {
+  String _activeEngineSummary(
+    AppLocalizations l10n,
+    OcrConfigNotifier notifier,
+  ) {
     final zh = _isZh(l10n);
     return switch (notifier.activeEngine) {
-      OcrEngineKind.local => notifier.localVerified
-          ? (zh ? '目前生效引擎：本地 OCR 伺服器（已測試可用）' : 'Active engine: local OCR server (verified)')
-          : (zh ? '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）' : 'Active engine: local OCR server (not yet tested)'),
-      OcrEngineKind.gemini => notifier.geminiVerified
-          ? (zh ? '目前生效引擎：Gemini API（已測試可用）' : 'Active engine: Gemini API (verified)')
-          : (zh ? '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）' : 'Active engine: Gemini API (not yet tested)'),
-      OcrEngineKind.none => zh ? '尚未設定任何 OCR 引擎' : 'No OCR engine configured yet',
+      OcrEngineKind.local =>
+        notifier.localVerified
+            ? (zh
+                  ? '目前生效引擎：本地 OCR 伺服器（已測試可用）'
+                  : 'Active engine: local OCR server (verified)')
+            : (zh
+                  ? '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）'
+                  : 'Active engine: local OCR server (not yet tested)'),
+      OcrEngineKind.gemini =>
+        notifier.geminiVerified
+            ? (zh
+                  ? '目前生效引擎：Gemini API（已測試可用）'
+                  : 'Active engine: Gemini API (verified)')
+            : (zh
+                  ? '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）'
+                  : 'Active engine: Gemini API (not yet tested)'),
+      OcrEngineKind.none =>
+        zh ? '尚未設定任何 OCR 引擎' : 'No OCR engine configured yet',
     };
   }
 

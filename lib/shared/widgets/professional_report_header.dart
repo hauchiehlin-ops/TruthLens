@@ -186,7 +186,7 @@ class ProfessionalReportHeader extends StatelessWidget {
             },
           ),
 
-          // 4. 六軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性
+          // 4. 四軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性
           //    訊號進入下方作者判讀，其餘維持待核查事實。
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -524,6 +524,41 @@ class _VerdictSummaryCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.integratedStabilityLabel(
+                    (assessment.stabilityScore * 100).round(),
+                    (assessment.lowerBound * 100).round(),
+                    (assessment.upperBound * 100).round(),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.88),
+                  ),
+                ),
+                if (result.inputQuality.extractionQuality < 0.95) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    l10n.integratedInputQualityLabel(
+                      (result.inputQuality.extractionQuality * 100).round(),
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.88),
+                    ),
+                  ),
+                ],
+                if (result.calibration.isApplicable) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    l10n.integratedCalibrationLabel(
+                      result.calibration.pValue.toStringAsFixed(3),
+                      result.calibration.calibrationSize,
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.88),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 3),
                 Text(
                   assessment.passesAiEvidenceGate

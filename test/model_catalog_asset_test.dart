@@ -11,7 +11,9 @@ import 'package:truthlens/core/detection/model_catalog.dart';
 /// 但實際輸出的是情感傾向，結果無意義。
 void main() {
   final raw = File('assets/model_catalog.json').readAsStringSync();
-  final catalog = ModelCatalog.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  final catalog = ModelCatalog.fromJson(
+    jsonDecode(raw) as Map<String, dynamic>,
+  );
 
   test('catalog 可正確解析', () {
     expect(catalog.models, isNotEmpty);
@@ -23,10 +25,16 @@ void main() {
     for (final model in catalog.models) {
       for (final v in model.variants) {
         for (final bad in knownBad) {
-          expect(v.url ?? '', isNot(contains(bad)),
-              reason: '${v.id} 的 url 疑似指向情感分析模型而非 AI 偵測器');
-          expect(v.source, isNot(contains(bad)),
-              reason: '${v.id} 的 source 疑似為情感分析模型');
+          expect(
+            v.url ?? '',
+            isNot(contains(bad)),
+            reason: '${v.id} 的 url 疑似指向情感分析模型而非 AI 偵測器',
+          );
+          expect(
+            v.source,
+            isNot(contains(bad)),
+            reason: '${v.id} 的 source 疑似為情感分析模型',
+          );
         }
       }
     }
@@ -36,8 +44,11 @@ void main() {
     for (final model in catalog.models) {
       for (final v in model.variants) {
         if (v.isDownloadable && v.tokenizer != 'none') {
-          expect(v.tokenizerUrl, isNotNull,
-              reason: '${v.id} 可下載但缺少 tokenizer_url，端上將無法推論');
+          expect(
+            v.tokenizerUrl,
+            isNotNull,
+            reason: '${v.id} 可下載但缺少 tokenizer_url，端上將無法推論',
+          );
         }
       }
     }
@@ -48,8 +59,11 @@ void main() {
     final transformer = catalog.forRole('transformer')!;
     for (final v in transformer.variants) {
       if (v.isDownloadable) {
-        expect(supported, contains(v.tokenizer),
-            reason: '${v.id} 使用尚未支援的 tokenizer 類型 ${v.tokenizer}');
+        expect(
+          supported,
+          contains(v.tokenizer),
+          reason: '${v.id} 使用尚未支援的 tokenizer 類型 ${v.tokenizer}',
+        );
       }
     }
   });
@@ -62,10 +76,16 @@ void main() {
     for (final model in catalog.models) {
       for (final v in model.variants) {
         for (final marker in localHostMarkers) {
-          expect(v.url ?? '', isNot(contains(marker)),
-              reason: '${v.id} 的 url 指向本機位址，真實使用者永遠無法下載');
-          expect(v.tokenizerUrl ?? '', isNot(contains(marker)),
-              reason: '${v.id} 的 tokenizer_url 指向本機位址，真實使用者永遠無法下載');
+          expect(
+            v.url ?? '',
+            isNot(contains(marker)),
+            reason: '${v.id} 的 url 指向本機位址，真實使用者永遠無法下載',
+          );
+          expect(
+            v.tokenizerUrl ?? '',
+            isNot(contains(marker)),
+            reason: '${v.id} 的 tokenizer_url 指向本機位址，真實使用者永遠無法下載',
+          );
         }
       }
     }

@@ -2,12 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show Locale;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../models/calibration_evidence.dart';
 import '../models/detection_result.dart';
+import '../models/input_quality.dart';
+import '../services/calibration_service.dart';
 import '../services/document_provenance.dart';
 import '../services/writing_session.dart';
 import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
+import 'analysis_profile.dart';
 import 'evasion_scanner.dart';
 import 'evidence_fusion.dart';
 import 'lexical_calibration.dart';
@@ -80,11 +84,10 @@ class EnsembleOrchestrator extends ChangeNotifier {
   Future<DetectionResult> analyze(
     String input, {
     String sourceFileName = '',
-    String taskPrompt = '',
-    String previousDraftText = '',
-    String previousDraftFileName = '',
     DocumentProvenance provenance = DocumentProvenance.none,
     WritingSession writingSession = WritingSession.empty,
+    InputQualityEvidence inputQuality = InputQualityEvidence.directText,
+    CalibrationService? calibration,
     bool eslCorrectionEnabled = true,
     PreferencesService? prefs,
     AppLocalizations? l10n,
@@ -95,6 +98,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final loc = l10n ?? lookupAppLocalizations(const Locale('en'));
     final started = DateTime.now();
     final text = PreprocessedText.from(input);
+    final profile = AnalysisProfile.fromText(input);
 
     final futures = engines.map((engine) async {
       final role = _roleOf(engine.id);
@@ -132,10 +136,22 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final fusion = TextEvidenceFusion.evaluate(
       scores: scores,
       inputText: input,
+      profile: profile,
+      extractionQuality: inputQuality.extractionQuality,
       eslAdjusted: eslAdjusted,
     );
     final overall = fusion.probability;
     final sentences = _scoreSentences(text, overall, scores, loc);
+    final analysisSignature = CalibrationService.analysisSignatureFor(scores);
+    final calibrationEvidence =
+        calibration?.evaluateFor(
+          score: overall,
+          language: profile.language,
+          analysisSignature: analysisSignature,
+          domain: profile.domain.name,
+          lengthBucket: CalibrationService.lengthBucketFor(profile.wordCount),
+        ) ??
+        CalibrationEvidence.unavailable;
 
     // 統計引擎參與情況
     final availableCount = scores.where((s) => s.available).length;
@@ -165,9 +181,6 @@ class EnsembleOrchestrator extends ChangeNotifier {
       analyzedAt: started,
       inputText: input,
       sourceFileName: sourceFileName,
-      taskPrompt: taskPrompt,
-      previousDraftText: previousDraftText,
-      previousDraftFileName: previousDraftFileName,
       provenance: provenance,
       // 規避痕跡掃描是純本地的確定性檢查，成本近乎零，直接在分析當下完成
       evasion: scanForEvasion(input),
@@ -181,6 +194,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
       elapsed: DateTime.now().difference(started),
       availableEngineCount: availableCount,
       totalEngineCount: totalCount,
+      inputQuality: inputQuality,
+      calibration: calibrationEvidence,
     );
   }
 

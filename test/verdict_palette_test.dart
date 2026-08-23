@@ -9,9 +9,7 @@ import 'package:truthlens/shared/widgets/verdict_palette.dart';
 double _luminance(Color c) {
   double channel(double v) =>
       v <= 0.03928 ? v / 12.92 : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
-  return 0.2126 * channel(c.r) +
-      0.7152 * channel(c.g) +
-      0.0722 * channel(c.b);
+  return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
 }
 
 /// 白色文字在 [background] 上的對比度
@@ -59,7 +57,8 @@ void main() {
       expect(
         (luminances[i] - luminances[i - 1]).abs(),
         greaterThan(0.004),
-        reason: '${Verdict.values[i - 1].name} 與 ${Verdict.values[i].name} 明度太接近',
+        reason:
+            '${Verdict.values[i - 1].name} 與 ${Verdict.values[i].name} 明度太接近',
       );
     }
   });
@@ -91,10 +90,25 @@ void main() {
 
   test('切點與判定共用同一個來源，PDF 與畫面不會分岔', () {
     // report_exporter 以 Verdict.fromProbability 取級距後查同一張表
-    expect(verdictColor(Verdict.fromProbability(0.10)), verdictColor(Verdict.human));
-    expect(verdictColor(Verdict.fromProbability(0.30)), verdictColor(Verdict.likelyHuman));
-    expect(verdictColor(Verdict.fromProbability(0.50)), verdictColor(Verdict.mixed));
-    expect(verdictColor(Verdict.fromProbability(0.70)), verdictColor(Verdict.likelyAi));
-    expect(verdictColor(Verdict.fromProbability(0.90)), verdictColor(Verdict.ai));
+    expect(
+      verdictColor(Verdict.fromProbability(0.10)),
+      verdictColor(Verdict.human),
+    );
+    expect(
+      verdictColor(Verdict.fromProbability(0.30)),
+      verdictColor(Verdict.likelyHuman),
+    );
+    expect(
+      verdictColor(Verdict.fromProbability(0.50)),
+      verdictColor(Verdict.mixed),
+    );
+    expect(
+      verdictColor(Verdict.fromProbability(0.70)),
+      verdictColor(Verdict.likelyAi),
+    );
+    expect(
+      verdictColor(Verdict.fromProbability(0.90)),
+      verdictColor(Verdict.ai),
+    );
   });
 }

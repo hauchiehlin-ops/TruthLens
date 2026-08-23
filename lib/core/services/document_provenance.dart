@@ -181,7 +181,9 @@ class DocumentProvenance {
     final notable = signals
         .where((s) => s.severity == ProvenanceSeverity.notable)
         .length;
-    if (strong >= 2 || (strong >= 1 && notable >= 1)) return ProvenanceRisk.high;
+    if (strong >= 2 || (strong >= 1 && notable >= 1)) {
+      return ProvenanceRisk.high;
+    }
     if (strong >= 1 || notable >= 2) return ProvenanceRisk.medium;
     return ProvenanceRisk.low;
   }
@@ -354,12 +356,8 @@ class DocumentProvenance {
   static int countWords(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return 0;
-    final cjk = RegExp(
-      r'[㐀-䶿一-鿿぀-ヿ가-힯]',
-    ).allMatches(trimmed).length;
-    final latin = RegExp(
-      r'[A-Za-zÀ-ɏЀ-ӿ]+',
-    ).allMatches(trimmed).length;
+    final cjk = RegExp(r'[㐀-䶿一-鿿぀-ヿ가-힯]').allMatches(trimmed).length;
+    final latin = RegExp(r'[A-Za-zÀ-ɏЀ-ӿ]+').allMatches(trimmed).length;
     return cjk + latin;
   }
 
