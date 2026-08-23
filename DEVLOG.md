@@ -1,5 +1,29 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-24（第一百三十八次更新）— Android Web 重新整理啟動循環修復
+
+Android Chrome 重新整理正式 Web 版後可能停留在「正在啟動本地分析工作台」靜態
+訊息頁，無法進入 Flutter 主畫面；同一版本在 iOS Safari 正常。追查正式部署資源後
+確認不是 App 路由問題，而是 Service Worker 遷移流程互相衝突：Flutter 產生的
+`flutter_service_worker.js` 會註銷自身並重新導向所有頁面，但自訂 bootstrap 又在每次
+載入時重新註冊它，Android Chrome 因完整支援 Worker 而可能陷入反覆重新整理。
+
+**啟動修復**：bootstrap 不再傳入 `serviceWorkerSettings`，因此不會註冊新的 Flutter
+Worker。啟動前會註銷同來源的既有 Worker、刪除舊 `flutter-app-cache`／`flutter-*`
+快取；若目前頁面仍受舊 Worker 控制，只重新整理一次，並以 session 標記防止循環。
+這讓已經開啟過舊版的 Android 使用者也能自動完成遷移，而非只修復全新安裝。
+
+**失敗復原**：Flutter 載入、引擎初始化或 30 秒啟動逾時時，靜態 SEO shell 不再永久
+顯示「正在啟動」；它會改成可理解的失敗狀態並提供符合 44px 觸控尺寸的重新載入按鈕。
+新增靜態回歸測試，禁止 bootstrap 再次註冊 Service Worker，並驗證一次性遷移、快取
+清理與可存取的重試介面。
+
+**版本與狀態**：v4.6.2 / Build 1435。✅ Flutter 564 項測試全數通過；
+`flutter analyze --no-pub` 零問題，Web release 建置與 JavaScript 語法檢查通過。
+實際瀏覽器以 390×844 Android 視窗植入舊 Worker，再驗證自動註銷、快取遷移與
+連續三次重新整理；每次都直接進入主頁，Worker 註冊數與控制器皆為零，且無執行期
+warning 或 error。
+
 ## 2026-08-23（第一百三十七次更新）— iOS／Android 響應式工作區完整性
 
 針對行動裝置部分卡片無法完整檢視進行跨尺寸稽核。追查確認舊版僅在內容寬度低於

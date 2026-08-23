@@ -62,4 +62,31 @@ void main() {
       expect(filesystemIndex, lessThan(fallbackIndex));
     }
   });
+
+  test(
+    'web bootstrap removes legacy workers without registering a new one',
+    () {
+      final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+
+      expect(bootstrap, isNot(contains('flutter_service_worker_version')));
+      expect(bootstrap, isNot(contains('serviceWorkerSettings:')));
+      expect(bootstrap, contains('navigator.serviceWorker.getRegistrations()'));
+      expect(bootstrap, contains('registration.unregister()'));
+      expect(bootstrap, contains('truthlens-worker-cleanup-v1'));
+      expect(bootstrap, contains('window.sessionStorage'));
+      expect(bootstrap, contains('window.caches.delete(name)'));
+      expect(bootstrap, isNot(contains('navigator.serviceWorker.register(')));
+    },
+  );
+
+  test('web startup shell exposes an accessible retry state', () {
+    final html = File('web/index.html').readAsStringSync();
+    final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+
+    expect(html, contains('class="seo-shell__status" role="status"'));
+    expect(html, contains('#seo-shell-retry'));
+    expect(bootstrap, contains('showTruthLensStartupFailure'));
+    expect(bootstrap, contains('retry.type = "button"'));
+    expect(bootstrap, contains('window.location.reload()'));
+  });
 }
