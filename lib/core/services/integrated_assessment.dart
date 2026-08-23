@@ -25,6 +25,15 @@ enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed, balanced }
 
 enum IntegratedConfidence { low, moderate, high }
 
+enum IntegratedConclusion {
+  preliminaryAi,
+  preliminaryHuman,
+  likelyAi,
+  likelyHuman,
+  likelyMixed,
+  noClearDominance,
+}
+
 class IntegratedEvidenceContribution {
   final EvidenceAxisKind kind;
 
@@ -80,6 +89,36 @@ class IntegratedAssessment {
     required this.stabilityAvailable,
     required this.contributions,
   });
+
+  /// 50 是方向中點，不是 AI 升級線。接近中點且信心低時仍提供方向，
+  /// 但以「暫偏向」呈現，避免把 49／51 包裝成穩健的二元判定。
+  bool get isNearDirectionalMidpoint => (aiLikelihood - 0.5).abs() <= 0.08;
+
+  int get evidenceIndex => (aiLikelihood * 100).round();
+
+  int get evidenceSufficiency => (confidenceScore * 100).round();
+
+  int get aiEscalationGap => math.max(
+    0,
+    ((DetectionResult.aiFlagThreshold - aiLikelihood) * 100).ceil(),
+  );
+
+  IntegratedConclusion get conclusion {
+    if (direction == IntegratedDirection.likelyMixed) {
+      return IntegratedConclusion.likelyMixed;
+    }
+    if (direction == IntegratedDirection.balanced) {
+      return IntegratedConclusion.noClearDominance;
+    }
+    if (confidence == IntegratedConfidence.low && isNearDirectionalMidpoint) {
+      return direction == IntegratedDirection.likelyAi
+          ? IntegratedConclusion.preliminaryAi
+          : IntegratedConclusion.preliminaryHuman;
+    }
+    return direction == IntegratedDirection.likelyAi
+        ? IntegratedConclusion.likelyAi
+        : IntegratedConclusion.likelyHuman;
+  }
 
   factory IntegratedAssessment.assess(
     DetectionResult result, {

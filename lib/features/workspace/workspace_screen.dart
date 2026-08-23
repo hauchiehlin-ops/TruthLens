@@ -1675,12 +1675,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                         itemBuilder: (context, index) {
                           final entry = labels.entries.elementAt(index);
                           final group = _engineGroupFor(entry.key, l10n);
+                          final liveScore = _scores[entry.key];
+                          final displayedScore = group != null
+                              ? group.hasDirectionalSignal
+                                    ? group.probability
+                                    : null
+                              : liveScore?.hasEvidence == true
+                              ? liveScore?.aiProbability
+                              : null;
                           return _EngineTelemetryRow(
                             role: entry.key,
                             label: entry.value,
                             active: _activeEngines.contains(entry.key),
                             done: _done.contains(entry.key),
-                            score: _scores[entry.key]?.aiProbability,
+                            score: displayedScore,
                             relationshipText: group?.relationshipText,
                             reasons: group?.reasons,
                           );
@@ -2649,6 +2657,7 @@ class _ProbabilityGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final complete = progress >= 1;
     final color = complete
@@ -2696,24 +2705,37 @@ class _ProbabilityGauge extends StatelessWidget {
                 child: SizedBox.square(
                   dimension: compact ? 50 : 66,
                   child: Center(
-                    // 完成前不顯示百分比數字：與最終 AI 機率同樣的粗體樣式容易讓使用者
-                    // 誤以為「解析/分析中」階段的工作流程進度就是 AI 機率（曾造成混淆）。
-                    // 完成前改以圖示表示狀態，機率數字只在真正判定完成後才出現。
+                    // 完成前不顯示指數數字：與最終 AI 證據指數同樣的粗體樣式容易讓使用者
+                    // 誤以為「解析/分析中」階段的工作流程進度就是判讀結果（曾造成混淆）。
+                    // 完成前改以圖示表示狀態，證據指數只在真正判定完成後才出現。
                     child: complete
-                        ? Text(
-                            '${(probability * 100).round()}%',
-                            style:
-                                (compact
-                                        ? Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium
-                                        : Theme.of(
-                                            context,
-                                          ).textTheme.titleLarge)
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${(probability * 100).round()}',
+                                style:
+                                    (compact
+                                            ? Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium
+                                            : Theme.of(
+                                                context,
+                                              ).textTheme.titleLarge)
+                                        ?.copyWith(
+                                          color: color,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                              ),
+                              Text(
+                                l10n.workspaceAiEvidenceIndexShort,
+                                style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: color,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w700,
                                     ),
+                              ),
+                            ],
                           )
                         : Icon(
                             analyzing
@@ -3065,6 +3087,16 @@ class _EngineTelemetryRow extends StatelessWidget {
                           color: isOverlayTheme
                               ? Colors.white
                               : scheme.onSurface,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    else
+                      Text(
+                        '—',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: isOverlayTheme
+                              ? Colors.white.withValues(alpha: 0.82)
+                              : scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

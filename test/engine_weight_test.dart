@@ -37,9 +37,9 @@ void main() {
       eslCorrectionEnabled: false,
     );
 
-    // Transformer 的 AI 訊號只有 10% 上限，統計家族的人類方向有 20%；
-    // 新融合不再做會重複計票的四引擎算術平均，但設定權重仍決定相對話語權。
-    expect(result.aiProbability, lessThan(0.30));
+    // Transformer 的 AI 訊號為 1.0×10%，統計家族的人類訊號為 0.0×20%；
+    // 線性累積結果可直接重算為 0.10 / (0.10 + 0.20) = 1/3。
+    expect(result.aiProbability, closeTo(1 / 3, 1e-9));
     expect(
       result.engineScores.firstWhere((s) => s.engineId == 'transformer').weight,
       0.10,

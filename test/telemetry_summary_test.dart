@@ -184,7 +184,7 @@ void main() {
     final text = lines.join(' ');
 
     expect(text, contains('More likely not AI-generated'));
-    expect(text, contains('AI likelihood index 10%'));
+    expect(text, contains('AI evidence index 10/100'));
     expect(text, isNot(contains('AI and human signals are balanced')));
     expect(text, isNot(contains('engines disagree')));
     expect(text, isNot(contains('broadly agree')));

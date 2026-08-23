@@ -509,12 +509,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String reportEngineSignalLabel(int percent) {
-    return 'AI 訊號 $percent%';
+    return 'AI 訊號指數 $percent/100';
   }
 
   @override
+  String reportEngineDirectionalIndex(int percent) {
+    return '弱方向 $percent/100';
+  }
+
+  @override
+  String get reportEngineNoDirectionalSignal => '未形成方向性訊號';
+
+  @override
   String get reportEngineSignalExplanation =>
-      'AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。';
+      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；沒有跨過門檻或折扣後方向的引擎顯示「未形成方向性訊號」，不再以 50% 冒充量測結果。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {
@@ -1697,6 +1705,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String engineReasonBurstinessMid(String value) {
+    return '句長變化（burstiness $value）落在 0.30–0.55 中性帶，未形成方向性證據';
+  }
+
+  @override
   String engineReasonTtrLow(String value) {
     return '詞彙重複度較高（TTR $value）[偏 AI 模板/固定格式特徵]';
   }
@@ -1707,18 +1720,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String engineReasonMattrNoAiSignal(String value, String cut) {
+    return '詞彙多樣性（MATTR $value）未跨過校準後的 AI 訊號切點 $cut';
+  }
+
+  @override
   String engineReasonStatisticalSummaryAi(String percent) {
-    return '綜合統計分析：各項指標加總整體偏向 AI 生成特徵（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標偏向 AI 生成特徵（訊號指數 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryHuman(String percent) {
-    return '綜合統計分析：各項指標加總整體偏向人類自然寫作（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標偏向人類自然寫作（AI 訊號指數 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryNeutral(String percent) {
-    return '綜合統計分析：各項統計特徵互有消長，整體呈現中性區間（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標方向互有消長（AI 訊號指數 $percent/100）';
   }
 
   @override
@@ -2450,7 +2468,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String workspacePreliminaryVerdict(int percent) {
-    return '初步 AI 機率：$percent%';
+    return '初步 AI 證據指數：$percent/100';
   }
 
   @override
@@ -2464,18 +2482,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceSentenceColumnHeader => '句子內容';
 
   @override
+  String get workspaceAiEvidenceIndexShort => '指數';
+
+  @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
     return '$engine 本次沒有找到證據，未參與投票（角色權重 $weight%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。';
   }
 
   @override
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
+    return '$engine 本次只有弱方向性訊號，已折扣納入初步篩查，但未達可投票的證據門檻（角色權重上限 $weight%）。';
+  }
+
+  @override
   String telemetrySummarySingleSource(String engine) {
-    return '本次只有$engine找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。';
+    return '本次只有$engine形成可用方向，其餘引擎沒有方向性訊號。結論僅由單一面向支撐，信心請相應打折。';
   }
 
   @override
   String telemetrySummarySilentEngines(int count) {
-    return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
+    return '另有 $count 個引擎有執行但未形成方向性訊號，已排除在外，避免把「沒話說」誤算成「看起來像人寫的」。';
   }
 
   @override
@@ -2718,8 +2744,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedBalanced => '未檢出明確 AI 主導訊號';
 
   @override
+  String get integratedPreliminaryAi => '目前偏向 AI，但接近分界';
+
+  @override
+  String get integratedPreliminaryHuman => '目前偏向真人，但接近分界';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
-    return '整合 AI 可能性：$percent%';
+    return 'AI 證據指數：$percent/100';
   }
 
   @override
@@ -2740,6 +2772,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedEvidenceSufficiency(int percent, String tier) {
+    return '證據充分度：$percent/100 · $tier';
+  }
+
+  @override
+  String get integratedEvidenceTierScreening => '初步篩查';
+
+  @override
+  String get integratedEvidenceTierReference => '具參考性';
+
+  @override
+  String get integratedEvidenceTierStrong => '支持較充分';
+
+  @override
+  String integratedBoundaryAi(int index, int gap) {
+    return '指數 $index 只呈現微弱 AI 方向，距 60 分 AI 升級線仍有 $gap 分；目前不足以認定 AI 撰寫。';
+  }
+
+  @override
+  String integratedBoundaryHuman(int index, int gap) {
+    return '指數 $index 目前偏向真人，且距 60 分 AI 升級線仍有 $gap 分；但證據有限，仍不能排除 AI 協作。';
+  }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
@@ -2797,7 +2853,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
+    return '依本次可用證據加權後，本文「$direction」（AI 證據指數 $percent/100，$confidence信心）。';
   }
 
   @override
@@ -3344,12 +3400,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String reportEngineSignalLabel(int percent) {
-    return 'AI 信号 $percent%';
+    return 'AI 信号指数 $percent/100';
   }
 
   @override
+  String reportEngineDirectionalIndex(int percent) {
+    return '弱方向 $percent/100';
+  }
+
+  @override
+  String get reportEngineNoDirectionalSignal => '未形成方向性信号';
+
+  @override
   String get reportEngineSignalExplanation =>
-      'AI 信号是引擎对本文档的判定概率；设置权重决定影响比例，显示的贡献百分点会分配为合计后恰好等于总体 AI 概率。‘未检测’表示低于 60% 强信号阈值，不等于数值必须为 0。';
+      '各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；没有跨过阈值或折扣后方向的引擎显示“未形成方向性信号”，不再以 50% 冒充量测结果。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {
@@ -4532,6 +4596,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonBurstinessMid(String value) {
+    return '句长变化（burstiness $value）落在 0.30–0.55 中性带，未形成方向性证据';
+  }
+
+  @override
   String engineReasonTtrLow(String value) {
     return '词汇重复度较高（TTR $value）[偏 AI 模板/固定格式特征]';
   }
@@ -4542,18 +4611,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonMattrNoAiSignal(String value, String cut) {
+    return '词汇多样性（MATTR $value）未跨过校准后的 AI 信号切点 $cut';
+  }
+
+  @override
   String engineReasonStatisticalSummaryAi(String percent) {
-    return '综合统计分析：各项指标加总整体偏向 AI 生成特征（AI 概率 $percent%）';
+    return '综合统计分析：合格指标偏向 AI 生成特征（信号指数 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryHuman(String percent) {
-    return '综合统计分析：各项指标加总整体偏向人类自然写作（AI 概率 $percent%）';
+    return '综合统计分析：合格指标偏向人类自然写作（AI 信号指数 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryNeutral(String percent) {
-    return '综合统计分析：各项统计特征互有消长，整体呈现中性区间（AI 概率 $percent%）';
+    return '综合统计分析：合格指标方向互有消长（AI 信号指数 $percent/100）';
   }
 
   @override
@@ -5285,7 +5359,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String workspacePreliminaryVerdict(int percent) {
-    return '初步 AI 概率：$percent%';
+    return '初步 AI 证据指数：$percent/100';
   }
 
   @override
@@ -5299,18 +5373,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceSentenceColumnHeader => '句子内容';
 
   @override
+  String get workspaceAiEvidenceIndexShort => '指数';
+
+  @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
     return '$engine 本次没有找到证据，未参与投票（角色权重 $weight%）。这代表它在自己负责的面向没有发现 AI 痕迹，不等于它认为本文是人类撰写。';
   }
 
   @override
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
+    return '$engine 本次只有弱方向性信号，已折扣纳入初步筛查，但未达可投票的证据阈值（角色权重上限 $weight%）。';
+  }
+
+  @override
   String telemetrySummarySingleSource(String engine) {
-    return '本次只有$engine找到证据，其余引擎什么都没发现。结论仅由单一面向支撑，信心请相应打折。';
+    return '本次只有$engine形成可用方向，其余引擎没有方向性信号。结论仅由单一面向支撑，信心请相应打折。';
   }
 
   @override
   String telemetrySummarySilentEngines(int count) {
-    return '另有 $count 个引擎有跑但没找到证据，已排除在投票之外，避免把「没话说」误算成「看起来像人写的」。';
+    return '另有 $count 个引擎有执行但未形成方向性信号，已排除在外，避免把「没话说」误算成「看起来像人写的」。';
   }
 
   @override
@@ -5553,8 +5635,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedBalanced => '未检出明确 AI 主导信号';
 
   @override
+  String get integratedPreliminaryAi => '目前偏向 AI，但接近分界';
+
+  @override
+  String get integratedPreliminaryHuman => '目前偏向真人，但接近分界';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
-    return '整合 AI 可能性：$percent%';
+    return 'AI 证据指数：$percent/100';
   }
 
   @override
@@ -5575,6 +5663,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedEvidenceSufficiency(int percent, String tier) {
+    return '证据充分度：$percent/100 · $tier';
+  }
+
+  @override
+  String get integratedEvidenceTierScreening => '初步筛查';
+
+  @override
+  String get integratedEvidenceTierReference => '具参考性';
+
+  @override
+  String get integratedEvidenceTierStrong => '支持较充分';
+
+  @override
+  String integratedBoundaryAi(int index, int gap) {
+    return '指数 $index 只呈现微弱 AI 方向，距 60 分 AI 升级线仍有 $gap 分；目前不足以认定 AI 撰写。';
+  }
+
+  @override
+  String integratedBoundaryHuman(int index, int gap) {
+    return '指数 $index 目前偏向真人，且距 60 分 AI 升级线仍有 $gap 分；但证据有限，仍不能排除 AI 协作。';
+  }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
@@ -5632,7 +5744,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     int percent,
     String confidence,
   ) {
-    return '依本次可用证据加权后，本文“$direction”（AI 可能性指数 $percent%，$confidence信心）。';
+    return '依本次可用证据加权后，本文“$direction”（AI 证据指数 $percent/100，$confidence信心）。';
   }
 
   @override
@@ -6179,12 +6291,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String reportEngineSignalLabel(int percent) {
-    return 'AI 訊號 $percent%';
+    return 'AI 訊號指數 $percent/100';
   }
 
   @override
+  String reportEngineDirectionalIndex(int percent) {
+    return '弱方向 $percent/100';
+  }
+
+  @override
+  String get reportEngineNoDirectionalSignal => '未形成方向性訊號';
+
+  @override
   String get reportEngineSignalExplanation =>
-      'AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。';
+      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；沒有跨過門檻或折扣後方向的引擎顯示「未形成方向性訊號」，不再以 50% 冒充量測結果。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {
@@ -7367,6 +7487,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonBurstinessMid(String value) {
+    return '句長變化（burstiness $value）落在 0.30–0.55 中性帶，未形成方向性證據';
+  }
+
+  @override
   String engineReasonTtrLow(String value) {
     return '詞彙重複度較高（TTR $value）[偏 AI 模板/固定格式特徵]';
   }
@@ -7377,18 +7502,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonMattrNoAiSignal(String value, String cut) {
+    return '詞彙多樣性（MATTR $value）未跨過校準後的 AI 訊號切點 $cut';
+  }
+
+  @override
   String engineReasonStatisticalSummaryAi(String percent) {
-    return '綜合統計分析：各項指標加總整體偏向 AI 生成特徵（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標偏向 AI 生成特徵（訊號指數 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryHuman(String percent) {
-    return '綜合統計分析：各項指標加總整體偏向人類自然寫作（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標偏向人類自然寫作（AI 訊號指數 $percent/100）';
   }
 
   @override
   String engineReasonStatisticalSummaryNeutral(String percent) {
-    return '綜合統計分析：各項統計特徵互有消長，整體呈現中性區間（AI 機率 $percent%）';
+    return '綜合統計分析：合格指標方向互有消長（AI 訊號指數 $percent/100）';
   }
 
   @override
@@ -8120,7 +8250,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String workspacePreliminaryVerdict(int percent) {
-    return '初步 AI 機率：$percent%';
+    return '初步 AI 證據指數：$percent/100';
   }
 
   @override
@@ -8134,18 +8264,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get workspaceSentenceColumnHeader => '句子內容';
 
   @override
+  String get workspaceAiEvidenceIndexShort => '指數';
+
+  @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
     return '$engine 本次沒有找到證據，未參與投票（角色權重 $weight%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。';
   }
 
   @override
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
+    return '$engine 本次只有弱方向性訊號，已折扣納入初步篩查，但未達可投票的證據門檻（角色權重上限 $weight%）。';
+  }
+
+  @override
   String telemetrySummarySingleSource(String engine) {
-    return '本次只有$engine找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。';
+    return '本次只有$engine形成可用方向，其餘引擎沒有方向性訊號。結論僅由單一面向支撐，信心請相應打折。';
   }
 
   @override
   String telemetrySummarySilentEngines(int count) {
-    return '另有 $count 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。';
+    return '另有 $count 個引擎有執行但未形成方向性訊號，已排除在外，避免把「沒話說」誤算成「看起來像人寫的」。';
   }
 
   @override
@@ -8388,8 +8526,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedBalanced => '未檢出明確 AI 主導訊號';
 
   @override
+  String get integratedPreliminaryAi => '目前偏向 AI，但接近分界';
+
+  @override
+  String get integratedPreliminaryHuman => '目前偏向真人，但接近分界';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
-    return '整合 AI 可能性：$percent%';
+    return 'AI 證據指數：$percent/100';
   }
 
   @override
@@ -8410,6 +8554,30 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get integratedConfidenceHigh => '高';
+
+  @override
+  String integratedEvidenceSufficiency(int percent, String tier) {
+    return '證據充分度：$percent/100 · $tier';
+  }
+
+  @override
+  String get integratedEvidenceTierScreening => '初步篩查';
+
+  @override
+  String get integratedEvidenceTierReference => '具參考性';
+
+  @override
+  String get integratedEvidenceTierStrong => '支持較充分';
+
+  @override
+  String integratedBoundaryAi(int index, int gap) {
+    return '指數 $index 只呈現微弱 AI 方向，距 60 分 AI 升級線仍有 $gap 分；目前不足以認定 AI 撰寫。';
+  }
+
+  @override
+  String integratedBoundaryHuman(int index, int gap) {
+    return '指數 $index 目前偏向真人，且距 60 分 AI 升級線仍有 $gap 分；但證據有限，仍不能排除 AI 協作。';
+  }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
@@ -8467,7 +8635,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     int percent,
     String confidence,
   ) {
-    return '依本次可用證據加權後，本文「$direction」（AI 可能性指數 $percent%，$confidence信心）。';
+    return '依本次可用證據加權後，本文「$direction」（AI 證據指數 $percent/100，$confidence信心）。';
   }
 
   @override

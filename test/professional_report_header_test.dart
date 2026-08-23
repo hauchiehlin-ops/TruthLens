@@ -107,7 +107,7 @@ void main() {
 
       expect(find.text('Overall verdict'), findsOneWidget);
       expect(
-        find.text('Integrated AI likelihood: $integratedPercent%'),
+        find.text('AI evidence index: $integratedPercent/100'),
         findsNWidgets(2),
       );
       expect(
@@ -215,7 +215,7 @@ void main() {
 
       expect(find.text('More likely not AI-generated'), findsNWidgets(2));
       expect(
-        find.text('Integrated AI likelihood: $integratedPercent%'),
+        find.text('AI evidence index: $integratedPercent/100'),
         findsNWidgets(2),
       );
       expect(
@@ -297,11 +297,16 @@ void main() {
       IntegratedConfidence.moderate => 'Moderate',
       IntegratedConfidence.high => 'High',
     };
-    final direction = switch (assessment.direction) {
-      IntegratedDirection.likelyAi => 'More likely AI-generated',
-      IntegratedDirection.likelyMixed => 'More likely human-AI mixed',
-      IntegratedDirection.likelyHuman => 'More likely not AI-generated',
-      IntegratedDirection.balanced => 'AI and human signals are balanced',
+    final direction = switch (assessment.conclusion) {
+      IntegratedConclusion.preliminaryAi =>
+        'Currently leans AI, near the boundary',
+      IntegratedConclusion.preliminaryHuman =>
+        'Currently leans human, near the boundary',
+      IntegratedConclusion.likelyAi => 'More likely AI-generated',
+      IntegratedConclusion.likelyHuman => 'More likely not AI-generated',
+      IntegratedConclusion.likelyMixed => 'More likely human-AI mixed',
+      IntegratedConclusion.noClearDominance =>
+        'No clear AI-dominant signal detected',
     };
     final evidenceGate = assessment.passesAiEvidenceGate
         ? 'AI evidence gate: passed'
@@ -316,7 +321,7 @@ void main() {
     expect(find.text('Integrated authorship assessment'), findsOneWidget);
     expect(find.text(direction), findsNWidgets(2));
     expect(
-      find.text('Integrated AI likelihood: $integratedPercent%'),
+      find.text('AI evidence index: $integratedPercent/100'),
       findsNWidgets(2),
     );
     expect(find.textContaining('Text-model score: 22%'), findsOneWidget);

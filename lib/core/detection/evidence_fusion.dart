@@ -31,6 +31,8 @@ class FamilyEvidence {
     required this.supportsHuman,
     required this.directTrace,
   });
+
+  double get effectiveWeight => configuredWeight * reliability;
 }
 
 class TextEvidenceFusion {
@@ -50,6 +52,8 @@ class TextEvidenceFusion {
   final bool passesAiEvidenceGate;
   final bool mixedAuthorship;
   final bool hasDirectTrace;
+  final double weightedAiMass;
+  final double activeFamilyWeight;
   final TextAuthorshipClass authorshipClass;
   final List<FamilyEvidence> families;
 
@@ -70,6 +74,8 @@ class TextEvidenceFusion {
     required this.passesAiEvidenceGate,
     required this.mixedAuthorship,
     required this.hasDirectTrace,
+    required this.weightedAiMass,
+    required this.activeFamilyWeight,
     required this.authorshipClass,
     required this.families,
   });
@@ -190,17 +196,15 @@ class TextEvidenceFusion {
         directTrace || aiFamilies.length >= 2 || strongSingleFamily;
 
     var probability = 0.5;
+    var weightedAiMass = 0.0;
+    var activeFamilyWeight = 0.0;
     if (familyEvidence.isNotEmpty) {
-      var weightedLogOdds = 0.0;
-      var totalWeight = 0.0;
       for (final family in familyEvidence) {
-        final p = family.probability.clamp(0.02, 0.98);
-        final weight = family.configuredWeight * family.reliability;
-        weightedLogOdds += math.log(p / (1 - p)) * weight;
-        totalWeight += weight;
+        weightedAiMass += family.probability * family.effectiveWeight;
+        activeFamilyWeight += family.effectiveWeight;
       }
-      if (totalWeight > 0) {
-        probability = 1 / (1 + math.exp(-(weightedLogOdds / totalWeight)));
+      if (activeFamilyWeight > 0) {
+        probability = (weightedAiMass / activeFamilyWeight).clamp(0.0, 1.0);
       }
     }
     final positive = familyEvidence
@@ -280,6 +284,8 @@ class TextEvidenceFusion {
       passesAiEvidenceGate: passesGate,
       mixedAuthorship: mixed,
       hasDirectTrace: directTrace,
+      weightedAiMass: weightedAiMass,
+      activeFamilyWeight: activeFamilyWeight,
       authorshipClass: authorshipClass,
       families: familyEvidence,
     );

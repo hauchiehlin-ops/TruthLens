@@ -393,7 +393,7 @@
       }
     }
   },
-  "reportEngineSignalLabel": "AI signal {percent}%",
+  "reportEngineSignalLabel": "AI signal index {percent}/100",
   "@reportEngineSignalLabel": {
     "placeholders": {
       "percent": {
@@ -401,7 +401,10 @@
       }
     }
   },
-  "reportEngineSignalExplanation": "AI signal is the engine's probability for this document; configured weight controls its influence, and contribution points are allocated so their displayed sum exactly matches the overall AI probability. ‘Not detected’ means below the 60% strong-signal threshold, not necessarily mathematically zero.",
+  "reportEngineDirectionalIndex": "Weak direction {percent}/100",
+  "@reportEngineDirectionalIndex": {"placeholders": {"percent": {"type": "int"}}},
+  "reportEngineNoDirectionalSignal": "No directional signal",
+  "reportEngineSignalExplanation": "Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.",
   "engineReasonAdversarialNoStrongSentence": "None of {total} sentences crossed the strong paraphrase threshold; the calibrated weak signal is {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {
     "placeholders": {
@@ -1697,6 +1700,8 @@
       }
     }
   },
+  "engineReasonBurstinessMid": "Sentence-length variation (burstiness {value}) stayed inside the neutral band 0.30–0.55",
+  "@engineReasonBurstinessMid": {"placeholders": {"value": {"type": "String"}}},
   "engineReasonTtrLow": "Low vocabulary diversity (TTR {value}) [AI-leaning template pattern]",
   "@engineReasonTtrLow": {
     "placeholders": {
@@ -1713,7 +1718,9 @@
       }
     }
   },
-  "engineReasonStatisticalSummaryAi": "Overall statistical summary: Leans towards AI-generated characteristics ({percent}% AI probability)",
+  "engineReasonMattrNoAiSignal": "Vocabulary diversity (MATTR {value}) did not cross the calibrated AI-signal cutoff {cut}",
+  "@engineReasonMattrNoAiSignal": {"placeholders": {"value": {"type": "String"}, "cut": {"type": "String"}}},
+  "engineReasonStatisticalSummaryAi": "Overall statistical summary: leans towards AI-generated characteristics (signal index {percent}/100)",
   "@engineReasonStatisticalSummaryAi": {
     "placeholders": {
       "percent": {
@@ -1721,7 +1728,7 @@
       }
     }
   },
-  "engineReasonStatisticalSummaryHuman": "Overall statistical summary: Leans towards human natural writing ({percent}% AI probability)",
+  "engineReasonStatisticalSummaryHuman": "Overall statistical summary: leans towards human natural writing (AI signal index {percent}/100)",
   "@engineReasonStatisticalSummaryHuman": {
     "placeholders": {
       "percent": {
@@ -1729,7 +1736,7 @@
       }
     }
   },
-  "engineReasonStatisticalSummaryNeutral": "Overall statistical summary: Indicators balance out, showing neutral characteristics ({percent}% AI probability)",
+  "engineReasonStatisticalSummaryNeutral": "Overall statistical summary: qualified indicators point in different directions (AI signal index {percent}/100)",
   "@engineReasonStatisticalSummaryNeutral": {
     "placeholders": {
       "percent": {
@@ -2020,7 +2027,7 @@
   "workspaceAnalysisStopped": "Analysis stopped. The document text remains in the workspace.",
   "workspaceSelectedEvidence": "Selected evidence",
   "workspaceNoEvidence": "Sentence evidence appears here as each engine completes.",
-  "workspacePreliminaryVerdict": "Preliminary AI probability: {percent}%",
+  "workspacePreliminaryVerdict": "Preliminary AI evidence index: {percent}/100",
   "@workspacePreliminaryVerdict": {
     "placeholders": {
       "percent": {
@@ -2031,6 +2038,7 @@
   "workspaceSentenceSignalTooltip": "This percentage is this sentence's own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.",
   "workspaceSentenceSignalHeader": "AI signal per sentence",
   "workspaceSentenceColumnHeader": "Sentence",
+  "workspaceAiEvidenceIndexShort": "index",
   "reportEngineRelationshipNoEvidence": "{engine} found no evidence this time, so it did not take part in the vote (role weight {weight}%). This means it spotted no AI traces on its own axis — not that it considers the text human-written.",
   "@reportEngineRelationshipNoEvidence": {
     "description": "Shown for an engine that ran but found no evidence, so it did not vote",
@@ -2043,7 +2051,9 @@
       }
     }
   },
-  "telemetrySummarySingleSource": "Only {engine} found anything; the other engines turned up nothing this time. The conclusion rests on a single line of evidence, so treat its confidence accordingly.",
+  "reportEngineRelationshipDirectionalOnly": "{engine} found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap {weight}%).",
+  "@reportEngineRelationshipDirectionalOnly": {"placeholders": {"engine": {"type": "String"}, "weight": {"type": "int"}}},
+  "telemetrySummarySingleSource": "Only {engine} produced a usable direction; the other engines turned up nothing this time. The conclusion rests on a single analysis axis, so treat its confidence accordingly.",
   "@telemetrySummarySingleSource": {
     "description": "Telemetry summary line when exactly one engine found evidence",
     "placeholders": {
@@ -2052,7 +2062,7 @@
       }
     }
   },
-  "telemetrySummarySilentEngines": "{count} further engine(s) ran but found no evidence, and were excluded from the vote so that 'nothing to report' is not miscounted as 'looks human-written'.",
+  "telemetrySummarySilentEngines": "{count} further engine(s) ran but formed no directional signal, and were excluded so that 'nothing to report' is not miscounted as 'looks human-written'.",
   "@telemetrySummarySilentEngines": {
     "description": "Telemetry summary line counting engines that ran but found no evidence",
     "placeholders": {
@@ -2281,7 +2291,9 @@
   "integratedLikelyMixed": "More likely human-AI mixed",
   "integratedLikelyHuman": "More likely not AI-generated",
   "integratedBalanced": "No clear AI-dominant signal detected",
-  "integratedLikelihoodLabel": "Integrated AI likelihood: {percent}%",
+  "integratedPreliminaryAi": "Currently leans AI, near the boundary",
+  "integratedPreliminaryHuman": "Currently leans human, near the boundary",
+  "integratedLikelihoodLabel": "AI evidence index: {percent}/100",
   "@integratedLikelihoodLabel": {"placeholders": {"percent": {"type": "int"}}},
   "integratedTextScoreLabel": "Text-model score: {percent}%",
   "@integratedTextScoreLabel": {"placeholders": {"percent": {"type": "int"}}},
@@ -2290,6 +2302,15 @@
   "integratedConfidenceLow": "Low",
   "integratedConfidenceModerate": "Moderate",
   "integratedConfidenceHigh": "High",
+  "integratedEvidenceSufficiency": "Evidence sufficiency: {percent}/100 · {tier}",
+  "@integratedEvidenceSufficiency": {"placeholders": {"percent": {"type": "int"}, "tier": {"type": "String"}}},
+  "integratedEvidenceTierScreening": "preliminary screening",
+  "integratedEvidenceTierReference": "reference-level",
+  "integratedEvidenceTierStrong": "well supported",
+  "integratedBoundaryAi": "Index {index} is only a weak AI-side direction and remains {gap} points below the 60-point escalation line. It has not established AI authorship.",
+  "@integratedBoundaryAi": {"placeholders": {"index": {"type": "int"}, "gap": {"type": "int"}}},
+  "integratedBoundaryHuman": "Index {index} leans human and remains {gap} points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.",
+  "@integratedBoundaryHuman": {"placeholders": {"index": {"type": "int"}, "gap": {"type": "int"}}},
   "integratedEvidenceCoverage": "Directional signal families: {families}/4 · applicability coverage {coverage}%",
   "@integratedEvidenceCoverage": {"placeholders": {"families": {"type": "int"}, "coverage": {"type": "int"}}},
   "integratedEvidenceGatePassed": "AI evidence gate: passed",
@@ -2306,7 +2327,7 @@
   "@composerTextScoreThresholdReached": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
   "composerTextScoreThresholdNotReached": "The text-model raw score is {aiPercent}%, below the {thresholdPercent}% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report's authorship direction.",
   "@composerTextScoreThresholdNotReached": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
-  "telemetryIntegratedVerdict": "After weighting the available evidence, the document is “{direction}” (AI likelihood index {percent}%, {confidence} confidence).",
+  "telemetryIntegratedVerdict": "After weighting the available evidence, the document is “{direction}” (AI evidence index {percent}/100, {confidence} confidence).",
   "@telemetryIntegratedVerdict": {"placeholders": {"direction": {"type": "String"}, "percent": {"type": "int"}, "confidence": {"type": "String"}}},
   "integratedStabilityLabel": "Segment stability {percent}% · interval {lower}–{upper}%",
   "@integratedStabilityLabel": {"placeholders": {"percent": {"type": "int"}, "lower": {"type": "int"}, "upper": {"type": "int"}}},

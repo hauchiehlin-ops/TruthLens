@@ -44,10 +44,17 @@ class StatisticalEngine implements DetectionEngine {
       'type_token_ratio': ttr,
       'entropy': entropy,
     };
-    var score = 0.5;
-    // 本引擎的中性點是 0.5，可正可負；moved 記錄有沒有任何指標真的把它推離中性。
-    // 三個指標全部落在中間帶時輸出的 0.5 是「沒有意見」，不是「一半像 AI」。
-    var moved = false;
+    final signals = <({String feature, double aiRatio, double weight})>[];
+
+    void addSignal(String feature, double aiRatio, double weight) {
+      final value = aiRatio.clamp(0.02, 0.98);
+      signals.add((feature: feature, aiRatio: value, weight: weight));
+      // 保留既有欄位供舊報告讀取，並新增可重算線性累積結果的分量。
+      features['${feature}_probability'] = value;
+      features['${feature}_weight'] = weight;
+      features['${feature}_weighted_ai_mass'] = value * weight;
+      features['${feature}_signed_contribution'] = (value - 0.5) * weight;
+    }
 
     // 困惑度只在「這個語言有實測門檻」時採計。門檻來自 PerplexityCalibration
     // 查表，而不是寫死的常數：困惑度的尺度隨語言而變（同一顆 DistilGPT2，
@@ -92,12 +99,16 @@ class StatisticalEngine implements DetectionEngine {
     if (ppl != null && calibration != null) {
       features['perplexity'] = ppl;
       if (ppl < calibration.aiCut) {
-        score += 0.28;
-        moved = true;
+        final distance = ((calibration.aiCut - ppl) / calibration.aiCut).clamp(
+          0.0,
+          1.0,
+        );
+        addSignal('perplexity', 0.64 + distance * 0.31, 0.50);
         reasons.add(l10n.engineReasonPplLow(ppl.toStringAsFixed(0)));
       } else if (calibration.humanCut != null && ppl > calibration.humanCut!) {
-        score -= 0.25;
-        moved = true;
+        final distance = ((ppl - calibration.humanCut!) / calibration.humanCut!)
+            .clamp(0.0, 1.0);
+        addSignal('perplexity', 0.36 - distance * 0.26, 0.50);
         reasons.add(l10n.engineReasonPplHigh(ppl.toStringAsFixed(0)));
       } else {
         reasons.add(l10n.engineReasonPplMid(ppl.toStringAsFixed(0)));
@@ -107,16 +118,20 @@ class StatisticalEngine implements DetectionEngine {
     // Burstiness：人類句長起伏大；AI 節奏均勻
     if (text.sentences.length >= 4) {
       if (burstiness < 0.30) {
-        score += 0.20;
-        moved = true;
+        final distance = ((0.30 - burstiness) / 0.30).clamp(0.0, 1.0);
+        addSignal('burstiness', 0.60 + distance * 0.24, 0.30);
         reasons.add(
           l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)),
         );
       } else if (burstiness > 0.55) {
-        score -= 0.20;
-        moved = true;
+        final distance = ((burstiness - 0.55) / 0.55).clamp(0.0, 1.0);
+        addSignal('burstiness', 0.40 - distance * 0.22, 0.30);
         reasons.add(
           l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)),
+        );
+      } else {
+        reasons.add(
+          l10n.engineReasonBurstinessMid(burstiness.toStringAsFixed(2)),
         );
       }
     }
@@ -136,13 +151,28 @@ class StatisticalEngine implements DetectionEngine {
       final mattr = text.movingAverageTypeTokenRatio;
       features['mattr'] = mattr;
       if (mattr < lexical.aiCut) {
-        score += 0.10;
-        moved = true;
+        final span = lexical.aiCut * 0.45;
+        final distance = ((lexical.aiCut - mattr) / span).clamp(0.0, 1.0);
+        addSignal('mattr', 0.61 + distance * 0.24, 0.20);
         reasons.add(l10n.engineReasonTtrLow(mattr.toStringAsFixed(2)));
+      } else {
+        reasons.add(
+          l10n.engineReasonMattrNoAiSignal(
+            mattr.toStringAsFixed(2),
+            lexical.aiCut.toStringAsFixed(2),
+          ),
+        );
       }
     }
 
-    final clampedScore = score.clamp(0.0, 1.0);
+    final fusion = _fuseSignals(signals);
+    final clampedScore = fusion.aiRatio;
+    features['statistical_signal_count'] = signals.length.toDouble();
+    features['statistical_weighted_sum'] = fusion.weightedSum;
+    features['statistical_active_weight'] = fusion.activeWeight;
+    features['statistical_linear_ai_ratio'] = fusion.aiRatio;
+    features['statistical_signal_strength'] = ((clampedScore - 0.5).abs() * 2)
+        .clamp(0.0, 1.0);
     final summaryPercent = (clampedScore * 100).round();
 
     if (clampedScore >= 0.60) {
@@ -169,7 +199,7 @@ class StatisticalEngine implements DetectionEngine {
       engineName: name(l10n),
       aiProbability: clampedScore,
       weight: defaultWeight,
-      hasEvidence: moved,
+      hasEvidence: signals.isNotEmpty,
       applicability: ppl != null
           ? EngineApplicability.validated
           : lexical != null
@@ -184,6 +214,32 @@ class StatisticalEngine implements DetectionEngine {
           : 0.32,
       features: features,
       reasons: reasons,
+    );
+  }
+
+  /// 將各統計矩陣的連續方向作線性累積。分子為 Σ(訊號比率 × 權重)，
+  /// 分母只納入本次實際有效的矩陣權重；無效矩陣不會以 0.5 稀釋結果。
+  static ({double aiRatio, double weightedSum, double activeWeight})
+  _fuseSignals(
+    List<({String feature, double aiRatio, double weight})> signals,
+  ) {
+    if (signals.isEmpty) {
+      return (aiRatio: 0.5, weightedSum: 0, activeWeight: 0);
+    }
+    var weightedSum = 0.0;
+    var activeWeight = 0.0;
+    for (final signal in signals) {
+      if (signal.weight <= 0) continue;
+      weightedSum += signal.aiRatio * signal.weight;
+      activeWeight += signal.weight;
+    }
+    if (activeWeight <= 0) {
+      return (aiRatio: 0.5, weightedSum: 0, activeWeight: 0);
+    }
+    return (
+      aiRatio: (weightedSum / activeWeight).clamp(0.0, 1.0),
+      weightedSum: weightedSum,
+      activeWeight: activeWeight,
     );
   }
 

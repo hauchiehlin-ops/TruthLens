@@ -8,6 +8,7 @@ import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/core/utils/text_stats.dart';
 import 'package:truthlens/features/workspace/telemetry_summary.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:truthlens/shared/widgets/professional_report_header.dart';
 
 /// 假引擎：可指定分數與「有沒有找到證據」
 class _Engine implements DetectionEngine {
@@ -256,8 +257,8 @@ void main() {
     final text = lines.join(' ');
 
     expect(text, contains('Only'));
-    expect(text, contains('single line of evidence'));
-    expect(text, contains('found no evidence'));
+    expect(text, contains('single analysis axis'));
+    expect(text, contains('formed no directional signal'));
     expect(text, isNot(contains('Not enough evidence to judge')));
   });
 
@@ -351,6 +352,95 @@ void main() {
       );
       expect(score.aiProbability, 0.5);
       expect(score.hasEvidence, isFalse);
+    });
+
+    test('統計分數依句長起伏離門檻的距離連續變化', () async {
+      const uniform =
+          'Alpha beta gamma delta epsilon zeta eta theta. '
+          'Iota kappa lambda mu nu xi omicron pi. '
+          'Rho sigma tau upsilon phi chi psi omega. '
+          'River stone window paper signal method value result.';
+      const moderatelyUniform =
+          'Alpha beta gamma delta epsilon zeta. '
+          'Iota kappa lambda mu nu xi omicron pi. '
+          'Rho sigma tau upsilon phi chi psi omega value method. '
+          'River stone window paper signal method value result field sample data note.';
+      const highlyVaried =
+          'Alpha beta gamma delta. '
+          'Iota kappa lambda mu. '
+          'Rho sigma tau upsilon. '
+          'River stone window paper signal method value result field sample data note '
+          'analysis evidence context design process outcome review conclusion detail.';
+
+      final engine = StatisticalEngine();
+      final uniformScore = await engine.analyze(
+        PreprocessedText.from(uniform),
+        l10n,
+      );
+      final moderateScore = await engine.analyze(
+        PreprocessedText.from(moderatelyUniform),
+        l10n,
+      );
+      final variedScore = await engine.analyze(
+        PreprocessedText.from(highlyVaried),
+        l10n,
+      );
+
+      expect(
+        uniformScore.aiProbability,
+        greaterThan(moderateScore.aiProbability),
+      );
+      expect(moderateScore.aiProbability, greaterThan(0.60));
+      expect(variedScore.aiProbability, lessThan(0.40));
+      expect(uniformScore.features['burstiness_probability'], isNotNull);
+      expect(variedScore.features['burstiness_probability'], isNotNull);
+    });
+
+    test('統計矩陣以有效權重線性累積且可由分量重算', () async {
+      const mixedSignals =
+          'The result is in the report. '
+          'The method is in the report. '
+          'The evidence is in the report. '
+          'The result is in the report and the method is in the report '
+          'and the evidence is in the report and the result is in the report '
+          'and the method is in the report and the evidence is in the report '
+          'and the result is in the report and the method is in the report.';
+
+      final score = await StatisticalEngine().analyze(
+        PreprocessedText.from(mixedSignals),
+        l10n,
+      );
+      final features = score.features;
+      final burstinessMass = features['burstiness_weighted_ai_mass']!;
+      final mattrMass = features['mattr_weighted_ai_mass']!;
+      final activeWeight = features['statistical_active_weight']!;
+      final expectedSum = burstinessMass + mattrMass;
+
+      expect(features['burstiness_signed_contribution'], lessThan(0));
+      expect(features['mattr_signed_contribution'], greaterThan(0));
+      expect(activeWeight, closeTo(0.50, 1e-9));
+      expect(features['statistical_weighted_sum'], closeTo(expectedSum, 1e-9));
+      expect(score.aiProbability, closeTo(expectedSum / activeWeight, 1e-9));
+      expect(
+        features['statistical_linear_ai_ratio'],
+        closeTo(score.aiProbability, 1e-9),
+      );
+    });
+
+    test('統計引擎無合格訊號時報告層不得顯示成 50%', () {
+      final group = EngineGroup.fromScores(const [
+        EngineScore(
+          engineId: 'statistical',
+          engineName: 'Statistical',
+          aiProbability: 0.50,
+          weight: 0.25,
+          hasEvidence: false,
+        ),
+      ], l10n).firstWhere((group) => group.role == 'statistical');
+
+      expect(group.hasDirectionalSignal, isFalse);
+      expect(group.probability, 0);
+      expect(group.relationshipText, contains('found no evidence'));
     });
   });
 

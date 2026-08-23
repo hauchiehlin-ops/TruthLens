@@ -548,6 +548,14 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String reportEngineDirectionalIndex(int percent) {
+    return 'Weak direction $percent/100';
+  }
+
+  @override
+  String get reportEngineNoDirectionalSignal => 'No directional signal';
+
+  @override
   String get reportEngineSignalExplanation =>
       'Das KI-Signal ist die Wahrscheinlichkeit dieses Moduls für das Dokument. Das eingestellte Gewicht bestimmt seinen Einfluss; die Beitragspunkte werden so verteilt, dass ihre angezeigte Summe genau der gesamten KI-Wahrscheinlichkeit entspricht. „Nicht erkannt“ bedeutet unterhalb der starken Signalschwelle von 60 %, nicht zwingend den Wert null.';
 
@@ -1775,6 +1783,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String engineReasonBurstinessMid(String value) {
+    return 'Sentence-length variation (burstiness $value) stayed inside the neutral band 0.30–0.55';
+  }
+
+  @override
   String engineReasonTtrLow(String value) {
     return 'Geringe Wortschatzvielfalt (TTR $value) — hohe Wortwiederholung';
   }
@@ -1782,6 +1795,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String engineReasonTtrHigh(String value) {
     return 'Hohe Wortschatzvielfalt (TTR $value)';
+  }
+
+  @override
+  String engineReasonMattrNoAiSignal(String value, String cut) {
+    return 'Vocabulary diversity (MATTR $value) did not cross the calibrated AI-signal cutoff $cut';
   }
 
   @override
@@ -2585,8 +2603,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workspaceSentenceColumnHeader => 'Satz';
 
   @override
+  String get workspaceAiEvidenceIndexShort => 'index';
+
+  @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
     return '$engine hat diesmal keine Belege gefunden und nahm daher nicht an der Abstimmung teil (Rollengewicht $weight %). Das heißt: keine KI-Spuren auf seiner eigenen Achse — nicht, dass er den Text für menschlich geschrieben hält.';
+  }
+
+  @override
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
+    return '$engine found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap $weight%).';
   }
 
   @override
@@ -2846,8 +2872,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get integratedBalanced => 'No clear AI-dominant signal detected';
 
   @override
+  String get integratedPreliminaryAi => 'Currently leans AI, near the boundary';
+
+  @override
+  String get integratedPreliminaryHuman =>
+      'Currently leans human, near the boundary';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
-    return 'Integrated AI likelihood: $percent%';
+    return 'AI evidence index: $percent/100';
   }
 
   @override
@@ -2868,6 +2901,30 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get integratedConfidenceHigh => 'High';
+
+  @override
+  String integratedEvidenceSufficiency(int percent, String tier) {
+    return 'Evidence sufficiency: $percent/100 · $tier';
+  }
+
+  @override
+  String get integratedEvidenceTierScreening => 'preliminary screening';
+
+  @override
+  String get integratedEvidenceTierReference => 'reference-level';
+
+  @override
+  String get integratedEvidenceTierStrong => 'well supported';
+
+  @override
+  String integratedBoundaryAi(int index, int gap) {
+    return 'Index $index is only a weak AI-side direction and remains $gap points below the 60-point escalation line. It has not established AI authorship.';
+  }
+
+  @override
+  String integratedBoundaryHuman(int index, int gap) {
+    return 'Index $index leans human and remains $gap points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.';
+  }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
@@ -2926,7 +2983,7 @@ class AppLocalizationsDe extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return 'After weighting the available evidence, the document is “$direction” (AI likelihood index $percent%, $confidence confidence).';
+    return 'After weighting the available evidence, the document is “$direction” (AI evidence index $percent/100, $confidence confidence).';
   }
 
   @override

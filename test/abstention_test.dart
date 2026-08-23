@@ -98,7 +98,8 @@ void main() {
       final lines = buildTelemetrySummary(r, l10n);
       final text = lines.join(' ');
 
-      expect(text, contains('More likely'));
+      expect(text, contains('Currently leans human, near the boundary'));
+      expect(text, contains('AI evidence index 49/100'));
       expect(text, contains('Low confidence'));
       expect(text, contains('analysable sentence'));
       expect(text, contains('screening result, not proof'));

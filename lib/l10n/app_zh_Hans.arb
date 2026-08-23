@@ -166,7 +166,9 @@
       }
     }
   },
-  "reportEngineSignalLabel": "AI 信号 {percent}%",
+  "reportEngineSignalLabel": "AI 信号指数 {percent}/100",
+  "reportEngineDirectionalIndex": "弱方向 {percent}/100",
+  "reportEngineNoDirectionalSignal": "未形成方向性信号",
   "@reportEngineSignalLabel": {
     "placeholders": {
       "percent": {
@@ -174,7 +176,7 @@
       }
     }
   },
-  "reportEngineSignalExplanation": "AI 信号是引擎对本文档的判定概率；设置权重决定影响比例，显示的贡献百分点会分配为合计后恰好等于总体 AI 概率。‘未检测’表示低于 60% 强信号阈值，不等于数值必须为 0。",
+  "reportEngineSignalExplanation": "各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；没有跨过阈值或折扣后方向的引擎显示“未形成方向性信号”，不再以 50% 冒充量测结果。",
   "engineReasonAdversarialNoStrongSentence": "{total} 个句子均未跨越强改写信号阈值；校准后的微弱信号为 {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {
     "placeholders": {
@@ -1001,11 +1003,13 @@
   "engineReasonPplMid": "语言模型困惑度中等（{ppl}）[中性特征]",
   "engineReasonBurstinessLow": "句子长度高度一致（burstiness {value}）[偏 AI 特征]，节奏平稳均匀",
   "engineReasonBurstinessHigh": "句长起伏显著（burstiness {value}）[偏人类特征]，节奏变化丰富",
+  "engineReasonBurstinessMid": "句长变化（burstiness {value}）落在 0.30–0.55 中性带，未形成方向性证据",
   "engineReasonTtrLow": "词汇重复度较高（TTR {value}）[偏 AI 模板/固定格式特征]",
   "engineReasonTtrHigh": "词汇多样性丰富（TTR {value}）[偏人类特征]",
-  "engineReasonStatisticalSummaryAi": "综合统计分析：各项指标加总整体偏向 AI 生成特征（AI 概率 {percent}%）",
-  "engineReasonStatisticalSummaryHuman": "综合统计分析：各项指标加总整体偏向人类自然写作（AI 概率 {percent}%）",
-  "engineReasonStatisticalSummaryNeutral": "综合统计分析：各项统计特征互有消长，整体呈现中性区间（AI 概率 {percent}%）",
+  "engineReasonMattrNoAiSignal": "词汇多样性（MATTR {value}）未跨过校准后的 AI 信号切点 {cut}",
+  "engineReasonStatisticalSummaryAi": "综合统计分析：合格指标偏向 AI 生成特征（信号指数 {percent}/100）",
+  "engineReasonStatisticalSummaryHuman": "综合统计分析：合格指标偏向人类自然写作（AI 信号指数 {percent}/100）",
+  "engineReasonStatisticalSummaryNeutral": "综合统计分析：合格指标方向互有消长（AI 信号指数 {percent}/100）",
   "reportFormulaTitle": "加权计算透明度与参数解析",
   "reportFormulaExplanation": "整体 AI 概率系由各可用引擎之判定概率依其指定权重加权平均计算得出：",
   "reportFormulaActiveEngines": "参与投票引擎与权重",
@@ -1220,7 +1224,7 @@
   "workspaceAnalysisStopped": "分析已停止，文档文字仍保留在工作台。",
   "workspaceSelectedEvidence": "选取证据",
   "workspaceNoEvidence": "各引擎完成后，句子证据会依序显示于此。",
-  "workspacePreliminaryVerdict": "初步 AI 概率：{percent}%",
+  "workspacePreliminaryVerdict": "初步 AI 证据指数：{percent}/100",
   "@workspacePreliminaryVerdict": {
     "placeholders": {
       "percent": {
@@ -1231,9 +1235,11 @@
   "workspaceSentenceSignalTooltip": "此百分比是「这一句」自己的 AI 信号强度，不是整份文件的最终判定。数字越高代表这句的用字模式越接近 AI 生成；越低则越接近一般人类写作习惯。最终报告会依各引擎权重综合所有句子后得出。",
   "workspaceSentenceSignalHeader": "逐句 AI 信号",
   "workspaceSentenceColumnHeader": "句子内容",
+  "workspaceAiEvidenceIndexShort": "指数",
   "reportEngineRelationshipNoEvidence": "{engine} 本次没有找到证据，未参与投票（角色权重 {weight}%）。这代表它在自己负责的面向没有发现 AI 痕迹，不等于它认为本文是人类撰写。",
-  "telemetrySummarySingleSource": "本次只有{engine}找到证据，其余引擎什么都没发现。结论仅由单一面向支撑，信心请相应打折。",
-  "telemetrySummarySilentEngines": "另有 {count} 个引擎有跑但没找到证据，已排除在投票之外，避免把「没话说」误算成「看起来像人写的」。",
+  "reportEngineRelationshipDirectionalOnly": "{engine} 本次只有弱方向性信号，已折扣纳入初步筛查，但未达可投票的证据阈值（角色权重上限 {weight}%）。",
+  "telemetrySummarySingleSource": "本次只有{engine}形成可用方向，其余引擎没有方向性信号。结论仅由单一面向支撑，信心请相应打折。",
+  "telemetrySummarySilentEngines": "另有 {count} 个引擎有执行但未形成方向性信号，已排除在外，避免把「没话说」误算成「看起来像人写的」。",
   "engineReasonPplUncalibratedLanguage": "本次未采计语言模型困惑度：困惑度模型（DistilGPT2）只在英文语料上训练，对中日韩文而言它量到的是字节的可预测性，不是语言的可预测性。以标注语料实测，它在这些语言上区分真人与 AI 的能力为 0%，采计只会制造伪阳性。",
   "settingsCalibrationByLanguage": "各语言基准集：{breakdown}",
   "settingsCalibrationLegacySamples": "另有 {count} 份较早的样本没有语言标记，无法归入任何语言的基准集——原文默认不保存，事后无从补算语言。随着新文件分析会逐步替换。",
@@ -1296,12 +1302,20 @@
   "integratedLikelyMixed": "较可能是人机混合",
   "integratedLikelyHuman": "较可能不是 AI 生成",
   "integratedBalanced": "未检出明确 AI 主导信号",
-  "integratedLikelihoodLabel": "整合 AI 可能性：{percent}%",
+  "integratedPreliminaryAi": "目前偏向 AI，但接近分界",
+  "integratedPreliminaryHuman": "目前偏向真人，但接近分界",
+  "integratedLikelihoodLabel": "AI 证据指数：{percent}/100",
   "integratedTextScoreLabel": "文字模型原始分数：{percent}%",
   "integratedConfidenceLabel": "判读信心：{confidence}",
   "integratedConfidenceLow": "低",
   "integratedConfidenceModerate": "中",
   "integratedConfidenceHigh": "高",
+  "integratedEvidenceSufficiency": "证据充分度：{percent}/100 · {tier}",
+  "integratedEvidenceTierScreening": "初步筛查",
+  "integratedEvidenceTierReference": "具参考性",
+  "integratedEvidenceTierStrong": "支持较充分",
+  "integratedBoundaryAi": "指数 {index} 只呈现微弱 AI 方向，距 60 分 AI 升级线仍有 {gap} 分；目前不足以认定 AI 撰写。",
+  "integratedBoundaryHuman": "指数 {index} 目前偏向真人，且距 60 分 AI 升级线仍有 {gap} 分；但证据有限，仍不能排除 AI 协作。",
   "integratedEvidenceCoverage": "方向性信号家族：{families}/4 · 适用性覆盖 {coverage}%",
   "@integratedEvidenceCoverage": {"placeholders": {"families": {"type": "int"}, "coverage": {"type": "int"}}},
   "integratedEvidenceGatePassed": "AI 证据门槛：已通过",
@@ -1313,7 +1327,7 @@
   "reportSynthesisStrongestTextSignal": "最高文字引擎信号是 {label}（{percent}%）；它可影响文字模型分数，但不能单独覆盖整合判读。",
   "composerTextScoreThresholdReached": "文字模型原始分数为 {aiPercent}%，已达 {thresholdPercent}% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。",
   "composerTextScoreThresholdNotReached": "文字模型原始分数为 {aiPercent}%，低于 {thresholdPercent}% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。",
-  "telemetryIntegratedVerdict": "依本次可用证据加权后，本文“{direction}”（AI 可能性指数 {percent}%，{confidence}信心）。",
+  "telemetryIntegratedVerdict": "依本次可用证据加权后，本文“{direction}”（AI 证据指数 {percent}/100，{confidence}信心）。",
   "integratedStabilityLabel": "分段稳定性 {percent}% · 区间 {lower}–{upper}%",
   "integratedInputQualityLabel": "输入抽取质量：{percent}%",
   "integratedCalibrationLabel": "同条件本地基准：p={value} · n={count}"

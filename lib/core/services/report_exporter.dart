@@ -64,11 +64,13 @@ class ReportExporter {
   static String _integratedDirectionLabel(
     IntegratedAssessment assessment,
     AppLocalizations l10n,
-  ) => switch (assessment.direction) {
-    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-    IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
-    IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
-    IntegratedDirection.balanced => l10n.integratedBalanced,
+  ) => switch (assessment.conclusion) {
+    IntegratedConclusion.preliminaryAi => l10n.integratedPreliminaryAi,
+    IntegratedConclusion.preliminaryHuman => l10n.integratedPreliminaryHuman,
+    IntegratedConclusion.likelyAi => l10n.integratedLikelyAi,
+    IntegratedConclusion.likelyHuman => l10n.integratedLikelyHuman,
+    IntegratedConclusion.likelyMixed => l10n.integratedLikelyMixed,
+    IntegratedConclusion.noClearDominance => l10n.integratedBalanced,
   };
 
   static String _integratedConfidenceLabel(
@@ -78,6 +80,30 @@ class ReportExporter {
     IntegratedConfidence.low => l10n.integratedConfidenceLow,
     IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
     IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+  };
+
+  static String _integratedEvidenceTierLabel(
+    IntegratedAssessment assessment,
+    AppLocalizations l10n,
+  ) => switch (assessment.confidence) {
+    IntegratedConfidence.low => l10n.integratedEvidenceTierScreening,
+    IntegratedConfidence.moderate => l10n.integratedEvidenceTierReference,
+    IntegratedConfidence.high => l10n.integratedEvidenceTierStrong,
+  };
+
+  static String? _integratedBoundaryExplanation(
+    IntegratedAssessment assessment,
+    AppLocalizations l10n,
+  ) => switch (assessment.conclusion) {
+    IntegratedConclusion.preliminaryAi => l10n.integratedBoundaryAi(
+      assessment.evidenceIndex,
+      assessment.aiEscalationGap,
+    ),
+    IntegratedConclusion.preliminaryHuman => l10n.integratedBoundaryHuman(
+      assessment.evidenceIndex,
+      assessment.aiEscalationGap,
+    ),
+    _ => null,
   };
 
   static String _pdfAbstentionReason(
@@ -151,9 +177,12 @@ class ReportExporter {
       ],
       'overall': {
         'integrated_ai_likelihood': integrated.aiLikelihood,
+        'ai_evidence_index': integrated.evidenceIndex,
         'integrated_direction': integrated.direction.name,
+        'integrated_conclusion': integrated.conclusion.name,
         'integrated_confidence': integrated.confidence.name,
         'integrated_confidence_score': integrated.confidenceScore,
+        'evidence_sufficiency': integrated.evidenceSufficiency,
         'text_model_reliability': integrated.textReliability,
         'text_authorship_class': integrated.textAuthorshipClass.name,
         'analysis_domain': integrated.analysisDomain.name,
@@ -463,6 +492,20 @@ class ReportExporter {
             ),
           ),
           pw.SizedBox(height: 6),
+          pw.Text(
+            l10n.integratedEvidenceSufficiency(
+              integrated.evidenceSufficiency,
+              _integratedEvidenceTierLabel(integrated, l10n),
+            ),
+            style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+          ),
+          if (_integratedBoundaryExplanation(integrated, l10n)
+              case final explanation?)
+            pw.Text(
+              explanation,
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+            ),
+          pw.SizedBox(height: 3),
           pw.Text(
             '${l10n.integratedTextScoreLabel((r.aiProbability * 100).round())} '
             '${r.eslAdjusted ? l10n.pdfEslAppliedSuffix : ''}',

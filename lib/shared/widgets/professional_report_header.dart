@@ -50,6 +50,42 @@ String describeAbstention(DetectionResult result, AppLocalizations l10n) {
   };
 }
 
+String integratedConclusionLabel(
+  IntegratedAssessment assessment,
+  AppLocalizations l10n,
+) => switch (assessment.conclusion) {
+  IntegratedConclusion.preliminaryAi => l10n.integratedPreliminaryAi,
+  IntegratedConclusion.preliminaryHuman => l10n.integratedPreliminaryHuman,
+  IntegratedConclusion.likelyAi => l10n.integratedLikelyAi,
+  IntegratedConclusion.likelyHuman => l10n.integratedLikelyHuman,
+  IntegratedConclusion.likelyMixed => l10n.integratedLikelyMixed,
+  IntegratedConclusion.noClearDominance => l10n.integratedBalanced,
+};
+
+String integratedEvidenceTierLabel(
+  IntegratedAssessment assessment,
+  AppLocalizations l10n,
+) => switch (assessment.confidence) {
+  IntegratedConfidence.low => l10n.integratedEvidenceTierScreening,
+  IntegratedConfidence.moderate => l10n.integratedEvidenceTierReference,
+  IntegratedConfidence.high => l10n.integratedEvidenceTierStrong,
+};
+
+String? integratedBoundaryExplanation(
+  IntegratedAssessment assessment,
+  AppLocalizations l10n,
+) => switch (assessment.conclusion) {
+  IntegratedConclusion.preliminaryAi => l10n.integratedBoundaryAi(
+    assessment.evidenceIndex,
+    assessment.aiEscalationGap,
+  ),
+  IntegratedConclusion.preliminaryHuman => l10n.integratedBoundaryHuman(
+    assessment.evidenceIndex,
+    assessment.aiEscalationGap,
+  ),
+  _ => null,
+};
+
 /// 專業級報告頁頭：判定摘要 + 詳細指標
 class ProfessionalReportHeader extends StatelessWidget {
   final DetectionResult result;
@@ -501,12 +537,7 @@ class _VerdictSummaryCard extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                switch (assessment.direction) {
-                  IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-                  IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
-                  IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
-                  IntegratedDirection.balanced => l10n.integratedBalanced,
-                },
+                integratedConclusionLabel(assessment, l10n),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -530,6 +561,29 @@ class _VerdictSummaryCard extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.88),
                 ),
               ),
+              const SizedBox(height: 3),
+              Text(
+                l10n.integratedEvidenceSufficiency(
+                  assessment.evidenceSufficiency,
+                  integratedEvidenceTierLabel(assessment, l10n),
+                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.88),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (integratedBoundaryExplanation(assessment, l10n)
+                  case final explanation?) ...[
+                const SizedBox(height: 6),
+                Text(
+                  explanation,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white,
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
               const SizedBox(height: 3),
               Text(
                 l10n.integratedEvidenceCoverage(
@@ -1022,19 +1076,30 @@ class _EngineContributionCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                group.available
-                                    ? l10n.reportEngineSignalLabel(
-                                        (group.probability * 100).round(),
-                                      )
-                                    : l10n.reportEngineNotParticipated,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: group.available
-                                          ? const Color(0xFF1E3A5F)
-                                          : Colors.grey[600],
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              Flexible(
+                                child: Text(
+                                  !group.available
+                                      ? l10n.reportEngineNotParticipated
+                                      : group.hasEvidence
+                                      ? l10n.reportEngineSignalLabel(
+                                          (group.probability * 100).round(),
+                                        )
+                                      : group.hasDirectionalSignal
+                                      ? l10n.reportEngineDirectionalIndex(
+                                          (group.probability * 100).round(),
+                                        )
+                                      : l10n.reportEngineNoDirectionalSignal,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.end,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: group.hasDirectionalSignal
+                                            ? const Color(0xFF1E3A5F)
+                                            : Colors.grey[600],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
                               ),
                             ],
                           ),
@@ -1042,7 +1107,9 @@ class _EngineContributionCard extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
-                              value: group.available ? group.probability : 0,
+                              value: group.hasDirectionalSignal
+                                  ? group.probability
+                                  : 0,
                               minHeight: 4,
                               backgroundColor: Colors.grey[200],
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -1176,14 +1243,7 @@ class _VerdictSignalBadge extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      switch (assessment.direction) {
-                        IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-                        IntegratedDirection.likelyMixed =>
-                          l10n.integratedLikelyMixed,
-                        IntegratedDirection.likelyHuman =>
-                          l10n.integratedLikelyHuman,
-                        IntegratedDirection.balanced => l10n.integratedBalanced,
-                      },
+                      integratedConclusionLabel(assessment, l10n),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: meta.color,
                         fontWeight: FontWeight.w800,
@@ -1210,6 +1270,29 @@ class _VerdictSignalBadge extends StatelessWidget {
               height: 1.3,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.integratedEvidenceSufficiency(
+              assessment.evidenceSufficiency,
+              integratedEvidenceTierLabel(assessment, l10n),
+            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey[700],
+              height: 1.3,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (integratedBoundaryExplanation(assessment, l10n)
+              case final explanation?) ...[
+            const SizedBox(height: 6),
+            Text(
+              explanation,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[700],
+                height: 1.35,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1419,13 +1502,16 @@ class _EngineSynthesisSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final available = groups.where((g) => g.available).toList();
-    final strongestSignal = available.isEmpty
+    final directional = groups.where((g) => g.hasDirectionalSignal).toList();
+    final strongestSignal = directional.isEmpty
         ? null
-        : available.reduce((a, b) => a.probability >= b.probability ? a : b);
-    final strongestContribution = available.isEmpty
+        : directional.reduce((a, b) => a.probability >= b.probability ? a : b);
+    final contributing = groups
+        .where((group) => group.contributionPoints > 0)
+        .toList();
+    final strongestContribution = contributing.isEmpty
         ? null
-        : available.reduce(
+        : contributing.reduce(
             (a, b) => a.contributionPoints >= b.contributionPoints ? a : b,
           );
     EngineGroup? style;
@@ -1437,12 +1523,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
     }
     final hasModelGap = groups.any((g) => !g.available);
 
-    final direction = switch (assessment.direction) {
-      IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-      IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
-      IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
-      IntegratedDirection.balanced => l10n.integratedBalanced,
-    };
+    final direction = integratedConclusionLabel(assessment, l10n);
     final confidence = switch (assessment.confidence) {
       IntegratedConfidence.low => l10n.integratedConfidenceLow,
       IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
@@ -1475,6 +1556,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
       );
     }
     if (style != null &&
+        style.hasDirectionalSignal &&
         style.probability < 0.45 &&
         textModelProbability >= 0.45) {
       lines.add(l10n.reportSynthesisStyleCaveat);
@@ -1516,6 +1598,7 @@ class EngineGroup {
   /// 這個引擎本次是否真的找到證據。false 代表它可用但沒有發言——
   /// 不參與投票，也不算在引擎分歧裡。
   final bool hasEvidence;
+  final bool hasDirectionalSignal;
   final int variantCount;
   final List<String> reasons;
   final AppLocalizations l10n;
@@ -1530,6 +1613,7 @@ class EngineGroup {
     required this.contributionPoints,
     required this.available,
     required this.hasEvidence,
+    required this.hasDirectionalSignal,
     required this.variantCount,
     required this.reasons,
     required this.l10n,
@@ -1544,6 +1628,12 @@ class EngineGroup {
       );
     }
     if (!hasEvidence) {
+      if (hasDirectionalSignal) {
+        return l10n.reportEngineRelationshipDirectionalOnly(
+          label,
+          weightPercent,
+        );
+      }
       return l10n.reportEngineRelationshipNoEvidence(label, weightPercent);
     }
     final variantText = variantCount > 1
@@ -1628,9 +1718,25 @@ class EngineGroup {
         )
         .toList();
     final available = availableScores.isNotEmpty;
-    final probability = available
-        ? availableScores.fold<double>(0, (sum, s) => sum + s.aiProbability) /
-              availableScores.length
+    double? directionalProbability(EngineScore score) {
+      if (score.votes) return score.aiProbability;
+      if (role != 'transformer') return null;
+      final raw = score.features['raw_avg_prob'];
+      if (raw == null || (raw - 0.5).abs() < 0.015) return null;
+      return raw.clamp(0.0, 1.0);
+    }
+
+    final directionalProbabilities = availableScores
+        .map(directionalProbability)
+        .whereType<double>()
+        .toList();
+    final hasDirectionalSignal = directionalProbabilities.isNotEmpty;
+    final probability = hasDirectionalSignal
+        ? directionalProbabilities.fold<double>(
+                0,
+                (sum, value) => sum + value,
+              ) /
+              directionalProbabilities.length
         : 0.0;
     final weight = scores.isNotEmpty ? scores.first.weight : _roleWeight(role);
     final contribution = counted && availableWeight > 0
@@ -1654,6 +1760,7 @@ class EngineGroup {
       contributionPoints: contributionPoints,
       available: available,
       hasEvidence: availableScores.any((s) => s.hasEvidence),
+      hasDirectionalSignal: hasDirectionalSignal,
       variantCount: math.max(scores.length, 1),
       reasons: uniqueReasons.isEmpty
           ? [_fallbackReason(role, available, l10n)]

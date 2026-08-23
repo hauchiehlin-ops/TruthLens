@@ -58,6 +58,26 @@ void main() {
     expect(fusion.authorshipClass, TextAuthorshipClass.likelyAiGenerated);
   });
 
+  test('跨家族分數以有效權重線性累積且可由家族分量重算', () {
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: [_score('transformer', 0.82), _score('statistical', 0.28)],
+      inputText: longGeneralText,
+    );
+    final expectedMass = fusion.families.fold<double>(
+      0,
+      (sum, family) => sum + family.probability * family.effectiveWeight,
+    );
+    final expectedWeight = fusion.families.fold<double>(
+      0,
+      (sum, family) => sum + family.effectiveWeight,
+    );
+
+    expect(fusion.families, hasLength(2));
+    expect(fusion.weightedAiMass, closeTo(expectedMass, 1e-9));
+    expect(fusion.activeFamilyWeight, closeTo(expectedWeight, 1e-9));
+    expect(fusion.probability, closeTo(expectedMass / expectedWeight, 1e-9));
+  });
+
   test('風格命中強度 35% 是弱 AI 佐證，不是 35% 的人類票', () {
     final fusion = TextEvidenceFusion.evaluate(
       scores: [_score('stylometry', 0.35)],

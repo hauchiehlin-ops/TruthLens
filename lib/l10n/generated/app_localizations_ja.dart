@@ -518,6 +518,14 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String reportEngineDirectionalIndex(int percent) {
+    return 'Weak direction $percent/100';
+  }
+
+  @override
+  String get reportEngineNoDirectionalSignal => 'No directional signal';
+
+  @override
   String get reportEngineSignalExplanation =>
       'AI信号は、この文書に対する各エンジンの確率です。設定した重みが影響度を決め、表示される寄与ポイントの合計が総合AI確率と正確に一致するよう配分されます。「未検出」は強い信号のしきい値60%未満を意味し、必ずしも数値が0という意味ではありません。';
 
@@ -1712,6 +1720,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String engineReasonBurstinessMid(String value) {
+    return 'Sentence-length variation (burstiness $value) stayed inside the neutral band 0.30–0.55';
+  }
+
+  @override
   String engineReasonTtrLow(String value) {
     return '語彙の多様性が低く（TTR $value）、単語の反復度が高いです';
   }
@@ -1719,6 +1732,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String engineReasonTtrHigh(String value) {
     return '語彙の多様性が高いです（TTR $value）';
+  }
+
+  @override
+  String engineReasonMattrNoAiSignal(String value, String cut) {
+    return 'Vocabulary diversity (MATTR $value) did not cross the calibrated AI-signal cutoff $cut';
   }
 
   @override
@@ -2496,8 +2514,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceSentenceColumnHeader => '文';
 
   @override
+  String get workspaceAiEvidenceIndexShort => 'index';
+
+  @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
     return '$engine は今回、根拠を見つけられなかったため投票に参加していません（役割重み $weight%）。これは自分の担当する観点でAIの痕跡がなかったという意味であり、人が書いたと判断したわけではありません。';
+  }
+
+  @override
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
+    return '$engine found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap $weight%).';
   }
 
   @override
@@ -2757,8 +2783,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get integratedBalanced => 'No clear AI-dominant signal detected';
 
   @override
+  String get integratedPreliminaryAi => 'Currently leans AI, near the boundary';
+
+  @override
+  String get integratedPreliminaryHuman =>
+      'Currently leans human, near the boundary';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
-    return 'Integrated AI likelihood: $percent%';
+    return 'AI evidence index: $percent/100';
   }
 
   @override
@@ -2779,6 +2812,30 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get integratedConfidenceHigh => 'High';
+
+  @override
+  String integratedEvidenceSufficiency(int percent, String tier) {
+    return 'Evidence sufficiency: $percent/100 · $tier';
+  }
+
+  @override
+  String get integratedEvidenceTierScreening => 'preliminary screening';
+
+  @override
+  String get integratedEvidenceTierReference => 'reference-level';
+
+  @override
+  String get integratedEvidenceTierStrong => 'well supported';
+
+  @override
+  String integratedBoundaryAi(int index, int gap) {
+    return 'Index $index is only a weak AI-side direction and remains $gap points below the 60-point escalation line. It has not established AI authorship.';
+  }
+
+  @override
+  String integratedBoundaryHuman(int index, int gap) {
+    return 'Index $index leans human and remains $gap points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.';
+  }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
@@ -2837,7 +2894,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return 'After weighting the available evidence, the document is “$direction” (AI likelihood index $percent%, $confidence confidence).';
+    return 'After weighting the available evidence, the document is “$direction” (AI evidence index $percent/100, $confidence confidence).';
   }
 
   @override

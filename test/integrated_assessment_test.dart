@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:truthlens/core/detection/analysis_profile.dart';
+import 'package:truthlens/core/detection/evidence_fusion.dart';
 import 'package:truthlens/core/models/detection_result.dart';
 import 'package:truthlens/core/models/calibration_evidence.dart';
 import 'package:truthlens/core/models/input_quality.dart';
@@ -56,6 +58,34 @@ DetectionResult _result({
 );
 
 void main() {
+  test('49 分低信心明示為真人側初篩，並距 AI 升級線 11 分', () {
+    const assessment = IntegratedAssessment(
+      aiLikelihood: 0.49,
+      direction: IntegratedDirection.likelyHuman,
+      confidence: IntegratedConfidence.low,
+      confidenceScore: 0.24,
+      textReliability: 0.18,
+      textAuthorshipClass: TextAuthorshipClass.likelyHuman,
+      analysisDomain: AnalysisDomain.general,
+      independentEvidenceFamilies: 0,
+      applicabilityCoverage: 0.25,
+      evidenceCoverage: 0,
+      passesAiEvidenceGate: false,
+      hasAuthorshipEvidence: false,
+      stabilityScore: 0,
+      lowerBound: 0,
+      upperBound: 1,
+      confidenceCeiling: 0.45,
+      stabilityAvailable: false,
+      contributions: [],
+    );
+
+    expect(assessment.conclusion, IntegratedConclusion.preliminaryHuman);
+    expect(assessment.evidenceIndex, 49);
+    expect(assessment.evidenceSufficiency, 24);
+    expect(assessment.aiEscalationGap, 11);
+  });
+
   test('全引擎沉默時保留原始分數方向，不固定回到 50%', () {
     final assessment = IntegratedAssessment.assess(_result());
 

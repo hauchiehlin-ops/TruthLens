@@ -970,13 +970,25 @@ abstract class AppLocalizations {
   /// No description provided for @reportEngineSignalLabel.
   ///
   /// In en, this message translates to:
-  /// **'AI signal {percent}%'**
+  /// **'AI signal index {percent}/100'**
   String reportEngineSignalLabel(int percent);
+
+  /// No description provided for @reportEngineDirectionalIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak direction {percent}/100'**
+  String reportEngineDirectionalIndex(int percent);
+
+  /// No description provided for @reportEngineNoDirectionalSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'No directional signal'**
+  String get reportEngineNoDirectionalSignal;
 
   /// No description provided for @reportEngineSignalExplanation.
   ///
   /// In en, this message translates to:
-  /// **'AI signal is the engine\'s probability for this document; configured weight controls its influence, and contribution points are allocated so their displayed sum exactly matches the overall AI probability. ‘Not detected’ means below the 60% strong-signal threshold, not necessarily mathematically zero.'**
+  /// **'Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.'**
   String get reportEngineSignalExplanation;
 
   /// No description provided for @engineReasonAdversarialNoStrongSentence.
@@ -2798,6 +2810,12 @@ abstract class AppLocalizations {
   /// **'Noticeable variation in sentence length (burstiness {value}) [Human-leaning], dynamic rhythm'**
   String engineReasonBurstinessHigh(String value);
 
+  /// No description provided for @engineReasonBurstinessMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence-length variation (burstiness {value}) stayed inside the neutral band 0.30–0.55'**
+  String engineReasonBurstinessMid(String value);
+
   /// No description provided for @engineReasonTtrLow.
   ///
   /// In en, this message translates to:
@@ -2810,22 +2828,28 @@ abstract class AppLocalizations {
   /// **'High vocabulary diversity (TTR {value}) [Human-leaning]'**
   String engineReasonTtrHigh(String value);
 
+  /// No description provided for @engineReasonMattrNoAiSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocabulary diversity (MATTR {value}) did not cross the calibrated AI-signal cutoff {cut}'**
+  String engineReasonMattrNoAiSignal(String value, String cut);
+
   /// No description provided for @engineReasonStatisticalSummaryAi.
   ///
   /// In en, this message translates to:
-  /// **'Overall statistical summary: Leans towards AI-generated characteristics ({percent}% AI probability)'**
+  /// **'Overall statistical summary: leans towards AI-generated characteristics (signal index {percent}/100)'**
   String engineReasonStatisticalSummaryAi(String percent);
 
   /// No description provided for @engineReasonStatisticalSummaryHuman.
   ///
   /// In en, this message translates to:
-  /// **'Overall statistical summary: Leans towards human natural writing ({percent}% AI probability)'**
+  /// **'Overall statistical summary: leans towards human natural writing (AI signal index {percent}/100)'**
   String engineReasonStatisticalSummaryHuman(String percent);
 
   /// No description provided for @engineReasonStatisticalSummaryNeutral.
   ///
   /// In en, this message translates to:
-  /// **'Overall statistical summary: Indicators balance out, showing neutral characteristics ({percent}% AI probability)'**
+  /// **'Overall statistical summary: qualified indicators point in different directions (AI signal index {percent}/100)'**
   String engineReasonStatisticalSummaryNeutral(String percent);
 
   /// No description provided for @reportFormulaTitle.
@@ -4082,7 +4106,7 @@ abstract class AppLocalizations {
   /// No description provided for @workspacePreliminaryVerdict.
   ///
   /// In en, this message translates to:
-  /// **'Preliminary AI probability: {percent}%'**
+  /// **'Preliminary AI evidence index: {percent}/100'**
   String workspacePreliminaryVerdict(int percent);
 
   /// No description provided for @workspaceSentenceSignalTooltip.
@@ -4103,22 +4127,34 @@ abstract class AppLocalizations {
   /// **'Sentence'**
   String get workspaceSentenceColumnHeader;
 
+  /// No description provided for @workspaceAiEvidenceIndexShort.
+  ///
+  /// In en, this message translates to:
+  /// **'index'**
+  String get workspaceAiEvidenceIndexShort;
+
   /// Shown for an engine that ran but found no evidence, so it did not vote
   ///
   /// In en, this message translates to:
   /// **'{engine} found no evidence this time, so it did not take part in the vote (role weight {weight}%). This means it spotted no AI traces on its own axis — not that it considers the text human-written.'**
   String reportEngineRelationshipNoEvidence(String engine, int weight);
 
+  /// No description provided for @reportEngineRelationshipDirectionalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine} found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap {weight}%).'**
+  String reportEngineRelationshipDirectionalOnly(String engine, int weight);
+
   /// Telemetry summary line when exactly one engine found evidence
   ///
   /// In en, this message translates to:
-  /// **'Only {engine} found anything; the other engines turned up nothing this time. The conclusion rests on a single line of evidence, so treat its confidence accordingly.'**
+  /// **'Only {engine} produced a usable direction; the other engines turned up nothing this time. The conclusion rests on a single analysis axis, so treat its confidence accordingly.'**
   String telemetrySummarySingleSource(String engine);
 
   /// Telemetry summary line counting engines that ran but found no evidence
   ///
   /// In en, this message translates to:
-  /// **'{count} further engine(s) ran but found no evidence, and were excluded from the vote so that \'nothing to report\' is not miscounted as \'looks human-written\'.'**
+  /// **'{count} further engine(s) ran but formed no directional signal, and were excluded so that \'nothing to report\' is not miscounted as \'looks human-written\'.'**
   String telemetrySummarySilentEngines(int count);
 
   /// Shown when the perplexity metric is skipped because the model does not support the document's language
@@ -4497,10 +4533,22 @@ abstract class AppLocalizations {
   /// **'No clear AI-dominant signal detected'**
   String get integratedBalanced;
 
+  /// No description provided for @integratedPreliminaryAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently leans AI, near the boundary'**
+  String get integratedPreliminaryAi;
+
+  /// No description provided for @integratedPreliminaryHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently leans human, near the boundary'**
+  String get integratedPreliminaryHuman;
+
   /// No description provided for @integratedLikelihoodLabel.
   ///
   /// In en, this message translates to:
-  /// **'Integrated AI likelihood: {percent}%'**
+  /// **'AI evidence index: {percent}/100'**
   String integratedLikelihoodLabel(int percent);
 
   /// No description provided for @integratedTextScoreLabel.
@@ -4532,6 +4580,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'High'**
   String get integratedConfidenceHigh;
+
+  /// No description provided for @integratedEvidenceSufficiency.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence sufficiency: {percent}/100 · {tier}'**
+  String integratedEvidenceSufficiency(int percent, String tier);
+
+  /// No description provided for @integratedEvidenceTierScreening.
+  ///
+  /// In en, this message translates to:
+  /// **'preliminary screening'**
+  String get integratedEvidenceTierScreening;
+
+  /// No description provided for @integratedEvidenceTierReference.
+  ///
+  /// In en, this message translates to:
+  /// **'reference-level'**
+  String get integratedEvidenceTierReference;
+
+  /// No description provided for @integratedEvidenceTierStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'well supported'**
+  String get integratedEvidenceTierStrong;
+
+  /// No description provided for @integratedBoundaryAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Index {index} is only a weak AI-side direction and remains {gap} points below the 60-point escalation line. It has not established AI authorship.'**
+  String integratedBoundaryAi(int index, int gap);
+
+  /// No description provided for @integratedBoundaryHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'Index {index} leans human and remains {gap} points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.'**
+  String integratedBoundaryHuman(int index, int gap);
 
   /// No description provided for @integratedEvidenceCoverage.
   ///
@@ -4599,7 +4683,7 @@ abstract class AppLocalizations {
   /// No description provided for @telemetryIntegratedVerdict.
   ///
   /// In en, this message translates to:
-  /// **'After weighting the available evidence, the document is “{direction}” (AI likelihood index {percent}%, {confidence} confidence).'**
+  /// **'After weighting the available evidence, the document is “{direction}” (AI evidence index {percent}/100, {confidence} confidence).'**
   String telemetryIntegratedVerdict(
     String direction,
     int percent,

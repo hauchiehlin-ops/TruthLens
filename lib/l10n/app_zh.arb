@@ -166,7 +166,9 @@
       }
     }
   },
-  "reportEngineSignalLabel": "AI 訊號 {percent}%",
+  "reportEngineSignalLabel": "AI 訊號指數 {percent}/100",
+  "reportEngineDirectionalIndex": "弱方向 {percent}/100",
+  "reportEngineNoDirectionalSignal": "未形成方向性訊號",
   "@reportEngineSignalLabel": {
     "placeholders": {
       "percent": {
@@ -174,7 +176,7 @@
       }
     }
   },
-  "reportEngineSignalExplanation": "AI 訊號是引擎對本文件的判定機率；設定權重決定影響比例，顯示的貢獻百分點會分配為加總後恰好等於整體 AI 機率。「未偵測」表示低於 60% 強訊號閾值，不等於數值必須為 0。",
+  "reportEngineSignalExplanation": "各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；沒有跨過門檻或折扣後方向的引擎顯示「未形成方向性訊號」，不再以 50% 冒充量測結果。",
   "engineReasonAdversarialNoStrongSentence": "{total} 句均未跨越強改寫訊號閾值；校準後的微弱訊號為 {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {
     "placeholders": {
@@ -1001,11 +1003,13 @@
   "engineReasonPplMid": "語言模型困惑度中等（{ppl}）[中性特徵]",
   "engineReasonBurstinessLow": "句子長度高度一致（burstiness {value}）[偏 AI 特徵]，節奏平穩均勻",
   "engineReasonBurstinessHigh": "句長起伏顯著（burstiness {value}）[偏人類特徵]，節奏變化豐富",
+  "engineReasonBurstinessMid": "句長變化（burstiness {value}）落在 0.30–0.55 中性帶，未形成方向性證據",
   "engineReasonTtrLow": "詞彙重複度較高（TTR {value}）[偏 AI 模板/固定格式特徵]",
   "engineReasonTtrHigh": "詞彙多樣性豐富（TTR {value}）[偏人類特徵]",
-  "engineReasonStatisticalSummaryAi": "綜合統計分析：各項指標加總整體偏向 AI 生成特徵（AI 機率 {percent}%）",
-  "engineReasonStatisticalSummaryHuman": "綜合統計分析：各項指標加總整體偏向人類自然寫作（AI 機率 {percent}%）",
-  "engineReasonStatisticalSummaryNeutral": "綜合統計分析：各項統計特徵互有消長，整體呈現中性區間（AI 機率 {percent}%）",
+  "engineReasonMattrNoAiSignal": "詞彙多樣性（MATTR {value}）未跨過校準後的 AI 訊號切點 {cut}",
+  "engineReasonStatisticalSummaryAi": "綜合統計分析：合格指標偏向 AI 生成特徵（訊號指數 {percent}/100）",
+  "engineReasonStatisticalSummaryHuman": "綜合統計分析：合格指標偏向人類自然寫作（AI 訊號指數 {percent}/100）",
+  "engineReasonStatisticalSummaryNeutral": "綜合統計分析：合格指標方向互有消長（AI 訊號指數 {percent}/100）",
   "reportFormulaTitle": "加權計算透明度與參數解析",
   "reportFormulaExplanation": "整體 AI 機率係由各可用引擎之判定機率依其指定權重加權平均計算得出：",
   "reportFormulaActiveEngines": "參與投票引擎與權重",
@@ -1221,7 +1225,7 @@
   "workspaceAnalysisStopped": "分析已停止，文件文字仍保留在工作台。",
   "workspaceSelectedEvidence": "選取證據",
   "workspaceNoEvidence": "各引擎完成後，句子證據會依序顯示於此。",
-  "workspacePreliminaryVerdict": "初步 AI 機率：{percent}%",
+  "workspacePreliminaryVerdict": "初步 AI 證據指數：{percent}/100",
   "@workspacePreliminaryVerdict": {
     "placeholders": {
       "percent": {
@@ -1232,9 +1236,11 @@
   "workspaceSentenceSignalTooltip": "此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。",
   "workspaceSentenceSignalHeader": "逐句 AI 訊號",
   "workspaceSentenceColumnHeader": "句子內容",
+  "workspaceAiEvidenceIndexShort": "指數",
   "reportEngineRelationshipNoEvidence": "{engine} 本次沒有找到證據，未參與投票（角色權重 {weight}%）。這代表它在自己負責的面向沒有發現 AI 痕跡，不等於它認為本文是人類撰寫。",
-  "telemetrySummarySingleSource": "本次只有{engine}找到證據，其餘引擎什麼都沒發現。結論僅由單一面向支撐，信心請相應打折。",
-  "telemetrySummarySilentEngines": "另有 {count} 個引擎有跑但沒找到證據，已排除在投票之外，避免把「沒話說」誤算成「看起來像人寫的」。",
+  "reportEngineRelationshipDirectionalOnly": "{engine} 本次只有弱方向性訊號，已折扣納入初步篩查，但未達可投票的證據門檻（角色權重上限 {weight}%）。",
+  "telemetrySummarySingleSource": "本次只有{engine}形成可用方向，其餘引擎沒有方向性訊號。結論僅由單一面向支撐，信心請相應打折。",
+  "telemetrySummarySilentEngines": "另有 {count} 個引擎有執行但未形成方向性訊號，已排除在外，避免把「沒話說」誤算成「看起來像人寫的」。",
   "engineReasonPplUncalibratedLanguage": "本次未採計語言模型困惑度：困惑度模型（DistilGPT2）只在英文語料上訓練，對中日韓文而言它量到的是位元組的可預測性，不是語言的可預測性。以標註語料實測，它在這些語言上區分真人與 AI 的能力為 0%，採計只會製造偽陽性。",
   "settingsCalibrationByLanguage": "各語言基準集：{breakdown}",
   "settingsCalibrationLegacySamples": "另有 {count} 份較早的樣本沒有語言標記，無法歸入任何語言的基準集——原文預設不保存，事後無從補算語言。隨著新文件分析會逐步替換。",
@@ -1297,12 +1303,20 @@
   "integratedLikelyMixed": "較可能是人機混合",
   "integratedLikelyHuman": "較可能不是 AI 生成",
   "integratedBalanced": "未檢出明確 AI 主導訊號",
-  "integratedLikelihoodLabel": "整合 AI 可能性：{percent}%",
+  "integratedPreliminaryAi": "目前偏向 AI，但接近分界",
+  "integratedPreliminaryHuman": "目前偏向真人，但接近分界",
+  "integratedLikelihoodLabel": "AI 證據指數：{percent}/100",
   "integratedTextScoreLabel": "文字模型原始分數：{percent}%",
   "integratedConfidenceLabel": "判讀信心：{confidence}",
   "integratedConfidenceLow": "低",
   "integratedConfidenceModerate": "中",
   "integratedConfidenceHigh": "高",
+  "integratedEvidenceSufficiency": "證據充分度：{percent}/100 · {tier}",
+  "integratedEvidenceTierScreening": "初步篩查",
+  "integratedEvidenceTierReference": "具參考性",
+  "integratedEvidenceTierStrong": "支持較充分",
+  "integratedBoundaryAi": "指數 {index} 只呈現微弱 AI 方向，距 60 分 AI 升級線仍有 {gap} 分；目前不足以認定 AI 撰寫。",
+  "integratedBoundaryHuman": "指數 {index} 目前偏向真人，且距 60 分 AI 升級線仍有 {gap} 分；但證據有限，仍不能排除 AI 協作。",
   "integratedEvidenceCoverage": "方向性訊號家族：{families}/4 · 適用性覆蓋 {coverage}%",
   "@integratedEvidenceCoverage": {"placeholders": {"families": {"type": "int"}, "coverage": {"type": "int"}}},
   "integratedEvidenceGatePassed": "AI 證據門檻：已通過",
@@ -1314,7 +1328,7 @@
   "reportSynthesisStrongestTextSignal": "最高文字引擎訊號是 {label}（{percent}%）；它可影響文字模型分數，但不能單獨覆蓋整合判讀。",
   "composerTextScoreThresholdReached": "文字模型原始分數為 {aiPercent}%，已達 {thresholdPercent}% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。",
   "composerTextScoreThresholdNotReached": "文字模型原始分數為 {aiPercent}%，低於 {thresholdPercent}% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。",
-  "telemetryIntegratedVerdict": "依本次可用證據加權後，本文「{direction}」（AI 可能性指數 {percent}%，{confidence}信心）。",
+  "telemetryIntegratedVerdict": "依本次可用證據加權後，本文「{direction}」（AI 證據指數 {percent}/100，{confidence}信心）。",
   "integratedStabilityLabel": "分段穩定性 {percent}% · 區間 {lower}–{upper}%",
   "integratedInputQualityLabel": "輸入抽取品質：{percent}%",
   "integratedCalibrationLabel": "同條件本地基準：p={value} · n={count}"

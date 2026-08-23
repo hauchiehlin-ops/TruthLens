@@ -7,7 +7,12 @@ import '../../core/services/integrated_assessment.dart';
 import '../../core/services/publication_evidence.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/professional_report_header.dart'
-    show EngineGroup, describeAbstention;
+    show
+        EngineGroup,
+        describeAbstention,
+        integratedBoundaryExplanation,
+        integratedConclusionLabel,
+        integratedEvidenceTierLabel;
 
 /// 以白話文總結各引擎的分析結果：先講結論，再講引擎之間合不合、
 /// 分數主要被誰拉動、逐句掃出什麼，最後給一句「所以該怎麼辦」。
@@ -27,20 +32,15 @@ List<String> buildTelemetrySummary(
   );
   final available = groups.where((g) => g.available).toList();
   if (available.isEmpty) return const [];
-  // 真正有話說的引擎。沉默的引擎不列入「引擎之間合不合」的比較——
-  // 它們沒有主張，拿它們的中性點去和正向訊號相減只會製造假分歧。
-  final speaking = available.where((g) => g.hasEvidence).toList();
+  // 有強證據或折扣後弱方向的引擎才列入比較。完全沉默的引擎沒有主張，
+  // 拿它們的中性點去和方向性訊號相減只會製造假分歧。
+  final speaking = available.where((g) => g.hasDirectionalSignal).toList();
   final assessment = IntegratedAssessment.assess(
     result,
     claims: ClaimAudit.analyze(result.inputText),
     publication: publication,
   );
-  final direction = switch (assessment.direction) {
-    IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
-    IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
-    IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
-    IntegratedDirection.balanced => l10n.integratedBalanced,
-  };
+  final direction = integratedConclusionLabel(assessment, l10n);
   final confidence = switch (assessment.confidence) {
     IntegratedConfidence.low => l10n.integratedConfidenceLow,
     IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
@@ -50,9 +50,14 @@ List<String> buildTelemetrySummary(
   final lines = <String>[
     l10n.telemetryIntegratedVerdict(
       direction,
-      (assessment.aiLikelihood * 100).round(),
+      assessment.evidenceIndex,
       confidence,
     ),
+    l10n.integratedEvidenceSufficiency(
+      assessment.evidenceSufficiency,
+      integratedEvidenceTierLabel(assessment, l10n),
+    ),
+    ?integratedBoundaryExplanation(assessment, l10n),
     if (result.hasEvidenceLimitations)
       l10n.integratedQualifiedWarning(describeAbstention(result, l10n)),
   ];
