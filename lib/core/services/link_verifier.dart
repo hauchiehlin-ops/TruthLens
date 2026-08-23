@@ -35,6 +35,10 @@ class LinkCheckResult {
   /// Crossref 回傳的篇名（僅 [isCitationVerified] 為 true 且查得到時提供）。
   final String? articleTitle;
 
+  /// Crossref 登記的 DOI 與最早可用出版年。
+  final String? doi;
+  final int? publicationYear;
+
   const LinkCheckResult({
     required this.url,
     required this.status,
@@ -42,6 +46,8 @@ class LinkCheckResult {
     this.isCitationVerified = false,
     this.journalName,
     this.articleTitle,
+    this.doi,
+    this.publicationYear,
   });
 }
 
@@ -53,13 +59,16 @@ class LinkVerifier {
   static String _getProxiedUrl(String targetUrl) {
     if (!kIsWeb) return targetUrl;
 
-    // 優先使用同源代理，其次使用 Vercel 代理
+    // 正式部署優先使用同源代理；本機靜態伺服器沒有 `/api/proxy`，改走目前
+    // 可用的正式代理。舊 truth-lens-band-b 專案已失效，不得再作 fallback。
     try {
+      if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
+        return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      // 回退到 Vercel 代理
-      return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 
@@ -67,6 +76,10 @@ class LinkVerifier {
 
   /// DOI 格式（依 Crossref 規範：字首 `10.` + 4-9 碼註冊者代碼 + `/` + 任意後綴）。
   static final RegExp _doiSuffixPattern = RegExp(r'^10\.\d{4,9}/\S+$');
+  static final RegExp _bareDoiPattern = RegExp(
+    r'10\.\d{4,9}/[-._;()/:A-Z0-9]+',
+    caseSensitive: false,
+  );
 
   /// 從文字中抽取所有網址（依出現順序去重）；不做任何連線動作。
   static List<String> extractUrls(String text) {
@@ -81,6 +94,21 @@ class LinkVerifier {
       if (url.isEmpty || seen.contains(url)) continue;
       seen.add(url);
       result.add(url);
+    }
+    return result;
+  }
+
+  /// 從文字抽取 DOI（含裸 DOI），並移除句尾標點。
+  static List<String> extractDois(String text) {
+    final seen = <String>{};
+    final result = <String>[];
+    for (final match in _bareDoiPattern.allMatches(text)) {
+      var doi = match.group(0)!;
+      while (doi.isNotEmpty && '.,;:!?)]}、。，；：'.contains(doi[doi.length - 1])) {
+        doi = doi.substring(0, doi.length - 1);
+      }
+      doi = doi.toLowerCase();
+      if (doi.isNotEmpty && seen.add(doi)) result.add(doi);
     }
     return result;
   }
@@ -118,6 +146,24 @@ class LinkVerifier {
     }
   }
 
+  /// 核實單一 DOI；可接受裸 DOI 或 doi.org 網址。
+  static Future<LinkCheckResult> verifyDoi(
+    String doiOrUrl, {
+    http.Client? client,
+    Duration timeout = const Duration(seconds: 6),
+  }) async {
+    final normalized = isDoiUrl(doiOrUrl)
+        ? doiOrUrl
+        : 'https://doi.org/${doiOrUrl.trim()}';
+    final c = client ?? http.Client();
+    final owns = client == null;
+    try {
+      return await _verifyDoiCitation(c, normalized, timeout);
+    } finally {
+      if (owns) c.close();
+    }
+  }
+
   /// 期刊文獻目錄核實：查詢 Crossref 的 DOI 登記資料（不下載全文）。
   static Future<LinkCheckResult> _verifyDoiCitation(
     http.Client client,
@@ -139,6 +185,7 @@ class LinkVerifier {
         final titles = (message?['title'] as List?)?.cast<dynamic>();
         final containers = (message?['container-title'] as List?)
             ?.cast<dynamic>();
+        final registeredDoi = message?['DOI']?.toString();
         return LinkCheckResult(
           url: url,
           status: LinkStatus.reachable,
@@ -150,6 +197,8 @@ class LinkVerifier {
           journalName: (containers != null && containers.isNotEmpty)
               ? containers.first.toString()
               : null,
+          doi: registeredDoi ?? doi,
+          publicationYear: _publicationYear(message),
         );
       }
       if (response.statusCode == 404) {
@@ -158,6 +207,7 @@ class LinkVerifier {
           status: LinkStatus.notFound,
           statusCode: 404,
           isCitationVerified: true,
+          doi: doi,
         );
       }
       return LinkCheckResult(
@@ -165,6 +215,7 @@ class LinkVerifier {
         status: LinkStatus.unreachable,
         statusCode: response.statusCode,
         isCitationVerified: true,
+        doi: doi,
       );
     } catch (_) {
       return LinkCheckResult(
@@ -173,6 +224,31 @@ class LinkVerifier {
         isCitationVerified: true,
       );
     }
+  }
+
+  static int? _publicationYear(Map<String, dynamic>? message) {
+    if (message == null) return null;
+    for (final key in const [
+      'published-print',
+      'published-online',
+      'published',
+      'issued',
+      'created',
+    ]) {
+      final value = message[key];
+      if (value is! Map) continue;
+      final parts = value['date-parts'];
+      if (parts is List && parts.isNotEmpty && parts.first is List) {
+        final first = parts.first as List;
+        if (first.isNotEmpty && first.first is num) {
+          return (first.first as num).toInt();
+        }
+      }
+      final timestamp = value['date-time']?.toString();
+      final parsed = timestamp == null ? null : DateTime.tryParse(timestamp);
+      if (parsed != null) return parsed.year;
+    }
+    return null;
   }
 
   static Future<LinkCheckResult> _verifyOne(

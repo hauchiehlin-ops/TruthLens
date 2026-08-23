@@ -8,11 +8,18 @@ import 'package:http/http.dart' as http;
 class NetworkStatus {
   static String _getProxiedUrl(String targetUrl) {
     if (!kIsWeb) return targetUrl;
+
+    // 正式部署使用同源代理；本機靜態伺服器通常沒有 `/api/proxy`，因此改走
+    // 目前有效的正式代理。與 LinkVerifier 保持一致，避免連線探測和實際核實
+    // 使用不同端點，造成「探測離線、實際服務正常」的矛盾狀態。
     try {
+      if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
+        return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      return 'https://truth-lens-band-b.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 

@@ -11,6 +11,8 @@
 /// 而且不隨語言模型進步而失效。
 library;
 
+import '../models/input_quality.dart';
+
 /// 規避手法的種類
 enum EvasionKind {
   /// 零寬字元（零寬空格／連接符／不連接符、BOM）
@@ -50,7 +52,15 @@ class EvasionScan {
   /// 掃描時的總字元數，用來換算密度
   final int characterCount;
 
-  const EvasionScan({this.findings = const [], this.characterCount = 0});
+  /// PDF 文字層與 OCR 可能由排版器帶入控制字元；這些發現仍會列出，但需要
+  /// 更高密度才足以被解讀為刻意規避。
+  final bool extractionDerived;
+
+  const EvasionScan({
+    this.findings = const [],
+    this.characterCount = 0,
+    this.extractionDerived = false,
+  });
 
   static const EvasionScan clean = EvasionScan();
 
@@ -67,14 +77,14 @@ class EvasionScan {
     for (final f in findings) {
       switch (f.kind) {
         case EvasionKind.homoglyph:
-          // 混用外觀相同的異體字母極難自然發生
+          // 掃描器只保留嵌入 ASCII 單字的異體字母，三處以上才視為系統性替換。
           if (f.count >= 3) return true;
         case EvasionKind.bidiControl:
-          return true;
+          if (f.count >= (extractionDerived ? 3 : 1)) return true;
         case EvasionKind.zeroWidth:
-          if (f.count >= 5) return true;
+          if (f.count >= (extractionDerived ? 12 : 5)) return true;
         case EvasionKind.unusualSpace:
-          if (f.count >= 20) return true;
+          if (f.count >= (extractionDerived ? 40 : 20)) return true;
       }
     }
     return false;
@@ -114,8 +124,18 @@ const _homoglyphs = <String, String>{
 ///
 /// 同形字只在**拉丁文本**中判定：一份俄文或希臘文文件裡出現西里爾／希臘字母
 /// 是理所當然的，那不是規避。判斷依據是文本中拉丁字母的佔比。
-EvasionScan scanForEvasion(String raw) {
+EvasionScan scanForEvasion(
+  String raw, {
+  InputAcquisitionMethod acquisitionMethod = InputAcquisitionMethod.directText,
+}) {
   if (raw.isEmpty) return EvasionScan.clean;
+
+  final extractionDerived = switch (acquisitionMethod) {
+    InputAcquisitionMethod.pdfTextLayer ||
+    InputAcquisitionMethod.ocr ||
+    InputAcquisitionMethod.legacyDocument => true,
+    _ => false,
+  };
 
   final findings = <EvasionFinding>[];
 
@@ -141,11 +161,33 @@ EvasionScan scanForEvasion(String raw) {
   final latin = RegExp(r'[A-Za-z]').allMatches(raw).length;
   if (latin / raw.length > 0.30) {
     final hits = <String>[];
-    for (final ch in raw.split('')) {
-      if (_homoglyphs.containsKey(ch)) hits.add(ch);
+    final chars = raw.split('');
+    final asciiLetter = RegExp(r'[A-Za-z]');
+    for (var i = 0; i < chars.length; i++) {
+      final ch = chars[i];
+      if (!_homoglyphs.containsKey(ch)) continue;
+      // PDF/OCR 的數學式經常把 ν 等希臘變數與後方英文說明黏在一起；這是
+      // 抽取失真，不是把拉丁字母替換成同形字。西里爾字母仍照常檢查。
+      if (extractionDerived && _isGreekHomoglyph(ch)) continue;
+      // 科學論文常合法使用獨立的 α、ν、ο 等希臘變數；只有字元被塞進
+      // ASCII 單字／識別字中時，才符合 humanizer 的同形字替換模式。
+      final leftAscii = i > 0 && asciiLetter.hasMatch(chars[i - 1]);
+      final rightAscii =
+          i + 1 < chars.length && asciiLetter.hasMatch(chars[i + 1]);
+      if (leftAscii || rightAscii) hits.add(ch);
     }
     add(EvasionKind.homoglyph, hits);
   }
 
-  return EvasionScan(findings: findings, characterCount: raw.length);
+  return EvasionScan(
+    findings: findings,
+    characterCount: raw.length,
+    extractionDerived: extractionDerived,
+  );
+}
+
+bool _isGreekHomoglyph(String ch) {
+  final code = ch.runes.single;
+  return (code >= 0x0370 && code <= 0x03FF) ||
+      (code >= 0x1F00 && code <= 0x1FFF);
 }

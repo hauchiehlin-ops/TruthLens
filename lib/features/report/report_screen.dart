@@ -12,6 +12,7 @@ import '../../core/services/claim_audit.dart';
 import '../../core/services/link_verifier.dart';
 import '../../core/services/network_status.dart';
 import '../../core/services/preferences_service.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../core/services/report_exporter.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
@@ -43,7 +44,14 @@ List<BibliographyCheckResult> deduplicateBibliographyPreviewResults(
 class ReportScreen extends StatefulWidget {
   final DetectionResult result;
   final bool embedded;
-  const ReportScreen({super.key, required this.result, this.embedded = false});
+  final ValueChanged<PublicationEvidence>? onPublicationEvidenceChanged;
+
+  const ReportScreen({
+    super.key,
+    required this.result,
+    this.embedded = false,
+    this.onPublicationEvidenceChanged,
+  });
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -58,6 +66,10 @@ class _ReportScreenState extends State<ReportScreen> {
   );
   bool _checkingLinks = false;
   List<LinkCheckResult>? _linkChecks;
+  late final String? _sourceDoi = PublicationEvidence.extractSourceDoi(
+    result.inputText,
+  );
+  PublicationEvidence _publicationEvidence = PublicationEvidence.none;
 
   late final List<BibliographyEntry> _bibEntries =
       BibliographyVerifier.extractEntries(result.inputText);
@@ -91,7 +103,9 @@ class _ReportScreenState extends State<ReportScreen> {
           .read<PreferencesService>()
           .linkVerificationEnabled;
       if (linkVerificationOn &&
-          (_detectedUrls.isNotEmpty || _bibEntries.isNotEmpty)) {
+          (_detectedUrls.isNotEmpty ||
+              _bibEntries.isNotEmpty ||
+              _sourceDoi != null)) {
         _runVerification();
       }
     });
@@ -136,6 +150,21 @@ class _ReportScreenState extends State<ReportScreen> {
     }
 
     final tasks = <Future<void>>[];
+    if (_sourceDoi != null) {
+      tasks.add(
+        PublicationEvidence.verify(
+          inputText: result.inputText,
+          sourceFileName: result.sourceFileName,
+        ).then((evidence) {
+          if (mounted) {
+            setState(() {
+              _publicationEvidence = evidence;
+            });
+            widget.onPublicationEvidenceChanged?.call(evidence);
+          }
+        }),
+      );
+    }
     if (_detectedUrls.isNotEmpty) {
       tasks.add(
         LinkVerifier.verifyAll(_detectedUrls).then((checks) {
@@ -264,6 +293,7 @@ class _ReportScreenState extends State<ReportScreen> {
       AppLocalizations, {
       ReportDocument? reportDocument,
       List<BibliographyCheckResult>? bibliographyChecks,
+      PublicationEvidence? publicationEvidence,
     })
     exporter,
   ) async {
@@ -275,6 +305,7 @@ class _ReportScreenState extends State<ReportScreen> {
         l10n,
         reportDocument: _doc,
         bibliographyChecks: _bibChecks,
+        publicationEvidence: _publicationEvidence,
       );
       if (path != null) {
         messenger.showSnackBar(
@@ -320,6 +351,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         _bibChecks ?? const [],
                       ),
                       claims: _claimAudit,
+                      publication: _publicationEvidence,
                     ),
 
                     if (result.wordCount >= DetectionResult.minWords) ...[
@@ -363,7 +395,8 @@ class _ReportScreenState extends State<ReportScreen> {
                     // 網路狀態警告（若適用）
                     if (_networkAvailable == false &&
                         (_detectedUrls.isNotEmpty ||
-                            _bibEntries.isNotEmpty)) ...[
+                            _bibEntries.isNotEmpty ||
+                            _sourceDoi != null)) ...[
                       const SizedBox(height: 24),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -19,6 +19,7 @@ import '../detection/evidence_fusion.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
+import 'publication_evidence.dart';
 
 enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed, balanced }
 
@@ -51,10 +52,12 @@ class IntegratedAssessment {
   final double applicabilityCoverage;
   final double evidenceCoverage;
   final bool passesAiEvidenceGate;
+  final bool hasAuthorshipEvidence;
   final double stabilityScore;
   final double lowerBound;
   final double upperBound;
   final double confidenceCeiling;
+  final bool stabilityAvailable;
   final List<IntegratedEvidenceContribution> contributions;
 
   const IntegratedAssessment({
@@ -69,10 +72,12 @@ class IntegratedAssessment {
     required this.applicabilityCoverage,
     required this.evidenceCoverage,
     required this.passesAiEvidenceGate,
+    required this.hasAuthorshipEvidence,
     required this.stabilityScore,
     required this.lowerBound,
     required this.upperBound,
     required this.confidenceCeiling,
+    required this.stabilityAvailable,
     required this.contributions,
   });
 
@@ -80,6 +85,7 @@ class IntegratedAssessment {
     DetectionResult result, {
     CitationEvidence citations = CitationEvidence.none,
     ClaimAudit claims = ClaimAudit.none,
+    PublicationEvidence publication = PublicationEvidence.none,
   }) {
     final contributionByAxis = <EvidenceAxisKind, double>{};
     final informationByAxis = <EvidenceAxisKind, double>{};
@@ -128,12 +134,18 @@ class IntegratedAssessment {
     final textProbability =
         (fusion.families.isEmpty ? result.aiProbability : fusion.probability)
             .clamp(0.02, 0.98);
-    final textLogOdds = math.log(textProbability / (1 - textProbability));
-    add(
-      EvidenceAxisKind.textTrace,
-      textLogOdds * textReliability,
-      information: textReliability,
-    );
+    // 精確中性值且沒有任何證據家族時，不建立一張假的「五五波文字票」。
+    // 非中性的舊引擎總分仍保留為低可靠度方向性篩查，兼顧既有報告需求。
+    if (fusion.families.isNotEmpty ||
+        calibratedAiOutlier ||
+        textProbability != 0.5) {
+      final textLogOdds = math.log(textProbability / (1 - textProbability));
+      add(
+        EvidenceAxisKind.textTrace,
+        textLogOdds * textReliability,
+        information: textReliability,
+      );
+    }
     if (result.evasion.indicatesDeliberateEvasion &&
         fusion.passesAiEvidenceGate &&
         fusion.probability >= DetectionResult.aiFlagThreshold) {
@@ -151,6 +163,11 @@ class IntegratedAssessment {
     final provenance = result.provenance;
     if (provenance.indicatesHumanAuthorship) {
       add(EvidenceAxisKind.documentOrigin, -1.35, information: 1.0);
+    }
+    if (publication.supportsHumanAuthorship) {
+      // DOI、篇名與出版年代共同吻合，表示這份出版品早於現代生成式 AI。
+      // 這是來源身分證據，不是文風猜測，因此證據力高於沉默的文字引擎。
+      add(EvidenceAxisKind.documentOrigin, -2.20, information: 2.0);
     }
 
     // [citations] 與 [claims] 仍保留在 API，因為呼叫端同時用它們建立四軸矩陣。
@@ -197,7 +214,8 @@ class IntegratedAssessment {
         (1 - conflictRatio * 0.55);
     final provenanceSupportsHuman =
         provenance.indicatesHumanAuthorship ||
-        writing.consistentWithLiveWriting;
+        writing.consistentWithLiveWriting ||
+        publication.supportsHumanAuthorship;
     final weakAiScreeningOnly =
         aiLikelihood > 0.5 && !passesAiEvidenceGate && !provenanceSupportsHuman;
     final evidenceConfidenceCeiling = weakAiScreeningOnly
@@ -210,7 +228,7 @@ class IntegratedAssessment {
     final confidenceCeiling = math.min(
       result.inputQuality.confidenceCeiling,
       math.min(
-        fusion.stabilitySegmentCount < 3 ? 0.45 : 1.0,
+        !fusion.stabilityAvailable && !provenanceSupportsHuman ? 0.45 : 1.0,
         evidenceConfidenceCeiling,
       ),
     );
@@ -220,7 +238,7 @@ class IntegratedAssessment {
         : confidenceScore >= 0.38
         ? IntegratedConfidence.moderate
         : IntegratedConfidence.low;
-    var confidence = result.evidenceEngineCount == 0
+    var confidence = result.evidenceEngineCount == 0 && !provenanceSupportsHuman
         ? IntegratedConfidence.low
         : rawConfidence == IntegratedConfidence.high &&
               fusion.aiSupportingFamilies < 2 &&
@@ -262,10 +280,17 @@ class IntegratedAssessment {
       applicabilityCoverage: fusion.applicabilityCoverage,
       evidenceCoverage: fusion.evidenceCoverage,
       passesAiEvidenceGate: passesAiEvidenceGate,
+      hasAuthorshipEvidence:
+          fusion.families.isNotEmpty ||
+          calibratedAiOutlier ||
+          writing.consistentWithLiveWriting ||
+          provenance.indicatesHumanAuthorship ||
+          publication.supportsHumanAuthorship,
       stabilityScore: fusion.stabilityScore,
       lowerBound: fusion.lowerBound,
       upperBound: fusion.upperBound,
       confidenceCeiling: confidenceCeiling,
+      stabilityAvailable: fusion.stabilityAvailable,
       contributions: contributions,
     );
   }

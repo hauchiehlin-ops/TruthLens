@@ -140,7 +140,7 @@ class BibliographyVerifier {
     // 都會請求到不存在的 localhost `/api/proxy`。
     final appHost = Uri.base.host.toLowerCase();
     if (appHost == 'localhost' || appHost == '127.0.0.1' || appHost == '::1') {
-      return 'https://truth-lens-band-b.vercel.app/api/proxy?url='
+      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url='
           '${Uri.encodeComponent(targetUrl)}';
     }
 

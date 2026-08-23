@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/integrated_assessment.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 以 Canvas 繪製社群分享用的摘要卡並輸出 PNG（plan 第九節）。
@@ -26,6 +27,7 @@ class SummaryCard {
     DetectionResult r,
     AppLocalizations l10n, {
     double scale = 2,
+    PublicationEvidence publicationEvidence = PublicationEvidence.none,
   }) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
@@ -34,6 +36,7 @@ class SummaryCard {
     final assessment = IntegratedAssessment.assess(
       r,
       claims: ClaimAudit.analyze(r.inputText),
+      publication: publicationEvidence,
     );
     final color = _verdictColor(assessment.aiLikelihood);
     final pct = (assessment.aiLikelihood * 100).round();

@@ -35,8 +35,14 @@ void main() {
         return http.Response(
           jsonEncode({
             'message': {
+              'DOI': '10.1038/nphys1170',
               'title': ['Some Article Title'],
               'container-title': ['Nature Physics'],
+              'published-print': {
+                'date-parts': [
+                  [2010, 5, 1],
+                ],
+              },
             },
           }),
           200,
@@ -50,6 +56,8 @@ void main() {
       expect(r.status, LinkStatus.reachable);
       expect(r.journalName, 'Nature Physics');
       expect(r.articleTitle, 'Some Article Title');
+      expect(r.doi, '10.1038/nphys1170');
+      expect(r.publicationYear, 2010);
     });
 
     test('Crossref 404 → 查無此 DOI 登記，判定為 notFound', () async {
@@ -89,6 +97,17 @@ void main() {
 
     test('沒有網址時回傳空陣列，不誤判一般文字', () {
       expect(LinkVerifier.extractUrls('這是一段完全沒有連結的文字。'), isEmpty);
+    });
+  });
+
+  group('LinkVerifier.extractDois', () {
+    test('可抽取裸 DOI 並移除句尾標點', () {
+      expect(
+        LinkVerifier.extractDois(
+          'DOI:10.1142/S0218127410026678。另見 10.1000/XYZ-123.',
+        ),
+        ['10.1142/s0218127410026678', '10.1000/xyz-123'],
+      );
     });
   });
 

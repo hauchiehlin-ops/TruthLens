@@ -86,13 +86,15 @@ void main() {
     test('含摘要註解與逐句資料列', () {
       final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       final lines = csv.trim().split('\n');
-      expect(lines.where((l) => l.startsWith('#')).length, 23);
+      expect(lines.where((l) => l.startsWith('#')).length, 28);
       expect(lines, contains('index,sentence,ai_probability,patterns'));
       expect(lines.last, startsWith('1,'));
       expect(csv, contains('overall_ai_probability,0.5500'));
       expect(csv, contains('integrated_ai_likelihood'));
       expect(csv, contains('integrated_direction'));
       expect(csv, contains('ai_evidence_gate_passed'));
+      expect(csv, contains('has_authorship_evidence'));
+      expect(csv, contains('source_publication_status'));
     });
 
     test('逗號與引號正確跳脫', () {

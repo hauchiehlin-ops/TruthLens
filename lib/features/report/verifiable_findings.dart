@@ -13,6 +13,7 @@ library;
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../shared/widgets/provenance_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -36,8 +37,30 @@ List<VerifiableFinding> collectVerifiableFindings(
   AppLocalizations l10n, {
   CitationEvidence citations = CitationEvidence.none,
   ClaimAudit claims = ClaimAudit.none,
+  PublicationEvidence publication = PublicationEvidence.none,
 }) {
   final findings = <VerifiableFinding>[];
+
+  if (publication.supportsHumanAuthorship) {
+    findings.add(
+      VerifiableFinding(
+        statement: l10n.findingPublicationPredatesGenerativeAi(
+          publication.doi ?? '',
+          publication.publicationYear ?? 0,
+        ),
+        isConcern: false,
+      ),
+    );
+  } else if (publication.status == PublicationEvidenceStatus.identityMismatch) {
+    findings.add(
+      VerifiableFinding(
+        statement: l10n.findingPublicationIdentityMismatch(
+          publication.doi ?? '',
+        ),
+        isConcern: true,
+      ),
+    );
+  }
 
   // 1. 刻意規避的痕跡——最直接，因為它顯示有人動過手腳
   if (result.evasion.indicatesDeliberateEvasion) {

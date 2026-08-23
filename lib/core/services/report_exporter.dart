@@ -18,6 +18,7 @@ import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
 import 'integrated_assessment.dart';
+import 'publication_evidence.dart';
 import '../utils/text_stats.dart';
 
 /// 報告匯出：CSV（逐句數據）、JSON（系統整合）與 PDF（完整報告）。
@@ -111,6 +112,7 @@ class ReportExporter {
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence publicationEvidence = PublicationEvidence.none,
   }) {
     final doc = reportDocument ?? _composer.compose(r, l10n);
     final orderedBibliographyChecks = bibliographyChecks == null
@@ -124,11 +126,13 @@ class ReportExporter {
       r,
       citations: citations,
       claims: claims,
+      publication: publicationEvidence,
     );
     final integrated = IntegratedAssessment.assess(
       r,
       citations: citations,
       claims: claims,
+      publication: publicationEvidence,
     );
     final map = {
       'version': 4,
@@ -157,12 +161,24 @@ class ReportExporter {
         'applicability_coverage': integrated.applicabilityCoverage,
         'evidence_coverage': integrated.evidenceCoverage,
         'ai_evidence_gate_passed': integrated.passesAiEvidenceGate,
+        'has_authorship_evidence': integrated.hasAuthorshipEvidence,
+        'segment_stability_available': integrated.stabilityAvailable,
         'segment_stability': integrated.stabilityScore,
         'segment_interval': {
           'lower': integrated.lowerBound,
           'upper': integrated.upperBound,
         },
         'confidence_ceiling': integrated.confidenceCeiling,
+        'source_publication': {
+          'status': publicationEvidence.status.name,
+          'doi': publicationEvidence.doi,
+          'title': publicationEvidence.articleTitle,
+          'journal': publicationEvidence.journalName,
+          'year': publicationEvidence.publicationYear,
+          'title_similarity': publicationEvidence.titleSimilarity,
+          'supports_human_authorship':
+              publicationEvidence.supportsHumanAuthorship,
+        },
         'input_quality': {
           'method': r.inputQuality.method.name,
           'extraction_quality': r.inputQuality.extractionQuality,
@@ -260,9 +276,17 @@ class ReportExporter {
   }
 
   /// 逐句數據表。`#` 開頭為摘要註解列，方便試算表與程式兩用。
-  static String buildCsv(DetectionResult r, AppLocalizations l10n) {
+  static String buildCsv(
+    DetectionResult r,
+    AppLocalizations l10n, {
+    PublicationEvidence publicationEvidence = PublicationEvidence.none,
+  }) {
     final claims = ClaimAudit.analyze(r.inputText);
-    final integrated = IntegratedAssessment.assess(r, claims: claims);
+    final integrated = IntegratedAssessment.assess(
+      r,
+      claims: claims,
+      publication: publicationEvidence,
+    );
     final buf = StringBuffer()
       ..writeln('# ${l10n.exportReportTitle}')
       ..writeln('# analyzed_at,${r.analyzedAt.toIso8601String()}')
@@ -291,6 +315,10 @@ class ReportExporter {
         '# evidence_coverage,${integrated.evidenceCoverage.toStringAsFixed(4)}',
       )
       ..writeln('# ai_evidence_gate_passed,${integrated.passesAiEvidenceGate}')
+      ..writeln('# has_authorship_evidence,${integrated.hasAuthorshipEvidence}')
+      ..writeln(
+        '# segment_stability_available,${integrated.stabilityAvailable}',
+      )
       ..writeln(
         '# segment_stability,${integrated.stabilityScore.toStringAsFixed(4)}',
       )
@@ -307,6 +335,13 @@ class ReportExporter {
       ..writeln('# esl_adjusted,${r.eslAdjusted}')
       ..writeln('# checkable_claims,${claims.total}')
       ..writeln('# unsupported_claims,${claims.unsupported}')
+      ..writeln(
+        '# source_publication_status,${publicationEvidence.status.name}',
+      )
+      ..writeln('# source_publication_doi,${publicationEvidence.doi ?? ''}')
+      ..writeln(
+        '# source_publication_year,${publicationEvidence.publicationYear ?? ''}',
+      )
       ..writeln('index,sentence,ai_probability,patterns');
     for (final s in _analyzableSentences(r)) {
       buf.writeln(
@@ -336,6 +371,7 @@ class ReportExporter {
     required ByteData boldFont,
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence publicationEvidence = PublicationEvidence.none,
   }) async {
     final orderedBibliographyChecks = bibliographyChecks == null
         ? null
@@ -349,11 +385,13 @@ class ReportExporter {
       r,
       citations: citations,
       claims: claims,
+      publication: publicationEvidence,
     );
     final integrated = IntegratedAssessment.assess(
       r,
       citations: citations,
       claims: claims,
+      publication: publicationEvidence,
     );
     final regular = pw.Font.ttf(regularFont);
     final bold = pw.Font.ttf(boldFont);
@@ -432,11 +470,13 @@ class ReportExporter {
           ),
           pw.SizedBox(height: 3),
           pw.Text(
-            l10n.integratedStabilityLabel(
-              (integrated.stabilityScore * 100).round(),
-              (integrated.lowerBound * 100).round(),
-              (integrated.upperBound * 100).round(),
-            ),
+            integrated.stabilityAvailable
+                ? l10n.integratedStabilityLabel(
+                    (integrated.stabilityScore * 100).round(),
+                    (integrated.lowerBound * 100).round(),
+                    (integrated.upperBound * 100).round(),
+                  )
+                : l10n.integratedStabilityUnavailable,
             style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
           if (r.inputQuality.extractionQuality < 0.95)
@@ -831,12 +871,19 @@ class ReportExporter {
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence? publicationEvidence,
   }) async {
     final bytes = Uint8List.fromList([
       0xEF,
       0xBB,
       0xBF,
-      ...utf8.encode(buildCsv(r, l10n)),
+      ...utf8.encode(
+        buildCsv(
+          r,
+          l10n,
+          publicationEvidence: publicationEvidence ?? PublicationEvidence.none,
+        ),
+      ),
     ]);
     return _save(
       bytes: bytes,
@@ -851,6 +898,7 @@ class ReportExporter {
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence? publicationEvidence,
   }) async {
     final bytes = Uint8List.fromList([
       0xEF,
@@ -862,6 +910,7 @@ class ReportExporter {
           l10n,
           reportDocument: reportDocument,
           bibliographyChecks: bibliographyChecks,
+          publicationEvidence: publicationEvidence ?? PublicationEvidence.none,
         ),
       ),
     ]);
@@ -878,8 +927,13 @@ class ReportExporter {
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence? publicationEvidence,
   }) async {
-    final bytes = await SummaryCard.renderPng(r, l10n);
+    final bytes = await SummaryCard.renderPng(
+      r,
+      l10n,
+      publicationEvidence: publicationEvidence ?? PublicationEvidence.none,
+    );
     return _save(
       bytes: bytes,
       fileName: 'truthlens_${_timestamp(r.analyzedAt)}.png',
@@ -893,6 +947,7 @@ class ReportExporter {
     AppLocalizations l10n, {
     ReportDocument? reportDocument,
     List<BibliographyCheckResult>? bibliographyChecks,
+    PublicationEvidence? publicationEvidence,
   }) async {
     final bytes = await buildPdf(
       r,
@@ -901,6 +956,7 @@ class ReportExporter {
       boldFont: await rootBundle.load('assets/fonts/NotoSansTC-Bold.ttf'),
       reportDocument: reportDocument,
       bibliographyChecks: bibliographyChecks,
+      publicationEvidence: publicationEvidence ?? PublicationEvidence.none,
     );
     return _save(
       bytes: bytes,

@@ -2590,6 +2590,24 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String findingPublicationPredatesGenerativeAi(String doi, int year) {
+    return 'Source DOI $doi matches this document and was registered in $year, before modern generative-AI writing systems.';
+  }
+
+  @override
+  String findingPublicationIdentityMismatch(String doi) {
+    return 'Source DOI $doi resolves, but its registered title does not match this document. Verify the document identity before relying on it.';
+  }
+
+  @override
+  String get integratedStabilityUnavailable =>
+      'Segment stability unavailable · no sentence-level evidence voted';
+
+  @override
+  String get integratedNeutralBaseline =>
+      'No authorship-specific evidence was found; 50% is a neutral baseline, not an equal-evidence result.';
+
+  @override
   String get reportVerifiableFindingsTitle => '検証できること';
 
   @override

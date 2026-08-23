@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/detection/evasion_scanner.dart';
+import 'package:truthlens/core/models/input_quality.dart';
 
 /// 這是整套系統裡唯一確定性的檢查：不估機率，只回報「有沒有」。
 /// 它指向的不是「這段文字像 AI」，而是「有人刻意規避偵測」——
@@ -23,6 +26,24 @@ void main() {
 
     test('空字串不崩潰', () {
       expect(scanForEvasion('').hasFindings, isFalse);
+    });
+
+    test('實際 IJBC 學術 PDF 抽取文字不構成刻意規避', () {
+      final paper = File('test/fixtures/ijbc_paper.txt').readAsStringSync();
+      final scan = scanForEvasion(
+        paper,
+        acquisitionMethod: InputAcquisitionMethod.pdfTextLayer,
+      );
+      expect(
+        scan.indicatesDeliberateEvasion,
+        isFalse,
+        reason: scan.findings
+            .map(
+              (finding) =>
+                  '${finding.kind.name}:${finding.count}:${finding.samples}',
+            )
+            .join(', '),
+      );
     });
   });
 
@@ -51,6 +72,18 @@ void main() {
       expect(scan.findings.any((f) => f.kind == EvasionKind.homoglyph), isTrue);
     });
 
+    test('學術公式中的獨立希臘變數不算同形字規避', () {
+      final scan = scanForEvasion(
+        'The eigenvalue is written as ν = 0.25, while α controls the mode.',
+        acquisitionMethod: InputAcquisitionMethod.pdfTextLayer,
+      );
+      expect(
+        scan.findings.any((f) => f.kind == EvasionKind.homoglyph),
+        isFalse,
+      );
+      expect(scan.indicatesDeliberateEvasion, isFalse);
+    });
+
     test('俄文文件裡的西里爾字母不算規避', () {
       // 一份俄文文件裡有西里爾字母是理所當然的
       final scan = scanForEvasion(
@@ -68,6 +101,15 @@ void main() {
     test('出現即示警——正常寫作工具不會產生', () {
       final scan = scanForEvasion('The flow\u202Ewas examined.');
       expect(scan.indicatesDeliberateEvasion, isTrue);
+    });
+
+    test('PDF 抽取的單一方向控制字元只列出，不直接指控規避', () {
+      final scan = scanForEvasion(
+        'The flow\u202E was examined.',
+        acquisitionMethod: InputAcquisitionMethod.pdfTextLayer,
+      );
+      expect(scan.hasFindings, isTrue);
+      expect(scan.indicatesDeliberateEvasion, isFalse);
     });
   });
 

@@ -10,6 +10,7 @@ import '../models/detection_result.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'document_provenance.dart';
+import 'publication_evidence.dart';
 
 enum EvidenceAxisKind {
   textTrace,
@@ -45,11 +46,12 @@ class ForensicEvidenceMatrix {
     DetectionResult result, {
     CitationEvidence citations = CitationEvidence.none,
     ClaimAudit claims = ClaimAudit.none,
+    PublicationEvidence publication = PublicationEvidence.none,
   }) => ForensicEvidenceMatrix(
     axes: [
       _textAxis(result),
       _writingAxis(result),
-      _originAxis(result),
+      _originAxis(result, publication),
       _sourceAxis(citations, claims),
     ],
   );
@@ -143,7 +145,17 @@ class ForensicEvidenceMatrix {
     );
   }
 
-  static EvidenceAxisAssessment _originAxis(DetectionResult result) {
+  static EvidenceAxisAssessment _originAxis(
+    DetectionResult result,
+    PublicationEvidence publication,
+  ) {
+    if (publication.supportsHumanAuthorship) {
+      return const EvidenceAxisAssessment(
+        kind: EvidenceAxisKind.documentOrigin,
+        state: EvidenceAxisState.reassuring,
+        strength: EvidenceStrength.strong,
+      );
+    }
     final risk = result.provenance.risk;
     return switch (risk) {
       ProvenanceRisk.unknown => const EvidenceAxisAssessment(

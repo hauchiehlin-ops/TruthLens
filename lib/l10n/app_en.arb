@@ -2204,6 +2204,12 @@
       }
     }
   },
+  "findingPublicationPredatesGenerativeAi": "Source DOI {doi} matches this document and was registered in {year}, before modern generative-AI writing systems.",
+  "@findingPublicationPredatesGenerativeAi": {"placeholders": {"doi": {"type": "String"}, "year": {"type": "int"}}},
+  "findingPublicationIdentityMismatch": "Source DOI {doi} resolves, but its registered title does not match this document. Verify the document identity before relying on it.",
+  "@findingPublicationIdentityMismatch": {"placeholders": {"doi": {"type": "String"}}},
+  "integratedStabilityUnavailable": "Segment stability unavailable · no sentence-level evidence voted",
+  "integratedNeutralBaseline": "No authorship-specific evidence was found; 50% is a neutral baseline, not an equal-evidence result.",
   "reportVerifiableFindingsTitle": "What can be verified",
   "reportVerifiableFindingsSubtitle": "Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.",
   "@reportVerifiableFindingsTitle": {

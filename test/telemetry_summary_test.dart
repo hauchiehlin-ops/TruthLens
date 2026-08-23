@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/models/detection_result.dart';
+import 'package:truthlens/core/services/publication_evidence.dart';
 import 'package:truthlens/features/workspace/telemetry_summary.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
 
@@ -11,6 +12,7 @@ final _longText = List.filled(200, 'alpha').join(' ');
 DetectionResult _result({
   required Map<String, double> engineScores,
   Set<String> unavailable = const {},
+  bool hasEvidence = true,
   List<double> sentenceScores = const [0.1, 0.1, 0.1, 0.15, 0.12, 0.08],
 }) {
   final scores = [
@@ -21,6 +23,8 @@ DetectionResult _result({
         aiProbability: entry.value,
         weight: 0.25,
         available: !unavailable.contains(entry.key),
+        hasEvidence: hasEvidence,
+        sentenceScores: hasEvidence ? sentenceScores : null,
       ),
   ];
   final activeWeight = scores
@@ -154,5 +158,36 @@ void main() {
 
     expect(text, contains('After weighting the available evidence'));
     expect(text, contains('2 engine(s) sat this one out'));
+  });
+
+  test('已核實的生成式 AI 前出版來源會同步更新遙測總結', () {
+    final lines = buildTelemetrySummary(
+      _result(
+        engineScores: {
+          'transformer': 0.5,
+          'statistical': 0.5,
+          'stylometry': 0.5,
+          'adversarial': 0.5,
+        },
+        hasEvidence: false,
+      ),
+      l10n,
+      publication: const PublicationEvidence(
+        status: PublicationEvidenceStatus.verified,
+        doi: '10.1142/S0218127410026678',
+        articleTitle:
+            'Lowest Stability Boundary on Flow of Concentric Rotating Cylinders',
+        publicationYear: 2010,
+        titleSimilarity: 1,
+      ),
+    );
+    final text = lines.join(' ');
+
+    expect(text, contains('More likely not AI-generated'));
+    expect(text, contains('AI likelihood index 10%'));
+    expect(text, isNot(contains('AI and human signals are balanced')));
+    expect(text, isNot(contains('engines disagree')));
+    expect(text, isNot(contains('broadly agree')));
+    expect(text, isNot(contains('crossed the strong-AI line')));
   });
 }

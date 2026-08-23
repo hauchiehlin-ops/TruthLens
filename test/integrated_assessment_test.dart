@@ -7,6 +7,7 @@ import 'package:truthlens/core/services/claim_audit.dart';
 import 'package:truthlens/core/services/document_provenance.dart';
 import 'package:truthlens/core/services/forensic_evidence.dart';
 import 'package:truthlens/core/services/integrated_assessment.dart';
+import 'package:truthlens/core/services/publication_evidence.dart';
 import 'package:truthlens/core/services/writing_session.dart';
 
 DetectionResult _result({
@@ -72,6 +73,28 @@ void main() {
     expect(assessment.direction, IntegratedDirection.balanced);
     expect(assessment.confidence, IntegratedConfidence.low);
     expect(assessment.passesAiEvidenceGate, isFalse);
+    expect(assessment.hasAuthorshipEvidence, isFalse);
+    expect(assessment.stabilityAvailable, isFalse);
+  });
+
+  test('已核實的生成式 AI 前出版品可提供真人作者方向', () {
+    const publication = PublicationEvidence(
+      status: PublicationEvidenceStatus.verified,
+      doi: '10.1142/s0218127410026678',
+      articleTitle:
+          'Lowest stability boundary on flow of concentric rotating cylinders',
+      publicationYear: 2010,
+      titleSimilarity: 1,
+    );
+    final assessment = IntegratedAssessment.assess(
+      _result(textScore: 0.50),
+      publication: publication,
+    );
+
+    expect(assessment.direction, IntegratedDirection.likelyHuman);
+    expect(assessment.aiLikelihood, lessThan(0.15));
+    expect(assessment.confidence, IntegratedConfidence.moderate);
+    expect(assessment.hasAuthorshipEvidence, isTrue);
   });
 
   test('整段貼上、可疑來源與查無引用不能把偏低文字訊號翻成 AI', () {

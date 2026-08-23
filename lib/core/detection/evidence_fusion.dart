@@ -44,6 +44,7 @@ class TextEvidenceFusion {
   final double lowerBound;
   final double upperBound;
   final int stabilitySegmentCount;
+  final bool stabilityAvailable;
   final int aiSupportingFamilies;
   final int humanSupportingFamilies;
   final bool passesAiEvidenceGate;
@@ -63,6 +64,7 @@ class TextEvidenceFusion {
     required this.lowerBound,
     required this.upperBound,
     required this.stabilitySegmentCount,
+    required this.stabilityAvailable,
     required this.aiSupportingFamilies,
     required this.humanSupportingFamilies,
     required this.passesAiEvidenceGate,
@@ -261,6 +263,7 @@ class TextEvidenceFusion {
       lowerBound: window.lowerBound,
       upperBound: window.upperBound,
       stabilitySegmentCount: window.analyzable,
+      stabilityAvailable: window.analyzable >= 3 && _hasSegmentEvidence(scores),
       aiSupportingFamilies: aiFamilies.length,
       humanSupportingFamilies: humanFamilies.length,
       passesAiEvidenceGate: passesGate,
@@ -301,8 +304,12 @@ class TextEvidenceFusion {
               score.sentenceScores!.isNotEmpty,
         )
         .toList();
+    // 聚合後的 fallback 句分數只有在至少一個引擎真的投票時才具有證據
+    // 意義。全體沉默時它只是 UI 診斷值，不能製造 100% 穩定的 0–0% 區間。
+    final hasVotingEngine = scores.any((score) => score.votes);
+    final usableFallback = hasVotingEngine ? fallback : const <SentenceScore>[];
     final length = perEngine.isEmpty
-        ? fallback.length
+        ? usableFallback.length
         : perEngine
               .map((score) => score.sentenceScores!.length)
               .reduce(math.max);
@@ -327,8 +334,8 @@ class TextEvidenceFusion {
           values.add(score.sentenceScores![i]);
         }
       }
-      if (values.isEmpty && i < fallback.length) {
-        values.add(fallback[i].aiProbability);
+      if (values.isEmpty && i < usableFallback.length) {
+        values.add(usableFallback[i].aiProbability);
       }
       if (values.isEmpty) continue;
       analyzable++;
@@ -347,6 +354,13 @@ class TextEvidenceFusion {
       upperBound: interval.upper,
     );
   }
+
+  static bool _hasSegmentEvidence(List<EngineScore> scores) => scores.any(
+    (score) =>
+        score.votes &&
+        score.sentenceScores != null &&
+        score.sentenceScores!.isNotEmpty,
+  );
 
   /// 以固定種子的分段 bootstrap 估計文件內部穩定性。固定種子讓同一份文件
   /// 在任何平台都得到相同區間；重抽樣單位是句段，不把 token 當獨立樣本。

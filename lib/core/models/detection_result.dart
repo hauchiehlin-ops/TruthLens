@@ -430,16 +430,14 @@ class DetectionResult {
   /// 實際提供診斷訊號的引擎。最終判讀會再按證據家族去除相關訊號；這份清單
   /// 只供引擎明細與原始貢獻視覺化使用。
   List<EngineScore> get votingEngines {
-    final available = engineScores
+    return engineScores
         .where(
           (s) =>
-              s.available &&
+              s.votes &&
               s.applicability != EngineApplicability.unsupported &&
               s.calibrationReliability > 0,
         )
         .toList();
-    final evidential = available.where((s) => s.votes).toList();
-    return evidential.isNotEmpty ? evidential : available;
   }
 
   double get _activeEffectiveWeight => votingEngines.fold<double>(

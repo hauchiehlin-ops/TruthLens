@@ -28,6 +28,7 @@ import '../../core/services/claim_audit.dart';
 import '../../core/services/integrated_assessment.dart';
 import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -86,6 +87,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   InputQualityEvidence _inputQuality = InputQualityEvidence.directText;
   _WorkspacePhase _phase = _WorkspacePhase.idle;
   DetectionResult? _result;
+  PublicationEvidence _publicationEvidence = PublicationEvidence.none;
   int _selectedEvidence = 0;
   int _analysisRun = 0;
   Timer? _analysisTicker;
@@ -215,6 +217,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     setState(() {
       _phase = _WorkspacePhase.ready;
       _result = null;
+      _publicationEvidence = PublicationEvidence.none;
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
@@ -242,6 +245,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ? _WorkspacePhase.idle
           : _WorkspacePhase.ready;
       _result = null;
+      _publicationEvidence = PublicationEvidence.none;
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
@@ -377,6 +381,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     setState(() {
       _phase = _WorkspacePhase.analyzing;
       _result = null;
+      _publicationEvidence = PublicationEvidence.none;
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
@@ -486,6 +491,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     setState(() {
       _phase = _WorkspacePhase.idle;
       _result = null;
+      _publicationEvidence = PublicationEvidence.none;
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
@@ -1532,6 +1538,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         : IntegratedAssessment.assess(
             _result!,
             claims: ClaimAudit.analyze(_result!.inputText),
+            publication: _publicationEvidence,
           );
     final probability =
         completedAssessment?.aiLikelihood ?? _runningProbability ?? 0;
@@ -1596,7 +1603,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               if (!_isAnalyzing && !condensed) ...[
                 Builder(
                   builder: (context) {
-                    final summary = buildTelemetrySummary(_result, l10n);
+                    final summary = buildTelemetrySummary(
+                      _result,
+                      l10n,
+                      publication: _publicationEvidence,
+                    );
                     if (summary.isEmpty) return const SizedBox.shrink();
                     return _TelemetrySummaryCard(
                       title: l10n.telemetrySummaryTitle,
@@ -1990,6 +2001,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         key: ValueKey(result.id),
         result: result,
         embedded: true,
+        onPublicationEvidenceChanged: (evidence) {
+          if (!mounted || evidence == _publicationEvidence) return;
+          setState(() => _publicationEvidence = evidence);
+        },
       ),
     );
   }

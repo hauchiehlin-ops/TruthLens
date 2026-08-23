@@ -4,6 +4,7 @@ library;
 import '../../core/models/detection_result.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/integrated_assessment.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/professional_report_header.dart'
     show EngineGroup, describeAbstention;
@@ -13,8 +14,9 @@ import '../../shared/widgets/professional_report_header.dart'
 /// 每一句都由本次實際數據組出，不是固定罐頭句；結果為 null 或無可用引擎時回傳空清單。
 List<String> buildTelemetrySummary(
   DetectionResult? result,
-  AppLocalizations l10n,
-) {
+  AppLocalizations l10n, {
+  PublicationEvidence publication = PublicationEvidence.none,
+}) {
   if (result == null) return const [];
 
   final groups = EngineGroup.fromScores(
@@ -31,6 +33,7 @@ List<String> buildTelemetrySummary(
   final assessment = IntegratedAssessment.assess(
     result,
     claims: ClaimAudit.analyze(result.inputText),
+    publication: publication,
   );
   final direction = switch (assessment.direction) {
     IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
@@ -55,26 +58,25 @@ List<String> buildTelemetrySummary(
   ];
 
   // 引擎之間看法合不合：分數全距 30 個百分點以內視為一致
-  final compared = speaking.isNotEmpty ? speaking : available;
-  final highest = compared.reduce(
-    (a, b) => a.probability >= b.probability ? a : b,
-  );
-  final lowest = compared.reduce(
-    (a, b) => a.probability <= b.probability ? a : b,
-  );
-  final highPercent = (highest.probability * 100).round();
-  final lowPercent = (lowest.probability * 100).round();
-  final enginesDisagree = compared.length >= 2 && highPercent - lowPercent > 30;
+  final highest = speaking.isEmpty
+      ? null
+      : speaking.reduce((a, b) => a.probability >= b.probability ? a : b);
+  final lowest = speaking.isEmpty
+      ? null
+      : speaking.reduce((a, b) => a.probability <= b.probability ? a : b);
+  final highPercent = highest == null ? 0 : (highest.probability * 100).round();
+  final lowPercent = lowest == null ? 0 : (lowest.probability * 100).round();
+  final enginesDisagree = speaking.length >= 2 && highPercent - lowPercent > 30;
   if (speaking.length == 1) {
     // 單一證人：要講清楚結論的支撐面很窄，但不能因此改口說「沒有證據」
     lines.add(l10n.telemetrySummarySingleSource(speaking.single.label));
-  } else if (compared.length >= 2) {
+  } else if (speaking.length >= 2) {
     lines.add(
       enginesDisagree
           ? l10n.telemetrySummaryDisagreement(
-              highest.label,
+              highest!.label,
               highPercent,
-              lowest.label,
+              lowest!.label,
               lowPercent,
             )
           : l10n.telemetrySummaryAgreement(highPercent, lowPercent),
@@ -93,7 +95,7 @@ List<String> buildTelemetrySummary(
 
   // 逐句掃描結果
   final analyzable = result.analyzableSentenceCount;
-  if (analyzable > 0) {
+  if (assessment.stabilityAvailable && analyzable > 0) {
     final flagged = result.aiSentenceCount;
     lines.add(
       flagged == 0

@@ -183,7 +183,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
       sourceFileName: sourceFileName,
       provenance: provenance,
       // 規避痕跡掃描是純本地的確定性檢查，成本近乎零，直接在分析當下完成
-      evasion: scanForEvasion(input),
+      evasion: scanForEvasion(input, acquisitionMethod: inputQuality.method),
       writingSession: writingSession,
       aiProbability: overall,
       verdict: Verdict.fromProbability(overall),
@@ -236,7 +236,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final neuralScores = scores
         .where(
           (s) =>
-              s.available &&
+              s.votes &&
               s.sentenceScores != null &&
               s.sentenceScores!.isNotEmpty,
         )

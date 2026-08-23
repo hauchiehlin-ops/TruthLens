@@ -8,6 +8,7 @@ import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/forensic_evidence.dart';
 import '../../core/services/integrated_assessment.dart';
+import '../../core/services/publication_evidence.dart';
 import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -58,6 +59,7 @@ class ProfessionalReportHeader extends StatelessWidget {
   /// [DetectionResult]，而由報告頁在結果到齊後傳入。
   final CitationEvidence citations;
   final ClaimAudit claims;
+  final PublicationEvidence publication;
 
   const ProfessionalReportHeader({
     super.key,
@@ -65,6 +67,7 @@ class ProfessionalReportHeader extends StatelessWidget {
     required this.onDownloadPdf,
     this.citations = CitationEvidence.none,
     this.claims = ClaimAudit.none,
+    this.publication = PublicationEvidence.none,
   });
 
   @override
@@ -74,6 +77,7 @@ class ProfessionalReportHeader extends StatelessWidget {
       result,
       citations: citations,
       claims: claims,
+      publication: publication,
     );
 
     return SingleChildScrollView(
@@ -173,6 +177,7 @@ class ProfessionalReportHeader extends StatelessWidget {
               l10n: l10n,
               assessment: assessment,
               citations: citations,
+              publication: publication,
             ),
           ),
 
@@ -185,6 +190,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 l10n,
                 citations: citations,
                 claims: claims,
+                publication: publication,
               );
               if (findings.isEmpty) return const SizedBox.shrink();
               return Padding(
@@ -206,6 +212,7 @@ class ProfessionalReportHeader extends StatelessWidget {
                 result,
                 citations: citations,
                 claims: claims,
+                publication: publication,
               ),
             ),
           ),
@@ -380,6 +387,7 @@ enum _LowScoreCaveat {
 _LowScoreCaveat _lowScoreCaveat(
   DetectionResult result, {
   CitationEvidence citations = CitationEvidence.none,
+  PublicationEvidence publication = PublicationEvidence.none,
 }) {
   if (result.verdict != Verdict.human &&
       result.verdict != Verdict.likelyHuman) {
@@ -400,7 +408,10 @@ _LowScoreCaveat _lowScoreCaveat(
     return _LowScoreCaveat.provenanceContradicts;
   }
 
-  if (result.provenance.indicatesHumanAuthorship) return _LowScoreCaveat.none;
+  if (result.provenance.indicatesHumanAuthorship ||
+      publication.supportsHumanAuthorship) {
+    return _LowScoreCaveat.none;
+  }
 
   final risk = result.provenance.risk;
   if (risk == ProvenanceRisk.medium || risk == ProvenanceRisk.high) {
@@ -415,12 +426,14 @@ class _VerdictSummaryCard extends StatelessWidget {
   final AppLocalizations l10n;
   final IntegratedAssessment assessment;
   final CitationEvidence citations;
+  final PublicationEvidence publication;
 
   const _VerdictSummaryCard({
     required this.result,
     required this.l10n,
     required this.assessment,
     required this.citations,
+    required this.publication,
   });
 
   @override
@@ -530,11 +543,13 @@ class _VerdictSummaryCard extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                l10n.integratedStabilityLabel(
-                  (assessment.stabilityScore * 100).round(),
-                  (assessment.lowerBound * 100).round(),
-                  (assessment.upperBound * 100).round(),
-                ),
+                assessment.stabilityAvailable
+                    ? l10n.integratedStabilityLabel(
+                        (assessment.stabilityScore * 100).round(),
+                        (assessment.lowerBound * 100).round(),
+                        (assessment.upperBound * 100).round(),
+                      )
+                    : l10n.integratedStabilityUnavailable,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.white.withValues(alpha: 0.88),
                 ),
@@ -574,6 +589,17 @@ class _VerdictSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+              if (!assessment.hasAuthorshipEvidence) ...[
+                Text(
+                  l10n.integratedNeutralBaseline,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white,
+                    height: 1.4,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
               Text(
                 l10n.integratedIndexCaveat,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -612,7 +638,11 @@ class _VerdictSummaryCard extends StatelessWidget {
               // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
               // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
               // 旁邊，塞進下方的說明卡等於沒說。
-              if (_lowScoreCaveat(result, citations: citations) !=
+              if (_lowScoreCaveat(
+                    result,
+                    citations: citations,
+                    publication: publication,
+                  ) !=
                   _LowScoreCaveat.none) ...[
                 const SizedBox(height: 10),
                 Container(
@@ -625,7 +655,11 @@ class _VerdictSummaryCard extends StatelessWidget {
                     // 是「別只看上面那個數字」的告誡
                     color: Colors.white.withValues(
                       alpha:
-                          _lowScoreCaveat(result, citations: citations) ==
+                          _lowScoreCaveat(
+                                result,
+                                citations: citations,
+                                publication: publication,
+                              ) ==
                               _LowScoreCaveat.provenanceContradicts
                           ? 0.22
                           : 0.12,
@@ -634,7 +668,11 @@ class _VerdictSummaryCard extends StatelessWidget {
                     border: Border.all(
                       color: Colors.white.withValues(
                         alpha:
-                            _lowScoreCaveat(result, citations: citations) ==
+                            _lowScoreCaveat(
+                                  result,
+                                  citations: citations,
+                                  publication: publication,
+                                ) ==
                                 _LowScoreCaveat.provenanceContradicts
                             ? 0.70
                             : 0.28,
@@ -645,7 +683,11 @@ class _VerdictSummaryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
-                        _lowScoreCaveat(result, citations: citations) ==
+                        _lowScoreCaveat(
+                                  result,
+                                  citations: citations,
+                                  publication: publication,
+                                ) ==
                                 _LowScoreCaveat.provenanceContradicts
                             ? LucideIcons.alertTriangle
                             : LucideIcons.info,
@@ -655,7 +697,11 @@ class _VerdictSummaryCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          _lowScoreCaveat(result, citations: citations) ==
+                          _lowScoreCaveat(
+                                    result,
+                                    citations: citations,
+                                    publication: publication,
+                                  ) ==
                                   _LowScoreCaveat.provenanceContradicts
                               ? l10n.reportProvenanceContradictsLowScore
                               : l10n.reportLowScoreNotProofOfHuman,
@@ -1537,17 +1583,10 @@ class EngineGroup {
       return configured * reliability * eslFactor;
     }
 
-    // 與 DetectionResult.votingEngines 同步：有證據的角色才分配權重；
-    // 全體沉默時退回全體可用角色，否則貢獻度會全部變成 0。
+    // 與 DetectionResult.votingEngines 同步：只有真正握有證據的角色才分配
+    // 本次權重。全體沉默時貢獻度理應全部為 0，不能把「可運行」冒充投票。
     bool roleVotes(String role) => grouped[role]!.any((s) => s.votes);
-    final anyEvidence = order.any(roleVotes);
-    bool counts(String role) => anyEvidence
-        ? roleVotes(role)
-        : grouped[role]!.any(
-            (s) =>
-                s.available &&
-                s.applicability != EngineApplicability.unsupported,
-          );
+    bool counts(String role) => roleVotes(role);
     final availableWeight = order.fold<double>(
       0,
       (sum, role) => counts(role) ? sum + effectiveWeight(role) : sum,

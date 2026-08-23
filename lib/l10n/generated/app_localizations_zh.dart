@@ -2558,6 +2558,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String findingPublicationPredatesGenerativeAi(String doi, int year) {
+    return '來源 DOI $doi 與本文件篇名吻合，且於 $year 年完成登記，早於現代生成式 AI 寫作系統。';
+  }
+
+  @override
+  String findingPublicationIdentityMismatch(String doi) {
+    return '來源 DOI $doi 雖可解析，但登記篇名與本文件不符；採信前應先核對文件身分。';
+  }
+
+  @override
+  String get integratedStabilityUnavailable => '分段穩定性無法計算 · 沒有逐句證據參與投票';
+
+  @override
+  String get integratedNeutralBaseline =>
+      '本次未找到作者特異性證據；50% 是中性基準，不代表 AI 與真人證據各半。';
+
+  @override
   String get reportVerifiableFindingsTitle => '可查證的事實';
 
   @override
@@ -5376,6 +5393,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String findingPublicationPredatesGenerativeAi(String doi, int year) {
+    return '来源 DOI $doi 与本文档篇名吻合，且于 $year 年完成登记，早于现代生成式 AI 写作系统。';
+  }
+
+  @override
+  String findingPublicationIdentityMismatch(String doi) {
+    return '来源 DOI $doi 虽可解析，但登记篇名与本文档不符；采信前应先核对文档身份。';
+  }
+
+  @override
+  String get integratedStabilityUnavailable => '分段稳定性无法计算 · 没有逐句证据参与投票';
+
+  @override
+  String get integratedNeutralBaseline =>
+      '本次未找到作者特异性证据；50% 是中性基准，不代表 AI 与真人证据各半。';
+
+  @override
   String get reportVerifiableFindingsTitle => '可查证的事实';
 
   @override
@@ -8192,6 +8226,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String findingEditingRecordNormal(int minutes, int revisions) {
     return '檔案記錄了 $minutes 分鐘的編輯時間、$revisions 次存檔，與「這份文字是在本文件中寫成的」相符。';
   }
+
+  @override
+  String findingPublicationPredatesGenerativeAi(String doi, int year) {
+    return '來源 DOI $doi 與本文件篇名吻合，且於 $year 年完成登記，早於現代生成式 AI 寫作系統。';
+  }
+
+  @override
+  String findingPublicationIdentityMismatch(String doi) {
+    return '來源 DOI $doi 雖可解析，但登記篇名與本文件不符；採信前應先核對文件身分。';
+  }
+
+  @override
+  String get integratedStabilityUnavailable => '分段穩定性無法計算 · 沒有逐句證據參與投票';
+
+  @override
+  String get integratedNeutralBaseline =>
+      '本次未找到作者特異性證據；50% 是中性基準，不代表 AI 與真人證據各半。';
 
   @override
   String get reportVerifiableFindingsTitle => '可查證的事實';

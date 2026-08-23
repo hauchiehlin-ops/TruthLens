@@ -4221,6 +4221,30 @@ abstract class AppLocalizations {
   /// **'The file records {minutes} minutes of editing across {revisions} saves, which is consistent with the text having been written in this document.'**
   String findingEditingRecordNormal(int minutes, int revisions);
 
+  /// No description provided for @findingPublicationPredatesGenerativeAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Source DOI {doi} matches this document and was registered in {year}, before modern generative-AI writing systems.'**
+  String findingPublicationPredatesGenerativeAi(String doi, int year);
+
+  /// No description provided for @findingPublicationIdentityMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Source DOI {doi} resolves, but its registered title does not match this document. Verify the document identity before relying on it.'**
+  String findingPublicationIdentityMismatch(String doi);
+
+  /// No description provided for @integratedStabilityUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Segment stability unavailable · no sentence-level evidence voted'**
+  String get integratedStabilityUnavailable;
+
+  /// No description provided for @integratedNeutralBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'No authorship-specific evidence was found; 50% is a neutral baseline, not an equal-evidence result.'**
+  String get integratedNeutralBaseline;
+
   /// Heading of the verifiable-facts card shown above the verdict
   ///
   /// In en, this message translates to:

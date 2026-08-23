@@ -83,6 +83,23 @@ void main() {
     expect(fusion.families, isEmpty);
     expect(fusion.probability, 0.5);
     expect(fusion.passesAiEvidenceGate, isFalse);
+    expect(fusion.stabilityAvailable, isFalse);
+  });
+
+  test('全引擎沉默時不以 fallback 句分數偽造穩定區間', () {
+    final fusion = TextEvidenceFusion.evaluate(
+      scores: [_score('transformer', 0, evidence: false)],
+      inputText: longGeneralText,
+      sentences: [
+        for (var i = 0; i < 8; i++)
+          SentenceScore(index: i, text: 'Sentence $i.', aiProbability: 0),
+      ],
+    );
+
+    expect(fusion.stabilityAvailable, isFalse);
+    expect(fusion.stabilitySegmentCount, 0);
+    expect(fusion.lowerBound, 0);
+    expect(fusion.upperBound, 1);
   });
 
   test('AI 訊號集中於部分句子時標示人機混合', () {
