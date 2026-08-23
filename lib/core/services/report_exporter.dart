@@ -69,6 +69,7 @@ class ReportExporter {
     IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
     IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
     IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+    IntegratedDirection.balanced => l10n.integratedBalanced,
   };
 
   static String _integratedConfidenceLabel(

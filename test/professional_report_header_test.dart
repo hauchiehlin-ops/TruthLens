@@ -301,6 +301,7 @@ void main() {
       IntegratedDirection.likelyAi => 'More likely AI-generated',
       IntegratedDirection.likelyMixed => 'More likely human-AI mixed',
       IntegratedDirection.likelyHuman => 'More likely not AI-generated',
+      IntegratedDirection.balanced => 'AI and human signals are balanced',
     };
     final evidenceGate = assessment.passesAiEvidenceGate
         ? 'AI evidence gate: passed'

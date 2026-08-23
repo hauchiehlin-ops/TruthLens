@@ -127,6 +127,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           l10n.integratedLikelyMixed,
                         IntegratedDirection.likelyHuman =>
                           l10n.integratedLikelyHuman,
+                        IntegratedDirection.balanced => l10n.integratedBalanced,
                       };
                       final integratedPercent = (e.integratedAiLikelihood * 100)
                           .round();

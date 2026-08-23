@@ -419,6 +419,7 @@ class _VerdictSummaryCard extends StatelessWidget {
       IntegratedDirection.likelyAi => Verdict.likelyAi,
       IntegratedDirection.likelyMixed => Verdict.mixed,
       IntegratedDirection.likelyHuman => Verdict.likelyHuman,
+      IntegratedDirection.balanced => Verdict.mixed,
     };
     final base = verdictColor(verdict);
     final confidence = switch (assessment.confidence) {
@@ -458,6 +459,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                   IntegratedDirection.likelyAi => LucideIcons.cpu,
                   IntegratedDirection.likelyMixed => LucideIcons.layers,
                   IntegratedDirection.likelyHuman => LucideIcons.pencil,
+                  IntegratedDirection.balanced => LucideIcons.scale,
                 },
                 size: 40,
                 color: Colors.white,
@@ -486,6 +488,7 @@ class _VerdictSummaryCard extends StatelessWidget {
                       l10n.integratedLikelyMixed,
                     IntegratedDirection.likelyHuman =>
                       l10n.integratedLikelyHuman,
+                    IntegratedDirection.balanced => l10n.integratedBalanced,
                   },
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
@@ -1023,6 +1026,7 @@ class _VerdictSignalBadge extends StatelessWidget {
       IntegratedDirection.likelyAi => Verdict.likelyAi,
       IntegratedDirection.likelyMixed => Verdict.mixed,
       IntegratedDirection.likelyHuman => Verdict.likelyHuman,
+      IntegratedDirection.balanced => Verdict.mixed,
     };
     final meta = _meta(verdict);
     final probability = (assessment.aiLikelihood * 100).round();
@@ -1074,6 +1078,7 @@ class _VerdictSignalBadge extends StatelessWidget {
                           l10n.integratedLikelyMixed,
                         IntegratedDirection.likelyHuman =>
                           l10n.integratedLikelyHuman,
+                        IntegratedDirection.balanced => l10n.integratedBalanced,
                       },
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: meta.color,
@@ -1332,6 +1337,7 @@ class _EngineSynthesisSummary extends StatelessWidget {
       IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
       IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
       IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+      IntegratedDirection.balanced => l10n.integratedBalanced,
     };
     final confidence = switch (assessment.confidence) {
       IntegratedConfidence.low => l10n.integratedConfidenceLow,

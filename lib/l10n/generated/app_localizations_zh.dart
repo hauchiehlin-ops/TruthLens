@@ -2748,6 +2748,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
+  String get integratedBalanced => 'AI 與真人訊號相當';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
     return '整合 AI 可能性：$percent%';
   }
@@ -2789,7 +2792,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      '本連續指數呈現證據融合後的實際偏向，不再以 49% 人工封頂；獨立的 AI 證據門檻則表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -5575,6 +5578,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get integratedLikelyHuman => '较可能不是 AI 生成';
 
   @override
+  String get integratedBalanced => 'AI 与真人信号相当';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
     return '整合 AI 可能性：$percent%';
   }
@@ -5616,7 +5622,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get integratedIndexCaveat =>
-      '本连续指数呈现证据融合后的实际偏向，不再以 49% 人工封顶；独立的 AI 证据门槛则表示是否已有足够跨来源支持可升级处理。引用质量、任务契合、贴上行为与异常元数据不能单独产生 AI 判定。本指数是证据分数，不是经总体校准的统计概率。';
+      '独立的 AI 证据门槛表示是否已有足够跨来源支持可升级处理。引用质量、任务契合、贴上行为与异常元数据不能单独产生 AI 判定。本指数是证据分数，不是经总体校准的统计概率。';
 
   @override
   String get reportTextEngineSignalExplanation =>
@@ -8402,6 +8408,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get integratedLikelyHuman => '較可能不是 AI 生成';
 
   @override
+  String get integratedBalanced => 'AI 與真人訊號相當';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
     return '整合 AI 可能性：$percent%';
   }
@@ -8443,7 +8452,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get integratedIndexCaveat =>
-      '本連續指數呈現證據融合後的實際偏向，不再以 49% 人工封頂；獨立的 AI 證據門檻則表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
+      '獨立的 AI 證據門檻表示是否已有足夠跨來源支持可升級處理。引用品質、任務契合、貼上行為與異常中繼資料不能單獨產生 AI 判定。本指數是證據分數，不是經母體校準的統計機率。';
 
   @override
   String get reportTextEngineSignalExplanation =>

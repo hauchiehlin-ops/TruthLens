@@ -36,6 +36,7 @@ List<String> buildTelemetrySummary(
     IntegratedDirection.likelyAi => l10n.integratedLikelyAi,
     IntegratedDirection.likelyMixed => l10n.integratedLikelyMixed,
     IntegratedDirection.likelyHuman => l10n.integratedLikelyHuman,
+    IntegratedDirection.balanced => l10n.integratedBalanced,
   };
   final confidence = switch (assessment.confidence) {
     IntegratedConfidence.low => l10n.integratedConfidenceLow,
@@ -109,6 +110,7 @@ List<String> buildTelemetrySummary(
     IntegratedDirection.likelyHuman => l10n.telemetrySummaryAdviceMixed,
     IntegratedDirection.likelyMixed => l10n.telemetrySummaryAdviceMixed,
     IntegratedDirection.likelyAi => l10n.telemetrySummaryAdviceAi,
+    IntegratedDirection.balanced => l10n.telemetrySummaryAdviceMixed,
   });
 
   // 可用但本次沒找到東西的引擎：說明它們為何不影響分數，

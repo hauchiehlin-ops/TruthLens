@@ -29,6 +29,7 @@ class ReportComposer {
       IntegratedDirection.likelyAi => 'ai_alert',
       IntegratedDirection.likelyMixed => 'mixed_detailed',
       IntegratedDirection.likelyHuman => 'human_clean',
+      IntegratedDirection.balanced => 'mixed_detailed',
     };
   }
 
@@ -45,6 +46,7 @@ class ReportComposer {
       IntegratedDirection.likelyAi => l10n.composerHeadlineLikelyAi(pct),
       IntegratedDirection.likelyMixed => l10n.composerHeadlineMixed(pct),
       IntegratedDirection.likelyHuman => l10n.composerHeadlineLikelyHuman(pct),
+      IntegratedDirection.balanced => l10n.integratedBalanced,
     };
   }
 
@@ -144,6 +146,8 @@ class ReportComposer {
         parts.add(l10n.composerNarrativeMixedPattern);
       case IntegratedDirection.likelyHuman:
         parts.add(l10n.composerNarrativeHumanPattern);
+      case IntegratedDirection.balanced:
+        break;
     }
 
     // 取可解釋引擎（統計/風格）最具代表性的理由各一

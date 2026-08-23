@@ -4551,6 +4551,12 @@ abstract class AppLocalizations {
   /// **'More likely not AI-generated'**
   String get integratedLikelyHuman;
 
+  /// No description provided for @integratedBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'AI and human signals are balanced'**
+  String get integratedBalanced;
+
   /// No description provided for @integratedLikelihoodLabel.
   ///
   /// In en, this message translates to:
@@ -4614,7 +4620,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedIndexCaveat.
   ///
   /// In en, this message translates to:
-  /// **'This continuous index shows the direction of the fused evidence without forcing an artificial 49% ceiling. The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.'**
+  /// **'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.'**
   String get integratedIndexCaveat;
 
   /// No description provided for @reportTextEngineSignalExplanation.

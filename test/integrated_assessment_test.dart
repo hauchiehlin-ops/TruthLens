@@ -49,13 +49,22 @@ DetectionResult _result({
 );
 
 void main() {
-  test('全引擎沉默時回到 50% 中性點並標示低信心', () {
+  test('全引擎沉默時保留原始分數方向，不固定回到 50%', () {
     final assessment = IntegratedAssessment.assess(_result());
 
     expect(assessment.direction, IntegratedDirection.likelyHuman);
-    expect(assessment.aiLikelihood, 0.50);
+    expect(assessment.aiLikelihood, inInclusiveRange(0.40, 0.43));
     expect(assessment.confidence, IntegratedConfidence.low);
-    expect(assessment.textReliability, 0.12);
+    expect(assessment.textReliability, 0.18);
+    expect(assessment.passesAiEvidenceGate, isFalse);
+  });
+
+  test('50% 顯示訊號相當，不得標成較可能不是 AI', () {
+    final assessment = IntegratedAssessment.assess(_result(textScore: 0.50));
+
+    expect(assessment.aiLikelihood, 0.50);
+    expect(assessment.direction, IntegratedDirection.balanced);
+    expect(assessment.confidence, IntegratedConfidence.low);
     expect(assessment.passesAiEvidenceGate, isFalse);
   });
 

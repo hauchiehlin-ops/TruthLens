@@ -21,7 +21,7 @@ import 'claim_audit.dart';
 import 'forensic_evidence.dart';
 import 'revision_evidence.dart';
 
-enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed }
+enum IntegratedDirection { likelyAi, likelyHuman, likelyMixed, balanced }
 
 enum IntegratedConfidence { low, moderate, high }
 
@@ -108,9 +108,13 @@ class IntegratedAssessment {
         : fusion.passesAiEvidenceGate
         ? math.max(0.80, fusion.reliability)
         : result.evidenceEngineCount == 0
-        ? 0.12
+        ? 0.18
         : (0.25 + fusion.reliability * 0.50).clamp(0.25, 0.70);
-    final textProbability = fusion.probability.clamp(0.02, 0.98);
+    // 引擎全部沉默時，家族融合本身只能回到 50% 中性值。此時保留四引擎原始
+    // 診斷分數的方向，但以低可靠度收縮，避免把「無正式證據」誤寫成固定 50%。
+    final textProbability =
+        (fusion.families.isEmpty ? result.aiProbability : fusion.probability)
+            .clamp(0.02, 0.98);
     final textLogOdds = math.log(textProbability / (1 - textProbability));
     add(
       EvidenceAxisKind.textTrace,
@@ -164,8 +168,6 @@ class IntegratedAssessment {
     final fusedLikelihood = 1 / (1 + math.exp(-combinedLogOdds));
     final passesAiEvidenceGate = fusion.passesAiEvidenceGate;
 
-    // 保留實際融合值，不再把未通過證據門檻的結果一律截成 49%。方向、信心與
-    // 證據門檻分開呈現，避免政策性上限偽裝成精確機率。
     final aiLikelihood = fusedLikelihood;
 
     final positive = contributions
@@ -211,11 +213,19 @@ class IntegratedAssessment {
           : confidence;
     }
 
-    final direction = aiLikelihood > 0.5 && fusion.mixedAuthorship
+    final displayedAiPercent = (aiLikelihood * 100).round();
+    final direction = displayedAiPercent > 50 && fusion.mixedAuthorship
         ? IntegratedDirection.likelyMixed
-        : aiLikelihood > 0.5
+        : displayedAiPercent > 50
         ? IntegratedDirection.likelyAi
-        : IntegratedDirection.likelyHuman;
+        : displayedAiPercent < 50
+        ? IntegratedDirection.likelyHuman
+        : IntegratedDirection.balanced;
+    final textAuthorshipClass = fusion.mixedAuthorship
+        ? TextAuthorshipClass.likelyAiAssisted
+        : textProbability >= 0.5
+        ? TextAuthorshipClass.likelyAiGenerated
+        : TextAuthorshipClass.likelyHuman;
 
     return IntegratedAssessment(
       aiLikelihood: aiLikelihood,
@@ -223,7 +233,7 @@ class IntegratedAssessment {
       confidence: confidence,
       confidenceScore: confidenceScore,
       textReliability: textReliability,
-      textAuthorshipClass: fusion.authorshipClass,
+      textAuthorshipClass: textAuthorshipClass,
       analysisDomain: profile.domain,
       independentEvidenceFamilies: fusion.families.length,
       applicabilityCoverage: fusion.applicabilityCoverage,

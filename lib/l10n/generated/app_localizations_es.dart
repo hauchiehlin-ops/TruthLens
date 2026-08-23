@@ -2882,6 +2882,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get integratedLikelyHuman => 'More likely not AI-generated';
 
   @override
+  String get integratedBalanced => 'AI and human signals are balanced';
+
+  @override
   String integratedLikelihoodLabel(int percent) {
     return 'Integrated AI likelihood: $percent%';
   }
@@ -2924,7 +2927,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get integratedIndexCaveat =>
-      'This continuous index shows the direction of the fused evidence without forcing an artificial 49% ceiling. The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
+      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, task fit, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
 
   @override
   String get reportTextEngineSignalExplanation =>
