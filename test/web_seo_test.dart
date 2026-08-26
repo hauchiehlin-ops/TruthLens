@@ -72,7 +72,9 @@ void main() {
       expect(bootstrap, isNot(contains('serviceWorkerSettings:')));
       expect(bootstrap, contains('navigator.serviceWorker.getRegistrations()'));
       expect(bootstrap, contains('registration.unregister()'));
-      expect(bootstrap, contains('truthlens-worker-cleanup-v1'));
+      expect(bootstrap, contains('truthlens-worker-cleanup-v2'));
+      expect(bootstrap, contains('truthlens-worker-migration-v2'));
+      expect(bootstrap, contains('window.localStorage'));
       expect(bootstrap, contains('window.sessionStorage'));
       expect(bootstrap, contains('window.caches.delete(name)'));
       expect(bootstrap, isNot(contains('navigator.serviceWorker.register(')));
@@ -88,5 +90,23 @@ void main() {
     expect(bootstrap, contains('showTruthLensStartupFailure'));
     expect(bootstrap, contains('retry.type = "button"'));
     expect(bootstrap, contains('window.location.reload()'));
+    expect(bootstrap, contains('}, 120000)'));
+    expect(bootstrap, contains('Android 裝置可能需要較長時間'));
+  });
+
+  test('web first frame does not wait for OPFS model inventory restore', () {
+    final mainSource = File('lib/main.dart').readAsStringSync();
+
+    expect(mainSource, contains('if (kIsWeb)'));
+    expect(mainSource, contains('_webPreferenceStartupTimeout'));
+    expect(mainSource, contains('prefs.load().timeout'));
+    expect(mainSource, contains('runApp('));
+    expect(mainSource, contains('unawaited('));
+    expect(
+      mainSource,
+      contains(
+        "_runStartupTask('model inventory', modelManager.refreshInstallStates)",
+      ),
+    );
   });
 }

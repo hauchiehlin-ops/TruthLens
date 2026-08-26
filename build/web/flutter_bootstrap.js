@@ -39,7 +39,35 @@ if (!window._flutter) {
 _flutter.buildConfig = {"engineRevision":"a10d8ac38de835021c8d2f920dbf50a920ccc030","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
 
-const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v1";
+const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
+const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
+
+function updateTruthLensStartupStatus(message) {
+  const status = document
+    .getElementById("seo-shell")
+    ?.querySelector(".seo-shell__status");
+  if (status) status.textContent = message;
+}
+
+function readTruthLensStorage(storage, key) {
+  try {
+    return storage.getItem(key);
+  } catch (_) {
+    return null;
+  }
+}
+
+function writeTruthLensStorage(storage, key, value) {
+  try {
+    if (value == null) {
+      storage.removeItem(key);
+    } else {
+      storage.setItem(key, value);
+    }
+  } catch (_) {
+    // Storage can be unavailable in strict privacy modes. Startup still works.
+  }
+}
 
 function showTruthLensStartupFailure(error) {
   console.error("TruthLens Web startup failed:", error);
@@ -61,6 +89,16 @@ function showTruthLensStartupFailure(error) {
 async function removeLegacyFlutterWorker() {
   if (!("serviceWorker" in navigator)) return false;
 
+  if (
+    navigator.serviceWorker.controller == null &&
+    readTruthLensStorage(
+      window.localStorage,
+      truthLensWorkerMigrationKey,
+    ) === "complete"
+  ) {
+    return false;
+  }
+
   const registrations = await navigator.serviceWorker.getRegistrations();
   const hadLegacyWorker =
     registrations.length > 0 || navigator.serviceWorker.controller != null;
@@ -75,6 +113,13 @@ async function removeLegacyFlutterWorker() {
             name === "flutter-app-cache" || name.startsWith("flutter-"),
         )
         .map((name) => window.caches.delete(name)),
+    );
+  }
+  if (!hadLegacyWorker) {
+    writeTruthLensStorage(
+      window.localStorage,
+      truthLensWorkerMigrationKey,
+      "complete",
     );
   }
   return hadLegacyWorker;
@@ -92,25 +137,38 @@ async function bootTruthLens() {
 
   if (
     hadLegacyWorker &&
-    window.sessionStorage.getItem(truthLensWorkerCleanupKey) !== "reloaded"
+    readTruthLensStorage(window.sessionStorage, truthLensWorkerCleanupKey) !==
+      "reloaded"
   ) {
     // An unregistered worker can continue controlling the current document
     // until the next navigation. Reload exactly once so main.dart.js is fetched
     // without the stale worker; the session marker prevents a reload loop.
-    window.sessionStorage.setItem(truthLensWorkerCleanupKey, "reloaded");
+    writeTruthLensStorage(
+      window.sessionStorage,
+      truthLensWorkerCleanupKey,
+      "reloaded",
+    );
     window.location.reload();
     return;
   }
-  window.sessionStorage.removeItem(truthLensWorkerCleanupKey);
+  writeTruthLensStorage(window.sessionStorage, truthLensWorkerCleanupKey, null);
 
   let appStarted = false;
+  const slowStartupNotice = window.setTimeout(() => {
+    if (!appStarted) {
+      updateTruthLensStartupStatus(
+        "正在恢復本機分析元件與資料，Android 裝置可能需要較長時間…",
+      );
+    }
+  }, 15000);
   const startupWatchdog = window.setTimeout(() => {
     if (!appStarted) {
       showTruthLensStartupFailure(new Error("Flutter startup timed out"));
     }
-  }, 30000);
+  }, 120000);
 
   try {
+    updateTruthLensStartupStatus("正在載入本機分析工作台…");
     await _flutter.loader.load({
       // Do not pass serviceWorkerSettings. Flutter's generated worker now
       // unregisters itself and navigates clients; registering it on every load
@@ -121,18 +179,22 @@ async function bootTruthLens() {
       },
       onEntrypointLoaded: async function(engineInitializer) {
         try {
+          updateTruthLensStartupStatus("正在初始化工作台介面…");
           const appRunner = await engineInitializer.initializeEngine();
           await appRunner.runApp();
           appStarted = true;
+          window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);
           document.getElementById("seo-shell")?.remove();
         } catch (error) {
+          window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);
           showTruthLensStartupFailure(error);
         }
       },
     });
   } catch (error) {
+    window.clearTimeout(slowStartupNotice);
     window.clearTimeout(startupWatchdog);
     showTruthLensStartupFailure(error);
   }

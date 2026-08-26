@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,10 +24,11 @@ import 'core/services/preferences_service.dart';
 import 'core/utils/app_version.dart';
 import 'l10n/generated/app_localizations.dart';
 
-import 'dart:ui';
 import 'core/detection/llama_ffi.dart';
 
-void main() async {
+const _webPreferenceStartupTimeout = Duration(seconds: 5);
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   pdfrxFlutterInitialize();
   AppLifecycleListener(
@@ -35,24 +39,37 @@ void main() async {
       return AppExitResponse.exit;
     },
   );
-  await AppVersion.init();
   final prefs = PreferencesService();
-  await prefs.load();
   final calibration = CalibrationService();
-  await calibration.load();
-  await OcrService.hydrate();
-
   final modelManager = ModelManager();
-  await modelManager.refreshInstallStates();
   final catalogService = ModelCatalogService();
   final provisioner = ModelProvisioner(
     catalogService: catalogService,
     modelManager: modelManager,
   );
 
+  var webPreferencesReady = true;
+  if (kIsWeb) {
+    // Android Chrome may need a long time to reopen OPFS when large local
+    // models are installed. Only the small preference payload is allowed to
+    // delay the first frame, and even that wait is bounded.
+    try {
+      await prefs.load().timeout(_webPreferenceStartupTimeout);
+    } catch (error) {
+      webPreferencesReady = false;
+      debugPrint('[Startup] Web preferences deferred: $error');
+    }
+  } else {
+    await Future.wait([AppVersion.init(), prefs.load(), calibration.load()]);
+    await OcrService.hydrate();
+    await modelManager.refreshInstallStates();
+  }
+
   // 首次啟動且核心偵測模型未安裝 → 進引導頁；否則直接進首頁。
   final needsOnboarding =
-      !prefs.firstRunHandled && !modelManager.isInstalled('transformer');
+      webPreferencesReady &&
+      !prefs.firstRunHandled &&
+      !modelManager.isInstalled('transformer');
 
   runApp(
     TruthLensApp(
@@ -64,6 +81,31 @@ void main() async {
     ),
   );
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
+
+  if (kIsWeb) {
+    // Restore non-essential browser state after runApp. Model health checks can
+    // touch hundreds of megabytes in OPFS and must never hold the HTML startup
+    // shell hostage during an Android refresh.
+    unawaited(
+      Future.wait([
+        _runStartupTask('app version', AppVersion.init),
+        _runStartupTask('calibration', calibration.load),
+        _runStartupTask('OCR settings', OcrService.hydrate),
+        _runStartupTask('model inventory', modelManager.refreshInstallStates),
+      ]),
+    );
+  }
+}
+
+Future<void> _runStartupTask(
+  String label,
+  Future<void> Function() operation,
+) async {
+  try {
+    await operation();
+  } catch (error) {
+    debugPrint('[Startup] Unable to restore $label: $error');
+  }
 }
 
 class TruthLensApp extends StatelessWidget {
