@@ -35,6 +35,23 @@ void main() {
     expect(text.language.code, 'en');
   });
 
+  test('真實 PDF 的版面換行不會成為即時卡片的句子碎片', () {
+    final text = PreprocessedText.from(paper);
+
+    expect(
+      text.sentences,
+      contains(
+        'In this study, we numerically investigate the lowest instability '
+        'boundary of nonaxisymmetric Taylor vortex ﬂow (TVF) for diﬀerent '
+        'axial wavenumbers.',
+      ),
+    );
+    expect(
+      text.sentences.where((sentence) => sentence == 'is' || sentence == 'and'),
+      isEmpty,
+    );
+  });
+
   test('英文在現行困惑度模型下有可用門檻，指標不得被跳過', () {
     final text = PreprocessedText.from(paper);
     final calibration = PerplexityCalibration.of(

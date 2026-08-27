@@ -14,6 +14,57 @@ void main() {
       expect(t.sentenceTokens.first.take(4), ['this', 'is', 'a', 'complete']);
     });
 
+    test('PDF 硬換行與分號會重建為完整英文句子', () {
+      final t = PreprocessedText.from('''
+C
+ircular Couette flow or Taylor-Couette flow
+1,2
+is
+a classical problem of hydrodynamic stability; it
+is an important paradigm for determining the
+dynamics of sheared flows.
+Donnelly et al. reported the same experimental result.
+''');
+
+      expect(t.sentences, hasLength(2));
+      expect(
+        t.sentences.first,
+        'Circular Couette flow or Taylor-Couette flow is a classical problem '
+        'of hydrodynamic stability; it is an important paradigm for '
+        'determining the dynamics of sheared flows.',
+      );
+      expect(t.sentences.last, contains('Donnelly et al. reported'));
+    });
+
+    test('學術縮寫、姓名縮寫與小數點不會被誤判為句尾', () {
+      final t = PreprocessedText.from(
+        'W. M. Yang et al. measured the response in Fig. 3 at 3.14. '
+        'The next complete sentence reports the resulting flow state.',
+      );
+
+      expect(t.sentences, hasLength(2));
+      expect(t.sentences.first, contains('W. M. Yang et al.'));
+      expect(t.sentences.first, endsWith('3.14.'));
+    });
+
+    test('無空格姓名縮寫、電子郵件與段落標題不會污染正文句子', () {
+      final t = PreprocessedText.from('''
+LOWEST STABILITY BOUNDARY ON FLOW
+DOI:10.1142/S0218127410026678
+andW.M.YANG
+author.name@example.com
+Received June 5, 2009; Revised August 7, 2009
+In this study, we investigate a complete academic sentence across the page.
+1. Introduction
+The first body paragraph starts with a complete sentence for analysis.
+''');
+
+      expect(t.sentences, [
+        'In this study, we investigate a complete academic sentence across the page.',
+        'The first body paragraph starts with a complete sentence for analysis.',
+      ]);
+    });
+
     test('中文斷句與逐字斷詞', () {
       final t = PreprocessedText.from('這是一段可分析的測試句子。第二句話也具有完整語義！');
       expect(t.sentences.length, 2);
@@ -64,6 +115,18 @@ void main() {
       expect(t.sentenceChunkIndices, [0, 1]);
       expect(t.expandChunkScoresToSentences([0.2, 0.8]), [0.2, 0.8]);
       expect(() => t.expandChunkScoresToSentences([0.2]), throwsArgumentError);
+    });
+
+    test('超長完整句只在模型層分片，畫面與報告仍保留完整句', () {
+      final sentence = '${List.filled(150, 'context').join(' ')}.';
+      final t = PreprocessedText.from(sentence);
+
+      expect(t.sentences, [sentence]);
+      expect(t.analysisChunks, hasLength(2));
+      expect(t.sentenceAnalysisChunkIndices, [
+        [0, 1],
+      ]);
+      expect(t.expandChunkScoresToSentences([0.2, 0.8]), [0.5]);
     });
 
     test('單一字母、頁碼、標題與引用殘片不作 AI 句級判讀', () {

@@ -221,6 +221,31 @@ for validating an imported academic document before content detection begins.
         expect(text, contains('接續內容。'));
         expect(text, isNot(contains('<text:')));
       });
+
+      test('DOCX 保留實體段落、行內樣式與手動換行', () {
+        const documentXml = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>第一段具有</w:t></w:r><w:r><w:t>粗體文字。</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Second paragraph keeps</w:t></w:r><w:r><w:tab/></w:r><w:r><w:t>its structure.</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Third line</w:t><w:br/><w:t>continues here.</w:t></w:r></w:p>
+  </w:body>
+</w:document>
+''';
+        final contentBytes = utf8.encode(documentXml);
+        final archive = Archive()
+          ..addFile(
+            ArchiveFile('word/document.xml', contentBytes.length, contentBytes),
+          );
+        final bytes = ZipEncoder().encode(archive);
+
+        final text = DocumentImporter.parseBytes(bytes, extension: 'docx');
+
+        expect(text, contains('第一段具有粗體文字。\n\nSecond paragraph'));
+        expect(text, contains('keeps\tits structure.'));
+        expect(text, contains('Third line\ncontinues here.'));
+      });
     },
   );
 }

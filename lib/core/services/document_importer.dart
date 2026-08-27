@@ -360,19 +360,31 @@ class DocumentImporter {
         allowMalformed: true,
       );
 
-      final regex = RegExp(r'<w:t[^>]*>(.*?)</w:t>');
-      final matches = regex.allMatches(xmlContent);
       final textBuffer = StringBuffer();
 
-      for (final match in matches) {
-        var t = match.group(1) ?? '';
-        t = t
-            .replaceAll('&amp;', '&')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&quot;', '"')
-            .replaceAll('&apos;', "'");
-        textBuffer.write(t);
+      final paragraphs = RegExp(
+        r'<w:p(?:\s[^>]*)?>[\s\S]*?</w:p>',
+      ).allMatches(xmlContent);
+      for (final paragraph in paragraphs) {
+        final paragraphXml = paragraph.group(0) ?? '';
+        final paragraphBuffer = StringBuffer();
+        final nodes = RegExp(
+          r'<w:t(?:\s[^>]*)?>([\s\S]*?)</w:t>|<w:tab\s*/>|<w:br(?:\s[^>]*)?\s*/>',
+        ).allMatches(paragraphXml);
+        for (final node in nodes) {
+          final rawText = node.group(1);
+          if (rawText != null) {
+            paragraphBuffer.write(_decodeXmlEntities(rawText));
+          } else if ((node.group(0) ?? '').startsWith('<w:tab')) {
+            paragraphBuffer.write('\t');
+          } else {
+            paragraphBuffer.write('\n');
+          }
+        }
+        final paragraphText = paragraphBuffer.toString().trim();
+        if (paragraphText.isEmpty) continue;
+        if (textBuffer.isNotEmpty) textBuffer.write('\n\n');
+        textBuffer.write(paragraphText);
       }
       return textBuffer.toString();
     } catch (_) {
@@ -397,9 +409,9 @@ class DocumentImporter {
       xmlContent = xmlContent
           .replaceAll(RegExp(r'<text:tab\s*/>'), '\t')
           .replaceAll(RegExp(r'<text:line-break\s*/>'), '\n')
-          .replaceAll(RegExp(r'</text:p>'), '\n')
-          .replaceAll(RegExp(r'</text:h>'), '\n')
-          .replaceAll(RegExp(r'</text:list-item>'), '\n');
+          .replaceAll(RegExp(r'</text:p>'), '\n\n')
+          .replaceAll(RegExp(r'</text:h>'), '\n\n')
+          .replaceAll(RegExp(r'</text:list-item>'), '\n\n');
 
       final textBuffer = StringBuffer();
       var insideTag = false;
@@ -426,6 +438,13 @@ class DocumentImporter {
       return '';
     }
   }
+
+  static String _decodeXmlEntities(String text) => text
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&apos;', "'");
 
   static bool _isUsableText(String text) {
     return pdfTextQuality(text) >= _minimumPdfTextQuality;

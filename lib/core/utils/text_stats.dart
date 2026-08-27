@@ -13,6 +13,7 @@ class PreprocessedText {
   final List<List<String>> sentenceTokens;
   final List<String> analysisChunks;
   final List<int> sentenceChunkIndices;
+  final List<List<int>> sentenceAnalysisChunkIndices;
 
   /// 文件語言，於預處理時辨識一次。四個引擎、校準查表與模型路由都需要它，
   /// 各自重算不但浪費，還可能因為傳入不同片段而得到不一致的結果。
@@ -24,6 +25,7 @@ class PreprocessedText {
     this.sentenceTokens,
     this.analysisChunks,
     this.sentenceChunkIndices,
+    this.sentenceAnalysisChunkIndices,
     this.language,
   );
 
@@ -34,27 +36,46 @@ class PreprocessedText {
     final tokens = <List<String>>[];
     final analysisChunks = <String>[];
     final sentenceChunkIndices = <int>[];
+    final sentenceAnalysisChunkIndices = <List<int>>[];
 
-    for (final paragraph in normalized.split(RegExp(r'\n\s*\n+'))) {
+    for (final paragraph in _reconstructParagraphs(normalized)) {
       final paragraphSentences = _splitSentences(
         paragraph,
       ).map(normalizeSentenceForAnalysis).where(isAnalyzableSentence).toList();
       var pendingSentences = <String>[];
+      var pendingSentenceIndices = <int>[];
       var pendingTokenCount = 0;
 
       void flushChunk() {
         if (pendingSentences.isEmpty) return;
         final chunkIndex = analysisChunks.length;
         analysisChunks.add(pendingSentences.join(' '));
-        sentenceChunkIndices.addAll(
-          List<int>.filled(pendingSentences.length, chunkIndex),
-        );
+        for (final sentenceIndex in pendingSentenceIndices) {
+          sentenceAnalysisChunkIndices[sentenceIndex].add(chunkIndex);
+        }
         pendingSentences = <String>[];
+        pendingSentenceIndices = <int>[];
         pendingTokenCount = 0;
       }
 
       for (final sentence in paragraphSentences) {
         final sentenceTokenList = _tokenize(sentence);
+        final sentenceIndex = sentences.length;
+        sentences.add(sentence);
+        tokens.add(sentenceTokenList);
+        sentenceAnalysisChunkIndices.add(<int>[]);
+
+        final modelUnits = _splitLongAnalysisUnit(sentence);
+        if (modelUnits.length > 1) {
+          flushChunk();
+          for (final unit in modelUnits) {
+            final chunkIndex = analysisChunks.length;
+            analysisChunks.add(unit);
+            sentenceAnalysisChunkIndices[sentenceIndex].add(chunkIndex);
+          }
+          continue;
+        }
+
         final exceedsSentenceLimit =
             pendingSentences.length >= maxAnalysisChunkSentences;
         final exceedsTokenLimit =
@@ -63,14 +84,17 @@ class PreprocessedText {
                 maxAnalysisChunkTokens;
         if (exceedsSentenceLimit || exceedsTokenLimit) flushChunk();
 
-        sentences.add(sentence);
-        tokens.add(sentenceTokenList);
         pendingSentences.add(sentence);
+        pendingSentenceIndices.add(sentenceIndex);
         pendingTokenCount += sentenceTokenList.length;
       }
       // 不跨越原始段落合併，避免把不同主題的句子放進同一推論區塊。
       flushChunk();
     }
+
+    sentenceChunkIndices.addAll(
+      sentenceAnalysisChunkIndices.map((indices) => indices.first),
+    );
 
     return PreprocessedText._(
       normalized,
@@ -78,6 +102,7 @@ class PreprocessedText {
       tokens,
       analysisChunks,
       sentenceChunkIndices,
+      sentenceAnalysisChunkIndices,
       language,
     );
   }
@@ -91,16 +116,261 @@ class PreprocessedText {
         'Expected ${analysisChunks.length} analysis chunk scores',
       );
     }
-    return sentenceChunkIndices.map((index) => chunkScores[index]).toList();
+    return sentenceAnalysisChunkIndices.map((indices) {
+      final sum = indices.fold<double>(0, (value, index) {
+        return value + chunkScores[index];
+      });
+      return sum / indices.length;
+    }).toList();
+  }
+
+  /// 以文件段落為第一層邊界，重接 PDF/OCR 因版面寬度產生的硬換行。
+  /// 單一換行不是句尾；空白行才代表明確段落分隔。
+  static List<String> _reconstructParagraphs(String text) {
+    if (text.trim().isEmpty) return const [];
+    final normalizedLineEndings = text
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n');
+    final paragraphs = <String>[];
+    for (final block in normalizedLineEndings.split(RegExp(r'\n[ \t]*\n+'))) {
+      var pendingLines = <String>[];
+
+      void flushPending() {
+        final paragraph = _joinWrappedLines(pendingLines.join('\n'));
+        if (paragraph.isNotEmpty) paragraphs.add(paragraph);
+        pendingLines = <String>[];
+      }
+
+      for (final rawLine in block.split('\n')) {
+        final line = rawLine.trim();
+        if (line.isEmpty || _isDiscardableLayoutLine(line)) continue;
+        if (_isReliableDocumentBoundaryLine(line)) {
+          flushPending();
+          paragraphs.add(line);
+        } else {
+          pendingLines.add(line);
+        }
+      }
+      flushPending();
+    }
+    return paragraphs;
+  }
+
+  static bool _isReliableDocumentBoundaryLine(String line) {
+    if (RegExp(
+      r'^(?:doi\s*:|keywords?\s*:|received\b|revised\b|accepted\b|published\b)',
+      caseSensitive: false,
+    ).hasMatch(line)) {
+      return true;
+    }
+    return line.length <= 100 &&
+        RegExp(
+          r'^\d+(?:\.\d+)*[.)]?\s+[\p{L}]',
+          unicode: true,
+        ).hasMatch(line) &&
+        !RegExp(r'[.!?。！？]\s+.+[.!?。！？]$').hasMatch(line);
+  }
+
+  static bool _isDiscardableLayoutLine(String line) {
+    const months =
+        r'(?:January|February|March|April|May|June|July|August|September|October|November|December)';
+    if (RegExp(
+      '^$months\\s+\\d{1,2},\\s+\\d{4}\\s+\\d{1,2}:\\d{2}\\b',
+      caseSensitive: false,
+    ).hasMatch(line)) {
+      return true;
+    }
+    return RegExp(r'^\d{3,4}\s*[A-Z][A-Za-z.\s&]{2,40}$').hasMatch(line);
+  }
+
+  static String _joinWrappedLines(String paragraph) {
+    final lines = paragraph
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return '';
+
+    final buffer = StringBuffer();
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].replaceAll('\u00ad', '');
+
+      // PDF 上標註腳常被抽成獨立的一行；保留在正文只會破壞句法與統計。
+      if (_isIsolatedCitationMarker(lines, i)) {
+        continue;
+      }
+
+      // 欄寬或字型定位偶爾會把單字首字母單獨抽出，例如 C\nircular。
+      if (RegExp(r'^[A-Za-z]$').hasMatch(line) && i + 1 < lines.length) {
+        final next = lines[i + 1].trim();
+        if (RegExp(r'^[a-z]').hasMatch(next)) {
+          line += next;
+          i++;
+        }
+      }
+
+      if (buffer.isNotEmpty) {
+        final previous = buffer.toString();
+        final joinsHyphenatedWord =
+            RegExp(r'[\p{L}]-$', unicode: true).hasMatch(previous) &&
+            RegExp(r'^[\p{Ll}]', unicode: true).hasMatch(line);
+        if (!joinsHyphenatedWord) buffer.write(' ');
+      }
+      buffer.write(line);
+    }
+    return buffer.toString().replaceAll(RegExp(r'[ \t]+'), ' ').trim();
+  }
+
+  static bool _isIsolatedCitationMarker(List<String> lines, int index) {
+    if (index == 0 || index >= lines.length - 1) return false;
+    if (!RegExp(r'^\d{1,3}(?:\s*,\s*\d{1,3})*$').hasMatch(lines[index])) {
+      return false;
+    }
+    final hasLetters = RegExp(r'[\p{L}]', unicode: true);
+    return hasLetters.hasMatch(lines[index - 1]) &&
+        hasLetters.hasMatch(lines[index + 1]);
   }
 
   static List<String> _splitSentences(String text) {
-    final parts = text
-        .split(RegExp(r'(?<=[.!?。！？；;\n])\s*'))
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
-    return parts;
+    final normalized = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (normalized.isEmpty) return const [];
+
+    final sentences = <String>[];
+    var start = 0;
+    var index = 0;
+    while (index < normalized.length) {
+      if (!_isSentenceBoundary(normalized, index)) {
+        index++;
+        continue;
+      }
+
+      var end = index + 1;
+      while (end < normalized.length &&
+          RegExp(r'[.!?。！？]').hasMatch(normalized[end])) {
+        end++;
+      }
+      while (end < normalized.length &&
+          RegExp(r'''["'”’」』）)\]]''').hasMatch(normalized[end])) {
+        end++;
+      }
+
+      final sentence = normalized.substring(start, end).trim();
+      if (sentence.isNotEmpty) sentences.add(sentence);
+      while (end < normalized.length && normalized[end].trim().isEmpty) {
+        end++;
+      }
+      start = end;
+      index = end;
+    }
+
+    final tail = normalized.substring(start).trim();
+    if (tail.isNotEmpty) sentences.add(tail);
+    return sentences;
+  }
+
+  static bool _isSentenceBoundary(String text, int index) {
+    final mark = text[index];
+    if ('。！？!?'.contains(mark)) return true;
+    if (mark != '.') return false;
+
+    final previous = index > 0 ? text[index - 1] : '';
+    final next = index + 1 < text.length ? text[index + 1] : '';
+    if (RegExp(r'\d').hasMatch(previous) && RegExp(r'\d').hasMatch(next)) {
+      return false;
+    }
+    if (next == '.') return false;
+    if (next.isNotEmpty &&
+        next.trim().isNotEmpty &&
+        !RegExp(r'''["'”’」』）)\]]''').hasMatch(next)) {
+      return false;
+    }
+
+    final prefix = text.substring(0, index + 1);
+    final tokenMatch = RegExp(r'([A-Za-z][A-Za-z.]*)\.$').firstMatch(prefix);
+    final token = tokenMatch?.group(1)?.toLowerCase() ?? '';
+    final dottedToken = tokenMatch?.group(0)?.toLowerCase() ?? '';
+    final atEnd = index == text.length - 1;
+    if (atEnd) return true;
+
+    const neverTerminal = {
+      'mr',
+      'mrs',
+      'ms',
+      'dr',
+      'prof',
+      'fig',
+      'figs',
+      'eq',
+      'eqs',
+      'no',
+      'nos',
+      'vol',
+      'vols',
+      'pp',
+      'p',
+      'sec',
+      'secs',
+      'ch',
+      'approx',
+      'vs',
+      'cf',
+      'dept',
+      'univ',
+      'inc',
+      'ltd',
+    };
+    if (neverTerminal.contains(token)) return false;
+    if (const {'e.g.', 'i.e.', 'a.k.a.'}.contains(dottedToken)) return false;
+    if (RegExp(r'^(?:[a-z]\.){2,}$').hasMatch(dottedToken)) return false;
+
+    var nextIndex = index + 1;
+    while (nextIndex < text.length && text[nextIndex].trim().isEmpty) {
+      nextIndex++;
+    }
+    if (nextIndex >= text.length) return true;
+    final nextVisible = text[nextIndex];
+
+    // 單一姓名縮寫（W. M. Yang）與句中 et al. 不應被切開。
+    if (token.length == 1 && RegExp(r'[A-Z]').hasMatch(nextVisible)) {
+      return false;
+    }
+    if (token == 'al' && !RegExp(r'[A-Z一-鿿]').hasMatch(nextVisible)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /// 完整句子是使用者可讀的證據單位；模型 token 上限只影響內部分片。
+  static List<String> _splitLongAnalysisUnit(String sentence) {
+    if (_tokenize(sentence).length <= maxAnalysisChunkTokens) {
+      return [sentence];
+    }
+
+    final isCjk = RegExp(r'[一-鿿぀-ヿ가-힯]').hasMatch(sentence);
+    final units = isCjk ? sentence.split('') : sentence.split(RegExp(r'\s+'));
+    final chunks = <String>[];
+    var pending = <String>[];
+    var pendingTokens = 0;
+
+    void flush() {
+      if (pending.isEmpty) return;
+      chunks.add(isCjk ? pending.join() : pending.join(' '));
+      pending = <String>[];
+      pendingTokens = 0;
+    }
+
+    for (final unit in units) {
+      final count = _tokenize(unit).length;
+      if (pending.isNotEmpty &&
+          pendingTokens + count > maxAnalysisChunkTokens) {
+        flush();
+      }
+      pending.add(unit);
+      pendingTokens += count;
+    }
+    flush();
+    return chunks;
   }
 
   /// 判斷一段斷句是否有足夠語義內容可做 AI 句級判讀。
@@ -115,6 +385,25 @@ class PreprocessedText {
     if (RegExp(r'^[A-Za-z]{1,2}$').hasMatch(trimmed)) return false;
     if (RegExp(r'^\d{1,4}[.)、]?$').hasMatch(trimmed)) return false;
     if (RegExp(r'^[,，;；:：)\]）]+\s*\d{4}[.)）]?$').hasMatch(trimmed)) {
+      return false;
+    }
+    if (RegExp(
+      r'^(?:doi\s*:|keywords?\s*:|received\b|revised\b|accepted\b|published\b)',
+      caseSensitive: false,
+    ).hasMatch(trimmed)) {
+      return false;
+    }
+    if (RegExp(r'\bdoi\s*:', caseSensitive: false).hasMatch(trimmed)) {
+      return false;
+    }
+    if (RegExp(
+          r'\b(?:international journal|publishing company|department of|university|issn|copyright)\b',
+          caseSensitive: false,
+        ).hasMatch(trimmed) &&
+        !RegExp(
+          r'\b(is|are|was|were|has|have|shows?|finds?|reports?)\b',
+          caseSensitive: false,
+        ).hasMatch(trimmed)) {
       return false;
     }
     if (_looksLikeStructuralHeading(trimmed)) return false;

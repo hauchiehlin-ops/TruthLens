@@ -1814,11 +1814,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     ).withValues(alpha: 0.18),
                     child: Text('${index + 1}'),
                   ),
-                  title: Text(
-                    item.$1,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  title: Text(item.$1),
                   trailing: Text('${(item.$2 * 100).round()}%'),
                 );
               },
