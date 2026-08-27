@@ -91,17 +91,20 @@ void main() {
     expect(bootstrap, contains('retry.type = "button"'));
     expect(bootstrap, contains('window.location.reload()'));
     expect(bootstrap, contains('}, 120000)'));
-    expect(bootstrap, contains('Android 裝置可能需要較長時間'));
+    expect(bootstrap, contains('此裝置可能需要較長時間'));
   });
 
-  test('Android web startup bypasses incompatible GPU rendering', () {
+  test('Android and macOS web bypass incompatible GPU rendering', () {
     final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
     final workflow = File(
       '.github/workflows/deploy_vercel.yml',
     ).readAsStringSync();
 
-    expect(bootstrap, contains('function isTruthLensAndroid()'));
+    expect(bootstrap, contains('function getTruthLensCompatibilityPlatform()'));
     expect(bootstrap, contains('navigator.userAgentData?.platform'));
+    expect(bootstrap, contains('navigator.maxTouchPoints'));
+    expect(bootstrap, contains('return "Android"'));
+    expect(bootstrap, contains('return isMacOS ? "macOS" : null'));
     expect(bootstrap, contains('config.canvasKitVariant = "full"'));
     expect(bootstrap, contains('config.canvasKitForceCpuOnly = true'));
     expect(bootstrap, contains('config: flutterConfig'));

@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-28（第一百四十一次更新）— macOS Web 相容渲染
+
+Android 與 iOS 在 `v4.6.4` 已可正常進入工作台，但 macOS Web 隨後出現相同的
+Flutter 首畫面前停滯。正式站版本與 bootstrap 均確認已更新，因此延伸上一版已驗證的
+CanvasKit 相容策略，不再把它寫死為 Android 專用判斷。
+
+**跨平台相容策略**：真正的 macOS Web 現在與 Android Web 一樣，採用完整 CanvasKit
+變體與 CPU rasterization，避開 WebGL 可建立、但特定 GPU／驅動在第一個硬體 surface
+初始化時停滯的路徑。iPadOS 可能以 `MacIntel` 自陳，故另以觸控點數辨識並排除，避免
+改動已正常的 iOS 路徑；Windows、Linux 與其他桌面平台仍保留硬體加速。
+
+**啟動語意**：相容模式會依實際平台顯示 Android 或 macOS；慢速恢復提示改為平台中性
+文案。loader 與 `initializeEngine()` 仍共用同一設定，確保完整 CanvasKit 與 CPU-only
+同時作用於資產選擇和 Flutter Engine。
+
+**版本與狀態**：v4.6.5 / Build 1438。✅ Flutter 566 項測試全數通過；
+`flutter analyze --no-pub` 零問題，Web release 建置與產物 JavaScript 語法檢查通過。
+macOS 瀏覽器連續重新整理三次皆在 0.15–0.17 秒建立 `flutter-view`、移除 SEO shell，
+且請求完整 `/canvaskit/` 並由 Engine 確認 CPU-only 生效。另以 Android 14 Chrome
+與 iPadOS desktop UA 交叉驗證：Android 仍進入相容模式；`MacIntel + 5 touch points`
+正確排除為 iPadOS 並維持自動 CanvasKit，兩者均能進入工作台。
+
 ## 2026-08-27（第一百四十次更新）— Android Web CanvasKit 相容啟動
 
 `v4.6.3` 已在 Vercel 正式環境正確部署，版本檔與其他平台也都顯示 Build 1436，

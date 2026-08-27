@@ -42,20 +42,35 @@ _flutter.buildConfig = {"engineRevision":"a10d8ac38de835021c8d2f920dbf50a920ccc0
 const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
 const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
 
-function isTruthLensAndroid() {
+function getTruthLensCompatibilityPlatform() {
   const userAgent = navigator.userAgent || "";
   const userAgentPlatform = navigator.userAgentData?.platform || "";
-  return /Android/i.test(userAgent) || /Android/i.test(userAgentPlatform);
+  const legacyPlatform = navigator.platform || "";
+
+  if (/Android/i.test(userAgent) || /Android/i.test(userAgentPlatform)) {
+    return "Android";
+  }
+
+  // iPadOS can advertise itself as MacIntel. Keep the already-working iOS
+  // renderer path by requiring a non-touch Mac before applying this fallback.
+  const isIPadOS =
+    legacyPlatform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1;
+  const isMacOS =
+    !isIPadOS &&
+    (/Macintosh|Mac OS X/i.test(userAgent) ||
+      /macOS/i.test(userAgentPlatform) ||
+      /^Mac/i.test(legacyPlatform));
+  return isMacOS ? "macOS" : null;
 }
 
-function createTruthLensFlutterConfig() {
+function createTruthLensFlutterConfig(compatibilityPlatform) {
   const config = {
     canvasKitBaseUrl: "canvaskit/",
     useLocalCanvasKit: true,
   };
 
-  if (isTruthLensAndroid()) {
-    // Some Android Chrome GPU/driver combinations expose WebGL successfully
+  if (compatibilityPlatform != null) {
+    // Some Android and macOS GPU/driver combinations expose WebGL successfully
     // but stall while CanvasKit creates its first accelerated surface. Use the
     // universally compatible CanvasKit build and software rasterization there.
     config.canvasKitVariant = "full";
@@ -180,7 +195,7 @@ async function bootTruthLens() {
   const slowStartupNotice = window.setTimeout(() => {
     if (!appStarted) {
       updateTruthLensStartupStatus(
-        "正在恢復本機分析元件與資料，Android 裝置可能需要較長時間…",
+        "正在恢復本機分析元件與資料，此裝置可能需要較長時間…",
       );
     }
   }, 15000);
@@ -189,12 +204,13 @@ async function bootTruthLens() {
       showTruthLensStartupFailure(new Error("Flutter startup timed out"));
     }
   }, 120000);
-  const flutterConfig = createTruthLensFlutterConfig();
+  const compatibilityPlatform = getTruthLensCompatibilityPlatform();
+  const flutterConfig = createTruthLensFlutterConfig(compatibilityPlatform);
 
   try {
     updateTruthLensStartupStatus(
-      isTruthLensAndroid()
-        ? "正在以 Android 相容模式載入本機分析工作台…"
+      compatibilityPlatform != null
+        ? `正在以 ${compatibilityPlatform} 相容模式載入本機分析工作台…`
         : "正在載入本機分析工作台…",
     );
     await _flutter.loader.load({
