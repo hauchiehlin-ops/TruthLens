@@ -1,5 +1,33 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-27（第一百四十次更新）— Android Web CanvasKit 相容啟動
+
+`v4.6.3` 已在 Vercel 正式環境正確部署，版本檔與其他平台也都顯示 Build 1436，
+但特定 Android Chrome 實機重新整理後仍停在 SEO 訊息頁。這排除了版本、路由、
+Service Worker 與 App 內大型模型恢復流程；故障發生在 Dart `main()` 執行前的
+Flutter Web 引擎初始化層。
+
+**Android 相容渲染**：啟動腳本現在會辨識 Android Web，改用完整 CanvasKit 變體並
+強制 CPU rasterization，避開部分 Android GPU／驅動雖宣告支援 WebGL、卻在建立第一個
+CanvasKit 硬體表面時停滯的情況。iOS、macOS、Windows 與桌面瀏覽器仍沿用自動選擇的
+硬體加速 CanvasKit，不承擔相容模式的效能成本。
+
+**引擎設定傳遞修復**：先前 bootstrap 只把設定傳給 `_flutter.loader.load()`，但自訂
+`onEntrypointLoaded` 又以無參數 `initializeEngine()` 建立引擎，導致 CPU-only 等真正
+屬於引擎的選項不會生效。現在 loader 與 `initializeEngine()` 共用同一份設定，確保
+Android 相容路徑確實進入 Flutter Engine，而非只改變資產下載位置。
+
+**可重現部署**：Vercel production workflow 固定使用 Flutter 3.44.4，不再讓 `stable`
+標籤於不同部署時間解析成不同引擎版本。新增靜態回歸測試，鎖定 Android 偵測、完整
+CanvasKit、CPU rasterization、雙階段設定傳遞與 CI SDK 版本。
+
+**版本與狀態**：v4.6.4 / Build 1437。✅ Flutter 566 項測試全數通過；
+`flutter analyze --no-pub` 零問題，Web release 建置與產物 JavaScript 語法檢查通過。
+以 Pixel 8 Pro／Android 14／Chrome 142 User-Agent、412×915 viewport 驗證，網路請求
+確實由 `/canvaskit/chromium/` 切換為完整 `/canvaskit/` 變體，Flutter Engine 明確回報
+CPU-only 已生效。連續重新整理三次皆在 0.19–0.23 秒建立 `flutter-view`、移除 SEO
+shell，沒有啟動錯誤或重新載入循環。
+
 ## 2026-08-27（第一百三十九次更新）— Android Web 首畫面與大型模型恢復解耦
 
 `v4.6.2` 雖已停止 Service Worker 重新註冊循環，但 Android Chrome 重新整理後仍可能

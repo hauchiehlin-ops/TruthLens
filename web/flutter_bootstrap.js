@@ -7,6 +7,29 @@
 const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
 const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
 
+function isTruthLensAndroid() {
+  const userAgent = navigator.userAgent || "";
+  const userAgentPlatform = navigator.userAgentData?.platform || "";
+  return /Android/i.test(userAgent) || /Android/i.test(userAgentPlatform);
+}
+
+function createTruthLensFlutterConfig() {
+  const config = {
+    canvasKitBaseUrl: "canvaskit/",
+    useLocalCanvasKit: true,
+  };
+
+  if (isTruthLensAndroid()) {
+    // Some Android Chrome GPU/driver combinations expose WebGL successfully
+    // but stall while CanvasKit creates its first accelerated surface. Use the
+    // universally compatible CanvasKit build and software rasterization there.
+    config.canvasKitVariant = "full";
+    config.canvasKitForceCpuOnly = true;
+  }
+
+  return config;
+}
+
 function updateTruthLensStartupStatus(message) {
   const status = document
     .getElementById("seo-shell")
@@ -131,21 +154,28 @@ async function bootTruthLens() {
       showTruthLensStartupFailure(new Error("Flutter startup timed out"));
     }
   }, 120000);
+  const flutterConfig = createTruthLensFlutterConfig();
 
   try {
-    updateTruthLensStartupStatus("正在載入本機分析工作台…");
+    updateTruthLensStartupStatus(
+      isTruthLensAndroid()
+        ? "正在以 Android 相容模式載入本機分析工作台…"
+        : "正在載入本機分析工作台…",
+    );
     await _flutter.loader.load({
       // Do not pass serviceWorkerSettings. Flutter's generated worker now
       // unregisters itself and navigates clients; registering it on every load
       // creates a refresh loop in Android Chrome.
-      config: {
-        canvasKitBaseUrl: "canvaskit/",
-        useLocalCanvasKit: true,
-      },
+      config: flutterConfig,
       onEntrypointLoaded: async function(engineInitializer) {
         try {
           updateTruthLensStartupStatus("正在初始化工作台介面…");
-          const appRunner = await engineInitializer.initializeEngine();
+          // Loader settings choose the CanvasKit asset. Passing the same
+          // settings into initializeEngine is required for engine options such
+          // as canvasKitForceCpuOnly to take effect.
+          const appRunner = await engineInitializer.initializeEngine(
+            flutterConfig,
+          );
           await appRunner.runApp();
           appStarted = true;
           window.clearTimeout(slowStartupNotice);

@@ -94,6 +94,26 @@ void main() {
     expect(bootstrap, contains('Android 裝置可能需要較長時間'));
   });
 
+  test('Android web startup bypasses incompatible GPU rendering', () {
+    final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+    final workflow = File(
+      '.github/workflows/deploy_vercel.yml',
+    ).readAsStringSync();
+
+    expect(bootstrap, contains('function isTruthLensAndroid()'));
+    expect(bootstrap, contains('navigator.userAgentData?.platform'));
+    expect(bootstrap, contains('config.canvasKitVariant = "full"'));
+    expect(bootstrap, contains('config.canvasKitForceCpuOnly = true'));
+    expect(bootstrap, contains('config: flutterConfig'));
+    expect(
+      bootstrap,
+      contains(
+        'engineInitializer.initializeEngine(\n            flutterConfig,',
+      ),
+    );
+    expect(workflow, contains("flutter-version: '3.44.4'"));
+  });
+
   test('web first frame does not wait for OPFS model inventory restore', () {
     final mainSource = File('lib/main.dart').readAsStringSync();
 
