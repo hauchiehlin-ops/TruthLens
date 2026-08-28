@@ -224,6 +224,7 @@
   "historyAppBarTitle": "Sejarah",
   "historyClearAllTooltip": "Kosongkan semua",
   "historySearchHint": "Cari sejarah…",
+  "historyUntitledDocument": "Dokumen tanpa tajuk",
   "historyDeletedSnackbar": "Entri telah dipadam",
   "historyClearAllTitle": "Kosongkan semua sejarah?",
   "historyClearAllBody": "Ini akan memadam semua {count} entri. Tindakan ini tidak boleh dibatalkan.",

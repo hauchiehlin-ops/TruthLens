@@ -1115,6 +1115,12 @@ abstract class AppLocalizations {
   /// **'Search history…'**
   String get historySearchHint;
 
+  /// No description provided for @historyUntitledDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled document'**
+  String get historyUntitledDocument;
+
   /// No description provided for @historyDeletedSnackbar.
   ///
   /// In en, this message translates to:

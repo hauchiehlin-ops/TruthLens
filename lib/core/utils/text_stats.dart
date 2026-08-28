@@ -9,6 +9,7 @@ class PreprocessedText {
   static const int maxAnalysisChunkSentences = 5;
 
   final String raw;
+  final String analysisText;
   final List<String> sentences;
   final List<List<String>> sentenceTokens;
   final List<String> analysisChunks;
@@ -21,6 +22,7 @@ class PreprocessedText {
 
   PreprocessedText._(
     this.raw,
+    this.analysisText,
     this.sentences,
     this.sentenceTokens,
     this.analysisChunks,
@@ -31,10 +33,10 @@ class PreprocessedText {
 
   factory PreprocessedText.from(String raw) {
     final normalized = raw.trim();
-    final language = detectLanguage(normalized);
     final sentences = <String>[];
     final tokens = <List<String>>[];
     final analysisChunks = <String>[];
+    final analysisParagraphs = <String>[];
     final sentenceChunkIndices = <int>[];
     final sentenceAnalysisChunkIndices = <List<int>>[];
 
@@ -42,6 +44,9 @@ class PreprocessedText {
       final paragraphSentences = _splitSentences(
         paragraph,
       ).map(normalizeSentenceForAnalysis).where(isAnalyzableSentence).toList();
+      if (paragraphSentences.isNotEmpty) {
+        analysisParagraphs.add(paragraphSentences.join(' '));
+      }
       var pendingSentences = <String>[];
       var pendingSentenceIndices = <int>[];
       var pendingTokenCount = 0;
@@ -95,9 +100,14 @@ class PreprocessedText {
     sentenceChunkIndices.addAll(
       sentenceAnalysisChunkIndices.map((indices) => indices.first),
     );
+    final analysisText = analysisParagraphs.join('\n\n');
+    final language = detectLanguage(
+      analysisText.isNotEmpty ? analysisText : normalized,
+    );
 
     return PreprocessedText._(
       normalized,
+      analysisText,
       sentences,
       tokens,
       analysisChunks,
@@ -125,19 +135,24 @@ class PreprocessedText {
   }
 
   /// 以文件段落為第一層邊界，重接 PDF/OCR 因版面寬度產生的硬換行。
-  /// 單一換行不是句尾；空白行才代表明確段落分隔。
+  ///
+  /// 部分 PDF 文字層會在每一視覺行之間插入空白行，因此空白行只能視為
+  /// 「候選段落」而不是絕對句界。候選段落若呈現明確續寫（小寫開頭，或
+  /// 中日文及無大小寫語系尚未出現句末標點），會在斷句前先接回原句。
   static List<String> _reconstructParagraphs(String text) {
     if (text.trim().isEmpty) return const [];
     final normalizedLineEndings = text
         .replaceAll('\r\n', '\n')
         .replaceAll('\r', '\n');
-    final paragraphs = <String>[];
+    final candidates = <({String text, bool hardBoundary})>[];
     for (final block in normalizedLineEndings.split(RegExp(r'\n[ \t]*\n+'))) {
       var pendingLines = <String>[];
 
       void flushPending() {
         final paragraph = _joinWrappedLines(pendingLines.join('\n'));
-        if (paragraph.isNotEmpty) paragraphs.add(paragraph);
+        if (paragraph.isNotEmpty) {
+          candidates.add((text: paragraph, hardBoundary: false));
+        }
         pendingLines = <String>[];
       }
 
@@ -146,14 +161,52 @@ class PreprocessedText {
         if (line.isEmpty || _isDiscardableLayoutLine(line)) continue;
         if (_isReliableDocumentBoundaryLine(line)) {
           flushPending();
-          paragraphs.add(line);
+          candidates.add((text: line, hardBoundary: true));
         } else {
           pendingLines.add(line);
         }
       }
       flushPending();
     }
+
+    final paragraphs = <String>[];
+    for (final candidate in candidates) {
+      if (paragraphs.isNotEmpty &&
+          !candidate.hardBoundary &&
+          _shouldMergeExtractedBlocks(paragraphs.last, candidate.text)) {
+        paragraphs[paragraphs.length - 1] = _joinTextRuns(
+          paragraphs.last,
+          candidate.text,
+        );
+      } else {
+        paragraphs.add(candidate.text);
+      }
+    }
     return paragraphs;
+  }
+
+  static bool _shouldMergeExtractedBlocks(String previous, String next) {
+    final left = previous.trimRight();
+    final right = next.trimLeft();
+    if (left.isEmpty || right.isEmpty || _endsWithSentenceBoundary(left)) {
+      return false;
+    }
+    if (_isReliableDocumentBoundaryLine(right) ||
+        _looksLikeStructuralHeading(left) ||
+        _looksLikeStructuralHeading(right)) {
+      return false;
+    }
+
+    final first = right.substring(0, 1);
+    if (RegExp(r'^[\p{Ll}]', unicode: true).hasMatch(first)) return true;
+    if (RegExp(r'^[,，、;；:：)）\]】}"”’]', unicode: true).hasMatch(first)) {
+      return true;
+    }
+
+    // 中文、日文、韓文、泰文、阿拉伯文、天城文等文字沒有可依賴的
+    // 大小寫句首。以 Unicode 字母屬性判斷，可涵蓋未逐一列出的語系。
+    return RegExp(r'^\p{L}', unicode: true).hasMatch(first) &&
+        !RegExp(r'^[\p{Lu}\p{Lt}]', unicode: true).hasMatch(first);
   }
 
   static bool _isReliableDocumentBoundaryLine(String line) {
@@ -209,16 +262,37 @@ class PreprocessedText {
         }
       }
 
-      if (buffer.isNotEmpty) {
-        final previous = buffer.toString();
-        final joinsHyphenatedWord =
-            RegExp(r'[\p{L}]-$', unicode: true).hasMatch(previous) &&
-            RegExp(r'^[\p{Ll}]', unicode: true).hasMatch(line);
-        if (!joinsHyphenatedWord) buffer.write(' ');
+      if (buffer.isNotEmpty && _needsWrapSpace(buffer.toString(), line)) {
+        buffer.write(' ');
       }
       buffer.write(line);
     }
     return buffer.toString().replaceAll(RegExp(r'[ \t]+'), ' ').trim();
+  }
+
+  static String _joinTextRuns(String previous, String next) {
+    final left = previous.trimRight();
+    final right = next.trimLeft();
+    return _needsWrapSpace(left, right) ? '$left $right' : '$left$right';
+  }
+
+  static bool _needsWrapSpace(String previous, String next) {
+    if (previous.isEmpty || next.isEmpty) return false;
+    final joinsHyphenatedWord =
+        RegExp(r'[\p{L}]-$', unicode: true).hasMatch(previous) &&
+        RegExp(r'^[\p{Ll}]', unicode: true).hasMatch(next);
+    if (joinsHyphenatedWord) return false;
+    if (RegExp(r'[（(「『【\[〈《]$').hasMatch(previous) ||
+        RegExp(r'^[，。！？、；：,.!?;:）)」』】\]〉》]').hasMatch(next)) {
+      return false;
+    }
+
+    // 漢字、假名、泰文、高棉文與寮文的版面折行不代表詞間空白。
+    const noSpaceScripts =
+        r'\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}'
+        r'\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}';
+    return !(RegExp('[$noSpaceScripts]\$', unicode: true).hasMatch(previous) &&
+        RegExp('^[$noSpaceScripts]', unicode: true).hasMatch(next));
   }
 
   static bool _isIsolatedCitationMarker(List<String> lines, int index) {
@@ -245,12 +319,11 @@ class PreprocessedText {
       }
 
       var end = index + 1;
-      while (end < normalized.length &&
-          RegExp(r'[.!?。！？]').hasMatch(normalized[end])) {
+      while (end < normalized.length && _isSentenceMark(normalized, end)) {
         end++;
       }
       while (end < normalized.length &&
-          RegExp(r'''["'”’」』）)\]]''').hasMatch(normalized[end])) {
+          RegExp(r'''["'”’»›」』）)\]】〕〗〙〛〉》]''').hasMatch(normalized[end])) {
         end++;
       }
 
@@ -270,7 +343,26 @@ class PreprocessedText {
 
   static bool _isSentenceBoundary(String text, int index) {
     final mark = text[index];
-    if ('。！？!?'.contains(mark)) return true;
+    if ('。｡！？!?؟۔։՜՞።፧।॥။'.contains(mark)) return true;
+    if (mark == '…') {
+      var nextIndex = index + 1;
+      while (nextIndex < text.length && text[nextIndex] == '…') {
+        nextIndex++;
+      }
+      while (nextIndex < text.length && text[nextIndex].trim().isEmpty) {
+        nextIndex++;
+      }
+      return nextIndex >= text.length ||
+          RegExp(
+            r'[\p{Lu}\p{Script=Han}\p{Script=Hiragana}'
+            r'\p{Script=Katakana}\p{Script=Hangul}]',
+            unicode: true,
+          ).hasMatch(text[nextIndex]);
+    }
+    if (mark == ';' &&
+        RegExp(r'[\p{Script=Greek}]', unicode: true).hasMatch(text)) {
+      return true;
+    }
     if (mark != '.') return false;
 
     final previous = index > 0 ? text[index - 1] : '';
@@ -341,6 +433,20 @@ class PreprocessedText {
     return true;
   }
 
+  static bool _isSentenceMark(String text, int index) {
+    final mark = text[index];
+    return mark == '.' || _isSentenceBoundary(text, index);
+  }
+
+  static bool _endsWithSentenceBoundary(String text) {
+    final stripped = text.replaceFirst(
+      RegExp(r'''[\s"'”’»›」』）)\]】〕〗〙〛〉》]+$'''),
+      '',
+    );
+    return stripped.isNotEmpty &&
+        _isSentenceBoundary(stripped, stripped.length - 1);
+  }
+
   /// 完整句子是使用者可讀的證據單位；模型 token 上限只影響內部分片。
   static List<String> _splitLongAnalysisUnit(String sentence) {
     if (_tokenize(sentence).length <= maxAnalysisChunkTokens) {
@@ -407,6 +513,11 @@ class PreprocessedText {
       return false;
     }
     if (_looksLikeStructuralHeading(trimmed)) return false;
+    if (_looksLikeTableRow(trimmed)) return false;
+    if (!_endsWithSentenceBoundary(trimmed) &&
+        _endsWithIncompleteConnector(trimmed)) {
+      return false;
+    }
 
     final tokens = _tokenize(trimmed);
     if (tokens.length < 4) return false;
@@ -418,11 +529,11 @@ class PreprocessedText {
     if (lettersAndNumbers < 4) return false;
 
     final wordLikeTokens = RegExp(
-      r'[\p{L}]{2,}',
+      r'[\p{L}\p{M}]{2,}',
       unicode: true,
     ).allMatches(trimmed).length;
     final cjkLikeChars = RegExp(r'[一-鿿぀-ヿ가-힯]').allMatches(trimmed).length;
-    final hasSentencePunctuation = RegExp(r'[。！？!?；;.]$').hasMatch(trimmed);
+    final hasSentencePunctuation = _endsWithSentenceBoundary(trimmed);
     final hasClausePunctuation = RegExp(r'[，,、：:]').hasMatch(trimmed);
 
     if (cjkLikeChars == 0 && wordLikeTokens < 5 && !hasSentencePunctuation) {
@@ -439,6 +550,39 @@ class PreprocessedText {
     }
 
     return true;
+  }
+
+  static bool _looksLikeTableRow(String text) {
+    final numbers = RegExp(
+      r'(?<![\p{L}])\d+(?:[.,]\d+)*(?![\p{L}])',
+      unicode: true,
+    ).allMatches(text).length;
+    if (numbers < 6) return false;
+    final words = RegExp(r'[\p{L}]{2,}', unicode: true).allMatches(text).length;
+    return numbers / math.max(1, numbers + words) >= 0.30;
+  }
+
+  static bool _endsWithIncompleteConnector(String text) {
+    if (RegExp(r'[,，、;；:：/\-–—]$').hasMatch(text)) return true;
+    final lastWord = RegExp(
+      r'([\p{L}]+)[\s\u00a0]*$',
+      unicode: true,
+    ).firstMatch(text)?.group(1)?.toLowerCase();
+    if (lastWord == null) return false;
+    const danglingWords = {
+      // Germanic / Romance languages.
+      'a', 'an', 'the', 'of', 'to', 'for', 'from', 'with', 'without', 'by',
+      'and', 'or', 'but', 'because', 'if', 'when', 'while', 'that', 'which',
+      'de', 'del', 'la', 'el', 'los', 'las', 'para', 'por', 'con', 'sin',
+      'y', 'o', 'que', 'du', 'des', 'avec', 'sans', 'et', 'ou', 'von',
+      'zu', 'mit', 'ohne', 'und', 'oder', 'do', 'da', 'dos', 'das', 'com',
+      'sem', 'e', 'di', 'della', 'delle', 'che',
+      // Chinese / Japanese / Korean and Indic connectors.
+      '的', '與', '和', '及', '或', '在', '由', '對', '為', '因為', '如果',
+      '當', '而', '但', '並', '以及', 'について', 'により', '및', '또는',
+      'और', 'या', 'के', 'की', 'का', 'से', 'में', 'पर',
+    };
+    return danglingWords.contains(lastWord);
   }
 
   /// 移除 OCR/PDF 常見的前導項次，但保留真正句子本體。
@@ -515,9 +659,9 @@ class PreprocessedText {
       r'can|could|may|might|will|would|should|suggests?|shows?|finds?)\b)',
       caseSensitive: false,
     ).hasMatch(normalized);
-    final hasTerminalSentencePunctuation = RegExp(
-      r'[。！？!?；;.]$',
-    ).hasMatch(withoutTrailingPage);
+    final hasTerminalSentencePunctuation = _endsWithSentenceBoundary(
+      withoutTrailingPage,
+    );
     final tokenCount = _tokenize(withoutTrailingPage).length;
 
     if (!hasTerminalSentencePunctuation &&
@@ -537,10 +681,9 @@ class PreprocessedText {
       return true;
     }
 
-    final titleProbe = withoutTrailingPage.replaceFirst(
-      RegExp(r'[.!?。！？]+$'),
-      '',
-    );
+    final titleProbe = hasTerminalSentencePunctuation
+        ? withoutTrailingPage.substring(0, withoutTrailingPage.length - 1)
+        : withoutTrailingPage;
     final titleWords = RegExp(r'[A-Za-z]{2,}').allMatches(titleProbe).toList();
     final capitalizedTitleWords = titleWords
         .where((m) => RegExp(r'^[A-Z][a-z]+$').hasMatch(m.group(0)!))
@@ -566,7 +709,7 @@ class PreprocessedText {
     }
     return sentence
         .toLowerCase()
-        .split(RegExp(r'[^\p{L}\p{N}]+', unicode: true))
+        .split(RegExp(r'[^\p{L}\p{M}\p{N}]+', unicode: true))
         .where((w) => w.isNotEmpty)
         .toList();
   }

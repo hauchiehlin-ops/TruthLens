@@ -36,6 +36,43 @@ Donnelly et al. reported the same experimental result.
       expect(t.sentences.last, contains('Donnelly et al. reported'));
     });
 
+    test('PDF 空白行不是絕對句界，續寫片段會合併且殘句與表格列不分析', () {
+      final t = PreprocessedText.from('''
+Removal efficiencies for the proposed dust collector at the airflow rate of 20 m3/min Wet scrubber for removal of fine particles from exhaust gas 69 Table 1 Removal efficiency by SGS and corresponding pressure loss Inlet concentration 20.9 2.15 89.71 539 1600 1.86 99.88 1323 7680 2.04 99.97 1764
+
+Table 1 shows the removal efficiency and pressure loss at the airflow rate of
+
+The inner structure of proposed wet scrubber is same
+
+with the shape of the Venturi scrubber.
+
+Particle removal efficiency increases with increasing pressure drop because of increased turbulence due to high gas velocity in the throat.
+''');
+
+      expect(t.sentences, [
+        'The inner structure of proposed wet scrubber is same with the shape of the Venturi scrubber.',
+        'Particle removal efficiency increases with increasing pressure drop because of increased turbulence due to high gas velocity in the throat.',
+      ]);
+      expect(t.analysisText, isNot(contains('airflow rate of')));
+      expect(t.analysisText, isNot(contains('89.71 539 1600')));
+      expect(
+        t.analysisChunks.join(' '),
+        t.analysisText.replaceAll('\n\n', ' '),
+      );
+    });
+
+    test('英文大寫新句不會被前一個缺字殘句錯誤吞併', () {
+      final t = PreprocessedText.from('''
+Table 1 shows the removal efficiency at the airflow rate of
+
+The next complete sentence starts with a capital letter and remains independent.
+''');
+
+      expect(t.sentences, [
+        'The next complete sentence starts with a capital letter and remains independent.',
+      ]);
+    });
+
     test('學術縮寫、姓名縮寫與小數點不會被誤判為句尾', () {
       final t = PreprocessedText.from(
         'W. M. Yang et al. measured the response in Fig. 3 at 3.14. '

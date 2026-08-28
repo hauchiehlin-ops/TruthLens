@@ -630,6 +630,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get historySearchHint => 'Cari riwayat…';
 
   @override
+  String get historyUntitledDocument => 'Dokumen tanpa judul';
+
+  @override
   String get historyDeletedSnackbar => 'Entri telah dihapus';
 
   @override

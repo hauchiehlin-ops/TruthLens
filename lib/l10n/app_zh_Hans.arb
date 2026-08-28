@@ -220,6 +220,7 @@
   "historyAppBarTitle": "历史纪录",
   "historyClearAllTooltip": "清空全部",
   "historySearchHint": "搜索历史纪录…",
+  "historyUntitledDocument": "未命名文件",
   "historyDeletedSnackbar": "已删除该笔纪录",
   "historyClearAllTitle": "清空所有历史纪录？",
   "historyClearAllBody": "将删除全部 {count} 笔纪录，此动作无法复原。",

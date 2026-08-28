@@ -606,6 +606,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get historySearchHint => '기록 검색…';
 
   @override
+  String get historyUntitledDocument => '제목 없는 문서';
+
+  @override
   String get historyDeletedSnackbar => '해당 기록을 삭제했습니다';
 
   @override

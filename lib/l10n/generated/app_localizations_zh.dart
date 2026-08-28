@@ -597,6 +597,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historySearchHint => '搜尋歷史紀錄…';
 
   @override
+  String get historyUntitledDocument => '未命名文件';
+
+  @override
   String get historyDeletedSnackbar => '已刪除該筆紀錄';
 
   @override
@@ -3481,6 +3484,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get historySearchHint => '搜索历史纪录…';
 
   @override
+  String get historyUntitledDocument => '未命名文件';
+
+  @override
   String get historyDeletedSnackbar => '已删除该笔纪录';
 
   @override
@@ -6363,6 +6369,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get historySearchHint => '搜尋歷史紀錄…';
+
+  @override
+  String get historyUntitledDocument => '未命名文件';
 
   @override
   String get historyDeletedSnackbar => '已刪除該筆紀錄';

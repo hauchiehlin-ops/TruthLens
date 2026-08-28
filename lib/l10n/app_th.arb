@@ -224,6 +224,7 @@
   "historyAppBarTitle": "ประวัติ",
   "historyClearAllTooltip": "ล้างทั้งหมด",
   "historySearchHint": "ค้นหาประวัติ…",
+  "historyUntitledDocument": "เอกสารไม่มีชื่อ",
   "historyDeletedSnackbar": "ลบรายการนี้แล้ว",
   "historyClearAllTitle": "ล้างประวัติทั้งหมดหรือไม่?",
   "historyClearAllBody": "จะลบรายการทั้งหมด {count} รายการ การกระทำนี้ไม่สามารถย้อนกลับได้",

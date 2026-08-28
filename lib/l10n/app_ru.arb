@@ -224,6 +224,7 @@
   "historyAppBarTitle": "История",
   "historyClearAllTooltip": "Очистить всё",
   "historySearchHint": "Поиск по истории…",
+  "historyUntitledDocument": "Документ без названия",
   "historyDeletedSnackbar": "Запись удалена",
   "historyClearAllTitle": "Очистить всю историю?",
   "historyClearAllBody": "Это удалит все {count} записей. Это действие нельзя отменить.",

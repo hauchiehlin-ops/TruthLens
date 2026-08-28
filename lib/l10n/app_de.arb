@@ -224,6 +224,7 @@
   "historyAppBarTitle": "Verlauf",
   "historyClearAllTooltip": "Alles löschen",
   "historySearchHint": "Verlauf durchsuchen…",
+  "historyUntitledDocument": "Unbenanntes Dokument",
   "historyDeletedSnackbar": "Eintrag gelöscht",
   "historyClearAllTitle": "Gesamten Verlauf löschen?",
   "historyClearAllBody": "Dadurch werden alle {count} Einträge gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",

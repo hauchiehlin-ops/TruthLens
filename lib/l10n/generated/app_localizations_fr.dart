@@ -634,7 +634,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get historyClearAllTooltip => 'Tout effacer';
 
   @override
-  String get historySearchHint => 'Rechercher dans l\'historique…';
+  String get historySearchHint => 'Rechercher dans l’historique…';
+
+  @override
+  String get historyUntitledDocument => 'Document sans titre';
 
   @override
   String get historyDeletedSnackbar => 'Entrée supprimée';

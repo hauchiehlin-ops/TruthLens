@@ -631,6 +631,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historySearchHint => 'Поиск по истории…';
 
   @override
+  String get historyUntitledDocument => 'Документ без названия';
+
+  @override
   String get historyDeletedSnackbar => 'Запись удалена';
 
   @override

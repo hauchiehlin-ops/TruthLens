@@ -636,6 +636,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get historySearchHint => 'Pesquisar no histórico…';
 
   @override
+  String get historyUntitledDocument => 'Documento sem título';
+
+  @override
   String get historyDeletedSnackbar => 'Entrada excluída';
 
   @override

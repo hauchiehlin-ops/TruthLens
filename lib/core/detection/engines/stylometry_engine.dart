@@ -78,7 +78,7 @@ class StylometryEngine implements DetectionEngine {
     if (text.language.code == 'en' && text.allTokens.length >= 100) {
       try {
         final lexicalScore = await Pan25TfidfScorer.load().then(
-          (scorer) => scorer.score(text.raw),
+          (scorer) => scorer.score(text.analysisText),
         );
         lexicalProbability = lexicalScore;
         features['pan25_tfidf_probability'] = lexicalScore;
@@ -91,7 +91,7 @@ class StylometryEngine implements DetectionEngine {
     // 特徵 0：聊天助理回覆框架殘留。單一片語可能只是正文引用，僅給 75%；
     // 命中兩個獨立對話框架時才提高至近乎完整的規則分數。
     final assistantArtifactHits = assistantResponsePatterns
-        .where((pattern) => pattern.hasMatch(text.raw))
+        .where((pattern) => pattern.hasMatch(text.analysisText))
         .length;
     features['assistant_response_artifacts'] = assistantArtifactHits.toDouble();
     if (assistantArtifactHits > 0) {
@@ -102,7 +102,7 @@ class StylometryEngine implements DetectionEngine {
     }
 
     // 特徵 1：通用過渡詞密度
-    final lower = text.raw.toLowerCase();
+    final lower = text.analysisText.toLowerCase();
     var transitionHits = 0;
     final hitWords = <String>{};
     for (final t in genericTransitions) {

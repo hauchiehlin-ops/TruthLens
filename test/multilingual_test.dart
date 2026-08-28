@@ -20,10 +20,37 @@ void main() {
       expect(t.sentences.length, 3);
     });
 
+    test('中文 PDF 跨行與空白行會接回實體句子且不產生假空格', () {
+      final t = PreprocessedText.from('''
+人工智慧可以協助研究者整理大量資料
+
+並提升分析效率。這是另一個完整句子！
+''');
+      expect(t.sentences, ['人工智慧可以協助研究者整理大量資料並提升分析效率。', '這是另一個完整句子！']);
+    });
+
     test('日文（以句號斷句、CJK 逐字）', () {
       final t = PreprocessedText.from('今日はとてもいい天気です。午後に公園まで散歩に行きました。');
       expect(t.sentences.length, 2);
       expect(t.allTokens, isNotEmpty);
+    });
+
+    test('日文跨行、阿拉伯問號與天城文 danda 採用完整句界', () {
+      final japanese = PreprocessedText.from('''
+人工知能は大量の資料を整理し
+
+研究者の分析を支援します。次の文も完全です。
+''');
+      final arabic = PreprocessedText.from(
+        'هل تساعد النماذج الباحثين؟ نعم، لكنها تحتاج إلى مراجعة۔',
+      );
+      final hindi = PreprocessedText.from(
+        'कृत्रिम बुद्धिमत्ता शोध में सहायता करती है। परिणामों की समीक्षा आवश्यक है॥',
+      );
+
+      expect(japanese.sentences, ['人工知能は大量の資料を整理し研究者の分析を支援します。', '次の文も完全です。']);
+      expect(arabic.sentences, hasLength(2));
+      expect(hindi.sentences, hasLength(2));
     });
 
     test('中英混合不崩潰', () {

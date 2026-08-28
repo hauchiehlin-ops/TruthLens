@@ -72,7 +72,9 @@ class StatisticalEngine implements DetectionEngine {
           modelManager?.activeVariant('statistical')?.variantId ??
           defaultPerplexityModelId,
     );
-    final ppl = calibration != null ? await _tryPerplexity(text.raw) : null;
+    final ppl = calibration != null
+        ? await _tryPerplexity(text.analysisText)
+        : null;
     features['perplexity_calibrated'] = ppl == null ? 0 : 1;
     if (calibration == null) {
       // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
@@ -169,7 +171,7 @@ class StatisticalEngine implements DetectionEngine {
     // PAN 2025 corpus-calibrated compression coherence. This is independent of
     // vocabulary and logits, but intentionally one-sided and low weight.
     if (language.code == 'en') {
-      final compression = CompressionProfile.analyze(text.raw);
+      final compression = CompressionProfile.analyze(text.analysisText);
       if (compression != null) {
         features['compression_coherence'] = compression.coherence;
         features['compression_human_95_cut'] =

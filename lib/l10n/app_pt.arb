@@ -224,6 +224,7 @@
   "historyAppBarTitle": "Histórico",
   "historyClearAllTooltip": "Limpar tudo",
   "historySearchHint": "Pesquisar no histórico…",
+  "historyUntitledDocument": "Documento sem título",
   "historyDeletedSnackbar": "Entrada excluída",
   "historyClearAllTitle": "Limpar todo o histórico?",
   "historyClearAllBody": "Isso excluirá todas as {count} entradas. Esta ação não pode ser desfeita.",

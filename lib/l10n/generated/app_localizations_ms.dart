@@ -627,6 +627,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get historySearchHint => 'Cari sejarah…';
 
   @override
+  String get historyUntitledDocument => 'Dokumen tanpa tajuk';
+
+  @override
   String get historyDeletedSnackbar => 'Entri telah dipadam';
 
   @override

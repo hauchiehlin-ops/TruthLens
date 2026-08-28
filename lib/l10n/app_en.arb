@@ -455,6 +455,7 @@
   "historyAppBarTitle": "History",
   "historyClearAllTooltip": "Clear all",
   "historySearchHint": "Search history…",
+  "historyUntitledDocument": "Untitled document",
   "historyDeletedSnackbar": "Entry deleted",
   "historyClearAllTitle": "Clear all history?",
   "historyClearAllBody": "This will delete all {count} entries. This cannot be undone.",

@@ -220,6 +220,7 @@
   "historyAppBarTitle": "歷史紀錄",
   "historyClearAllTooltip": "清空全部",
   "historySearchHint": "搜尋歷史紀錄…",
+  "historyUntitledDocument": "未命名文件",
   "historyDeletedSnackbar": "已刪除該筆紀錄",
   "historyClearAllTitle": "清空所有歷史紀錄？",
   "historyClearAllBody": "將刪除全部 {count} 筆紀錄，此動作無法復原。",

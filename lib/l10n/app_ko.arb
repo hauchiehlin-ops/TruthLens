@@ -224,6 +224,7 @@
   "historyAppBarTitle": "기록",
   "historyClearAllTooltip": "전체 지우기",
   "historySearchHint": "기록 검색…",
+  "historyUntitledDocument": "제목 없는 문서",
   "historyDeletedSnackbar": "해당 기록을 삭제했습니다",
   "historyClearAllTitle": "모든 기록을 지우시겠습니까?",
   "historyClearAllBody": "전체 {count}개의 기록을 삭제합니다. 이 작업은 되돌릴 수 없습니다.",

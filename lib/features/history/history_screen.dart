@@ -131,6 +131,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       };
                       final integratedPercent = (e.integratedAiLikelihood * 100)
                           .round();
+                      final confidenceLabel = switch (e.integratedConfidence) {
+                        IntegratedConfidence.low =>
+                          l10n.integratedConfidenceLow,
+                        IntegratedConfidence.moderate =>
+                          l10n.integratedConfidenceModerate,
+                        IntegratedConfidence.high =>
+                          l10n.integratedConfidenceHigh,
+                      };
+                      final documentTitle = e.documentTitle.isEmpty
+                          ? l10n.historyUntitledDocument
+                          : e.documentTitle;
+                      final resultSummary = [
+                        verdictLabel,
+                        l10n.integratedLikelihoodLabel(integratedPercent),
+                        l10n.integratedConfidenceLabel(confidenceLabel),
+                      ].join(' · ');
                       return Dismissible(
                         key: ValueKey(e.id),
                         direction: DismissDirection.endToStart,
@@ -171,7 +187,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             verdictLabel,
                             integratedPercent,
                             time,
-                            e.inputText,
+                            documentTitle,
                           ),
                           child: ListTile(
                             leading: ExcludeSemantics(
@@ -188,11 +204,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                             ),
                             title: Text(
-                              e.inputText,
+                              documentTitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '$resultSummary\n$time',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            subtitle: Text('$verdictLabel · $time'),
+                            isThreeLine: true,
                             trailing: IconButton(
                               icon: Icon(LucideIcons.refreshCw),
                               tooltip: l10n.historyReanalyzeTooltip,

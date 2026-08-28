@@ -627,6 +627,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get historySearchHint => 'ค้นหาประวัติ…';
 
   @override
+  String get historyUntitledDocument => 'เอกสารไม่มีชื่อ';
+
+  @override
   String get historyDeletedSnackbar => 'ลบรายการนี้แล้ว';
 
   @override

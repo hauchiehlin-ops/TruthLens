@@ -224,6 +224,7 @@
   "historyAppBarTitle": "Riwayat",
   "historyClearAllTooltip": "Bersihkan semua",
   "historySearchHint": "Cari riwayat…",
+  "historyUntitledDocument": "Dokumen tanpa judul",
   "historyDeletedSnackbar": "Entri telah dihapus",
   "historyClearAllTitle": "Bersihkan semua riwayat?",
   "historyClearAllBody": "Ini akan menghapus semua {count} entri. Tindakan ini tidak dapat dibatalkan.",

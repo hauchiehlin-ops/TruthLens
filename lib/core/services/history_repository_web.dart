@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../detection/web_js_bridge.dart';
 import '../models/detection_result.dart';
 import 'claim_audit.dart';
+import 'history_metadata.dart';
 import 'integrated_assessment.dart';
 
 /// 歷史檢測紀錄（web 版）：持久化於瀏覽器 IndexedDB（見 [WebDb]），介面與原生版
@@ -19,6 +20,10 @@ class HistoryRepository {
         'analyzed_at': result.analyzedAt.millisecondsSinceEpoch,
         'input_text': result.inputText,
         'source_file_name': result.sourceFileName,
+        'document_title': resolveHistoryDocumentTitle(
+          sourceFileName: result.sourceFileName,
+          inputText: result.inputText,
+        ),
         'ai_probability': result.aiProbability,
         'verdict': result.verdict.name,
         'integrated_likelihood': integrated.aiLikelihood,
@@ -34,7 +39,10 @@ class HistoryRepository {
         raw.cast<Map<String, dynamic>>().map(HistoryEntry.fromJson).toList()
           ..sort((a, b) => b.analyzedAt.compareTo(a.analyzedAt));
     if (query != null && query.isNotEmpty) {
-      entries = entries.where((e) => e.inputText.contains(query)).toList();
+      final normalizedQuery = query.trim().toLowerCase();
+      entries = entries
+          .where((entry) => entry.matchesMetadata(normalizedQuery))
+          .toList();
     }
     return entries.take(200).toList();
   }
@@ -50,6 +58,7 @@ class HistoryEntry {
   final DateTime analyzedAt;
   final String inputText;
   final String sourceFileName;
+  final String documentTitle;
   final double aiProbability;
   final Verdict verdict;
   final double integratedAiLikelihood;
@@ -61,6 +70,7 @@ class HistoryEntry {
     required this.analyzedAt,
     required this.inputText,
     this.sourceFileName = '',
+    this.documentTitle = '',
     required this.aiProbability,
     required this.verdict,
     required this.integratedAiLikelihood,
@@ -81,6 +91,11 @@ class HistoryEntry {
       analyzedAt: DateTime.fromMillisecondsSinceEpoch(j['analyzed_at'] as int),
       inputText: j['input_text'] as String,
       sourceFileName: j['source_file_name'] as String? ?? '',
+      documentTitle: resolveHistoryDocumentTitle(
+        storedTitle: j['document_title'] as String? ?? '',
+        sourceFileName: j['source_file_name'] as String? ?? '',
+        inputText: j['input_text'] as String,
+      ),
       aiProbability: textProbability,
       verdict: Verdict.values.byName(j['verdict'] as String),
       integratedAiLikelihood: integratedProbability,
@@ -97,5 +112,12 @@ class HistoryEntry {
               .firstOrNull ??
           IntegratedConfidence.low,
     );
+  }
+
+  bool matchesMetadata(String normalizedQuery) {
+    return documentTitle.toLowerCase().contains(normalizedQuery) ||
+        sourceFileName.toLowerCase().contains(normalizedQuery) ||
+        integratedDirection.name.toLowerCase().contains(normalizedQuery) ||
+        integratedConfidence.name.toLowerCase().contains(normalizedQuery);
   }
 }

@@ -605,6 +605,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get historySearchHint => '履歴を検索…';
 
   @override
+  String get historyUntitledDocument => '無題の文書';
+
+  @override
   String get historyDeletedSnackbar => 'この記録を削除しました';
 
   @override

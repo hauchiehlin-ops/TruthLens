@@ -638,6 +638,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get historySearchHint => 'Buscar en el historial…';
 
   @override
+  String get historyUntitledDocument => 'Documento sin título';
+
+  @override
   String get historyDeletedSnackbar => 'Entrada eliminada';
 
   @override

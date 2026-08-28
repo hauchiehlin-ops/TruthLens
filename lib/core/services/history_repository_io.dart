@@ -6,6 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/detection_result.dart';
 import 'claim_audit.dart';
+import 'history_metadata.dart';
 import 'integrated_assessment.dart';
 
 /// 歷史檢測紀錄（SQLite）。桌面端（macOS/Windows）走 sqflite FFI。
@@ -21,13 +22,14 @@ class HistoryRepository {
     final dir = await getApplicationSupportDirectory();
     _db = await openDatabase(
       p.join(dir.path, 'truthlens_history.db'),
-      version: 3,
+      version: 4,
       onCreate: (db, _) => db.execute('''
         CREATE TABLE history (
           id TEXT PRIMARY KEY,
           analyzed_at INTEGER NOT NULL,
           input_text TEXT NOT NULL,
           source_file_name TEXT NOT NULL DEFAULT '',
+          document_title TEXT NOT NULL DEFAULT '',
           ai_probability REAL NOT NULL,
           verdict TEXT NOT NULL,
           integrated_likelihood REAL NOT NULL,
@@ -62,6 +64,16 @@ class HistoryRepository {
                 integrated_confidence = 'low'
           ''');
         }
+        if (oldVersion < 4) {
+          await db.execute(
+            "ALTER TABLE history ADD COLUMN document_title TEXT NOT NULL DEFAULT ''",
+          );
+          await db.execute('''
+            UPDATE history
+            SET document_title = source_file_name
+            WHERE source_file_name <> ''
+          ''');
+        }
       },
     );
     return _db!;
@@ -78,6 +90,10 @@ class HistoryRepository {
       'analyzed_at': result.analyzedAt.millisecondsSinceEpoch,
       'input_text': result.inputText,
       'source_file_name': result.sourceFileName,
+      'document_title': resolveHistoryDocumentTitle(
+        sourceFileName: result.sourceFileName,
+        inputText: result.inputText,
+      ),
       'ai_probability': result.aiProbability,
       'verdict': result.verdict.name,
       'integrated_likelihood': integrated.aiLikelihood,
@@ -91,12 +107,15 @@ class HistoryRepository {
     final db = await _open();
     final rows = await db.query(
       'history',
-      where: query != null && query.isNotEmpty ? 'input_text LIKE ?' : null,
-      whereArgs: query != null && query.isNotEmpty ? ['%$query%'] : null,
       orderBy: 'analyzed_at DESC',
       limit: 200,
     );
-    return rows.map(HistoryEntry.fromRow).toList();
+    final entries = rows.map(HistoryEntry.fromRow);
+    final normalizedQuery = query?.trim().toLowerCase() ?? '';
+    if (normalizedQuery.isEmpty) return entries.toList();
+    return entries
+        .where((entry) => entry.matchesMetadata(normalizedQuery))
+        .toList();
   }
 
   Future<void> delete(String id) async {
@@ -116,6 +135,7 @@ class HistoryEntry {
   final DateTime analyzedAt;
   final String inputText;
   final String sourceFileName;
+  final String documentTitle;
   final double aiProbability;
   final Verdict verdict;
   final double integratedAiLikelihood;
@@ -127,6 +147,7 @@ class HistoryEntry {
     required this.analyzedAt,
     required this.inputText,
     this.sourceFileName = '',
+    this.documentTitle = '',
     required this.aiProbability,
     required this.verdict,
     required this.integratedAiLikelihood,
@@ -149,6 +170,11 @@ class HistoryEntry {
       ),
       inputText: row['input_text'] as String,
       sourceFileName: (row['source_file_name'] as String?) ?? '',
+      documentTitle: resolveHistoryDocumentTitle(
+        storedTitle: (row['document_title'] as String?) ?? '',
+        sourceFileName: (row['source_file_name'] as String?) ?? '',
+        inputText: row['input_text'] as String,
+      ),
       aiProbability: textProbability,
       verdict: Verdict.values.byName(row['verdict'] as String),
       integratedAiLikelihood: integratedProbability,
@@ -165,5 +191,12 @@ class HistoryEntry {
               .firstOrNull ??
           IntegratedConfidence.low,
     );
+  }
+
+  bool matchesMetadata(String normalizedQuery) {
+    return documentTitle.toLowerCase().contains(normalizedQuery) ||
+        sourceFileName.toLowerCase().contains(normalizedQuery) ||
+        integratedDirection.name.toLowerCase().contains(normalizedQuery) ||
+        integratedConfidence.name.toLowerCase().contains(normalizedQuery);
   }
 }
