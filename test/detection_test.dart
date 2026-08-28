@@ -102,6 +102,41 @@ The first body paragraph starts with a complete sentence for analysis.
       ]);
     });
 
+    test('參考文獻跨行條目不會被拆成逐句 AI 證據', () {
+      final t = PreprocessedText.from('''
+This body paragraph remains available for detection because it contains a complete contextual sentence.
+
+References
+
+Wullur, P., & Kim, J.
+
+Gender performance in social exchange robots.
+
+Interaction Studies, 24(1), 45–67.
+
+Yadav, R., & Pathak, G. S.
+
+Young consumers' intention towards buying green products.
+
+Ecological Economics, 131, 65–72.
+
+Yang, J., & Lee, S. S.
+
+Caught in the act: Natural recognition of deepfake UGC ad, expectancy violation and consumer responses.
+
+Yim, M. Y. C., Cicchirillo, V. J., & Drumwright, M. E.
+
+The impact of stereoscopic 3D advertising: The role of presence.
+''');
+
+      expect(t.sentences, [
+        'This body paragraph remains available for detection because it contains a complete contextual sentence.',
+      ]);
+      expect(t.analysisText, isNot(contains('Wullur')));
+      expect(t.analysisText, isNot(contains('Interaction Studies')));
+      expect(t.analysisText, isNot(contains('deepfake UGC ad')));
+    });
+
     test('中文斷句與逐字斷詞', () {
       final t = PreprocessedText.from('這是一段可分析的測試句子。第二句話也具有完整語義！');
       expect(t.sentences.length, 2);

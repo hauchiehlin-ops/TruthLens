@@ -172,6 +172,12 @@ class PreprocessedText {
     final paragraphs = <String>[];
     for (final candidate in candidates) {
       if (paragraphs.isNotEmpty &&
+          _shouldMergeBibliographyBlocks(paragraphs.last, candidate.text)) {
+        paragraphs[paragraphs.length - 1] = _joinTextRuns(
+          paragraphs.last,
+          candidate.text,
+        );
+      } else if (paragraphs.isNotEmpty &&
           !candidate.hardBoundary &&
           _shouldMergeExtractedBlocks(paragraphs.last, candidate.text)) {
         paragraphs[paragraphs.length - 1] = _joinTextRuns(
@@ -183,6 +189,22 @@ class PreprocessedText {
       }
     }
     return paragraphs;
+  }
+
+  static bool _shouldMergeBibliographyBlocks(String previous, String next) {
+    final left = previous.trim();
+    final right = next.trim();
+    if (left.isEmpty || right.isEmpty) return false;
+    if (_looksLikeBibliographyEntryStart(right)) return false;
+
+    final leftIsBibliographic =
+        _looksLikeBibliographyEntryStart(left) ||
+        _looksLikeBibliographyContinuation(left) ||
+        _looksLikeBibliographyEntryOrFragment(left);
+    if (!leftIsBibliographic) return false;
+
+    return _looksLikeBibliographyContinuation(right) ||
+        _looksLikeBibliographyTitleFragment(right);
   }
 
   static bool _shouldMergeExtractedBlocks(String previous, String next) {
@@ -234,6 +256,82 @@ class PreprocessedText {
       return true;
     }
     return RegExp(r'^\d{3,4}\s*[A-Z][A-Za-z.\s&]{2,40}$').hasMatch(line);
+  }
+
+  static String _withoutBibliographyPrefix(String text) {
+    return text
+        .replaceFirst(
+          RegExp(r'^\s*(?:\[\s*\d{1,3}\s*\]|\(?\d{1,3}\)?[.)、．])\s*'),
+          '',
+        )
+        .trim();
+  }
+
+  static bool _looksLikeBibliographyEntryStart(String text) {
+    final cleaned = _withoutBibliographyPrefix(text);
+    final authorInitial = RegExp(
+      r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*){1,3}"
+      r"(?:(?:,\s*|,\s*&\s*|,\s*and\s+|&\s*|and\s+)"
+      r"[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*){1,3})*",
+    );
+    final authorNoComma = RegExp(
+      r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+(?:[A-Z]\.\s*){1,3}"
+      r"(?:,\s*[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+\s+(?:[A-Z]\.\s*){1,3})*",
+    );
+    return authorInitial.hasMatch(cleaned) || authorNoComma.hasMatch(cleaned);
+  }
+
+  static bool _looksLikeBibliographyContinuation(String text) {
+    final cleaned = _withoutBibliographyPrefix(text);
+    if (cleaned.isEmpty) return false;
+    if (RegExp(
+      r'^(?:doi\s*:|https?://|arxiv\s*:)',
+      caseSensitive: false,
+    ).hasMatch(cleaned)) {
+      return true;
+    }
+    if (RegExp(
+      r'\b(?:journal|proceedings|transactions|studies|economics|review|'
+      r'letters|research|conference|press|publisher)\b',
+      caseSensitive: false,
+    ).hasMatch(cleaned)) {
+      return true;
+    }
+    if (RegExp(
+      r'\b\d{1,4}\s*[(,]\s*\d{1,5}\s*[-–—]\s*\d{1,5}\b',
+    ).hasMatch(cleaned)) {
+      return true;
+    }
+    if (RegExp(r'\b\d{1,5}\s*[-–—]\s*\d{1,5}\.?$').hasMatch(cleaned) &&
+        RegExp(r'\b\d{1,4}\b').hasMatch(cleaned)) {
+      return true;
+    }
+    if (RegExp(r'\b(?:18|19|20)\d\d[a-z]?[).,]?\s*$').hasMatch(cleaned)) {
+      return true;
+    }
+    return _looksLikeBibliographyTitleFragment(cleaned);
+  }
+
+  static bool _looksLikeBibliographyTitleFragment(String text) {
+    final cleaned = _withoutBibliographyPrefix(text);
+    if (!_endsWithSentenceBoundary(cleaned)) return false;
+    final tokenCount = _tokenize(cleaned).length;
+    if (tokenCount < 4 || tokenCount > 22) return false;
+    final hasTitleColon = RegExp(r'[:：]').hasMatch(cleaned);
+    final hasFiniteVerb = RegExp(
+      r'\b(?:am|is|are|was|were|be|been|being|has|have|had|do|does|did|'
+      r'can|could|may|might|must|shall|should|will|would|'
+      r'argues?|claims?|shows?|finds?|reports?|suggests?|indicates?|'
+      r'demonstrates?|reveals?|concludes?)\b',
+      caseSensitive: false,
+    ).hasMatch(cleaned);
+    final hasTitleKeyword = RegExp(
+      r'\b(?:impact|effect|role|intention|performance|recognition|'
+      r'advertising|consumer|consumers|products|robots|exchange|'
+      r'generative|deepfake|stereoscopic|presence)\b',
+      caseSensitive: false,
+    ).hasMatch(cleaned);
+    return !hasFiniteVerb && (hasTitleColon || hasTitleKeyword);
   }
 
   static String _joinWrappedLines(String paragraph) {
@@ -512,6 +610,7 @@ class PreprocessedText {
         ).hasMatch(trimmed)) {
       return false;
     }
+    if (_looksLikeBibliographyEntryOrFragment(trimmed)) return false;
     if (_looksLikeStructuralHeading(trimmed)) return false;
     if (_looksLikeTableRow(trimmed)) return false;
     if (!_endsWithSentenceBoundary(trimmed) &&
@@ -550,6 +649,21 @@ class PreprocessedText {
     }
 
     return true;
+  }
+
+  static bool _looksLikeBibliographyEntryOrFragment(String text) {
+    final cleaned = _withoutBibliographyPrefix(text);
+    if (cleaned.isEmpty) return false;
+    if (_looksLikeBibliographyEntryStart(cleaned)) return true;
+    if (_looksLikeBibliographyContinuation(cleaned)) return true;
+    if (RegExp(
+      r"^[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*){1,3}"
+      r"(?:,\s*&\s*[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'\-]+,\s*(?:[A-Z]\.\s*){1,3})?"
+      r"\.?$",
+    ).hasMatch(cleaned)) {
+      return true;
+    }
+    return false;
   }
 
   static bool _looksLikeTableRow(String text) {

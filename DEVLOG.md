@@ -1,5 +1,26 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-29（第一百四十九次更新）— 文獻目錄不再污染逐句證據
+
+使用者用截圖指出逐句列表仍出現非完整句段：文獻目錄被 PDF 文字層拆成作者、篇名、
+期刊卷頁各自一列，例如 `Wullur, P., & Kim, J.`、`Gender performance...`、
+`Interaction Studies, 24(1), 45–67.` 都被當成獨立句子評分。這不是單純顯示問題；
+文獻條目本來就不是作者正文，若進入 AI 逐句證據，會同時污染 Transformer、句長統計與
+風格特徵。
+
+作法改在 `PreprocessedText` 的段落重建層處理：加入 bibliography-aware 合併規則，
+允許「作者行 → 篇名行 → 期刊／卷頁行」即使前一行有句點也先合併為同一文獻條目；
+再於 `isAnalyzableSentence` 排除文獻條目與殘片，讓 citation verification 繼續走
+專門的 `BibliographyVerifier`，AI 句級判讀只看正文。第一版曾把英文逗號句與中文
+`此外，/首先，/其次，` 誤判為文獻線索，已透過回歸測試收斂：逗號不再作為篇名依據，
+中文作者起點不放在通用 AI 斷句核心裡。
+
+新增測試覆蓋截圖同型態的跨行 APA/期刊條目，確認正文句子仍保留，文獻作者、篇名與期刊
+卷頁不進入 `sentences` / `analysisText`。
+
+**版本與狀態**：v4.6.8 / Build 1441。✅ `flutter test test/detection_test.dart`
+全數通過；`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
+
 ## 2026-08-29（第一百四十八次更新）— PWA 安裝引導與自有 service worker
 
 **起點是一個死路**：做完 `beforeinstallprompt` 攔截與安裝按鈕後，在 release 建置上
