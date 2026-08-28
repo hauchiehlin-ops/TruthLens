@@ -102,6 +102,32 @@ The first body paragraph starts with a complete sentence for analysis.
       ]);
     });
 
+    test('內文剛好含 review／research 等字不得被整句移除', () {
+      // 書目過濾在句子層是孤立判斷，沒有「前一段已是書目」的上下文可倚賴。
+      // 裸詞表原本讓這句（含 review）被整句刪掉，句長起伏因此歸零，統計引擎
+      // 連帶失去可用訊號——掉的是真實內文，不只是測試數字。
+      final t = PreprocessedText.from(
+        'Alpha beta gamma delta. '
+        'Iota kappa lambda mu. '
+        'Rho sigma tau upsilon. '
+        'River stone window paper signal method value result field sample data note '
+        'analysis evidence context design process outcome review conclusion detail.',
+      );
+
+      expect(t.sentences.length, 4);
+      expect(t.sentences.last, contains('review conclusion detail'));
+    });
+
+    test('真正的書目條目仍然被排除（帶卷頁或作者樣式）', () {
+      final withLocator = PreprocessedText.from(
+        'Interaction Studies, 24(1), 45-67.',
+      );
+      expect(withLocator.sentences, isEmpty);
+
+      final withAuthors = PreprocessedText.from('Wullur, P., & Kim, J.');
+      expect(withAuthors.sentences, isEmpty);
+    });
+
     test('參考文獻跨行條目不會被拆成逐句 AI 證據', () {
       final t = PreprocessedText.from('''
 This body paragraph remains available for detection because it contains a complete contextual sentence.

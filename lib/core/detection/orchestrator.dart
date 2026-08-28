@@ -291,6 +291,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
           text: s,
           aiProbability: p.clamp(0.0, 1.0),
           patterns: patterns,
+          modelBacked: neuralScores.isNotEmpty,
         ),
       );
     }

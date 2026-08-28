@@ -169,9 +169,27 @@ class BibliographyVerifier {
   /// 四位數西元紀年 (1800-2099)
   static final RegExp _yearRegex = RegExp(r'\b(18\d\d|19\d\d|20\d\d)\b');
 
-  /// 中文作者與多作者標記（如：張三、李四等）
+  /// 中文作者與多作者標記（如：張三、李四等）。
+  ///
+  /// 兩個刻意的限制：分隔符**不含空白**，且必須出現在條目開頭。原本兩者都放寬，
+  /// 導致「朋友、家人、微網紅」「進行問卷數據分析，再搭配」這類普通中文內文
+  /// 一律被算成作者列表——中文書目的作者本來就只出現在條目最前面。
   static final RegExp _chineseAuthor = RegExp(
-    r'[\u4e00-\u9fa5]{2,4}(?:[、,，\s]+(?:[\u4e00-\u9fa5]{2,4}|等|著|編|譯))+',
+    r'^[\u4e00-\u9fa5]{2,4}(?:[、,，]+(?:[\u4e00-\u9fa5]{2,4}|等|著|編|譯))+',
+  );
+
+  /// 明確到足以單獨支撐「這是書目條目」的期刊／出版標記。
+  static final RegExp _strongJournalKeyword = RegExp(
+    r'(?:Journal of|Transactions|Proceedings|Proc\.|Physical Review|Phys\. Rev\.|Physical Fluids|Phys\. Fluids|Fluid Dynamics Research|Computational Fluid Dynamics|Physics Letters|Annales|Z\.?\s*Flugwiss|AIChE|AICHE|IEEE|ACM|arXiv|doi\.org|DOI:|PMID:|vol\.|no\.|pp\.|pages|第\s*\d+\s*卷|第\s*\d+\s*期|第\s*\d+\s*頁|頁\s*\d+|\[[JCMDROPOL]\])',
+    caseSensitive: false,
+  );
+
+  /// 敘事散文的標記。書目條目是結構化紀錄，不會對讀者說話、不會提出建議，
+  /// 也不會用整段論述推進。缺少 DOI／編號／卷頁這類定位資訊時，出現這些標記
+  /// 就足以判定它是內文而非參考文獻——這正是 AI 撰寫的論文寫作建議被整段
+  /// 誤判成文獻的原因。
+  static final RegExp _narrativeProse = RegExp(
+    r'(?:建議|您|請|希望|不妨|以下為|可以從|可以先|例如|舉例|值得注意|首先|其次|再者|總之|綜上|我們|讓我|幫您|為您|如下|以下是|接下來)',
   );
 
   /// 偵測參考文獻條目的開頭特徵（支援 Surname, F. M. (1983) 及 Surname, F. M. [1983] 括號格式）。
@@ -605,6 +623,20 @@ class BibliographyVerifier {
       return 0.0;
     }
 
+    // 結構化定位資訊：有這些才有資格在帶敘事語氣時仍被當成條目
+    // （例如某些中文書目會寫成「…，見第 12 卷第 3 期」）。
+    final hasStructuredLocator =
+        RegExp(r'^\s*\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]').hasMatch(block) ||
+        RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
+        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false).hasMatch(block) ||
+        RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false).hasMatch(block);
+
+    // 敘事散文不是書目條目。一篇「教你怎麼投期刊」的文章滿篇都是「期刊」，
+    // 但它句句都在對讀者說話——這是最可靠的區隔。
+    if (!hasStructuredLocator && _narrativeProse.hasMatch(block)) {
+      return 0.0;
+    }
+
     var score = 0.0;
     final hasBracketRef = RegExp(
       r'^\s*\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]',
@@ -654,10 +686,15 @@ class BibliographyVerifier {
 
     if (hasHeading) score += 0.20;
 
-    // 若沒有 References 標題，且完全沒有學術作者、期刊關鍵字、DOI/arXiv 或 [1] 標記，直接歸零排除
+    // 若沒有 References 標題，且完全沒有學術作者、**明確的**期刊／出版標記、
+    // DOI/arXiv 或 [1] 標記，直接歸零排除。
+    //
+    // 這裡刻意用 _strongJournalKeyword 而非 _journalKeyword：後者匹配裸詞
+    // 「期刊」「學報」「出版社」與單字 Science／Nature／Press，一篇談論投稿的
+    // 文章每段都會命中，等於讓保險條款失效。
     if (!hasHeading &&
         !hasAuthorPattern &&
-        !_journalKeyword.hasMatch(block) &&
+        !_strongJournalKeyword.hasMatch(block) &&
         !hasBracketRef &&
         !block.contains('doi:') &&
         !block.contains('arXiv:')) {

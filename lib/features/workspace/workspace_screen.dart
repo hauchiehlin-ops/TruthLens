@@ -849,7 +849,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: CircleAvatar(radius: 12, child: Text('${i + 1}')),
                 title: Text(evidence[i].$1),
-                trailing: Text('${(evidence[i].$2 * 100).round()}%'),
+                trailing: Text(
+                  _sentenceSignalLabel(evidence[i].$2, evidence[i].$3),
+                ),
               ),
             ],
           ],
@@ -1825,27 +1827,39 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     child: Text('${index + 1}'),
                   ),
                   title: Text(item.$1),
-                  trailing: Text('${(item.$2 * 100).round()}%'),
+                  trailing: Text(
+                    _sentenceSignalLabel(item.$2, item.$3),
+                  ),
                 );
               },
             ),
     );
   }
 
-  List<(String, double)> _evidenceRows() {
+  /// 第三個欄位：這句的數值是否真的由神經模型支撐。為 false 時介面顯示棄權，
+  /// 不顯示百分比——沒有模型投票時的逐句數值只是文件級分數的估計，把它當成
+  /// 「模型判定這句 1% 像 AI」會直接誤導讀者。
+  List<(String, double, bool)> _evidenceRows() {
     if (_result != null) {
       return [
         for (final sentence in _result!.sentences)
-          (sentence.text, sentence.aiProbability),
+          (sentence.text, sentence.aiProbability, sentence.modelBacked),
       ];
     }
     final text = PreprocessedText.from(_controller.text);
     if (text.sentences.isEmpty || _scores.isEmpty) return const [];
+    final hasNeural = _scores.values.any(
+      (score) => score.available && (score.sentenceScores?.isNotEmpty ?? false),
+    );
     return [
       for (var i = 0; i < text.sentences.length; i++)
-        (text.sentences[i], _runningSentenceScore(i)),
+        (text.sentences[i], _runningSentenceScore(i), hasNeural),
     ];
   }
+
+  /// 逐句訊號的顯示字串。棄權以破折號呈現，與報告其他地方的棄權標示一致。
+  static String _sentenceSignalLabel(double probability, bool modelBacked) =>
+      modelBacked ? '${(probability * 100).round()}%' : '—';
 
   double _runningSentenceScore(int index) {
     var weighted = 0.0;
@@ -1955,7 +1969,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                                 ),
                                 Expanded(child: Text(item.$1)),
                                 const SizedBox(width: 8),
-                                Text('${(item.$2 * 100).round()}%'),
+                                Text(
+                                  _sentenceSignalLabel(item.$2, item.$3),
+                                ),
                               ],
                             ),
                           ),

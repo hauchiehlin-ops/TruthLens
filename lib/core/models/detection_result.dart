@@ -220,11 +220,19 @@ class SentenceScore {
   final double aiProbability;
   final List<String> patterns; // 命中的 AI 寫作模式
 
+  /// [aiProbability] 是否真的由神經模型的逐句輸出支撐。
+  ///
+  /// 沒有任何神經引擎投票時，逐句數值只是文件級分數再依句長偏差與轉折詞
+  /// 微調出來的估計。把它當成「模型看過這句、判定 1% 像 AI」會完全誤導——
+  /// 那是棄權，不是人類票。介面必須據此顯示棄權而非百分比。
+  final bool modelBacked;
+
   const SentenceScore({
     required this.index,
     required this.text,
     required this.aiProbability,
     this.patterns = const [],
+    this.modelBacked = true,
   });
 }
 

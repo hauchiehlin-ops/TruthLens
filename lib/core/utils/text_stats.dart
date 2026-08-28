@@ -281,6 +281,31 @@ class PreprocessedText {
     return authorInitial.hasMatch(cleaned) || authorNoComma.hasMatch(cleaned);
   }
 
+  /// 書目定位特徵：年份、卷(期)頁碼、頁碼區間、DOI／arXiv／URL。
+  ///
+  /// 這是「這串文字是書目紀錄」與「這串文字只是剛好提到 review／research」
+  /// 之間的分界。少了它，`_looksLikeBibliographyContinuation` 的裸詞表會把
+  /// 任何含有 review、studies、research 的普通句子當成參考文獻續行。
+  static bool _hasBibliographicLocator(String text) {
+    if (RegExp(
+      r'(?:doi\s*:|https?://|arxiv\s*:)',
+      caseSensitive: false,
+    ).hasMatch(text)) {
+      return true;
+    }
+    // 卷(期), 起頁–迄頁
+    if (RegExp(
+      r'\b\d{1,4}\s*[(,]\s*\d{1,5}\s*[-–—]\s*\d{1,5}\b',
+    ).hasMatch(text)) {
+      return true;
+    }
+    // 結尾的頁碼區間
+    if (RegExp(r'\b\d{1,5}\s*[-–—]\s*\d{1,5}\.?$').hasMatch(text)) {
+      return true;
+    }
+    return RegExp(r'\b(?:18|19|20)\d\d[a-z]?\b').hasMatch(text);
+  }
+
   static bool _looksLikeBibliographyContinuation(String text) {
     final cleaned = _withoutBibliographyPrefix(text);
     if (cleaned.isEmpty) return false;
@@ -290,12 +315,14 @@ class PreprocessedText {
     ).hasMatch(cleaned)) {
       return true;
     }
+    // 裸詞單獨不算數：review／research／studies 在一般散文裡太常見。
+    // 必須同時具備年份、卷頁或 DOI 這類書目定位特徵才視為續行。
     if (RegExp(
       r'\b(?:journal|proceedings|transactions|studies|economics|review|'
       r'letters|research|conference|press|publisher)\b',
       caseSensitive: false,
     ).hasMatch(cleaned)) {
-      return true;
+      if (_hasBibliographicLocator(cleaned)) return true;
     }
     if (RegExp(
       r'\b\d{1,4}\s*[(,]\s*\d{1,5}\s*[-–—]\s*\d{1,5}\b',
@@ -331,7 +358,11 @@ class PreprocessedText {
       r'generative|deepfake|stereoscopic|presence)\b',
       caseSensitive: false,
     ).hasMatch(cleaned);
-    return !hasFiniteVerb && (hasTitleColon || hasTitleKeyword);
+    // 「沒有限定動詞」原本是硬性條件，但那描述的是一大片普通名詞句。
+    // 改為加分項：沒有動詞時，單一標題特徵即可；有動詞時要求兩項都命中。
+    return hasFiniteVerb
+        ? (hasTitleColon && hasTitleKeyword)
+        : (hasTitleColon || hasTitleKeyword);
   }
 
   static String _joinWrappedLines(String paragraph) {
@@ -610,7 +641,14 @@ class PreprocessedText {
         ).hasMatch(trimmed)) {
       return false;
     }
-    if (_looksLikeBibliographyEntryOrFragment(trimmed)) return false;
+    // 句子層是孤立判斷，沒有「前一段已是書目」這種上下文佐證，因此門檻要高：
+    // 除非開頭就是作者樣式，否則必須帶有書目定位特徵才排除。否則一句剛好
+    // 含 review 的普通內文會被整句刪掉，統計引擎連句長起伏都算不出來。
+    if (_looksLikeBibliographyEntryOrFragment(trimmed) &&
+        (_looksLikeBibliographyEntryStart(trimmed) ||
+            _hasBibliographicLocator(trimmed))) {
+      return false;
+    }
     if (_looksLikeStructuralHeading(trimmed)) return false;
     if (_looksLikeTableRow(trimmed)) return false;
     if (!_endsWithSentenceBoundary(trimmed) &&
