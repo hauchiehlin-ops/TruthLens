@@ -18,7 +18,7 @@
 ```bash
 # 若要重建環境
 python3.14 -m venv .venv
-.venv/bin/python -m pip install torch transformers datasets scikit-learn onnx onnxruntime accelerate 'numpy<3'
+.venv/bin/python -m pip install torch transformers datasets scikit-learn onnx onnxruntime accelerate opencc-python-reimplemented 'numpy<3'
 ```
 
 ## 流程
@@ -111,6 +111,153 @@ hard-negative／hard-positive 訓練；重訓後仍須換一批未見 test 文�
 
 切換只需改 [config.py](config.py) 的 `base_model`。第一版用較輕的 distilbert 先建立可運作基準；
 品質衝刺時換回 xlm-roberta-base 並提高 epoch。
+
+## 中文詞彙指紋（DetectRL-ZH 字元 SVM）
+
+App 打包的 `assets/models/detectrl_zh_char_svm.json` 由此流程產出。刻意做成單向閘門：
+只有跨過開發集真人分數 99 百分位的樣本才會投 AI 票，低分**不**反向投人類票——
+分布外或經改寫的生成文不該變成一張假的人類票。
+
+### 取得資料
+
+```bash
+mkdir -p data/nlpcc2025 && cd data/nlpcc2025
+for f in train.json dev.json test_with_label.json; do
+  curl -sL -O "https://raw.githubusercontent.com/NLP2CT/NLPCC-2025-Task1/main/data/$f"
+done
+```
+
+約 71MB，`data/` 已在 `.gitignore` 內，不會進版控。
+
+### 匯出
+
+```bash
+.venv/bin/python export_detectrl_zh_char_svm.py \
+  --train data/nlpcc2025/train.json \
+  --dev data/nlpcc2025/dev.json \
+  --test data/nlpcc2025/test_with_label.json \
+  --output ../assets/models/detectrl_zh_char_svm.json
+```
+
+流程是決定性的：同樣的輸入會逐位元重現目前出貨的資產（含 `ai_decision_cut`
+與資產內建的 `validation` 區塊）。需要 `opencc-python-reimplemented`——訓練時
+以 s2t/t2s 雙向增強，繁簡因此走同一條證據流程。
+
+### 外部驗證（與 benchmark_contract.json 對齊）
+
+匯出腳本回報的是**訓練來源語料**上的數字，對未見語料、未見生成器一律沒有效力；
+`benchmark_contract.json` 明文把「拿訓練來源的 test 當外部驗證」列為禁區。要取得
+可對外宣稱的數字，得拿出貨資產去跑合約認可的外部語料：
+
+```bash
+# 從 SemEval-2024 Task 8 Subtask A 抽出中文子集（需 gdown）
+.venv/bin/python evaluate_external_zh.py \
+  --corpus data/semeval2024/semeval_zh.json \
+  --corpus-id semeval-2024-task8-zh \
+  --json-out validation/external_zh_semeval.json
+```
+
+`evaluate_external_zh.py` 的評分邏輯與 `lib/core/detection/detectrl_zh_char_scorer.dart`
+逐行對應，並曾逐篇交叉驗證過（最大差 1.6e-15）。改動任一邊都要重新對過。
+
+**目前的實測結果**（見 `validation/current.json`）：誤報率 0.63%（Wilson 95% 上界
+0.83%，通過合約的 1% 目標），但召回率只有 33.1%，遠低於合約的 0.5 下限。語料內
+（NLPCC test）的 62.6% 召回**不會**轉移到未見生成器。因此中文尚未通過發布門檻。
+
+## 中文 Transformer 的外部驗證
+
+風格引擎的詞彙通道只佔 20% 權重；中文真正吃重的是權重 40% 的
+`aigc-detector-zhv3-int8`。`evaluate_external_zh_transformer.py` 以 App 的推論契約
+（WordPiece 截斷至 192 token、只餵 `input_ids` 與 `attention_mask`、softmax 取
+`ai_label_index`）重放出貨模型：
+
+```bash
+# 取得模型（catalog 內的 sha256 需一致）
+mkdir -p artifacts/zhv3 && cd artifacts/zhv3
+curl -sLO "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_detector_zhv3_int8.onnx"
+curl -sLO "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_detector_zhv3_tokenizer.json"
+
+.venv/bin/python evaluate_external_zh_transformer.py \
+  --corpus data/semeval2024/semeval_zh.json \
+  --corpus-id semeval-2024-task8-zh \
+  --json-out validation/external_zh_semeval_transformer.json
+```
+
+在出貨的 0.99 門檻下：**真人誤報 0/6000**（Wilson 95% 上界 0.045%），但**召回只有
+9.0%**。catalog note 宣稱的 48.7% 是語料內數字，不會轉移。
+
+腳本同時輸出門檻掃描，用來看這份保守是花了多少代價：
+
+| 門檻 | FPR | FPR 95% 上界 | 召回 |
+|---|---|---|---|
+| 0.90 | 0.48% | 0.65% | **50.0%** |
+| 0.95 | 0.18% | 0.30% | 36.0% |
+| 0.99（出貨） | 0.00% | 0.05% | 9.0% |
+
+0.90 會同時通過合約的兩道門檻。**但不要就這樣改門檻**——這個值是從報告用語料讀出來的，
+直接採用正是合約 `prohibited_shortcuts` 列的「拿報告集當選擇集」。要動門檻，得先有一份
+獨立的校準集，報告再用另一份測試集。此外 50.0% 只比 0.5 下限高 0.03 個百分點，
+而且是對 2023 年生成器測出來的。
+
+### 認可外部來源對中文的涵蓋缺口
+
+合約列的三個來源裡，只有 M4 系的中文子集可用，而且：
+
+| 來源 | 中文 | 備註 |
+|---|---|---|
+| RAID | 無 | 域涵蓋含 Czech/German News，無中文 |
+| SemEval-2024 Task 8 | 有（11,934 筆） | 只在 multilingual **train** 內；dev 只有俄/阿/德 |
+| M4GT-Bench | 有（11,934 筆） | 與 SemEval 同一份 M4 中文子集，非獨立第二讀數 |
+
+且該子集的生成器是 2023 年的 chatGPT／davinci，而這顆偵測器針對的是
+DeepSeek-V3／GPT-4 世代的中文。合約要求 `zh` 已驗證，但認可來源裡沒有任何
+語料涵蓋當前的威脅模型——這個缺口要嘛補新的認可來源，要嘛在合約裡寫明。
+
+## 擴充到其他語言（現況：資料擋住了，不是流程擋住了）
+
+`export_detectrl_zh_char_svm.py` 本身與語言無關，加上 `--no-script-augment`
+（繁簡增強只對中文有意義）就能直接套用到其他語料。
+`prepare_m4gt_language.py` 負責把 M4GT／SemEval 的某個語言抽成同樣的格式。
+
+```bash
+.venv/bin/python prepare_m4gt_language.py --language indonesian --code id
+.venv/bin/python export_detectrl_zh_char_svm.py \
+  --train data/m4gt/id/train.json --dev data/m4gt/id/dev.json \
+  --test data/m4gt/id/test_with_label.json \
+  --language id --no-script-augment --output /tmp/svm_id.json
+```
+
+### 語料完整性：三個語言不能用
+
+`prepare_m4gt_language.py` 會交叉檢查 `label` 與 `model` 欄位並在矛盾時拒絕執行。
+`SubtaskA_multilingual.jsonl` 確實有這個問題：
+
+| 語言 | 樣本數 | 標籤與生成器矛盾 |
+|---|---|---|
+| 德文 | 7,000 | **3,000**（標為人類但 model=chatGPT） |
+| 義大利文 | 6,075 | **3,037** |
+| 阿拉伯文 | 3,103 | **1,001** |
+| 保加利亞文／中文／印尼文／俄文／烏爾都文 | — | 0 |
+
+拿德文那份訓練，等於直接教模型「ChatGPT 德文是人類寫的」，而且驗證集同樣髒，
+AUC 還會很好看。所以是拒絕，不是猜哪個欄位才對。
+
+### 實測結果與它真正的意義
+
+| 語言 | 訓練樣本 | 語料內 AUC | 語料內 FPR | 語料內召回 |
+|---|---|---|---|---|
+| 印尼文 | 4,191 | 0.9983 | 0.99% | 99.7% |
+| 俄文 | 1,400 | 0.9894 | 5.34% | 93.8% |
+
+**不要把這兩行當成可用的成績。** 這裡的 `independent_test` 只是同一份語料的隨機切分，
+生成器同樣是 chatGPT、領域同樣單一——與中文當初「語料內 AUC 0.94」是同一種數字。
+而中文後來在真正的外部語料上是：SVM 召回 62.6% → 33.1%，Transformer 48.7% → 9.0%。
+
+所以正確的讀法是「流程對其他語言可以跑通」，不是「印尼文可以偵測了」。要真的宣稱，
+需要第二份不同生成器的印尼文語料，而認可來源裡沒有。俄文另外還有兩個問題：
+1,400 筆訓練樣本太少，且語料內 FPR 已經 5.34%，遠超 1% 目標。
+
+**結論：目前不上架任何新語言模型。** 缺的是資料，不是流程。
 
 ## 設定
 

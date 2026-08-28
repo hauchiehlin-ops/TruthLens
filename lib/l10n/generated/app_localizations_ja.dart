@@ -193,6 +193,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get modelPromptDownload => 'ダウンロードへ';
 
   @override
+  String get firstRunModelPromptTitle => '検出モデルを追加しますか？';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens はこのままでも動作します。統計エンジンと文体エンジンはすでに利用可能です。端末内で動くニューラルモデルを追加すると、多言語分類器がアンサンブル投票に加わり、精度と対応言語が大きく向上します。モデルはすべてブラウザー内で実行され、文書がアップロードされることはありません。「設定 → AI モデル管理」から後で決めることもできます。';
+
+  @override
+  String get firstRunModelPromptLater => '今はしない';
+
+  @override
+  String get firstRunModelPromptGo => 'モデルを選ぶ';
+
+  @override
+  String get modernChineseModelPromptTitle => '中国語の検出精度を上げる';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      'この中国語文書には現在、現代中国語検出器（約 98 MB）がありません。従来の多言語モデルは初期世代のテキストで較正されており、DeepSeek・Gemini・GPT 系の現在の中国語表現を見逃すことがあります。より適切に較正された結果を得るには専用の端末内モデルをダウンロードしてください。弱い言語横断のフォールバックのまま続けることもできます。';
+
+  @override
   String get onboardingWelcomeTitle => 'TruthLensへようこそ';
 
   @override
@@ -207,6 +227,26 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get onboardingRecommendHint =>
       'お使いのハードウェアに基づいて「推奨」マークが表示されています。他のオプションも選択できます。';
+
+  @override
+  String get onboardingBundleTitle => 'この端末向けの推奨構成';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return 'モデル $count 個 · 合計 $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return 'ブラウザーの保存容量：使用可能 $available MB、ダウンロード後の残りは約 $remaining MB';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      'ダウンロード済みのモデルは、まだ自動削除から保護されていません。ディスク容量が不足するとブラウザーが回収することがあり、その場合は再ダウンロードが必要になります。TruthLens をアプリとしてインストールすると、ブラウザーが保持する可能性が大きく高まります。';
+
+  @override
+  String get onboardingInstallAppButton => 'アプリとしてインストール';
 
   @override
   String get onboardingSkipButton => '後で決める（モデルなしで統計・スタイル分析のみ使用）';
@@ -519,11 +559,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String reportEngineDirectionalIndex(int percent) {
-    return 'Weak direction $percent/100';
+    return '弱い方向性 $percent/100';
   }
 
   @override
-  String get reportEngineNoDirectionalSignal => 'No directional signal';
+  String get reportEngineNoDirectionalSignal => '方向性シグナルなし';
 
   @override
   String get reportEngineSignalExplanation =>
@@ -1161,11 +1201,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get abstentionNoEvidenceFound =>
-      'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.';
+      'すべてのエンジンが実行されましたが、利用できる根拠は見つかりませんでした。低いフォールバックスコアは診断用の出力であり、人間が書いたことの証拠ではありません。';
 
   @override
   String abstentionSingleWeakEvidenceSource(int count) {
-    return 'Only $count engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.';
+    return '利用できる根拠を見つけたエンジンは $count 個のみで、総合スコアも AI しきい値を下回っています。これは根拠の網羅性が低いという意味であり、人間が書いた証拠ではありません。';
   }
 
   @override
@@ -1724,7 +1764,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String engineReasonBurstinessMid(String value) {
-    return 'Sentence-length variation (burstiness $value) stayed inside the neutral band 0.30–0.55';
+    return '文長のばらつき（バースト性 $value）は中立帯 0.30〜0.55 の範囲内でした';
   }
 
   @override
@@ -1739,7 +1779,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String engineReasonMattrNoAiSignal(String value, String cut) {
-    return 'Vocabulary diversity (MATTR $value) did not cross the calibrated AI-signal cutoff $cut';
+    return '語彙の多様性（MATTR $value）は較正済みの AI シグナル基準 $cut を超えませんでした';
   }
 
   @override
@@ -1794,27 +1834,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
-    return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
+    return 'PAN 2025 の語彙指紋は AI 寄りです（$percent/100）。この独立した英語ベースラインは、人間コーパスと異なる語・句の分布を検出します';
   }
 
   @override
   String engineReasonPan25LexicalHuman(int percent) {
-    return 'PAN 2025 lexical fingerprint leans human ($percent/100); this remains model evidence, not proof of authorship';
+    return 'PAN 2025 の語彙指紋は人間寄りです（$percent/100）。これはモデルによる根拠であり、執筆者の証明ではありません';
   }
 
   @override
   String engineReasonPan25LexicalNeutral(int percent) {
-    return 'PAN 2025 lexical fingerprint is neutral ($percent/100) and does not provide a direction';
+    return 'PAN 2025 の語彙指紋は中立で（$percent/100）、方向性を示しません';
+  }
+
+  @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'DetectRL-ZH の中国語文字指紋が保守的な AI 根拠ゲートを超えました（$percent/100）。DeepSeek-V3、混在テキスト、逆翻訳、文字の摂動、長さの変動に対して独立に検証されています';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'DetectRL-ZH の中国語文字指紋は保守的な AI 根拠ゲートを超えませんでした（$percent/100）。これは判断保留であり、人間が書いた証拠ではありません';
   }
 
   @override
   String engineReasonCompressionCoherence(String value) {
-    return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
+    return '境界をまたぐ圧縮の一貫性（$value）が PAN 2025 の人間 95 パーセンタイル基準を上回りました［AI 側の弱いシグナル］';
   }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
-    return 'Detected $count conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text';
+    return '依頼者への呼びかけや、依頼された文章の修正の申し出など、対話型アシスタント応答の痕跡を $count 件検出しました';
   }
 
   @override
@@ -2035,14 +2085,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep1Body =>
-      '初回起動時にコア検出モデルのインストールが案内されます。その後はいつでも「設定 → AIモデル管理」から確認、ダウンロード、更新、削除ができます。アプリは起動時に最新バージョンを自動的に確認し、更新がある場合は設定の歯車アイコンと「AIモデル管理」項目に通知バッジが表示されます。';
+      'アプリは常にメイン画面から開きます。初回起動時に検出モデルが未インストールであれば、選択するかどうかを尋ねるダイアログが表示されます。断った場合でも、統計エンジンと文体エンジンでそのまま分析を開始できます。モデルの確認・ダウンロード・更新・削除は、いつでも「設定 → AI モデル管理」から行えます。起動時に最新版を自動確認し、更新がある場合は設定アイコンと「AI モデル管理」の項目にバッジを表示します。';
 
   @override
   String get helpWorkflowStep2Title => 'モデルの選び方（目的と効果）';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多言語AI分類器（重み40%）：文脈を保つ制限付き段落ブロックを解析し、確率を各文へ対応付けます。';
+      '多言語 AI 分類器（重み 40%）：文脈を保つために区切られた段落ブロックを解析し、その確率を文単位に対応づけて詳細な根拠を示します。分類器のバリアントを複数インストールしている場合、分析ごとに文書の言語で検証済みのものが選ばれます。中国語の文書には専用の現代中国語検出器が必要で、未導入の場合はアプリが案内します。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -2537,7 +2587,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceSentenceColumnHeader => '文';
 
   @override
-  String get workspaceAiEvidenceIndexShort => 'index';
+  String get workspaceAiEvidenceIndexShort => '指数';
 
   @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
@@ -2546,7 +2596,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
-    return '$engine found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap $weight%).';
+    return '$engine は弱い方向性シグナルのみを検出しました。スクリーニングでは割り引かれ、しきい値を満たす根拠には数えません（役割重みの上限 $weight%）。';
   }
 
   @override
@@ -2640,21 +2690,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String findingPublicationPredatesGenerativeAi(String doi, int year) {
-    return 'Source DOI $doi matches this document and was registered in $year, before modern generative-AI writing systems.';
+    return '出典 DOI $doi はこの文書と一致し、$year 年に登録されています。これは現代の生成 AI 執筆システムより前です。';
   }
 
   @override
   String findingPublicationIdentityMismatch(String doi) {
-    return 'Source DOI $doi resolves, but its registered title does not match this document. Verify the document identity before relying on it.';
+    return '出典 DOI $doi は解決できますが、登録されている表題がこの文書と一致しません。依拠する前に文書の同一性を確認してください。';
   }
 
   @override
   String get integratedStabilityUnavailable =>
-      'Segment stability unavailable · no sentence-level evidence voted';
+      'セグメント安定性は利用できません · 文単位の根拠が投票していません';
 
   @override
   String get integratedNeutralBaseline =>
-      'No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.';
+      '格上げに足るほど強い、執筆者特有の根拠は見つかりませんでした。表示されている結果は入手可能な範囲で最良の方向性スクリーニングであり、AI と人間の根拠が拮抗しているという主張ではありません。';
 
   @override
   String get reportVerifiableFindingsTitle => '検証できること';
@@ -2674,193 +2724,185 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get evidenceMatrixTitle => 'Multi-evidence assessment';
+  String get evidenceMatrixTitle => '複数根拠による評価';
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.';
+      '6 つの軸を個別に表示します。執筆者特有の根拠のみが判定に影響します。カバレッジは何を検査できたかを示します。';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
-    return 'Evidence coverage: $available of $total axes';
+    return '根拠のカバレッジ：$total 軸中 $available 軸';
   }
 
   @override
-  String get evidenceAxisText => 'Text-generation traces';
+  String get evidenceAxisText => 'テキスト生成の痕跡';
 
   @override
-  String get evidenceAxisTextNote =>
-      'Probabilistic patterns from the four local detectors';
+  String get evidenceAxisTextNote => '4 つのローカル検出器による確率的パターン';
 
   @override
-  String get evidenceAxisProcess => 'Writing process';
+  String get evidenceAxisProcess => '執筆プロセス';
 
   @override
-  String get evidenceAxisProcessNote =>
-      'Typing, revision and paste events recorded without storing their content';
+  String get evidenceAxisProcessNote => '内容を保存せずに記録した入力・修正・貼り付けのイベント';
 
   @override
-  String get evidenceAxisOrigin => 'Document origin';
+  String get evidenceAxisOrigin => '文書の由来';
 
   @override
-  String get evidenceAxisOriginNote =>
-      'Editing time, saves and DOCX/ODT/RSID metadata';
+  String get evidenceAxisOriginNote => '編集時間、保存回数、DOCX／ODT／RSID メタデータ';
 
   @override
-  String get evidenceAxisSources => 'Claim and source integrity';
+  String get evidenceAxisSources => '主張と出典の整合性';
 
   @override
-  String get evidenceAxisSourcesNote =>
-      'Checkable claims, citation anchors and bibliographic verification';
+  String get evidenceAxisSourcesNote => '検証可能な主張、引用の根拠、書誌情報の照合';
 
   @override
-  String get evidenceStateUnavailable => 'Unavailable';
+  String get evidenceStateUnavailable => '利用不可';
 
   @override
-  String get evidenceStateInconclusive => 'Inconclusive';
+  String get evidenceStateInconclusive => '判断不能';
 
   @override
-  String get evidenceStateReassuring => 'Consistent';
+  String get evidenceStateReassuring => '整合';
 
   @override
-  String get evidenceStateConcern => 'Review';
+  String get evidenceStateConcern => '要確認';
 
   @override
-  String get evidenceStrengthNone => 'No evidence';
+  String get evidenceStrengthNone => '根拠なし';
 
   @override
-  String get evidenceStrengthLimited => 'Limited';
+  String get evidenceStrengthLimited => '限定的';
 
   @override
-  String get evidenceStrengthModerate => 'Moderate';
+  String get evidenceStrengthModerate => '中程度';
 
   @override
-  String get evidenceStrengthStrong => 'Strong';
+  String get evidenceStrengthStrong => '強い';
 
   @override
   String get evidenceMatrixTextOnlyWarning =>
-      'Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.';
+      '利用できたのはテキストパターンの軸のみです。現世代の AI は人間の文章を模倣できるため、このレポートはスコアだけから執筆者を断定できません。';
 
   @override
   String get evidenceMatrixStrongConcern =>
-      'At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.';
+      '少なくとも 1 つの独立した軸に強い要確認シグナルがあります。テキストスコアに依拠する前に、その根拠を確認してください。';
 
   @override
   String findingUnsupportedClaims(int unsupported, int total) {
-    return '$unsupported of $total checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.';
+    return '検証可能な主張 $total 件のうち $unsupported 件が、同じ文の中に出典の裏づけがないまま数値・比較・研究への言及を含んでいます。これは誤りであることの証明ではなく、優先して検証すべき主張を示すものです。';
   }
 
   @override
-  String get integratedAssessmentTitle => 'Integrated authorship assessment';
+  String get integratedAssessmentTitle => '統合的な執筆者評価';
 
   @override
-  String get integratedInsufficientEvidence =>
-      'No quantifiable authorship signal';
+  String get integratedInsufficientEvidence => '定量化できる執筆者シグナルなし';
 
   @override
-  String get integratedLikelyAi => 'More likely AI-generated';
+  String get integratedLikelyAi => 'AI 生成の可能性が高い';
 
   @override
-  String get integratedLikelyMixed => 'More likely human-AI mixed';
+  String get integratedLikelyMixed => '人間と AI の混在の可能性が高い';
 
   @override
-  String get integratedLikelyHuman => 'More likely not AI-generated';
+  String get integratedLikelyHuman => 'AI 生成ではない可能性が高い';
 
   @override
-  String get integratedBalanced => 'No clear AI-dominant signal detected';
+  String get integratedBalanced => 'AI が優勢という明確なシグナルは検出されませんでした';
 
   @override
-  String get integratedPreliminaryAi => 'Currently leans AI, near the boundary';
+  String get integratedPreliminaryAi => '現時点では AI 寄り、境界付近';
 
   @override
-  String get integratedPreliminaryHuman =>
-      'Currently leans human, near the boundary';
+  String get integratedPreliminaryHuman => '現時点では人間寄り、境界付近';
 
   @override
   String integratedLikelihoodLabel(int percent) {
-    return 'AI evidence index: $percent/100';
+    return 'AI 根拠指数：$percent/100';
   }
 
   @override
-  String get integratedLikelihoodUnavailable =>
-      'AI evidence index: not estimable';
+  String get integratedLikelihoodUnavailable => 'AI 根拠指数：推定不可';
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return 'Text-model score: $percent%';
+    return 'テキストモデルのスコア：$percent%';
   }
 
   @override
   String integratedConfidenceLabel(String confidence) {
-    return 'Confidence: $confidence';
+    return '確信度：$confidence';
   }
 
   @override
-  String get integratedConfidenceLow => 'Low';
+  String get integratedConfidenceLow => '低';
 
   @override
-  String get integratedConfidenceModerate => 'Moderate';
+  String get integratedConfidenceModerate => '中';
 
   @override
-  String get integratedConfidenceHigh => 'High';
+  String get integratedConfidenceHigh => '高';
 
   @override
   String integratedEvidenceSufficiency(int percent, String tier) {
-    return 'Evidence sufficiency: $percent/100 · $tier';
+    return '根拠の充足度：$percent/100 · $tier';
   }
 
   @override
-  String get integratedEvidenceTierScreening => 'preliminary screening';
+  String get integratedEvidenceTierScreening => '予備的スクリーニング';
 
   @override
-  String get integratedEvidenceTierReference => 'reference-level';
+  String get integratedEvidenceTierReference => '参考水準';
 
   @override
-  String get integratedEvidenceTierStrong => 'well supported';
+  String get integratedEvidenceTierStrong => '十分に裏づけあり';
 
   @override
   String integratedBoundaryAi(int index, int gap) {
-    return 'Index $index is only a weak AI-side direction and remains $gap points below the 60-point escalation line. It has not established AI authorship.';
+    return '指数 $index は AI 側の弱い方向性にすぎず、格上げ基準の 60 点まで依然 $gap 点足りません。AI による執筆を立証したわけではありません。';
   }
 
   @override
   String integratedBoundaryHuman(int index, int gap) {
-    return 'Index $index leans human and remains $gap points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.';
+    return '指数 $index は人間寄りで、AI 格上げ基準の 60 点まで依然 $gap 点足りませんが、根拠が限られるため AI の支援を排除することはできません。';
   }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return 'Directional signal families: $families/4 · applicability coverage $coverage%';
+    return '方向性シグナルの系統：$families/4 · 適用可能性カバレッジ $coverage%';
   }
 
   @override
-  String get integratedEvidenceGatePassed => 'AI evidence gate: passed';
+  String get integratedEvidenceGatePassed => 'AI 根拠ゲート：通過';
 
   @override
-  String get integratedEvidenceGateNotPassed =>
-      'AI evidence gate: not passed · directional screening only';
+  String get integratedEvidenceGateNotPassed => 'AI 根拠ゲート：未通過 · 方向性スクリーニングのみ';
 
   @override
   String integratedQualifiedWarning(String reason) {
-    return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
+    return '$reason システムは最も可能性の高い方向を示し続けますが、確信度は下がります。証明ではなくスクリーニング結果として扱ってください。';
   }
 
   @override
   String get integratedIndexCaveat =>
-      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
+      '独立した AI 根拠ゲートは、格上げに足るだけの独立した裏づけがあるかどうかを示します。引用の質、貼り付けの挙動、疑わしいメタデータは、それ単独で AI 判定を導くことはできません。これは根拠のスコアであり、較正された統計的確率ではありません。';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.';
+      'これらのバーは 4 つのテキストエンジンによる診断シグナルを示します。関連するエンジンは系統ごとにまとめられ（保守的に割り引かれた人間側の分類器出力を含む）、その後で言語・分野の適用可能性と較正の信頼度が適用されます。方向性は「どちらの説明がより裏づけられるか」に答え、独立した AI 根拠ゲートは「その裏づけが格上げに足るか」に答えます。';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return 'Four-engine text-model raw score: $percent%. This is one input to the integrated assessment, not a second verdict.';
+    return '4 エンジンのテキストモデル生スコア：$percent%。これは統合評価への入力の一つであり、第二の判定ではありません。';
   }
 
   @override
   String reportSynthesisStrongestTextSignal(String label, int percent) {
-    return 'Strongest text-engine signal: $label ($percent%). It can influence the text-model score but cannot override the integrated assessment by itself.';
+    return '最も強いテキストエンジンのシグナル：$label（$percent%）。テキストモデルのスコアに影響し得ますが、単独で統合評価を覆すことはできません。';
   }
 
   @override
@@ -2868,7 +2910,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
+    return 'テキストモデルの生スコアは $aiPercent% で、診断用の目安 $thresholdPercent% に達しています。これはテキストシグナルの観察にすぎず、レポートの執筆者方向は上記の統合評価のままです。';
   }
 
   @override
@@ -2876,7 +2918,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
+    return 'テキストモデルの生スコアは $aiPercent% で、診断用の目安 $thresholdPercent% を下回っています。この目安に届かないことは人間が書いた証拠にはならず、レポートの執筆者方向は上記の統合評価のままです。';
   }
 
   @override
@@ -2885,49 +2927,49 @@ class AppLocalizationsJa extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return 'After weighting the available evidence, the document is “$direction” (AI evidence index $percent/100, $confidence confidence).';
+    return '利用可能な根拠を重み付けした結果、この文書は「$direction」です（AI 根拠指数 $percent/100、確信度 $confidence）。';
   }
 
   @override
   String telemetryIntegratedUnavailable(String direction, String confidence) {
-    return 'The available modules did not produce a quantifiable authorship direction (“$direction”, $confidence confidence); no numeric index was issued.';
+    return '利用可能なモジュールからは定量化できる執筆者の方向性が得られませんでした（「$direction」、確信度 $confidence）。数値指数は発行されていません。';
   }
 
   @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
-    return 'Segment stability $percent% · interval $lower–$upper%';
+    return 'セグメント安定性 $percent% · 区間 $lower〜$upper%';
   }
 
   @override
   String integratedInputQualityLabel(int percent) {
-    return 'Input extraction quality: $percent%';
+    return '入力抽出の品質：$percent%';
   }
 
   @override
   String integratedCalibrationLabel(String value, int count) {
-    return 'Matched local baseline: p=$value · n=$count';
+    return '一致したローカル基準：p=$value · n=$count';
   }
 
   @override
   String analysisReadinessLabel(String level) {
-    return 'Pre-analysis confidence baseline: $level';
+    return '分析前の確信度ベースライン：$level';
   }
 
   @override
-  String get analysisReadinessShortText => 'more text needed';
+  String get analysisReadinessShortText => 'テキスト量が不足';
 
   @override
-  String get analysisReadinessFewSentences => 'too few segments';
+  String get analysisReadinessFewSentences => 'セグメント数が少なすぎる';
 
   @override
-  String get analysisReadinessCoreModel => 'core classifier unavailable';
+  String get analysisReadinessCoreModel => '中核分類器が利用不可';
 
   @override
-  String get analysisReadinessFewEngines => 'fewer than two engines enabled';
+  String get analysisReadinessFewEngines => '有効なエンジンが 2 つ未満';
 
   @override
-  String get analysisReadinessExtraction => 'extraction quality is limited';
+  String get analysisReadinessExtraction => '抽出品質が限定的';
 
   @override
-  String get analysisReadinessBaseline => 'no matched local baseline';
+  String get analysisReadinessBaseline => '一致するローカル基準なし';
 }

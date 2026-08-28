@@ -268,11 +268,14 @@ class ModelManager extends ChangeNotifier {
                 tokenizerFileName: m.tokenizerFileName,
                 tokenizer: m.tokenizer,
                 aiLabelIndex: m.aiLabelIndex,
+                aiEvidenceThreshold: m.aiEvidenceThreshold,
                 version: m.version,
                 sizeBytes: m.sizeBytes,
                 name: m.name,
                 imported: m.imported,
                 sha256: hash,
+                runtimeJson: m.runtimeJson,
+                languages: m.languages,
               );
               changed = true;
               continue;
@@ -457,6 +460,7 @@ class ModelManager extends ChangeNotifier {
         tokenizerFileName: tokenizerFileName,
         tokenizer: variant.tokenizer,
         aiLabelIndex: variant.aiLabelIndex,
+        aiEvidenceThreshold: variant.aiEvidenceThreshold,
         version: variant.version,
         sizeBytes: variant.sizeBytes,
         // 安裝當下記下推論所需的額外輸入規格與語言涵蓋，

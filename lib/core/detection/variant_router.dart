@@ -60,6 +60,15 @@ class VariantChoice {
 
 /// 判斷單一變體對 [language] 的適用程度
 LanguageFit fitFor(InstalledModel model, String language) {
+  // 這顆模型曾在舊 catalog 被標成中文已驗證，但實測只適合早期 HC3：
+  // 2026 現代中文壓力集 18 篇皆未跨門檻。舊安裝紀錄會保留當時的
+  // languages，故不能只修 catalog，還要在路由層撤銷過時聲明。
+  if (model.variantId == 'truthlens-mbert-multilingual-int8' &&
+      language == 'zh') {
+    return model.languages.contains('multi')
+        ? LanguageFit.plausible
+        : LanguageFit.unsupported;
+  }
   if (model.languages.isEmpty) return LanguageFit.unknown;
   if (model.validatesLanguage(language)) return LanguageFit.validated;
   if (model.plausiblySupports(language)) return LanguageFit.plausible;

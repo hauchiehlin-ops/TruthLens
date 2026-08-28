@@ -14,6 +14,7 @@ class InstalledModel {
   final String? tokenizerFileName;
   final String tokenizer; // bert-wordpiece / roberta-bpe / none
   final int aiLabelIndex;
+  final double aiEvidenceThreshold;
   final String version;
   final int sizeBytes;
   final String? name; // 友善名稱（匯入的模型用）
@@ -43,6 +44,7 @@ class InstalledModel {
     this.tokenizerFileName,
     this.tokenizer = 'none',
     this.aiLabelIndex = 1,
+    this.aiEvidenceThreshold = 0.60,
     this.name,
     this.imported = false,
     this.sha256,
@@ -66,6 +68,7 @@ class InstalledModel {
     'tokenizer_file_name': tokenizerFileName,
     'tokenizer': tokenizer,
     'ai_label_index': aiLabelIndex,
+    'ai_evidence_threshold': aiEvidenceThreshold,
     'version': version,
     'size_bytes': sizeBytes,
     'name': name,
@@ -97,6 +100,8 @@ class InstalledModel {
       final tokenizerFileName = j['tokenizer_file_name'] as String?;
       final tokenizer = j['tokenizer'] as String? ?? 'none';
       final aiLabelIndex = (j['ai_label_index'] as num?)?.toInt() ?? 1;
+      final aiEvidenceThreshold =
+          (j['ai_evidence_threshold'] as num?)?.toDouble() ?? 0.60;
       final version = j['version'] as String? ?? '0';
       final sizeBytes = (j['size_bytes'] as num?)?.toInt() ?? 0;
       final name = j['name'] as String?;
@@ -113,6 +118,7 @@ class InstalledModel {
         tokenizerFileName: tokenizerFileName,
         tokenizer: tokenizer,
         aiLabelIndex: aiLabelIndex,
+        aiEvidenceThreshold: aiEvidenceThreshold,
         version: version,
         sizeBytes: sizeBytes,
         name: name,

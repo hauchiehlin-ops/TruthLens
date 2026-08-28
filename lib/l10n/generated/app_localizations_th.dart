@@ -199,6 +199,26 @@ class AppLocalizationsTh extends AppLocalizations {
   String get modelPromptDownload => 'ไปที่การดาวน์โหลด';
 
   @override
+  String get firstRunModelPromptTitle => 'เพิ่มโมเดลตรวจจับหรือไม่?';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens ใช้งานได้อยู่แล้ว เอนจินเชิงสถิติและเชิงลีลาการเขียนพร้อมใช้งานทันที การเพิ่มโมเดลนิวรัลที่ทำงานบนเครื่องจะทำให้ตัวจำแนกหลายภาษาเข้าร่วมการโหวตแบบรวมกลุ่ม ซึ่งช่วยเพิ่มความแม่นยำและความครอบคลุมภาษาอย่างชัดเจน โมเดลทำงานภายในเบราว์เซอร์ของคุณทั้งหมดและไม่เคยอัปโหลดเอกสารของคุณ คุณเลือกภายหลังได้จาก \"การตั้งค่า → การจัดการโมเดล AI\"';
+
+  @override
+  String get firstRunModelPromptLater => 'ยังไม่ต้อง';
+
+  @override
+  String get firstRunModelPromptGo => 'เลือกโมเดล';
+
+  @override
+  String get modernChineseModelPromptTitle => 'ปรับปรุงการตรวจจับภาษาจีน';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      'ขณะนี้เอกสารภาษาจีนฉบับนี้ยังไม่มีตัวตรวจจับภาษาจีนสมัยใหม่ (ประมาณ 98 MB) โมเดลหลายภาษารุ่นเก่าถูกปรับเทียบด้วยข้อความรุ่นแรก ๆ และอาจพลาดงานเขียนภาษาจีนปัจจุบันในแบบ DeepSeek, Gemini และ GPT ดาวน์โหลดโมเดลเฉพาะทางที่ทำงานบนเครื่องเพื่อผลลัพธ์ที่ปรับเทียบดีกว่า หรือใช้ตัวสำรองข้ามภาษาที่อ่อนกว่าต่อไปก็ได้';
+
+  @override
   String get onboardingWelcomeTitle => 'ยินดีต้อนรับสู่ TruthLens';
 
   @override
@@ -213,6 +233,26 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get onboardingRecommendHint =>
       'ระบบได้ทำเครื่องหมาย \"แนะนำ\" ตามฮาร์ดแวร์ของคุณแล้ว คุณสามารถเลือกตัวเลือกอื่นได้เช่นกัน';
+
+  @override
+  String get onboardingBundleTitle => 'ข้อแนะนำสำหรับเครื่องนี้';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count โมเดล · รวม $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return 'พื้นที่จัดเก็บของเบราว์เซอร์: ใช้ได้ $available MB เหลือประมาณ $remaining MB หลังดาวน์โหลด';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      'โมเดลที่ดาวน์โหลดแล้วยังไม่ได้รับการป้องกันจากการล้างข้อมูลอัตโนมัติ หากพื้นที่ดิสก์เหลือน้อย เบราว์เซอร์อาจเรียกคืนพื้นที่และคุณจะต้องดาวน์โหลดใหม่ การติดตั้ง TruthLens เป็นแอปจะเพิ่มโอกาสที่เบราว์เซอร์จะเก็บโมเดลไว้อย่างมาก';
+
+  @override
+  String get onboardingInstallAppButton => 'ติดตั้งเป็นแอป';
 
   @override
   String get onboardingSkipButton =>
@@ -539,11 +579,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String reportEngineDirectionalIndex(int percent) {
-    return 'Weak direction $percent/100';
+    return 'ทิศทางอ่อน $percent/100';
   }
 
   @override
-  String get reportEngineNoDirectionalSignal => 'No directional signal';
+  String get reportEngineNoDirectionalSignal => 'ไม่มีสัญญาณบอกทิศทาง';
 
   @override
   String get reportEngineSignalExplanation =>
@@ -1191,11 +1231,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get abstentionNoEvidenceFound =>
-      'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.';
+      'เอนจินทั้งหมดทำงานแล้ว แต่ไม่มีตัวใดพบหลักฐานที่ใช้ได้ คะแนนสำรองที่ต่ำเป็นผลลัพธ์เชิงวินิจฉัย ไม่ใช่หลักฐานว่ามนุษย์เป็นผู้เขียน';
 
   @override
   String abstentionSingleWeakEvidenceSource(int count) {
-    return 'Only $count engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.';
+    return 'มีเพียง $count เอนจินที่พบหลักฐานใช้ได้ และคะแนนรวมยังต่ำกว่าเกณฑ์ AI ให้ถือว่าความครอบคลุมของหลักฐานยังน้อย ไม่ใช่หลักฐานว่ามนุษย์เป็นผู้เขียน';
   }
 
   @override
@@ -1765,7 +1805,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String engineReasonBurstinessMid(String value) {
-    return 'Sentence-length variation (burstiness $value) stayed inside the neutral band 0.30–0.55';
+    return 'ความผันแปรของความยาวประโยค (burstiness $value) ยังอยู่ในช่วงกลาง 0.30–0.55';
   }
 
   @override
@@ -1780,7 +1820,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String engineReasonMattrNoAiSignal(String value, String cut) {
-    return 'Vocabulary diversity (MATTR $value) did not cross the calibrated AI-signal cutoff $cut';
+    return 'ความหลากหลายของคำศัพท์ (MATTR $value) ไม่ผ่านเกณฑ์สัญญาณ AI ที่ปรับเทียบไว้ $cut';
   }
 
   @override
@@ -1841,27 +1881,37 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
-    return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
+    return 'ลายนิ้วมือเชิงคำศัพท์ PAN 2025 เอียงไปทาง AI ($percent/100) เกณฑ์อ้างอิงภาษาอังกฤษอิสระนี้ตรวจจับการกระจายของคำและวลีที่ต่างจากคลังข้อความมนุษย์ของมัน';
   }
 
   @override
   String engineReasonPan25LexicalHuman(int percent) {
-    return 'PAN 2025 lexical fingerprint leans human ($percent/100); this remains model evidence, not proof of authorship';
+    return 'ลายนิ้วมือเชิงคำศัพท์ PAN 2025 เอียงไปทางมนุษย์ ($percent/100) สิ่งนี้ยังเป็นหลักฐานจากโมเดล ไม่ใช่ข้อพิสูจน์ความเป็นผู้เขียน';
   }
 
   @override
   String engineReasonPan25LexicalNeutral(int percent) {
-    return 'PAN 2025 lexical fingerprint is neutral ($percent/100) and does not provide a direction';
+    return 'ลายนิ้วมือเชิงคำศัพท์ PAN 2025 เป็นกลาง ($percent/100) และไม่ได้ชี้ทิศทางใด';
+  }
+
+  @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'ลายนิ้วมือตัวอักษรจีนของ DetectRL-ZH ผ่านประตูหลักฐาน AI แบบระมัดระวัง ($percent/100) โดยได้รับการทดสอบอิสระกับ DeepSeek-V3 ข้อความผสม การแปลกลับ การรบกวนตัวอักษร และความยาวที่แตกต่างกัน';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'ลายนิ้วมือตัวอักษรจีนของ DetectRL-ZH ไม่ผ่านประตูหลักฐาน AI แบบระมัดระวัง ($percent/100) นี่คือการงดออกเสียง ไม่ใช่หลักฐานว่ามนุษย์เป็นผู้เขียน';
   }
 
   @override
   String engineReasonCompressionCoherence(String value) {
-    return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
+    return 'ความสอดคล้องของการบีบอัดข้ามขอบเขต ($value) สูงกว่าเกณฑ์คัดกรองเปอร์เซ็นไทล์ที่ 95 ของข้อความมนุษย์ใน PAN 2025 [สัญญาณอ่อนฝั่ง AI]';
   }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
-    return 'Detected $count conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text';
+    return 'ตรวจพบร่องรอยการตอบแบบผู้ช่วยสนทนา $count จุด เช่น การเอ่ยถึงผู้ร้องขอ หรือการเสนอตัวแก้ไขข้อความที่ร้องขอ';
   }
 
   @override
@@ -2085,14 +2135,14 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep1Body =>
-      'การเปิดใช้งานครั้งแรกจะแนะนำการติดตั้งโมเดลตรวจจับหลัก หลังจากนั้นสามารถตรวจสอบ ดาวน์โหลด อัปเดต หรือลบได้ทุกเมื่อจาก \"การตั้งค่า → การจัดการโมเดล AI\" แอปจะตรวจสอบเวอร์ชันล่าสุดโดยอัตโนมัติเมื่อเปิดใช้งาน หากมีการอัปเดต จะมีแบดจ์แจ้งเตือนปรากฏที่ไอคอนฟันเฟืองการตั้งค่าและรายการ \"การจัดการโมเดล AI\"';
+      'แอปจะเปิดที่หน้าจอหลักเสมอ เมื่อเปิดใช้งานครั้งแรก หากยังไม่ได้ติดตั้งโมเดลตรวจจับใด ๆ จะมีข้อความถามว่าต้องการเลือกโมเดลหรือไม่ — หากปฏิเสธ คุณยังวิเคราะห์ได้ทันทีด้วยเอนจินเชิงสถิติและเชิงลีลาการเขียน คุณสามารถตรวจสอบ ดาวน์โหลด อัปเดต หรือลบโมเดลได้ตลอดเวลาจาก \"การตั้งค่า → การจัดการโมเดล AI\" แอปจะตรวจหาเวอร์ชันล่าสุดเมื่อเปิดใช้งาน และแสดงเครื่องหมายบนไอคอนการตั้งค่าและรายการ \"การจัดการโมเดล AI\" เมื่อมีการอัปเดต';
 
   @override
   String get helpWorkflowStep2Title => 'วิธีเลือกโมเดล（วัตถุประสงค์และผล）';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'ตัวจำแนก AI หลายภาษา（น้ำหนัก 40%）: วิเคราะห์บล็อกย่อหน้าที่จำกัดเพื่อคงบริบท แล้วจับคู่ความน่าจะเป็นกลับไปยังประโยค';
+      'ตัวจำแนก AI หลายภาษา (น้ำหนัก 40%): วิเคราะห์บล็อกย่อหน้าที่กำหนดขอบเขตเพื่อรักษาบริบท แล้วจับคู่ค่าความน่าจะเป็นกลับไปยังแต่ละประโยคเพื่อให้หลักฐานโดยละเอียด เมื่อติดตั้งตัวจำแนกไว้หลายรุ่น การวิเคราะห์แต่ละครั้งจะเลือกรุ่นที่ผ่านการตรวจสอบสำหรับภาษาของเอกสาร — เอกสารภาษาจีนต้องใช้ตัวตรวจจับภาษาจีนสมัยใหม่โดยเฉพาะ และแอปจะแจ้งเตือนเมื่อยังไม่มีโมเดลนั้น';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -2602,7 +2652,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get workspaceSentenceColumnHeader => 'ประโยค';
 
   @override
-  String get workspaceAiEvidenceIndexShort => 'index';
+  String get workspaceAiEvidenceIndexShort => 'ดัชนี';
 
   @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
@@ -2611,7 +2661,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
-    return '$engine found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap $weight%).';
+    return '$engine พบเพียงสัญญาณบอกทิศทางที่อ่อน จึงถูกลดน้ำหนักในการคัดกรองและไม่นับเป็นหลักฐานที่ผ่านเกณฑ์ (เพดานน้ำหนักบทบาท $weight%)';
   }
 
   @override
@@ -2705,21 +2755,21 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String findingPublicationPredatesGenerativeAi(String doi, int year) {
-    return 'Source DOI $doi matches this document and was registered in $year, before modern generative-AI writing systems.';
+    return 'DOI ต้นทาง $doi ตรงกับเอกสารนี้ และจดทะเบียนในปี $year ซึ่งก่อนระบบเขียนด้วย AI เชิงสร้างสรรค์สมัยใหม่';
   }
 
   @override
   String findingPublicationIdentityMismatch(String doi) {
-    return 'Source DOI $doi resolves, but its registered title does not match this document. Verify the document identity before relying on it.';
+    return 'DOI ต้นทาง $doi เปิดดูได้ แต่ชื่อเรื่องที่จดทะเบียนไว้ไม่ตรงกับเอกสารนี้ โปรดยืนยันตัวตนของเอกสารก่อนนำไปใช้อ้างอิง';
   }
 
   @override
   String get integratedStabilityUnavailable =>
-      'Segment stability unavailable · no sentence-level evidence voted';
+      'ไม่มีข้อมูลความเสถียรระดับช่วง · ไม่มีหลักฐานระดับประโยคเข้าร่วมโหวต';
 
   @override
   String get integratedNeutralBaseline =>
-      'No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.';
+      'ไม่พบหลักฐานเฉพาะด้านความเป็นผู้เขียนที่หนักแน่นพอจะยกระดับ ผลที่แสดงคือการคัดกรองเชิงทิศทางที่ดีที่สุดเท่าที่มี ไม่ใช่การอ้างว่าหลักฐานฝั่ง AI และมนุษย์เท่ากัน';
 
   @override
   String get reportVerifiableFindingsTitle => 'สิ่งที่ตรวจสอบได้';
@@ -2739,193 +2789,194 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get evidenceMatrixTitle => 'Multi-evidence assessment';
+  String get evidenceMatrixTitle => 'การประเมินจากหลักฐานหลายด้าน';
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.';
+      'แสดงหกแกนแยกจากกัน เฉพาะหลักฐานที่จำเพาะต่อความเป็นผู้เขียนเท่านั้นที่มีผลต่อคำวินิจฉัย ส่วนความครอบคลุมบอกว่าตรวจสอบอะไรได้บ้าง';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
-    return 'Evidence coverage: $available of $total axes';
+    return 'ความครอบคลุมของหลักฐาน: $available จาก $total แกน';
   }
 
   @override
-  String get evidenceAxisText => 'Text-generation traces';
+  String get evidenceAxisText => 'ร่องรอยการสร้างข้อความ';
 
   @override
   String get evidenceAxisTextNote =>
-      'Probabilistic patterns from the four local detectors';
+      'รูปแบบเชิงความน่าจะเป็นจากตัวตรวจจับในเครื่องทั้งสี่ตัว';
 
   @override
-  String get evidenceAxisProcess => 'Writing process';
+  String get evidenceAxisProcess => 'กระบวนการเขียน';
 
   @override
   String get evidenceAxisProcessNote =>
-      'Typing, revision and paste events recorded without storing their content';
+      'เหตุการณ์การพิมพ์ แก้ไข และวาง ที่บันทึกไว้โดยไม่เก็บเนื้อหา';
 
   @override
-  String get evidenceAxisOrigin => 'Document origin';
+  String get evidenceAxisOrigin => 'ที่มาของเอกสาร';
 
   @override
   String get evidenceAxisOriginNote =>
-      'Editing time, saves and DOCX/ODT/RSID metadata';
+      'เวลาที่ใช้แก้ไข จำนวนครั้งที่บันทึก และเมทาดาตา DOCX/ODT/RSID';
 
   @override
-  String get evidenceAxisSources => 'Claim and source integrity';
+  String get evidenceAxisSources => 'ความถูกต้องของข้ออ้างและแหล่งที่มา';
 
   @override
   String get evidenceAxisSourcesNote =>
-      'Checkable claims, citation anchors and bibliographic verification';
+      'ข้ออ้างที่ตรวจสอบได้ จุดยึดการอ้างอิง และการตรวจสอบบรรณานุกรม';
 
   @override
-  String get evidenceStateUnavailable => 'Unavailable';
+  String get evidenceStateUnavailable => 'ไม่พร้อมใช้งาน';
 
   @override
-  String get evidenceStateInconclusive => 'Inconclusive';
+  String get evidenceStateInconclusive => 'สรุปไม่ได้';
 
   @override
-  String get evidenceStateReassuring => 'Consistent';
+  String get evidenceStateReassuring => 'สอดคล้อง';
 
   @override
-  String get evidenceStateConcern => 'Review';
+  String get evidenceStateConcern => 'ควรตรวจสอบ';
 
   @override
-  String get evidenceStrengthNone => 'No evidence';
+  String get evidenceStrengthNone => 'ไม่มีหลักฐาน';
 
   @override
-  String get evidenceStrengthLimited => 'Limited';
+  String get evidenceStrengthLimited => 'จำกัด';
 
   @override
-  String get evidenceStrengthModerate => 'Moderate';
+  String get evidenceStrengthModerate => 'ปานกลาง';
 
   @override
-  String get evidenceStrengthStrong => 'Strong';
+  String get evidenceStrengthStrong => 'หนักแน่น';
 
   @override
   String get evidenceMatrixTextOnlyWarning =>
-      'Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.';
+      'มีเพียงแกนรูปแบบข้อความที่ใช้ได้ AI รุ่นปัจจุบันเลียนแบบงานเขียนของมนุษย์ได้ รายงานนี้จึงไม่สามารถชี้ขาดความเป็นผู้เขียนจากคะแนนเพียงอย่างเดียว';
 
   @override
   String get evidenceMatrixStrongConcern =>
-      'At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.';
+      'มีอย่างน้อยหนึ่งแกนอิสระที่ให้สัญญาณควรตรวจสอบอย่างหนักแน่น โปรดพิจารณาหลักฐานนั้นก่อนพึ่งพาคะแนนข้อความ';
 
   @override
   String findingUnsupportedClaims(int unsupported, int total) {
-    return '$unsupported of $total checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.';
+    return 'ข้ออ้างที่ตรวจสอบได้ $unsupported จาก $total ข้อ มีตัวเลข การเปรียบเทียบ หรือการอ้างถึงงานวิจัย โดยไม่มีจุดยึดแหล่งที่มาในประโยคเดียวกัน สิ่งนี้ไม่ได้พิสูจน์ว่าเป็นเท็จ แต่ชี้ว่าข้ออ้างใดควรตรวจสอบก่อน';
   }
 
   @override
-  String get integratedAssessmentTitle => 'Integrated authorship assessment';
+  String get integratedAssessmentTitle =>
+      'การประเมินความเป็นผู้เขียนแบบบูรณาการ';
 
   @override
   String get integratedInsufficientEvidence =>
-      'No quantifiable authorship signal';
+      'ไม่มีสัญญาณความเป็นผู้เขียนที่วัดได้';
 
   @override
-  String get integratedLikelyAi => 'More likely AI-generated';
+  String get integratedLikelyAi => 'มีแนวโน้มถูกสร้างโดย AI';
 
   @override
-  String get integratedLikelyMixed => 'More likely human-AI mixed';
+  String get integratedLikelyMixed => 'มีแนวโน้มเป็นงานผสมระหว่างมนุษย์กับ AI';
 
   @override
-  String get integratedLikelyHuman => 'More likely not AI-generated';
+  String get integratedLikelyHuman => 'มีแนวโน้มไม่ได้ถูกสร้างโดย AI';
 
   @override
-  String get integratedBalanced => 'No clear AI-dominant signal detected';
+  String get integratedBalanced => 'ไม่พบสัญญาณที่ AI มีอิทธิพลเด่นชัด';
 
   @override
-  String get integratedPreliminaryAi => 'Currently leans AI, near the boundary';
+  String get integratedPreliminaryAi => 'ขณะนี้เอียงไปทาง AI ใกล้เส้นแบ่ง';
 
   @override
   String get integratedPreliminaryHuman =>
-      'Currently leans human, near the boundary';
+      'ขณะนี้เอียงไปทางมนุษย์ ใกล้เส้นแบ่ง';
 
   @override
   String integratedLikelihoodLabel(int percent) {
-    return 'AI evidence index: $percent/100';
+    return 'ดัชนีหลักฐาน AI: $percent/100';
   }
 
   @override
   String get integratedLikelihoodUnavailable =>
-      'AI evidence index: not estimable';
+      'ดัชนีหลักฐาน AI: ประเมินไม่ได้';
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return 'Text-model score: $percent%';
+    return 'คะแนนโมเดลข้อความ: $percent%';
   }
 
   @override
   String integratedConfidenceLabel(String confidence) {
-    return 'Confidence: $confidence';
+    return 'ความเชื่อมั่น: $confidence';
   }
 
   @override
-  String get integratedConfidenceLow => 'Low';
+  String get integratedConfidenceLow => 'ต่ำ';
 
   @override
-  String get integratedConfidenceModerate => 'Moderate';
+  String get integratedConfidenceModerate => 'ปานกลาง';
 
   @override
-  String get integratedConfidenceHigh => 'High';
+  String get integratedConfidenceHigh => 'สูง';
 
   @override
   String integratedEvidenceSufficiency(int percent, String tier) {
-    return 'Evidence sufficiency: $percent/100 · $tier';
+    return 'ความเพียงพอของหลักฐาน: $percent/100 · $tier';
   }
 
   @override
-  String get integratedEvidenceTierScreening => 'preliminary screening';
+  String get integratedEvidenceTierScreening => 'การคัดกรองเบื้องต้น';
 
   @override
-  String get integratedEvidenceTierReference => 'reference-level';
+  String get integratedEvidenceTierReference => 'ระดับใช้อ้างอิงได้';
 
   @override
-  String get integratedEvidenceTierStrong => 'well supported';
+  String get integratedEvidenceTierStrong => 'มีหลักฐานรองรับดี';
 
   @override
   String integratedBoundaryAi(int index, int gap) {
-    return 'Index $index is only a weak AI-side direction and remains $gap points below the 60-point escalation line. It has not established AI authorship.';
+    return 'ดัชนี $index เป็นเพียงทิศทางอ่อน ๆ ฝั่ง AI และยังต่ำกว่าเส้นยกระดับที่ 60 คะแนนอยู่ $gap คะแนน ยังไม่ได้พิสูจน์ว่า AI เป็นผู้เขียน';
   }
 
   @override
   String integratedBoundaryHuman(int index, int gap) {
-    return 'Index $index leans human and remains $gap points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.';
+    return 'ดัชนี $index เอียงไปทางมนุษย์ และยังต่ำกว่าเส้นยกระดับ AI ที่ 60 คะแนนอยู่ $gap คะแนน แต่หลักฐานที่จำกัดยังตัดความเป็นไปได้ที่ AI ช่วยเขียนไม่ได้';
   }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return 'Directional signal families: $families/4 · applicability coverage $coverage%';
+    return 'กลุ่มสัญญาณบอกทิศทาง: $families/4 · ความครอบคลุมการใช้ได้ $coverage%';
   }
 
   @override
-  String get integratedEvidenceGatePassed => 'AI evidence gate: passed';
+  String get integratedEvidenceGatePassed => 'ประตูหลักฐาน AI: ผ่าน';
 
   @override
   String get integratedEvidenceGateNotPassed =>
-      'AI evidence gate: not passed · directional screening only';
+      'ประตูหลักฐาน AI: ไม่ผ่าน · เป็นเพียงการคัดกรองเชิงทิศทาง';
 
   @override
   String integratedQualifiedWarning(String reason) {
-    return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
+    return '$reason ระบบยังคงระบุทิศทางที่เป็นไปได้มากที่สุด แต่ความเชื่อมั่นลดลง โปรดถือเป็นผลการคัดกรอง ไม่ใช่ข้อพิสูจน์';
   }
 
   @override
   String get integratedIndexCaveat =>
-      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
+      'ประตูหลักฐาน AI ที่แยกต่างหากบอกว่าหลักฐานอิสระหนักแน่นพอจะยกระดับหรือไม่ คุณภาพการอ้างอิง พฤติกรรมการวาง และเมทาดาตาที่น่าสงสัย ไม่สามารถให้คำวินิจฉัยว่าเป็น AI ได้ด้วยตัวเอง นี่คือคะแนนหลักฐาน ไม่ใช่ความน่าจะเป็นทางสถิติที่ปรับเทียบแล้ว';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.';
+      'แถบเหล่านี้แสดงสัญญาณเชิงวินิจฉัยจากเอนจินข้อความทั้งสี่ตัว เอนจินที่เกี่ยวข้องกันจะถูกรวมตามกลุ่ม รวมถึงผลลัพธ์ฝั่งมนุษย์จากตัวจำแนกที่ถูกลดน้ำหนักอย่างระมัดระวัง ก่อนจะนำความเหมาะสมด้านภาษา/สาขา และความน่าเชื่อถือของการปรับเทียบมาใช้ ทิศทางตอบว่าคำอธิบายใดมีหลักฐานรองรับมากกว่า ส่วนประตูหลักฐาน AI ที่แยกต่างหากตอบว่าหลักฐานนั้นหนักแน่นพอจะยกระดับหรือไม่';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return 'Four-engine text-model raw score: $percent%. This is one input to the integrated assessment, not a second verdict.';
+    return 'คะแนนดิบของโมเดลข้อความสี่เอนจิน: $percent% นี่คือข้อมูลนำเข้าหนึ่งของการประเมินแบบบูรณาการ ไม่ใช่คำวินิจฉัยที่สอง';
   }
 
   @override
   String reportSynthesisStrongestTextSignal(String label, int percent) {
-    return 'Strongest text-engine signal: $label ($percent%). It can influence the text-model score but cannot override the integrated assessment by itself.';
+    return 'สัญญาณเอนจินข้อความที่แรงที่สุด: $label ($percent%) สัญญาณนี้มีผลต่อคะแนนโมเดลข้อความได้ แต่ไม่สามารถล้มการประเมินแบบบูรณาการได้ด้วยตัวเอง';
   }
 
   @override
@@ -2933,7 +2984,7 @@ class AppLocalizationsTh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
+    return 'คะแนนดิบของโมเดลข้อความคือ $aiPercent% ซึ่งถึงเครื่องหมายเชิงวินิจฉัยที่ $thresholdPercent% นี่เป็นเพียงการสังเกตสัญญาณข้อความ ทิศทางความเป็นผู้เขียนของรายงานยังคงเป็นการประเมินแบบบูรณาการด้านบน';
   }
 
   @override
@@ -2941,7 +2992,7 @@ class AppLocalizationsTh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
+    return 'คะแนนดิบของโมเดลข้อความคือ $aiPercent% ซึ่งต่ำกว่าเครื่องหมายเชิงวินิจฉัยที่ $thresholdPercent% การไม่ถึงเครื่องหมายนี้ไม่ใช่หลักฐานว่ามนุษย์เป็นผู้เขียน ทิศทางความเป็นผู้เขียนของรายงานยังคงเป็นการประเมินแบบบูรณาการด้านบน';
   }
 
   @override
@@ -2950,49 +3001,49 @@ class AppLocalizationsTh extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return 'After weighting the available evidence, the document is “$direction” (AI evidence index $percent/100, $confidence confidence).';
+    return 'หลังถ่วงน้ำหนักหลักฐานที่มี เอกสารนี้จัดเป็น “$direction” (ดัชนีหลักฐาน AI $percent/100, ความเชื่อมั่น $confidence)';
   }
 
   @override
   String telemetryIntegratedUnavailable(String direction, String confidence) {
-    return 'The available modules did not produce a quantifiable authorship direction (“$direction”, $confidence confidence); no numeric index was issued.';
+    return 'โมดูลที่ใช้ได้ไม่ได้ให้ทิศทางความเป็นผู้เขียนที่วัดได้ (“$direction”, ความเชื่อมั่น $confidence) จึงไม่มีการออกดัชนีเชิงตัวเลข';
   }
 
   @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
-    return 'Segment stability $percent% · interval $lower–$upper%';
+    return 'ความเสถียรระดับช่วง $percent% · ช่วง $lower–$upper%';
   }
 
   @override
   String integratedInputQualityLabel(int percent) {
-    return 'Input extraction quality: $percent%';
+    return 'คุณภาพการดึงข้อมูลนำเข้า: $percent%';
   }
 
   @override
   String integratedCalibrationLabel(String value, int count) {
-    return 'Matched local baseline: p=$value · n=$count';
+    return 'เกณฑ์ฐานในเครื่องที่ตรงกัน: p=$value · n=$count';
   }
 
   @override
   String analysisReadinessLabel(String level) {
-    return 'Pre-analysis confidence baseline: $level';
+    return 'เกณฑ์ความเชื่อมั่นก่อนวิเคราะห์: $level';
   }
 
   @override
-  String get analysisReadinessShortText => 'more text needed';
+  String get analysisReadinessShortText => 'ต้องการข้อความเพิ่ม';
 
   @override
-  String get analysisReadinessFewSentences => 'too few segments';
+  String get analysisReadinessFewSentences => 'จำนวนช่วงข้อความน้อยเกินไป';
 
   @override
-  String get analysisReadinessCoreModel => 'core classifier unavailable';
+  String get analysisReadinessCoreModel => 'ตัวจำแนกหลักไม่พร้อมใช้งาน';
 
   @override
-  String get analysisReadinessFewEngines => 'fewer than two engines enabled';
+  String get analysisReadinessFewEngines => 'เปิดใช้เอนจินไม่ถึงสองตัว';
 
   @override
-  String get analysisReadinessExtraction => 'extraction quality is limited';
+  String get analysisReadinessExtraction => 'คุณภาพการดึงข้อมูลจำกัด';
 
   @override
-  String get analysisReadinessBaseline => 'no matched local baseline';
+  String get analysisReadinessBaseline => 'ไม่มีเกณฑ์ฐานในเครื่องที่ตรงกัน';
 }

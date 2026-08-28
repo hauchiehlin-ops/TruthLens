@@ -199,6 +199,27 @@ class AppLocalizationsMs extends AppLocalizations {
   String get modelPromptDownload => 'Pergi memuat turun';
 
   @override
+  String get firstRunModelPromptTitle => 'Tambah model pengesanan?';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens sudah boleh digunakan: enjin statistik dan gaya penulisan sudah sedia. Menambah model neural pada peranti akan membawa pengelas berbilang bahasa ke dalam undian ensemble, sekali gus meningkatkan ketepatan dan liputan bahasa dengan ketara. Model berjalan sepenuhnya dalam pelayar anda dan tidak pernah memuat naik dokumen anda. Anda juga boleh membuat keputusan kemudian melalui \"Tetapan → Pengurusan Model AI\".';
+
+  @override
+  String get firstRunModelPromptLater => 'Bukan sekarang';
+
+  @override
+  String get firstRunModelPromptGo => 'Pilih model';
+
+  @override
+  String get modernChineseModelPromptTitle =>
+      'Tingkatkan pengesanan bahasa Cina';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      'Dokumen bahasa Cina ini kini tidak mempunyai pengesan bahasa Cina moden (kira-kira 98 MB). Model berbilang bahasa yang lama ditentukur pada teks generasi awal dan mungkin terlepas tulisan Cina masa kini bergaya DeepSeek, Gemini dan GPT. Muat turun model khusus pada peranti untuk hasil yang lebih tepat ditentukur, atau teruskan dengan sandaran merentas bahasa yang lebih lemah.';
+
+  @override
   String get onboardingWelcomeTitle => 'Selamat datang ke TruthLens';
 
   @override
@@ -213,6 +234,26 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get onboardingRecommendHint =>
       '\"Disyorkan\" ditanda berdasarkan perkakasan anda; anda juga boleh memilih pilihan lain.';
+
+  @override
+  String get onboardingBundleTitle => 'Cadangan untuk peranti ini';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count model · sejumlah $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return 'Storan pelayar: $available MB tersedia, kira-kira $remaining MB tinggal selepas muat turun';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      'Model yang dimuat turun belum dilindungi daripada pembersihan automatik. Jika ruang cakera berkurangan, pelayar boleh membuangnya dan anda terpaksa memuat turun semula. Memasang TruthLens sebagai aplikasi meningkatkan peluang pelayar mengekalkannya.';
+
+  @override
+  String get onboardingInstallAppButton => 'Pasang sebagai aplikasi';
 
   @override
   String get onboardingSkipButton =>
@@ -540,11 +581,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String reportEngineDirectionalIndex(int percent) {
-    return 'Weak direction $percent/100';
+    return 'Arah lemah $percent/100';
   }
 
   @override
-  String get reportEngineNoDirectionalSignal => 'No directional signal';
+  String get reportEngineNoDirectionalSignal => 'Tiada isyarat arah';
 
   @override
   String get reportEngineSignalExplanation =>
@@ -1197,11 +1238,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get abstentionNoEvidenceFound =>
-      'All engines ran, but none found usable evidence. The low fallback score is diagnostic output, not evidence that a person wrote the text.';
+      'Semua enjin telah dijalankan, tetapi tiada satu pun menemui bukti yang boleh digunakan. Skor sandaran yang rendah ialah keluaran diagnostik, bukan bukti bahawa teks ditulis oleh manusia.';
 
   @override
   String abstentionSingleWeakEvidenceSource(int count) {
-    return 'Only $count engine found usable evidence, and the overall score is still below the AI threshold. Treat this as weak coverage, not as evidence that a person wrote it.';
+    return 'Hanya $count enjin menemui bukti yang boleh digunakan, dan skor keseluruhan masih di bawah ambang AI. Anggap ini sebagai liputan yang lemah, bukan bukti tulisan manusia.';
   }
 
   @override
@@ -1775,7 +1816,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String engineReasonBurstinessMid(String value) {
-    return 'Sentence-length variation (burstiness $value) stayed inside the neutral band 0.30–0.55';
+    return 'Variasi panjang ayat (burstiness $value) kekal dalam jalur neutral 0,30–0,55';
   }
 
   @override
@@ -1790,7 +1831,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String engineReasonMattrNoAiSignal(String value, String cut) {
-    return 'Vocabulary diversity (MATTR $value) did not cross the calibrated AI-signal cutoff $cut';
+    return 'Kepelbagaian kosa kata (MATTR $value) tidak melepasi had isyarat AI yang ditentukur $cut';
   }
 
   @override
@@ -1849,27 +1890,37 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
-    return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
+    return 'Cap leksikal PAN 2025 condong kepada AI ($percent/100); garis dasar bahasa Inggeris bebas ini mengesan taburan perkataan dan frasa yang berbeza daripada korpus manusianya';
   }
 
   @override
   String engineReasonPan25LexicalHuman(int percent) {
-    return 'PAN 2025 lexical fingerprint leans human ($percent/100); this remains model evidence, not proof of authorship';
+    return 'Cap leksikal PAN 2025 condong kepada manusia ($percent/100); ini kekal sebagai bukti model, bukan bukti kepengarangan';
   }
 
   @override
   String engineReasonPan25LexicalNeutral(int percent) {
-    return 'PAN 2025 lexical fingerprint is neutral ($percent/100) and does not provide a direction';
+    return 'Cap leksikal PAN 2025 adalah neutral ($percent/100) dan tidak memberikan arah';
+  }
+
+  @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'Cap aksara Cina DetectRL-ZH melepasi pintu bukti AI yang konservatif ($percent/100); ia diuji secara bebas terhadap DeepSeek-V3, teks campuran, terjemahan balik, gangguan aksara dan panjang yang berbeza-beza';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'Cap aksara Cina DetectRL-ZH tidak melepasi pintu bukti AI yang konservatif ($percent/100); ini ialah pengecualian diri, bukan bukti bahawa teks ditulis oleh manusia';
   }
 
   @override
   String engineReasonCompressionCoherence(String value) {
-    return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
+    return 'Kepaduan mampatan merentas sempadan ($value) melebihi saringan persentil ke-95 manusia PAN 2025 [isyarat lemah di pihak AI]';
   }
 
   @override
   String engineReasonAssistantResponseArtifact(int count) {
-    return 'Detected $count conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text';
+    return 'Dikesan $count kesan respons pembantu perbualan, seperti menyapa pemohon atau menawarkan untuk menyemak semula teks yang diminta';
   }
 
   @override
@@ -2093,14 +2144,14 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get helpWorkflowStep1Body =>
-      'Pelancaran pertama membimbing anda memasang model pengesanan teras; selepas itu anda boleh sentiasa menyemak, memuat turun, mengemas kini, atau membuang model dari \"Tetapan → Pengurusan Model AI\". Apl secara proaktif menyemak versi terkini semasa pelancaran, dan menunjukkan lencana pada ikon tetapan serta entri \"Pengurusan Model AI\" jika kemas kini tersedia.';
+      'Aplikasi sentiasa dibuka pada skrin utama. Pada pelancaran pertama, jika tiada model pengesanan dipasang lagi, satu gesaan akan bertanya sama ada anda mahu memilih satu — jika menolak, anda boleh terus menganalisis menggunakan enjin statistik dan gaya penulisan. Anda boleh menyemak, memuat turun, mengemas kini atau membuang model pada bila-bila masa melalui \"Tetapan → Pengurusan Model AI\". Aplikasi menyemak versi terkini semasa dilancarkan dan memaparkan lencana pada ikon tetapan serta entri \"Pengurusan Model AI\" apabila kemas kini tersedia.';
 
   @override
   String get helpWorkflowStep2Title => 'Memilih model (tujuan & kesan)';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Pengelas AI berbilang bahasa (pemberat 40%): menganalisis blok perenggan terhad untuk mengekalkan konteks, kemudian memetakan kebarangkalian kembali kepada ayat.';
+      'Pengelas AI berbilang bahasa (pemberat 40%): menganalisis blok perenggan terbatas untuk mengekalkan konteks, kemudian memetakan kebarangkalian kembali kepada ayat bagi bukti terperinci. Apabila beberapa varian pengelas dipasang, setiap analisis memilih varian yang disahkan untuk bahasa dokumen — dokumen bahasa Cina memerlukan pengesan bahasa Cina moden yang khusus, dan aplikasi akan memberitahu apabila model itu tiada.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -2612,7 +2663,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get workspaceSentenceColumnHeader => 'Ayat';
 
   @override
-  String get workspaceAiEvidenceIndexShort => 'index';
+  String get workspaceAiEvidenceIndexShort => 'indeks';
 
   @override
   String reportEngineRelationshipNoEvidence(String engine, int weight) {
@@ -2621,7 +2672,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String reportEngineRelationshipDirectionalOnly(String engine, int weight) {
-    return '$engine found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap $weight%).';
+    return '$engine hanya menemui isyarat arah yang lemah. Ia didiskaunkan untuk saringan dan tidak dikira sebagai bukti yang melepasi ambang (had berat peranan $weight%).';
   }
 
   @override
@@ -2715,21 +2766,21 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String findingPublicationPredatesGenerativeAi(String doi, int year) {
-    return 'Source DOI $doi matches this document and was registered in $year, before modern generative-AI writing systems.';
+    return 'DOI sumber $doi sepadan dengan dokumen ini dan didaftarkan pada $year, sebelum sistem penulisan AI generatif moden.';
   }
 
   @override
   String findingPublicationIdentityMismatch(String doi) {
-    return 'Source DOI $doi resolves, but its registered title does not match this document. Verify the document identity before relying on it.';
+    return 'DOI sumber $doi boleh dirungkai, tetapi tajuk berdaftarnya tidak sepadan dengan dokumen ini. Sahkan identiti dokumen sebelum bergantung padanya.';
   }
 
   @override
   String get integratedStabilityUnavailable =>
-      'Segment stability unavailable · no sentence-level evidence voted';
+      'Kestabilan segmen tidak tersedia · tiada bukti peringkat ayat yang mengundi';
 
   @override
   String get integratedNeutralBaseline =>
-      'No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.';
+      'Tiada bukti khusus kepengarangan yang cukup kuat untuk dinaikkan taraf ditemui. Keputusan yang dipaparkan ialah saringan arah terbaik yang ada, bukan dakwaan bahawa bukti AI dan manusia adalah seimbang.';
 
   @override
   String get reportVerifiableFindingsTitle => 'Yang boleh disahkan';
@@ -2749,193 +2800,196 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get evidenceMatrixTitle => 'Multi-evidence assessment';
+  String get evidenceMatrixTitle => 'Penilaian pelbagai bukti';
 
   @override
   String get evidenceMatrixSubtitle =>
-      'Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.';
+      'Enam paksi dipaparkan secara berasingan. Hanya bukti khusus kepengarangan mempengaruhi keputusan; liputan menunjukkan apa yang sempat diperiksa.';
 
   @override
   String evidenceMatrixCoverage(int available, int total) {
-    return 'Evidence coverage: $available of $total axes';
+    return 'Liputan bukti: $available daripada $total paksi';
   }
 
   @override
-  String get evidenceAxisText => 'Text-generation traces';
+  String get evidenceAxisText => 'Kesan penjanaan teks';
 
   @override
   String get evidenceAxisTextNote =>
-      'Probabilistic patterns from the four local detectors';
+      'Corak kebarangkalian daripada empat pengesan setempat';
 
   @override
-  String get evidenceAxisProcess => 'Writing process';
+  String get evidenceAxisProcess => 'Proses penulisan';
 
   @override
   String get evidenceAxisProcessNote =>
-      'Typing, revision and paste events recorded without storing their content';
+      'Peristiwa menaip, menyunting dan menampal yang direkodkan tanpa menyimpan kandungannya';
 
   @override
-  String get evidenceAxisOrigin => 'Document origin';
+  String get evidenceAxisOrigin => 'Asal usul dokumen';
 
   @override
   String get evidenceAxisOriginNote =>
-      'Editing time, saves and DOCX/ODT/RSID metadata';
+      'Masa penyuntingan, bilangan simpanan dan metadata DOCX/ODT/RSID';
 
   @override
-  String get evidenceAxisSources => 'Claim and source integrity';
+  String get evidenceAxisSources => 'Integriti dakwaan dan sumber';
 
   @override
   String get evidenceAxisSourcesNote =>
-      'Checkable claims, citation anchors and bibliographic verification';
+      'Dakwaan yang boleh disemak, sauh petikan dan pengesahan bibliografi';
 
   @override
-  String get evidenceStateUnavailable => 'Unavailable';
+  String get evidenceStateUnavailable => 'Tidak tersedia';
 
   @override
-  String get evidenceStateInconclusive => 'Inconclusive';
+  String get evidenceStateInconclusive => 'Tidak muktamad';
 
   @override
-  String get evidenceStateReassuring => 'Consistent';
+  String get evidenceStateReassuring => 'Konsisten';
 
   @override
-  String get evidenceStateConcern => 'Review';
+  String get evidenceStateConcern => 'Perlu disemak';
 
   @override
-  String get evidenceStrengthNone => 'No evidence';
+  String get evidenceStrengthNone => 'Tiada bukti';
 
   @override
-  String get evidenceStrengthLimited => 'Limited';
+  String get evidenceStrengthLimited => 'Terhad';
 
   @override
-  String get evidenceStrengthModerate => 'Moderate';
+  String get evidenceStrengthModerate => 'Sederhana';
 
   @override
-  String get evidenceStrengthStrong => 'Strong';
+  String get evidenceStrengthStrong => 'Kuat';
 
   @override
   String get evidenceMatrixTextOnlyWarning =>
-      'Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.';
+      'Hanya paksi corak teks yang tersedia. AI generasi kini boleh meniru prosa manusia, jadi laporan ini tidak dapat menetapkan kepengarangan hanya berdasarkan skor.';
 
   @override
   String get evidenceMatrixStrongConcern =>
-      'At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.';
+      'Sekurang-kurangnya satu paksi bebas mengandungi isyarat semakan yang kuat. Periksa bukti itu sebelum bergantung pada skor teks.';
 
   @override
   String findingUnsupportedClaims(int unsupported, int total) {
-    return '$unsupported of $total checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.';
+    return '$unsupported daripada $total dakwaan yang boleh disemak mengandungi nombor, perbandingan atau rujukan penyelidikan tanpa sauh sumber dalam ayat yang sama. Ini tidak membuktikan ia palsu, tetapi menandakan dakwaan yang perlu disahkan dahulu.';
   }
 
   @override
-  String get integratedAssessmentTitle => 'Integrated authorship assessment';
+  String get integratedAssessmentTitle => 'Penilaian kepengarangan bersepadu';
 
   @override
   String get integratedInsufficientEvidence =>
-      'No quantifiable authorship signal';
+      'Tiada isyarat kepengarangan yang boleh diukur';
 
   @override
-  String get integratedLikelyAi => 'More likely AI-generated';
+  String get integratedLikelyAi => 'Lebih berkemungkinan dijana AI';
 
   @override
-  String get integratedLikelyMixed => 'More likely human-AI mixed';
+  String get integratedLikelyMixed =>
+      'Lebih berkemungkinan campuran manusia dan AI';
 
   @override
-  String get integratedLikelyHuman => 'More likely not AI-generated';
+  String get integratedLikelyHuman => 'Lebih berkemungkinan bukan dijana AI';
 
   @override
-  String get integratedBalanced => 'No clear AI-dominant signal detected';
+  String get integratedBalanced =>
+      'Tiada isyarat dominan AI yang jelas dikesan';
 
   @override
-  String get integratedPreliminaryAi => 'Currently leans AI, near the boundary';
+  String get integratedPreliminaryAi =>
+      'Kini condong kepada AI, hampir dengan sempadan';
 
   @override
   String get integratedPreliminaryHuman =>
-      'Currently leans human, near the boundary';
+      'Kini condong kepada manusia, hampir dengan sempadan';
 
   @override
   String integratedLikelihoodLabel(int percent) {
-    return 'AI evidence index: $percent/100';
+    return 'Indeks bukti AI: $percent/100';
   }
 
   @override
   String get integratedLikelihoodUnavailable =>
-      'AI evidence index: not estimable';
+      'Indeks bukti AI: tidak dapat dianggarkan';
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return 'Text-model score: $percent%';
+    return 'Skor model teks: $percent%';
   }
 
   @override
   String integratedConfidenceLabel(String confidence) {
-    return 'Confidence: $confidence';
+    return 'Keyakinan: $confidence';
   }
 
   @override
-  String get integratedConfidenceLow => 'Low';
+  String get integratedConfidenceLow => 'Rendah';
 
   @override
-  String get integratedConfidenceModerate => 'Moderate';
+  String get integratedConfidenceModerate => 'Sederhana';
 
   @override
-  String get integratedConfidenceHigh => 'High';
+  String get integratedConfidenceHigh => 'Tinggi';
 
   @override
   String integratedEvidenceSufficiency(int percent, String tier) {
-    return 'Evidence sufficiency: $percent/100 · $tier';
+    return 'Kecukupan bukti: $percent/100 · $tier';
   }
 
   @override
-  String get integratedEvidenceTierScreening => 'preliminary screening';
+  String get integratedEvidenceTierScreening => 'saringan awal';
 
   @override
-  String get integratedEvidenceTierReference => 'reference-level';
+  String get integratedEvidenceTierReference => 'setaraf rujukan';
 
   @override
-  String get integratedEvidenceTierStrong => 'well supported';
+  String get integratedEvidenceTierStrong => 'disokong dengan baik';
 
   @override
   String integratedBoundaryAi(int index, int gap) {
-    return 'Index $index is only a weak AI-side direction and remains $gap points below the 60-point escalation line. It has not established AI authorship.';
+    return 'Indeks $index hanyalah arah lemah di pihak AI dan masih $gap mata di bawah garis peningkatan 60 mata. Ia belum membuktikan kepengarangan AI.';
   }
 
   @override
   String integratedBoundaryHuman(int index, int gap) {
-    return 'Index $index leans human and remains $gap points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.';
+    return 'Indeks $index condong kepada manusia dan masih $gap mata di bawah garis peningkatan AI 60 mata, tetapi bukti yang terhad tidak dapat menolak kemungkinan bantuan AI.';
   }
 
   @override
   String integratedEvidenceCoverage(int families, int coverage) {
-    return 'Directional signal families: $families/4 · applicability coverage $coverage%';
+    return 'Keluarga isyarat arah: $families/4 · liputan kebolehgunaan $coverage%';
   }
 
   @override
-  String get integratedEvidenceGatePassed => 'AI evidence gate: passed';
+  String get integratedEvidenceGatePassed => 'Pintu bukti AI: lulus';
 
   @override
   String get integratedEvidenceGateNotPassed =>
-      'AI evidence gate: not passed · directional screening only';
+      'Pintu bukti AI: tidak lulus · saringan arah sahaja';
 
   @override
   String integratedQualifiedWarning(String reason) {
-    return '$reason The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.';
+    return '$reason Sistem tetap memberikan arah yang paling berkemungkinan, tetapi keyakinannya berkurangan; anggap ia sebagai keputusan saringan, bukan bukti.';
   }
 
   @override
   String get integratedIndexCaveat =>
-      'The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.';
+      'Pintu bukti AI yang berasingan menunjukkan sama ada sokongan bebas cukup kuat untuk peningkatan taraf. Kualiti petikan, gelagat menampal dan metadata mencurigakan tidak boleh menghasilkan keputusan AI dengan sendirinya. Ini ialah skor bukti, bukan kebarangkalian statistik yang ditentukur.';
 
   @override
   String get reportTextEngineSignalExplanation =>
-      'These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.';
+      'Bar ini menunjukkan isyarat diagnostik daripada empat enjin teks. Enjin yang berkaitan digabungkan mengikut keluarga, termasuk keluaran pengelas di pihak manusia yang didiskaunkan secara konservatif, sebelum kebolehgunaan bahasa/domain dan kebolehpercayaan penentukuran digunakan. Arah menjawab penjelasan mana yang lebih disokong; pintu bukti AI yang berasingan menjawab sama ada sokongan itu cukup untuk peningkatan taraf.';
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return 'Four-engine text-model raw score: $percent%. This is one input to the integrated assessment, not a second verdict.';
+    return 'Skor mentah model teks empat enjin: $percent%. Ini satu input kepada penilaian bersepadu, bukan keputusan kedua.';
   }
 
   @override
   String reportSynthesisStrongestTextSignal(String label, int percent) {
-    return 'Strongest text-engine signal: $label ($percent%). It can influence the text-model score but cannot override the integrated assessment by itself.';
+    return 'Isyarat enjin teks terkuat: $label ($percent%). Ia boleh mempengaruhi skor model teks, tetapi tidak boleh mengatasi penilaian bersepadu dengan sendirinya.';
   }
 
   @override
@@ -2943,7 +2997,7 @@ class AppLocalizationsMs extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
+    return 'Skor mentah model teks ialah $aiPercent%, mencapai penanda diagnostik $thresholdPercent%. Ini hanya pemerhatian isyarat teks; penilaian bersepadu di atas kekal sebagai arah kepengarangan laporan.';
   }
 
   @override
@@ -2951,7 +3005,7 @@ class AppLocalizationsMs extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
+    return 'Skor mentah model teks ialah $aiPercent%, di bawah penanda diagnostik $thresholdPercent%. Kegagalan mencapai penanda itu bukan bukti kepengarangan manusia; penilaian bersepadu di atas kekal sebagai arah kepengarangan laporan.';
   }
 
   @override
@@ -2960,49 +3014,51 @@ class AppLocalizationsMs extends AppLocalizations {
     int percent,
     String confidence,
   ) {
-    return 'After weighting the available evidence, the document is “$direction” (AI evidence index $percent/100, $confidence confidence).';
+    return 'Selepas menimbang bukti yang ada, dokumen ini ialah \"$direction\" (indeks bukti AI $percent/100, keyakinan $confidence).';
   }
 
   @override
   String telemetryIntegratedUnavailable(String direction, String confidence) {
-    return 'The available modules did not produce a quantifiable authorship direction (“$direction”, $confidence confidence); no numeric index was issued.';
+    return 'Modul yang tersedia tidak menghasilkan arah kepengarangan yang boleh diukur (\"$direction\", keyakinan $confidence); tiada indeks berangka dikeluarkan.';
   }
 
   @override
   String integratedStabilityLabel(int percent, int lower, int upper) {
-    return 'Segment stability $percent% · interval $lower–$upper%';
+    return 'Kestabilan segmen $percent% · selang $lower–$upper%';
   }
 
   @override
   String integratedInputQualityLabel(int percent) {
-    return 'Input extraction quality: $percent%';
+    return 'Kualiti pengekstrakan input: $percent%';
   }
 
   @override
   String integratedCalibrationLabel(String value, int count) {
-    return 'Matched local baseline: p=$value · n=$count';
+    return 'Garis dasar setempat yang sepadan: p=$value · n=$count';
   }
 
   @override
   String analysisReadinessLabel(String level) {
-    return 'Pre-analysis confidence baseline: $level';
+    return 'Asas keyakinan sebelum analisis: $level';
   }
 
   @override
-  String get analysisReadinessShortText => 'more text needed';
+  String get analysisReadinessShortText => 'perlukan lebih banyak teks';
 
   @override
-  String get analysisReadinessFewSentences => 'too few segments';
+  String get analysisReadinessFewSentences => 'segmen terlalu sedikit';
 
   @override
-  String get analysisReadinessCoreModel => 'core classifier unavailable';
+  String get analysisReadinessCoreModel => 'pengelas teras tidak tersedia';
 
   @override
-  String get analysisReadinessFewEngines => 'fewer than two engines enabled';
+  String get analysisReadinessFewEngines =>
+      'kurang daripada dua enjin diaktifkan';
 
   @override
-  String get analysisReadinessExtraction => 'extraction quality is limited';
+  String get analysisReadinessExtraction => 'kualiti pengekstrakan terhad';
 
   @override
-  String get analysisReadinessBaseline => 'no matched local baseline';
+  String get analysisReadinessBaseline =>
+      'tiada garis dasar setempat yang sepadan';
 }

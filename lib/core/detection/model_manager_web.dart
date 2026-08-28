@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../l10n/generated/app_localizations.dart';
+import 'device_capabilities.dart';
 import 'model_catalog.dart';
 import 'model_catalog_service.dart';
 import 'model_manager_types.dart';
@@ -216,6 +217,19 @@ class ModelManager extends ChangeNotifier {
     return v1 != v2;
   }
 
+  /// 這次下載還差多少空間；空間足夠或配額未知時回傳 null。
+  ///
+  /// 預留 10% 餘裕：`estimate()` 是概略值，而且安裝過程還要寫 tokenizer 與
+  /// installed.json。未知不等於零——查不到配額時不擋下載，交給實際寫入時報錯。
+  Future<int?> _storageShortfallBytes(int needBytes) async {
+    if (needBytes <= 0) return null;
+    final device = await DeviceCapabilities.detect();
+    final available = device.storageAvailableBytes;
+    if (available == null) return null;
+    final required = (needBytes * 1.1).round();
+    return available >= required ? null : required - available;
+  }
+
   /// 下載並安裝變體：模型主檔逐塊直接串流寫入 OPFS（見 [_streamDownloadToFile]），
   /// 不再整份先堆積在記憶體；Tokenizer 檔通常僅數十 KB～數 MB，仍以整包記憶體
   /// 讀取（需要完整字串做 JSON 解析）。首個安裝的變體自動設為使用中。
@@ -224,6 +238,23 @@ class ModelManager extends ChangeNotifier {
       _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
       return false;
     }
+    // OPFS 的配額是可用磁碟的一個比例，不是固定值，而且寫爆時才拋錯——
+    // 使用者會在下載到一半（可能已數百 MB）才看到失敗。先問清楚再開始。
+    final shortfall = await _storageShortfallBytes(variant.sizeBytes);
+    if (shortfall != null) {
+      _mark(
+        role,
+        InstallState.failed,
+        error:
+            '瀏覽器可用儲存空間不足，還差約 ${(shortfall / 1048576).ceil()} MB。'
+            '請先移除不需要的模型，或清出磁碟空間後再試。',
+      );
+      return false;
+    }
+    // 要求持久化儲存。Chromium 依互動程度自行決定，而「使用者剛主動選擇下載
+    // 數百 MB 模型」正是最有機會獲准的時機；被拒也只是維持原本的可回收狀態，
+    // 不影響本次下載，因此不檢查回傳值。
+    unawaited(DeviceCapabilities.requestPersistentStorage());
     _mark(
       role,
       InstallState.downloading,
@@ -278,6 +309,7 @@ class ModelManager extends ChangeNotifier {
         tokenizerFileName: tokenizerFileName,
         tokenizer: variant.tokenizer,
         aiLabelIndex: variant.aiLabelIndex,
+        aiEvidenceThreshold: variant.aiEvidenceThreshold,
         version: variant.version,
         sizeBytes: variant.sizeBytes,
         // 安裝當下記下推論所需的額外輸入規格與語言涵蓋，

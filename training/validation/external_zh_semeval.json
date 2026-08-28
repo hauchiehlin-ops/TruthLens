@@ -1,0 +1,28 @@
+{
+  "corpus_id": "semeval-2024-task8-zh",
+  "documents_scored": 11655,
+  "documents_below_length_floor": 279,
+  "operating_point": 0.004276500634531995,
+  "human_documents": 5993,
+  "machine_documents": 5662,
+  "fpr": 0.006340730852661438,
+  "fpr_upper_95": 0.008264352923067625,
+  "recall": 0.3306252207700459,
+  "per_generator": {
+    "chatGPT": {
+      "n": 2923,
+      "label": 1,
+      "above_cut_rate": 0.4769072870338693
+    },
+    "davinci": {
+      "n": 2739,
+      "label": 1,
+      "above_cut_rate": 0.17451624680540342
+    },
+    "human": {
+      "n": 5993,
+      "label": 0,
+      "above_cut_rate": 0.006340730852661438
+    }
+  }
+}

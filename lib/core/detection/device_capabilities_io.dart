@@ -14,12 +14,35 @@ class DeviceCapabilities {
   final String platform;
   final bool ramMeasured; // false = 估算值
 
+  /// 與 Web 版保持同一介面。原生端寫入一般檔案系統，沒有 origin 配額的概念，
+  /// 也不會被自動回收，因此配額為未知、持久化恆為真。
+  final int? storageQuotaBytes;
+  final int? storageUsageBytes;
+  final bool storagePersisted;
+  final bool webGpuAvailable;
+
   const DeviceCapabilities({
     required this.totalRamMb,
     required this.processors,
     required this.platform,
     required this.ramMeasured,
+    this.storageQuotaBytes,
+    this.storageUsageBytes,
+    this.storagePersisted = true,
+    this.webGpuAvailable = false,
   });
+
+  /// 原生端不需要申請，儲存本來就不會被瀏覽器回收。
+  static Future<bool> requestPersistentStorage() async => true;
+
+  /// 與 Web 版同一套算法。原生端 detect() 不填配額（檔案系統沒有 origin
+  /// 配額的概念），因此實務上恆為 null；但保留計算式，測試才能注入配額。
+  int? get storageAvailableBytes {
+    final quota = storageQuotaBytes;
+    if (quota == null) return null;
+    final free = quota - (storageUsageBytes ?? 0);
+    return free > 0 ? free : 0;
+  }
 
   static Future<DeviceCapabilities> detect() async {
     final processors = Platform.numberOfProcessors;

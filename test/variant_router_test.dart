@@ -13,6 +13,12 @@ InstalledModel _m(String id, List<String> languages) => InstalledModel(
 
 final _enOnly = _m('roberta-en', ['en']);
 final _multi = _m('mbert-multi', ['en', 'zh', 'multi']);
+final _obsoleteZh = _m('truthlens-mbert-multilingual-int8', [
+  'en',
+  'zh',
+  'multi',
+]);
+final _modernZh = _m('aigc-detector-zhv3-int8', ['zh']);
 final _legacy = _m('legacy', const []);
 
 void main() {
@@ -20,6 +26,11 @@ void main() {
     test('明確列出的語言為已驗證', () {
       expect(fitFor(_multi, 'zh'), LanguageFit.validated);
       expect(fitFor(_enOnly, 'en'), LanguageFit.validated);
+    });
+
+    test('舊安裝紀錄不得讓過時 HC3 模型繼續冒充現代中文已驗證', () {
+      expect(fitFor(_obsoleteZh, 'zh'), LanguageFit.plausible);
+      expect(fitFor(_obsoleteZh, 'en'), LanguageFit.validated);
     });
 
     test('僅有 multi 標記的語言為未驗證，不得當成已驗證', () {
@@ -48,6 +59,42 @@ void main() {
       expect(choice.fit, LanguageFit.validated);
       expect(choice.overrodeUserChoice, isTrue);
       expect(choice.isValidated, isTrue);
+    });
+
+    test('現代中文模型會取代使用者原先啟用的過時中文模型', () {
+      final choice = chooseVariant(
+        installed: [_obsoleteZh, _modernZh],
+        language: 'zh',
+        userActiveVariantId: _obsoleteZh.variantId,
+      );
+      expect(choice.variant, _modernZh);
+      expect(choice.fit, LanguageFit.validated);
+      expect(choice.overrodeUserChoice, isTrue);
+    });
+
+    test('加入中文專用模型後，英文文件的路由結果不變', () {
+      // Orchestrator 不再於建構時鎖死 activeVariantId，改由每次分析路由。
+      // 這條守的是那次改動的邊界：英文仍走原本那顆英文已驗證的模型，
+      // 不會被新裝的中文專用變體帶偏。
+      final choice = chooseVariant(
+        installed: [_obsoleteZh, _modernZh],
+        language: 'en',
+        userActiveVariantId: _obsoleteZh.variantId,
+      );
+      expect(choice.variant, _obsoleteZh);
+      expect(choice.fit, LanguageFit.validated);
+      expect(choice.overrodeUserChoice, isFalse);
+    });
+
+    test('使用中的是中文專用模型時，英文文件改用英文已驗證的變體', () {
+      final choice = chooseVariant(
+        installed: [_modernZh, _enOnly],
+        language: 'en',
+        userActiveVariantId: _modernZh.variantId,
+      );
+      expect(choice.variant, _enOnly);
+      expect(choice.fit, LanguageFit.validated);
+      expect(choice.overrodeUserChoice, isTrue);
     });
 
     test('使用者選的變體已驗證時不換，尊重手動選擇', () {

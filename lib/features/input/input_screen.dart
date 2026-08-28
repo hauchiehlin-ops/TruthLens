@@ -17,6 +17,7 @@ import '../../core/services/ocr_service.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
+import '../../core/utils/language_id.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/workspace_navigation.dart';
@@ -111,6 +112,16 @@ class _InputScreenState extends State<InputScreen> {
         return;
       }
       // skip / dismissed → 以現有引擎（統計/風格）繼續分析
+    }
+    if (detectLanguage(text).code == 'zh' &&
+        !manager.isVariantInstalled('transformer', modernChineseDetectorId)) {
+      if (!mounted) return;
+      final choice = await showModernChineseModelPrompt(context);
+      if (!mounted) return;
+      if (choice == ModelPromptResult.download) {
+        context.push('/models');
+        return;
+      }
     }
     if (!mounted) return;
     context.push(
@@ -983,14 +994,17 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
-                l10n.settingsVersionSubtitle(
-                  AppVersion.displayVersion,
-                  AppVersion.buildNumber,
+              ValueListenableBuilder<AppVersionInfo>(
+                valueListenable: AppVersion.listenable,
+                builder: (context, info, _) => Text(
+                  l10n.settingsVersionSubtitle(
+                    info.displayVersion,
+                    info.buildNumber,
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -1194,10 +1208,13 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             ListTile(
               leading: Icon(LucideIcons.info),
               title: const Text('TruthLens'),
-              subtitle: Text(
-                l10n.settingsVersionSubtitle(
-                  AppVersion.displayVersion,
-                  AppVersion.buildNumber,
+              subtitle: ValueListenableBuilder<AppVersionInfo>(
+                valueListenable: AppVersion.listenable,
+                builder: (context, info, _) => Text(
+                  l10n.settingsVersionSubtitle(
+                    info.displayVersion,
+                    info.buildNumber,
+                  ),
                 ),
               ),
             ),

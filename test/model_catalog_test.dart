@@ -98,7 +98,28 @@ void main() {
         anyOf(0, 1),
         reason: '${variant['id']} 的 AI 類別索引無效——取錯會讓判定完全顛倒',
       );
+      final evidenceThreshold =
+          (variant['ai_evidence_threshold'] as num?)?.toDouble() ?? 0.60;
+      expect(
+        evidenceThreshold,
+        inInclusiveRange(0.50, 1.0),
+        reason: '${variant['id']} 的 AI 證據門檻必須是可解釋的機率值',
+      );
     }
+  });
+
+  test('現代中文變體使用獨立校準門檻，舊 HC3 變體不得宣稱中文已驗證', () {
+    final variants = variantsOf('transformer');
+    final modern = variants.firstWhere(
+      (v) => v['id'] == 'aigc-detector-zhv3-int8',
+    );
+    final legacy = variants.firstWhere(
+      (v) => v['id'] == 'truthlens-mbert-multilingual-int8',
+    );
+
+    expect(modern['languages'], contains('zh'));
+    expect(modern['ai_evidence_threshold'], 0.99);
+    expect(legacy['languages'], isNot(contains('zh')));
   });
 
   test('多語言變體排在英文專用變體之前（品質優先）', () {

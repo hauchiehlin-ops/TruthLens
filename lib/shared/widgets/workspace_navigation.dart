@@ -48,11 +48,14 @@ class AppIdentityTitle extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-            child: Text(
-              AppVersion.displayVersion,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: scheme.onPrimaryContainer,
-                fontWeight: FontWeight.w700,
+            child: ValueListenableBuilder<AppVersionInfo>(
+              valueListenable: AppVersion.listenable,
+              builder: (context, info, _) => Text(
+                info.displayVersion,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: scheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

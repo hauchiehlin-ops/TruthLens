@@ -49,16 +49,10 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final discovered = <DetectionEngine>[];
 
     // 1. Transformer AI 分類器。
-    // 同一 role 可安裝多個候選變體，但一次分析只跑「使用中」變體。
-    // 這能避免 Web ONNX Runtime 同時啟動多個同類 session 而產生
-    // Session already started / Session mismatch，權重也保持固定 40%。
-    final activeTransformer = mm.activeVariant('transformer');
-    discovered.add(
-      TransformerEngine(
-        modelManager: mm,
-        variantId: activeTransformer?.variantId,
-      ),
-    );
+    // 一次分析仍只跑一顆 Transformer，但不在 Orchestrator 建構時鎖死
+    // activeVariantId。文件語言要等預處理後才知道，TransformerEngine
+    // 會在每次分析時從所有已安裝變體挑選經該語言驗證的最佳模型。
+    discovered.add(TransformerEngine(modelManager: mm));
 
     // 2. 統計特徵模型 (Perplexity)
     discovered.add(StatisticalEngine(modelManager: mm));

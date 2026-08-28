@@ -48,25 +48,65 @@ void main() {
       expect(find.text('Analysis telemetry'), findsNothing);
     },
   );
+
+  testWidgets('首次啟動先進主畫面，再以提示詢問是否前往模型頁', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = PreferencesService();
+    await prefs.load();
+    expect(prefs.firstRunHandled, isFalse);
+
+    await tester.pumpWidget(_testApp(prefs, promptModelOnFirstRun: true));
+    await tester.pumpAndSettle();
+
+    // 主畫面必須已經在後面渲染——提示是覆蓋層，不是攔截頁。
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+    expect(find.text('Add a detection model?'), findsOneWidget);
+    expect(find.text('Choose a model'), findsOneWidget);
+
+    await tester.tap(find.text('Not now'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Add a detection model?'), findsNothing);
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+    // 婉拒也算處理過：下次啟動不再打擾。
+    expect(prefs.firstRunHandled, isTrue);
+  });
+
+  testWidgets('未要求提示時首次啟動不出現任何對話框', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = PreferencesService();
+    await prefs.load();
+
+    await tester.pumpWidget(_testApp(prefs));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+  });
 }
 
-Widget _testApp(PreferencesService prefs) => MultiProvider(
+Widget _testApp(PreferencesService prefs, {bool promptModelOnFirstRun = false}) =>
+    MultiProvider(
   providers: [
     ChangeNotifierProvider.value(value: prefs),
     ChangeNotifierProvider<ModelManager>.value(value: _FakeModelManager()),
     Provider(create: (_) => ModelCatalogService()),
     ChangeNotifierProvider(create: (_) => OcrConfigNotifier()),
   ],
-  child: const MaterialApp(
-    locale: Locale('en'),
+  child: MaterialApp(
+    locale: const Locale('en'),
     supportedLocales: AppLocalizations.supportedLocales,
-    localizationsDelegates: [
+    localizationsDelegates: const [
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
     ],
-    home: HomeScreen(),
+    home: HomeScreen(promptModelOnFirstRun: promptModelOnFirstRun),
   ),
 );
 

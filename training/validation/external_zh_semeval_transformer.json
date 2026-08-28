@@ -1,0 +1,70 @@
+{
+  "corpus_id": "semeval-2024-task8-zh",
+  "component": "aigc-detector-zhv3-int8",
+  "documents_scored": 11934,
+  "operating_point": 0.99,
+  "max_len": 192,
+  "human_documents": 6000,
+  "machine_documents": 5934,
+  "fpr": 0.0,
+  "fpr_upper_95": 0.0004507460713588669,
+  "recall": 0.09015840916750927,
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "fpr": 0.107,
+      "fpr_upper_95": 0.11374224926610572,
+      "recall": 0.8609706774519716
+    },
+    {
+      "threshold": 0.7,
+      "fpr": 0.0355,
+      "fpr_upper_95": 0.03964348761895001,
+      "recall": 0.734917425008426
+    },
+    {
+      "threshold": 0.8,
+      "fpr": 0.018,
+      "fpr_upper_95": 0.02104826460354885,
+      "recall": 0.6359959555106168
+    },
+    {
+      "threshold": 0.9,
+      "fpr": 0.004833333333333334,
+      "fpr_upper_95": 0.006545786584008049,
+      "recall": 0.5003370407819346
+    },
+    {
+      "threshold": 0.95,
+      "fpr": 0.0018333333333333333,
+      "fpr_upper_95": 0.0029934407934246354,
+      "recall": 0.36012807549713516
+    },
+    {
+      "threshold": 0.99,
+      "fpr": 0.0,
+      "fpr_upper_95": 0.0004507460713588669,
+      "recall": 0.09015840916750927
+    },
+    {
+      "threshold": 0.999,
+      "fpr": 0.0,
+      "fpr_upper_95": 0.0004507460713588669,
+      "recall": 0.0
+    }
+  ],
+  "per_generator": {
+    "chatGPT": {
+      "n": 2970,
+      "above_threshold_rate": 0.14747474747474748
+    },
+    "davinci": {
+      "n": 2964,
+      "above_threshold_rate": 0.03272604588394062
+    },
+    "human": {
+      "n": 6000,
+      "above_threshold_rate": 0.0
+    }
+  }
+}

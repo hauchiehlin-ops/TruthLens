@@ -157,11 +157,42 @@
   "modelPromptDontRemind": "Don't remind me again",
   "modelPromptSkip": "Skip for now",
   "modelPromptDownload": "Go to download",
+  "firstRunModelPromptTitle": "Add a detection model?",
+  "firstRunModelPromptBody": "TruthLens already works: the statistical and stylistic engines are ready now. Adding an on-device neural model brings the multilingual classifier into the ensemble vote, which markedly improves accuracy and language coverage. The model runs entirely in your browser and never uploads your documents. You can also decide later from \"Settings → AI Model Management\".",
+  "firstRunModelPromptLater": "Not now",
+  "firstRunModelPromptGo": "Choose a model",
+  "modernChineseModelPromptTitle": "Improve Chinese detection",
+  "modernChineseModelPromptBody": "This Chinese document is currently missing the modern Chinese detector (about 98 MB). The older multilingual model was calibrated on early-generation text and can miss current DeepSeek, Gemini and GPT-style Chinese writing. Download the specialized on-device model for a better calibrated result, or continue with the weaker cross-language fallback.",
   "onboardingWelcomeTitle": "Welcome to TruthLens",
   "onboardingHeadline": "On-device AI content detection",
   "onboardingDetectedDevice": "Detected device",
   "onboardingChooseModel": "Choose a model to download",
   "onboardingRecommendHint": "\"Recommended\" is marked based on your hardware; you may also pick another option.",
+  "onboardingBundleTitle": "Recommended for this device",
+  "onboardingBundleSummary": "{count} models · {size} MB total",
+  "@onboardingBundleSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingBundleStorage": "Browser storage: {available} MB available, about {remaining} MB left after downloading",
+  "@onboardingBundleStorage": {
+    "placeholders": {
+      "available": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingStorageNotPersisted": "Downloaded models are not yet protected from automatic cleanup. If disk space runs low the browser may reclaim them and you would have to download again. Installing TruthLens as an app makes the browser far more likely to keep them.",
+  "onboardingInstallAppButton": "Install as an app",
   "onboardingSkipButton": "Decide later (use statistical/stylistic analysis without a model)",
   "onboardingSkipHint": "You can still download later from \"Settings → AI Model Management\"; you'll be reminded again when an analysis needs a model.",
   "modelListCustomImportedLabel": "Custom imported models:",
@@ -402,7 +433,13 @@
     }
   },
   "reportEngineDirectionalIndex": "Weak direction {percent}/100",
-  "@reportEngineDirectionalIndex": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportEngineDirectionalIndex": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportEngineNoDirectionalSignal": "No directional signal",
   "reportEngineSignalExplanation": "Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.",
   "engineReasonAdversarialNoStrongSentence": "None of {total} sentences crossed the strong paraphrase threshold; the calibrated weak signal is {percent}%",
@@ -1702,7 +1739,13 @@
     }
   },
   "engineReasonBurstinessMid": "Sentence-length variation (burstiness {value}) stayed inside the neutral band 0.30–0.55",
-  "@engineReasonBurstinessMid": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonBurstinessMid": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonTtrLow": "Low vocabulary diversity (TTR {value}) [AI-leaning template pattern]",
   "@engineReasonTtrLow": {
     "placeholders": {
@@ -1720,7 +1763,16 @@
     }
   },
   "engineReasonMattrNoAiSignal": "Vocabulary diversity (MATTR {value}) did not cross the calibrated AI-signal cutoff {cut}",
-  "@engineReasonMattrNoAiSignal": {"placeholders": {"value": {"type": "String"}, "cut": {"type": "String"}}},
+  "@engineReasonMattrNoAiSignal": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "cut": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonStatisticalSummaryAi": "Overall statistical summary: leans towards AI-generated characteristics (signal index {percent}/100)",
   "@engineReasonStatisticalSummaryAi": {
     "placeholders": {
@@ -1773,15 +1825,61 @@
   },
   "engineReasonNoStyleMarkers": "No significant AI writing style patterns detected",
   "engineReasonPan25LexicalAi": "PAN 2025 lexical fingerprint leans AI ({percent}/100); this independent English baseline detects word and phrase distributions that differ from its human corpus",
-  "@engineReasonPan25LexicalAi": {"placeholders": {"percent": {"type": "int"}}},
+  "@engineReasonPan25LexicalAi": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonPan25LexicalHuman": "PAN 2025 lexical fingerprint leans human ({percent}/100); this remains model evidence, not proof of authorship",
-  "@engineReasonPan25LexicalHuman": {"placeholders": {"percent": {"type": "int"}}},
+  "@engineReasonPan25LexicalHuman": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonPan25LexicalNeutral": "PAN 2025 lexical fingerprint is neutral ({percent}/100) and does not provide a direction",
-  "@engineReasonPan25LexicalNeutral": {"placeholders": {"percent": {"type": "int"}}},
+  "@engineReasonPan25LexicalNeutral": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "engineReasonDetectRlZhAi": "DetectRL-ZH's Chinese character fingerprint crossed the conservative AI evidence gate ({percent}/100); it was independently tested against DeepSeek-V3, mixed text, back-translation, character perturbation, and varying lengths",
+  "@engineReasonDetectRlZhAi": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "engineReasonDetectRlZhNoAiSignal": "DetectRL-ZH's Chinese character fingerprint did not cross the conservative AI evidence gate ({percent}/100); this is an abstention, not evidence that a human wrote the text",
+  "@engineReasonDetectRlZhNoAiSignal": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonCompressionCoherence": "Cross-boundary compression coherence ({value}) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]",
-  "@engineReasonCompressionCoherence": {"placeholders": {"value": {"type": "String"}}},
+  "@engineReasonCompressionCoherence": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "engineReasonAssistantResponseArtifact": "Detected {count} conversational assistant-response artifact(s), such as addressing the requester or offering to revise the requested text",
-  "@engineReasonAssistantResponseArtifact": {"placeholders": {"count": {"type": "int"}}},
+  "@engineReasonAssistantResponseArtifact": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "engineReasonAdversarialNotInstalled": "The paraphrase-detection model is not installed; it did not take part in this vote",
   "engineReasonTransformerNotInstalled": "No model is installed or the active model is unsupported; it did not take part in this vote",
   "modelRepairNoActiveVariant": "No active model found; download a recommended model in Model Management.",
@@ -1871,9 +1969,9 @@
     }
   },
   "helpWorkflowStep1Title": "Model download & update",
-  "helpWorkflowStep1Body": "First launch guides you through installing the core detection model; afterward you can always check, download, update, or remove models from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.",
+  "helpWorkflowStep1Body": "The app always opens on the main screen. On first launch, if no detection model is installed yet, a prompt asks whether you want to choose one — decline it and you can analyse straight away using the statistical and stylistic engines. You can check, download, update, or remove models at any time from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.",
   "helpWorkflowStep2Title": "Choosing a model (purpose & effect)",
-  "helpWorkflowStep2Bullet1": "Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence.",
+  "helpWorkflowStep2Bullet1": "Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence. When several classifier variants are installed, each analysis picks the one validated for the document's language — Chinese documents need the dedicated modern Chinese detector, and the app prompts for it when that model is missing.",
   "helpWorkflowStep2Bullet2": "Statistical analysis engine (25% weight): sliding-window perplexity and burstiness analysis, capturing the regular rhythm and predictable wording of AI text.",
   "helpWorkflowStep2Bullet3": "Stylometric analysis (20% weight): semantic fluency, repeated sentence patterns, transition-word usage — the most explainable, easiest to understand \"why\".",
   "helpWorkflowStep2Bullet4": "Adversarial defense (15% weight): detects text that has been washed through a paraphrasing tool (e.g. QuillBot, Undetectable.ai).",
@@ -2061,7 +2159,16 @@
     }
   },
   "reportEngineRelationshipDirectionalOnly": "{engine} found only a weak directional signal. It is discounted for screening and does not count as threshold-qualified evidence (role weight cap {weight}%).",
-  "@reportEngineRelationshipDirectionalOnly": {"placeholders": {"engine": {"type": "String"}, "weight": {"type": "int"}}},
+  "@reportEngineRelationshipDirectionalOnly": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "int"
+      }
+    }
+  },
   "telemetrySummarySingleSource": "Only {engine} produced a usable direction; the other engines turned up nothing this time. The conclusion rests on a single analysis axis, so treat its confidence accordingly.",
   "@telemetrySummarySingleSource": {
     "description": "Telemetry summary line when exactly one engine found evidence",
@@ -2224,9 +2331,24 @@
     }
   },
   "findingPublicationPredatesGenerativeAi": "Source DOI {doi} matches this document and was registered in {year}, before modern generative-AI writing systems.",
-  "@findingPublicationPredatesGenerativeAi": {"placeholders": {"doi": {"type": "String"}, "year": {"type": "int"}}},
+  "@findingPublicationPredatesGenerativeAi": {
+    "placeholders": {
+      "doi": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
   "findingPublicationIdentityMismatch": "Source DOI {doi} resolves, but its registered title does not match this document. Verify the document identity before relying on it.",
-  "@findingPublicationIdentityMismatch": {"placeholders": {"doi": {"type": "String"}}},
+  "@findingPublicationIdentityMismatch": {
+    "placeholders": {
+      "doi": {
+        "type": "String"
+      }
+    }
+  },
   "integratedStabilityUnavailable": "Segment stability unavailable · no sentence-level evidence voted",
   "integratedNeutralBaseline": "No authorship-specific evidence strong enough for escalation was found. The result shown is the best directional screening available, not a claim that AI and human evidence are evenly split.",
   "reportVerifiableFindingsTitle": "What can be verified",
@@ -2261,7 +2383,16 @@
   "evidenceMatrixTitle": "Multi-evidence assessment",
   "evidenceMatrixSubtitle": "Six axes are shown separately. Only authorship-specific evidence affects the author verdict; coverage shows what could be examined.",
   "evidenceMatrixCoverage": "Evidence coverage: {available} of {total} axes",
-  "@evidenceMatrixCoverage": {"placeholders": {"available": {"type": "int"}, "total": {"type": "int"}}},
+  "@evidenceMatrixCoverage": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "evidenceAxisText": "Text-generation traces",
   "evidenceAxisTextNote": "Probabilistic patterns from the four local detectors",
   "evidenceAxisProcess": "Writing process",
@@ -2281,7 +2412,16 @@
   "evidenceMatrixTextOnlyWarning": "Only the text-pattern axis was available. Current-generation AI can imitate human prose, so this report cannot establish authorship from the score alone.",
   "evidenceMatrixStrongConcern": "At least one independent axis contains a strong review signal. Inspect that evidence before relying on the text score.",
   "findingUnsupportedClaims": "{unsupported} of {total} checkable claims contain numbers, comparisons or research attributions without a source anchor in the same sentence. This does not prove they are false, but identifies the claims that need verification first.",
-  "@findingUnsupportedClaims": {"placeholders": {"unsupported": {"type": "int"}, "total": {"type": "int"}}},
+  "@findingUnsupportedClaims": {
+    "placeholders": {
+      "unsupported": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "integratedAssessmentTitle": "Integrated authorship assessment",
   "integratedInsufficientEvidence": "No quantifiable authorship signal",
   "integratedLikelyAi": "More likely AI-generated",
@@ -2291,52 +2431,199 @@
   "integratedPreliminaryAi": "Currently leans AI, near the boundary",
   "integratedPreliminaryHuman": "Currently leans human, near the boundary",
   "integratedLikelihoodLabel": "AI evidence index: {percent}/100",
-  "@integratedLikelihoodLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@integratedLikelihoodLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "integratedLikelihoodUnavailable": "AI evidence index: not estimable",
   "integratedTextScoreLabel": "Text-model score: {percent}%",
-  "@integratedTextScoreLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@integratedTextScoreLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "integratedConfidenceLabel": "Confidence: {confidence}",
-  "@integratedConfidenceLabel": {"placeholders": {"confidence": {"type": "String"}}},
+  "@integratedConfidenceLabel": {
+    "placeholders": {
+      "confidence": {
+        "type": "String"
+      }
+    }
+  },
   "integratedConfidenceLow": "Low",
   "integratedConfidenceModerate": "Moderate",
   "integratedConfidenceHigh": "High",
   "integratedEvidenceSufficiency": "Evidence sufficiency: {percent}/100 · {tier}",
-  "@integratedEvidenceSufficiency": {"placeholders": {"percent": {"type": "int"}, "tier": {"type": "String"}}},
+  "@integratedEvidenceSufficiency": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
   "integratedEvidenceTierScreening": "preliminary screening",
   "integratedEvidenceTierReference": "reference-level",
   "integratedEvidenceTierStrong": "well supported",
   "integratedBoundaryAi": "Index {index} is only a weak AI-side direction and remains {gap} points below the 60-point escalation line. It has not established AI authorship.",
-  "@integratedBoundaryAi": {"placeholders": {"index": {"type": "int"}, "gap": {"type": "int"}}},
+  "@integratedBoundaryAi": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "gap": {
+        "type": "int"
+      }
+    }
+  },
   "integratedBoundaryHuman": "Index {index} leans human and remains {gap} points below the 60-point AI escalation line, but the limited evidence cannot rule out AI assistance.",
-  "@integratedBoundaryHuman": {"placeholders": {"index": {"type": "int"}, "gap": {"type": "int"}}},
+  "@integratedBoundaryHuman": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "gap": {
+        "type": "int"
+      }
+    }
+  },
   "integratedEvidenceCoverage": "Directional signal families: {families}/4 · applicability coverage {coverage}%",
-  "@integratedEvidenceCoverage": {"placeholders": {"families": {"type": "int"}, "coverage": {"type": "int"}}},
+  "@integratedEvidenceCoverage": {
+    "placeholders": {
+      "families": {
+        "type": "int"
+      },
+      "coverage": {
+        "type": "int"
+      }
+    }
+  },
   "integratedEvidenceGatePassed": "AI evidence gate: passed",
   "integratedEvidenceGateNotPassed": "AI evidence gate: not passed · directional screening only",
   "integratedQualifiedWarning": "{reason} The system still gives the most likely direction, but confidence is reduced; treat it as a screening result, not proof.",
-  "@integratedQualifiedWarning": {"placeholders": {"reason": {"type": "String"}}},
+  "@integratedQualifiedWarning": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "integratedIndexCaveat": "The separate AI evidence gate indicates whether independent support is strong enough for escalation. Citation quality, paste behavior, and suspicious metadata cannot independently produce an AI verdict. This is an evidence score, not a calibrated statistical probability.",
   "reportTextEngineSignalExplanation": "These bars show diagnostic signals from the four text engines. Related engines are merged by family, including conservatively discounted human-side classifier output, before language/domain applicability and calibration reliability are applied. The direction answers which explanation is better supported; the separate AI evidence gate answers whether support is strong enough for escalation.",
   "reportSynthesisTextScoreContext": "Four-engine text-model raw score: {percent}%. This is one input to the integrated assessment, not a second verdict.",
-  "@reportSynthesisTextScoreContext": {"placeholders": {"percent": {"type": "int"}}},
+  "@reportSynthesisTextScoreContext": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "reportSynthesisStrongestTextSignal": "Strongest text-engine signal: {label} ({percent}%). It can influence the text-model score but cannot override the integrated assessment by itself.",
-  "@reportSynthesisStrongestTextSignal": {"placeholders": {"label": {"type": "String"}, "percent": {"type": "int"}}},
+  "@reportSynthesisStrongestTextSignal": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "composerTextScoreThresholdReached": "The text-model raw score is {aiPercent}%, reaching the {thresholdPercent}% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report's authorship direction.",
-  "@composerTextScoreThresholdReached": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
+  "@composerTextScoreThresholdReached": {
+    "placeholders": {
+      "aiPercent": {
+        "type": "int"
+      },
+      "thresholdPercent": {
+        "type": "int"
+      }
+    }
+  },
   "composerTextScoreThresholdNotReached": "The text-model raw score is {aiPercent}%, below the {thresholdPercent}% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report's authorship direction.",
-  "@composerTextScoreThresholdNotReached": {"placeholders": {"aiPercent": {"type": "int"}, "thresholdPercent": {"type": "int"}}},
+  "@composerTextScoreThresholdNotReached": {
+    "placeholders": {
+      "aiPercent": {
+        "type": "int"
+      },
+      "thresholdPercent": {
+        "type": "int"
+      }
+    }
+  },
   "telemetryIntegratedVerdict": "After weighting the available evidence, the document is “{direction}” (AI evidence index {percent}/100, {confidence} confidence).",
-  "@telemetryIntegratedVerdict": {"placeholders": {"direction": {"type": "String"}, "percent": {"type": "int"}, "confidence": {"type": "String"}}},
+  "@telemetryIntegratedVerdict": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "confidence": {
+        "type": "String"
+      }
+    }
+  },
   "telemetryIntegratedUnavailable": "The available modules did not produce a quantifiable authorship direction (“{direction}”, {confidence} confidence); no numeric index was issued.",
-  "@telemetryIntegratedUnavailable": {"placeholders": {"direction": {"type": "String"}, "confidence": {"type": "String"}}},
+  "@telemetryIntegratedUnavailable": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "confidence": {
+        "type": "String"
+      }
+    }
+  },
   "integratedStabilityLabel": "Segment stability {percent}% · interval {lower}–{upper}%",
-  "@integratedStabilityLabel": {"placeholders": {"percent": {"type": "int"}, "lower": {"type": "int"}, "upper": {"type": "int"}}},
+  "@integratedStabilityLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "lower": {
+        "type": "int"
+      },
+      "upper": {
+        "type": "int"
+      }
+    }
+  },
   "integratedInputQualityLabel": "Input extraction quality: {percent}%",
-  "@integratedInputQualityLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@integratedInputQualityLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "integratedCalibrationLabel": "Matched local baseline: p={value} · n={count}",
-  "@integratedCalibrationLabel": {"placeholders": {"value": {"type": "String"}, "count": {"type": "int"}}},
+  "@integratedCalibrationLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "analysisReadinessLabel": "Pre-analysis confidence baseline: {level}",
-  "@analysisReadinessLabel": {"placeholders": {"level": {"type": "String"}}},
+  "@analysisReadinessLabel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "analysisReadinessShortText": "more text needed",
   "analysisReadinessFewSentences": "too few segments",
   "analysisReadinessCoreModel": "core classifier unavailable",

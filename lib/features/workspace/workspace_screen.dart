@@ -380,6 +380,16 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         return;
       }
     }
+    if (detectLanguage(text).code == 'zh' &&
+        !manager.isVariantInstalled('transformer', modernChineseDetectorId)) {
+      if (!mounted) return;
+      final choice = await showModernChineseModelPrompt(context);
+      if (!mounted) return;
+      if (choice == ModelPromptResult.download) {
+        context.push('/models');
+        return;
+      }
+    }
 
     final run = ++_analysisRun;
     final startedAt = DateTime.now();

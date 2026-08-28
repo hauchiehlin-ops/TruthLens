@@ -51,11 +51,22 @@
   "modelPromptDontRemind": "不再提醒我",
   "modelPromptSkip": "暂时略过",
   "modelPromptDownload": "前往下载",
+  "firstRunModelPromptTitle": "要加入检测模型吗？",
+  "firstRunModelPromptBody": "TruthLens 现在就能用：统计与风格引擎已经就绪。加入设备端神经网络模型后，多语言分类器会加入集成投票，准确度与语言涵盖会明显提升。模型完全在你的浏览器内执行，不会上传你的文件。你也可以稍后从“设置 → AI 模型管理”再决定。",
+  "firstRunModelPromptLater": "现在不用",
+  "firstRunModelPromptGo": "去挑模型",
+  "modernChineseModelPromptTitle": "补齐现代中文判读模型",
+  "modernChineseModelPromptBody": "这份中文文件尚未安装现代中文侦测器（约 98 MB）。旧多语言模型只以早期生成文本校准，容易漏掉目前 DeepSeek、Gemini 与 GPT 类型的中文写作。建议下载专用的装置端模型后再分析；也可继续使用较弱的跨语言备用模型。",
   "onboardingWelcomeTitle": "欢迎使用 TruthLens",
   "onboardingHeadline": "设备端 AI 内容检测",
   "onboardingDetectedDevice": "侦测到的设备",
   "onboardingChooseModel": "选择要下载的模型",
   "onboardingRecommendHint": "已依你的硬件标示「推荐」；也可自行选择其他选项。",
+  "onboardingBundleTitle": "为这台设备的建议组合",
+  "onboardingBundleSummary": "{count} 颗模型 · 合计 {size} MB",
+  "onboardingBundleStorage": "浏览器存储空间：可用 {available} MB，下载后约剩 {remaining} MB",
+  "onboardingStorageNotPersisted": "已下载的模型尚未受到自动清理的保护。磁盘空间不足时浏览器可能将其回收，届时必须重新下载。把 TruthLens 安装成应用程序，可大幅提高浏览器保留这些模型的机会。",
+  "onboardingInstallAppButton": "安装成应用程序",
   "onboardingSkipButton": "稍后再说（先用免模型的统计/风格分析）",
   "onboardingSkipHint": "略过后仍可随时到「设置 → AI 模型管理」下载；使用需要模型的分析时也会再次提醒。",
   "modelListCustomImportedLabel": "自订导入的模型：",
@@ -1024,6 +1035,8 @@
   "engineReasonPan25LexicalAi": "PAN 2025 词汇指纹偏向 AI（{percent}/100）；这项独立英文基准检测到词语与短语分布不同于其人类语料",
   "engineReasonPan25LexicalHuman": "PAN 2025 词汇指纹偏向真人（{percent}/100）；这仍是模型证据，不是作者身份的证明",
   "engineReasonPan25LexicalNeutral": "PAN 2025 词汇指纹落在中性区（{percent}/100），不提供方向",
+  "engineReasonDetectRlZhAi": "DetectRL-ZH 中文字符指纹跨过保守 AI 证据门槛（{percent}/100）；此模型已另以 DeepSeek-V3、混写、回译、形近字干扰及不同长度数据测试",
+  "engineReasonDetectRlZhNoAiSignal": "DetectRL-ZH 中文字符指纹未跨过保守 AI 证据门槛（{percent}/100）；这代表弃权，不是由真人撰写的证据",
   "engineReasonCompressionCoherence": "跨半段压缩一致性（{value}）超过 PAN 2025 人类语料第 95 百分位筛线［弱 AI 方向信号］",
   "engineReasonAssistantResponseArtifact": "侦测到 {count} 处聊天助理回复残留，例如称呼提问者或主动表示可修改受托文字",
   "engineReasonAdversarialNotInstalled": "改写侦测模型尚未安装，未参与本次投票",
@@ -1088,9 +1101,9 @@
     }
   },
   "helpWorkflowStep1Title": "模型下载与更新",
-  "helpWorkflowStep1Body": "首次启动会引导安装内核侦测模型；之后可随时至「设置 → AI 模型管理」查看、下载、更新或移除。App 会在启动时主动比对最新版本，若有更新，设置齿轮图标与「AI 模型管理」项目会出现红点提示。",
+  "helpWorkflowStep1Body": "应用程序一律先进入主画面。首次启动时若尚未安装任何检测模型，会出现提示询问是否前往挑选——婉拒也能立刻开始分析，改由统计与风格引擎作业。你随时可以从“设置 → AI 模型管理”查看、下载、更新或移除模型。启动时会主动检查最新版本，有更新时会在设置图标与“AI 模型管理”入口显示标记。",
   "helpWorkflowStep2Title": "如何选用模型（目的与效果）",
-  "helpWorkflowStep2Bullet1": "多语言 AI 分类器（权重 40%）：以受控段落区块保留上下文，再将几率映射回逐句证据。",
+  "helpWorkflowStep2Bullet1": "多语言 AI 分类器（权重 40%）：以受限段落区块分析以保留上下文，再把概率映射回句子形成逐句证据。安装多个分类器变体时，每次分析会挑选对该文件语言已验证的那一颗——中文文件需要专用的现代中文检测器，缺少时应用程序会主动提示。",
   "helpWorkflowStep2Bullet2": "统计分析引擎（权重 25%）：困惑度与 Burstiness 滑动窗口分析，捕捉 AI 文本规律的节奏与用词可预测性。",
   "helpWorkflowStep2Bullet3": "风格特征分析（权重 20%）：语意流畅度、重复句式、过渡词使用，可解释性最高，最容易看懂「为什么」。",
   "helpWorkflowStep2Bullet4": "对抗式防御（权重 15%）：辨识是否经改写工具（如 QuillBot、Undetectable.ai）洗过的文本。",
@@ -1313,7 +1326,16 @@
   "integratedBoundaryAi": "指数 {index} 只呈现微弱 AI 方向，距 60 分 AI 升级线仍有 {gap} 分；目前不足以认定 AI 撰写。",
   "integratedBoundaryHuman": "指数 {index} 目前偏向真人，且距 60 分 AI 升级线仍有 {gap} 分；但证据有限，仍不能排除 AI 协作。",
   "integratedEvidenceCoverage": "方向性信号家族：{families}/4 · 适用性覆盖 {coverage}%",
-  "@integratedEvidenceCoverage": {"placeholders": {"families": {"type": "int"}, "coverage": {"type": "int"}}},
+  "@integratedEvidenceCoverage": {
+    "placeholders": {
+      "families": {
+        "type": "int"
+      },
+      "coverage": {
+        "type": "int"
+      }
+    }
+  },
   "integratedEvidenceGatePassed": "AI 证据门槛：已通过",
   "integratedEvidenceGateNotPassed": "AI 证据门槛：未通过・仅供方向筛查",
   "integratedQualifiedWarning": "{reason} 系统仍提供最可能方向，但已降低信心；请把它视为筛查结果，而不是定案证明。",
@@ -1327,8 +1349,8 @@
   "telemetryIntegratedUnavailable": "本次可用模块未形成可量化的作者方向（“{direction}”、{confidence}信心），因此不提供数字指数。",
   "integratedStabilityLabel": "分段稳定性 {percent}% · 区间 {lower}–{upper}%",
   "integratedInputQualityLabel": "输入抽取质量：{percent}%",
-  "integratedCalibrationLabel": "同条件本地基准：p={value} · n={count}"
-  ,"analysisReadinessLabel": "分析前信心基准：{level}",
+  "integratedCalibrationLabel": "同条件本地基准：p={value} · n={count}",
+  "analysisReadinessLabel": "分析前信心基准：{level}",
   "analysisReadinessShortText": "需要更多文字",
   "analysisReadinessFewSentences": "可分析句段不足",
   "analysisReadinessCoreModel": "核心分类模型不可用",

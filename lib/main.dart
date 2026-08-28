@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import 'app/router.dart';
 import 'app/theme.dart';
+import 'core/detection/device_capabilities.dart';
 import 'core/detection/model_catalog_service.dart';
 import 'core/detection/model_manager.dart';
 import 'core/detection/llm_manager.dart';
@@ -65,8 +66,10 @@ Future<void> main() async {
     await modelManager.refreshInstallStates();
   }
 
-  // 首次啟動且核心偵測模型未安裝 → 進引導頁；否則直接進首頁。
-  final needsOnboarding =
+  // 首次啟動且核心偵測模型未安裝時「提示」而不是「攔截」：一律先進首頁，
+  // 讓使用者看到自己要用的東西，再由首頁詢問是否前往模型頁。開場就把人丟到
+  // 一頁模型清單，等於在使用者還不知道這個 App 做什麼之前就要他做決定。
+  final needsModelPrompt =
       webPreferencesReady &&
       !prefs.firstRunHandled &&
       !modelManager.isInstalled('transformer');
@@ -77,7 +80,8 @@ Future<void> main() async {
       modelManager: modelManager,
       provisioner: provisioner,
       calibration: calibration,
-      initialLocation: needsOnboarding ? '/onboarding' : '/',
+      initialLocation: '/',
+      promptModelOnFirstRun: needsModelPrompt,
     ),
   );
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
@@ -92,6 +96,12 @@ Future<void> main() async {
         _runStartupTask('calibration', calibration.load),
         _runStartupTask('OCR settings', OcrService.hydrate),
         _runStartupTask('model inventory', modelManager.refreshInstallStates),
+        // 已下載的模型預設是「盡力而為」等級，瀏覽器在磁碟壓力下可以直接回收，
+        // 使用者下次開啟就得重載數百 MB。每次啟動都補問一次——Chromium 會依
+        // 累積的互動程度決定，第一次被拒不代表之後也拒。
+        _runStartupTask('persistent storage', () async {
+          await DeviceCapabilities.requestPersistentStorage();
+        }),
       ]),
     );
   }
@@ -114,6 +124,10 @@ class TruthLensApp extends StatelessWidget {
   final ModelProvisioner provisioner;
   final CalibrationService calibration;
   final String initialLocation;
+
+  /// 首次啟動且尚未安裝偵測模型：首頁顯示一次性提示，詢問是否前往模型頁。
+  final bool promptModelOnFirstRun;
+
   const TruthLensApp({
     super.key,
     required this.prefs,
@@ -121,11 +135,15 @@ class TruthLensApp extends StatelessWidget {
     required this.provisioner,
     required this.calibration,
     required this.initialLocation,
+    this.promptModelOnFirstRun = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final router = createRouter(initialLocation: initialLocation);
+    final router = createRouter(
+      initialLocation: initialLocation,
+      promptModelOnFirstRun: promptModelOnFirstRun,
+    );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: prefs),

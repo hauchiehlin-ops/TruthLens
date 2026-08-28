@@ -1,0 +1,11 @@
+AIGC Detector Zh-v3 model notice
+
+Upstream project: https://github.com/YuchuanTian/AIGC_text_detector
+Upstream model: https://huggingface.co/yuchuantian/AIGC_detector_zhv3
+Copyright: Yuchuan Tian and contributors
+License: Apache License 2.0
+
+TruthLens converts the upstream PyTorch checkpoint to ONNX, applies dynamic
+INT8 quantization, and uses an independently calibrated 0.99 AI-evidence gate.
+These conversion and calibration changes are not representations made by the
+upstream authors. The model is downloaded on demand and runs on device.

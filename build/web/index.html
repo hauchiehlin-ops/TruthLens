@@ -90,6 +90,9 @@
   </style>
 
   <!-- TruthLens 端上推論橋接：執行期與模型均採自我托管，文件內容不送往伺服器。 -->
+  <!-- 必須早於 flutter_bootstrap.js：beforeinstallprompt 只派送一次，
+       且通常在 Flutter 啟動前就已觸發。 -->
+  <script src="pwa_bridge.js"></script>
   <script src="fs_bridge.js"></script>
   <script src="ort_bridge.js"></script>
   <script src="db_bridge.js"></script>

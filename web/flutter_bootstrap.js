@@ -6,6 +6,8 @@
 
 const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
 const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
+const truthLensWorkerScript = "truthlens_sw.js";
+const truthLensShellCache = "truthlens-shell-v1";
 
 function getTruthLensCompatibilityPlatform() {
   const userAgent = navigator.userAgent || "";
@@ -103,9 +105,21 @@ async function removeLegacyFlutterWorker() {
   }
 
   const registrations = await navigator.serviceWorker.getRegistrations();
+  // TruthLens 自有的 worker 不算「舊」——它是安裝為應用程式的前提。
+  // 少了這個判斷，每次載入都會把它反註冊掉，安裝提示永遠不會出現。
+  const isOwnWorker = (registration) => {
+    const worker =
+      registration.active || registration.waiting || registration.installing;
+    return worker != null && worker.scriptURL.endsWith(truthLensWorkerScript);
+  };
+  const legacy = registrations.filter((registration) => !isOwnWorker(registration));
   const hadLegacyWorker =
-    registrations.length > 0 || navigator.serviceWorker.controller != null;
-  await Promise.all(registrations.map((registration) => registration.unregister()));
+    legacy.length > 0 ||
+    (navigator.serviceWorker.controller != null &&
+      !navigator.serviceWorker.controller.scriptURL.endsWith(
+        truthLensWorkerScript,
+      ));
+  await Promise.all(legacy.map((registration) => registration.unregister()));
 
   if ("caches" in window) {
     const cacheNames = await window.caches.keys();
@@ -113,7 +127,8 @@ async function removeLegacyFlutterWorker() {
       cacheNames
         .filter(
           (name) =>
-            name === "flutter-app-cache" || name.startsWith("flutter-"),
+            name !== truthLensShellCache &&
+            (name === "flutter-app-cache" || name.startsWith("flutter-")),
         )
         .map((name) => window.caches.delete(name)),
     );
@@ -126,6 +141,16 @@ async function removeLegacyFlutterWorker() {
     );
   }
   return hadLegacyWorker;
+}
+
+// Chromium 只有在網站具備帶 fetch handler 的 service worker 時才會派送
+// beforeinstallprompt，而安裝是 storage.persist() 獲准的最有效途徑。
+// 刻意等應用程式跑起來才註冊：註冊失敗或延遲都不該影響啟動。
+function registerTruthLensWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register(truthLensWorkerScript).catch((error) => {
+    console.warn("TruthLens service worker registration failed:", error);
+  });
 }
 
 async function bootTruthLens() {
@@ -197,6 +222,7 @@ async function bootTruthLens() {
           window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);
           document.getElementById("seo-shell")?.remove();
+          registerTruthLensWorker();
         } catch (error) {
           window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);

@@ -193,6 +193,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modelPromptDownload => '前往下載';
 
   @override
+  String get firstRunModelPromptTitle => '要加入偵測模型嗎？';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
+
+  @override
+  String get firstRunModelPromptLater => '現在不用';
+
+  @override
+  String get firstRunModelPromptGo => '去挑模型';
+
+  @override
+  String get modernChineseModelPromptTitle => '補齊現代中文判讀模型';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      '這份中文文件尚未安裝現代中文偵測器（約 98 MB）。舊多語言模型只以早期生成文本校準，容易漏掉目前 DeepSeek、Gemini 與 GPT 類型的中文寫作。建議下載專用的裝置端模型後再分析；也可繼續使用較弱的跨語言備援。';
+
+  @override
   String get onboardingWelcomeTitle => '歡迎使用 TruthLens';
 
   @override
@@ -206,6 +226,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get onboardingRecommendHint => '已依你的硬體標示「推薦」；也可自行選擇其他選項。';
+
+  @override
+  String get onboardingBundleTitle => '為這台裝置的建議組合';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count 顆模型 · 合計 $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return '瀏覽器儲存空間：可用 $available MB，下載後約剩 $remaining MB';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 TruthLens 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
+
+  @override
+  String get onboardingInstallAppButton => '安裝成應用程式';
 
   @override
   String get onboardingSkipButton => '稍後再說（先用免模型的統計/風格分析）';
@@ -1792,6 +1832,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'DetectRL-ZH 中文字元指紋跨過保守 AI 證據門檻（$percent/100）；此模型已另以 DeepSeek-V3、混寫、回譯、形近字干擾及不同長度資料測試';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'DetectRL-ZH 中文字元指紋未跨過保守 AI 證據門檻（$percent/100）；這代表棄權，不是由真人撰寫的證據';
+  }
+
+  @override
   String engineReasonCompressionCoherence(String value) {
     return '跨半段壓縮一致性（$value）超過 PAN 2025 人類語料第 95 百分位篩線［弱 AI 方向訊號］';
   }
@@ -2012,14 +2062,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep1Body =>
-      '首次啟動會引導安裝核心偵測模型；之後可隨時至「設定 → AI 模型管理」查看、下載、更新或移除。App 會在啟動時主動比對最新版本，若有更新，設定齒輪圖示與「AI 模型管理」項目會出現紅點提示。';
+      '應用程式一律先進入主畫面。首次啟動時若尚未安裝任何偵測模型，會出現提示詢問是否前往挑選——婉拒也能立刻開始分析，改由統計與風格引擎作業。你隨時可以從「設定 → AI 模型管理」查看、下載、更新或移除模型。啟動時會主動檢查最新版本，有更新時會在設定圖示與「AI 模型管理」入口顯示標記。';
 
   @override
   String get helpWorkflowStep2Title => '如何選用模型（目的與效果）';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多語言 AI 分類器（權重 40%）：以受控段落區塊保留上下文，再將機率映射回逐句證據。';
+      '多語言 AI 分類器（權重 40%）：以受限段落區塊分析以保留上下文，再把機率映射回句子形成逐句證據。安裝多個分類器變體時，每次分析會挑選對該文件語言已驗證的那一顆——中文文件需要專用的現代中文偵測器，缺少時應用程式會主動提示。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -3080,6 +3130,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get modelPromptDownload => '前往下载';
 
   @override
+  String get firstRunModelPromptTitle => '要加入检测模型吗？';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens 现在就能用：统计与风格引擎已经就绪。加入设备端神经网络模型后，多语言分类器会加入集成投票，准确度与语言涵盖会明显提升。模型完全在你的浏览器内执行，不会上传你的文件。你也可以稍后从“设置 → AI 模型管理”再决定。';
+
+  @override
+  String get firstRunModelPromptLater => '现在不用';
+
+  @override
+  String get firstRunModelPromptGo => '去挑模型';
+
+  @override
+  String get modernChineseModelPromptTitle => '补齐现代中文判读模型';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      '这份中文文件尚未安装现代中文侦测器（约 98 MB）。旧多语言模型只以早期生成文本校准，容易漏掉目前 DeepSeek、Gemini 与 GPT 类型的中文写作。建议下载专用的装置端模型后再分析；也可继续使用较弱的跨语言备用模型。';
+
+  @override
   String get onboardingWelcomeTitle => '欢迎使用 TruthLens';
 
   @override
@@ -3093,6 +3163,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get onboardingRecommendHint => '已依你的硬件标示「推荐」；也可自行选择其他选项。';
+
+  @override
+  String get onboardingBundleTitle => '为这台设备的建议组合';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count 颗模型 · 合计 $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return '浏览器存储空间：可用 $available MB，下载后约剩 $remaining MB';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      '已下载的模型尚未受到自动清理的保护。磁盘空间不足时浏览器可能将其回收，届时必须重新下载。把 TruthLens 安装成应用程序，可大幅提高浏览器保留这些模型的机会。';
+
+  @override
+  String get onboardingInstallAppButton => '安装成应用程序';
 
   @override
   String get onboardingSkipButton => '稍后再说（先用免模型的统计/风格分析）';
@@ -4679,6 +4769,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'DetectRL-ZH 中文字符指纹跨过保守 AI 证据门槛（$percent/100）；此模型已另以 DeepSeek-V3、混写、回译、形近字干扰及不同长度数据测试';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'DetectRL-ZH 中文字符指纹未跨过保守 AI 证据门槛（$percent/100）；这代表弃权，不是由真人撰写的证据';
+  }
+
+  @override
   String engineReasonCompressionCoherence(String value) {
     return '跨半段压缩一致性（$value）超过 PAN 2025 人类语料第 95 百分位筛线［弱 AI 方向信号］';
   }
@@ -4899,14 +4999,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep1Body =>
-      '首次启动会引导安装内核侦测模型；之后可随时至「设置 → AI 模型管理」查看、下载、更新或移除。App 会在启动时主动比对最新版本，若有更新，设置齿轮图标与「AI 模型管理」项目会出现红点提示。';
+      '应用程序一律先进入主画面。首次启动时若尚未安装任何检测模型，会出现提示询问是否前往挑选——婉拒也能立刻开始分析，改由统计与风格引擎作业。你随时可以从“设置 → AI 模型管理”查看、下载、更新或移除模型。启动时会主动检查最新版本，有更新时会在设置图标与“AI 模型管理”入口显示标记。';
 
   @override
   String get helpWorkflowStep2Title => '如何选用模型（目的与效果）';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多语言 AI 分类器（权重 40%）：以受控段落区块保留上下文，再将几率映射回逐句证据。';
+      '多语言 AI 分类器（权重 40%）：以受限段落区块分析以保留上下文，再把概率映射回句子形成逐句证据。安装多个分类器变体时，每次分析会挑选对该文件语言已验证的那一颗——中文文件需要专用的现代中文检测器，缺少时应用程序会主动提示。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>
@@ -5967,6 +6067,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get modelPromptDownload => '前往下載';
 
   @override
+  String get firstRunModelPromptTitle => '要加入偵測模型嗎？';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
+
+  @override
+  String get firstRunModelPromptLater => '現在不用';
+
+  @override
+  String get firstRunModelPromptGo => '去挑模型';
+
+  @override
+  String get modernChineseModelPromptTitle => '補齊現代中文判讀模型';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      '這份中文文件尚未安裝現代中文偵測器（約 98 MB）。舊多語言模型只以早期生成文本校準，容易漏掉目前 DeepSeek、Gemini 與 GPT 類型的中文寫作。建議下載專用的裝置端模型後再分析；也可繼續使用較弱的跨語言備援。';
+
+  @override
   String get onboardingWelcomeTitle => '歡迎使用 TruthLens';
 
   @override
@@ -5980,6 +6100,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get onboardingRecommendHint => '已依你的硬體標示「推薦」；也可自行選擇其他選項。';
+
+  @override
+  String get onboardingBundleTitle => '為這台裝置的建議組合';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count 顆模型 · 合計 $size MB';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return '瀏覽器儲存空間：可用 $available MB，下載後約剩 $remaining MB';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 TruthLens 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
+
+  @override
+  String get onboardingInstallAppButton => '安裝成應用程式';
 
   @override
   String get onboardingSkipButton => '稍後再說（先用免模型的統計/風格分析）';
@@ -7566,6 +7706,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'DetectRL-ZH 中文字元指紋跨過保守 AI 證據門檻（$percent/100）；此模型已另以 DeepSeek-V3、混寫、回譯、形近字干擾及不同長度資料測試';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'DetectRL-ZH 中文字元指紋未跨過保守 AI 證據門檻（$percent/100）；這代表棄權，不是由真人撰寫的證據';
+  }
+
+  @override
   String engineReasonCompressionCoherence(String value) {
     return '跨半段壓縮一致性（$value）超過 PAN 2025 人類語料第 95 百分位篩線［弱 AI 方向訊號］';
   }
@@ -7786,14 +7936,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep1Body =>
-      '首次啟動會引導安裝核心偵測模型；之後可隨時至「設定 → AI 模型管理」查看、下載、更新或移除。App 會在啟動時主動比對最新版本，若有更新，設定齒輪圖示與「AI 模型管理」項目會出現紅點提示。';
+      '應用程式一律先進入主畫面。首次啟動時若尚未安裝任何偵測模型，會出現提示詢問是否前往挑選——婉拒也能立刻開始分析，改由統計與風格引擎作業。你隨時可以從「設定 → AI 模型管理」查看、下載、更新或移除模型。啟動時會主動檢查最新版本，有更新時會在設定圖示與「AI 模型管理」入口顯示標記。';
 
   @override
   String get helpWorkflowStep2Title => '如何選用模型（目的與效果）';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      '多語言 AI 分類器（權重 40%）：以受控段落區塊保留上下文，再將機率映射回逐句證據。';
+      '多語言 AI 分類器（權重 40%）：以受限段落區塊分析以保留上下文，再把機率映射回句子形成逐句證據。安裝多個分類器變體時，每次分析會挑選對該文件語言已驗證的那一顆——中文文件需要專用的現代中文偵測器，缺少時應用程式會主動提示。';
 
   @override
   String get helpWorkflowStep2Bullet2 =>

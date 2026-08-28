@@ -65,6 +65,7 @@ class ModelVariant {
   final String? pageUrl; // 模型頁面（HF model page），供「查看/取得最新」
   final String tokenizer; // bert-wordpiece / roberta-bpe / none
   final int aiLabelIndex; // 輸出兩類中代表 AI 的索引（依模型 id2label）
+  final double aiEvidenceThreshold; // 此變體校準後可投 AI 票的最低機率
 
   /// 此模型需要的 KV cache 輸入規格；null 表示模型不宣告 KV cache
   final KvCacheSpec? kvCache;
@@ -88,6 +89,7 @@ class ModelVariant {
     this.pageUrl,
     this.tokenizer = 'none',
     this.aiLabelIndex = 1,
+    this.aiEvidenceThreshold = 0.60,
     this.kvCache,
   });
 
@@ -123,6 +125,8 @@ class ModelVariant {
     pageUrl: j['page_url'] as String?,
     tokenizer: j['tokenizer'] as String? ?? 'none',
     aiLabelIndex: (j['ai_label_index'] as num?)?.toInt() ?? 1,
+    aiEvidenceThreshold:
+        (j['ai_evidence_threshold'] as num?)?.toDouble() ?? 0.60,
     kvCache: KvCacheSpec.fromJson(
       (j['runtime'] as Map<String, dynamic>?)?['kv_cache']
           as Map<String, dynamic>?,

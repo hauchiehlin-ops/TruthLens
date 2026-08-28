@@ -196,12 +196,16 @@ class TransformerEngine implements DetectionEngine {
     }
     final perSentence = text.expandChunkScoresToSentences(perChunk);
     final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
-    final strongChunks = perChunk.where((score) => score >= 0.6).toList();
+    final variant = _resolveVariant();
+    final aiEvidenceThreshold = variant?.aiEvidenceThreshold ?? 0.60;
+    final strongChunks = perChunk
+        .where((score) => score >= aiEvidenceThreshold)
+        .toList();
     final strongChunkCount = strongChunks.length;
     final strongChunkRatio = strongChunkCount / perChunk.length;
     final maxChunk = perChunk.reduce(math.max);
     final strongSentenceCount = perSentence
-        .where((score) => score >= 0.6)
+        .where((score) => score >= aiEvidenceThreshold)
         .length;
     final strongSentenceRatio = strongSentenceCount / perSentence.length;
 
@@ -229,7 +233,6 @@ class TransformerEngine implements DetectionEngine {
     // TODO: 未來替這個引擎補一條負向證據通道，讓確信的人類判斷也能發聲。
     final hasEvidence = strongChunkCount > 0;
 
-    final variant = _resolveVariant();
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
@@ -251,6 +254,7 @@ class TransformerEngine implements DetectionEngine {
         'analysis_chunk_count': perChunk.length.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
+        'ai_evidence_threshold': aiEvidenceThreshold,
       },
       reasons: [
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。

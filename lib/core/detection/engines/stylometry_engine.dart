@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/text_stats.dart';
+import '../detectrl_zh_char_scorer.dart';
 import '../detection_engine.dart';
 import '../pan25_tfidf_scorer.dart';
 
@@ -75,14 +76,35 @@ class StylometryEngine implements DetectionEngine {
     // 先驗基線誤當成 AI 證據。
     var score = 0.0;
     double? lexicalProbability;
+    var lexicalSupportsAiOnly = false;
+    var lexicalModel = '';
     if (text.language.code == 'en' && text.allTokens.length >= 100) {
       try {
         final lexicalScore = await Pan25TfidfScorer.load().then(
           (scorer) => scorer.score(text.analysisText),
         );
         lexicalProbability = lexicalScore;
+        lexicalModel = 'pan25';
         features['pan25_tfidf_probability'] = lexicalScore;
         features['bidirectional_probability'] = 1;
+      } catch (_) {
+        lexicalProbability = null;
+      }
+    } else if (text.language.code == 'zh') {
+      try {
+        final lexicalScore = await DetectRlZhCharScorer.load().then(
+          (scorer) => scorer.score(text.analysisText),
+        );
+        if (lexicalScore != null) {
+          lexicalProbability = lexicalScore.probability;
+          lexicalSupportsAiOnly = lexicalScore.supportsAi;
+          lexicalModel = 'detectrl_zh';
+          features['detectrl_zh_probability'] = lexicalScore.probability;
+          features['detectrl_zh_decision'] = lexicalScore.decision;
+          features['detectrl_zh_ai_cut'] = lexicalScore.aiDecisionCut;
+          features['detectrl_zh_supports_ai'] = lexicalScore.supportsAi ? 1 : 0;
+          features['bidirectional_probability'] = 1;
+        }
       } catch (_) {
         lexicalProbability = null;
       }
@@ -157,16 +179,27 @@ class StylometryEngine implements DetectionEngine {
     // 因此沒命中任何特徵時它是沉默，不是在投「人類」一票。
     final foundMarkers = reasons.isNotEmpty;
     final lexicalDirectional =
-        lexicalProbability != null && (lexicalProbability - 0.5).abs() >= 0.08;
+        lexicalProbability != null &&
+        (lexicalModel == 'detectrl_zh'
+            ? lexicalSupportsAiOnly
+            : (lexicalProbability - 0.5).abs() >= 0.08);
     if (lexicalProbability != null) {
       final percent = (lexicalProbability * 100).round();
-      reasons.add(
-        lexicalProbability >= 0.58
-            ? l10n.engineReasonPan25LexicalAi(percent)
-            : lexicalProbability <= 0.42
-            ? l10n.engineReasonPan25LexicalHuman(percent)
-            : l10n.engineReasonPan25LexicalNeutral(percent),
-      );
+      if (lexicalModel == 'detectrl_zh') {
+        reasons.add(
+          lexicalSupportsAiOnly
+              ? l10n.engineReasonDetectRlZhAi(percent)
+              : l10n.engineReasonDetectRlZhNoAiSignal(percent),
+        );
+      } else {
+        reasons.add(
+          lexicalProbability >= 0.58
+              ? l10n.engineReasonPan25LexicalAi(percent)
+              : lexicalProbability <= 0.42
+              ? l10n.engineReasonPan25LexicalHuman(percent)
+              : l10n.engineReasonPan25LexicalNeutral(percent),
+        );
+      }
     } else if (!foundMarkers) {
       reasons.add(l10n.engineReasonNoStyleMarkers);
     }
@@ -188,12 +221,14 @@ class StylometryEngine implements DetectionEngine {
       evidenceFamily: lexicalProbability != null
           ? EvidenceFamily.lexicalFingerprint
           : EvidenceFamily.stylometric,
-      applicability: assistantArtifactHits >= 2
+      applicability: assistantArtifactHits >= 2 || lexicalModel == 'detectrl_zh'
           ? EngineApplicability.validated
           : EngineApplicability.plausible,
       // 規則式風格只作弱佐證；兩個完整聊天助理框架屬高特異性直接痕跡。
       calibrationReliability: assistantArtifactHits >= 2
           ? 0.95
+          : lexicalModel == 'detectrl_zh'
+          ? 0.82
           : lexicalProbability != null
           ? 0.76
           : 0.42,

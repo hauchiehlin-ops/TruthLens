@@ -64,10 +64,12 @@ void main() {
   });
 
   test(
-    'web bootstrap removes legacy workers without registering a new one',
+    'web bootstrap removes legacy workers and registers only its own',
     () {
       final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
 
+      // Flutter 產生的 worker 會反註冊自己並導航所有 client，在 Android Chrome
+      // 造成重整迴圈。它永遠不該被接回來。
       expect(bootstrap, isNot(contains('flutter_service_worker_version')));
       expect(bootstrap, isNot(contains('serviceWorkerSettings:')));
       expect(bootstrap, contains('navigator.serviceWorker.getRegistrations()'));
@@ -77,9 +79,45 @@ void main() {
       expect(bootstrap, contains('window.localStorage'));
       expect(bootstrap, contains('window.sessionStorage'));
       expect(bootstrap, contains('window.caches.delete(name)'));
-      expect(bootstrap, isNot(contains('navigator.serviceWorker.register(')));
+
+      // 自有 worker 是「可安裝」的前提，Chromium 沒有它就不派送
+      // beforeinstallprompt，安裝按鈕永遠不會出現。
+      expect(bootstrap, contains('navigator.serviceWorker.register(truthLensWorkerScript)'));
+      expect(bootstrap, contains('const truthLensWorkerScript = "truthlens_sw.js"'));
+      // 清理邏輯必須放過自有 worker 與其快取，否則每次載入都會把它清掉。
+      expect(bootstrap, contains('isOwnWorker'));
+      expect(bootstrap, contains('name !== truthLensShellCache'));
     },
   );
+
+  test('自有 service worker 只做可安裝判準所需的事', () {
+    // 只看程式碼：註解裡本來就會提到這些名詞，拿整份原始碼比對會誤判。
+    final worker = File('web/truthlens_sw.js')
+        .readAsLinesSync()
+        .where((line) => !line.trimLeft().startsWith('//'))
+        .join('\n');
+
+    // Chromium 的可安裝判準要求有 fetch handler。
+    expect(worker, contains("addEventListener('fetch'"));
+    // 以下兩件正是先前 Flutter worker 造成 Android 重整迴圈的原因。
+    expect(worker, isNot(contains('registration.unregister')));
+    expect(worker, isNot(contains('client.navigate')));
+    // 只接管導覽請求；main.dart.js／CanvasKit／模型一律不碰，避免陳舊資產。
+    expect(worker, contains("request.mode !== 'navigate'"));
+    // 網路優先：網路成功時一定回傳最新內容，快取只作離線後備。
+    expect(worker, contains('await fetch(request)'));
+  });
+
+  test('PWA 橋接必須早於 flutter_bootstrap 載入', () {
+    final html = File('web/index.html').readAsStringSync();
+
+    // beforeinstallprompt 只派送一次，且通常早於 Flutter 啟動。
+    // 比較實際的 script 標籤位置，HTML 註解提到檔名不算數。
+    expect(
+      html.indexOf('<script src="pwa_bridge.js">'),
+      lessThan(html.indexOf('<script src="flutter_bootstrap.js"')),
+    );
+  });
 
   test('web startup shell exposes an accessible retry state', () {
     final html = File('web/index.html').readAsStringSync();

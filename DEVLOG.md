@@ -1,5 +1,159 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-29（第一百四十八次更新）— PWA 安裝引導與自有 service worker
+
+**起點是一個死路**：做完 `beforeinstallprompt` 攔截與安裝按鈕後，在 release 建置上
+實測發現按鈕永遠不會出現——網站上 service worker 註冊數為 0。Chromium 只有在網站具備
+帶 fetch handler 的 SW 時才派送該事件，而 `flutter_bootstrap.js` 是**刻意**不註冊的
+（Flutter 產生的 worker 會反註冊自己並導航所有 client，在 Android Chrome 造成重整
+迴圈，見 `b940e8f`）。也就是說擋住 PWA 的不是按鈕，是更底層的架構決定。
+
+**自有 SW（`web/truthlens_sw.js`）**：只做滿足可安裝判準所需的最小工作，並刻意避開
+當初出事的三件事——不在 activate 反註冊自己、不呼叫 `client.navigate()`、不預先快取
+任何應用程式資產（`main.dart.js`、CanvasKit、模型一律不碰）。唯一行為是導覽請求走
+網路優先，成功時順手更新一份 `index.html` 當離線後備：網路正常時永遠最新，不可能陳舊。
+非導覽請求完全不呼叫 `respondWith`，交回瀏覽器預設路徑。
+
+`removeLegacyFlutterWorker()` 原本會反註冊**所有** worker，若不處理，每次載入都會把
+自有 SW 清掉、安裝提示永遠不出現。已改為依 scriptURL 排除自己，快取清理同樣放過
+`truthlens-shell-v1`。註冊時機放在應用程式跑起來之後，絕不擋啟動路徑。
+
+**回歸驗證（實機 release 建置 + 本機伺服器）**：連續兩次重載，SW 均存活且持續接管、
+`navEntries` 每次都是 1（無重整迴圈）、`sessionStorage` 的清理旗標維持 null（清理邏輯
+正確判定自有 worker 不是舊 worker）、快取只有 `truthlens-shell-v1`、無 console 錯誤、
+Flutter 每次都正常啟動。離線後備確認已快取且內容正確（5,698 bytes，含 bootstrap 與
+pwa_bridge）。
+
+**`web/pwa_bridge.js`**：在 `flutter_bootstrap.js` 之前載入——`beforeinstallprompt`
+只派送一次且早於 Flutter 啟動，從 Dart 註冊來不及。事件被攔下暫存，經
+`lib/core/services/pwa_install.dart`（web/io 雙實作）暴露給 UI。安裝按鈕出現在模型頁
+的儲存警告下方；接受安裝後會重新申請 `persist()` 並刷新套組，警告在真的獲准時自行消失。
+Safari 沒有這個事件，維持文字指引（加入主畫面）。
+
+**尚未證實的一段**：嵌入式瀏覽器不派送 `beforeinstallprompt`，因此本機測得
+`canInstall: false`。已知的阻礙（缺 SW）已排除，manifest、HTTPS、fetch handler 三項
+判準都齊備，但事件是否真的派送必須在部署後以真實 Chrome 確認。
+
+**版本與狀態**：v4.6.8 / Build 1441。✅ Flutter 607 項測試全數通過；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題；
+`flutter build web --release` 成功。
+
+## 2026-08-28（第一百四十七次更新）— 語言判別修正、瀏覽器儲存持久化與硬體感知套組
+
+**先澄清一個前提**：訓練端 2.7GB 語料只存在開發機，永遠不會進到瀏覽器。使用者端
+下載的只有 catalog 模型，完整 catalog 約 2,673 MB（報告 LLM 一顆就佔 1,629 MB）。
+瀏覽器實測 origin 配額為 4.03 GB，全裝會吃掉六成以上。
+
+**語言判別的四個結構性錯誤**：拿 M4GT 多語語料（9 語各 300 篇）量 `detectLanguage()`，
+發現失敗全是結構性的而非隨機誤差——只看文字系統，西里爾一律判俄文、阿拉伯字母一律
+判阿拉伯文；義大利文根本沒有剖面；印馬近親互鎖導致幾乎全數棄權。
+
+| 語言 | 修正前 | 修正後 |
+|---|---|---|
+| 保加利亞文 | 0%（99.7% 判成 ru） | 99.3% |
+| 烏爾都文 | 0%（100% 判成 ar） | 99.7% |
+| 義大利文 | 0%（78.7% 棄權） | 100% |
+| 印尼文 | 1.0%（98.3% 棄權） | 92.3% |
+
+作法：西里爾以俄文專屬字母（ы／э／ё）與 ъ 密度分辨，再退回西里爾功能詞剖面；
+阿拉伯字系以烏爾都文專屬字母（ٹ ڈ ڑ ں ے ہ ھ）判別；補上義大利文剖面；印馬改用
+正字法對照詞（karena/kerana、saja/sahaja、yaitu/iaitu）裁決。ar/de/en 維持 100%，
+ru 99.0%、zh 98.3% 未變動。新增 7 條回歸測試。
+
+**瀏覽器儲存持久化**：實測發現 `navigator.storage.persist()` 在本站被 Chromium
+**拒絕**（回傳 false）——光呼叫 API 不夠，它依網站互動程度決定。已在啟動時與每次
+下載前各申請一次（下載當下互動程度最高，最有機會獲准）。另補上下載前的配額預檢：
+原本會下到一半（可能已數百 MB）才因寫入失敗中止，現在先算清楚並回報還差幾 MB。
+
+**硬體感知的建議套組**：原本只有逐 role 標「推薦」，回答不了「總共幾顆、多大」。
+新增 `RecommendedBundle`，依 RAM 與**實際可用配額**（只用七成，留給歷史紀錄並降低
+被回收機率）排出建議：優先序按每 MB 換到多少判讀能力——transformer 是核心，
+statistical 輕量變體 78 MB 換 25% 權重最划算，報告 LLM 因 1.6 GB 且不影響判讀結論
+永遠排除。中文介面會一併建議中文專用變體。被排除的項目都帶理由（RAM 不足／空間
+不足／非必要），不是靜默消失。新增 5 條測試。
+
+**多語擴充：卡在資料，不是流程**。`export_detectrl_zh_char_svm.py` 加上
+`--no-script-augment` 後即與語言無關（中文資產仍逐位元重現）。但新寫的
+`prepare_m4gt_language.py` 交叉檢查 `label` 與 `model` 欄位時擋下三個語言：
+德文 3000／義大利文 3037／阿拉伯文 1001 筆標為人類卻註明 model=chatGPT。拿它訓練
+等於教模型「ChatGPT 德文是人類寫的」，且驗證集同樣髒、AUC 還會很好看。
+
+印尼文（4,191 筆）語料內 AUC 0.9983／FPR 0.99%／召回 99.7%，俄文（1,400 筆）
+AUC 0.9894／FPR 5.34%。**兩者都不上架**：那個 test 只是同一份單一生成器語料的隨機
+切分，正是中文從 62.6% 崩到 33.1% 之前的同一種數字；俄文更是語料內 FPR 就已超標。
+
+**版本與狀態**：v4.6.8 / Build 1441。✅ Flutter 604 項測試全數通過；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
+
+## 2026-08-28（第一百四十六次更新）— 中文模型外部驗證、首次進站流程與語系補齊
+
+**中文兩顆模型的外部實測**：先前所有中文數字都來自訓練來源語料。這次把 NLPCC-2025
+與 SemEval-2024 Task 8 落到本機（`training/data/`，已 gitignore），拿**出貨資產**在
+合約認可的外部語料上重放出貨操作點。DetectRL-ZH 字元 SVM 的匯出流程確認可逐位元重現；
+其 Python 評估與 Dart 出貨評分器逐篇交叉驗證，最大差 1.6e-15。
+
+| 元件 | 權重 | 出貨門檻 | 誤報（95% 上界） | 召回 | 語料內召回 |
+|---|---|---|---|---|---|
+| aigc-detector-zhv3-int8 | 40% | 0.99 | 0.00%（0.05%） | **9.0%** | 宣稱 48.7% |
+| detectrl-zh-char-svm | 20% | 0.0043 | 0.63%（0.83%） | **33.1%** | 62.6% |
+
+兩顆都**守住誤報承諾、但召回遠低於合約的 0.5 下限**。單向閘門的設計因此得到印證：
+它不會誤指真人，代價是靜默放過多數 AI 中文。Transformer 的門檻掃描顯示 0.90 可得
+召回 50.0% / 誤報上界 0.65%，兩道門檻都過——但那個值是從報告用語料讀出來的，直接採用
+正是合約明列的禁區，需要先有獨立校準集，因此**未變更出貨門檻**。
+
+**認可來源對中文的結構性缺口**：RAID 無中文；M4GT-Bench 的中文子集與 SemEval 完全相同
+（同 11,934 筆、同 chatGPT／davinci）。三個認可來源實際只有一份 2023 年的中文語料，
+而兩顆模型針對的是 DeepSeek-V3／GPT-4 世代。已寫入 `validation/current.json`。
+
+**調參無法補救**：以 train 內切分做的九組超參數掃描（特徵數、C、n-gram 範圍、min_df、
+LogReg）在 inner-dev 全部 AUC 1.0000、召回 0.9996——訊號完全飽和、零鑑別度。語料內
+指標已到頂而外部只有 33%，瓶頸在訓練語料的生成器涵蓋，不在模型容量。
+
+**首次進站不再攔截**：`main.dart` 過去在首次啟動且無模型時直接把 `initialLocation`
+指到 `/onboarding`，等於在使用者還不知道 App 做什麼之前就要他做決定。改為一律先進
+首頁，由 `HomeScreen` 在首幀後以一次性提示（`showFirstRunModelPrompt`）詢問是否前往
+模型頁；婉拒或直接關掉都記為已處理，不再打擾。OnboardingScreen 因此從起始路由變成
+被 push 的頁面，同步移除 `automaticallyImplyLeading: false`，否則使用者進去沒有退路。
+
+**操作說明手冊與多國語系**：手冊的「首次啟動引導你安裝模型」已被上述改動弄過時，
+連同語言路由與中文專用模型一併補進 `helpWorkflowStep1Body` 與
+`helpWorkflowStep2Bullet1`（14 語系）。另查出 de/es/fr/id/ja/ko/ms/pt/ru/th 各缺
+86 個字串——證據矩陣、統合判讀、引擎理由、就緒度等報告主體都會回退成英文。已全部補齊，
+14 個語系現在各 766 鍵、零缺漏，合併時逐條驗證 ICU 佔位符。
+
+**版本與狀態**：v4.6.8 / Build 1441。✅ Flutter 592 項測試全數通過（新增首次進站流程
+兩條）；`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
+
+## 2026-08-28（第一百四十五次更新）— 版本徽章回歸與中文模型上線回歸測試
+
+**版本徽章顯示錯版**：兩個部署網址一個顯示 v4.6.8、一個顯示 v1.4.0，實際上是同一份
+build（roan-three 的 `version.json` 就是 4.6.8/1441）。原因在 Web 啟動路徑：
+`AppVersion.init()` 於 `runApp` 之後才在背景完成，而 `AppVersion` 是純 static 欄位、
+沒有任何通知機制，徽章 widget 只在 build 當下讀一次。閒置畫面沒有後續 rebuild，就永遠
+停在寫死的回退值 `1.4.0`；分析中的畫面因不斷 rebuild 才顯示正確版號。
+
+改為 `ValueNotifier<AppVersionInfo>`，四處徽章（workspace_navigation、input_screen
+兩處設定面板、settings_screen）以 `ValueListenableBuilder` 監聽，init 完成即自動更新。
+回退值同時從 `1.4.0` 改為 `—`：寫死一個看起來合理的舊版號，會讓讀取失敗偽裝成正常結果。
+
+**中文模型上線回歸測試**：三項重點皆已驗證。①舊安裝紀錄的過時中文聲明由
+`fitFor()` 在路由層撤銷，Transformer 與對抗式引擎的適用度判定全部經此一處，UI 的語言
+標示讀的是 catalog 變體而非安裝紀錄。②繁簡走同一條證據流程且結論一致——匯出腳本以
+OpenCC 雙向增強訓練，資產自帶的獨立測試集數據為簡體 AUC 0.9407／誤報 1.49%、繁體
+AUC 0.9408／誤報 1.42%；以出貨資產實測同一文本僅換字形，decision +0.8297 對 +0.8416。
+③英文路由不變：使用中變體對英文已驗證時 `chooseVariant` 直接回傳原選擇；只有在使用中
+變體是中文專用模型時才改用英文已驗證變體，這是修正而非回歸。
+
+**修掉一條假的紅測試**：`detectrl_zh_char_scorer_test.dart` 斷言某段「DetectRL-ZH 的
+已知機器文本」可跨門檻，但出貨資產給的是 decision -0.2476（門檻 +0.0043）。這不是繁簡
+問題（簡體版 -0.2492 同樣不跨），而是該樣本屬敘事語域，而模型獨立測試集召回率本就只有
+62.6%。改為以出貨資產實測過的斷言：機器語域跨門檻、人類敘事不跨且不反向投人類票、
+繁簡結論與分數貼齊。
+
+**版本與狀態**：v4.6.8 / Build 1441。✅ Flutter 590 項測試全數通過；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 風格建議外零問題。
+
 ## 2026-08-28（第一百四十四次更新）— 歷史紀錄文件識別與摘要
 
 歷史清單先前直接把 `input_text` 當標題，導致 PDF 頁首、章節名稱、下載提示甚至長篇

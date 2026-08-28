@@ -426,6 +426,42 @@ abstract class AppLocalizations {
   /// **'Go to download'**
   String get modelPromptDownload;
 
+  /// No description provided for @firstRunModelPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a detection model?'**
+  String get firstRunModelPromptTitle;
+
+  /// No description provided for @firstRunModelPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'TruthLens already works: the statistical and stylistic engines are ready now. Adding an on-device neural model brings the multilingual classifier into the ensemble vote, which markedly improves accuracy and language coverage. The model runs entirely in your browser and never uploads your documents. You can also decide later from \"Settings → AI Model Management\".'**
+  String get firstRunModelPromptBody;
+
+  /// No description provided for @firstRunModelPromptLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get firstRunModelPromptLater;
+
+  /// No description provided for @firstRunModelPromptGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a model'**
+  String get firstRunModelPromptGo;
+
+  /// No description provided for @modernChineseModelPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve Chinese detection'**
+  String get modernChineseModelPromptTitle;
+
+  /// No description provided for @modernChineseModelPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This Chinese document is currently missing the modern Chinese detector (about 98 MB). The older multilingual model was calibrated on early-generation text and can miss current DeepSeek, Gemini and GPT-style Chinese writing. Download the specialized on-device model for a better calibrated result, or continue with the weaker cross-language fallback.'**
+  String get modernChineseModelPromptBody;
+
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
@@ -455,6 +491,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'\"Recommended\" is marked based on your hardware; you may also pick another option.'**
   String get onboardingRecommendHint;
+
+  /// No description provided for @onboardingBundleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for this device'**
+  String get onboardingBundleTitle;
+
+  /// No description provided for @onboardingBundleSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} models · {size} MB total'**
+  String onboardingBundleSummary(int count, String size);
+
+  /// No description provided for @onboardingBundleStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Browser storage: {available} MB available, about {remaining} MB left after downloading'**
+  String onboardingBundleStorage(String available, String remaining);
+
+  /// No description provided for @onboardingStorageNotPersisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded models are not yet protected from automatic cleanup. If disk space runs low the browser may reclaim them and you would have to download again. Installing TruthLens as an app makes the browser far more likely to keep them.'**
+  String get onboardingStorageNotPersisted;
+
+  /// No description provided for @onboardingInstallAppButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Install as an app'**
+  String get onboardingInstallAppButton;
 
   /// No description provided for @onboardingSkipButton.
   ///
@@ -2936,6 +3002,18 @@ abstract class AppLocalizations {
   /// **'PAN 2025 lexical fingerprint is neutral ({percent}/100) and does not provide a direction'**
   String engineReasonPan25LexicalNeutral(int percent);
 
+  /// No description provided for @engineReasonDetectRlZhAi.
+  ///
+  /// In en, this message translates to:
+  /// **'DetectRL-ZH\'s Chinese character fingerprint crossed the conservative AI evidence gate ({percent}/100); it was independently tested against DeepSeek-V3, mixed text, back-translation, character perturbation, and varying lengths'**
+  String engineReasonDetectRlZhAi(int percent);
+
+  /// No description provided for @engineReasonDetectRlZhNoAiSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'DetectRL-ZH\'s Chinese character fingerprint did not cross the conservative AI evidence gate ({percent}/100); this is an abstention, not evidence that a human wrote the text'**
+  String engineReasonDetectRlZhNoAiSignal(int percent);
+
   /// No description provided for @engineReasonCompressionCoherence.
   ///
   /// In en, this message translates to:
@@ -3281,7 +3359,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep1Body.
   ///
   /// In en, this message translates to:
-  /// **'First launch guides you through installing the core detection model; afterward you can always check, download, update, or remove models from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.'**
+  /// **'The app always opens on the main screen. On first launch, if no detection model is installed yet, a prompt asks whether you want to choose one — decline it and you can analyse straight away using the statistical and stylistic engines. You can check, download, update, or remove models at any time from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.'**
   String get helpWorkflowStep1Body;
 
   /// No description provided for @helpWorkflowStep2Title.
@@ -3293,7 +3371,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep2Bullet1.
   ///
   /// In en, this message translates to:
-  /// **'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence.'**
+  /// **'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence. When several classifier variants are installed, each analysis picks the one validated for the document\'s language — Chinese documents need the dedicated modern Chinese detector, and the app prompts for it when that model is missing.'**
   String get helpWorkflowStep2Bullet1;
 
   /// No description provided for @helpWorkflowStep2Bullet2.

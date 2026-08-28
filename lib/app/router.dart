@@ -11,10 +11,17 @@ import '../features/report/report_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/workspace/workspace_screen.dart';
 
-GoRouter createRouter({required String initialLocation}) => GoRouter(
+GoRouter createRouter({
+  required String initialLocation,
+  bool promptModelOnFirstRun = false,
+}) => GoRouter(
   initialLocation: initialLocation,
   routes: [
-    GoRoute(path: '/', builder: (_, _) => const HomeScreen()),
+    GoRoute(
+      path: '/',
+      builder: (_, _) =>
+          HomeScreen(promptModelOnFirstRun: promptModelOnFirstRun),
+    ),
     GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(
       path: '/analysis',

@@ -476,10 +476,13 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: Icon(LucideIcons.info),
             title: const Text('TruthLens'),
-            subtitle: Text(
-              l10n.settingsVersionSubtitle(
-                AppVersion.displayVersion,
-                AppVersion.buildNumber,
+            subtitle: ValueListenableBuilder<AppVersionInfo>(
+              valueListenable: AppVersion.listenable,
+              builder: (context, info, _) => Text(
+                l10n.settingsVersionSubtitle(
+                  info.displayVersion,
+                  info.buildNumber,
+                ),
               ),
             ),
           ),

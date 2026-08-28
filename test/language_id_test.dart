@@ -116,6 +116,73 @@ void main() {
       );
       expect(['ms', 'id', 'und'], contains(result.code));
     });
+
+    // 以下四項對應 M4GT 多語語料上量到的結構性錯誤：只看文字系統會把
+    // 保加利亞文全判成俄文、烏爾都文全判成阿拉伯文，而義大利文與印尼文
+    // 因為缺剖面／近親互鎖幾乎全數棄權。
+    test('保加利亞文不會因共用西里爾字母而被判成俄文', () {
+      final result = detectLanguage(
+        'Настоящото изследване разглежда прехода към турбулентност в потока '
+        'между два коаксиални цилиндъра и се съсредоточава върху ъгловата '
+        'скорост като основен параметър, който определя формата на вихрите.',
+      );
+      expect(result.code, 'bg');
+    });
+
+    test('俄文仍判為俄文，不被保加利亞文的規則搶走', () {
+      final result = detectLanguage(
+        'Это исследование рассматривает переход к турбулентности в потоке '
+        'между двумя коаксиальными цилиндрами и сосредоточено на угловой '
+        'скорости, которая определяет форму вихрей в этой системе.',
+      );
+      expect(result.code, 'ru');
+    });
+
+    test('烏爾都文不會因共用阿拉伯字母而被判成阿拉伯文', () {
+      final result = detectLanguage(
+        'یہ تحقیق دو ہم محور سلنڈروں کے درمیان بہاؤ میں اضطراب کی طرف منتقلی '
+        'کا جائزہ لیتی ہے اور زاویائی رفتار پر توجہ مرکوز کرتی ہے جو اس نظام '
+        'میں بھنوروں کی شکل کا تعین کرتی ہے۔',
+      );
+      expect(result.code, 'ur');
+    });
+
+    test('阿拉伯文仍判為阿拉伯文', () {
+      final result = detectLanguage(
+        'يتناول هذا البحث الانتقال إلى الاضطراب في التدفق بين أسطوانتين '
+        'متحدتي المحور، مع التركيز على السرعة الزاوية التي تحدد شكل '
+        'الدوامات في هذا النظام على أن تكون النتائج قابلة للتكرار.',
+      );
+      expect(result.code, 'ar');
+    });
+
+    test('義大利文有自己的剖面，不再被誤判為西班牙文', () {
+      final result = detectLanguage(
+        'Questo studio esamina la transizione alla turbolenza nel flusso che '
+        'si sviluppa tra due cilindri coassiali e si concentra sulla velocità '
+        'angolare, che è il parametro più importante perché determina la '
+        'forma dei vortici quando il sistema viene perturbato.',
+      );
+      expect(result.code, 'it');
+    });
+
+    test('印尼文可由正字法對照詞分出，不再一律棄權', () {
+      final result = detectLanguage(
+        'Penelitian ini bisa menjelaskan peralihan menuju turbulensi karena '
+        'kecepatan sudut yang diukur pada setiap tahap, yaitu parameter utama '
+        'yang menentukan bentuk pusaran dalam sistem tersebut saja.',
+      );
+      expect(result.code, 'id');
+    });
+
+    test('馬來文同樣可由正字法對照詞分出', () {
+      final result = detectLanguage(
+        'Kajian ini ialah usaha menjelaskan peralihan menuju gelora kerana '
+        'halaju sudut yang diukur pada setiap peringkat, iaitu parameter utama '
+        'yang menentukan bentuk pusaran dalam sistem itu sahaja.',
+      );
+      expect(result.code, 'ms');
+    });
   });
 
   group('校準表', () {

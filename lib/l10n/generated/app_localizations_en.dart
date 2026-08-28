@@ -198,6 +198,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modelPromptDownload => 'Go to download';
 
   @override
+  String get firstRunModelPromptTitle => 'Add a detection model?';
+
+  @override
+  String get firstRunModelPromptBody =>
+      'TruthLens already works: the statistical and stylistic engines are ready now. Adding an on-device neural model brings the multilingual classifier into the ensemble vote, which markedly improves accuracy and language coverage. The model runs entirely in your browser and never uploads your documents. You can also decide later from \"Settings → AI Model Management\".';
+
+  @override
+  String get firstRunModelPromptLater => 'Not now';
+
+  @override
+  String get firstRunModelPromptGo => 'Choose a model';
+
+  @override
+  String get modernChineseModelPromptTitle => 'Improve Chinese detection';
+
+  @override
+  String get modernChineseModelPromptBody =>
+      'This Chinese document is currently missing the modern Chinese detector (about 98 MB). The older multilingual model was calibrated on early-generation text and can miss current DeepSeek, Gemini and GPT-style Chinese writing. Download the specialized on-device model for a better calibrated result, or continue with the weaker cross-language fallback.';
+
+  @override
   String get onboardingWelcomeTitle => 'Welcome to TruthLens';
 
   @override
@@ -212,6 +232,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingRecommendHint =>
       '\"Recommended\" is marked based on your hardware; you may also pick another option.';
+
+  @override
+  String get onboardingBundleTitle => 'Recommended for this device';
+
+  @override
+  String onboardingBundleSummary(int count, String size) {
+    return '$count models · $size MB total';
+  }
+
+  @override
+  String onboardingBundleStorage(String available, String remaining) {
+    return 'Browser storage: $available MB available, about $remaining MB left after downloading';
+  }
+
+  @override
+  String get onboardingStorageNotPersisted =>
+      'Downloaded models are not yet protected from automatic cleanup. If disk space runs low the browser may reclaim them and you would have to download again. Installing TruthLens as an app makes the browser far more likely to keep them.';
+
+  @override
+  String get onboardingInstallAppButton => 'Install as an app';
 
   @override
   String get onboardingSkipButton =>
@@ -1849,6 +1889,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String engineReasonDetectRlZhAi(int percent) {
+    return 'DetectRL-ZH\'s Chinese character fingerprint crossed the conservative AI evidence gate ($percent/100); it was independently tested against DeepSeek-V3, mixed text, back-translation, character perturbation, and varying lengths';
+  }
+
+  @override
+  String engineReasonDetectRlZhNoAiSignal(int percent) {
+    return 'DetectRL-ZH\'s Chinese character fingerprint did not cross the conservative AI evidence gate ($percent/100); this is an abstention, not evidence that a human wrote the text';
+  }
+
+  @override
   String engineReasonCompressionCoherence(String value) {
     return 'Cross-boundary compression coherence ($value) exceeds the PAN 2025 human 95th-percentile screen [weak AI-side signal]';
   }
@@ -2079,14 +2129,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep1Body =>
-      'First launch guides you through installing the core detection model; afterward you can always check, download, update, or remove models from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.';
+      'The app always opens on the main screen. On first launch, if no detection model is installed yet, a prompt asks whether you want to choose one — decline it and you can analyse straight away using the statistical and stylistic engines. You can check, download, update, or remove models at any time from \"Settings → AI Model Management\". The app proactively checks for the latest version on launch, and shows a badge on the settings icon and the \"AI Model Management\" entry if an update is available.';
 
   @override
   String get helpWorkflowStep2Title => 'Choosing a model (purpose & effect)';
 
   @override
   String get helpWorkflowStep2Bullet1 =>
-      'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence.';
+      'Multilingual AI classifier (40% weight): analyzes bounded paragraph blocks to retain context, then maps probabilities back to sentences for detailed evidence. When several classifier variants are installed, each analysis picks the one validated for the document\'s language — Chinese documents need the dedicated modern Chinese detector, and the app prompts for it when that model is missing.';
 
   @override
   String get helpWorkflowStep2Bullet2 =>

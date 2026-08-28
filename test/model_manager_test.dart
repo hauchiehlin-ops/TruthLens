@@ -13,6 +13,7 @@ ModelVariant _variant(
   int minRamMb = 4096,
   String? url,
   String version = '1.0',
+  double aiEvidenceThreshold = 0.60,
 }) => ModelVariant(
   id: id,
   name: id,
@@ -26,6 +27,7 @@ ModelVariant _variant(
   source: 'hf',
   license: 'mit',
   url: url,
+  aiEvidenceThreshold: aiEvidenceThreshold,
 );
 
 void main() {
@@ -66,6 +68,21 @@ void main() {
     await m2.refreshInstallStates();
     expect(m2.isInstalled('transformer'), isTrue);
     expect(m2.activeVariant('transformer')?.variantId, 'roberta');
+  });
+
+  test('變體校準後的 AI 證據門檻會寫入 manifest 並於重啟後保留', () async {
+    await manager.downloadVariant(
+      'transformer',
+      _variant(
+        'modern-zh',
+        url: 'https://x/zh.onnx',
+        aiEvidenceThreshold: 0.99,
+      ),
+    );
+
+    final restored = ModelManager(modelsDir: tmp);
+    await restored.refreshInstallStates();
+    expect(restored.activeVariant('transformer')?.aiEvidenceThreshold, 0.99);
   });
 
   test('多變體並存並可切換使用中', () async {

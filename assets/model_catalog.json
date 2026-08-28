@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-19",
+  "catalog_version": "2026-08-28",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -14,7 +14,6 @@
           "ai_label_index": 1,
           "languages": [
             "en",
-            "zh",
             "multi"
           ],
           "quant": "int8",
@@ -28,7 +27,30 @@
           "source": "training/ HC3 英+中微調 distilbert-base-multilingual-cased",
           "page_url": "https://huggingface.co/hauchieh/truthlens-models",
           "license": "資料源 HC3（研究用途）",
-          "note": "HC3 驗證集逐語言 AUC 1.000（中文命中 100%／誤傷 7.5%，英文 100%／3.3%）。分布外手寫樣本 4 題對 3，英文論說文體裁會失手。取代 v0.1 的早期檢查點——後者中文 AUC 僅 0.776，在 0.6 閾值下中文命中率 0%，且 catalog 誤配 RoBERTa tokenizer。評測見 training/evaluate_detector.py。托管於 HuggingFace 而非 GitHub Releases：後者資產不回 access-control-allow-origin，瀏覽器 fetch 會被 CORS 阻擋，本機開發環境（無 Edge 代理）完全無法下載。封存鏡像：https://github.com/hauchiehlin-ops/TruthLens/releases/download/v0.2-models-detector/mbert_detector_int8.onnx"
+          "note": "HC3 驗證集英文 AUC 1.000（命中 100%／誤傷 3.3%）。模型雖可分詞中文，但只學過較早期 HC3 分布；在 2026 現代中文 AI 壓力集 18 篇中沒有任何一篇跨過門檻，因此中文只作未驗證備援，不再宣稱已校準。評測見 training/evaluate_detector.py。"
+        },
+        {
+          "id": "aigc-detector-zhv3-int8",
+          "name": "現代中文偵測器（DeepSeek／GPT-4・INT8）",
+          "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
+          "ai_evidence_threshold": 0.99,
+          "languages": [
+            "zh"
+          ],
+          "quant": "int8",
+          "size_bytes": 103073737,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_detector_zhv3_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_detector_zhv3_tokenizer.json",
+          "sha256": "3fb6b2546d8d1872abaf86fca53c93e521edb8c31dd6286349698276f7ebd64f",
+          "version": "3.0-truthlens-cal1",
+          "source": "YuchuanTian/AIGC_detector_zhv3（TruthLens ONNX INT8 轉換與獨立固定誤報率校準）",
+          "page_url": "https://huggingface.co/yuchuantian/AIGC_detector_zhv3",
+          "license": "Apache-2.0",
+          "note": "針對 DeepSeek-V3、GPT-4 與現代中文生成文訓練。TruthLens 不沿用原始 0.5 門檻：在 NLPCC 2025 DetectRL-ZH 獨立樣本上以 0.99 投票門檻得到約 0.3% 真人誤報率、48.7% AI 召回率；NLPCC 2026 兩組未見資料真人誤報率約 0.7%／1.3%。低於門檻只表示未取得 AI 證據，不反向投真人票。"
         },
         {
           "id": "chatgpt-detector-roberta-onnx-int8",
