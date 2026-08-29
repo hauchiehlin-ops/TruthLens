@@ -1437,5 +1437,15 @@
   "ocrErrorNativeCheckFailed": "原生 OCR 外掛檢查失敗：{detail}",
   "ocrErrorNativeFailed": "原生 OCR 執行失敗：{detail}",
   "settingsEngineLlmTitle": "報告生成 LLM",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct（Q4_K_M）"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct（Q4_K_M）",
+  "firstRunModelListTitle": "要下載的模型",
+  "firstRunModelOptionalReason": "選用——只影響報告文字，不影響判定結果",
+  "firstRunModelStorageReason": "可能超出瀏覽器可用儲存空間",
+  "firstRunModelRamReason": "需要 {ramGb} GB 記憶體，超過本裝置回報的容量",
+  "firstRunModelSelectionSummary": "已選 {count} 項 · 合計 {size}",
+  "firstRunModelConfirm": "下載所選項目",
+  "firstRunModelCancel": "取消",
+  "firstRunModelManualTitle": "之後自行下載模型",
+  "firstRunModelManualBody": "您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。",
+  "commonGotIt": "了解"
 }

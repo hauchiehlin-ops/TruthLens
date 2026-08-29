@@ -3352,4 +3352,41 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => 'Model untuk dimuat turun';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      'Pilihan — hanya mempengaruhi teks laporan, bukan keputusan analisis';
+
+  @override
+  String get firstRunModelStorageReason =>
+      'Mungkin tidak muat dalam storan pelayar yang tersedia';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return 'Memerlukan RAM $ramGb GB — lebih daripada yang dilaporkan peranti ini';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '$count dipilih · jumlah $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => 'Muat turun pilihan';
+
+  @override
+  String get firstRunModelCancel => 'Batal';
+
+  @override
+  String get firstRunModelManualTitle => 'Muat turun model kemudian';
+
+  @override
+  String get firstRunModelManualBody =>
+      'Anda boleh memuat turunnya bila-bila masa: buka Tetapan (ikon gear pada bar atas) dan pilih «Pengurusan Model AI». Sementara itu TruthLens terus berfungsi dengan enjin statistik dan gayanya.';
+
+  @override
+  String get commonGotIt => 'Faham';
 }

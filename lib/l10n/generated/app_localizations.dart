@@ -5265,6 +5265,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gemma 2 · 2B Instruct (Q4_K_M)'**
   String get modelNameGemma2Llm;
+
+  /// No description provided for @firstRunModelListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Models to download'**
+  String get firstRunModelListTitle;
+
+  /// No description provided for @firstRunModelOptionalReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — report wording only; does not affect detection results'**
+  String get firstRunModelOptionalReason;
+
+  /// No description provided for @firstRunModelStorageReason.
+  ///
+  /// In en, this message translates to:
+  /// **'May not fit in the browser’s available storage'**
+  String get firstRunModelStorageReason;
+
+  /// No description provided for @firstRunModelRamReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs {ramGb} GB RAM — more than this device reports'**
+  String firstRunModelRamReason(String ramGb);
+
+  /// No description provided for @firstRunModelSelectionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected · {size} total'**
+  String firstRunModelSelectionSummary(int count, String size);
+
+  /// No description provided for @firstRunModelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Download selected'**
+  String get firstRunModelConfirm;
+
+  /// No description provided for @firstRunModelCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get firstRunModelCancel;
+
+  /// No description provided for @firstRunModelManualTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading models later'**
+  String get firstRunModelManualTitle;
+
+  /// No description provided for @firstRunModelManualBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then TruthLens keeps working with its statistical and stylistic engines.'**
+  String get firstRunModelManualBody;
+
+  /// No description provided for @commonGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get commonGotIt;
 }
 
 class _AppLocalizationsDelegate

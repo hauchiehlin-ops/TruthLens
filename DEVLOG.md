@@ -1,5 +1,38 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-30（第一百六十二次更新）— 首次啟動直接列出模型清單，可勾選下載
+
+原本首次啟動的提示只問「要不要去挑模型」，按下去就把人丟到模型管理頁自己找。但
+首次啟動的使用者正好是最不知道「哪些 role 是必要的、哪一顆變體配得上自己硬體」的人。
+
+改成提示內直接列出待下載清單並預先勾選。預設值不是另寫一套規則，而是沿用
+`ModelProvisioner.recommendBundle`——它已經按「每 MB 換到多少判讀能力」排序，並把
+1.6 GB 的報告用 LLM 標為 `skipOptional`（只影響報告文字，不影響判定結論），所以那顆
+預設不勾但仍然列出，使用者要就自己勾。RAM 不足的變體列出但不可勾（勾了也載不起來），
+並寫出是 RAM 的問題；空間可能不足的預設不勾但可勾，理由一併顯示。
+
+「確認」後先 push 到模型管理頁再逐顆依序下載——那一頁已經有逐顆進度條與錯誤呈現，
+在對話框裡另做一套只是多一份要維護的東西；並行下載則會讓數百 MB 的請求互搶頻寬。
+「取消」時才顯示自行下載的路徑（設定齒輪 →「AI 模型管理」）：只說「可以稍後下載」
+而不說去哪，等於要使用者自己在設定裡翻找。
+
+**測試過程中被抓到的三個真實缺陷**（都不是測試本身的問題）：
+
+1. `_load()` 原本放在 `initState`，但它要讀 `Localizations.localeOf` 才知道補哪個語言的
+   專用變體——inherited widget 在 initState 完成前不可依賴。移到 `didChangeDependencies`。
+2. `pumpAndSettle` 對這個對話框永遠逾時：內容備妥前畫面上是 `CircularProgressIndicator`，
+   它每幀都排下一幀，而 pumpAndSettle 的內圈不讓出真正的事件迴圈，MethodChannel 的
+   回覆因此抵達不了。改為 runAsync + pump 交替。
+3. `rootBundle` 是全域 `CachingAssetBundle`，快取的是 **Future 而非結果**。某個測試中途
+   啟動、卻隨測試結束而未完成的 asset 讀取，會把永不完成的 future 留在快取裡，後續
+   測試讀同一個 asset 就只能一直等——單獨跑會過、整檔跑必掛。在 `setUpAll` 於 fake async
+   之外先讀一次即可。順帶把測試的 `ModelCatalogService` 補上 MockClient，否則它會去打
+   真實網路（8 秒逾時），載入時間變成不可預測。
+
+**版本與狀態**：v4.11.6 / Build 1456。✅ `flutter test` 635 全數通過；`flutter analyze`
+除既有 8 條 `prefer_initializing_formals` 外零問題；`flutter build web --release` 成功。
+新增 10 條 l10n 鍵 × 14 語系。
+
 ## 2026-08-30（第一百六十一次更新）— 模型管理頁的角色標題與 LLM 名稱
 
 使用者截圖圈出：英文介面下「Adversarial paraphrase detection」正常，下一區的標題卻是

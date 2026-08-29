@@ -3259,4 +3259,40 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct(Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => '다운로드할 모델';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      '선택 사항 — 보고서 문구에만 영향을 주며 판정 결과에는 영향이 없습니다';
+
+  @override
+  String get firstRunModelStorageReason => '브라우저의 사용 가능한 저장 공간에 맞지 않을 수 있습니다';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return '$ramGb GB 메모리가 필요하며 이 기기가 보고한 용량을 초과합니다';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '$count개 선택 · 합계 $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => '선택 항목 다운로드';
+
+  @override
+  String get firstRunModelCancel => '취소';
+
+  @override
+  String get firstRunModelManualTitle => '나중에 직접 다운로드하기';
+
+  @override
+  String get firstRunModelManualBody =>
+      '언제든지 직접 다운로드할 수 있습니다. 상단 도구 모음의 톱니바퀴 아이콘에서 «설정»을 열고 «AI 모델 관리»를 선택하세요. 그전에도 TruthLens는 통계 및 문체 엔진으로 작동합니다.';
+
+  @override
+  String get commonGotIt => '확인';
 }

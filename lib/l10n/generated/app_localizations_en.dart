@@ -3330,4 +3330,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => 'Models to download';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      'Optional — report wording only; does not affect detection results';
+
+  @override
+  String get firstRunModelStorageReason =>
+      'May not fit in the browser’s available storage';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return 'Needs $ramGb GB RAM — more than this device reports';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '$count selected · $size total';
+  }
+
+  @override
+  String get firstRunModelConfirm => 'Download selected';
+
+  @override
+  String get firstRunModelCancel => 'Cancel';
+
+  @override
+  String get firstRunModelManualTitle => 'Downloading models later';
+
+  @override
+  String get firstRunModelManualBody =>
+      'You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then TruthLens keeps working with its statistical and stylistic engines.';
+
+  @override
+  String get commonGotIt => 'Got it';
 }

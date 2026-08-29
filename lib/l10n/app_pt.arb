@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "A verificação do plug-in OCR nativo falhou: {detail}",
   "ocrErrorNativeFailed": "O OCR nativo falhou: {detail}",
   "settingsEngineLlmTitle": "LLM de redação de relatórios",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "Modelos a transferir",
+  "firstRunModelOptionalReason": "Opcional — afeta apenas o texto do relatório, não o resultado da análise",
+  "firstRunModelStorageReason": "Pode não caber no armazenamento disponível do navegador",
+  "firstRunModelRamReason": "Requer {ramGb} GB de RAM — mais do que este dispositivo indica",
+  "firstRunModelSelectionSummary": "{count} selecionados · {size} no total",
+  "firstRunModelConfirm": "Transferir a seleção",
+  "firstRunModelCancel": "Cancelar",
+  "firstRunModelManualTitle": "Transferir os modelos mais tarde",
+  "firstRunModelManualBody": "Pode transferi-los a qualquer momento: abra as Definições (o ícone de engrenagem na barra superior) e escolha «Gerenciamento de modelos de IA». Até lá, o TruthLens continua a funcionar com os seus motores estatístico e estilístico.",
+  "commonGotIt": "Entendido"
 }

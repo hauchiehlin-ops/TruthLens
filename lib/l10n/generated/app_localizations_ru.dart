@@ -3352,4 +3352,41 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => 'Модели для загрузки';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      'Необязательно — влияет только на текст отчёта, но не на результат анализа';
+
+  @override
+  String get firstRunModelStorageReason =>
+      'Может не поместиться в доступном хранилище браузера';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return 'Требуется $ramGb ГБ ОЗУ — больше, чем сообщает это устройство';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return 'Выбрано: $count · всего $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => 'Загрузить выбранное';
+
+  @override
+  String get firstRunModelCancel => 'Отмена';
+
+  @override
+  String get firstRunModelManualTitle => 'Загрузить модели позже';
+
+  @override
+  String get firstRunModelManualBody =>
+      'Вы можете загрузить их в любой момент: откройте «Настройки» (значок шестерёнки на верхней панели) и выберите «Управление моделями ИИ». До этого TruthLens продолжит работать со статистическим и стилистическим движками.';
+
+  @override
+  String get commonGotIt => 'Понятно';
 }

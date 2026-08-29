@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "Не удалось проверить нативный плагин OCR: {detail}",
   "ocrErrorNativeFailed": "Сбой нативного OCR: {detail}",
   "settingsEngineLlmTitle": "LLM для составления отчётов",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "Модели для загрузки",
+  "firstRunModelOptionalReason": "Необязательно — влияет только на текст отчёта, но не на результат анализа",
+  "firstRunModelStorageReason": "Может не поместиться в доступном хранилище браузера",
+  "firstRunModelRamReason": "Требуется {ramGb} ГБ ОЗУ — больше, чем сообщает это устройство",
+  "firstRunModelSelectionSummary": "Выбрано: {count} · всего {size}",
+  "firstRunModelConfirm": "Загрузить выбранное",
+  "firstRunModelCancel": "Отмена",
+  "firstRunModelManualTitle": "Загрузить модели позже",
+  "firstRunModelManualBody": "Вы можете загрузить их в любой момент: откройте «Настройки» (значок шестерёнки на верхней панели) и выберите «Управление моделями ИИ». До этого TruthLens продолжит работать со статистическим и стилистическим движками.",
+  "commonGotIt": "Понятно"
 }

@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "Pemeriksaan pemalam OCR asli gagal: {detail}",
   "ocrErrorNativeFailed": "OCR asli gagal: {detail}",
   "settingsEngineLlmTitle": "LLM penulisan laporan",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "Model untuk dimuat turun",
+  "firstRunModelOptionalReason": "Pilihan — hanya mempengaruhi teks laporan, bukan keputusan analisis",
+  "firstRunModelStorageReason": "Mungkin tidak muat dalam storan pelayar yang tersedia",
+  "firstRunModelRamReason": "Memerlukan RAM {ramGb} GB — lebih daripada yang dilaporkan peranti ini",
+  "firstRunModelSelectionSummary": "{count} dipilih · jumlah {size}",
+  "firstRunModelConfirm": "Muat turun pilihan",
+  "firstRunModelCancel": "Batal",
+  "firstRunModelManualTitle": "Muat turun model kemudian",
+  "firstRunModelManualBody": "Anda boleh memuat turunnya bila-bila masa: buka Tetapan (ikon gear pada bar atas) dan pilih «Pengurusan Model AI». Sementara itu TruthLens terus berfungsi dengan enjin statistik dan gayanya.",
+  "commonGotIt": "Faham"
 }

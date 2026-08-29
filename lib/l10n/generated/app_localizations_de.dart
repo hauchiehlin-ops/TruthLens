@@ -3366,4 +3366,41 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => 'Herunterzuladende Modelle';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      'Optional – betrifft nur den Berichtstext, nicht das Analyseergebnis';
+
+  @override
+  String get firstRunModelStorageReason =>
+      'Passt möglicherweise nicht in den verfügbaren Browser-Speicher';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return 'Benötigt $ramGb GB RAM – mehr, als dieses Gerät meldet';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '$count ausgewählt · $size insgesamt';
+  }
+
+  @override
+  String get firstRunModelConfirm => 'Auswahl herunterladen';
+
+  @override
+  String get firstRunModelCancel => 'Abbrechen';
+
+  @override
+  String get firstRunModelManualTitle => 'Modelle später herunterladen';
+
+  @override
+  String get firstRunModelManualBody =>
+      'Sie können die Modelle jederzeit selbst herunterladen: Öffnen Sie die Einstellungen (Zahnradsymbol in der oberen Leiste) und wählen Sie „KI-Modellverwaltung“. Bis dahin arbeitet TruthLens mit seinen statistischen und stilistischen Engines weiter.';
+
+  @override
+  String get commonGotIt => 'Verstanden';
 }

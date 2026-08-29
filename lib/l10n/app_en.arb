@@ -2869,5 +2869,32 @@
   "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
   "@modelNameGemma2Llm": {
     "description": "Display name of the Gemma 2 2B Instruct report-writing model"
-  }
+  },
+  "firstRunModelListTitle": "Models to download",
+  "firstRunModelOptionalReason": "Optional — report wording only; does not affect detection results",
+  "firstRunModelStorageReason": "May not fit in the browser’s available storage",
+  "firstRunModelRamReason": "Needs {ramGb} GB RAM — more than this device reports",
+  "@firstRunModelRamReason": {
+    "placeholders": {
+      "ramGb": {
+        "type": "String"
+      }
+    }
+  },
+  "firstRunModelSelectionSummary": "{count} selected · {size} total",
+  "@firstRunModelSelectionSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "firstRunModelConfirm": "Download selected",
+  "firstRunModelCancel": "Cancel",
+  "firstRunModelManualTitle": "Downloading models later",
+  "firstRunModelManualBody": "You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then TruthLens keeps working with its statistical and stylistic engines.",
+  "commonGotIt": "Got it"
 }

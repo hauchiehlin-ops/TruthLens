@@ -3211,6 +3211,41 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
+
+  @override
+  String get firstRunModelListTitle => '要下載的模型';
+
+  @override
+  String get firstRunModelOptionalReason => '選用——只影響報告文字，不影響判定結果';
+
+  @override
+  String get firstRunModelStorageReason => '可能超出瀏覽器可用儲存空間';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return '需要 $ramGb GB 記憶體，超過本裝置回報的容量';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '已選 $count 項 · 合計 $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => '下載所選項目';
+
+  @override
+  String get firstRunModelCancel => '取消';
+
+  @override
+  String get firstRunModelManualTitle => '之後自行下載模型';
+
+  @override
+  String get firstRunModelManualBody =>
+      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。';
+
+  @override
+  String get commonGotIt => '了解';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6420,6 +6455,41 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
+
+  @override
+  String get firstRunModelListTitle => '要下载的模型';
+
+  @override
+  String get firstRunModelOptionalReason => '选用——只影响报告文字，不影响判定结果';
+
+  @override
+  String get firstRunModelStorageReason => '可能超出浏览器可用存储空间';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return '需要 $ramGb GB 内存，超过本设备报告的容量';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '已选 $count 项 · 合计 $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => '下载所选项目';
+
+  @override
+  String get firstRunModelCancel => '取消';
+
+  @override
+  String get firstRunModelManualTitle => '之后自行下载模型';
+
+  @override
+  String get firstRunModelManualBody =>
+      '您随时可以自行下载：打开「设定」（顶部工具栏的齿轮图标），选择「AI 模型管理」。在此之前 TruthLens 仍可使用统计与风格引擎正常运作。';
+
+  @override
+  String get commonGotIt => '了解';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9629,4 +9699,39 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
+
+  @override
+  String get firstRunModelListTitle => '要下載的模型';
+
+  @override
+  String get firstRunModelOptionalReason => '選用——只影響報告文字，不影響判定結果';
+
+  @override
+  String get firstRunModelStorageReason => '可能超出瀏覽器可用儲存空間';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return '需要 $ramGb GB 記憶體，超過本裝置回報的容量';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '已選 $count 項 · 合計 $size';
+  }
+
+  @override
+  String get firstRunModelConfirm => '下載所選項目';
+
+  @override
+  String get firstRunModelCancel => '取消';
+
+  @override
+  String get firstRunModelManualTitle => '之後自行下載模型';
+
+  @override
+  String get firstRunModelManualBody =>
+      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。';
+
+  @override
+  String get commonGotIt => '了解';
 }

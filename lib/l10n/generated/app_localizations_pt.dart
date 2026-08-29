@@ -3364,4 +3364,41 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
+
+  @override
+  String get firstRunModelListTitle => 'Modelos a transferir';
+
+  @override
+  String get firstRunModelOptionalReason =>
+      'Opcional — afeta apenas o texto do relatório, não o resultado da análise';
+
+  @override
+  String get firstRunModelStorageReason =>
+      'Pode não caber no armazenamento disponível do navegador';
+
+  @override
+  String firstRunModelRamReason(String ramGb) {
+    return 'Requer $ramGb GB de RAM — mais do que este dispositivo indica';
+  }
+
+  @override
+  String firstRunModelSelectionSummary(int count, String size) {
+    return '$count selecionados · $size no total';
+  }
+
+  @override
+  String get firstRunModelConfirm => 'Transferir a seleção';
+
+  @override
+  String get firstRunModelCancel => 'Cancelar';
+
+  @override
+  String get firstRunModelManualTitle => 'Transferir os modelos mais tarde';
+
+  @override
+  String get firstRunModelManualBody =>
+      'Pode transferi-los a qualquer momento: abra as Definições (o ícone de engrenagem na barra superior) e escolha «Gerenciamento de modelos de IA». Até lá, o TruthLens continua a funcionar com os seus motores estatístico e estilístico.';
+
+  @override
+  String get commonGotIt => 'Entendido';
 }

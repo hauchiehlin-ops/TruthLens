@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "La comprobación del complemento OCR nativo falló: {detail}",
   "ocrErrorNativeFailed": "El OCR nativo falló: {detail}",
   "settingsEngineLlmTitle": "LLM de redacción de informes",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "Modelos que se descargarán",
+  "firstRunModelOptionalReason": "Opcional: solo afecta al texto del informe, no al resultado del análisis",
+  "firstRunModelStorageReason": "Puede que no quepa en el almacenamiento disponible del navegador",
+  "firstRunModelRamReason": "Necesita {ramGb} GB de RAM, más de lo que indica este dispositivo",
+  "firstRunModelSelectionSummary": "{count} seleccionados · {size} en total",
+  "firstRunModelConfirm": "Descargar la selección",
+  "firstRunModelCancel": "Cancelar",
+  "firstRunModelManualTitle": "Descargar los modelos más tarde",
+  "firstRunModelManualBody": "Puedes descargarlos cuando quieras: abre Ajustes (el icono de engranaje de la barra superior) y elige «Gestión de modelos de IA». Mientras tanto, TruthLens sigue funcionando con sus motores estadístico y estilístico.",
+  "commonGotIt": "Entendido"
 }

@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "Prüfung des nativen OCR-Plug-ins fehlgeschlagen: {detail}",
   "ocrErrorNativeFailed": "Native OCR fehlgeschlagen: {detail}",
   "settingsEngineLlmTitle": "LLM für Berichtstexte",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "Herunterzuladende Modelle",
+  "firstRunModelOptionalReason": "Optional – betrifft nur den Berichtstext, nicht das Analyseergebnis",
+  "firstRunModelStorageReason": "Passt möglicherweise nicht in den verfügbaren Browser-Speicher",
+  "firstRunModelRamReason": "Benötigt {ramGb} GB RAM – mehr, als dieses Gerät meldet",
+  "firstRunModelSelectionSummary": "{count} ausgewählt · {size} insgesamt",
+  "firstRunModelConfirm": "Auswahl herunterladen",
+  "firstRunModelCancel": "Abbrechen",
+  "firstRunModelManualTitle": "Modelle später herunterladen",
+  "firstRunModelManualBody": "Sie können die Modelle jederzeit selbst herunterladen: Öffnen Sie die Einstellungen (Zahnradsymbol in der oberen Leiste) und wählen Sie „KI-Modellverwaltung“. Bis dahin arbeitet TruthLens mit seinen statistischen und stilistischen Engines weiter.",
+  "commonGotIt": "Verstanden"
 }

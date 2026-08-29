@@ -1399,5 +1399,15 @@
   "ocrErrorNativeCheckFailed": "การตรวจสอบปลั๊กอิน OCR ดั้งเดิมล้มเหลว: {detail}",
   "ocrErrorNativeFailed": "OCR ดั้งเดิมทำงานล้มเหลว: {detail}",
   "settingsEngineLlmTitle": "LLM สร้างรายงาน",
-  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "firstRunModelListTitle": "โมเดลที่จะดาวน์โหลด",
+  "firstRunModelOptionalReason": "ตัวเลือกเสริม — มีผลต่อข้อความในรายงานเท่านั้น ไม่มีผลต่อผลการวิเคราะห์",
+  "firstRunModelStorageReason": "อาจไม่พอดีกับพื้นที่จัดเก็บที่เบราว์เซอร์มีอยู่",
+  "firstRunModelRamReason": "ต้องใช้แรม {ramGb} GB ซึ่งมากกว่าที่อุปกรณ์นี้รายงาน",
+  "firstRunModelSelectionSummary": "เลือกแล้ว {count} รายการ · รวม {size}",
+  "firstRunModelConfirm": "ดาวน์โหลดรายการที่เลือก",
+  "firstRunModelCancel": "ยกเลิก",
+  "firstRunModelManualTitle": "ดาวน์โหลดโมเดลภายหลัง",
+  "firstRunModelManualBody": "คุณดาวน์โหลดเองได้ทุกเมื่อ เปิด «การตั้งค่า» (ไอคอนรูปเฟืองบนแถบด้านบน) แล้วเลือก «การจัดการโมเดล AI» ในระหว่างนี้ TruthLens ยังทำงานได้ด้วยเครื่องมือเชิงสถิติและเชิงรูปแบบการเขียน",
+  "commonGotIt": "เข้าใจแล้ว"
 }
