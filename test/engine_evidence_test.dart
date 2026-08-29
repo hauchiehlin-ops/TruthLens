@@ -331,6 +331,55 @@ void main() {
       expect(score.aiProbability, greaterThan(0));
     });
 
+    test('版面密度不是助理特徵，語篇招呼才是', () async {
+      // 實測：人類撰寫的技術文件在標題比例（18.6% 對 8.3%）、粗體數（142 對 27）
+      // 與 emoji 數（41 對 5）上都高於受測的 AI 回覆。用版面密度當特徵只會在
+      // 專案自己的 README 上誤報，因此版面只在已有語句招呼時才小幅加分。
+      const humanTechnicalDoc =
+          '## 架構決策\n\n'
+          '- **推論平台**：瀏覽器端 Dart 推論，不依賴原生層\n'
+          '- **模型下載**：HTTP 206 續傳支援\n'
+          '- **儲存**：OPFS，文件內容不上傳\n\n'
+          '### 效能目標\n\n'
+          '1. 500 字文件在 5 秒內完成分析\n'
+          '2. 冷啟動 3 秒內\n'
+          '3. 記憶體峰值低於 2GB\n\n'
+          '這些目標來自實機量測，不是估算值。後續若要調整，必須附上新的量測數據。\n';
+
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(humanTechnicalDoc),
+        l10n,
+      );
+      expect(score.features['assistant_response_artifacts'], 0.0);
+      expect(
+        score.hasEvidence,
+        isFalse,
+        reason: '密集的標題與條列是技術寫作常態，不得單獨構成 AI 證據',
+      );
+    });
+
+    test('多條獨立助理招呼語構成高特異性證據', () async {
+      const assistantReply =
+          '撰寫關於從眾心理學的期刊論文是一個極具價值的選擇。\n\n'
+          '以下為您整理目前最新的研究成果：\n\n'
+          '**1. 社群電商下的從眾機制**\n'
+          '消費者依賴他人的評論或購買數量來做決策。\n\n'
+          '建議您的論文可以先透過結構方程模型進行問卷數據分析。\n\n'
+          '希望這些趨勢能幫助您的論文找到亮點！'
+          '如果您對其中某個方向特別感興趣，我們可以進一步討論。\n';
+
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(assistantReply),
+        l10n,
+      );
+      expect(
+        score.features['assistant_response_artifacts']!,
+        greaterThanOrEqualTo(2),
+      );
+      expect(score.hasEvidence, isTrue);
+      expect(score.votes, isTrue);
+    });
+
     test('助理招呼語長在版面結構上，剝掉結構就會連證據一起剝掉', () async {
       // 真實回報：一份 Gemini 回覆被判為「未取得可量化的作者訊號」。原因是
       // 助理殘留樣式比對的是 analysisText，而 analysisText 刻意剝除標題、

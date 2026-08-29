@@ -8,57 +8,49 @@
   "note": "Both Chinese components have now been measured on an approved external source at their shipped operating points. Neither clears the gate: both hold the false-positive promise comfortably, but recall collapses on unseen generators. No high-confidence population claim may be made for Chinese. English remains unmeasured.",
   "measurements": [
     {
-      "component": "detectrl-zh-char-svm-v2",
+      "component": "detectrl-zh-char-svm-v3",
       "role": "stylometry-lexical",
       "asset": "assets/models/detectrl_zh_char_svm.json",
       "trained_on": [
         "detectrl-x-zh",
-        "nlpcc-2025-zh"
+        "nlpcc-2025-zh",
+        "hc3-chinese"
       ],
-      "operating_point": 0.11276769804987598,
+      "operating_point": 0.160515,
       "calibration": "99.5th percentile of human scores on the combined development split. The earlier 99th percentile met its 1% budget on the dev split but exceeded it on NLPCC test (1.73%); the stricter quantile buys margin across unseen human distributions.",
       "reported": [
         {
+          "corpus_id": "hc3-zh-test",
+          "register": "assistant reply",
+          "fpr_upper_95": 0.0091,
+          "recall": 0.9388,
+          "previous_recall": 0.0673
+        },
+        {
           "corpus_id": "detectrl-x-zh-test",
-          "generators": [
-            "DeepSeek-V3",
-            "Gemini-2.5-Flash",
-            "GPT-4o",
-            "Qwen-Max"
-          ],
-          "fpr": 0.0,
-          "fpr_upper_95": 0.0005,
-          "recall": 0.9492,
-          "per_generator_recall": {
-            "gemini-2.5-flash": 0.9647,
-            "gpt-4o": 0.946,
-            "deepseek-v3": 0.898,
-            "qwen-max": 0.988
-          }
+          "register": "document rewrite",
+          "fpr_upper_95": 0.0048,
+          "recall": 0.9283,
+          "previous_recall": 0.9492
         },
         {
           "corpus_id": "semeval-2024-task8-zh",
-          "generators": [
-            "chatGPT",
-            "davinci"
-          ],
-          "fpr_upper_95": 0.001,
-          "recall": 0.0911
+          "register": "QA",
+          "fpr_upper_95": 0.0034,
+          "recall": 0.5535,
+          "previous_recall": 0.0911
         },
         {
           "corpus_id": "nlpcc-2025-test",
-          "generators": [
-            "DeepSeek-V3"
-          ],
-          "fpr_upper_95": 0.0082,
-          "recall": 0.6749
+          "fpr_upper_95": 0.0071,
+          "recall": 0.6973,
+          "previous_recall": 0.6749
         }
       ],
       "meets_target_fpr": true,
       "meets_minimum_recall": "corpus-dependent: 0.949 / 0.675 on contemporary corpora, 0.091 on the 2023-era one",
-      "why_shipped": "The previous asset exceeded the 1% false-positive budget on two of three corpora (3.88% on DetectRL-X, 1.53% on NLPCC). This one clears it on all three while raising Gemini-2.5-Flash recall from 0.666 to 0.965. The SemEval regression (0.331 -> 0.091) is on chatGPT/davinci, generators from 2023 that are not the threat model this app faces.",
-      "known_blind_spot": "Assistant-response register — a chat model answering a user prompt with headings, numbered advice and second-person address — is still missed. All five DetectRL-X domains (News, Novel, SEO, Webtext, Wiki) are document rewrite/continuation tasks, not assistant replies. A real user document in this register scored 0/100 both before and after retraining.",
-      "rejected_alternative": "A DetectRL-X-only model reached in-corpus AUC 0.9999 but flagged 67% of genuine human Chinese on NLPCC. Verified not to be leakage (train/test human overlap: 1 of ~14000). Its human distribution was simply too narrow."
+      "why_shipped": "Adding HC3-Chinese closed the register gap: assistant-reply recall went from 0.067 to 0.939. SemEval also recovered from 0.091 to 0.554 — its Baidu-Zhidao QA content is the same register, which corrects the earlier diagnosis that its regression was purely a generator-era effect. All four corpora stay inside the 1% false-positive budget.",
+      "known_blind_spot": "The document that triggered this work still does not cross the gate (decision -0.089 against a 0.161 cut), though it moved from -0.328. Its most AI-like property is layout structure, which a character n-gram model cannot see. That axis is handled by the stylometry engine instead."
     },
     {
       "component": "aigc-detector-zhv3-int8",
@@ -172,5 +164,26 @@
         "why_not_shipped": "Fails the 1% false-positive target even in-corpus, on only 1400 training documents."
       }
     ]
+  },
+  "layout_features_investigated": {
+    "finding": "Layout density does not separate AI from human writing and was not shipped as a feature.",
+    "measured": {
+      "ai_reply": {
+        "heading_ratio": 0.083,
+        "bold_markers": 27,
+        "emoji": 5
+      },
+      "human_readme": {
+        "heading_ratio": 0.186,
+        "bold_markers": 142,
+        "emoji": 41
+      },
+      "human_plan": {
+        "heading_ratio": 0.095,
+        "bold_markers": 50,
+        "emoji": 23
+      }
+    },
+    "shipped_instead": "Four discourse patterns that hit 1-2 times in the AI reply and zero times across three human project documents, plus one weaker layout convention that only scores when a discourse pattern already fired. A fifth candidate (colon-led preamble into a list) was rejected: it occurs 247 times in the project DEVLOG."
   }
 }

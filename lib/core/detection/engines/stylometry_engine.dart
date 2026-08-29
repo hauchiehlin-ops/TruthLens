@@ -63,6 +63,29 @@ class StylometryEngine implements DetectionEngine {
       caseSensitive: false,
     ),
     RegExp(r'as an ai (?:language )?model', caseSensitive: false),
+    // 以下四條由實測樣式挑選：在一份 Gemini 回覆上分別命中 1–2 次，而在三份
+    // 人類撰寫的專案文件（implementation_plan.md、README.md、DEVLOG.md）上
+    // 全部為 0。刻意不收「冒號引導接條列」——那條在 DEVLOG 命中 247 次，
+    // 是技術寫作的常態而非助理特徵。
+    RegExp(r'建議(?:您|你)|(?:您|你)可以(?:先|從|考慮|切入)|供(?:您|你)參考'),
+    RegExp(
+      r'(?:如果|若)(?:您|你).{0,30}(?:可以|我們可以|歡迎).{0,20}'
+      r'(?:討論|說明|調整|深入)',
+    ),
+    RegExp(r'希望(?:這些|以上|本文).{0,30}(?:能|有(?:所)?)(?:幫助|助於|啟發)'),
+    RegExp(
+      r"(?:hope|feel free to).{0,60}(?:helps?|let me know|reach out)",
+      caseSensitive: false,
+    ),
+  ];
+
+  /// 版面慣例層的助理特徵：證據力明顯弱於語句招呼，單獨出現不足以支撐高信心。
+  ///
+  /// 「**術語：** 說明」這種粗體定義式條列在受測的 AI 回覆中出現 12 次、在三份
+  /// 人類文件中皆為 0，但控制組只有三份文件，不足以當作已驗證的判準。因此它
+  /// 另計一組、給較低的分數，也不參與「命中兩個獨立框架」的高信心條件。
+  static final assistantLayoutPatterns = <RegExp>[
+    RegExp(r'\*\*[^*\n]{2,40}[：:]\*\*'),
   ];
 
   @override
@@ -127,6 +150,17 @@ class StylometryEngine implements DetectionEngine {
       reasons.add(
         l10n.engineReasonAssistantResponseArtifact(assistantArtifactHits),
       );
+    }
+
+    // 版面慣例只在已經有語句招呼時才加分。單看版面密度無法分辨——實測人類
+    // 撰寫的技術文件在標題比例（18.6% 對 8.3%）、粗體數（142 對 27）與 emoji
+    // 數（41 對 5）上都高於受測的 AI 回覆，密度特徵只會製造誤報。
+    final layoutHits = assistantLayoutPatterns
+        .where((pattern) => pattern.hasMatch(text.raw))
+        .length;
+    features['assistant_layout_conventions'] = layoutHits.toDouble();
+    if (layoutHits > 0 && assistantArtifactHits > 0) {
+      score += 0.10;
     }
 
     // 特徵 1：通用過渡詞密度
