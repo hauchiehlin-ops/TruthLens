@@ -926,7 +926,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportDetailAnalysisTitle => 'Análisis detallado';
 
   @override
-  String get reportNoEngineData => 'Aún no hay datos de análisis de motores';
+  String get reportNoEngineData => 'Sin datos de motores';
 
   @override
   String get reportEngineNotParticipated => 'No participó';
@@ -1918,6 +1918,75 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get engineStylometryDetectRlModule =>
       'Huella de caracteres DetectRL-ZH';
+
+  @override
+  String get modelNameMbertMultilingual =>
+      'Detector multilingüe (EN+ZH · INT8)';
+
+  @override
+  String get modelNameTruthlensZh =>
+      'Detector de chino TruthLens (generadores 2026 · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 =>
+      'Detector de chino moderno (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'Detector RoBERTa (inglés · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl =>
+      'Modelo multilingüe de perplejidad (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl =>
+      'Modelo de perplejidad DistilGPT2 (INT8)';
+
+  @override
+  String get modelNameAdversarial => 'Detector de reescritura (INT8)';
+
+  @override
+  String get modelErrorNoSource =>
+      'Esta variante todavía no tiene fuente de descarga.';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'Almacenamiento del navegador insuficiente: faltan unos $mb MB. Elimine modelos que ya no necesite o libere espacio en disco.';
+  }
+
+  @override
+  String get modelErrorChecksum =>
+      'La suma de comprobación no coincide; el archivo podría estar dañado.';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'El JSON del tokenizador descargado está incompleto o se cortó la conexión.';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'Descarga incompleta: se recibieron $got MB y se esperaban unos $expected MB.';
+  }
+
+  @override
+  String get modelErrorChunkAborted =>
+      'La descarga se interrumpió a mitad de bloque y los reintentos fallaron.';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'JSON del tokenizador no válido.';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu CPU · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => ' (estimado)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

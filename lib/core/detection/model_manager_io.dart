@@ -452,9 +452,13 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 下載並安裝變體。首個安裝的變體自動設為使用中。回傳 true 表示成功。
-  Future<bool> downloadVariant(String role, ModelVariant variant) async {
+  Future<bool> downloadVariant(
+    String role,
+    ModelVariant variant, {
+    AppLocalizations? l10n,
+  }) async {
     if (!variant.isDownloadable) {
-      _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
+      _mark(role, InstallState.failed, error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源');
       return false;
     }
     _mark(
@@ -490,7 +494,7 @@ class ModelManager extends ChangeNotifier {
         final digest = await _sha256Of(tmp);
         if (digest != variant.sha256) {
           await tmp.delete();
-          throw const FormatException('校驗和不符，檔案可能損毀');
+          throw FormatException(l10n?.modelErrorChecksum ?? '校驗和不符，檔案可能損毀');
         }
       }
 

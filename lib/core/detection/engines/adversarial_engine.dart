@@ -6,6 +6,7 @@ import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
 import '../model_file_exists.dart';
 import '../model_manager.dart';
+import '../model_display_names.dart';
 import '../variant_router.dart';
 import '../onnx_detector.dart';
 
@@ -147,7 +148,7 @@ class AdversarialEngine implements DetectionEngine {
     if (_choice.overrodeUserChoice) {
       notes.add(
         l10n.engineRoutedToBetterVariant(
-          variant.displayName,
+          localizedModelName(variant.variantId, variant.name, l10n),
           text.language.code,
         ),
       );
@@ -156,14 +157,14 @@ class AdversarialEngine implements DetectionEngine {
       case LanguageFit.plausible:
         notes.add(
           l10n.engineLanguageNotValidated(
-            variant.displayName,
+            localizedModelName(variant.variantId, variant.name, l10n),
             text.language.code,
           ),
         );
       case LanguageFit.unsupported:
         notes.add(
           l10n.engineLanguageUnsupported(
-            variant.displayName,
+            localizedModelName(variant.variantId, variant.name, l10n),
             text.language.code,
           ),
         );
@@ -263,7 +264,7 @@ class AdversarialEngine implements DetectionEngine {
       },
       modules: [
         if (_choice.variant != null)
-          _choice.variant!.displayName
+          localizedModelName(_choice.variant!.variantId, _choice.variant!.name, l10n)
         else
           name(l10n),
       ],

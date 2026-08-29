@@ -916,7 +916,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportDetailAnalysisTitle => 'Analisis terperinci';
 
   @override
-  String get reportNoEngineData => 'Belum ada data analisis enjin';
+  String get reportNoEngineData => 'Tiada data enjin';
 
   @override
   String get reportEngineNotParticipated => 'Tidak terlibat';
@@ -1905,6 +1905,74 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get engineStylometryDetectRlModule => 'Cap aksara DetectRL-ZH';
+
+  @override
+  String get modelNameMbertMultilingual =>
+      'Pengesan berbilang bahasa (EN+ZH · INT8)';
+
+  @override
+  String get modelNameTruthlensZh =>
+      'Pengesan bahasa Cina TruthLens (penjana 2026 · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 =>
+      'Pengesan bahasa Cina moden (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'Pengesan RoBERTa (Inggeris · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl =>
+      'Model perpleksiti berbilang bahasa (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'Model perpleksiti DistilGPT2 (INT8)';
+
+  @override
+  String get modelNameAdversarial => 'Pengesan tulisan semula (INT8)';
+
+  @override
+  String get modelErrorNoSource =>
+      'Varian ini belum mempunyai sumber muat turun.';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'Storan pelayar tidak mencukupi — kurang kira-kira $mb MB. Buang model yang tidak diperlukan atau kosongkan ruang cakera.';
+  }
+
+  @override
+  String get modelErrorChecksum =>
+      'Checksum tidak sepadan — fail mungkin rosak.';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'JSON tokenizer yang dimuat turun tidak lengkap atau sambungan terputus.';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'Muat turun tidak lengkap: $got MB diterima, dijangka kira-kira $expected MB.';
+  }
+
+  @override
+  String get modelErrorChunkAborted =>
+      'Muat turun terputus di pertengahan blok dan cubaan semula gagal.';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'JSON tokenizer tidak sah.';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu CPU · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => ' (anggaran)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

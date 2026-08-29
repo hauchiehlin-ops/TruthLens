@@ -9,6 +9,7 @@ import '../../utils/text_stats.dart';
 import '../detection_engine.dart';
 import '../model_file_exists.dart';
 import '../model_manager.dart';
+import '../model_display_names.dart';
 import '../variant_router.dart';
 import '../onnx_detector.dart';
 
@@ -261,7 +262,7 @@ class TransformerEngine implements DetectionEngine {
       // 路由每次分析都可能換變體，使用者只看「Transformer 分類器」無從得知
       // 這次是哪一顆在發言。
       modules: [
-        if (variant != null) variant.displayName else name(l10n),
+        if (variant != null) localizedModelName(variant.variantId, variant.name, l10n) else name(l10n),
       ],
       reasons: [
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。
@@ -293,7 +294,7 @@ class TransformerEngine implements DetectionEngine {
     if (_choice.overrodeUserChoice) {
       notes.add(
         l10n.engineRoutedToBetterVariant(
-          variant.displayName,
+          localizedModelName(variant.variantId, variant.name, l10n),
           text.language.code,
         ),
       );
@@ -302,14 +303,14 @@ class TransformerEngine implements DetectionEngine {
       case LanguageFit.plausible:
         notes.add(
           l10n.engineLanguageNotValidated(
-            variant.displayName,
+            localizedModelName(variant.variantId, variant.name, l10n),
             text.language.code,
           ),
         );
       case LanguageFit.unsupported:
         notes.add(
           l10n.engineLanguageUnsupported(
-            variant.displayName,
+            localizedModelName(variant.variantId, variant.name, l10n),
             text.language.code,
           ),
         );

@@ -910,7 +910,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportDetailAnalysisTitle => 'Detailed analysis';
 
   @override
-  String get reportNoEngineData => 'No engine analysis data yet';
+  String get reportNoEngineData => 'No engine data';
 
   @override
   String get reportEngineNotParticipated => 'Not involved';
@@ -1891,6 +1891,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get engineStylometryDetectRlModule =>
       'DetectRL-ZH character fingerprint';
+
+  @override
+  String get modelNameMbertMultilingual =>
+      'Multilingual detector (EN+ZH · INT8)';
+
+  @override
+  String get modelNameTruthlensZh =>
+      'TruthLens Chinese detector (2026 generators · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 =>
+      'Modern Chinese detector (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa detector (English · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl =>
+      'Multilingual perplexity model (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 perplexity model (INT8)';
+
+  @override
+  String get modelNameAdversarial => 'Rewrite detector (INT8)';
+
+  @override
+  String get modelErrorNoSource => 'This variant has no download source yet.';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'Not enough browser storage — about $mb MB short. Remove models you no longer need, or free up disk space, then try again.';
+  }
+
+  @override
+  String get modelErrorChecksum =>
+      'Checksum mismatch — the file may be corrupted.';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'The downloaded tokenizer JSON is incomplete or the connection dropped.';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'Incomplete download: received $got MB but expected about $expected MB.';
+  }
+
+  @override
+  String get modelErrorChunkAborted =>
+      'The download was interrupted mid-chunk and repeated retries failed.';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Invalid tokenizer JSON.';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu CPU · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => ' (estimated)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

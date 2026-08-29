@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/device_capabilities.dart';
+import '../../core/detection/model_display_names.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
 import 'package:file_picker/file_picker.dart';
@@ -588,13 +589,10 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
     );
   }
 
-  String _localizedDeviceSummary(DeviceCapabilities device) {
-    final ram = (device.totalRamMb / 1024).toStringAsFixed(
-      device.totalRamMb % 1024 == 0 ? 0 : 1,
-    );
-    return '${device.platform.toUpperCase()} · ${device.processors} CPU · '
-        '$ram GB RAM · ${device.tier.name.toUpperCase()}';
-  }
+  /// 函式原本叫「localized」卻寫死英文的 CPU / GB RAM，介面切到其他語系
+  /// 仍是英文。改為呼叫共用的在地化版本，與 onboarding 走同一條路徑。
+  String _localizedDeviceSummary(DeviceCapabilities device) =>
+      localizedDeviceSummary(device, AppLocalizations.of(context));
 }
 
 /// 手動新增「已知由 AI 產出」的樣本。

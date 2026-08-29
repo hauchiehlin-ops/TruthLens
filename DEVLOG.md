@@ -21,6 +21,39 @@
 **版本與狀態**：v4.6.8 / Build 1441。✅ `flutter test test/detection_test.dart`
 全數通過；`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
 
+## 2026-08-30（第一百五十九次更新）— 深度掃描並修正未在地化的介面文字
+
+使用者回報英文介面下模型清單顯示中文名稱。掃描後發現這不是單點疏漏，而是**四條
+各自寫死語言的路徑**：
+
+**一、模型名稱**。`model_options_list.dart` 有一張寫死**英文**的覆寫表，表中有的
+（RoBERTa、DistilGPT2）顯示英文、沒有的落回 catalog 的**中文**——同一份清單兩種
+語言並存，正是截圖中的樣子。改由 `localizedModelName(id, catalogName, l10n)` 統一
+處理：7 個已知變體走翻譯，未知 id 回退 catalog 名稱，遠端新增的模型才不會顯示成
+裸 id。已安裝清單與引擎理由文字裡的模型名稱一併改用同一路徑。
+
+**二、裝置摘要**。兩條路徑各寫死一種語言：`DeviceCapabilities.summary` 是中文
+（「web · 10 核 · 16GB RAM」），模型管理頁另有一個名為 `_localizedDeviceSummary`
+卻**寫死英文**的函式（「WEB · 10 CPU · 16 GB RAM · HIGH」）。合併為共用的
+`localizedDeviceSummary`。
+
+**三、下載錯誤訊息**。模型管理頁的失敗訊息全是中文。`downloadVariant` 加上可選的
+`l10n` 參數（沿用 `repairActiveVariant` 既有的模式），UI 呼叫端傳入；未傳時保留原
+字串作後備，非 UI 呼叫端不受影響。
+
+**四、報告的空狀態**。雷達圖無資料時顯示寫死的「無引擎數據」。
+
+掃描方法與結果：全專案 284 處中文字面值，逐一分類後確認 211 處是中文偵測的 regex、
+轉折詞資料與 debugPrint（**不該動**），真正需要在地化的是上述四類。新增 16 個鍵，
+14 語系各 793 鍵、零缺漏。
+
+**尚未處理並記錄於此**：`web_ocr_settings.dart` 有 **22 對手動的中英三元式**
+（`_isZh(l10n) ? '中文' : 'English'`），其餘 12 個語系一律拿到英文。這是同類型但
+範圍更大的問題，留待下一輪。
+
+**版本與狀態**：v4.11.3。✅ Flutter 630 項測試全數通過；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
+
 ## 2026-08-30（第一百五十八次更新）— 困惑度模型依文件語言路由
 
 **先更正兩則錯誤的說法。** 上一次宣稱「困惑度模型沒安裝」，那是從測試環境

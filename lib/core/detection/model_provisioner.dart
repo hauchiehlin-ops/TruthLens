@@ -1,4 +1,5 @@
 import 'device_capabilities.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'model_catalog.dart';
 import 'model_catalog_service.dart';
 import 'model_manager.dart';
@@ -211,6 +212,9 @@ class ModelProvisioner {
     return modelManager.isInstalled('transformer');
   }
 
-  Future<bool> downloadVariant(String role, ModelVariant variant) =>
-      modelManager.downloadVariant(role, variant);
+  Future<bool> downloadVariant(
+    String role,
+    ModelVariant variant, {
+    AppLocalizations? l10n,
+  }) => modelManager.downloadVariant(role, variant, l10n: l10n);
 }

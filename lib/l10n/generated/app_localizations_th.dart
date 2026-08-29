@@ -914,7 +914,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportDetailAnalysisTitle => 'การวิเคราะห์โดยละเอียด';
 
   @override
-  String get reportNoEngineData => 'ยังไม่มีข้อมูลการวิเคราะห์เอนจิน';
+  String get reportNoEngineData => 'ไม่มีข้อมูลเอนจิน';
 
   @override
   String get reportEngineNotParticipated => 'ไม่ได้เข้าร่วม';
@@ -1896,6 +1896,70 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get engineStylometryDetectRlModule => 'ลายนิ้วมืออักขระ DetectRL-ZH';
+
+  @override
+  String get modelNameMbertMultilingual => 'ตัวตรวจจับหลายภาษา (EN+ZH · INT8)';
+
+  @override
+  String get modelNameTruthlensZh =>
+      'ตัวตรวจจับภาษาจีน TruthLens (รุ่นปี 2026 · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 =>
+      'ตัวตรวจจับภาษาจีนสมัยใหม่ (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'ตัวตรวจจับ RoBERTa (อังกฤษ · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl => 'โมเดลความยากหลายภาษา (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'โมเดลความยาก DistilGPT2 (INT8)';
+
+  @override
+  String get modelNameAdversarial => 'ตัวตรวจจับการเขียนใหม่ (INT8)';
+
+  @override
+  String get modelErrorNoSource => 'รุ่นนี้ยังไม่มีแหล่งดาวน์โหลด';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'พื้นที่จัดเก็บของเบราว์เซอร์ไม่พอ ขาดอีกประมาณ $mb MB โปรดลบโมเดลที่ไม่ต้องการหรือเพิ่มพื้นที่ดิสก์';
+  }
+
+  @override
+  String get modelErrorChecksum => 'ค่าตรวจสอบไม่ตรงกัน ไฟล์อาจเสียหาย';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'ไฟล์ Tokenizer JSON ที่ดาวน์โหลดไม่สมบูรณ์ หรือการเชื่อมต่อหลุด';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'ดาวน์โหลดไม่สมบูรณ์: ได้รับ $got MB คาดว่าประมาณ $expected MB';
+  }
+
+  @override
+  String get modelErrorChunkAborted =>
+      'การดาวน์โหลดหยุดกลางบล็อกและลองใหม่หลายครั้งไม่สำเร็จ';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'รูปแบบ Tokenizer JSON ไม่ถูกต้อง';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu CPU · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => ' (ประมาณ)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

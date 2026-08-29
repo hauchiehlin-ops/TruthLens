@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/detection/device_capabilities.dart';
+import '../../core/detection/model_display_names.dart';
 import '../../core/detection/model_provisioner.dart';
 import '../../core/services/preferences_service.dart';
 import '../../core/services/pwa_install.dart';
@@ -122,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: ListTile(
                           leading: Icon(LucideIcons.tabletSmartphone),
                           title: Text(l10n.onboardingDetectedDevice),
-                          subtitle: Text(device.summary),
+                          subtitle: Text(localizedDeviceSummary(device, l10n)),
                         ),
                       ),
                     // 逐 role 的「推薦」標記回答不了「總共要下載幾顆、多大」。

@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/detection/model_catalog.dart';
 import '../../core/detection/model_manager.dart';
 import '../../core/detection/model_provisioner.dart';
+import '../../core/detection/model_display_names.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 共用的模型選項清單：每個 role 列出所有變體，標示硬體推薦、安裝與使用中狀態，
@@ -31,15 +32,13 @@ class ModelOptionsList extends StatelessWidget {
     _ => fallback,
   };
 
-  static String variantLabel(ModelVariant variant) => switch (variant.id) {
-    'chatgpt-detector-roberta-onnx-int8' => 'RoBERTa ChatGPT Detector (INT8)',
-    'truthlens-multilingual-distil-int8' =>
-      'TruthLens Multilingual Detector (INT8)',
-    'distilgpt2-ppl-int8' => 'DistilGPT2 Perplexity (INT8)',
-    'truthlens-adversarial-distil-int8' => 'TruthLens Rewrite Detector (INT8)',
-    'gemma-2-2b-it-q4km' => 'Gemma 2 · 2B Instruct (Q4_K_M)',
-    _ => variant.name,
-  };
+  /// 變體的顯示名稱，依介面語系在地化。
+  ///
+  /// 這裡原本是一張寫死英文的覆寫表：表中有的顯示英文、沒有的落回 catalog 的
+  /// 中文，於是英文介面下模型清單中英混雜。改由 [localizedModelName] 統一處理，
+  /// 未知變體才回退 catalog 名稱。
+  static String variantLabel(ModelVariant variant, AppLocalizations l10n) =>
+      localizedModelName(variant.id, variant.name, l10n);
 
   static String? variantDescription(
     String role,
@@ -157,7 +156,7 @@ class _VariantTile extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      ModelOptionsList.variantLabel(variant),
+                      ModelOptionsList.variantLabel(variant, l10n),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -253,7 +252,7 @@ class _VariantTile extends StatelessWidget {
       children: [
         if (!installed && variant.isDownloadable)
           FilledButton.tonalIcon(
-            onPressed: () => provisioner.downloadVariant(plan.role, variant),
+            onPressed: () => provisioner.downloadVariant(plan.role, variant, l10n: l10n),
             icon: Icon(LucideIcons.download, size: 18),
             label: Text(
               l10n.modelListDownloadButton(
@@ -271,7 +270,7 @@ class _VariantTile extends StatelessWidget {
           ),
         if (hasUpdate)
           FilledButton.tonalIcon(
-            onPressed: () => provisioner.downloadVariant(plan.role, variant),
+            onPressed: () => provisioner.downloadVariant(plan.role, variant, l10n: l10n),
             icon: Icon(LucideIcons.download, size: 18),
             label: Text(l10n.modelListUpdateButton),
           ),
@@ -318,7 +317,7 @@ class _VariantTile extends StatelessWidget {
         title: Text(l10n.modelListDeleteConfirmTitle),
         content: Text(
           l10n.modelListDeleteConfirmBody(
-            ModelOptionsList.variantLabel(variant),
+            ModelOptionsList.variantLabel(variant, l10n),
             ModelOptionsList.sizeLabel(variant.sizeBytes),
           ),
         ),
@@ -378,7 +377,11 @@ class _CustomModelTile extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      model.displayName,
+                      localizedModelName(
+                        model.variantId,
+                        model.name,
+                        l10n,
+                      ),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -420,7 +423,11 @@ class _CustomModelTile extends StatelessWidget {
                           title: Text(l10n.modelListDeleteConfirmTitle),
                           content: Text(
                             l10n.modelListDeleteCustomConfirmBody(
-                              model.displayName,
+                              localizedModelName(
+                                model.variantId,
+                                model.name,
+                                l10n,
+                              ),
                               ModelOptionsList.sizeLabel(model.sizeBytes),
                             ),
                           ),

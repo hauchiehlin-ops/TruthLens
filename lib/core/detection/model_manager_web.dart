@@ -296,9 +296,13 @@ class ModelManager extends ChangeNotifier {
   /// 下載並安裝變體：模型主檔逐塊直接串流寫入 OPFS（見 [_streamDownloadToFile]），
   /// 不再整份先堆積在記憶體；Tokenizer 檔通常僅數十 KB～數 MB，仍以整包記憶體
   /// 讀取（需要完整字串做 JSON 解析）。首個安裝的變體自動設為使用中。
-  Future<bool> downloadVariant(String role, ModelVariant variant) async {
+  Future<bool> downloadVariant(
+    String role,
+    ModelVariant variant, {
+    AppLocalizations? l10n,
+  }) async {
     if (!variant.isDownloadable) {
-      _mark(role, InstallState.failed, error: '此變體尚未提供下載來源');
+      _mark(role, InstallState.failed, error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源');
       return false;
     }
     // OPFS 的配額是可用磁碟的一個比例，不是固定值，而且寫爆時才拋錯——
@@ -309,8 +313,9 @@ class ModelManager extends ChangeNotifier {
         role,
         InstallState.failed,
         error:
+            l10n?.modelErrorStorageShort('${(shortfall / 1048576).ceil()}') ??
             '瀏覽器可用儲存空間不足，還差約 ${(shortfall / 1048576).ceil()} MB。'
-            '請先移除不需要的模型，或清出磁碟空間後再試。',
+                '請先移除不需要的模型，或清出磁碟空間後再試。',
       );
       return false;
     }
@@ -345,7 +350,7 @@ class ModelManager extends ChangeNotifier {
       try {
         _validateDownloadedSize(downloaded.sizeBytes, variant.sizeBytes);
         if (variant.sha256 != null && downloaded.sha256Hex != variant.sha256) {
-          throw const FormatException('校驗和不符，檔案可能損毀');
+          throw FormatException(l10n?.modelErrorChecksum ?? '校驗和不符，檔案可能損毀');
         }
       } catch (_) {
         await WebFs.deleteFile(fileName); // 驗證失敗，清除半成品，避免殘留壞檔

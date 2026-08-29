@@ -887,7 +887,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportDetailAnalysisTitle => '詳細分析';
 
   @override
-  String get reportNoEngineData => 'エンジン分析データはまだありません';
+  String get reportNoEngineData => 'エンジンデータなし';
 
   @override
   String get reportEngineNotParticipated => '不参加';
@@ -1849,6 +1849,67 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get engineStylometryDetectRlModule => 'DetectRL-ZH 文字指紋';
+
+  @override
+  String get modelNameMbertMultilingual => '多言語検出器（英+中・INT8）';
+
+  @override
+  String get modelNameTruthlensZh => 'TruthLens 中国語検出器（2026 世代・INT8）';
+
+  @override
+  String get modelNameAigcZhv3 => '現代中国語検出器（DeepSeek／GPT-4・INT8）';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa 検出器（英語・ChatGPT 専用）';
+
+  @override
+  String get modelNameQwenPpl => '多言語パープレキシティモデル（Qwen2.5-0.5B・INT8）';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 パープレキシティモデル（INT8）';
+
+  @override
+  String get modelNameAdversarial => '書き換え検出モデル（INT8）';
+
+  @override
+  String get modelErrorNoSource => 'このバリアントにはまだダウンロード元がありません。';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'ブラウザーの保存容量が不足しています（約 $mb MB 不足）。不要なモデルを削除するか、ディスク容量を空けてください。';
+  }
+
+  @override
+  String get modelErrorChecksum => 'チェックサムが一致しません。ファイルが破損している可能性があります。';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'ダウンロードした Tokenizer JSON が不完全か、接続が切断されました。';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'ダウンロードが不完全です：$got MB を受信、約 $expected MB を想定。';
+  }
+
+  @override
+  String get modelErrorChunkAborted => 'ダウンロードがブロック途中で切断され、再試行にも失敗しました。';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Tokenizer JSON の形式が無効です。';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu コア · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => '（推定）';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

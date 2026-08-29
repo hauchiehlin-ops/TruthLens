@@ -1022,7 +1022,7 @@ class _EngineContributionCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                l10n.reportNoEngineData,
+                AppLocalizations.of(context).reportNoEngineData,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
@@ -1351,7 +1351,7 @@ class _EngineRadarChart extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Center(
           child: Text(
-            '無引擎數據',
+            AppLocalizations.of(context).reportNoEngineData,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),

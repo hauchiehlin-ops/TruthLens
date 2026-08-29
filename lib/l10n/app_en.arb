@@ -718,7 +718,7 @@
     }
   },
   "reportDetailAnalysisTitle": "Detailed analysis",
-  "reportNoEngineData": "No engine analysis data yet",
+  "reportNoEngineData": "No engine data",
   "reportEngineNotParticipated": "Not involved",
   "reportAiContentReportTitle": "AI Content Detection Report",
   "reportAnalysisTimeLabel": "Analysis time: {time}",
@@ -1830,6 +1830,58 @@
   "engineStylometryRulesModule": "Rule-based style markers",
   "engineStylometryPan25Module": "PAN 2025 lexical fingerprint",
   "engineStylometryDetectRlModule": "DetectRL-ZH character fingerprint",
+  "modelNameMbertMultilingual": "Multilingual detector (EN+ZH · INT8)",
+  "modelNameTruthlensZh": "TruthLens Chinese detector (2026 generators · INT8)",
+  "modelNameAigcZhv3": "Modern Chinese detector (DeepSeek/GPT-4 · INT8)",
+  "modelNameRobertaEn": "RoBERTa detector (English · ChatGPT)",
+  "modelNameQwenPpl": "Multilingual perplexity model (Qwen2.5-0.5B · INT8)",
+  "modelNameDistilgpt2Ppl": "DistilGPT2 perplexity model (INT8)",
+  "modelNameAdversarial": "Rewrite detector (INT8)",
+  "modelErrorNoSource": "This variant has no download source yet.",
+  "modelErrorStorageShort": "Not enough browser storage — about {mb} MB short. Remove models you no longer need, or free up disk space, then try again.",
+  "@modelErrorStorageShort": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "modelErrorChecksum": "Checksum mismatch — the file may be corrupted.",
+  "modelErrorTokenizerIncomplete": "The downloaded tokenizer JSON is incomplete or the connection dropped.",
+  "modelErrorSizeMismatch": "Incomplete download: received {got} MB but expected about {expected} MB.",
+  "@modelErrorSizeMismatch": {
+    "placeholders": {
+      "got": {
+        "type": "String"
+      },
+      "expected": {
+        "type": "String"
+      }
+    }
+  },
+  "modelErrorChunkAborted": "The download was interrupted mid-chunk and repeated retries failed.",
+  "modelErrorTokenizerInvalid": "Invalid tokenizer JSON.",
+  "deviceCapabilitySummary": "{platform} · {cpu} CPU · {ram} GB RAM{estimated} · {tier}",
+  "@deviceCapabilitySummary": {
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      },
+      "cpu": {
+        "type": "int"
+      },
+      "ram": {
+        "type": "String"
+      },
+      "estimated": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "deviceCapabilityEstimated": " (estimated)",
   "engineReasonPan25LexicalAi": "PAN 2025 lexical fingerprint leans AI ({percent}/100); this independent English baseline detects word and phrase distributions that differ from its human corpus",
   "@engineReasonPan25LexicalAi": {
     "placeholders": {

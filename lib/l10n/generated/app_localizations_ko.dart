@@ -891,7 +891,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportDetailAnalysisTitle => '상세 분석';
 
   @override
-  String get reportNoEngineData => '아직 엔진 분석 데이터가 없습니다';
+  String get reportNoEngineData => '엔진 데이터 없음';
 
   @override
   String get reportEngineNotParticipated => '참여하지 않음';
@@ -1854,6 +1854,67 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get engineStylometryDetectRlModule => 'DetectRL-ZH 문자 지문';
+
+  @override
+  String get modelNameMbertMultilingual => '다국어 탐지기 (영+중 · INT8)';
+
+  @override
+  String get modelNameTruthlensZh => 'TruthLens 중국어 탐지기 (2026 세대 · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 => '현대 중국어 탐지기 (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa 탐지기 (영어 · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl => '다국어 퍼플렉시티 모델 (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 퍼플렉시티 모델 (INT8)';
+
+  @override
+  String get modelNameAdversarial => '재작성 탐지 모델 (INT8)';
+
+  @override
+  String get modelErrorNoSource => '이 변형은 아직 다운로드 소스가 없습니다.';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return '브라우저 저장 공간이 부족합니다(약 $mb MB 부족). 필요 없는 모델을 삭제하거나 디스크 공간을 확보하세요.';
+  }
+
+  @override
+  String get modelErrorChecksum => '체크섬이 일치하지 않습니다. 파일이 손상되었을 수 있습니다.';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      '내려받은 Tokenizer JSON이 불완전하거나 연결이 끊어졌습니다.';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return '다운로드가 불완전합니다: $got MB 수신, 약 $expected MB 예상.';
+  }
+
+  @override
+  String get modelErrorChunkAborted => '다운로드가 블록 도중 끊겼고 재시도도 실패했습니다.';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Tokenizer JSON 형식이 올바르지 않습니다.';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu 코어 · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => '(추정)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

@@ -1577,7 +1577,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportNoEngineData.
   ///
   /// In en, this message translates to:
-  /// **'No engine analysis data yet'**
+  /// **'No engine data'**
   String get reportNoEngineData;
 
   /// No description provided for @reportEngineNotParticipated.
@@ -3019,6 +3019,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DetectRL-ZH character fingerprint'**
   String get engineStylometryDetectRlModule;
+
+  /// No description provided for @modelNameMbertMultilingual.
+  ///
+  /// In en, this message translates to:
+  /// **'Multilingual detector (EN+ZH · INT8)'**
+  String get modelNameMbertMultilingual;
+
+  /// No description provided for @modelNameTruthlensZh.
+  ///
+  /// In en, this message translates to:
+  /// **'TruthLens Chinese detector (2026 generators · INT8)'**
+  String get modelNameTruthlensZh;
+
+  /// No description provided for @modelNameAigcZhv3.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Chinese detector (DeepSeek/GPT-4 · INT8)'**
+  String get modelNameAigcZhv3;
+
+  /// No description provided for @modelNameRobertaEn.
+  ///
+  /// In en, this message translates to:
+  /// **'RoBERTa detector (English · ChatGPT)'**
+  String get modelNameRobertaEn;
+
+  /// No description provided for @modelNameQwenPpl.
+  ///
+  /// In en, this message translates to:
+  /// **'Multilingual perplexity model (Qwen2.5-0.5B · INT8)'**
+  String get modelNameQwenPpl;
+
+  /// No description provided for @modelNameDistilgpt2Ppl.
+  ///
+  /// In en, this message translates to:
+  /// **'DistilGPT2 perplexity model (INT8)'**
+  String get modelNameDistilgpt2Ppl;
+
+  /// No description provided for @modelNameAdversarial.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewrite detector (INT8)'**
+  String get modelNameAdversarial;
+
+  /// No description provided for @modelErrorNoSource.
+  ///
+  /// In en, this message translates to:
+  /// **'This variant has no download source yet.'**
+  String get modelErrorNoSource;
+
+  /// No description provided for @modelErrorStorageShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough browser storage — about {mb} MB short. Remove models you no longer need, or free up disk space, then try again.'**
+  String modelErrorStorageShort(String mb);
+
+  /// No description provided for @modelErrorChecksum.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum mismatch — the file may be corrupted.'**
+  String get modelErrorChecksum;
+
+  /// No description provided for @modelErrorTokenizerIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'The downloaded tokenizer JSON is incomplete or the connection dropped.'**
+  String get modelErrorTokenizerIncomplete;
+
+  /// No description provided for @modelErrorSizeMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Incomplete download: received {got} MB but expected about {expected} MB.'**
+  String modelErrorSizeMismatch(String got, String expected);
+
+  /// No description provided for @modelErrorChunkAborted.
+  ///
+  /// In en, this message translates to:
+  /// **'The download was interrupted mid-chunk and repeated retries failed.'**
+  String get modelErrorChunkAborted;
+
+  /// No description provided for @modelErrorTokenizerInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid tokenizer JSON.'**
+  String get modelErrorTokenizerInvalid;
+
+  /// No description provided for @deviceCapabilitySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{platform} · {cpu} CPU · {ram} GB RAM{estimated} · {tier}'**
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  );
+
+  /// No description provided for @deviceCapabilityEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **' (estimated)'**
+  String get deviceCapabilityEstimated;
 
   /// No description provided for @engineReasonPan25LexicalAi.
   ///

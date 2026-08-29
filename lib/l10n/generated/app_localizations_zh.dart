@@ -879,7 +879,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportDetailAnalysisTitle => '詳細分析';
 
   @override
-  String get reportNoEngineData => '尚無引擎分析數據';
+  String get reportNoEngineData => '無引擎數據';
 
   @override
   String get reportEngineNotParticipated => '未參與';
@@ -1833,6 +1833,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get engineStylometryDetectRlModule => 'DetectRL-ZH 字元指紋';
+
+  @override
+  String get modelNameMbertMultilingual => '多語言偵測器（英+中・INT8）';
+
+  @override
+  String get modelNameTruthlensZh => 'TruthLens 中文偵測器（2026 生成器・INT8）';
+
+  @override
+  String get modelNameAigcZhv3 => '現代中文偵測器（DeepSeek／GPT-4・INT8）';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa 偵測器（英文・ChatGPT 專用）';
+
+  @override
+  String get modelNameQwenPpl => '多語言困惑度模型（Qwen2.5-0.5B・INT8）';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 困惑度模型（INT8）';
+
+  @override
+  String get modelNameAdversarial => '改寫偵測模型（INT8）';
+
+  @override
+  String get modelErrorNoSource => '此變體尚未提供下載來源。';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return '瀏覽器可用儲存空間不足，還差約 $mb MB。請先移除不需要的模型，或清出磁碟空間後再試。';
+  }
+
+  @override
+  String get modelErrorChecksum => '校驗和不符，檔案可能損毀。';
+
+  @override
+  String get modelErrorTokenizerIncomplete => '下載的 Tokenizer JSON 格式不完整，或連線中斷。';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return '模型下載不完整：收到 $got MB，預期約 $expected MB。';
+  }
+
+  @override
+  String get modelErrorChunkAborted => '下載在中途分塊斷線，重試多次仍失敗。';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Tokenizer JSON 格式無效。';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu 核 · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => '（估算）';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
@@ -3834,7 +3894,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportDetailAnalysisTitle => '详细分析';
 
   @override
-  String get reportNoEngineData => '暂无引擎分析数据';
+  String get reportNoEngineData => '无引擎数据';
 
   @override
   String get reportEngineNotParticipated => '未参与';
@@ -4788,6 +4848,66 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get engineStylometryDetectRlModule => 'DetectRL-ZH 字符指纹';
+
+  @override
+  String get modelNameMbertMultilingual => '多语言检测器（英+中・INT8）';
+
+  @override
+  String get modelNameTruthlensZh => 'TruthLens 中文检测器（2026 生成器・INT8）';
+
+  @override
+  String get modelNameAigcZhv3 => '现代中文检测器（DeepSeek／GPT-4・INT8）';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa 检测器（英文・ChatGPT 专用）';
+
+  @override
+  String get modelNameQwenPpl => '多语言困惑度模型（Qwen2.5-0.5B・INT8）';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 困惑度模型（INT8）';
+
+  @override
+  String get modelNameAdversarial => '改写检测模型（INT8）';
+
+  @override
+  String get modelErrorNoSource => '此变体尚未提供下载来源。';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return '浏览器可用存储空间不足，还差约 $mb MB。请先移除不需要的模型，或清出磁盘空间后再试。';
+  }
+
+  @override
+  String get modelErrorChecksum => '校验和不符，文件可能损坏。';
+
+  @override
+  String get modelErrorTokenizerIncomplete => '下载的 Tokenizer JSON 格式不完整，或连接中断。';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return '模型下载不完整：收到 $got MB，预期约 $expected MB。';
+  }
+
+  @override
+  String get modelErrorChunkAborted => '下载在中途分块断线，重试多次仍失败。';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Tokenizer JSON 格式无效。';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu 核 · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => '（估算）';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
@@ -6789,7 +6909,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportDetailAnalysisTitle => '詳細分析';
 
   @override
-  String get reportNoEngineData => '尚無引擎分析數據';
+  String get reportNoEngineData => '無引擎數據';
 
   @override
   String get reportEngineNotParticipated => '未參與';
@@ -7743,6 +7863,66 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get engineStylometryDetectRlModule => 'DetectRL-ZH 字元指紋';
+
+  @override
+  String get modelNameMbertMultilingual => '多語言偵測器（英+中・INT8）';
+
+  @override
+  String get modelNameTruthlensZh => 'TruthLens 中文偵測器（2026 生成器・INT8）';
+
+  @override
+  String get modelNameAigcZhv3 => '現代中文偵測器（DeepSeek／GPT-4・INT8）';
+
+  @override
+  String get modelNameRobertaEn => 'RoBERTa 偵測器（英文・ChatGPT 專用）';
+
+  @override
+  String get modelNameQwenPpl => '多語言困惑度模型（Qwen2.5-0.5B・INT8）';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'DistilGPT2 困惑度模型（INT8）';
+
+  @override
+  String get modelNameAdversarial => '改寫偵測模型（INT8）';
+
+  @override
+  String get modelErrorNoSource => '此變體尚未提供下載來源。';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return '瀏覽器可用儲存空間不足，還差約 $mb MB。請先移除不需要的模型，或清出磁碟空間後再試。';
+  }
+
+  @override
+  String get modelErrorChecksum => '校驗和不符，檔案可能損毀。';
+
+  @override
+  String get modelErrorTokenizerIncomplete => '下載的 Tokenizer JSON 格式不完整，或連線中斷。';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return '模型下載不完整：收到 $got MB，預期約 $expected MB。';
+  }
+
+  @override
+  String get modelErrorChunkAborted => '下載在中途分塊斷線，重試多次仍失敗。';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Tokenizer JSON 格式無效。';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu 核 · $ram GB RAM$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => '（估算）';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

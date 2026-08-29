@@ -920,7 +920,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportDetailAnalysisTitle => 'Подробный анализ';
 
   @override
-  String get reportNoEngineData => 'Данных анализа движков пока нет';
+  String get reportNoEngineData => 'Нет данных движков';
 
   @override
   String get reportEngineNotParticipated => 'Не участвовал';
@@ -1907,6 +1907,74 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get engineStylometryDetectRlModule =>
       'Символьный отпечаток DetectRL-ZH';
+
+  @override
+  String get modelNameMbertMultilingual =>
+      'Многоязычный детектор (EN+ZH · INT8)';
+
+  @override
+  String get modelNameTruthlensZh =>
+      'Китайский детектор TruthLens (генераторы 2026 · INT8)';
+
+  @override
+  String get modelNameAigcZhv3 =>
+      'Современный китайский детектор (DeepSeek/GPT-4 · INT8)';
+
+  @override
+  String get modelNameRobertaEn => 'Детектор RoBERTa (английский · ChatGPT)';
+
+  @override
+  String get modelNameQwenPpl =>
+      'Многоязычная модель перплексии (Qwen2.5-0.5B · INT8)';
+
+  @override
+  String get modelNameDistilgpt2Ppl => 'Модель перплексии DistilGPT2 (INT8)';
+
+  @override
+  String get modelNameAdversarial => 'Детектор переписывания (INT8)';
+
+  @override
+  String get modelErrorNoSource =>
+      'Для этого варианта пока нет источника загрузки.';
+
+  @override
+  String modelErrorStorageShort(String mb) {
+    return 'Недостаточно места в хранилище браузера — не хватает около $mb МБ. Удалите ненужные модели или освободите место на диске.';
+  }
+
+  @override
+  String get modelErrorChecksum =>
+      'Контрольная сумма не совпадает — файл может быть повреждён.';
+
+  @override
+  String get modelErrorTokenizerIncomplete =>
+      'Загруженный JSON токенизатора неполон или соединение прервалось.';
+
+  @override
+  String modelErrorSizeMismatch(String got, String expected) {
+    return 'Загрузка неполная: получено $got МБ, ожидалось около $expected МБ.';
+  }
+
+  @override
+  String get modelErrorChunkAborted =>
+      'Загрузка прервалась посреди блока, повторные попытки не удались.';
+
+  @override
+  String get modelErrorTokenizerInvalid => 'Недопустимый JSON токенизатора.';
+
+  @override
+  String deviceCapabilitySummary(
+    String platform,
+    int cpu,
+    String ram,
+    String estimated,
+    String tier,
+  ) {
+    return '$platform · $cpu ЦП · $ram ГБ ОЗУ$estimated · $tier';
+  }
+
+  @override
+  String get deviceCapabilityEstimated => ' (оценка)';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {
