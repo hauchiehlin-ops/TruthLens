@@ -1889,6 +1889,24 @@ class AppLocalizationsId extends AppLocalizations {
       'Tidak ada pola penulisan AI yang mencolok terdeteksi';
 
   @override
+  String get engineStatisticalPerplexityModule => 'Perpleksitas model bahasa';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Sidik leksikal';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Statistik heuristik';
+
+  @override
+  String get engineStylometryRulesModule => 'Penanda gaya berbasis aturan';
+
+  @override
+  String get engineStylometryPan25Module => 'Sidik leksikal PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule => 'Sidik karakter DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'Sidik leksikal PAN 2025 condong ke AI ($percent/100); baseline bahasa Inggris independen ini mendeteksi distribusi kata dan frasa yang berbeda dari korpus manusianya';
   }

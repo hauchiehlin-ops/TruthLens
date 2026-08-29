@@ -1890,6 +1890,25 @@ class AppLocalizationsRu extends AppLocalizations {
       'Заметных шаблонов письма ИИ не обнаружено';
 
   @override
+  String get engineStatisticalPerplexityModule => 'Перплексия языковой модели';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Лексический отпечаток';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Эвристическая статистика';
+
+  @override
+  String get engineStylometryRulesModule => 'Стилевые признаки по правилам';
+
+  @override
+  String get engineStylometryPan25Module => 'Лексический отпечаток PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'Символьный отпечаток DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'Лексический отпечаток PAN 2025 склоняется к ИИ ($percent/100); эта независимая англоязычная база выявляет распределения слов и словосочетаний, отличные от её человеческого корпуса';
   }

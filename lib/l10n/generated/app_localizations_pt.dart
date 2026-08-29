@@ -1895,6 +1895,26 @@ class AppLocalizationsPt extends AppLocalizations {
       'Nenhum padrão de escrita de IA notável detectado';
 
   @override
+  String get engineStatisticalPerplexityModule =>
+      'Perplexidade do modelo de linguagem';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Impressão lexical';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Estatística heurística';
+
+  @override
+  String get engineStylometryRulesModule => 'Marcadores de estilo por regras';
+
+  @override
+  String get engineStylometryPan25Module => 'Impressão lexical PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'Impressão de carateres DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'A impressão lexical PAN 2025 pende para IA ($percent/100); esta referência independente em inglês deteta distribuições de palavras e expressões diferentes das do seu corpus humano';
   }

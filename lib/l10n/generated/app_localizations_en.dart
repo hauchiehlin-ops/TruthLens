@@ -1874,6 +1874,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'No significant AI writing style patterns detected';
 
   @override
+  String get engineStatisticalPerplexityModule => 'Language-model perplexity';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Lexical fingerprint';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Heuristic statistics';
+
+  @override
+  String get engineStylometryRulesModule => 'Rule-based style markers';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 lexical fingerprint';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'DetectRL-ZH character fingerprint';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'PAN 2025 lexical fingerprint leans AI ($percent/100); this independent English baseline detects word and phrase distributions that differ from its human corpus';
   }

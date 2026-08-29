@@ -1902,6 +1902,26 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine auffälligen KI-Schreibmuster erkannt';
 
   @override
+  String get engineStatisticalPerplexityModule => 'Sprachmodell-Perplexität';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Lexikalischer Fingerabdruck';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Heuristische Statistik';
+
+  @override
+  String get engineStylometryRulesModule => 'Regelbasierte Stilmerkmale';
+
+  @override
+  String get engineStylometryPan25Module =>
+      'PAN 2025 lexikalischer Fingerabdruck';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'DetectRL-ZH Zeichen-Fingerabdruck';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'Der lexikalische Fingerabdruck PAN 2025 tendiert zu KI ($percent/100); diese unabhängige englische Referenz erkennt Wort- und Phrasenverteilungen, die von ihrem menschlichen Korpus abweichen';
   }

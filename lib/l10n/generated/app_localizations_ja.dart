@@ -1833,6 +1833,24 @@ class AppLocalizationsJa extends AppLocalizations {
   String get engineReasonNoStyleMarkers => '顕著なAI文体パターンは検出されませんでした';
 
   @override
+  String get engineStatisticalPerplexityModule => '言語モデルのパープレキシティ';
+
+  @override
+  String get engineStatisticalLexicalModule => '語彙指紋';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'ヒューリスティック統計';
+
+  @override
+  String get engineStylometryRulesModule => 'ルールベースの文体特徴';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 語彙指紋';
+
+  @override
+  String get engineStylometryDetectRlModule => 'DetectRL-ZH 文字指紋';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'PAN 2025 の語彙指紋は AI 寄りです（$percent/100）。この独立した英語ベースラインは、人間コーパスと異なる語・句の分布を検出します';
   }

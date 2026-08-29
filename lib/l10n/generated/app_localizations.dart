@@ -2984,6 +2984,42 @@ abstract class AppLocalizations {
   /// **'No significant AI writing style patterns detected'**
   String get engineReasonNoStyleMarkers;
 
+  /// No description provided for @engineStatisticalPerplexityModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Language-model perplexity'**
+  String get engineStatisticalPerplexityModule;
+
+  /// No description provided for @engineStatisticalLexicalModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Lexical fingerprint'**
+  String get engineStatisticalLexicalModule;
+
+  /// No description provided for @engineStatisticalHeuristicModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Heuristic statistics'**
+  String get engineStatisticalHeuristicModule;
+
+  /// No description provided for @engineStylometryRulesModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Rule-based style markers'**
+  String get engineStylometryRulesModule;
+
+  /// No description provided for @engineStylometryPan25Module.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN 2025 lexical fingerprint'**
+  String get engineStylometryPan25Module;
+
+  /// No description provided for @engineStylometryDetectRlModule.
+  ///
+  /// In en, this message translates to:
+  /// **'DetectRL-ZH character fingerprint'**
+  String get engineStylometryDetectRlModule;
+
   /// No description provided for @engineReasonPan25LexicalAi.
   ///
   /// In en, this message translates to:

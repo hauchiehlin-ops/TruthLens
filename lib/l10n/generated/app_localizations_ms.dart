@@ -1889,6 +1889,24 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tiada corak penulisan AI yang ketara dikesan';
 
   @override
+  String get engineStatisticalPerplexityModule => 'Perpleksiti model bahasa';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Cap leksikal';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Statistik heuristik';
+
+  @override
+  String get engineStylometryRulesModule => 'Penanda gaya berasaskan peraturan';
+
+  @override
+  String get engineStylometryPan25Module => 'Cap leksikal PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule => 'Cap aksara DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'Cap leksikal PAN 2025 condong kepada AI ($percent/100); garis dasar bahasa Inggeris bebas ini mengesan taburan perkataan dan frasa yang berbeza daripada korpus manusianya';
   }

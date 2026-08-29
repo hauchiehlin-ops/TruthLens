@@ -1817,6 +1817,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
 
   @override
+  String get engineStatisticalPerplexityModule => '語言模型困惑度';
+
+  @override
+  String get engineStatisticalLexicalModule => '詞彙指紋';
+
+  @override
+  String get engineStatisticalHeuristicModule => '啟發式統計';
+
+  @override
+  String get engineStylometryRulesModule => '規則式風格特徵';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 詞彙指紋';
+
+  @override
+  String get engineStylometryDetectRlModule => 'DetectRL-ZH 字元指紋';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'PAN 2025 詞彙指紋偏向 AI（$percent/100）；這項獨立英文基準偵測到詞語與片語分布不同於其人類語料';
   }
@@ -4754,6 +4772,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get engineReasonNoStyleMarkers => '未侦测到显著的 AI 写作风格模式';
 
   @override
+  String get engineStatisticalPerplexityModule => '语言模型困惑度';
+
+  @override
+  String get engineStatisticalLexicalModule => '词汇指纹';
+
+  @override
+  String get engineStatisticalHeuristicModule => '启发式统计';
+
+  @override
+  String get engineStylometryRulesModule => '规则式风格特征';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 词汇指纹';
+
+  @override
+  String get engineStylometryDetectRlModule => 'DetectRL-ZH 字符指纹';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'PAN 2025 词汇指纹偏向 AI（$percent/100）；这项独立英文基准检测到词语与短语分布不同于其人类语料';
   }
@@ -7689,6 +7725,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get engineReasonNoStyleMarkers => '未偵測到顯著的 AI 寫作風格模式';
+
+  @override
+  String get engineStatisticalPerplexityModule => '語言模型困惑度';
+
+  @override
+  String get engineStatisticalLexicalModule => '詞彙指紋';
+
+  @override
+  String get engineStatisticalHeuristicModule => '啟發式統計';
+
+  @override
+  String get engineStylometryRulesModule => '規則式風格特徵';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 詞彙指紋';
+
+  @override
+  String get engineStylometryDetectRlModule => 'DetectRL-ZH 字元指紋';
 
   @override
   String engineReasonPan25LexicalAi(int percent) {

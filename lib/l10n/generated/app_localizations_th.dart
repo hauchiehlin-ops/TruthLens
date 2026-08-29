@@ -1880,6 +1880,24 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่พบรูปแบบการเขียนแบบ AI ที่ชัดเจน';
 
   @override
+  String get engineStatisticalPerplexityModule => 'ความยากของโมเดลภาษา';
+
+  @override
+  String get engineStatisticalLexicalModule => 'ลายนิ้วมือเชิงคำศัพท์';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'สถิติเชิงฮิวริสติก';
+
+  @override
+  String get engineStylometryRulesModule => 'ลักษณะลีลาเชิงกฎ';
+
+  @override
+  String get engineStylometryPan25Module => 'ลายนิ้วมือคำศัพท์ PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule => 'ลายนิ้วมืออักขระ DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'ลายนิ้วมือเชิงคำศัพท์ PAN 2025 เอียงไปทาง AI ($percent/100) เกณฑ์อ้างอิงภาษาอังกฤษอิสระนี้ตรวจจับการกระจายของคำและวลีที่ต่างจากคลังข้อความมนุษย์ของมัน';
   }

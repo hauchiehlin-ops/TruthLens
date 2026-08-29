@@ -1712,6 +1712,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             score: displayedScore,
                             relationshipText: group?.relationshipText,
                             reasons: group?.reasons,
+                            modules: group?.modules,
                           );
                         },
                       ),
@@ -2988,6 +2989,10 @@ class _EngineTelemetryRow extends StatelessWidget {
   final String? relationshipText;
   final List<String>? reasons;
 
+  /// 本次實際使用的模組。一個角色底下可能有多個（統計會同時跑困惑度與詞彙
+  /// 指紋），而 Transformer 的變體又由路由逐次決定——只看角色名稱看不出來。
+  final List<String>? modules;
+
   const _EngineTelemetryRow({
     required this.role,
     required this.label,
@@ -2996,6 +3001,7 @@ class _EngineTelemetryRow extends StatelessWidget {
     required this.score,
     this.relationshipText,
     this.reasons,
+    this.modules,
   });
 
   @override
@@ -3004,7 +3010,10 @@ class _EngineTelemetryRow extends StatelessWidget {
     final color = _engineColor(context, role);
     final icon = _engineIcon(role);
     final showDetail =
-        done && (relationshipText != null || (reasons?.isNotEmpty ?? false));
+        done &&
+        (relationshipText != null ||
+            (reasons?.isNotEmpty ?? false) ||
+            (modules?.isNotEmpty ?? false));
     // cosmic/soft 主題面板背景較深，內文若沿用淺色主題的 onSurfaceVariant
     // 會呈現深灰字疊深色底、對比不足；改用半透明白字確保可讀性。
     final isOverlayTheme =
@@ -3027,6 +3036,38 @@ class _EngineTelemetryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (modules?.isNotEmpty ?? false)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          for (final module in modules!)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: color.withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Text(
+                                module,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: color,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   if (relationshipText != null)
                     Text(
                       relationshipText!,

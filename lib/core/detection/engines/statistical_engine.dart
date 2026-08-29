@@ -236,6 +236,16 @@ class StatisticalEngine implements DetectionEngine {
           : 0.32,
       features: features,
       reasons: reasons,
+      // 這個角色底下同時可能跑兩個獨立模組：語言模型困惑度與詞彙指紋。
+      // 只有實際算出結果的才列出——沒有模型時困惑度是缺席，不是「跑了但中性」。
+      modules: [
+        if (ppl != null)
+          modelManager?.activeVariant('statistical')?.variantId ??
+              l10n.engineStatisticalPerplexityModule,
+        if (lexical != null) l10n.engineStatisticalLexicalModule,
+        if (ppl == null && lexical == null)
+          l10n.engineStatisticalHeuristicModule,
+      ],
     );
   }
 

@@ -1824,6 +1824,12 @@
     }
   },
   "engineReasonNoStyleMarkers": "No significant AI writing style patterns detected",
+  "engineStatisticalPerplexityModule": "Language-model perplexity",
+  "engineStatisticalLexicalModule": "Lexical fingerprint",
+  "engineStatisticalHeuristicModule": "Heuristic statistics",
+  "engineStylometryRulesModule": "Rule-based style markers",
+  "engineStylometryPan25Module": "PAN 2025 lexical fingerprint",
+  "engineStylometryDetectRlModule": "DetectRL-ZH character fingerprint",
   "engineReasonPan25LexicalAi": "PAN 2025 lexical fingerprint leans AI ({percent}/100); this independent English baseline detects word and phrase distributions that differ from its human corpus",
   "@engineReasonPan25LexicalAi": {
     "placeholders": {

@@ -95,6 +95,15 @@ class EngineScore {
   final List<String> reasons; // 人類可讀的判定理由
   final List<double>? sentenceScores; // 句子級 AI 機率（有神經模型時提供）
 
+  /// 本次分析**實際載入並使用**的模組名稱。
+  ///
+  /// 同一個角色底下可能有多個模組（例如統計角色會同時跑困惑度模型與詞彙指紋），
+  /// 而路由又會依文件語言換掉 Transformer 的變體。使用者只看角色名稱無從得知
+  /// 這次到底是誰在發言，遙測面板因此需要逐次列出。
+  ///
+  /// 只列真的用到的：載入失敗或未安裝的模組不得出現在這裡。
+  final List<String> modules;
+
   /// 這個分數是否代表引擎「真的找到了東西」。
   ///
   /// 四個引擎的中性點並不相同：統計引擎從 0.5 出發、可正可負，
@@ -126,6 +135,7 @@ class EngineScore {
     this.features = const {},
     this.reasons = const [],
     this.sentenceScores,
+    this.modules = const [],
     this.hasEvidence = true,
     this.evidenceFamily = EvidenceFamily.unknown,
     this.applicability = EngineApplicability.validated,
@@ -145,6 +155,7 @@ class EngineScore {
     features: features,
     reasons: reasons,
     sentenceScores: sentenceScores,
+    modules: modules,
     hasEvidence: hasEvidence,
     evidenceFamily: evidenceFamily,
     applicability: applicability ?? this.applicability,

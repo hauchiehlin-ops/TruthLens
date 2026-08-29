@@ -272,6 +272,12 @@ class StylometryEngine implements DetectionEngine {
           : lexicalProbability != null
           ? 0.76
           : 0.42,
+      // 規則層永遠有跑；詞彙指紋則依語言選用不同資產，兩者是獨立模組。
+      modules: [
+        l10n.engineStylometryRulesModule,
+        if (lexicalModel == 'pan25') l10n.engineStylometryPan25Module,
+        if (lexicalModel == 'detectrl_zh') l10n.engineStylometryDetectRlModule,
+      ],
     );
   }
 }

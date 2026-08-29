@@ -1902,6 +1902,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucun motif d\'écriture IA notable détecté';
 
   @override
+  String get engineStatisticalPerplexityModule =>
+      'Perplexité du modèle de langue';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Empreinte lexicale';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Statistiques heuristiques';
+
+  @override
+  String get engineStylometryRulesModule => 'Marqueurs stylistiques par règles';
+
+  @override
+  String get engineStylometryPan25Module => 'Empreinte lexicale PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'Empreinte de caractères DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'L\'empreinte lexicale PAN 2025 penche vers l\'IA ($percent/100) ; cette référence anglaise indépendante détecte des distributions de mots et d\'expressions différentes de son corpus humain';
   }

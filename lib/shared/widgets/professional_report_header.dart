@@ -1611,6 +1611,9 @@ class EngineGroup {
   final bool hasEvidence;
   final bool hasDirectionalSignal;
   final int variantCount;
+
+  /// 本次角色底下實際使用的模組名稱，依 [EngineScore.modules] 彙整並去重。
+  final List<String> modules;
   final List<String> reasons;
   final AppLocalizations l10n;
 
@@ -1626,6 +1629,7 @@ class EngineGroup {
     required this.hasEvidence,
     required this.hasDirectionalSignal,
     required this.variantCount,
+    required this.modules,
     required this.reasons,
     required this.l10n,
   });
@@ -1770,6 +1774,10 @@ class EngineGroup {
       hasEvidence: availableScores.any((s) => s.hasEvidence),
       hasDirectionalSignal: hasDirectionalSignal,
       variantCount: math.max(scores.length, 1),
+      modules: {
+        for (final score in availableScores)
+          ...score.modules.where((m) => m.trim().isNotEmpty),
+      }.toList(),
       reasons: uniqueReasons.isEmpty
           ? [_fallbackReason(role, available, l10n)]
           : uniqueReasons,

@@ -261,6 +261,12 @@ class AdversarialEngine implements DetectionEngine {
         LanguageFit.unknown => EngineApplicability.unknown,
         LanguageFit.unsupported => EngineApplicability.unsupported,
       },
+      modules: [
+        if (_choice.variant != null)
+          _choice.variant!.displayName
+        else
+          name(l10n),
+      ],
       calibrationReliability: _choice.isValidated ? 0.78 : 0.55,
       sentenceScores: perSentence,
       features: {

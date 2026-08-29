@@ -1900,6 +1900,26 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se detectaron patrones notables de escritura de IA';
 
   @override
+  String get engineStatisticalPerplexityModule =>
+      'Perplejidad del modelo de lenguaje';
+
+  @override
+  String get engineStatisticalLexicalModule => 'Huella léxica';
+
+  @override
+  String get engineStatisticalHeuristicModule => 'Estadística heurística';
+
+  @override
+  String get engineStylometryRulesModule => 'Marcadores de estilo por reglas';
+
+  @override
+  String get engineStylometryPan25Module => 'Huella léxica PAN 2025';
+
+  @override
+  String get engineStylometryDetectRlModule =>
+      'Huella de caracteres DetectRL-ZH';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'La huella léxica PAN 2025 se inclina hacia IA ($percent/100); esta referencia independiente en inglés detecta distribuciones de palabras y frases que difieren de su corpus humano';
   }

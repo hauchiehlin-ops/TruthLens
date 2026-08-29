@@ -1838,6 +1838,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get engineReasonNoStyleMarkers => '뚜렷한 AI 문체 패턴이 감지되지 않았습니다';
 
   @override
+  String get engineStatisticalPerplexityModule => '언어 모델 퍼플렉시티';
+
+  @override
+  String get engineStatisticalLexicalModule => '어휘 지문';
+
+  @override
+  String get engineStatisticalHeuristicModule => '휴리스틱 통계';
+
+  @override
+  String get engineStylometryRulesModule => '규칙 기반 문체 특징';
+
+  @override
+  String get engineStylometryPan25Module => 'PAN 2025 어휘 지문';
+
+  @override
+  String get engineStylometryDetectRlModule => 'DetectRL-ZH 문자 지문';
+
+  @override
   String engineReasonPan25LexicalAi(int percent) {
     return 'PAN 2025 어휘 지문이 AI 쪽으로 기울었습니다($percent/100). 이 독립적인 영어 기준선은 사람 말뭉치와 다른 단어·구 분포를 탐지합니다';
   }
