@@ -87,6 +87,58 @@ void main() {
     expect(assessment.aiEscalationGap, 11);
   });
 
+  test('證據全在 AI 側但不足時，不得反向報成「較可能不是 AI」', () {
+    // 實測案例：一篇 100% ChatGPT 的英文文章，Transformer、風格、對抗三個引擎
+    // 全部給出正向 AI 證據（11 句 AI 特徵、21 句改寫痕跡），加總 44/100 低於
+    // 中點，舊邏輯直接判成「較可能不是 AI 生成」——把證據不足說成反向結論。
+    //
+    // 這三個引擎的中性點是 0，只在命中特徵時加分；沒有任何家族往人類側傾斜，
+    // 也沒有寫作過程或來源證據，方向就只能是「沒有明確方向」。
+    final assessment = IntegratedAssessment.assess(
+      _result(textScore: 0.44, enginesHaveEvidence: true),
+    );
+
+    expect(assessment.aiLikelihood, lessThan(0.5));
+    expect(
+      assessment.direction,
+      isNot(IntegratedDirection.likelyHuman),
+      reason: '沒有人類側證據就不能給人類方向',
+    );
+    expect(assessment.conclusion, isNot(IntegratedConclusion.likelyHuman));
+  });
+
+  test('真的有人類側證據時，仍可給出人類方向', () {
+    // 寫作過程紀錄是獨立於文字統計的人類側證據：一份在編輯器內逐步寫成的
+    // 文件，其打字與修改節奏是任何語言模型都偽造不了的。
+    final assessment = IntegratedAssessment.assess(
+      _result(
+        textScore: 0.30,
+        enginesHaveEvidence: true,
+        writing: const WritingSession(
+          events: [
+            InputEvent(
+              kind: InputEventKind.typing,
+              characters: 1200,
+              elapsedMs: 900000,
+            ),
+            InputEvent(
+              kind: InputEventKind.deletion,
+              characters: 180,
+              elapsedMs: 960000,
+            ),
+            InputEvent(
+              kind: InputEventKind.typing,
+              characters: 800,
+              elapsedMs: 1500000,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(assessment.hasAuthorshipEvidence, isTrue);
+  });
+
   test('全引擎沉默時不沿用 fallback 原始分數', () {
     final assessment = IntegratedAssessment.assess(_result());
 

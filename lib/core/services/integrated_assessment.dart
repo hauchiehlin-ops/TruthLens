@@ -311,11 +311,26 @@ class IntegratedAssessment {
           : confidence;
     }
 
+    // 「分數低於中點」不等於「證據指向人類」。Transformer、風格與對抗三個引擎
+    // 的中性點是 0——它們只在命中特徵時加分，因此偏低的分數代表證據不足，而不是
+    // 它們認為這是人寫的。實測案例：一篇 100% ChatGPT 的英文文章，三個引擎全部
+    // 給出**正向** AI 證據（11 句 AI 特徵、21 句改寫痕跡），加總 44/100 仍低於
+    // 中點，於是被報成「較可能不是 AI 生成」——把證據不足說成了反向結論。
+    //
+    // 因此人類方向必須有人類側的實質證據才能成立：某個證據家族真的往人類側傾斜
+    // （對數勝算為負），或寫作過程、文件來源、出版紀錄支持真人撰寫。都沒有時，
+    // 低分只能是「沒有明確方向」。
+    final hasHumanSideEvidence =
+        fusion.families.any((family) => family.supportsHuman) ||
+        writing.consistentWithLiveWriting ||
+        provenance.indicatesHumanAuthorship ||
+        publication.supportsHumanAuthorship;
+
     final direction = aiLikelihood > 0.5 && fusion.mixedAuthorship
         ? IntegratedDirection.likelyMixed
         : aiLikelihood > 0.5
         ? IntegratedDirection.likelyAi
-        : aiLikelihood < 0.5
+        : aiLikelihood < 0.5 && hasHumanSideEvidence
         ? IntegratedDirection.likelyHuman
         : IntegratedDirection.balanced;
     final textAuthorshipClass = fusion.mixedAuthorship
