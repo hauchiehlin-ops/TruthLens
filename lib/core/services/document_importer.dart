@@ -444,7 +444,17 @@ class DocumentImporter {
       .replaceAll('&lt;', '<')
       .replaceAll('&gt;', '>')
       .replaceAll('&quot;', '"')
-      .replaceAll('&apos;', "'");
+      .replaceAll('&apos;', "'")
+      .replaceAllMapped(RegExp(r'&#(\d+);'), (match) {
+        final codePoint = int.tryParse(match.group(1) ?? '');
+        if (codePoint == null) return match.group(0) ?? '';
+        return String.fromCharCode(codePoint);
+      })
+      .replaceAllMapped(RegExp(r'&#x([0-9A-Fa-f]+);'), (match) {
+        final codePoint = int.tryParse(match.group(1) ?? '', radix: 16);
+        if (codePoint == null) return match.group(0) ?? '';
+        return String.fromCharCode(codePoint);
+      });
 
   static bool _isUsableText(String text) {
     return pdfTextQuality(text) >= _minimumPdfTextQuality;
@@ -534,44 +544,359 @@ class DocumentImporter {
   }
 
   static String _parseLegacyDoc(List<int> bytes) {
+    final cfb = _CompoundBinaryFile.tryParse(bytes);
+    final sources = <List<int>>[];
+    if (cfb != null) {
+      for (final name in const ['WordDocument', '0Table', '1Table']) {
+        final stream = cfb.readStream(name);
+        if (stream != null && stream.isNotEmpty) sources.add(stream);
+      }
+    }
+    if (sources.isEmpty) sources.add(bytes);
+
+    final candidates = <String>[];
+    for (final source in sources) {
+      candidates
+        ..addAll(_scanUtf16LeTextRuns(source, alignment: 0))
+        ..addAll(_scanUtf16LeTextRuns(source, alignment: 1))
+        ..addAll(_scanUtf8TextRuns(source))
+        ..addAll(_scanAsciiTextRuns(source));
+    }
+
+    var best = '';
+    var bestScore = 0.0;
+    for (final candidate in candidates) {
+      final cleaned = _cleanExtractedLegacyText(candidate);
+      final score = pdfTextQuality(cleaned);
+      if (score > bestScore ||
+          (score == bestScore && cleaned.length > best.length)) {
+        best = cleaned;
+        bestScore = score;
+      }
+    }
+    return bestScore >= _minimumPdfTextQuality ? best : '';
+  }
+
+  static Iterable<String> _scanUtf16LeTextRuns(
+    List<int> bytes, {
+    required int alignment,
+  }) sync* {
     final buffer = StringBuffer();
-
-    // Heuristic 1: 掃描 UTF-16LE 寬字元段落（Word 常用）
-    for (int i = 0; i < bytes.length - 1; i += 2) {
-      final charCode = bytes[i] | (bytes[i + 1] << 8);
-      if ((charCode >= 32 && charCode <= 126) ||
-          (charCode >= 0x4E00 && charCode <= 0x9FFF)) {
-        buffer.writeCharCode(charCode);
-      } else if (charCode == 10 || charCode == 13) {
-        buffer.write('\n');
+    for (var i = alignment; i + 1 < bytes.length; i += 2) {
+      final codePoint = bytes[i] | (bytes[i + 1] << 8);
+      if (_isLegacyTextCodePoint(codePoint)) {
+        buffer.writeCharCode(codePoint);
+      } else {
+        final value = _takeReadableRun(buffer, minimumVisible: 12);
+        if (value != null) yield value;
       }
     }
+    final value = _takeReadableRun(buffer, minimumVisible: 12);
+    if (value != null) yield value;
+  }
 
-    // Heuristic 2: 若提取字元過少，回退至 ASCII printable 字元提取
-    if (buffer.length < 50) {
-      buffer.clear();
-      final currentRun = <int>[];
-      for (final b in bytes) {
-        final isPrintable =
-            (b >= 32 && b <= 126) || b == 10 || b == 13 || b == 9;
-        if (isPrintable) {
-          currentRun.add(b);
-        } else {
-          if (currentRun.length >= 4) {
-            buffer.write(utf8.decode(currentRun, allowMalformed: true));
-            buffer.write(' ');
-          }
-          currentRun.clear();
-        }
+  static Iterable<String> _scanUtf8TextRuns(List<int> bytes) sync* {
+    final run = <int>[];
+    for (var i = 0; i < bytes.length; i++) {
+      final b = bytes[i];
+      final isTextByte =
+          b == 0x09 || b == 0x0a || b == 0x0d || (b >= 0x20 && b <= 0xf4);
+      if (isTextByte) {
+        run.add(b);
+      } else {
+        final value = _decodeByteRun(run, minimumBytes: 24);
+        if (value != null) yield value;
       }
     }
+    final value = _decodeByteRun(run, minimumBytes: 24);
+    if (value != null) yield value;
+  }
 
-    return buffer
-        .toString()
+  static Iterable<String> _scanAsciiTextRuns(List<int> bytes) sync* {
+    final run = <int>[];
+    for (final b in bytes) {
+      final isPrintable =
+          b == 0x09 || b == 0x0a || b == 0x0d || b >= 32 && b <= 126;
+      if (isPrintable) {
+        run.add(b);
+      } else {
+        final value = _decodeByteRun(run, minimumBytes: 24);
+        if (value != null) yield value;
+      }
+    }
+    final value = _decodeByteRun(run, minimumBytes: 24);
+    if (value != null) yield value;
+  }
+
+  static bool _isLegacyTextCodePoint(int codePoint) {
+    return codePoint == 0x09 ||
+        codePoint == 0x0a ||
+        codePoint == 0x0d ||
+        codePoint >= 0x20 && codePoint <= 0x7e ||
+        codePoint >= 0xa0 && codePoint <= 0x2fff ||
+        codePoint >= 0x3400 && codePoint <= 0x9fff ||
+        codePoint >= 0xac00 && codePoint <= 0xd7af ||
+        codePoint >= 0xf900 && codePoint <= 0xfaff ||
+        codePoint >= 0xff00 && codePoint <= 0xffef;
+  }
+
+  static String? _takeReadableRun(
+    StringBuffer buffer, {
+    required int minimumVisible,
+  }) {
+    if (buffer.isEmpty) return null;
+    final value = buffer.toString();
+    buffer.clear();
+    final visible = value.runes
+        .where((rune) => !RegExp(r'\s').hasMatch(String.fromCharCode(rune)))
+        .length;
+    return visible >= minimumVisible ? value : null;
+  }
+
+  static String? _decodeByteRun(List<int> run, {required int minimumBytes}) {
+    if (run.length < minimumBytes) {
+      run.clear();
+      return null;
+    }
+    final value = utf8.decode(run, allowMalformed: true);
+    run.clear();
+    return value;
+  }
+
+  static String _cleanExtractedLegacyText(String text) {
+    return text
         .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '')
-        .replaceAll(RegExp(r' {2,}'), ' ')
+        .replaceAll(RegExp(r'[ \t]{2,}'), ' ')
+        .replaceAll(RegExp(r'\n{3,}'), '\n\n')
         .trim();
   }
+}
+
+class _CompoundBinaryFile {
+  static const List<int> _signature = [
+    0xD0,
+    0xCF,
+    0x11,
+    0xE0,
+    0xA1,
+    0xB1,
+    0x1A,
+    0xE1,
+  ];
+  static const int _endOfChain = 0xFFFFFFFE;
+  static const int _defaultMiniCutoff = 4096;
+  static const int _maxSectors = 1 << 20;
+
+  final Uint8List _bytes;
+  final int _sectorSize;
+  final int _miniSectorSize;
+  final int _miniCutoff;
+  final List<int> _fat;
+  final Uint8List _miniStream;
+  final List<int> _miniFat;
+  final Map<String, _CompoundBinaryStream> _streams;
+
+  const _CompoundBinaryFile._(
+    this._bytes,
+    this._sectorSize,
+    this._miniSectorSize,
+    this._miniCutoff,
+    this._fat,
+    this._miniStream,
+    this._miniFat,
+    this._streams,
+  );
+
+  static _CompoundBinaryFile? tryParse(List<int> input) {
+    try {
+      final bytes = Uint8List.fromList(input);
+      if (bytes.length < 512) return null;
+      for (var i = 0; i < _signature.length; i++) {
+        if (bytes[i] != _signature[i]) return null;
+      }
+
+      final data = ByteData.sublistView(bytes);
+      final sectorSize = 1 << data.getUint16(30, Endian.little);
+      final miniSectorSize = 1 << data.getUint16(32, Endian.little);
+      if (sectorSize < 128 || sectorSize > 1 << 16) return null;
+      if (miniSectorSize < 16 || miniSectorSize > sectorSize) return null;
+
+      int offsetOf(int sector) => (sector + 1) * sectorSize;
+      bool inRange(int sector) =>
+          sector >= 0 &&
+          sector < _maxSectors &&
+          offsetOf(sector) + sectorSize <= bytes.length;
+
+      final fatSectorCount = data.getUint32(44, Endian.little);
+      final firstDirSector = data.getUint32(48, Endian.little);
+      final miniCutoff = data.getUint32(56, Endian.little);
+      final firstMiniFatSector = data.getUint32(60, Endian.little);
+      final firstDifatSector = data.getUint32(68, Endian.little);
+
+      final difat = <int>[];
+      for (var i = 0; i < 109 && i < fatSectorCount; i++) {
+        difat.add(data.getUint32(76 + i * 4, Endian.little));
+      }
+
+      var difatSector = firstDifatSector;
+      var difatGuard = 0;
+      while (difat.length < fatSectorCount &&
+          inRange(difatSector) &&
+          difatGuard++ < _maxSectors) {
+        final base = offsetOf(difatSector);
+        final entries = sectorSize ~/ 4 - 1;
+        for (var i = 0; i < entries && difat.length < fatSectorCount; i++) {
+          difat.add(data.getUint32(base + i * 4, Endian.little));
+        }
+        difatSector = data.getUint32(base + entries * 4, Endian.little);
+      }
+
+      final fat = <int>[];
+      for (final sector in difat) {
+        if (!inRange(sector)) return null;
+        final base = offsetOf(sector);
+        for (var i = 0; i < sectorSize ~/ 4; i++) {
+          fat.add(data.getUint32(base + i * 4, Endian.little));
+        }
+      }
+      if (fat.isEmpty) return null;
+
+      List<int> chain(int start, List<int> table) {
+        final out = <int>[];
+        final seen = <int>{};
+        var sector = start;
+        while (sector < table.length && sector != _endOfChain) {
+          if (!seen.add(sector)) break;
+          if (out.length >= _maxSectors) break;
+          out.add(sector);
+          sector = table[sector];
+        }
+        return out;
+      }
+
+      Uint8List readRegularChain(int start, int size) {
+        final out = BytesBuilder();
+        for (final sector in chain(start, fat)) {
+          if (!inRange(sector)) break;
+          out.add(
+            bytes.sublist(offsetOf(sector), offsetOf(sector) + sectorSize),
+          );
+        }
+        final all = out.toBytes();
+        return size > 0 && size <= all.length ? all.sublist(0, size) : all;
+      }
+
+      final dirSectors = chain(firstDirSector, fat);
+      var rootStart = 0;
+      var rootSize = 0;
+      final streams = <String, _CompoundBinaryStream>{};
+
+      for (final sector in dirSectors) {
+        if (!inRange(sector)) return null;
+        final base = offsetOf(sector);
+        for (var e = 0; e + 128 <= sectorSize; e += 128) {
+          final entry = base + e;
+          final nameLength = data.getUint16(entry + 64, Endian.little);
+          final type = bytes[entry + 66];
+          if (type != 2 && type != 5) continue;
+
+          final chars = <int>[];
+          for (var i = 0; i + 1 < nameLength - 2 && i < 64; i += 2) {
+            chars.add(data.getUint16(entry + i, Endian.little));
+          }
+          final name = String.fromCharCodes(chars);
+          final start = data.getUint32(entry + 116, Endian.little);
+          final size = data.getUint32(entry + 120, Endian.little);
+
+          if (type == 5) {
+            rootStart = start;
+            rootSize = size;
+          } else if (name.isNotEmpty && size > 0) {
+            streams[name] = _CompoundBinaryStream(start, size);
+          }
+        }
+      }
+
+      final miniStream = readRegularChain(rootStart, rootSize);
+      final miniFatRaw = readRegularChain(firstMiniFatSector, 0);
+      final miniFat = <int>[];
+      final miniFatData = ByteData.sublistView(miniFatRaw);
+      for (var i = 0; i + 4 <= miniFatRaw.length; i += 4) {
+        miniFat.add(miniFatData.getUint32(i, Endian.little));
+      }
+
+      return _CompoundBinaryFile._(
+        bytes,
+        sectorSize,
+        miniSectorSize,
+        miniCutoff == 0 ? _defaultMiniCutoff : miniCutoff,
+        fat,
+        miniStream,
+        miniFat,
+        streams,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Uint8List? readStream(String name) {
+    final stream = _streams[name];
+    if (stream == null) return null;
+    if (stream.size >= _miniCutoff) {
+      return _readRegularChain(stream.start, stream.size);
+    }
+    return _readMiniChain(stream.start, stream.size);
+  }
+
+  Uint8List _readRegularChain(int start, int size) {
+    final out = BytesBuilder();
+    for (final sector in _chain(start, _fat)) {
+      if (!_inRange(sector)) break;
+      final offset = _offsetOf(sector);
+      out.add(_bytes.sublist(offset, offset + _sectorSize));
+    }
+    final all = out.toBytes();
+    return size > 0 && size <= all.length ? all.sublist(0, size) : all;
+  }
+
+  Uint8List _readMiniChain(int start, int size) {
+    final out = BytesBuilder();
+    for (final mini in _chain(start, _miniFat)) {
+      final offset = mini * _miniSectorSize;
+      if (offset + _miniSectorSize > _miniStream.length) break;
+      out.add(_miniStream.sublist(offset, offset + _miniSectorSize));
+    }
+    final all = out.toBytes();
+    return size > 0 && size <= all.length ? all.sublist(0, size) : all;
+  }
+
+  List<int> _chain(int start, List<int> table) {
+    final out = <int>[];
+    final seen = <int>{};
+    var sector = start;
+    while (sector < table.length && sector != _endOfChain) {
+      if (!seen.add(sector)) break;
+      if (out.length >= _maxSectors) break;
+      out.add(sector);
+      sector = table[sector];
+    }
+    return out;
+  }
+
+  int _offsetOf(int sector) => (sector + 1) * _sectorSize;
+
+  bool _inRange(int sector) =>
+      sector >= 0 &&
+      sector < _maxSectors &&
+      _offsetOf(sector) + _sectorSize <= _bytes.length;
+}
+
+class _CompoundBinaryStream {
+  final int start;
+  final int size;
+
+  const _CompoundBinaryStream(this.start, this.size);
 }
 
 class ImportedDocument {

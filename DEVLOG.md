@@ -1,5 +1,26 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-29（第一百六十三次更新）— 舊版 Word 匯入不再盲掃整個二進位檔
+
+使用者回報 `.doc` 檔案解析能力太差，匯入後幾乎都是亂碼。追到
+`DocumentImporter._parseLegacyDoc` 後確認原因：舊版 Word 是 OLE2／CFB 二進位容器，
+但原本的 heuristics 會直接掃整份檔案位元組；只要 FAT、目錄項或屬性資料剛好被解成
+可列印字元，就可能混進分析正文。
+
+改成先嘗試拆 CFB 容器，只從 `WordDocument`、`0Table`、`1Table` 這些可能含正文或
+piece table 的串流取候選文字；非 CFB 的簡化測試資料仍保留原本位元組掃描路徑。候選
+文字同時掃 UTF-16LE（兩種 alignment）、UTF-8 與 ASCII runs，最後用既有
+`pdfTextQuality` 選最高分，低於門檻就回空字串並走「舊版 .doc 無法可靠擷取」提示，
+避免把容器亂碼送進模型。這不是完整 MS-DOC piece table 解析器，但已把最危險的盲掃
+容器行為移除。
+
+順手修正 DOCX XML 實體解碼：原本只處理 `&amp;`、`&lt;` 等命名實體，現在也支援
+`&#20839;` 與 `&#x6AA2;` 這類十進位／十六進位字元實體，避免 Word 匯出的中文或特殊符號
+殘留成原始 XML 寫法。
+
+**狀態**：✅ `flutter test test/document_importer_test.dart` 全數通過（新增 2 條）；
+`flutter analyze` 僅剩既有 8 條 `prefer_initializing_formals` info，無本次新增警告。
+
 ## 2026-08-30（第一百六十二次更新）— 首次啟動直接列出模型清單，可勾選下載
 
 原本首次啟動的提示只問「要不要去挑模型」，按下去就把人丟到模型管理頁自己找。但

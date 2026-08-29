@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -191,6 +192,24 @@ for validating an imported academic document before content detection begins.
         expect(text, contains('本研究探討人工智慧內容檢測'));
       });
 
+      test('舊版 .doc 只從 OLE WordDocument 串流抽取候選正文', () {
+        const original =
+            'This WordDocument stream contains a readable academic paragraph '
+            'about local document analysis, import reliability, and evidence '
+            'quality. It should be selected instead of binary container data.';
+        final encoded = <int>[];
+        for (final codePoint in original.runes) {
+          encoded.add(codePoint & 0xff);
+          encoded.add((codePoint >> 8) & 0xff);
+        }
+
+        final bytes = _minimalOleDocWithWordDocumentStream(encoded);
+        final text = DocumentImporter.parseBytes(bytes, extension: 'doc');
+
+        expect(text, contains('This WordDocument stream contains'));
+        expect(text, isNot(contains('Root Entry')));
+      });
+
       test('ODT（Google 文件匯出的 OpenDocument）可正確抽取分段文字', () {
         const contentXml = '''
 <?xml version="1.0" encoding="UTF-8"?>
@@ -246,6 +265,100 @@ for validating an imported academic document before content detection begins.
         expect(text, contains('keeps\tits structure.'));
         expect(text, contains('Third line\ncontinues here.'));
       });
+
+      test('DOCX 會還原十進位與十六進位 XML 字元實體', () {
+        const documentXml = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>AI &#20839;&#23481; &#x6AA2;&#x6E2C;</w:t></w:r></w:p>
+  </w:body>
+</w:document>
+''';
+        final contentBytes = utf8.encode(documentXml);
+        final archive = Archive()
+          ..addFile(
+            ArchiveFile('word/document.xml', contentBytes.length, contentBytes),
+          );
+        final bytes = ZipEncoder().encode(archive);
+
+        final text = DocumentImporter.parseBytes(bytes, extension: 'docx');
+
+        expect(text, 'AI 內容 檢測');
+      });
     },
   );
+}
+
+List<int> _minimalOleDocWithWordDocumentStream(List<int> streamBytes) {
+  const sectorSize = 512;
+  const fatSector = 0;
+  const directorySector = 1;
+  const wordDocumentSector = 2;
+  final bytes = Uint8List((1 + 3) * sectorSize);
+  final data = ByteData.sublistView(bytes);
+
+  const signature = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+  for (var i = 0; i < signature.length; i++) {
+    bytes[i] = signature[i];
+  }
+  data.setUint16(30, 9, Endian.little);
+  data.setUint16(32, 6, Endian.little);
+  data.setUint32(44, 1, Endian.little);
+  data.setUint32(48, directorySector, Endian.little);
+  data.setUint32(56, 1, Endian.little);
+  data.setUint32(60, 0xFFFFFFFE, Endian.little);
+  data.setUint32(68, 0xFFFFFFFE, Endian.little);
+  data.setUint32(76, fatSector, Endian.little);
+
+  final fatOffset = sectorSize;
+  for (var i = 0; i < sectorSize ~/ 4; i++) {
+    data.setUint32(fatOffset + i * 4, 0xFFFFFFFF, Endian.little);
+  }
+  data.setUint32(fatOffset, 0xFFFFFFFD, Endian.little);
+  data.setUint32(fatOffset + 4, 0xFFFFFFFE, Endian.little);
+  data.setUint32(fatOffset + 8, 0xFFFFFFFE, Endian.little);
+
+  final directoryOffset = (1 + directorySector) * sectorSize;
+  _writeOleDirectoryEntry(
+    bytes,
+    data,
+    directoryOffset,
+    'Root Entry',
+    type: 5,
+    startSector: 0xFFFFFFFE,
+    size: 0,
+  );
+  _writeOleDirectoryEntry(
+    bytes,
+    data,
+    directoryOffset + 128,
+    'WordDocument',
+    type: 2,
+    startSector: wordDocumentSector,
+    size: streamBytes.length,
+  );
+
+  final streamOffset = (1 + wordDocumentSector) * sectorSize;
+  bytes.setRange(streamOffset, streamOffset + streamBytes.length, streamBytes);
+  return bytes;
+}
+
+void _writeOleDirectoryEntry(
+  Uint8List bytes,
+  ByteData data,
+  int offset,
+  String name, {
+  required int type,
+  required int startSector,
+  required int size,
+}) {
+  final chars = [...name.codeUnits, 0];
+  for (var i = 0; i < chars.length && i * 2 < 64; i++) {
+    data.setUint16(offset + i * 2, chars[i], Endian.little);
+  }
+  data.setUint16(offset + 64, chars.length * 2, Endian.little);
+  bytes[offset + 66] = type;
+  data.setUint32(offset + 116, startSector, Endian.little);
+  data.setUint32(offset + 120, size, Endian.little);
 }
