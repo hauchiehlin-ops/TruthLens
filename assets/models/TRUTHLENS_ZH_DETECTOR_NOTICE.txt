@@ -1,0 +1,29 @@
+TruthLens Chinese detector notice
+
+Model: truthlens_zh_detector_int8.onnx
+Hosted: https://huggingface.co/hauchieh/truthlens-models
+
+Base model
+----------
+hfl/chinese-roberta-wwm-ext — Apache License 2.0
+https://huggingface.co/hfl/chinese-roberta-wwm-ext
+
+Training corpora
+----------------
+DetectRL-X (MIT) — DeepSeek-V3, Gemini-2.5-Flash, GPT-4o, Qwen-Max
+NLPCC 2025 Shared Task 1 — GPT-4o, GLM-4-flash, Qwen-turbo
+HC3-Chinese (Hello-SimpleAI) — ChatGPT, assistant-reply register
+
+Calibration
+-----------
+The 0.98 AI-evidence gate was chosen on the combined development split — the
+lowest candidate whose false-positive Wilson 95% upper bound stays under 1% —
+and reported once on each of three corpora that took no part in training.
+It is one-sided: crossing it supports AI authorship, but a score below it is an
+abstention, never a vote for human authorship.
+
+Fine-tuning, quantisation and calibration are TruthLens work and are not
+representations made by the base-model or corpus authors.
+
+Reproduce with training/train_zh_detector.py and
+training/export_hf_sequence_classifier.py; commands are in training/README.md.

@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-29",
+  "catalog_version": "2026-08-30",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -28,6 +28,29 @@
           "page_url": "https://huggingface.co/hauchieh/truthlens-models",
           "license": "資料源 HC3（研究用途）",
           "note": "HC3 驗證集英文 AUC 1.000（命中 100%／誤傷 3.3%）。模型雖可分詞中文，但只學過較早期 HC3 分布；在 2026 現代中文 AI 壓力集 18 篇中沒有任何一篇跨過門檻，因此中文只作未驗證備援，不再宣稱已校準。評測見 training/evaluate_detector.py。"
+        },
+        {
+          "id": "truthlens-zh-detector-int8",
+          "name": "TruthLens 中文偵測器（2026 生成器・INT8）",
+          "backend": "transformer",
+          "tokenizer": "bert-wordpiece",
+          "ai_label_index": 1,
+          "ai_evidence_threshold": 0.98,
+          "languages": [
+            "zh"
+          ],
+          "quant": "int8",
+          "size_bytes": 103073737,
+          "min_ram_mb": 2048,
+          "tier": "low",
+          "url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/truthlens_zh_detector_int8.onnx",
+          "tokenizer_url": "https://huggingface.co/hauchieh/truthlens-models/resolve/main/truthlens_zh_detector_tokenizer.json",
+          "sha256": "cc9448f3d441b3543dc8f7f3493a4eaa9bfeaabadb298377513836e0af2b713c",
+          "version": "1.0-truthlens-zh",
+          "source": "TruthLens 以 hfl/chinese-roberta-wwm-ext 於 DetectRL-X + NLPCC-2025 + HC3-Chinese 微調",
+          "page_url": "https://huggingface.co/hauchieh/truthlens-models",
+          "license": "Apache-2.0（基礎模型）；訓練語料 MIT／各自授權",
+          "note": "針對 DeepSeek-V3、Gemini-2.5-Flash、GPT-4o、Qwen-Max 與助理回覆語域訓練。投票門檻 0.98 由合併開發集選出（取誤報 Wilson 95% 上界 ≤ 1% 中最低者），再於三份未參與訓練的語料各報告一次：DetectRL-X 誤報上界 0.13%／召回 73.1%；HC3 助理語域 0.17%／89.8%；SemEval 中文 0.15%／54.4%。相同校準流程下的 aigc-detector-zhv3 為 DetectRL-X 1.09%（超出誤報預算）／76.7%、HC3 僅 31.4%。主要進步在助理回覆語域。低於門檻只表示未取得 AI 證據，不反向投真人票。"
         },
         {
           "id": "aigc-detector-zhv3-int8",

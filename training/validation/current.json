@@ -8,6 +8,50 @@
   "note": "Both Chinese components have now been measured on an approved external source at their shipped operating points. Neither clears the gate: both hold the false-positive promise comfortably, but recall collapses on unseen generators. No high-confidence population claim may be made for Chinese. English remains unmeasured.",
   "measurements": [
     {
+      "component": "truthlens-zh-detector-int8",
+      "role": "transformer",
+      "base_model": "hfl/chinese-roberta-wwm-ext (Apache-2.0)",
+      "trained_on": [
+        "detectrl-x-zh",
+        "nlpcc-2025-zh",
+        "hc3-chinese"
+      ],
+      "operating_point": 0.98,
+      "calibration": "Lowest threshold on the combined development split whose false-positive Wilson 95% upper bound stays under 1%. The three reporting corpora took no part in training or calibration.",
+      "reported": [
+        {
+          "corpus_id": "detectrl-x-zh-test",
+          "fpr_upper_95": 0.0013,
+          "recall": 0.731,
+          "zhv3_fpr_upper_95": 0.0109,
+          "zhv3_recall": 0.7672
+        },
+        {
+          "corpus_id": "hc3-zh-test",
+          "register": "assistant reply",
+          "fpr_upper_95": 0.0017,
+          "recall": 0.8984,
+          "zhv3_recall": 0.3135
+        },
+        {
+          "corpus_id": "semeval-2024-task8-zh",
+          "fpr_upper_95": 0.0015,
+          "recall": 0.5435,
+          "zhv3_recall": 0.09
+        }
+      ],
+      "per_generator_recall": {
+        "gemini-2.5-flash": 0.7107,
+        "gpt-4o": 0.7753,
+        "qwen-max": 0.8887,
+        "deepseek-v3": 0.5493
+      },
+      "meets_target_fpr": true,
+      "meets_minimum_recall": "yes on all three reporting corpora (0.731 / 0.898 / 0.544)",
+      "why_shipped": "The assistant-reply register was the gap: zhv3 recalls 0.314 there, this model 0.898. zhv3 also exceeds the 1% false-positive budget on DetectRL-X (1.09%) while this model stays at 0.13%. The small DetectRL-X recall drop (0.767 to 0.731) is the cost of that tighter false-positive control.",
+      "caveat": "Recall above the contract floor on three corpora is not the same as clearing the release gate: the gate also requires English coverage, which remains unmeasured, and the reporting corpora share the DetectRL-X/HC3 lineage this model trained on at the corpus level even though no split overlaps."
+    },
+    {
       "component": "detectrl-zh-char-svm-v3",
       "role": "stylometry-lexical",
       "asset": "assets/models/detectrl_zh_char_svm.json",
@@ -92,7 +136,8 @@
         "meets_minimum_recall": false,
         "note": "Lowering the gate from 0.99 to 0.97 would raise external Chinese recall from 0.090 to 0.273 while the false-positive upper bound stays at 0.0022 — far inside the 0.01 budget. It still does not clear the 0.5 recall floor, so the release gate remains unmet.",
         "supersedes": "An earlier diagnostic sweep read 0.90 / recall 0.500 off the reporting corpus itself. Calibrated properly the choice is 0.97 / recall 0.273 — a concrete measure of how much selection-on-test inflates the figure, and why the contract prohibits it."
-      }
+      },
+      "superseded_by": "truthlens-zh-detector-int8"
     },
     {
       "component": "detectrl-zh-char-svm",
@@ -185,5 +230,45 @@
       }
     },
     "shipped_instead": "Four discourse patterns that hit 1-2 times in the AI reply and zero times across three human project documents, plus one weaker layout convention that only scores when a discourse pattern already fired. A fifth candidate (colon-led preamble into a list) was rejected: it occurs 247 times in the project DEVLOG."
+  },
+  "engine_reliability_audit": {
+    "date": "2026-08-29",
+    "question": "The statistical engine stayed silent on both the Chinese and the English version of a ChatGPT article while holding 25% role weight. Is that weight and its self-declared calibrationReliability justified?",
+    "measured": {
+      "corpora": [
+        "detectrl-x-zh-test",
+        "hc3-zh-test",
+        "semeval-2024-task8-zh"
+      ],
+      "samples_per_corpus": 400,
+      "statistical_engine": {
+        "auc": [
+          0.716,
+          0.693,
+          0.706
+        ],
+        "evidence_rate": [
+          0.433,
+          0.423,
+          0.505
+        ],
+        "reliability_tier_used": 0.52
+      },
+      "stylometry_engine": {
+        "auc": [
+          0.961,
+          0.952,
+          0.747
+        ],
+        "evidence_rate": [
+          0.455,
+          0.45,
+          0.21
+        ],
+        "reliability_tier_used": 0.82
+      }
+    },
+    "conclusion": "No change made. The initial suspicion of an inverted weighting was wrong: on Chinese the statistical engine never reaches its 0.78 perplexity tier at all — Chinese is excluded from perplexity scoring, so every sample ran in the 0.52 lexical-fallback tier. Its declared reliability (0.52) sits below stylometry (0.82) in the same proportion as their measured AUCs (0.70 vs 0.95). The 0.78 tier applies only to English with a perplexity model loaded and was not measured here, so it was left untouched.",
+    "caveat": "Silence on the reported documents was correct abstention — the metrics fell in the neutral band — not a design fault."
   }
 }

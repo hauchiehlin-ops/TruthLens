@@ -87,9 +87,15 @@ void main() {
 
     final transformers = bundle.included.where((e) => e.role == 'transformer');
     expect(transformers.length, 2, reason: '多語通用一顆 + 中文專用一顆');
+    // 只補一顆中文專用變體：catalog 依品質排序，取最前面那顆。塞兩顆功能
+    // 重疊的中文偵測器只會讓使用者多下載上百 MB。
     expect(
-      transformers.any((e) => e.variant.id == 'aigc-detector-zhv3-int8'),
+      transformers.any((e) => e.variant.languages.contains('zh')),
       isTrue,
+    );
+    expect(
+      transformers.where((e) => e.variant.languages.contains('zh')).length,
+      1,
     );
   });
 

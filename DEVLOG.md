@@ -21,6 +21,51 @@
 **版本與狀態**：v4.6.8 / Build 1441。✅ `flutter test test/detection_test.dart`
 全數通過；`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
 
+## 2026-08-30（第一百五十五次更新）— 自行微調中文 Transformer，補上助理語域
+
+40% 權重的中文 Transformer 在使用者回報的文件上完全沉默。上游的
+`aigc-detector-zhv3` 實測顯示兩個問題：助理回覆語域只有 31.4% 召回，且在
+DetectRL-X 上誤報 1.09%、**超出合約的 1% 預算**。改以本專案三語料自行微調
+（`hfl/chinese-roberta-wwm-ext`，DetectRL-X + NLPCC-2025 + HC3-Chinese，
+40,000 樣本，MPS 約 45 分鐘）。
+
+門檻 0.98 由合併開發集選出（取誤報 Wilson 95% 上界 ≤ 1% 中最低者），三份報告語料
+都未參與訓練或校準：
+
+| 語料 | zhv3 | 新模型 |
+|---|---|---|
+| DetectRL-X 文件語域 | 誤報 1.09% ❌／召回 76.7% | **0.13% ✅／73.1%** |
+| HC3 助理語域 | 0.34% ✅／**31.4%** | 0.17% ✅／**89.8%** |
+| SemEval 中文 | ／9.0% | 0.15% ✅／**54.4%** |
+
+分生成器：Gemini 71.1%、GPT-4o 77.5%、Qwen-Max 88.9%、DeepSeek-V3 54.9%。
+主要進步在助理語域；DetectRL-X 召回略降是誤報收緊的代價。
+
+模型已上傳至 `hauchieh/truthlens-models`（98MB INT8），下載後核對 sha256 一致、
+`access-control-allow-origin: *`（瀏覽器可直接抓）。catalog 已接上並排在
+zhv3 之前。
+
+**兩個順帶修掉的缺陷**：
+
+1. `model_catalog_test.dart` 依名稱推斷分詞器型別，把 `chinese-roberta-wwm-ext`
+   判成必須用 byte-level BPE。實測該模型 tokenizer 為 `model.type=WordPiece`、
+   `BertPreTokenizer`、21128 字表——**中文 RoBERTa 沿用 BERT 分詞器**。修的是
+   測試的啟發式，不是資產的標籤；標錯會導致分詞完全錯誤。
+2. `recommendBundle` 會把該語言的**所有**專用變體都加進建議套組。新模型上架後
+   中文使用者會被建議下載兩顆功能重疊的偵測器、多花上百 MB。改為只補品質最高的
+   一顆。
+
+**同時記錄兩項調查結論**：
+
+- 統計引擎的權重審計：先前推測「弱卻拿更多權重」**是錯的**。中文不採計困惑度，
+  實測跑的全是 0.52 那一檔，其可靠度與 AUC 的比值（0.52:0.82 對 0.70:0.95）方向
+  一致，現行設定合理。不修改，已寫入 `engine_reliability_audit`。
+- 字元 SVM 對新回報文件無效的成因：「長文件稀釋訊號」假設**不成立**——串接 16 篇
+  近 11,000 字後命中率反而 100%、誤報 0%。需要原始文件才能繼續診斷。
+
+**版本與狀態**：v4.10.0。✅ Flutter 620 項測試全數通過；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題。
+
 ## 2026-08-29（第一百五十四次更新）— 證據不足不得反向報成「不是 AI」
 
 使用者以同一篇 ChatGPT 文章的中文版與英文譯版對照測試，暴露出一個比「判不出來」

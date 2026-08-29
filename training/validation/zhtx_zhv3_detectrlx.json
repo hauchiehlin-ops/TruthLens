@@ -1,0 +1,88 @@
+{
+  "corpus_id": "detectrlx",
+  "component": "aigc-detector-zhv3-int8",
+  "documents_scored": 12000,
+  "operating_point": 0.969,
+  "max_len": 192,
+  "human_documents": 6000,
+  "machine_documents": 6000,
+  "fpr": 0.008666666666666666,
+  "fpr_upper_95": 0.010868450724837792,
+  "recall": 0.7671666666666667,
+  "calibration": {
+    "corpus": "data/zh_combined3/dev.json",
+    "documents": 10707,
+    "human_documents": 5101,
+    "target_fpr": 0.01,
+    "chosen_threshold": 0.969,
+    "calibration_fpr": 0.006665359733385611,
+    "calibration_fpr_upper_95": 0.008818575971372252,
+    "calibration_recall": 0.5909739564752051
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "fpr": 0.2648333333333333,
+      "fpr_upper_95": 0.27430789723791177,
+      "recall": 0.9893333333333333
+    },
+    {
+      "threshold": 0.7,
+      "fpr": 0.12983333333333333,
+      "fpr_upper_95": 0.13713822453252583,
+      "recall": 0.972
+    },
+    {
+      "threshold": 0.8,
+      "fpr": 0.0765,
+      "fpr_upper_95": 0.08233718488926914,
+      "recall": 0.9506666666666667
+    },
+    {
+      "threshold": 0.9,
+      "fpr": 0.034,
+      "fpr_upper_95": 0.0380634129505456,
+      "recall": 0.899
+    },
+    {
+      "threshold": 0.95,
+      "fpr": 0.015,
+      "fpr_upper_95": 0.01780850843384396,
+      "recall": 0.832
+    },
+    {
+      "threshold": 0.99,
+      "fpr": 0.0013333333333333333,
+      "fpr_upper_95": 0.002364775012852169,
+      "recall": 0.498
+    },
+    {
+      "threshold": 0.999,
+      "fpr": 0.0,
+      "fpr_upper_95": 0.0004507460713588669,
+      "recall": 0.0
+    }
+  ],
+  "per_generator": {
+    "deepseek-v3": {
+      "n": 1500,
+      "above_threshold_rate": 0.6566666666666666
+    },
+    "gemini-2.5-flash": {
+      "n": 1500,
+      "above_threshold_rate": 0.7966666666666666
+    },
+    "gpt-4o": {
+      "n": 1500,
+      "above_threshold_rate": 0.7913333333333333
+    },
+    "human": {
+      "n": 6000,
+      "above_threshold_rate": 0.008666666666666666
+    },
+    "qwen-max": {
+      "n": 1500,
+      "above_threshold_rate": 0.824
+    }
+  }
+}

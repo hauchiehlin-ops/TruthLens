@@ -152,9 +152,13 @@ class ModelProvisioner {
       final best = model.bestFor(device.tier, device.totalRamMb);
       if (best != null) candidates.add(best);
       if (role == 'transformer' && languageCode != null) {
+        // 只補**一顆**該語言的專用變體。catalog 的 variants 依品質排序，取第一顆
+        // 就好——同一語言塞兩顆功能重疊的偵測器，等於要使用者多下載上百 MB 卻
+        // 換不到額外的判讀能力。
         for (final v in model.variants) {
           if (v.id != best?.id && v.languages.contains(languageCode)) {
             candidates.add(v);
+            break;
           }
         }
       }

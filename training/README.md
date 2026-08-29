@@ -242,6 +242,47 @@ curl -sLO "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_de
 預算內盡量少漏——只用掉 1% 預算中的 0.22%——不是宣稱中文已可靠。真正的瓶頸仍是訓練
 語料的生成器涵蓋。
 
+## 中文 Transformer 自行微調（truthlens-zh-detector）
+
+上游的 `aigc-detector-zhv3` 在助理回覆語域只有 31.4% 召回，且在 DetectRL-X 上誤報
+1.09%、超出合約的 1% 預算。改以本專案的三語料自行微調。
+
+```bash
+# 1. 微調（MPS 約 45 分鐘，40,000 樣本）
+.venv/bin/python train_zh_detector.py --max-train 40000
+
+# 2. 匯出 INT8 ONNX（符合 App 推論契約：input_ids + attention_mask、兩個 logit）
+.venv/bin/python export_hf_sequence_classifier.py \
+  artifacts/zh_detector artifacts/zh_detector_onnx/truthlens_zh_detector_int8.onnx
+
+# 3. 校準門檻並在三份未參與訓練的語料各報告一次
+.venv/bin/python evaluate_external_zh_transformer.py \
+  --model artifacts/zh_detector_onnx/truthlens_zh_detector_int8.onnx \
+  --tokenizer artifacts/zh_detector_onnx/tokenizer.json \
+  --calibration-corpus data/zh_combined3/dev.json \
+  --corpus data/detectrl_x/zh/test_with_label.json --corpus-id detectrl-x-zh-test
+```
+
+基礎模型為 `hfl/chinese-roberta-wwm-ext`（Apache-2.0）。**注意它雖名為 RoBERTa，
+分詞器仍是 BERT WordPiece**（`model.type=WordPiece`、`BertPreTokenizer`、21128 字表），
+因此 catalog 的 `tokenizer` 必須標 `bert-wordpiece`；標成 `roberta-bpe` 會分詞錯誤。
+
+### 實測（門檻 0.98，由合併開發集選出）
+
+| 語料 | aigc-detector-zhv3 | truthlens-zh-detector |
+|---|---|---|
+| DetectRL-X 文件語域 | 誤報 1.09% ❌／召回 76.7% | **0.13% ✅／73.1%** |
+| HC3 助理語域 | 0.34% ✅／**31.4%** | 0.17% ✅／**89.8%** |
+| SemEval 中文 | ／9.0% | 0.15% ✅／**54.4%** |
+
+分生成器召回：Gemini-2.5-Flash 71.1%、GPT-4o 77.5%、Qwen-Max 88.9%、DeepSeek-V3 54.9%。
+
+主要進步在助理回覆語域（31.4% → 89.8%）。DetectRL-X 召回略降是誤報從 1.09% 收到
+0.13% 的代價。
+
+**這仍不等於通過發布門檻**：合約同時要求英文涵蓋（尚未量測），且三份報告語料與訓練
+語料同源（雖然切分無重疊）。
+
 ## 擴充到其他語言（現況：資料擋住了，不是流程擋住了）
 
 `export_detectrl_zh_char_svm.py` 本身與語言無關，加上 `--no-script-augment`

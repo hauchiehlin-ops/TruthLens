@@ -58,11 +58,26 @@ void main() {
           reason: '${variant['id']} 是 BERT 系底座，必須用 WordPiece',
         );
       }
-      if (source.contains('roberta')) {
+      // 名稱含 roberta 不代表用 byte-level BPE。中文 RoBERTa（如
+      // hfl/chinese-roberta-wwm-ext）沿用 BERT 的 WordPiece 分詞器與
+      // 21128 字表——實測該模型的 tokenizer.json 為
+      // model.type=WordPiece、pre_tokenizer=BertPreTokenizer。
+      // 因此只對確實使用 BPE 的英文 RoBERTa 系列要求 byte-level BPE。
+      final isChineseRoberta =
+          source.contains('roberta') &&
+          (source.contains('chinese') || source.contains('wwm'));
+      if (source.contains('roberta') && !isChineseRoberta) {
         expect(
           tokenizer,
           'roberta-bpe',
           reason: '${variant['id']} 是 RoBERTa 系底座，必須用 byte-level BPE',
+        );
+      }
+      if (isChineseRoberta) {
+        expect(
+          tokenizer,
+          'bert-wordpiece',
+          reason: '${variant['id']} 是中文 RoBERTa，分詞器仍是 WordPiece',
         );
       }
     }
