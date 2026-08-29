@@ -928,6 +928,101 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportNoEngineData => 'Keine Modul-Daten';
 
   @override
+  String get ocrGeminiKeyRequired =>
+      'Geben Sie zuerst einen Gemini-API-Schlüssel ein.';
+
+  @override
+  String get ocrGeminiKeyValid =>
+      'Gemini-API-Schlüssel ist gültig und erreichbar.';
+
+  @override
+  String get ocrGeminiKeyUnreachable =>
+      'Gemini-API nicht erreichbar. Bitte prüfen Sie den Schlüssel.';
+
+  @override
+  String get ocrStatusLocalUnset => 'Lokale OCR: Endpunkt nicht gesetzt';
+
+  @override
+  String get ocrStatusLocalUntested =>
+      'Lokale OCR: Endpunkt gesetzt, ungetestet';
+
+  @override
+  String get ocrStatusLocalTesting => 'Lokale OCR: Verbindung wird getestet';
+
+  @override
+  String get ocrStatusLocalReady => 'Lokale OCR: bereit';
+
+  @override
+  String get ocrStatusLocalUnreachable => 'Lokale OCR: nicht erreichbar';
+
+  @override
+  String get ocrStatusGeminiUnset => 'Gemini: kein Schlüssel gesetzt';
+
+  @override
+  String get ocrStatusGeminiUntested => 'Gemini: Schlüssel gesetzt, ungetestet';
+
+  @override
+  String get ocrStatusGeminiVerifying => 'Gemini: Schlüssel wird geprüft';
+
+  @override
+  String get ocrStatusGeminiValid => 'Gemini: Schlüssel gültig';
+
+  @override
+  String get ocrStatusGeminiInvalid => 'Gemini: ungültig oder nicht erreichbar';
+
+  @override
+  String get ocrActiveLocalVerified =>
+      'Aktive Engine: lokaler OCR-Server (geprüft)';
+
+  @override
+  String get ocrActiveLocalUntested =>
+      'Aktive Engine: lokaler OCR-Server (noch ungetestet)';
+
+  @override
+  String get ocrActiveGeminiVerified => 'Aktive Engine: Gemini-API (geprüft)';
+
+  @override
+  String get ocrActiveGeminiUntested =>
+      'Aktive Engine: Gemini-API (noch ungetestet)';
+
+  @override
+  String get ocrActiveNone => 'Noch keine OCR-Engine konfiguriert';
+
+  @override
+  String get ocrDetectAndDownload => 'System erkennen und Installer laden';
+
+  @override
+  String get ocrAutoInstallUnavailable =>
+      'Automatische Installation nicht verfügbar';
+
+  @override
+  String get ocrUnsupportedPlatformBody =>
+      'Die aktuelle Plattform ist kein unterstütztes Ziel für die Ein-Klick-Installation. Ein Webbrowser kann unter iOS, Android, Linux oder einem unbekannten System keinen lokalen OCR-Dienst installieren und starten.\n\nMöglichkeiten:\n1. Nutzen Sie diesen Assistenten in einem macOS- oder Windows-Desktopbrowser.\n2. Verwenden Sie einen Gemini-API-Schlüssel als Web-OCR-Ersatz.\n3. Fortgeschrittene können das OCR-Projekt öffnen, selbst einen kompatiblen /ocr-Endpunkt betreiben und die URL hier eintragen.';
+
+  @override
+  String ocrInstallerReady(String osName) {
+    return '$osName-Installer ist bereit';
+  }
+
+  @override
+  String get ocrRunInstructionMac => 'bash ~/Downloads/setup_and_run_ocr.sh';
+
+  @override
+  String get ocrRunInstructionWindows =>
+      'setup_and_run_ocr.bat im Ordner \"Downloads\" doppelklicken';
+
+  @override
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  ) {
+    return '$osName wurde erkannt und der lokale Endpunkt automatisch eingetragen:\n$endpoint\n\nIhr Browser lädt $fileName herunter. Aus Sicherheitsgründen kann TruthLens Web den Installer nicht selbst ausführen oder Starteinstellungen ändern.\n\nNächste Schritte:\n1. Installer ausführen: $runInstruction\n2. Warten, bis Terminal oder Fenster meldet, dass der OCR-Dienst bereit ist.\n3. Hierher zurückkehren und „$testButton“ wählen.\n\nNach erfolgreichem Test nutzt die Bild-OCR zuerst diesen lokalen Dienst. Bilder gehen nicht an Gemini, sofern Sie nicht zusätzlich einen Gemini-API-Schlüssel als Ersatz einrichten.';
+  }
+
+  @override
   String get reportEngineNotParticipated => 'Nicht beteiligt';
 
   @override
@@ -3159,4 +3254,110 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get analysisReadinessBaseline => 'keine passende lokale Referenz';
+
+  @override
+  String get ocrChipLocalVerified => 'Lokales OCR (geprüft)';
+
+  @override
+  String get ocrChipLocalUntested => 'Lokales OCR (ungeprüft)';
+
+  @override
+  String get ocrChipGeminiVerified => 'Gemini (geprüft)';
+
+  @override
+  String get ocrChipGeminiUntested => 'Gemini (ungeprüft)';
+
+  @override
+  String get ocrChipNone => 'OCR-Engine: nicht konfiguriert';
+
+  @override
+  String ocrErrorLocalServerReported(String detail) {
+    return 'Der lokale OCR-Server hat einen Fehler gemeldet: $detail';
+  }
+
+  @override
+  String get ocrErrorLocalServerFormat =>
+      'Der lokale OCR-Server hat ein inkompatibles Antwortformat geliefert; erwartet wurde ein Array von Textblöcken, results[].text oder text.';
+
+  @override
+  String get ocrErrorNoTextDetected =>
+      'OCR abgeschlossen, aber im Bild wurde kein verwertbarer Text gefunden.';
+
+  @override
+  String ocrErrorLocalServerStatus(String status, String detail) {
+    return 'Lokaler OCR-Server antwortete mit HTTP $status: $detail';
+  }
+
+  @override
+  String ocrErrorLocalUnreachable(String detail) {
+    return 'Der lokale OCR-Server ist nicht erreichbar oder die Anfrage lief in eine Zeitüberschreitung: $detail';
+  }
+
+  @override
+  String get ocrErrorNotConfigured =>
+      'OCR ist noch nicht eingerichtet. Hinterlegen Sie in den Einstellungen einen Gemini-API-Schlüssel oder die URL eines lokalen OCR-Servers.';
+
+  @override
+  String get ocrErrorGeminiNoParsableText =>
+      'Gemini hat geantwortet, die Antwort enthielt jedoch keinen lesbaren Text.';
+
+  @override
+  String get ocrErrorGeminiRateLimited =>
+      'Gemini OCR hat ein Raten- oder Kontingentlimit erreicht (429). Versuchen Sie es später erneut oder wechseln Sie zu einem lokalen OCR-Server.';
+
+  @override
+  String ocrErrorGeminiBadRequest(String detail) {
+    return 'Gemini OCR hat die Anfrage abgelehnt (400): $detail';
+  }
+
+  @override
+  String get ocrErrorGeminiUnauthorized =>
+      'Der Gemini-API-Schlüssel ist ungültig oder nicht autorisiert (401). Bitte fügen Sie einen gültigen Schlüssel erneut ein.';
+
+  @override
+  String ocrErrorGeminiHttpFailed(String status, String detail) {
+    return 'Gemini OCR fehlgeschlagen (HTTP $status): $detail';
+  }
+
+  @override
+  String ocrErrorGeminiException(String detail) {
+    return 'Gemini OCR konnte keine Verbindung herstellen oder die Antwort nicht auswerten: $detail';
+  }
+
+  @override
+  String get ocrErrorNoImageData =>
+      'Es wurden keine Bilddaten empfangen. Bitte wählen Sie das Bild erneut aus; schlägt es weiterhin fehl, liefert der Browser möglicherweise keine Datei-Bytes.';
+
+  @override
+  String ocrErrorGeminiKeyInvalid(String status) {
+    return 'Der Gemini-API-Schlüssel ist ungültig oder nicht autorisiert (HTTP $status).';
+  }
+
+  @override
+  String ocrErrorGeminiTestFailed(String status) {
+    return 'Verbindungstest der Gemini-API fehlgeschlagen (HTTP $status).';
+  }
+
+  @override
+  String ocrErrorGeminiTestException(String detail) {
+    return 'Verbindungstest der Gemini-API fehlgeschlagen: $detail';
+  }
+
+  @override
+  String get ocrErrorNativePluginNoPing =>
+      'Das native OCR-Plug-in dieser Plattform hat nicht auf einen Ping geantwortet.';
+
+  @override
+  String get ocrErrorNativePluginMissing =>
+      'Auf dieser Plattform ist kein natives OCR-Plug-in registriert.';
+
+  @override
+  String ocrErrorNativeCheckFailed(String detail) {
+    return 'Prüfung des nativen OCR-Plug-ins fehlgeschlagen: $detail';
+  }
+
+  @override
+  String ocrErrorNativeFailed(String detail) {
+    return 'Native OCR fehlgeschlagen: $detail';
+  }
 }

@@ -170,7 +170,9 @@ class _InputScreenState extends State<InputScreen> {
     final rawText = await ocr.recognize(path);
     if (!mounted) return;
     if (rawText == null || rawText.trim().isEmpty) {
-      _showFloatingSnackBar(OcrService.lastErrorMessage ?? l10n.inputOcrNoText);
+      _showFloatingSnackBar(
+        OcrService.lastFailure?.localize(l10n) ?? l10n.inputOcrNoText,
+      );
       return;
     }
     final text = OcrPostProcessor.clean(rawText);
@@ -322,32 +324,27 @@ class _InputScreenState extends State<InputScreen> {
   /// 已實測連線成功，讓使用者不必打開設定就能確認辨識來源。
   Widget _ocrEngineChip(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final zh = l10n.localeName.toLowerCase().startsWith('zh');
     final notifier = context.watch<OcrConfigNotifier>();
     final scheme = Theme.of(context).colorScheme;
 
     final (icon, label, color) = switch (notifier.activeEngine) {
       OcrEngineKind.local => (
         LucideIcons.server,
-        zh
-            ? (notifier.localVerified ? '本地 OCR（已測試）' : '本地 OCR（未測試）')
-            : (notifier.localVerified
-                  ? 'Local OCR (verified)'
-                  : 'Local OCR (untested)'),
+        notifier.localVerified
+            ? l10n.ocrChipLocalVerified
+            : l10n.ocrChipLocalUntested,
         notifier.localVerified ? Colors.green.shade700 : Colors.amber.shade700,
       ),
       OcrEngineKind.gemini => (
         LucideIcons.sparkles,
-        zh
-            ? (notifier.geminiVerified ? 'Gemini（已測試）' : 'Gemini（未測試）')
-            : (notifier.geminiVerified
-                  ? 'Gemini (verified)'
-                  : 'Gemini (untested)'),
+        notifier.geminiVerified
+            ? l10n.ocrChipGeminiVerified
+            : l10n.ocrChipGeminiUntested,
         notifier.geminiVerified ? Colors.green.shade700 : Colors.amber.shade700,
       ),
       OcrEngineKind.none => (
         LucideIcons.info,
-        zh ? 'OCR 引擎：尚未設定' : 'OCR engine: not configured',
+        l10n.ocrChipNone,
         scheme.onSurfaceVariant,
       ),
     };

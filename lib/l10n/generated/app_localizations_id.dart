@@ -922,6 +922,100 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportNoEngineData => 'Tidak ada data mesin';
 
   @override
+  String get ocrGeminiKeyRequired =>
+      'Masukkan kunci API Gemini terlebih dahulu.';
+
+  @override
+  String get ocrGeminiKeyValid => 'Kunci API Gemini valid dan dapat dijangkau.';
+
+  @override
+  String get ocrGeminiKeyUnreachable =>
+      'Tidak dapat menjangkau API Gemini. Periksa kuncinya.';
+
+  @override
+  String get ocrStatusLocalUnset => 'OCR lokal: endpoint belum diatur';
+
+  @override
+  String get ocrStatusLocalUntested =>
+      'OCR lokal: endpoint diatur, belum diuji';
+
+  @override
+  String get ocrStatusLocalTesting => 'OCR lokal: menguji koneksi';
+
+  @override
+  String get ocrStatusLocalReady => 'OCR lokal: siap';
+
+  @override
+  String get ocrStatusLocalUnreachable => 'OCR lokal: tidak terjangkau';
+
+  @override
+  String get ocrStatusGeminiUnset => 'Gemini: belum ada kunci';
+
+  @override
+  String get ocrStatusGeminiUntested => 'Gemini: kunci diatur, belum diuji';
+
+  @override
+  String get ocrStatusGeminiVerifying => 'Gemini: memverifikasi kunci';
+
+  @override
+  String get ocrStatusGeminiValid => 'Gemini: kunci valid';
+
+  @override
+  String get ocrStatusGeminiInvalid =>
+      'Gemini: tidak valid atau tak terjangkau';
+
+  @override
+  String get ocrActiveLocalVerified =>
+      'Mesin aktif: server OCR lokal (terverifikasi)';
+
+  @override
+  String get ocrActiveLocalUntested =>
+      'Mesin aktif: server OCR lokal (belum diuji)';
+
+  @override
+  String get ocrActiveGeminiVerified =>
+      'Mesin aktif: API Gemini (terverifikasi)';
+
+  @override
+  String get ocrActiveGeminiUntested => 'Mesin aktif: API Gemini (belum diuji)';
+
+  @override
+  String get ocrActiveNone => 'Belum ada mesin OCR yang dikonfigurasi';
+
+  @override
+  String get ocrDetectAndDownload => 'Deteksi sistem & unduh pemasang';
+
+  @override
+  String get ocrAutoInstallUnavailable => 'Pemasangan otomatis tidak tersedia';
+
+  @override
+  String get ocrUnsupportedPlatformBody =>
+      'Platform saat ini tidak mendukung pemasangan desktop sekali klik. Peramban web tidak dapat memasang dan menjalankan layanan OCR lokal di iOS, Android, Linux, atau sistem yang tidak dikenal.\n\nPilihan:\n1. Gunakan asisten ini dari peramban desktop macOS atau Windows.\n2. Gunakan kunci API Gemini sebagai cadangan OCR web.\n3. Pengguna tingkat lanjut dapat membuka proyek OCR, menjalankan endpoint /ocr yang kompatibel, lalu memasukkan URL di sini.';
+
+  @override
+  String ocrInstallerReady(String osName) {
+    return 'Pemasang $osName siap';
+  }
+
+  @override
+  String get ocrRunInstructionMac => 'bash ~/Downloads/setup_and_run_ocr.sh';
+
+  @override
+  String get ocrRunInstructionWindows =>
+      'klik dua kali setup_and_run_ocr.bat di folder Downloads';
+
+  @override
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  ) {
+    return '$osName terdeteksi, dan endpoint lokal telah diisi otomatis:\n$endpoint\n\nPeramban Anda mulai mengunduh $fileName. Demi keamanan peramban, TruthLens Web tidak dapat menjalankan pemasang atau mengubah pengaturan startup.\n\nLangkah berikutnya:\n1. Jalankan pemasang yang diunduh: $runInstruction\n2. Tunggu hingga terminal atau jendela menyatakan layanan OCR siap.\n3. Kembali ke sini dan pilih \"$testButton\".\n\nSetelah pengujian berhasil, OCR gambar akan memakai layanan lokal ini lebih dulu. Gambar tidak dikirim ke Gemini kecuali Anda juga mengatur kunci API Gemini sebagai cadangan.';
+  }
+
+  @override
   String get reportEngineNotParticipated => 'Tidak terlibat';
 
   @override
@@ -3139,4 +3233,110 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get analysisReadinessBaseline => 'tidak ada baseline lokal yang cocok';
+
+  @override
+  String get ocrChipLocalVerified => 'OCR lokal (terverifikasi)';
+
+  @override
+  String get ocrChipLocalUntested => 'OCR lokal (belum diuji)';
+
+  @override
+  String get ocrChipGeminiVerified => 'Gemini (terverifikasi)';
+
+  @override
+  String get ocrChipGeminiUntested => 'Gemini (belum diuji)';
+
+  @override
+  String get ocrChipNone => 'Mesin OCR: belum dikonfigurasi';
+
+  @override
+  String ocrErrorLocalServerReported(String detail) {
+    return 'Server OCR lokal melaporkan galat: $detail';
+  }
+
+  @override
+  String get ocrErrorLocalServerFormat =>
+      'Server OCR lokal mengembalikan format respons yang tidak kompatibel; diharapkan larik blok teks, results[].text, atau text.';
+
+  @override
+  String get ocrErrorNoTextDetected =>
+      'OCR selesai, tetapi tidak ada teks yang dapat digunakan pada gambar.';
+
+  @override
+  String ocrErrorLocalServerStatus(String status, String detail) {
+    return 'Server OCR lokal merespons HTTP $status: $detail';
+  }
+
+  @override
+  String ocrErrorLocalUnreachable(String detail) {
+    return 'Tidak dapat menghubungi server OCR lokal, atau permintaan melampaui batas waktu: $detail';
+  }
+
+  @override
+  String get ocrErrorNotConfigured =>
+      'OCR belum disiapkan. Tambahkan kunci API Gemini di pengaturan, atau isi URL server OCR lokal.';
+
+  @override
+  String get ocrErrorGeminiNoParsableText =>
+      'Gemini merespons, tetapi respons tidak memuat teks yang dapat dibaca.';
+
+  @override
+  String get ocrErrorGeminiRateLimited =>
+      'Gemini OCR mencapai batas laju atau kuota (429). Coba lagi nanti, atau beralih ke server OCR lokal.';
+
+  @override
+  String ocrErrorGeminiBadRequest(String detail) {
+    return 'Gemini OCR menolak permintaan (400): $detail';
+  }
+
+  @override
+  String get ocrErrorGeminiUnauthorized =>
+      'Kunci API Gemini tidak valid atau tidak diizinkan (401). Tempelkan kembali kunci yang valid.';
+
+  @override
+  String ocrErrorGeminiHttpFailed(String status, String detail) {
+    return 'Gemini OCR gagal (HTTP $status): $detail';
+  }
+
+  @override
+  String ocrErrorGeminiException(String detail) {
+    return 'Gemini OCR tidak dapat terhubung atau mengurai respons: $detail';
+  }
+
+  @override
+  String get ocrErrorNoImageData =>
+      'Tidak ada data gambar yang diterima. Pilih ulang gambar; jika tetap gagal, peramban mungkin tidak menyediakan byte berkas.';
+
+  @override
+  String ocrErrorGeminiKeyInvalid(String status) {
+    return 'Kunci API Gemini tidak valid atau tidak diizinkan (HTTP $status).';
+  }
+
+  @override
+  String ocrErrorGeminiTestFailed(String status) {
+    return 'Uji koneksi API Gemini gagal (HTTP $status).';
+  }
+
+  @override
+  String ocrErrorGeminiTestException(String detail) {
+    return 'Uji koneksi API Gemini gagal: $detail';
+  }
+
+  @override
+  String get ocrErrorNativePluginNoPing =>
+      'Plugin OCR bawaan pada platform ini tidak merespons ping.';
+
+  @override
+  String get ocrErrorNativePluginMissing =>
+      'Tidak ada plugin OCR bawaan yang terdaftar pada platform ini.';
+
+  @override
+  String ocrErrorNativeCheckFailed(String detail) {
+    return 'Pemeriksaan plugin OCR bawaan gagal: $detail';
+  }
+
+  @override
+  String ocrErrorNativeFailed(String detail) {
+    return 'OCR bawaan gagal: $detail';
+  }
 }

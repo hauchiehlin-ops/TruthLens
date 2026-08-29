@@ -719,6 +719,57 @@
   },
   "reportDetailAnalysisTitle": "Detailed analysis",
   "reportNoEngineData": "No engine data",
+  "ocrGeminiKeyRequired": "Enter a Gemini API key first.",
+  "ocrGeminiKeyValid": "Gemini API key is valid and reachable.",
+  "ocrGeminiKeyUnreachable": "Could not reach Gemini API. Please check the key.",
+  "ocrStatusLocalUnset": "Local OCR: endpoint not set",
+  "ocrStatusLocalUntested": "Local OCR: endpoint set, not tested",
+  "ocrStatusLocalTesting": "Local OCR: testing connection",
+  "ocrStatusLocalReady": "Local OCR: ready",
+  "ocrStatusLocalUnreachable": "Local OCR: unreachable",
+  "ocrStatusGeminiUnset": "Gemini: no key set",
+  "ocrStatusGeminiUntested": "Gemini: key set, not tested",
+  "ocrStatusGeminiVerifying": "Gemini: verifying key",
+  "ocrStatusGeminiValid": "Gemini: key valid",
+  "ocrStatusGeminiInvalid": "Gemini: invalid or unreachable",
+  "ocrActiveLocalVerified": "Active engine: local OCR server (verified)",
+  "ocrActiveLocalUntested": "Active engine: local OCR server (not yet tested)",
+  "ocrActiveGeminiVerified": "Active engine: Gemini API (verified)",
+  "ocrActiveGeminiUntested": "Active engine: Gemini API (not yet tested)",
+  "ocrActiveNone": "No OCR engine configured yet",
+  "ocrDetectAndDownload": "Detect OS & download installer",
+  "ocrAutoInstallUnavailable": "Automatic install is not available",
+  "ocrUnsupportedPlatformBody": "The current platform is not a supported one-click desktop install target. A web browser cannot install and start a local OCR service on iOS, Android, Linux, or an unknown system.\n\nOptions:\n1. Use this assistant from a macOS or Windows desktop browser.\n2. Use a Gemini API key as the Web OCR fallback.\n3. Advanced users can open the OCR project, run a compatible /ocr endpoint manually, then enter the URL here and test the connection.",
+  "ocrInstallerReady": "{osName} installer is ready",
+  "ocrRunInstructionMac": "bash ~/Downloads/setup_and_run_ocr.sh",
+  "ocrRunInstructionWindows": "double-click setup_and_run_ocr.bat in Downloads",
+  "ocrAssistantDownloadedBody": "{osName} was detected, and the local endpoint has been filled in automatically:\n{endpoint}\n\nYour browser has started downloading {fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: {runInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “{testButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.",
+  "@ocrAssistantDownloadedBody": {
+    "placeholders": {
+      "osName": {
+        "type": "String"
+      },
+      "endpoint": {
+        "type": "String"
+      },
+      "fileName": {
+        "type": "String"
+      },
+      "runInstruction": {
+        "type": "String"
+      },
+      "testButton": {
+        "type": "String"
+      }
+    }
+  },
+  "@ocrInstallerReady": {
+    "placeholders": {
+      "osName": {
+        "type": "String"
+      }
+    }
+  },
   "reportEngineNotParticipated": "Not involved",
   "reportAiContentReportTitle": "AI Content Detection Report",
   "reportAnalysisTimeLabel": "Analysis time: {time}",
@@ -2687,5 +2738,128 @@
   "analysisReadinessCoreModel": "core classifier unavailable",
   "analysisReadinessFewEngines": "fewer than two engines enabled",
   "analysisReadinessExtraction": "extraction quality is limited",
-  "analysisReadinessBaseline": "no matched local baseline"
+  "analysisReadinessBaseline": "no matched local baseline",
+  "ocrChipLocalVerified": "Local OCR (verified)",
+  "@ocrChipLocalVerified": {
+    "description": "Compact AppBar chip: local OCR server active and connection-tested"
+  },
+  "ocrChipLocalUntested": "Local OCR (untested)",
+  "@ocrChipLocalUntested": {
+    "description": "Compact AppBar chip: local OCR server active but not yet connection-tested"
+  },
+  "ocrChipGeminiVerified": "Gemini (verified)",
+  "@ocrChipGeminiVerified": {
+    "description": "Compact AppBar chip: Gemini OCR active and key-verified"
+  },
+  "ocrChipGeminiUntested": "Gemini (untested)",
+  "@ocrChipGeminiUntested": {
+    "description": "Compact AppBar chip: Gemini OCR active but key not yet verified"
+  },
+  "ocrChipNone": "OCR engine: not configured",
+  "@ocrChipNone": {
+    "description": "Compact AppBar chip: no OCR engine configured"
+  },
+  "ocrErrorLocalServerReported": "Local OCR server reported an error: {detail}",
+  "@ocrErrorLocalServerReported": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorLocalServerFormat": "The local OCR server returned an incompatible response format; expected an array of text blocks, results[].text, or text.",
+  "ocrErrorNoTextDetected": "OCR finished, but no usable text was found in the image.",
+  "ocrErrorLocalServerStatus": "Local OCR server returned HTTP {status}: {detail}",
+  "@ocrErrorLocalServerStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorLocalUnreachable": "Could not reach the local OCR server, or the request timed out: {detail}",
+  "@ocrErrorLocalUnreachable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorNotConfigured": "OCR is not set up yet. Add a Gemini API key in settings, or enter a local OCR server URL.",
+  "ocrErrorGeminiNoParsableText": "Gemini responded, but the response contained no readable text.",
+  "ocrErrorGeminiRateLimited": "Gemini OCR hit a rate or quota limit (429). Try again later, or switch to a local OCR server.",
+  "ocrErrorGeminiBadRequest": "Gemini OCR rejected the request (400): {detail}",
+  "@ocrErrorGeminiBadRequest": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorGeminiUnauthorized": "The Gemini API key is invalid or unauthorised (401). Please paste a valid key again.",
+  "ocrErrorGeminiHttpFailed": "Gemini OCR failed (HTTP {status}): {detail}",
+  "@ocrErrorGeminiHttpFailed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorGeminiException": "Gemini OCR could not connect or parse the response: {detail}",
+  "@ocrErrorGeminiException": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorNoImageData": "No image data was received. Please pick the image again; if it still fails, the browser may not be providing file bytes.",
+  "ocrErrorGeminiKeyInvalid": "The Gemini API key is invalid or unauthorised (HTTP {status}).",
+  "@ocrErrorGeminiKeyInvalid": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorGeminiTestFailed": "Gemini API connection test failed (HTTP {status}).",
+  "@ocrErrorGeminiTestFailed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorGeminiTestException": "Gemini API connection test failed: {detail}",
+  "@ocrErrorGeminiTestException": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorNativePluginNoPing": "The native OCR plugin on this platform did not respond to a ping.",
+  "ocrErrorNativePluginMissing": "No native OCR plugin is registered on this platform.",
+  "ocrErrorNativeCheckFailed": "Checking the native OCR plugin failed: {detail}",
+  "@ocrErrorNativeCheckFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ocrErrorNativeFailed": "Native OCR failed: {detail}",
+  "@ocrErrorNativeFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  }
 }

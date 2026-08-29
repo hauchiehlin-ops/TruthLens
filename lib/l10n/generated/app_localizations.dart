@@ -1580,6 +1580,162 @@ abstract class AppLocalizations {
   /// **'No engine data'**
   String get reportNoEngineData;
 
+  /// No description provided for @ocrGeminiKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a Gemini API key first.'**
+  String get ocrGeminiKeyRequired;
+
+  /// No description provided for @ocrGeminiKeyValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini API key is valid and reachable.'**
+  String get ocrGeminiKeyValid;
+
+  /// No description provided for @ocrGeminiKeyUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach Gemini API. Please check the key.'**
+  String get ocrGeminiKeyUnreachable;
+
+  /// No description provided for @ocrStatusLocalUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR: endpoint not set'**
+  String get ocrStatusLocalUnset;
+
+  /// No description provided for @ocrStatusLocalUntested.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR: endpoint set, not tested'**
+  String get ocrStatusLocalUntested;
+
+  /// No description provided for @ocrStatusLocalTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR: testing connection'**
+  String get ocrStatusLocalTesting;
+
+  /// No description provided for @ocrStatusLocalReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR: ready'**
+  String get ocrStatusLocalReady;
+
+  /// No description provided for @ocrStatusLocalUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR: unreachable'**
+  String get ocrStatusLocalUnreachable;
+
+  /// No description provided for @ocrStatusGeminiUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini: no key set'**
+  String get ocrStatusGeminiUnset;
+
+  /// No description provided for @ocrStatusGeminiUntested.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini: key set, not tested'**
+  String get ocrStatusGeminiUntested;
+
+  /// No description provided for @ocrStatusGeminiVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini: verifying key'**
+  String get ocrStatusGeminiVerifying;
+
+  /// No description provided for @ocrStatusGeminiValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini: key valid'**
+  String get ocrStatusGeminiValid;
+
+  /// No description provided for @ocrStatusGeminiInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini: invalid or unreachable'**
+  String get ocrStatusGeminiInvalid;
+
+  /// No description provided for @ocrActiveLocalVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Active engine: local OCR server (verified)'**
+  String get ocrActiveLocalVerified;
+
+  /// No description provided for @ocrActiveLocalUntested.
+  ///
+  /// In en, this message translates to:
+  /// **'Active engine: local OCR server (not yet tested)'**
+  String get ocrActiveLocalUntested;
+
+  /// No description provided for @ocrActiveGeminiVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Active engine: Gemini API (verified)'**
+  String get ocrActiveGeminiVerified;
+
+  /// No description provided for @ocrActiveGeminiUntested.
+  ///
+  /// In en, this message translates to:
+  /// **'Active engine: Gemini API (not yet tested)'**
+  String get ocrActiveGeminiUntested;
+
+  /// No description provided for @ocrActiveNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No OCR engine configured yet'**
+  String get ocrActiveNone;
+
+  /// No description provided for @ocrDetectAndDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect OS & download installer'**
+  String get ocrDetectAndDownload;
+
+  /// No description provided for @ocrAutoInstallUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic install is not available'**
+  String get ocrAutoInstallUnavailable;
+
+  /// No description provided for @ocrUnsupportedPlatformBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The current platform is not a supported one-click desktop install target. A web browser cannot install and start a local OCR service on iOS, Android, Linux, or an unknown system.\n\nOptions:\n1. Use this assistant from a macOS or Windows desktop browser.\n2. Use a Gemini API key as the Web OCR fallback.\n3. Advanced users can open the OCR project, run a compatible /ocr endpoint manually, then enter the URL here and test the connection.'**
+  String get ocrUnsupportedPlatformBody;
+
+  /// No description provided for @ocrInstallerReady.
+  ///
+  /// In en, this message translates to:
+  /// **'{osName} installer is ready'**
+  String ocrInstallerReady(String osName);
+
+  /// No description provided for @ocrRunInstructionMac.
+  ///
+  /// In en, this message translates to:
+  /// **'bash ~/Downloads/setup_and_run_ocr.sh'**
+  String get ocrRunInstructionMac;
+
+  /// No description provided for @ocrRunInstructionWindows.
+  ///
+  /// In en, this message translates to:
+  /// **'double-click setup_and_run_ocr.bat in Downloads'**
+  String get ocrRunInstructionWindows;
+
+  /// No description provided for @ocrAssistantDownloadedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{osName} was detected, and the local endpoint has been filled in automatically:\n{endpoint}\n\nYour browser has started downloading {fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: {runInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “{testButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.'**
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  );
+
   /// No description provided for @reportEngineNotParticipated.
   ///
   /// In en, this message translates to:
@@ -4947,6 +5103,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'no matched local baseline'**
   String get analysisReadinessBaseline;
+
+  /// Compact AppBar chip: local OCR server active and connection-tested
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR (verified)'**
+  String get ocrChipLocalVerified;
+
+  /// Compact AppBar chip: local OCR server active but not yet connection-tested
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR (untested)'**
+  String get ocrChipLocalUntested;
+
+  /// Compact AppBar chip: Gemini OCR active and key-verified
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini (verified)'**
+  String get ocrChipGeminiVerified;
+
+  /// Compact AppBar chip: Gemini OCR active but key not yet verified
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini (untested)'**
+  String get ocrChipGeminiUntested;
+
+  /// Compact AppBar chip: no OCR engine configured
+  ///
+  /// In en, this message translates to:
+  /// **'OCR engine: not configured'**
+  String get ocrChipNone;
+
+  /// No description provided for @ocrErrorLocalServerReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR server reported an error: {detail}'**
+  String ocrErrorLocalServerReported(String detail);
+
+  /// No description provided for @ocrErrorLocalServerFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'The local OCR server returned an incompatible response format; expected an array of text blocks, results[].text, or text.'**
+  String get ocrErrorLocalServerFormat;
+
+  /// No description provided for @ocrErrorNoTextDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'OCR finished, but no usable text was found in the image.'**
+  String get ocrErrorNoTextDetected;
+
+  /// No description provided for @ocrErrorLocalServerStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Local OCR server returned HTTP {status}: {detail}'**
+  String ocrErrorLocalServerStatus(String status, String detail);
+
+  /// No description provided for @ocrErrorLocalUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the local OCR server, or the request timed out: {detail}'**
+  String ocrErrorLocalUnreachable(String detail);
+
+  /// No description provided for @ocrErrorNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'OCR is not set up yet. Add a Gemini API key in settings, or enter a local OCR server URL.'**
+  String get ocrErrorNotConfigured;
+
+  /// No description provided for @ocrErrorGeminiNoParsableText.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini responded, but the response contained no readable text.'**
+  String get ocrErrorGeminiNoParsableText;
+
+  /// No description provided for @ocrErrorGeminiRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini OCR hit a rate or quota limit (429). Try again later, or switch to a local OCR server.'**
+  String get ocrErrorGeminiRateLimited;
+
+  /// No description provided for @ocrErrorGeminiBadRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini OCR rejected the request (400): {detail}'**
+  String ocrErrorGeminiBadRequest(String detail);
+
+  /// No description provided for @ocrErrorGeminiUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'The Gemini API key is invalid or unauthorised (401). Please paste a valid key again.'**
+  String get ocrErrorGeminiUnauthorized;
+
+  /// No description provided for @ocrErrorGeminiHttpFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini OCR failed (HTTP {status}): {detail}'**
+  String ocrErrorGeminiHttpFailed(String status, String detail);
+
+  /// No description provided for @ocrErrorGeminiException.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini OCR could not connect or parse the response: {detail}'**
+  String ocrErrorGeminiException(String detail);
+
+  /// No description provided for @ocrErrorNoImageData.
+  ///
+  /// In en, this message translates to:
+  /// **'No image data was received. Please pick the image again; if it still fails, the browser may not be providing file bytes.'**
+  String get ocrErrorNoImageData;
+
+  /// No description provided for @ocrErrorGeminiKeyInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The Gemini API key is invalid or unauthorised (HTTP {status}).'**
+  String ocrErrorGeminiKeyInvalid(String status);
+
+  /// No description provided for @ocrErrorGeminiTestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini API connection test failed (HTTP {status}).'**
+  String ocrErrorGeminiTestFailed(String status);
+
+  /// No description provided for @ocrErrorGeminiTestException.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini API connection test failed: {detail}'**
+  String ocrErrorGeminiTestException(String detail);
+
+  /// No description provided for @ocrErrorNativePluginNoPing.
+  ///
+  /// In en, this message translates to:
+  /// **'The native OCR plugin on this platform did not respond to a ping.'**
+  String get ocrErrorNativePluginNoPing;
+
+  /// No description provided for @ocrErrorNativePluginMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'No native OCR plugin is registered on this platform.'**
+  String get ocrErrorNativePluginMissing;
+
+  /// No description provided for @ocrErrorNativeCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the native OCR plugin failed: {detail}'**
+  String ocrErrorNativeCheckFailed(String detail);
+
+  /// No description provided for @ocrErrorNativeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Native OCR failed: {detail}'**
+  String ocrErrorNativeFailed(String detail);
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:web/web.dart';
 import 'package:http/http.dart' as http;
 import 'local_ocr_response_parser.dart';
+import 'ocr_failure.dart';
 import '../utils/ocr_post_processor.dart';
 
 /// Web 版 OCR 服務 — Gemini API + 本地伺服器備援
@@ -29,9 +30,11 @@ class OcrService {
   static const int _maxBackoffMs = 30000; // 最大退避時間（30秒）
 
   static DateTime? _lastGeminiRequestTime;
-  static String? _lastErrorMessage;
+  static OcrFailure? _lastFailure;
 
-  static String? get lastErrorMessage => _lastErrorMessage;
+  /// 最近一次失敗的成因。顯示端以 [OcrFailure.localize] 依介面語系描述——
+  /// 服務層自己不組字串，否則非中文使用者會拿到中文錯誤。
+  static OcrFailure? get lastFailure => _lastFailure;
 
   /// 此平台是否支援 OCR（Web 版永遠回傳 true）
   Future<bool> get isSupported async => true;
@@ -63,19 +66,27 @@ class OcrService {
         final parsed = parseLocalOcrResponse(jsonDecode(response.body));
         if (parsed.hasText) return parsed.text;
         if (parsed.error != null) {
-          _lastErrorMessage = '本地 OCR 伺服器回報錯誤：${parsed.error}';
+          _lastFailure = OcrFailure(
+            OcrFailureKind.localServerReported,
+            detail: parsed.error,
+          );
         } else if (!parsed.supportedFormat) {
-          _lastErrorMessage =
-              '本地 OCR 伺服器回應格式不相容；預期文字區塊陣列、results[].text 或 text。';
+          _lastFailure = const OcrFailure(OcrFailureKind.localServerFormat);
         } else {
-          _lastErrorMessage = '本地 OCR 已完成，但圖片中未辨識到可用文字。';
+          _lastFailure = const OcrFailure(OcrFailureKind.noTextDetected);
         }
       } else {
-        _lastErrorMessage =
-            '本地 OCR 伺服器回應 ${response.statusCode}：${response.body}';
+        _lastFailure = OcrFailure(
+          OcrFailureKind.localServerStatus,
+          statusCode: response.statusCode,
+          detail: response.body,
+        );
       }
     } catch (e) {
-      _lastErrorMessage = '本地 OCR 伺服器無法連線或逾時：$e';
+      _lastFailure = OcrFailure(
+        OcrFailureKind.localUnreachable,
+        detail: '$e',
+      );
     }
     return null;
   }
@@ -87,8 +98,7 @@ class OcrService {
   }) async {
     final apiKey = window.localStorage.getItem(_storageKeyApiKey)?.trim();
     if (apiKey == null || apiKey.isEmpty) {
-      _lastErrorMessage =
-          'Web OCR 尚未設定：請在設定輸入 Gemini API 金鑰，或填入本地 OCR 伺服器 URL。';
+      _lastFailure = const OcrFailure(OcrFailureKind.notConfigured);
       return null; // 使用者未提供 API 金鑰
     }
 
@@ -156,12 +166,16 @@ class OcrService {
                   (parts[0] as Map<String, dynamic>)['text'] as String? ?? '';
               final text = OcrPostProcessor.clean(rawText);
               if (text.isEmpty) {
-                _lastErrorMessage = 'Gemini 已回應，但圖片中未偵測到可用文字。';
+                _lastFailure = const OcrFailure(
+                  OcrFailureKind.noTextDetected,
+                );
               }
               return text.isEmpty ? null : text;
             }
           }
-          _lastErrorMessage = 'Gemini 已回應，但回應中沒有可解析文字。';
+          _lastFailure = const OcrFailure(
+            OcrFailureKind.geminiNoParsableText,
+          );
           return null;
         } else if (response.statusCode == 429) {
           // 速率限制（Free Tier 日配額達到）— 重試後続延遲時間
@@ -174,18 +188,25 @@ class OcrService {
             backoffMs = (backoffMs * 2).clamp(0, _maxBackoffMs);
             continue;
           } else {
-            _lastErrorMessage = 'Gemini OCR 達到速率或配額限制（429），請稍後再試或改用本地 OCR 伺服器。';
+            _lastFailure = const OcrFailure(
+              OcrFailureKind.geminiRateLimited,
+            );
             return null; // 超過重試次數，回傳 null
           }
         } else if (response.statusCode == 400) {
           // 無效參數 — 不重試
           debugPrint('Gemini API invalid request (400): ${response.body}');
-          _lastErrorMessage = 'Gemini OCR 請求格式錯誤（400）：${response.body}';
+          _lastFailure = OcrFailure(
+            OcrFailureKind.geminiBadRequest,
+            detail: response.body,
+          );
           return null;
         } else if (response.statusCode == 401) {
           // 無效金鑰 — 不重試
           debugPrint('Gemini API unauthorized (401): invalid API key');
-          _lastErrorMessage = 'Gemini API 金鑰無效或未授權（401），請重新貼上有效金鑰。';
+          _lastFailure = const OcrFailure(
+            OcrFailureKind.geminiUnauthorized,
+          );
           return null;
         } else {
           // 其他伺服器錯誤 — 重試
@@ -198,8 +219,11 @@ class OcrService {
             backoffMs = (backoffMs * 2).clamp(0, _maxBackoffMs);
             continue;
           } else {
-            _lastErrorMessage =
-                'Gemini OCR 失敗（HTTP ${response.statusCode}）：${response.body}';
+            _lastFailure = OcrFailure(
+              OcrFailureKind.geminiHttpFailed,
+              statusCode: response.statusCode,
+              detail: response.body,
+            );
             return null; // 超過重試次數
           }
         }
@@ -211,7 +235,10 @@ class OcrService {
           backoffMs = (backoffMs * 2).clamp(0, _maxBackoffMs);
           continue;
         } else {
-          _lastErrorMessage = 'Gemini OCR 連線或解析失敗：$e';
+          _lastFailure = OcrFailure(
+            OcrFailureKind.geminiException,
+            detail: '$e',
+          );
           return null;
         }
       }
@@ -247,14 +274,14 @@ class OcrService {
   /// 2. Gemini API（如果用戶提供了 API 金鑰；自動避免速率限制）
   /// 3. 都失敗 → 回傳 null
   Future<String?> recognize(String imagePath, {List<String>? languages}) async {
-    _lastErrorMessage = null;
+    _lastFailure = null;
 
     // Web 版本由 ImagePicker 傳入 data URL。
     String imageDataUrl;
     if (imagePath.startsWith('data:image/')) {
       imageDataUrl = imagePath;
     } else {
-      _lastErrorMessage = 'Web OCR 未取得圖片資料。請重新選取圖片；若仍失敗，可能是瀏覽器未提供檔案 bytes。';
+      _lastFailure = const OcrFailure(OcrFailureKind.noImageData);
       return null;
     }
 
@@ -267,8 +294,7 @@ class OcrService {
             .isNotEmpty;
 
     if (!hasLocalServer && !hasApiKey) {
-      _lastErrorMessage =
-          'Web OCR 尚未設定：請在設定輸入 Gemini API 金鑰，或填入本地 OCR 伺服器 URL。';
+      _lastFailure = const OcrFailure(OcrFailureKind.notConfigured);
       return null;
     }
 
@@ -413,15 +439,20 @@ class OcrService {
         window.localStorage.setItem(_storageKeyApiKeyVerified, apiKey);
       } else {
         window.localStorage.removeItem(_storageKeyApiKeyVerified);
-        _lastErrorMessage =
-            response.statusCode == 401 || response.statusCode == 400
-            ? 'Gemini API 金鑰無效或未授權（HTTP ${response.statusCode}）。'
-            : 'Gemini API 連線測試失敗（HTTP ${response.statusCode}）。';
+        _lastFailure = OcrFailure(
+          response.statusCode == 401 || response.statusCode == 400
+              ? OcrFailureKind.geminiKeyInvalid
+              : OcrFailureKind.geminiTestFailed,
+          statusCode: response.statusCode,
+        );
       }
       return ok;
     } catch (e) {
       window.localStorage.removeItem(_storageKeyApiKeyVerified);
-      _lastErrorMessage = 'Gemini API 連線測試失敗：$e';
+      _lastFailure = OcrFailure(
+        OcrFailureKind.geminiTestException,
+        detail: '$e',
+      );
       return false;
     }
   }

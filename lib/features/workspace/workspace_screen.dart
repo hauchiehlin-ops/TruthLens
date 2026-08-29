@@ -296,7 +296,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final rawText = await ocr.recognize(path);
     if (!mounted) return;
     if (rawText == null || rawText.trim().isEmpty) {
-      _showMessage(OcrService.lastErrorMessage ?? l10n.inputOcrNoText);
+      _showMessage(
+        OcrService.lastFailure?.localize(l10n) ?? l10n.inputOcrNoText,
+      );
       return;
     }
     final text = OcrPostProcessor.clean(rawText);

@@ -1,5 +1,37 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-30（第一百六十次更新）— 在地化掃描收尾：OCR 錯誤與 chip 標籤
+
+延續上一則。上輪把 `web_ocr_settings.dart` 的 22 對手動中英三元式換成 l10n 鍵，
+這輪先補完剩下的三條（安裝說明本文、macOS／Windows 執行指令），把
+`_LocalOcrInstaller` 裡寫死的 `zhRunInstruction`／`enRunInstruction` 兩個欄位改成
+單一 `isWindows` 旗標——文字不該存在資料模型裡，那正是雙語寫死的來源。
+
+接著補一條回歸測試擋這類寫法（`test/l10n_coverage_test.dart`），它**立刻抓到我漏掉
+的第二處**：`input_screen.dart` 的 OCR 引擎 chip 同樣是 `_isZh ? 中文 : English`。
+新增 5 條短標籤鍵修正；AppBar chip 是 `maxLines: 1`，塞不下設定面板那組完整句子，
+因此另立 `ocrChip*` 而非複用 `ocrActive*`。
+
+再依使用者「深度掃描所有文字標籤」的要求全庫掃過字串字面值，293 筆命中裡多數是
+regex、中文停用詞表、`debugPrint` 日誌與校準註解——那些不該翻譯。逐一追呼叫端後，
+真正**會上畫面**的只剩一處，但份量最大：**`OcrService.lastErrorMessage` 的 20 條
+錯誤訊息全是寫死中文**，經 `input_screen` 與 `workspace_screen` 直接餵進 snackbar。
+服務層拿不到 `AppLocalizations`，這是它當初寫死的原因。
+
+改法是把「已格式化的字串」換成結構化失敗值：新增 `OcrFailure(kind, detail,
+statusCode)`，服務層只回報成因與技術明細（HTTP body、例外文字——這兩者刻意不翻譯，
+翻了就無法對照伺服器日誌），顯示端才呼叫 `localize(l10n)`。web 與 io 兩個實作同步
+改完，`lastErrorMessage` 全庫歸零。
+
+順帶查證幾個看似要翻譯、實際是死碼的：`ModelAutoDownloadService`、
+`ModelDiagnosticService`、`DetectionResult.lowConfidenceWarning()`、
+`DeviceCapabilities.summary` 都沒有任何呼叫端，不動。`workspace_navigation.dart`
+的「繁體中文／简体中文／日本語」是語言選單，各以自身文字顯示才是正確的。
+
+**版本與狀態**：v4.11.4 / Build 1454。✅ `flutter test` 633 全數通過（新增 3 條）；
+`flutter analyze` 除既有 8 條 `prefer_initializing_formals` 外零問題；
+`flutter build web --release` 成功。l10n 共 843 鍵 × 14 語系零缺漏。
+
 ## 2026-08-29（第一百四十九次更新）— 文獻目錄不再污染逐句證據
 
 使用者用截圖指出逐句列表仍出現非完整句段：文獻目錄被 PDF 文字層拆成作者、篇名、

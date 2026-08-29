@@ -882,6 +882,93 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportNoEngineData => '無引擎數據';
 
   @override
+  String get ocrGeminiKeyRequired => '請先輸入 Gemini API 金鑰。';
+
+  @override
+  String get ocrGeminiKeyValid => 'Gemini API 金鑰有效，可正常連線。';
+
+  @override
+  String get ocrGeminiKeyUnreachable => 'Gemini API 連線失敗，請確認金鑰是否正確。';
+
+  @override
+  String get ocrStatusLocalUnset => '本地 OCR：尚未設定端點';
+
+  @override
+  String get ocrStatusLocalUntested => '本地 OCR：已填入端點，尚未測試';
+
+  @override
+  String get ocrStatusLocalTesting => '本地 OCR：正在測試連線';
+
+  @override
+  String get ocrStatusLocalReady => '本地 OCR：可運行';
+
+  @override
+  String get ocrStatusLocalUnreachable => '本地 OCR：無法連線';
+
+  @override
+  String get ocrStatusGeminiUnset => 'Gemini：尚未設定金鑰';
+
+  @override
+  String get ocrStatusGeminiUntested => 'Gemini：已填入金鑰，尚未測試';
+
+  @override
+  String get ocrStatusGeminiVerifying => 'Gemini：正在驗證金鑰';
+
+  @override
+  String get ocrStatusGeminiValid => 'Gemini：金鑰有效';
+
+  @override
+  String get ocrStatusGeminiInvalid => 'Gemini：金鑰無效或無法連線';
+
+  @override
+  String get ocrActiveLocalVerified => '目前生效引擎：本地 OCR 伺服器（已測試可用）';
+
+  @override
+  String get ocrActiveLocalUntested => '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）';
+
+  @override
+  String get ocrActiveGeminiVerified => '目前生效引擎：Gemini API（已測試可用）';
+
+  @override
+  String get ocrActiveGeminiUntested => '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）';
+
+  @override
+  String get ocrActiveNone => '尚未設定任何 OCR 引擎';
+
+  @override
+  String get ocrDetectAndDownload => '偵測系統並下載安裝檔';
+
+  @override
+  String get ocrAutoInstallUnavailable => '此系統無法自動安裝';
+
+  @override
+  String get ocrUnsupportedPlatformBody =>
+      '已偵測到目前平台不是支援的一鍵安裝桌面環境。Web 瀏覽器不能直接在 iOS、Android、Linux 或未知系統上安裝並啟動本機 OCR 服務。\n\n可用做法：\n1. 在 macOS 或 Windows 桌面瀏覽器使用此精靈。\n2. 或改用 Gemini API 金鑰作為 Web OCR 備援。\n3. 進階使用者可開啟 OCR 專案，自行部署相容的 /ocr 端點，再回到此處填入 URL 並測試連線。';
+
+  @override
+  String ocrInstallerReady(String osName) {
+    return '已準備 $osName 安裝檔';
+  }
+
+  @override
+  String get ocrRunInstructionMac => 'bash ~/Downloads/setup_and_run_ocr.sh';
+
+  @override
+  String get ocrRunInstructionWindows =>
+      '按兩下 Downloads 資料夾中的 setup_and_run_ocr.bat';
+
+  @override
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  ) {
+    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
+  }
+
+  @override
   String get reportEngineNotParticipated => '未參與';
 
   @override
@@ -3017,6 +3104,107 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get analysisReadinessBaseline => '沒有同條件本地基準';
+
+  @override
+  String get ocrChipLocalVerified => '本地 OCR（已測試）';
+
+  @override
+  String get ocrChipLocalUntested => '本地 OCR（未測試）';
+
+  @override
+  String get ocrChipGeminiVerified => 'Gemini（已測試）';
+
+  @override
+  String get ocrChipGeminiUntested => 'Gemini（未測試）';
+
+  @override
+  String get ocrChipNone => 'OCR 引擎：尚未設定';
+
+  @override
+  String ocrErrorLocalServerReported(String detail) {
+    return '本地 OCR 伺服器回報錯誤：$detail';
+  }
+
+  @override
+  String get ocrErrorLocalServerFormat =>
+      '本地 OCR 伺服器回應格式不相容；預期文字區塊陣列、results[].text 或 text。';
+
+  @override
+  String get ocrErrorNoTextDetected => 'OCR 已完成，但圖片中未辨識到可用文字。';
+
+  @override
+  String ocrErrorLocalServerStatus(String status, String detail) {
+    return '本地 OCR 伺服器回應 HTTP $status：$detail';
+  }
+
+  @override
+  String ocrErrorLocalUnreachable(String detail) {
+    return '本地 OCR 伺服器無法連線或逾時：$detail';
+  }
+
+  @override
+  String get ocrErrorNotConfigured =>
+      'OCR 尚未設定：請在設定輸入 Gemini API 金鑰，或填入本地 OCR 伺服器網址。';
+
+  @override
+  String get ocrErrorGeminiNoParsableText => 'Gemini 已回應，但回應中沒有可解析文字。';
+
+  @override
+  String get ocrErrorGeminiRateLimited =>
+      'Gemini OCR 達到速率或配額限制（429），請稍後再試或改用本地 OCR 伺服器。';
+
+  @override
+  String ocrErrorGeminiBadRequest(String detail) {
+    return 'Gemini OCR 請求格式錯誤（400）：$detail';
+  }
+
+  @override
+  String get ocrErrorGeminiUnauthorized =>
+      'Gemini API 金鑰無效或未授權（401），請重新貼上有效金鑰。';
+
+  @override
+  String ocrErrorGeminiHttpFailed(String status, String detail) {
+    return 'Gemini OCR 失敗（HTTP $status）：$detail';
+  }
+
+  @override
+  String ocrErrorGeminiException(String detail) {
+    return 'Gemini OCR 連線或解析失敗：$detail';
+  }
+
+  @override
+  String get ocrErrorNoImageData => '未取得圖片資料。請重新選取圖片；若仍失敗，可能是瀏覽器未提供檔案 bytes。';
+
+  @override
+  String ocrErrorGeminiKeyInvalid(String status) {
+    return 'Gemini API 金鑰無效或未授權（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestFailed(String status) {
+    return 'Gemini API 連線測試失敗（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestException(String detail) {
+    return 'Gemini API 連線測試失敗：$detail';
+  }
+
+  @override
+  String get ocrErrorNativePluginNoPing => '此平台的原生 OCR 外掛未回應 ping。';
+
+  @override
+  String get ocrErrorNativePluginMissing => '此平台尚未註冊原生 OCR 外掛。';
+
+  @override
+  String ocrErrorNativeCheckFailed(String detail) {
+    return '原生 OCR 外掛檢查失敗：$detail';
+  }
+
+  @override
+  String ocrErrorNativeFailed(String detail) {
+    return '原生 OCR 執行失敗：$detail';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3895,6 +4083,93 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportNoEngineData => '无引擎数据';
+
+  @override
+  String get ocrGeminiKeyRequired => '请先输入 Gemini API 密钥。';
+
+  @override
+  String get ocrGeminiKeyValid => 'Gemini API 密钥有效，可正常连接。';
+
+  @override
+  String get ocrGeminiKeyUnreachable => 'Gemini API 连接失败，请确认密钥是否正确。';
+
+  @override
+  String get ocrStatusLocalUnset => '本地 OCR：尚未设置端点';
+
+  @override
+  String get ocrStatusLocalUntested => '本地 OCR：已填入端点，尚未测试';
+
+  @override
+  String get ocrStatusLocalTesting => '本地 OCR：正在测试连接';
+
+  @override
+  String get ocrStatusLocalReady => '本地 OCR：可运行';
+
+  @override
+  String get ocrStatusLocalUnreachable => '本地 OCR：无法连接';
+
+  @override
+  String get ocrStatusGeminiUnset => 'Gemini：尚未设置密钥';
+
+  @override
+  String get ocrStatusGeminiUntested => 'Gemini：已填入密钥，尚未测试';
+
+  @override
+  String get ocrStatusGeminiVerifying => 'Gemini：正在验证密钥';
+
+  @override
+  String get ocrStatusGeminiValid => 'Gemini：密钥有效';
+
+  @override
+  String get ocrStatusGeminiInvalid => 'Gemini：密钥无效或无法连接';
+
+  @override
+  String get ocrActiveLocalVerified => '当前生效引擎：本地 OCR 服务器（已测试可用）';
+
+  @override
+  String get ocrActiveLocalUntested => '当前生效引擎：本地 OCR 服务器（尚未测试，建议按「测试连接」确认）';
+
+  @override
+  String get ocrActiveGeminiVerified => '当前生效引擎：Gemini API（已测试可用）';
+
+  @override
+  String get ocrActiveGeminiUntested => '当前生效引擎：Gemini API（尚未测试，建议按「测试连接」确认）';
+
+  @override
+  String get ocrActiveNone => '尚未设置任何 OCR 引擎';
+
+  @override
+  String get ocrDetectAndDownload => '检测系统并下载安装包';
+
+  @override
+  String get ocrAutoInstallUnavailable => '此系统无法自动安装';
+
+  @override
+  String get ocrUnsupportedPlatformBody =>
+      '已检测到目前平台不是支持的一键安装桌面环境。Web 浏览器不能直接在 iOS、Android、Linux 或未知系统上安装并启动本机 OCR 服务。\n\n可用做法：\n1. 在 macOS 或 Windows 桌面浏览器使用此向导。\n2. 或改用 Gemini API 密钥作为 Web OCR 备援。\n3. 进阶用户可打开 OCR 项目，自行部署兼容的 /ocr 端点，再回到此处填入 URL 并测试连接。';
+
+  @override
+  String ocrInstallerReady(String osName) {
+    return '已准备 $osName 安装包';
+  }
+
+  @override
+  String get ocrRunInstructionMac => 'bash ~/Downloads/setup_and_run_ocr.sh';
+
+  @override
+  String get ocrRunInstructionWindows =>
+      '双击 Downloads 文件夹中的 setup_and_run_ocr.bat';
+
+  @override
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  ) {
+    return '已检测到 $osName，并已自动填入本地端点：\n$endpoint\n\n浏览器已开始下载 $fileName。基于浏览器安全限制，TruthLens Web 不能直接替您执行安装包或修改系统启动项。\n\n请完成以下步骤：\n1. 运行下载的安装包：$runInstruction\n2. 等待终端或窗口显示 OCR 服务已就绪。\n3. 回到此窗口按「$testButton」。\n\n测试成功后，图片 OCR 会优先使用这个本地服务；图片内容不会送往 Gemini，除非您另外设置 Gemini API 密钥作为备援。';
+  }
 
   @override
   String get reportEngineNotParticipated => '未参与';
@@ -6032,6 +6307,107 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get analysisReadinessBaseline => '没有同条件本地基准';
+
+  @override
+  String get ocrChipLocalVerified => '本地 OCR（已测试）';
+
+  @override
+  String get ocrChipLocalUntested => '本地 OCR（未测试）';
+
+  @override
+  String get ocrChipGeminiVerified => 'Gemini（已测试）';
+
+  @override
+  String get ocrChipGeminiUntested => 'Gemini（未测试）';
+
+  @override
+  String get ocrChipNone => 'OCR 引擎：尚未设定';
+
+  @override
+  String ocrErrorLocalServerReported(String detail) {
+    return '本地 OCR 服务器报告错误：$detail';
+  }
+
+  @override
+  String get ocrErrorLocalServerFormat =>
+      '本地 OCR 服务器响应格式不兼容；预期文字区块数组、results[].text 或 text。';
+
+  @override
+  String get ocrErrorNoTextDetected => 'OCR 已完成，但图片中未识别到可用文字。';
+
+  @override
+  String ocrErrorLocalServerStatus(String status, String detail) {
+    return '本地 OCR 服务器响应 HTTP $status：$detail';
+  }
+
+  @override
+  String ocrErrorLocalUnreachable(String detail) {
+    return '本地 OCR 服务器无法连接或超时：$detail';
+  }
+
+  @override
+  String get ocrErrorNotConfigured =>
+      'OCR 尚未设定：请在设定输入 Gemini API 密钥，或填入本地 OCR 服务器网址。';
+
+  @override
+  String get ocrErrorGeminiNoParsableText => 'Gemini 已响应，但响应中没有可解析文字。';
+
+  @override
+  String get ocrErrorGeminiRateLimited =>
+      'Gemini OCR 达到速率或配额限制（429），请稍后再试或改用本地 OCR 服务器。';
+
+  @override
+  String ocrErrorGeminiBadRequest(String detail) {
+    return 'Gemini OCR 请求格式错误（400）：$detail';
+  }
+
+  @override
+  String get ocrErrorGeminiUnauthorized =>
+      'Gemini API 密钥无效或未授权（401），请重新粘贴有效密钥。';
+
+  @override
+  String ocrErrorGeminiHttpFailed(String status, String detail) {
+    return 'Gemini OCR 失败（HTTP $status）：$detail';
+  }
+
+  @override
+  String ocrErrorGeminiException(String detail) {
+    return 'Gemini OCR 连接或解析失败：$detail';
+  }
+
+  @override
+  String get ocrErrorNoImageData => '未取得图片数据。请重新选取图片；若仍失败，可能是浏览器未提供文件 bytes。';
+
+  @override
+  String ocrErrorGeminiKeyInvalid(String status) {
+    return 'Gemini API 密钥无效或未授权（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestFailed(String status) {
+    return 'Gemini API 连接测试失败（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestException(String detail) {
+    return 'Gemini API 连接测试失败：$detail';
+  }
+
+  @override
+  String get ocrErrorNativePluginNoPing => '此平台的原生 OCR 插件未响应 ping。';
+
+  @override
+  String get ocrErrorNativePluginMissing => '此平台尚未注册原生 OCR 插件。';
+
+  @override
+  String ocrErrorNativeCheckFailed(String detail) {
+    return '原生 OCR 插件检查失败：$detail';
+  }
+
+  @override
+  String ocrErrorNativeFailed(String detail) {
+    return '原生 OCR 执行失败：$detail';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6910,6 +7286,93 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportNoEngineData => '無引擎數據';
+
+  @override
+  String get ocrGeminiKeyRequired => '請先輸入 Gemini API 金鑰。';
+
+  @override
+  String get ocrGeminiKeyValid => 'Gemini API 金鑰有效，可正常連線。';
+
+  @override
+  String get ocrGeminiKeyUnreachable => 'Gemini API 連線失敗，請確認金鑰是否正確。';
+
+  @override
+  String get ocrStatusLocalUnset => '本地 OCR：尚未設定端點';
+
+  @override
+  String get ocrStatusLocalUntested => '本地 OCR：已填入端點，尚未測試';
+
+  @override
+  String get ocrStatusLocalTesting => '本地 OCR：正在測試連線';
+
+  @override
+  String get ocrStatusLocalReady => '本地 OCR：可運行';
+
+  @override
+  String get ocrStatusLocalUnreachable => '本地 OCR：無法連線';
+
+  @override
+  String get ocrStatusGeminiUnset => 'Gemini：尚未設定金鑰';
+
+  @override
+  String get ocrStatusGeminiUntested => 'Gemini：已填入金鑰，尚未測試';
+
+  @override
+  String get ocrStatusGeminiVerifying => 'Gemini：正在驗證金鑰';
+
+  @override
+  String get ocrStatusGeminiValid => 'Gemini：金鑰有效';
+
+  @override
+  String get ocrStatusGeminiInvalid => 'Gemini：金鑰無效或無法連線';
+
+  @override
+  String get ocrActiveLocalVerified => '目前生效引擎：本地 OCR 伺服器（已測試可用）';
+
+  @override
+  String get ocrActiveLocalUntested => '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）';
+
+  @override
+  String get ocrActiveGeminiVerified => '目前生效引擎：Gemini API（已測試可用）';
+
+  @override
+  String get ocrActiveGeminiUntested => '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）';
+
+  @override
+  String get ocrActiveNone => '尚未設定任何 OCR 引擎';
+
+  @override
+  String get ocrDetectAndDownload => '偵測系統並下載安裝檔';
+
+  @override
+  String get ocrAutoInstallUnavailable => '此系統無法自動安裝';
+
+  @override
+  String get ocrUnsupportedPlatformBody =>
+      '已偵測到目前平台不是支援的一鍵安裝桌面環境。Web 瀏覽器不能直接在 iOS、Android、Linux 或未知系統上安裝並啟動本機 OCR 服務。\n\n可用做法：\n1. 在 macOS 或 Windows 桌面瀏覽器使用此精靈。\n2. 或改用 Gemini API 金鑰作為 Web OCR 備援。\n3. 進階使用者可開啟 OCR 專案，自行部署相容的 /ocr 端點，再回到此處填入 URL 並測試連線。';
+
+  @override
+  String ocrInstallerReady(String osName) {
+    return '已準備 $osName 安裝檔';
+  }
+
+  @override
+  String get ocrRunInstructionMac => 'bash ~/Downloads/setup_and_run_ocr.sh';
+
+  @override
+  String get ocrRunInstructionWindows =>
+      '按兩下 Downloads 資料夾中的 setup_and_run_ocr.bat';
+
+  @override
+  String ocrAssistantDownloadedBody(
+    String osName,
+    String endpoint,
+    String fileName,
+    String runInstruction,
+    String testButton,
+  ) {
+    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
+  }
 
   @override
   String get reportEngineNotParticipated => '未參與';
@@ -9047,4 +9510,105 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get analysisReadinessBaseline => '沒有同條件本地基準';
+
+  @override
+  String get ocrChipLocalVerified => '本地 OCR（已測試）';
+
+  @override
+  String get ocrChipLocalUntested => '本地 OCR（未測試）';
+
+  @override
+  String get ocrChipGeminiVerified => 'Gemini（已測試）';
+
+  @override
+  String get ocrChipGeminiUntested => 'Gemini（未測試）';
+
+  @override
+  String get ocrChipNone => 'OCR 引擎：尚未設定';
+
+  @override
+  String ocrErrorLocalServerReported(String detail) {
+    return '本地 OCR 伺服器回報錯誤：$detail';
+  }
+
+  @override
+  String get ocrErrorLocalServerFormat =>
+      '本地 OCR 伺服器回應格式不相容；預期文字區塊陣列、results[].text 或 text。';
+
+  @override
+  String get ocrErrorNoTextDetected => 'OCR 已完成，但圖片中未辨識到可用文字。';
+
+  @override
+  String ocrErrorLocalServerStatus(String status, String detail) {
+    return '本地 OCR 伺服器回應 HTTP $status：$detail';
+  }
+
+  @override
+  String ocrErrorLocalUnreachable(String detail) {
+    return '本地 OCR 伺服器無法連線或逾時：$detail';
+  }
+
+  @override
+  String get ocrErrorNotConfigured =>
+      'OCR 尚未設定：請在設定輸入 Gemini API 金鑰，或填入本地 OCR 伺服器網址。';
+
+  @override
+  String get ocrErrorGeminiNoParsableText => 'Gemini 已回應，但回應中沒有可解析文字。';
+
+  @override
+  String get ocrErrorGeminiRateLimited =>
+      'Gemini OCR 達到速率或配額限制（429），請稍後再試或改用本地 OCR 伺服器。';
+
+  @override
+  String ocrErrorGeminiBadRequest(String detail) {
+    return 'Gemini OCR 請求格式錯誤（400）：$detail';
+  }
+
+  @override
+  String get ocrErrorGeminiUnauthorized =>
+      'Gemini API 金鑰無效或未授權（401），請重新貼上有效金鑰。';
+
+  @override
+  String ocrErrorGeminiHttpFailed(String status, String detail) {
+    return 'Gemini OCR 失敗（HTTP $status）：$detail';
+  }
+
+  @override
+  String ocrErrorGeminiException(String detail) {
+    return 'Gemini OCR 連線或解析失敗：$detail';
+  }
+
+  @override
+  String get ocrErrorNoImageData => '未取得圖片資料。請重新選取圖片；若仍失敗，可能是瀏覽器未提供檔案 bytes。';
+
+  @override
+  String ocrErrorGeminiKeyInvalid(String status) {
+    return 'Gemini API 金鑰無效或未授權（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestFailed(String status) {
+    return 'Gemini API 連線測試失敗（HTTP $status）。';
+  }
+
+  @override
+  String ocrErrorGeminiTestException(String detail) {
+    return 'Gemini API 連線測試失敗：$detail';
+  }
+
+  @override
+  String get ocrErrorNativePluginNoPing => '此平台的原生 OCR 外掛未回應 ping。';
+
+  @override
+  String get ocrErrorNativePluginMissing => '此平台尚未註冊原生 OCR 外掛。';
+
+  @override
+  String ocrErrorNativeCheckFailed(String detail) {
+    return '原生 OCR 外掛檢查失敗：$detail';
+  }
+
+  @override
+  String ocrErrorNativeFailed(String detail) {
+    return '原生 OCR 執行失敗：$detail';
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/ocr_post_processor.dart';
+import 'ocr_failure.dart';
 
 /// 原生平台 OCR 服務（macOS、iOS、Android；Windows 需註冊對應外掛後才可用）
 ///
@@ -25,9 +26,10 @@ class OcrService {
   static String? _cachedApiKey;
   static String? _cachedServerUrl;
   static bool _hydrated = false;
-  static String? _lastErrorMessage;
+  static OcrFailure? _lastFailure;
 
-  static String? get lastErrorMessage => _lastErrorMessage;
+  /// 見 web 實作的說明：服務層只回報成因，字串由顯示端依語系產生。
+  static OcrFailure? get lastFailure => _lastFailure;
 
   /// 由 App 啟動時呼叫一次，將持久化的設定載入記憶體快取。
   static Future<void> hydrate() async {
@@ -81,14 +83,17 @@ class OcrService {
     try {
       final ok = await _channel.invokeMethod<bool>('ping');
       if (ok != true) {
-        _lastErrorMessage = '此平台的原生 OCR 外掛未回應 ping。';
+        _lastFailure = const OcrFailure(OcrFailureKind.nativePluginNoPing);
       }
       return ok ?? false;
     } on MissingPluginException {
-      _lastErrorMessage = '此平台尚未註冊原生 OCR 外掛。';
+      _lastFailure = const OcrFailure(OcrFailureKind.nativePluginMissing);
       return false;
     } catch (e) {
-      _lastErrorMessage = '原生 OCR 外掛檢查失敗：$e';
+      _lastFailure = OcrFailure(
+        OcrFailureKind.nativeCheckFailed,
+        detail: '$e',
+      );
       return false;
     }
   }
@@ -98,22 +103,24 @@ class OcrService {
   /// 辨識圖片檔中的文字。回傳 null 表示平台不支援或辨識失敗。
   /// [languages] 為 BCP-47 語言提示（如 ['zh-Hant','en-US']），部分平台會參考。
   Future<String?> recognize(String imagePath, {List<String>? languages}) async {
-    _lastErrorMessage = null;
+    _lastFailure = null;
     try {
       final text = await _channel.invokeMethod<String>('recognize', {
         'path': imagePath,
         'languages': languages ?? const ['zh-Hant', 'zh-Hans', 'en-US'],
       });
       if (text == null || text.trim().isEmpty) {
-        _lastErrorMessage = '原生 OCR 已執行，但圖片中未辨識到可用文字。';
+        _lastFailure = const OcrFailure(OcrFailureKind.noTextDetected);
       }
       return text == null ? null : OcrPostProcessor.clean(text);
     } on MissingPluginException {
-      _lastErrorMessage = '此平台尚未註冊原生 OCR 外掛。';
+      _lastFailure = const OcrFailure(OcrFailureKind.nativePluginMissing);
       return null;
     } on PlatformException catch (e) {
-      _lastErrorMessage =
-          '原生 OCR 執行失敗：${e.code}${e.message == null ? '' : '，${e.message}'}';
+      _lastFailure = OcrFailure(
+        OcrFailureKind.nativeFailed,
+        detail: e.message == null ? e.code : '${e.code}: ${e.message}',
+      );
       return null;
     }
   }

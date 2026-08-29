@@ -342,9 +342,7 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isZh(l10n)
-                ? '請先輸入 Gemini API 金鑰。'
-                : 'Enter a Gemini API key first.',
+            l10n.ocrGeminiKeyRequired,
           ),
         ),
       );
@@ -356,12 +354,8 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       SnackBar(
         content: Text(
           connected
-              ? (_isZh(l10n)
-                    ? 'Gemini API 金鑰有效，可正常連線。'
-                    : 'Gemini API key is valid and reachable.')
-              : (_isZh(l10n)
-                    ? 'Gemini API 連線失敗，請確認金鑰是否正確。'
-                    : 'Could not reach Gemini API. Please check the key.'),
+              ? (l10n.ocrGeminiKeyValid)
+              : (l10n.ocrGeminiKeyUnreachable),
         ),
         backgroundColor: connected
             ? Theme.of(context).colorScheme.primary
@@ -382,15 +376,13 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
         osName: 'macOS',
         fileName: 'setup_and_run_ocr.sh',
         downloadUri: _macInstallerUri,
-        zhRunInstruction: 'bash ~/Downloads/setup_and_run_ocr.sh',
-        enRunInstruction: 'bash ~/Downloads/setup_and_run_ocr.sh',
+        isWindows: false,
       ),
       TargetPlatform.windows => _LocalOcrInstaller(
         osName: 'Windows',
         fileName: 'setup_and_run_ocr.bat',
         downloadUri: _windowsInstallerUri,
-        zhRunInstruction: '按兩下 Downloads 資料夾中的 setup_and_run_ocr.bat',
-        enRunInstruction: 'double-click setup_and_run_ocr.bat in Downloads',
+        isWindows: true,
       ),
       TargetPlatform.android ||
       TargetPlatform.iOS ||
@@ -398,9 +390,6 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
       TargetPlatform.fuchsia => null,
     };
   }
-
-  bool _isZh(AppLocalizations l10n) =>
-      l10n.localeName.toLowerCase().startsWith('zh');
 
   _LocalOcrStatus _localStatus(OcrConfigNotifier notifier) {
     if (notifier.testingLocal) return _LocalOcrStatus.checking;
@@ -419,32 +408,30 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
   }
 
   String _localOcrStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
-    final zh = _isZh(l10n);
     return switch (status) {
       _LocalOcrStatus.notConfigured =>
-        zh ? '本地 OCR：尚未設定端點' : 'Local OCR: endpoint not set',
+        l10n.ocrStatusLocalUnset,
       _LocalOcrStatus.needsTest =>
-        zh ? '本地 OCR：已填入端點，尚未測試' : 'Local OCR: endpoint set, not tested',
+        l10n.ocrStatusLocalUntested,
       _LocalOcrStatus.checking =>
-        zh ? '本地 OCR：正在測試連線' : 'Local OCR: testing connection',
-      _LocalOcrStatus.ready => zh ? '本地 OCR：可運行' : 'Local OCR: ready',
+        l10n.ocrStatusLocalTesting,
+      _LocalOcrStatus.ready => l10n.ocrStatusLocalReady,
       _LocalOcrStatus.unavailable =>
-        zh ? '本地 OCR：無法連線' : 'Local OCR: unreachable',
+        l10n.ocrStatusLocalUnreachable,
     };
   }
 
   String _geminiStatusLabel(AppLocalizations l10n, _LocalOcrStatus status) {
-    final zh = _isZh(l10n);
     return switch (status) {
       _LocalOcrStatus.notConfigured =>
-        zh ? 'Gemini：尚未設定金鑰' : 'Gemini: no key set',
+        l10n.ocrStatusGeminiUnset,
       _LocalOcrStatus.needsTest =>
-        zh ? 'Gemini：已填入金鑰，尚未測試' : 'Gemini: key set, not tested',
+        l10n.ocrStatusGeminiUntested,
       _LocalOcrStatus.checking =>
-        zh ? 'Gemini：正在驗證金鑰' : 'Gemini: verifying key',
-      _LocalOcrStatus.ready => zh ? 'Gemini：金鑰有效' : 'Gemini: key valid',
+        l10n.ocrStatusGeminiVerifying,
+      _LocalOcrStatus.ready => l10n.ocrStatusGeminiValid,
       _LocalOcrStatus.unavailable =>
-        zh ? 'Gemini：金鑰無效或無法連線' : 'Gemini: invalid or unreachable',
+        l10n.ocrStatusGeminiInvalid,
     };
   }
 
@@ -452,66 +439,58 @@ class _WebOcrSettingsCardState extends State<WebOcrSettingsCard> {
     AppLocalizations l10n,
     OcrConfigNotifier notifier,
   ) {
-    final zh = _isZh(l10n);
     return switch (notifier.activeEngine) {
       OcrEngineKind.local =>
         notifier.localVerified
-            ? (zh
-                  ? '目前生效引擎：本地 OCR 伺服器（已測試可用）'
-                  : 'Active engine: local OCR server (verified)')
-            : (zh
-                  ? '目前生效引擎：本地 OCR 伺服器（尚未測試，建議按「測試連線」確認）'
-                  : 'Active engine: local OCR server (not yet tested)'),
+            ? (l10n.ocrActiveLocalVerified)
+            : (l10n.ocrActiveLocalUntested),
       OcrEngineKind.gemini =>
         notifier.geminiVerified
-            ? (zh
-                  ? '目前生效引擎：Gemini API（已測試可用）'
-                  : 'Active engine: Gemini API (verified)')
-            : (zh
-                  ? '目前生效引擎：Gemini API（尚未測試，建議按「測試連線」確認）'
-                  : 'Active engine: Gemini API (not yet tested)'),
+            ? (l10n.ocrActiveGeminiVerified)
+            : (l10n.ocrActiveGeminiUntested),
       OcrEngineKind.none =>
-        zh ? '尚未設定任何 OCR 引擎' : 'No OCR engine configured yet',
+        l10n.ocrActiveNone,
     };
   }
 
   String _assistantButtonLabel(AppLocalizations l10n) =>
-      _isZh(l10n) ? '偵測系統並下載安裝檔' : 'Detect OS & download installer';
+      l10n.ocrDetectAndDownload;
 
   String _assistantUnsupportedTitle(AppLocalizations l10n) =>
-      _isZh(l10n) ? '此系統無法自動安裝' : 'Automatic install is not available';
+      l10n.ocrAutoInstallUnavailable;
 
-  String _assistantUnsupportedBody(AppLocalizations l10n) => _isZh(l10n)
-      ? '已偵測到目前平台不是支援的一鍵安裝桌面環境。Web 瀏覽器不能直接在 iOS、Android、Linux 或未知系統上安裝並啟動本機 OCR 服務。\n\n可用做法：\n1. 在 macOS 或 Windows 桌面瀏覽器使用此精靈。\n2. 或改用 Gemini API 金鑰作為 Web OCR 備援。\n3. 進階使用者可開啟 OCR 專案，自行部署相容的 /ocr 端點，再回到此處填入 URL 並測試連線。'
-      : 'The current platform is not a supported one-click desktop install target. A web browser cannot install and start a local OCR service on iOS, Android, Linux, or an unknown system.\n\nOptions:\n1. Use this assistant from a macOS or Windows desktop browser.\n2. Use a Gemini API key as the Web OCR fallback.\n3. Advanced users can open the OCR project, run a compatible /ocr endpoint manually, then enter the URL here and test the connection.';
+  String _assistantUnsupportedBody(AppLocalizations l10n) => l10n.ocrUnsupportedPlatformBody;
 
   String _assistantDownloadedTitle(AppLocalizations l10n, String osName) =>
-      _isZh(l10n) ? '已準備 $osName 安裝檔' : '$osName installer is ready';
+      l10n.ocrInstallerReady(osName);
 
   String _assistantDownloadedBody(
     AppLocalizations l10n,
     _LocalOcrInstaller installer,
-  ) {
-    if (_isZh(l10n)) {
-      return '已偵測到 ${installer.osName}，並已自動填入本地端點：\n$_defaultLocalOcrEndpoint\n\n瀏覽器已開始下載 ${installer.fileName}。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：${installer.zhRunInstruction}\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「${l10n.webOcrTestServerButton}」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
-    }
-    return '${installer.osName} was detected, and the local endpoint has been filled in automatically:\n$_defaultLocalOcrEndpoint\n\nYour browser has started downloading ${installer.fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: ${installer.enRunInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “${l10n.webOcrTestServerButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.';
-  }
+  ) => l10n.ocrAssistantDownloadedBody(
+    installer.osName,
+    _defaultLocalOcrEndpoint,
+    installer.fileName,
+    installer.isWindows
+        ? l10n.ocrRunInstructionWindows
+        : l10n.ocrRunInstructionMac,
+    l10n.webOcrTestServerButton,
+  );
 }
 
 class _LocalOcrInstaller {
   final String osName;
   final String fileName;
   final Uri downloadUri;
-  final String zhRunInstruction;
-  final String enRunInstruction;
+  /// 執行指令依作業系統而異，且需在地化——原本把中英兩份文字寫死在資料模型裡，
+  /// 其餘 12 個語系一律拿到英文。改為只保留判別旗標，文字交給 l10n。
+  final bool isWindows;
 
   const _LocalOcrInstaller({
     required this.osName,
     required this.fileName,
     required this.downloadUri,
-    required this.zhRunInstruction,
-    required this.enRunInstruction,
+    required this.isWindows,
   });
 }
 
