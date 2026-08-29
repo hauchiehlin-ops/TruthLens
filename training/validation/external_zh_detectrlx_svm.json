@@ -1,0 +1,38 @@
+{
+  "corpus_id": "detectrl-x-zh-test",
+  "documents_scored": 12000,
+  "documents_below_length_floor": 0,
+  "operating_point": 0.11276769804987598,
+  "human_documents": 6000,
+  "machine_documents": 6000,
+  "fpr": 0.0,
+  "fpr_upper_95": 0.0004507460713588669,
+  "recall": 0.9491666666666667,
+  "per_generator": {
+    "deepseek-v3": {
+      "n": 1500,
+      "label": 1,
+      "above_cut_rate": 0.898
+    },
+    "gemini-2.5-flash": {
+      "n": 1500,
+      "label": 1,
+      "above_cut_rate": 0.9646666666666667
+    },
+    "gpt-4o": {
+      "n": 1500,
+      "label": 1,
+      "above_cut_rate": 0.946
+    },
+    "human": {
+      "n": 6000,
+      "label": 0,
+      "above_cut_rate": 0.0
+    },
+    "qwen-max": {
+      "n": 1500,
+      "label": 1,
+      "above_cut_rate": 0.988
+    }
+  }
+}

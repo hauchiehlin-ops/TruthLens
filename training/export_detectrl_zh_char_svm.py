@@ -74,6 +74,22 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--max-features", type=int, default=50_000)
     parser.add_argument("--language", default="zh", help="recorded in the asset")
+    # 開發集真人分數的分位數。0.99 對應約 1% 的開發集誤報率，但那是「在這份
+    # 開發集上」——換一份人類寫作分布就可能超出預算。調高分位數是買安全邊際，
+    # 代價是召回。預設維持 0.99 以保住既有資產的可重現性。
+    parser.add_argument("--human-quantile", type=float, default=0.99)
+    # 來源與生成器清單必須跟著實際訓練資料走。寫死會讓資產宣稱一份它沒讀過的
+    # 語料——這種 provenance 不實比數字錯更難發現。
+    parser.add_argument("--source", default="NLPCC 2025 Shared Task 1 / DetectRL-ZH")
+    parser.add_argument(
+        "--source-url", default="https://github.com/NLP2CT/NLPCC-2025-Task1"
+    )
+    parser.add_argument(
+        "--training-generators",
+        default="GPT-4o,GLM-4-flash,Qwen-turbo",
+        help="comma separated",
+    )
+    parser.add_argument("--independent-test-generator", default="DeepSeek-V3")
     # 繁簡雙向增強只對中文有意義。套到拉丁／西里爾語料上，OpenCC 原樣回傳，
     # 等於把每一筆樣本複製一份——會膨脹開發集分位數並浪費模型容量。
     parser.add_argument(
@@ -104,7 +120,7 @@ def main() -> None:
 
     dev_decisions = classifier.decision_function(vectorizer.transform(dev_text))
     # The shared-task rules explicitly reserve dev for threshold/calibration tuning.
-    human_cut = float(np.quantile(dev_decisions[dev_labels == 0], 0.99))
+    human_cut = float(np.quantile(dev_decisions[dev_labels == 0], args.human_quantile))
     calibrator = LogisticRegression(C=1000).fit(
         dev_decisions.reshape(-1, 1), dev_labels
     )
@@ -133,16 +149,19 @@ def main() -> None:
         terms[index] = term
     payload = {
         "format": "truthlens-detectrl-zh-char-svm-v1",
-        "source": "NLPCC 2025 Shared Task 1 / DetectRL-ZH",
-        "source_url": "https://github.com/NLP2CT/NLPCC-2025-Task1",
-        "training_generators": ["GPT-4o", "GLM-4-flash", "Qwen-turbo"],
-        "independent_test_generator": "DeepSeek-V3",
+        "source": args.source,
+        "source_url": args.source_url,
+        "training_generators": [
+            g.strip() for g in args.training_generators.split(",") if g.strip()
+        ],
+        "independent_test_generator": args.independent_test_generator,
         "language": args.language,
         "normalization": "lowercase-collapse-whitespace"
         + ("; trained with s2t/t2s augmentation" if args.script_augment else ""),
         "ngram_range": [2, 5],
         "minimum_characters": 64,
         "ai_decision_cut": human_cut,
+        "human_quantile": args.human_quantile,
         "platt_scale": platt_scale,
         "platt_intercept": platt_intercept,
         "intercept": float(classifier.intercept_[0]),

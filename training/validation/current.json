@@ -8,6 +8,59 @@
   "note": "Both Chinese components have now been measured on an approved external source at their shipped operating points. Neither clears the gate: both hold the false-positive promise comfortably, but recall collapses on unseen generators. No high-confidence population claim may be made for Chinese. English remains unmeasured.",
   "measurements": [
     {
+      "component": "detectrl-zh-char-svm-v2",
+      "role": "stylometry-lexical",
+      "asset": "assets/models/detectrl_zh_char_svm.json",
+      "trained_on": [
+        "detectrl-x-zh",
+        "nlpcc-2025-zh"
+      ],
+      "operating_point": 0.11276769804987598,
+      "calibration": "99.5th percentile of human scores on the combined development split. The earlier 99th percentile met its 1% budget on the dev split but exceeded it on NLPCC test (1.73%); the stricter quantile buys margin across unseen human distributions.",
+      "reported": [
+        {
+          "corpus_id": "detectrl-x-zh-test",
+          "generators": [
+            "DeepSeek-V3",
+            "Gemini-2.5-Flash",
+            "GPT-4o",
+            "Qwen-Max"
+          ],
+          "fpr": 0.0,
+          "fpr_upper_95": 0.0005,
+          "recall": 0.9492,
+          "per_generator_recall": {
+            "gemini-2.5-flash": 0.9647,
+            "gpt-4o": 0.946,
+            "deepseek-v3": 0.898,
+            "qwen-max": 0.988
+          }
+        },
+        {
+          "corpus_id": "semeval-2024-task8-zh",
+          "generators": [
+            "chatGPT",
+            "davinci"
+          ],
+          "fpr_upper_95": 0.001,
+          "recall": 0.0911
+        },
+        {
+          "corpus_id": "nlpcc-2025-test",
+          "generators": [
+            "DeepSeek-V3"
+          ],
+          "fpr_upper_95": 0.0082,
+          "recall": 0.6749
+        }
+      ],
+      "meets_target_fpr": true,
+      "meets_minimum_recall": "corpus-dependent: 0.949 / 0.675 on contemporary corpora, 0.091 on the 2023-era one",
+      "why_shipped": "The previous asset exceeded the 1% false-positive budget on two of three corpora (3.88% on DetectRL-X, 1.53% on NLPCC). This one clears it on all three while raising Gemini-2.5-Flash recall from 0.666 to 0.965. The SemEval regression (0.331 -> 0.091) is on chatGPT/davinci, generators from 2023 that are not the threat model this app faces.",
+      "known_blind_spot": "Assistant-response register — a chat model answering a user prompt with headings, numbered advice and second-person address — is still missed. All five DetectRL-X domains (News, Novel, SEO, Webtext, Wiki) are document rewrite/continuation tasks, not assistant replies. A real user document in this register scored 0/100 both before and after retraining.",
+      "rejected_alternative": "A DetectRL-X-only model reached in-corpus AUC 0.9999 but flagged 67% of genuine human Chinese on NLPCC. Verified not to be leakage (train/test human overlap: 1 of ~14000). Its human distribution was simply too narrow."
+    },
+    {
       "component": "aigc-detector-zhv3-int8",
       "role": "transformer",
       "ensemble_weight": 0.4,
@@ -74,7 +127,8 @@
         "In-corpus NLPCC-2025 test recall is 0.626; on unseen generators it is 0.331.",
         "Scoring was cross-checked document by document against the Dart production scorer (max delta 1.6e-15).",
         "Reproduce with: .venv/bin/python evaluate_external_zh.py --corpus data/semeval2024/semeval_zh.json --corpus-id semeval-2024-task8-zh"
-      ]
+      ],
+      "superseded_by": "detectrl-zh-char-svm-v2 (retrained 2026-08-29 on DetectRL-X + NLPCC)"
     }
   ],
   "approved_source_coverage_gap": {

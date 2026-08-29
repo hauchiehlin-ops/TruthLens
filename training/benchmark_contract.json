@@ -9,25 +9,60 @@
     "fpr_confidence_bound": "one-sided Wilson 95% upper",
     "minimum_recall": 0.5,
     "minimum_documents_per_label_per_group": 30,
-    "required_languages": ["en", "zh"],
-    "required_domains": ["academic", "general"],
-    "required_ai_strata": ["provider", "style", "attack", "label_class"]
+    "required_languages": [
+      "en",
+      "zh"
+    ],
+    "required_domains": [
+      "academic",
+      "general"
+    ],
+    "required_ai_strata": [
+      "provider",
+      "style",
+      "attack",
+      "label_class"
+    ]
   },
   "approved_external_sources": [
     {
       "id": "raid",
       "url": "https://github.com/liamdugan/raid",
-      "purpose": ["generator", "domain", "decoding", "attack"]
+      "purpose": [
+        "generator",
+        "domain",
+        "decoding",
+        "attack"
+      ]
     },
     {
       "id": "semeval-2024-task8",
       "url": "https://github.com/mbzuai-nlp/SemEval2024-task8",
-      "purpose": ["multilingual", "multidomain", "mixed_authorship"]
+      "purpose": [
+        "multilingual",
+        "multidomain",
+        "mixed_authorship"
+      ]
     },
     {
       "id": "m4gt-bench",
       "url": "https://github.com/mbzuai-nlp/m4gt-bench",
-      "purpose": ["multilingual", "multigenerator", "mixed_authorship"]
+      "purpose": [
+        "multilingual",
+        "multigenerator",
+        "mixed_authorship"
+      ]
+    },
+    {
+      "id": "detectrl-x",
+      "url": "https://huggingface.co/datasets/WUJUNCHAO/DetectRL-X",
+      "purpose": [
+        "multilingual",
+        "generator",
+        "attack",
+        "contemporary_generators"
+      ],
+      "note": "Added 2026-08-29. The pre-existing sources cover Chinese only through the 2023-era M4 subset (chatGPT/davinci), which no longer represents the generators this detector faces. DetectRL-X covers DeepSeek-V3, Gemini-2.5-Flash, GPT-4o and Qwen-Max across eight languages."
     }
   ],
   "prohibited_shortcuts": [

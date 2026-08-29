@@ -1,0 +1,25 @@
+DetectRL-ZH character n-gram detector notice
+
+This bundled asset (detectrl_zh_char_svm.json) is trained by TruthLens from two
+public corpora. The model file contains only learned vectorizer terms, IDF
+weights and linear coefficients — no corpus text is redistributed.
+
+Training corpora
+----------------
+DetectRL-X
+  https://huggingface.co/datasets/WUJUNCHAO/DetectRL-X
+  License: MIT
+  Generators: DeepSeek-V3, Gemini-2.5-Flash, GPT-4o, Qwen-Max
+
+NLPCC 2025 Shared Task 1 (DetectRL-ZH)
+  https://github.com/NLP2CT/NLPCC-2025-Task1
+  Generators: GPT-4o, GLM-4-flash, Qwen-turbo
+
+Calibration
+-----------
+The AI-evidence gate is the 99.5th percentile of human scores on the combined
+development split. It is deliberately one-sided: crossing it supports AI
+authorship, but a low score is an abstention, never a vote for human authorship.
+
+Reproduce with training/export_detectrl_zh_char_svm.py; the exact command is in
+training/README.md.

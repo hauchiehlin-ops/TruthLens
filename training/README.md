@@ -112,57 +112,82 @@ hard-negative／hard-positive 訓練；重訓後仍須換一批未見 test 文�
 切換只需改 [config.py](config.py) 的 `base_model`。第一版用較輕的 distilbert 先建立可運作基準；
 品質衝刺時換回 xlm-roberta-base 並提高 epoch。
 
-## 中文詞彙指紋（DetectRL-ZH 字元 SVM）
+## 中文詞彙指紋（字元 SVM）
 
 App 打包的 `assets/models/detectrl_zh_char_svm.json` 由此流程產出。刻意做成單向閘門：
-只有跨過開發集真人分數 99 百分位的樣本才會投 AI 票，低分**不**反向投人類票——
-分布外或經改寫的生成文不該變成一張假的人類票。
+只有跨過開發集真人分數分位數的樣本才會投 AI 票，低分**不**反向投人類票——分布外或
+經改寫的生成文不該變成一張假的人類票。
 
 ### 取得資料
 
 ```bash
+# NLPCC-2025（約 71MB）
 mkdir -p data/nlpcc2025 && cd data/nlpcc2025
 for f in train.json dev.json test_with_label.json; do
   curl -sL -O "https://raw.githubusercontent.com/NLP2CT/NLPCC-2025-Task1/main/data/$f"
 done
+
+# DetectRL-X 的通用切分（838MB，MIT）——涵蓋 DeepSeek-V3／Gemini-2.5-Flash／
+# GPT-4o／Qwen-Max，且每筆記錄自帶配對的人類文本
+mkdir -p ../detectrl_x && cd ../detectrl_x
+curl -sL -O "https://huggingface.co/datasets/WUJUNCHAO/DetectRL-X/resolve/main/Binary/binary_general_open.json"
 ```
 
-約 71MB，`data/` 已在 `.gitignore` 內，不會進版控。
+`data/` 已在 `.gitignore` 內，不會進版控。
+
+### 抽取與合併
+
+```bash
+.venv/bin/python prepare_detectrl_x_language.py --lang chinese --code zh
+```
+
+抽取時依「記錄」而非「樣本」切分——每筆記錄的人類與 LLM 兩半來自同一份原始文件，
+分到不同側就會讓模型背來源而不是學作者訊號。
+
+合併 DetectRL-X 與 NLPCC 的 train/dev（見 DEVLOG 第一百五十一次更新的腳本），
+兩者互補：前者提供 2026 生成器，後者提供另一種人類寫作分布（問答式）。
 
 ### 匯出
 
 ```bash
 .venv/bin/python export_detectrl_zh_char_svm.py \
-  --train data/nlpcc2025/train.json \
-  --dev data/nlpcc2025/dev.json \
-  --test data/nlpcc2025/test_with_label.json \
+  --train data/zh_combined/train.json --dev data/zh_combined/dev.json \
+  --test data/detectrl_x/zh/test_with_label.json \
+  --language zh --human-quantile 0.995 \
+  --source "DetectRL-X (WUJUNCHAO/DetectRL-X, MIT) + NLPCC 2025 Shared Task 1 / DetectRL-ZH" \
+  --source-url "https://huggingface.co/datasets/WUJUNCHAO/DetectRL-X" \
+  --training-generators "DeepSeek-V3,Gemini-2.5-Flash,GPT-4o,Qwen-Max,GLM-4-flash,Qwen-turbo" \
+  --independent-test-generator "DeepSeek-V3,Gemini-2.5-Flash,GPT-4o,Qwen-Max" \
   --output ../assets/models/detectrl_zh_char_svm.json
 ```
 
-流程是決定性的：同樣的輸入會逐位元重現目前出貨的資產（含 `ai_decision_cut`
-與資產內建的 `validation` 區塊）。需要 `opencc-python-reimplemented`——訓練時
-以 s2t/t2s 雙向增強，繁簡因此走同一條證據流程。
+`--human-quantile` 是誤報預算的旋鈕。0.99 在開發集上約當 1% 誤報，但那是「在這份
+開發集上」；實測 NLPCC test 會跑到 1.73%，超出合約預算。0.995 買到跨語料的安全邊際。
 
-### 外部驗證（與 benchmark_contract.json 對齊）
+### 出貨模型的實測（v2，2026-08-29）
 
-匯出腳本回報的是**訓練來源語料**上的數字，對未見語料、未見生成器一律沒有效力；
-`benchmark_contract.json` 明文把「拿訓練來源的 test 當外部驗證」列為禁區。要取得
-可對外宣稱的數字，得拿出貨資產去跑合約認可的外部語料：
+| 語料 | 舊模型 | 新模型 |
+|---|---|---|
+| DetectRL-X test（2026 生成器） | 誤報 3.88% ❌／召回 64.9% | **誤報 0.00% ✅／召回 94.9%** |
+| SemEval 中文（2023 生成器） | 0.83% ✅／33.1% | 0.10% ✅／9.1% |
+| NLPCC test | 1.83% ❌／63.7% | **0.82% ✅／67.5%** |
 
-```bash
-# 從 SemEval-2024 Task 8 Subtask A 抽出中文子集（需 gdown）
-.venv/bin/python evaluate_external_zh.py \
-  --corpus data/semeval2024/semeval_zh.json \
-  --corpus-id semeval-2024-task8-zh \
-  --json-out validation/external_zh_semeval.json
-```
+分生成器召回：Gemini-2.5-Flash **66.6% → 96.5%**、GPT-4o 71.7% → 94.6%、
+DeepSeek-V3 33.9% → 89.8%、Qwen-Max 87.3% → 98.8%；真人誤報 0/6000。
 
-`evaluate_external_zh.py` 的評分邏輯與 `lib/core/detection/detectrl_zh_char_scorer.dart`
-逐行對應，並曾逐篇交叉驗證過（最大差 1.6e-15）。改動任一邊都要重新對過。
+舊模型在三份語料中有兩份超出 1% 誤報預算，新模型三份全過。SemEval 的退步是唯一
+代價，而那份語料的生成器是 2023 年的 chatGPT／davinci。
 
-**目前的實測結果**（見 `validation/current.json`）：誤報率 0.63%（Wilson 95% 上界
-0.83%，通過合約的 1% 目標），但召回率只有 33.1%，遠低於合約的 0.5 下限。語料內
-（NLPCC test）的 62.6% 召回**不會**轉移到未見生成器。因此中文尚未通過發布門檻。
+### 兩個必須記住的教訓
+
+**只用 DetectRL-X 訓練會產生一個看似完美的廢模型。** 語料內 AUC 0.9999、召回 99.9%，
+但在 NLPCC 上把 **67% 的真人中文指控成 AI**。已驗證不是資料洩漏（train/test 人類文本
+重疊僅 1 筆／約 14000），純粹是它的人類文本分布（News/Novel/SEO/Wiki，全是專業寫作）
+太窄。合併 NLPCC 的問答式人類文本才解決。
+
+**還有一個尚未涵蓋的語域。** 「助理回覆」——聊天模型針對提問給出的、帶標題與編號
+建議、以第二人稱稱呼使用者的回應——目前兩份語料都沒有。實際使用者文件在這個語域下
+重訓前後都是 0/100。DetectRL-X 的五個領域全是「改寫／續寫既有文件」，不是「回答提問」。
 
 ## 中文 Transformer 的外部驗證
 
