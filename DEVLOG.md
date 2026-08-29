@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-30（第一百六十一次更新）— 模型管理頁的角色標題與 LLM 名稱
+
+使用者截圖圈出：英文介面下「Adversarial paraphrase detection」正常，下一區的標題卻是
+「報告生成 LLM」。上一輪我確認 `model.name` 已走 `localizedModelName` 就停手，沒有
+往上檢查**角色分區標題**——那是另一條路徑。
+
+兩個各自獨立的漏網：`ModelOptionsList.roleLabel` 的 switch 涵蓋 transformer／
+statistical／stylometry／adversarial 四個角色但**沒有 `'llm'`**，落回 catalog 的
+「報告生成 LLM」；`localizedModelName` 涵蓋 8 個變體中的 7 個，漏
+`gemma-2-2b-it-q4km`，落回「Gemma 2 · 2B Instruct（Q4_K_M）」（連全形括號一起）。
+兩者都是靜默回退，analyzer 與 gen-l10n 都不會有半句話。
+
+補上兩條鍵之外，重點是**把檢查機制換掉**：逐 id 手寫的 switch 必然跟不上可遠端更新的
+catalog，補完這次還會有下次。新增的測試改以 `assets/model_catalog.json` 為準源反查，
+對每個 role 與 variant 斷言英文語系下的輸出不含 CJK。已驗證移除 `'llm'` 那行後該測試
+確實轉紅，不是空轉的斷言。
+
+**版本與狀態**：v4.11.5 / Build 1455。✅ `flutter test` 634 全數通過；`flutter analyze`
+除既有 8 條 `prefer_initializing_formals` 外零問題；`flutter build web --release` 成功。
+
 ## 2026-08-30（第一百六十次更新）— 在地化掃描收尾：OCR 錯誤與 chip 標籤
 
 延續上一則。上輪把 `web_ocr_settings.dart` 的 22 對手動中英三元式換成 l10n 鍵，

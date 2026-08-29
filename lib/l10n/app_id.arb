@@ -1397,5 +1397,7 @@
   "ocrErrorNativePluginNoPing": "Plugin OCR bawaan pada platform ini tidak merespons ping.",
   "ocrErrorNativePluginMissing": "Tidak ada plugin OCR bawaan yang terdaftar pada platform ini.",
   "ocrErrorNativeCheckFailed": "Pemeriksaan plugin OCR bawaan gagal: {detail}",
-  "ocrErrorNativeFailed": "OCR bawaan gagal: {detail}"
+  "ocrErrorNativeFailed": "OCR bawaan gagal: {detail}",
+  "settingsEngineLlmTitle": "LLM penulis laporan",
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
 }

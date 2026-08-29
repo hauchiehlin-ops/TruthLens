@@ -19,6 +19,7 @@ String localizedModelName(
   'qwen05b-ppl-int8' => l10n.modelNameQwenPpl,
   'distilgpt2-ppl-int8' => l10n.modelNameDistilgpt2Ppl,
   'truthlens-adversarial-distil-int8' => l10n.modelNameAdversarial,
+  'gemma-2-2b-it-q4km' => l10n.modelNameGemma2Llm,
   _ => catalogName ?? variantId,
 };
 

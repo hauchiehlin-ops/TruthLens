@@ -3253,4 +3253,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String ocrErrorNativeFailed(String detail) {
     return '네이티브 OCR 실행에 실패했습니다: $detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => '보고서 생성 LLM';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct(Q4_K_M)';
 }

@@ -29,6 +29,7 @@ class ModelOptionsList extends StatelessWidget {
     'statistical' => l10n.settingsEngineStatisticalTitle,
     'stylometry' => l10n.settingsEngineStylometryTitle,
     'adversarial' => l10n.settingsEngineAdversarialTitle,
+    'llm' => l10n.settingsEngineLlmTitle,
     _ => fallback,
   };
 

@@ -1428,5 +1428,7 @@
   "ocrErrorNativePluginNoPing": "此平台的原生 OCR 插件未响应 ping。",
   "ocrErrorNativePluginMissing": "此平台尚未注册原生 OCR 插件。",
   "ocrErrorNativeCheckFailed": "原生 OCR 插件检查失败：{detail}",
-  "ocrErrorNativeFailed": "原生 OCR 执行失败：{detail}"
+  "ocrErrorNativeFailed": "原生 OCR 执行失败：{detail}",
+  "settingsEngineLlmTitle": "报告生成 LLM",
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct（Q4_K_M）"
 }

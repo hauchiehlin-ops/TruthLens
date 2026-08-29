@@ -1397,5 +1397,7 @@
   "ocrErrorNativePluginNoPing": "Нативный плагин OCR на этой платформе не ответил на ping.",
   "ocrErrorNativePluginMissing": "На этой платформе не зарегистрирован нативный плагин OCR.",
   "ocrErrorNativeCheckFailed": "Не удалось проверить нативный плагин OCR: {detail}",
-  "ocrErrorNativeFailed": "Сбой нативного OCR: {detail}"
+  "ocrErrorNativeFailed": "Сбой нативного OCR: {detail}",
+  "settingsEngineLlmTitle": "LLM для составления отчётов",
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
 }

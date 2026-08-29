@@ -3327,4 +3327,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String ocrErrorNativeFailed(String detail) {
     return 'OCR ดั้งเดิมทำงานล้มเหลว: $detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => 'LLM สร้างรายงาน';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
 }

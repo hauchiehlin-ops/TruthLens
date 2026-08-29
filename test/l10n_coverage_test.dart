@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:truthlens/core/detection/model_display_names.dart';
+import 'package:truthlens/features/onboarding/model_options_list.dart';
 import 'package:truthlens/core/services/ocr_failure.dart';
 import 'package:truthlens/l10n/generated/app_localizations.dart';
 
@@ -62,6 +65,42 @@ void main() {
           message.trim(),
           isNotEmpty,
           reason: '$locale 缺少 $kind 的描述',
+        );
+      }
+    }
+  });
+
+  test('catalog 的每個角色與變體都有在地化名稱，不落回中文 catalog 字串', () async {
+    // 漏網的實例：`roleLabel` 涵蓋 4 個角色但漏了 'llm'，`localizedModelName`
+    // 涵蓋 7 個變體但漏了 gemma——兩者都靜默落回 catalog 的中文原文，於是
+    // 英文介面出現「報告生成 LLM」。逐 id 手寫 switch 一定會跟不上 catalog，
+    // 所以改由測試以 catalog 為準源反查。
+    final catalog =
+        jsonDecode(File('assets/model_catalog.json').readAsStringSync())
+            as Map<String, dynamic>;
+    final models = catalog['models'] as List<dynamic>;
+    final en = await AppLocalizations.delegate.load(const Locale('en'));
+    final cjk = RegExp(r'[\u4e00-\u9fff]');
+
+    for (final entry in models) {
+      final role = entry as Map<String, dynamic>;
+      final roleId = role['role'] as String;
+      final roleName = role['name'] as String;
+
+      expect(
+        cjk.hasMatch(ModelOptionsList.roleLabel(roleId, roleName, en)),
+        isFalse,
+        reason: '角色 $roleId 沒有 l10n 對應，英文介面會顯示 catalog 的「$roleName」',
+      );
+
+      for (final v in (role['variants'] as List<dynamic>? ?? const [])) {
+        final variant = v as Map<String, dynamic>;
+        final id = variant['id'] as String;
+        final name = variant['name'] as String;
+        expect(
+          cjk.hasMatch(localizedModelName(id, name, en)),
+          isFalse,
+          reason: '變體 $id 沒有 l10n 對應，英文介面會顯示 catalog 的「$name」',
         );
       }
     }

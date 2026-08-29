@@ -3346,4 +3346,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String ocrErrorNativeFailed(String detail) {
     return 'OCR asli gagal: $detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => 'LLM penulisan laporan';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
 }

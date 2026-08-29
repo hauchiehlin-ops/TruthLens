@@ -3205,6 +3205,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String ocrErrorNativeFailed(String detail) {
     return '原生 OCR 執行失敗：$detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => '報告生成 LLM';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6408,6 +6414,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String ocrErrorNativeFailed(String detail) {
     return '原生 OCR 执行失败：$detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => '报告生成 LLM';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9611,4 +9623,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String ocrErrorNativeFailed(String detail) {
     return '原生 OCR 執行失敗：$detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => '報告生成 LLM';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct（Q4_K_M）';
 }

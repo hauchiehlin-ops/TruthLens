@@ -1397,5 +1397,7 @@
   "ocrErrorNativePluginNoPing": "Le plug-in OCR natif de cette plateforme n'a pas répondu au ping.",
   "ocrErrorNativePluginMissing": "Aucun plug-in OCR natif n'est enregistré sur cette plateforme.",
   "ocrErrorNativeCheckFailed": "Échec de la vérification du plug-in OCR natif : {detail}",
-  "ocrErrorNativeFailed": "Échec de l’OCR natif : {detail}"
+  "ocrErrorNativeFailed": "Échec de l’OCR natif : {detail}",
+  "settingsEngineLlmTitle": "LLM de rédaction de rapports",
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)"
 }

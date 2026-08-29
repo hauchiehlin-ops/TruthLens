@@ -1397,5 +1397,7 @@
   "ocrErrorNativePluginNoPing": "このプラットフォームのネイティブ OCR プラグインが ping に応答しませんでした。",
   "ocrErrorNativePluginMissing": "このプラットフォームにはネイティブ OCR プラグインが登録されていません。",
   "ocrErrorNativeCheckFailed": "ネイティブ OCR プラグインの確認に失敗しました: {detail}",
-  "ocrErrorNativeFailed": "ネイティブ OCR の実行に失敗しました: {detail}"
+  "ocrErrorNativeFailed": "ネイティブ OCR の実行に失敗しました: {detail}",
+  "settingsEngineLlmTitle": "レポート生成 LLM",
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct（Q4_K_M）"
 }

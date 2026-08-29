@@ -3368,4 +3368,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String ocrErrorNativeFailed(String detail) {
     return 'Échec de l’OCR natif : $detail';
   }
+
+  @override
+  String get settingsEngineLlmTitle => 'LLM de rédaction de rapports';
+
+  @override
+  String get modelNameGemma2Llm => 'Gemma 2 · 2B Instruct (Q4_K_M)';
 }

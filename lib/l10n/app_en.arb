@@ -2861,5 +2861,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsEngineLlmTitle": "Report-writing LLM",
+  "@settingsEngineLlmTitle": {
+    "description": "Section header for the report-writing LLM role in the model manager"
+  },
+  "modelNameGemma2Llm": "Gemma 2 · 2B Instruct (Q4_K_M)",
+  "@modelNameGemma2Llm": {
+    "description": "Display name of the Gemma 2 2B Instruct report-writing model"
   }
 }

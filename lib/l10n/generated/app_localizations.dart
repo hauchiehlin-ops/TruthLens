@@ -5253,6 +5253,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Native OCR failed: {detail}'**
   String ocrErrorNativeFailed(String detail);
+
+  /// Section header for the report-writing LLM role in the model manager
+  ///
+  /// In en, this message translates to:
+  /// **'Report-writing LLM'**
+  String get settingsEngineLlmTitle;
+
+  /// Display name of the Gemma 2 2B Instruct report-writing model
+  ///
+  /// In en, this message translates to:
+  /// **'Gemma 2 · 2B Instruct (Q4_K_M)'**
+  String get modelNameGemma2Llm;
 }
 
 class _AppLocalizationsDelegate
