@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-28",
+  "catalog_version": "2026-08-29",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -35,7 +35,7 @@
           "backend": "transformer",
           "tokenizer": "bert-wordpiece",
           "ai_label_index": 1,
-          "ai_evidence_threshold": 0.99,
+          "ai_evidence_threshold": 0.97,
           "languages": [
             "zh"
           ],
@@ -50,7 +50,7 @@
           "source": "YuchuanTian/AIGC_detector_zhv3（TruthLens ONNX INT8 轉換與獨立固定誤報率校準）",
           "page_url": "https://huggingface.co/yuchuantian/AIGC_detector_zhv3",
           "license": "Apache-2.0",
-          "note": "針對 DeepSeek-V3、GPT-4 與現代中文生成文訓練。TruthLens 不沿用原始 0.5 門檻：在 NLPCC 2025 DetectRL-ZH 獨立樣本上以 0.99 投票門檻得到約 0.3% 真人誤報率、48.7% AI 召回率；NLPCC 2026 兩組未見資料真人誤報率約 0.7%／1.3%。低於門檻只表示未取得 AI 證據，不反向投真人票。"
+          "note": "針對 DeepSeek-V3、GPT-4 與現代中文生成文訓練。TruthLens 不沿用原始 0.5 門檻。投票門檻 0.97 由 NLPCC-2025 DetectRL-ZH 的 dev 分割（shared task 指定的校準集）選出，取誤報 Wilson 95% 上界 ≤ 1% 之中最低者；隨後在完全不同的 SemEval-2024 Task 8 中文語料上只報告一次，得真人誤報 0.12%（上界 0.22%）、AI 召回 27.4%。召回仍低於發布門檻要求的 50%，因此中文尚未通過外部驗證；此門檻的意義是在誤報預算內盡量少漏，不是宣稱已可靠。前一版標示的 0.99／48.7% 召回是語料內數字，同一顆模型在外部語料上實測只有 9.0%。低於門檻只表示未取得 AI 證據，不反向投真人票。"
         },
         {
           "id": "chatgpt-detector-roberta-onnx-int8",

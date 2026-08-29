@@ -85,6 +85,61 @@ void main() {
     expect(restored.activeVariant('transformer')?.aiEvidenceThreshold, 0.99);
   });
 
+  group('校準中繼資料同步', () {
+    test('withCalibration 只換門檻與語言，其餘欄位原封不動', () {
+      const before = InstalledModel(
+        role: 'transformer',
+        variantId: 'aigc-detector-zhv3-int8',
+        fileName: 'zh.onnx',
+        tokenizerFileName: 'zh_tok.json',
+        tokenizer: 'bert-wordpiece',
+        aiLabelIndex: 1,
+        aiEvidenceThreshold: 0.99,
+        version: '3.0-truthlens-cal1',
+        sizeBytes: 103073737,
+        sha256: 'abc123',
+        languages: ['zh'],
+      );
+
+      final after = before.withCalibration(
+        aiEvidenceThreshold: 0.97,
+        languages: const ['zh'],
+      );
+
+      expect(after.aiEvidenceThreshold, 0.97);
+      expect(after.variantId, before.variantId);
+      expect(after.fileName, before.fileName);
+      expect(after.tokenizerFileName, before.tokenizerFileName);
+      expect(after.tokenizer, before.tokenizer);
+      expect(after.aiLabelIndex, before.aiLabelIndex);
+      expect(after.version, before.version);
+      expect(after.sizeBytes, before.sizeBytes);
+      expect(after.sha256, before.sha256);
+    });
+
+    test('sha256 不同時不得同步——那代表模型換了，不是只換校準', () async {
+      // 下載出來的檔案雜湊必然與 catalog 宣告的不同，正好模擬「模型檔不一致」。
+      await manager.downloadVariant(
+        'transformer',
+        _variant(
+          'aigc-detector-zhv3-int8',
+          url: 'https://x/zh.onnx',
+          aiEvidenceThreshold: 0.99,
+        ),
+      );
+      final before = manager.activeVariant('transformer')!;
+      expect(before.aiEvidenceThreshold, 0.99);
+
+      await manager.syncCalibrationFromCatalog(ModelCatalogService());
+
+      expect(
+        manager.activeVariant('transformer')?.aiEvidenceThreshold,
+        0.99,
+        reason: '模型檔與 catalog 宣告不符時，門檻不得被靜默改寫',
+      );
+    });
+  });
+
   test('多變體並存並可切換使用中', () async {
     await manager.downloadVariant(
       'transformer',

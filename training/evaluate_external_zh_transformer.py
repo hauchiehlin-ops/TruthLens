@@ -51,6 +51,14 @@ def main() -> None:
     parser.add_argument("--threshold", type=float, default=0.99)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--json-out", type=Path)
+    parser.add_argument(
+        "--calibration-corpus",
+        type=Path,
+        help="pick the threshold on THIS corpus, then report on --corpus. "
+        "The two must be different corpora, or the reported number is just "
+        "the selection restated.",
+    )
+    parser.add_argument("--target-fpr", type=float, default=0.01)
     args = parser.parse_args()
 
     tokenizer = Tokenizer.from_file(str(args.tokenizer))
@@ -60,27 +68,66 @@ def main() -> None:
     input_names = {i.name for i in session.get_inputs()}
     print(f"model inputs: {sorted(input_names)}", flush=True)
 
-    rows = json.loads(args.corpus.read_text(encoding="utf-8"))
-    probabilities = np.empty(len(rows), dtype=np.float64)
-    for start in range(0, len(rows), args.batch_size):
-        chunk = rows[start : start + args.batch_size]
-        encodings = tokenizer.encode_batch([r["text"] for r in chunk])
-        feed = {
-            "input_ids": np.array([e.ids for e in encodings], dtype=np.int64),
-            "attention_mask": np.array(
-                [e.attention_mask for e in encodings], dtype=np.int64
+    def score_corpus(path: Path):
+        rows = json.loads(path.read_text(encoding="utf-8"))
+        probabilities = np.empty(len(rows), dtype=np.float64)
+        for start in range(0, len(rows), args.batch_size):
+            chunk = rows[start : start + args.batch_size]
+            encodings = tokenizer.encode_batch([r["text"] for r in chunk])
+            feed = {
+                "input_ids": np.array([e.ids for e in encodings], dtype=np.int64),
+                "attention_mask": np.array(
+                    [e.attention_mask for e in encodings], dtype=np.int64
+                ),
+            }
+            feed = {k: v for k, v in feed.items() if k in input_names}
+            logits = np.asarray(session.run(None, feed)[0], dtype=np.float64)
+            shifted = logits - logits.max(axis=1, keepdims=True)
+            exp = np.exp(shifted)
+            probabilities[start : start + len(chunk)] = (
+                exp[:, args.ai_label_index] / exp.sum(axis=1)
+            )
+            if start % (args.batch_size * 50) == 0:
+                print(f"  {path.name} {start}/{len(rows)}", flush=True)
+        return rows, probabilities
+
+    calibration = None
+    if args.calibration_corpus:
+        if args.calibration_corpus.resolve() == args.corpus.resolve():
+            raise SystemExit(
+                "calibration and reporting corpora must differ — otherwise the "
+                "reported figure is the selection restated, which the contract "
+                "lists under prohibited_shortcuts."
+            )
+        cal_rows, cal_probs = score_corpus(args.calibration_corpus)
+        cal_labels = np.array([int(r["label"]) for r in cal_rows])
+        cal_human = cal_labels == 0
+        # 取「在誤報預算內、最低」的門檻：門檻愈低召回愈高，因此在符合
+        # 上界要求的候選中選最小者。用 Wilson 上界而非點估計，與合約的
+        # fpr_confidence_bound 一致。
+        chosen = 1.0
+        for candidate in np.round(np.arange(0.50, 0.9991, 0.001), 3):
+            fp = int(((cal_probs >= candidate) & cal_human).sum())
+            if wilson_upper(fp, int(cal_human.sum())) <= args.target_fpr:
+                chosen = float(candidate)
+                break
+        fp_at = int(((cal_probs >= chosen) & cal_human).sum())
+        calibration = {
+            "corpus": str(args.calibration_corpus),
+            "documents": len(cal_rows),
+            "human_documents": int(cal_human.sum()),
+            "target_fpr": args.target_fpr,
+            "chosen_threshold": chosen,
+            "calibration_fpr": fp_at / int(cal_human.sum()),
+            "calibration_fpr_upper_95": wilson_upper(fp_at, int(cal_human.sum())),
+            "calibration_recall": float(
+                (cal_probs[cal_labels == 1] >= chosen).mean()
             ),
         }
-        feed = {k: v for k, v in feed.items() if k in input_names}
-        logits = np.asarray(session.run(None, feed)[0], dtype=np.float64)
-        shifted = logits - logits.max(axis=1, keepdims=True)
-        exp = np.exp(shifted)
-        probabilities[start : start + len(chunk)] = (
-            exp[:, args.ai_label_index] / exp.sum(axis=1)
-        )
-        if start % (args.batch_size * 50) == 0:
-            print(f"  {start}/{len(rows)}", flush=True)
+        print(json.dumps({"calibration": calibration}, ensure_ascii=False, indent=2), flush=True)
+        args.threshold = chosen
 
+    rows, probabilities = score_corpus(args.corpus)
     labels = np.array([int(r["label"]) for r in rows])
     models = [r.get("model") for r in rows]
     flagged = probabilities >= args.threshold
@@ -116,6 +163,7 @@ def main() -> None:
         "fpr": false_positives / int(human.sum()),
         "fpr_upper_95": wilson_upper(false_positives, int(human.sum())),
         "recall": true_positives / int(machine.sum()),
+        "calibration": calibration,
         "threshold_sweep": sweep,
         "per_generator": {
             name: {

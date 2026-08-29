@@ -42,6 +42,69 @@ class ModelManager extends ChangeNotifier {
   /// 主動連線抓取最新 catalog，比對所有已安裝角色的使用中版本是否落後。
   /// 應用程式啟動時呼叫一次即可；離線或抓取失敗時靜默略過，不視為錯誤
   /// （catalog 服務本身已有「遠端優先、失敗回退本地資產」的機制）。
+
+  /// 讓 catalog 的校準修正抵達既有安裝：模型檔相同（sha256 一致）時，
+  /// 直接更新門檻與語言涵蓋，不要求重新下載。
+  ///
+  /// sha256 不同代表模型本身換了，那才是真正的「有更新」，交給
+  /// [checkForUpdates] 提示使用者重新下載。
+  Future<void> syncCalibrationFromCatalog(
+    ModelCatalogService catalogService,
+  ) async {
+    try {
+      final catalog = await catalogService.load();
+      var changed = false;
+      for (final role in _roles.keys.toList()) {
+        final state = _roles[role]!;
+        final variants = catalog.forRole(role)?.variants ?? const <ModelVariant>[];
+        final updated = <String, InstalledModel>{};
+        for (final entry in state.installed.entries) {
+          final installed = entry.value;
+          ModelVariant? match;
+          for (final v in variants) {
+            if (v.id == installed.variantId) {
+              match = v;
+              break;
+            }
+          }
+          final sameFile =
+              match != null &&
+              match.sha256 != null &&
+              installed.sha256 != null &&
+              match.sha256!.toLowerCase() == installed.sha256!.toLowerCase();
+          if (sameFile &&
+              (match.aiEvidenceThreshold != installed.aiEvidenceThreshold ||
+                  !_sameLanguages(match.languages, installed.languages))) {
+            updated[entry.key] = installed.withCalibration(
+              aiEvidenceThreshold: match.aiEvidenceThreshold,
+              languages: match.languages,
+            );
+            changed = true;
+          } else {
+            updated[entry.key] = installed;
+          }
+        }
+        if (changed) {
+          _roles[role] = state.copyWith(installed: updated);
+        }
+      }
+      if (changed) {
+        await _persist();
+        notifyListeners();
+      }
+    } catch (_) {
+      // catalog 讀不到就維持現狀，不影響既有分析流程。
+    }
+  }
+
+  static bool _sameLanguages(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
   Future<void> checkForUpdates(ModelCatalogService catalogService) async {
     try {
       final catalog = await catalogService.load();

@@ -68,9 +68,12 @@ class _InputScreenState extends State<InputScreen> {
   void initState() {
     super.initState();
     // 主動、靜默地檢查模型是否有更新；離線或失敗時不影響任何功能。
-    context.read<ModelManager>().checkForUpdates(
-      context.read<ModelCatalogService>(),
-    );
+    final manager = context.read<ModelManager>();
+    final catalogService = context.read<ModelCatalogService>();
+    manager.checkForUpdates(catalogService);
+    // 校準門檻的修正不需要重新下載模型，直接同步到既有安裝紀錄——
+    // 否則舊門檻會永遠留在已安裝使用者的裝置上。
+    manager.syncCalibrationFromCatalog(catalogService);
   }
 
   @override

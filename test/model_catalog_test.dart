@@ -118,7 +118,9 @@ void main() {
     );
 
     expect(modern['languages'], contains('zh'));
-    expect(modern['ai_evidence_threshold'], 0.99);
+    // 0.97 由 NLPCC-2025 dev 校準、在 SemEval 中文上報告：誤報上界 0.22%、
+    // 召回 27.4%。前一版的 0.99 是語料內數字，外部召回只有 9.0%。
+    expect(modern['ai_evidence_threshold'], 0.97);
     expect(legacy['languages'], isNot(contains('zh')));
   });
 

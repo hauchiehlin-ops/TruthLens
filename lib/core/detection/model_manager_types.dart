@@ -133,6 +133,31 @@ class InstalledModel {
       rethrow;
     }
   }
+
+  /// 從 catalog 同步「校準」欄位，其餘一律保留。
+  ///
+  /// 只在模型檔完全相同（sha256 一致）時才允許：檔案沒變代表推論結果不會變，
+  /// 變的只是我們對它該用什麼門檻的認識。讓使用者為了一個數字重新下載
+  /// 上百 MB 不合理，但把舊門檻留在裝置上又會讓校準修正永遠到不了既有使用者。
+  InstalledModel withCalibration({
+    required double aiEvidenceThreshold,
+    required List<String> languages,
+  }) => InstalledModel(
+    role: role,
+    variantId: variantId,
+    fileName: fileName,
+    tokenizerFileName: tokenizerFileName,
+    tokenizer: tokenizer,
+    aiLabelIndex: aiLabelIndex,
+    aiEvidenceThreshold: aiEvidenceThreshold,
+    version: version,
+    sizeBytes: sizeBytes,
+    name: name,
+    imported: imported,
+    sha256: sha256,
+    runtimeJson: runtimeJson,
+    languages: languages,
+  );
 }
 
 /// 單一 role 的安裝狀態（可含多個已安裝變體 + 使用中變體 + 下載進度）

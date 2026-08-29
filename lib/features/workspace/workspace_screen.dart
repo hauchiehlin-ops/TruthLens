@@ -125,9 +125,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         });
       }
     }
-    context.read<ModelManager>().checkForUpdates(
-      context.read<ModelCatalogService>(),
-    );
+    final manager = context.read<ModelManager>();
+    final catalogService = context.read<ModelCatalogService>();
+    manager.checkForUpdates(catalogService);
+    // 同上：校準修正直接同步，不要求重新下載。
+    manager.syncCalibrationFromCatalog(catalogService);
   }
 
   @override
