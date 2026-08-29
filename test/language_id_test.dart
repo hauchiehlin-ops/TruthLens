@@ -120,6 +120,30 @@ void main() {
     // 以下四項對應 M4GT 多語語料上量到的結構性錯誤：只看文字系統會把
     // 保加利亞文全判成俄文、烏爾都文全判成阿拉伯文，而義大利文與印尼文
     // 因為缺剖面／近親互鎖幾乎全數棄權。
+    test('夾雜少量中文的英文文件不得被判成中文', () {
+      // 原本用絕對門檻（漢字 >= 10%），實測中文只佔 10.4%（九成是英文）就會
+      // 判成 zh，整份文件接著被送去中文專用模型評分。改為比較內容單位：
+      // 漢字大致一字一義、拉丁文一詞一義，兩者用各自的單位數相比才對等。
+      const english =
+          'Conformity psychology plays a central role in consumer behaviour '
+          'research and deserves closer examination in modern digital markets. ';
+      const chinese = '從眾心理學在消費者行為研究中扮演關鍵角色。';
+
+      final result = detectLanguage(english * 20 + chinese * 5);
+      expect(result.code, 'en');
+    });
+
+    test('中英份量相當時判為中文並標記混合', () {
+      const english =
+          'Conformity psychology plays a central role in consumer behaviour '
+          'research and deserves closer examination in modern digital markets. ';
+      const chinese = '從眾心理學在消費者行為研究中扮演關鍵角色，值得深入探討。';
+
+      final result = detectLanguage(english * 20 + chinese * 20);
+      expect(result.code, 'zh');
+      expect(result.mixedScripts, isTrue);
+    });
+
     test('保加利亞文不會因共用西里爾字母而被判成俄文', () {
       final result = detectLanguage(
         'Настоящото изследване разглежда прехода към турбулентност в потока '

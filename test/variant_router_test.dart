@@ -97,6 +97,43 @@ void main() {
       expect(choice.overrodeUserChoice, isTrue);
     });
 
+    test('中英混合文件改用多語變體，不用只懂一半的專用模型', () {
+      // 實測：中文字元只佔 10% 的文件（九成是英文）原本會被判成 zh 並送去
+      // 中文專用模型評分。語言判定已修正，但真正的混合文件仍需要涵蓋兩種
+      // 語言的模型——拿中文偵測器讀英文段落等於那一半沒有被檢查。
+      final choice = chooseVariant(
+        installed: [_modernZh, _multi, _enOnly],
+        language: 'zh',
+        userActiveVariantId: _modernZh.variantId,
+        mixedScripts: true,
+      );
+
+      expect(choice.variant, _multi);
+      expect(choice.overrodeUserChoice, isTrue);
+    });
+
+    test('非混合文件維持原本的語言專用路由', () {
+      final choice = chooseVariant(
+        installed: [_modernZh, _multi, _enOnly],
+        language: 'zh',
+        userActiveVariantId: _modernZh.variantId,
+      );
+
+      expect(choice.variant, _modernZh);
+      expect(choice.overrodeUserChoice, isFalse);
+    });
+
+    test('混合文件但沒裝多語變體時，退回一般路由而非放棄', () {
+      final choice = chooseVariant(
+        installed: [_modernZh, _enOnly],
+        language: 'zh',
+        userActiveVariantId: _modernZh.variantId,
+        mixedScripts: true,
+      );
+
+      expect(choice.variant, _modernZh);
+    });
+
     test('使用者選的變體已驗證時不換，尊重手動選擇', () {
       final choice = chooseVariant(
         installed: [_enOnly, _multi],

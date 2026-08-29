@@ -86,8 +86,25 @@ VariantChoice chooseVariant({
   required List<InstalledModel> installed,
   required String? language,
   String? userActiveVariantId,
+  bool mixedScripts = false,
 }) {
   if (installed.isEmpty) return VariantChoice.none;
+
+  // 中英混合文件：語言專用模型只涵蓋其中一半，拿它評分另一半等於用中文偵測器
+  // 讀英文段落。多語變體兩邊都涵蓋，即使對單一語言的強度略遜，整份文件的
+  // 判讀仍然比較可信。找不到多語變體時才退回一般路由。
+  if (mixedScripts) {
+    for (final m in installed) {
+      if (m.languages.contains('multi')) {
+        return VariantChoice(
+          variant: m,
+          fit: fitFor(m, language ?? ''),
+          overrodeUserChoice:
+              userActiveVariantId != null && m.variantId != userActiveVariantId,
+        );
+      }
+    }
+  }
 
   InstalledModel? userChoice;
   for (final m in installed) {

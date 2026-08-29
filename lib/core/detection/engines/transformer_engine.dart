@@ -50,7 +50,7 @@ class TransformerEngine implements DetectionEngine {
   ///
   /// [variantId] 明確指定時直接鎖定該變體（測試與特定流程用），
   /// 不參與路由——呼叫端已經表達了確切意圖。
-  VariantChoice routeFor(String? language) {
+  VariantChoice routeFor(String? language, {bool mixedScripts = false}) {
     final installed = modelManager.installedVariants('transformer');
     if (variantId != null) {
       for (final m in installed) {
@@ -66,6 +66,7 @@ class TransformerEngine implements DetectionEngine {
     return chooseVariant(
       installed: installed,
       language: language,
+      mixedScripts: mixedScripts,
       userActiveVariantId: modelManager.activeVariant('transformer')?.variantId,
     );
   }
@@ -167,6 +168,7 @@ class TransformerEngine implements DetectionEngine {
     // 從未跨過強訊號閾值，等於權重空轉，而使用者看不出這件事。
     _choice = routeFor(
       text.language.isUndetermined ? null : text.language.code,
+      mixedScripts: text.language.mixedScripts,
     );
 
     OnnxDetector? detector;

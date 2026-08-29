@@ -10,6 +10,8 @@
 /// 幾乎零成本就能分出絕大多數的組，拉丁語系內部再以功能詞剖面細分。
 library;
 
+import 'dart:math' as math;
+
 /// 辨識結果。[code] 對應 [PerplexityCalibration] 等校準表的查表鍵。
 class DetectedLanguage {
   /// ISO 639-1 語言代碼；無法判定時為 [undetermined]
@@ -18,7 +20,13 @@ class DetectedLanguage {
   /// 判定信心 0–1。文字系統判定接近 1，功能詞剖面判定較低。
   final double confidence;
 
-  const DetectedLanguage(this.code, this.confidence);
+  /// 文件是否同時含有大量的另一種文字系統。
+  ///
+  /// 混合文件不該被丟給只涵蓋其中一種語言的專用模型——那等於用中文偵測器去
+  /// 評分英文段落。路由層看到這個旗標時會優先選多語言變體。
+  final bool mixedScripts;
+
+  const DetectedLanguage(this.code, this.confidence, {this.mixedScripts = false});
 
   /// 無法判定。校準表查不到它，對應的指標一律棄權而非猜測。
   static const String undetermined = 'und';
@@ -357,10 +365,35 @@ DetectedLanguage detectLanguage(String raw) {
   final arabic = ratio(_arabicRe);
   final devanagari = ratio(_devanagariRe);
 
+  // 中日韓以「內容單位」與拉丁文比較，而不是只看字元佔比。純中文文件裡漢字
+  // 約佔一半，因此門檻必須訂得低；但絕對門檻會讓夾雜少量中文的英文文件也中槍
+  // ——實測中文字元僅 10.4%（九成是英文）就會被判成 zh，接著整份文件被送去
+  // 中文專用模型評分。漢字大致一字一義，拉丁文一詞一義，兩者用各自的單位數
+  // 相比才對等。
+  final latinWords = _wordRe.allMatches(text).length;
+  final cjkChars = _hanRe.allMatches(text).length + _kanaRe.allMatches(text).length;
+  final hangulChars = _hangulRe.allMatches(text).length;
+  // 兩種文字系統都有實質份量時標記為混合：路由層會改選涵蓋兩者的多語模型。
+  final mixed =
+      latinWords >= 20 &&
+      (cjkChars + hangulChars) >= 20 &&
+      math.min(latinWords, cjkChars + hangulChars) >=
+          math.max(latinWords, cjkChars + hangulChars) * 0.25;
+
   // 日文與中文都用漢字，靠假名區分：日文正常行文必然夾雜假名。
-  if (kana >= 0.05) return DetectedLanguage('ja', (kana + han).clamp(0.0, 1.0));
-  if (hangul >= 0.10) return DetectedLanguage('ko', hangul);
-  if (han >= 0.10) return DetectedLanguage('zh', han);
+  if (kana >= 0.05 && cjkChars >= latinWords) {
+    return DetectedLanguage(
+      'ja',
+      (kana + han).clamp(0.0, 1.0),
+      mixedScripts: mixed,
+    );
+  }
+  if (hangul >= 0.10 && hangulChars >= latinWords) {
+    return DetectedLanguage('ko', hangul, mixedScripts: mixed);
+  }
+  if (han >= 0.10 && cjkChars >= latinWords) {
+    return DetectedLanguage('zh', han, mixedScripts: mixed);
+  }
   if (thai >= 0.10) return DetectedLanguage('th', thai);
   if (cyrillic >= 0.10) {
     return DetectedLanguage(_resolveCyrillic(text), cyrillic);
