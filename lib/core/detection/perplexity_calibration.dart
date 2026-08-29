@@ -101,9 +101,9 @@ const Map<String, Map<String, PerplexityThresholds>> _table = {
   // （onnx-community/Qwen2.5-0.5B 的 model_int8.onnx，非 fp32），
   // 因此切換模型時可直接生效，不需重測。
   //
-  // 尚未啟用的原因與門檻無關：Dart→JS 橋接目前只餵 input_ids 與
-  // attention_mask，而 Qwen 的 web 建置另需 position_ids 與 48 個
-  // KV cache 張量，需先擴充 web_js_bridge.dart 與 web/ 的 JS 側。
+  // 註：Web 側的支援已完成——ort_bridge.js 會依模型宣告自動補上 position_ids
+  // 與 24 層 × key/value 共 48 個空 KV cache 張量，靜態維度由 catalog 的
+  // runtime.kv_cache 帶入。實測 INT8 產物可正常推論並算出困惑度。
   'qwen05b-ppl-int8': {
     'zh': PerplexityThresholds(
       aiCut: 11.19,
@@ -151,6 +151,23 @@ abstract final class PerplexityCalibration {
     final entry = _table[modelId]?[languageCode];
     if (entry == null || !entry.isUsable) return null;
     return entry;
+  }
+
+  /// [candidateModelIds] 之中，第一個對 [languageCode] 有**可用**門檻的模型。
+  ///
+  /// 存在的理由：困惑度的可分性綁定「模型 × 語言」，差距可以很極端——
+  /// DistilGPT2 對中文的 AUC 是 0.50（等於亂猜），Qwen2.5-0.5B 是 0.965。
+  /// 若沿用使用者手動設定的「使用中」變體，一份中文文件配上 DistilGPT2 就會
+  /// 讓整個統計角色空轉，而介面上看不出原因。候選依傳入順序（catalog 的品質
+  /// 排序）評估，全部都查不到可用門檻時回傳 null，由呼叫端誠實棄權。
+  static String? bestModelFor(
+    String languageCode,
+    Iterable<String> candidateModelIds,
+  ) {
+    for (final id in candidateModelIds) {
+      if (of(languageCode, modelId: id) != null) return id;
+    }
+    return null;
   }
 
   /// 表中是否有這個語言的紀錄（含判定為不可用者）。

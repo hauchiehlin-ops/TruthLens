@@ -63,26 +63,38 @@ class StatisticalEngine implements DetectionEngine {
     // 語言由 PreprocessedText 統一提供，不各自重算——各引擎若拿到不同的
     // 語言判定，校準查表與模型路由就會互相矛盾。
     final language = text.language;
-    // 門檻綁定「模型 × 語言」，所以要查的是**目前使用中**那顆模型的門檻。
-    // 使用者自行匯入的模型沒有校準資料，查不到就不採計此指標——
-    // 沿用別顆模型的門檻等於在未知尺度上下結論。
-    final calibration = PerplexityCalibration.of(
-      language.code,
-      modelId:
-          modelManager?.activeVariant('statistical')?.variantId ??
-          defaultPerplexityModelId,
-    );
+    // 門檻綁定「模型 × 語言」，而差距可以很極端：DistilGPT2 對中文的 AUC 是
+    // 0.50（等於亂猜），Qwen2.5-0.5B 是 0.965。沿用使用者手動設定的「使用中」
+    // 變體，會讓一份中文文件配上 DistilGPT2 時整個角色空轉，而介面看不出原因。
+    //
+    // 因此改為逐文件挑選：在**已安裝**的變體中選第一個對本文件語言查得到
+    // 可用門檻的。挑不到就不採計——沿用別顆模型的門檻等於在未知尺度上下結論。
+    final installedIds = [
+      for (final v in modelManager?.installedVariants('statistical') ??
+          const <InstalledModel>[])
+        v.variantId,
+    ];
+    final activeId = modelManager?.activeVariant('statistical')?.variantId;
+    final routedModelId = language.isUndetermined
+        ? null
+        : PerplexityCalibration.bestModelFor(language.code, [
+            // 使用者的選擇優先——它適用時就不換，尊重手動設定。
+            ?activeId,
+            ...installedIds,
+            defaultPerplexityModelId,
+          ]);
+    final calibration = routedModelId == null
+        ? null
+        : PerplexityCalibration.of(language.code, modelId: routedModelId);
     final ppl = calibration != null
-        ? await _tryPerplexity(text.analysisText)
+        ? await _tryPerplexity(text.analysisText, routedModelId)
         : null;
     features['perplexity_calibrated'] = ppl == null ? 0 : 1;
     if (calibration == null) {
       // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
       // 先前一律套用中日韓文那段說明，結果一篇英文論文被告知
       // 「對中日韓文而言……」——訊息本身就在誤導。
-      final modelId =
-          modelManager?.activeVariant('statistical')?.variantId ??
-          defaultPerplexityModelId;
+      final modelId = activeId ?? defaultPerplexityModelId;
       if (language.isUndetermined) {
         reasons.add(l10n.engineReasonPplLanguageUndetermined);
       } else if (PerplexityCalibration.hasRecord(
@@ -240,8 +252,7 @@ class StatisticalEngine implements DetectionEngine {
       // 只有實際算出結果的才列出——沒有模型時困惑度是缺席，不是「跑了但中性」。
       modules: [
         if (ppl != null)
-          modelManager?.activeVariant('statistical')?.variantId ??
-              l10n.engineStatisticalPerplexityModule,
+          routedModelId ?? l10n.engineStatisticalPerplexityModule,
         if (lexical != null) l10n.engineStatisticalLexicalModule,
         if (ppl == null && lexical == null)
           l10n.engineStatisticalHeuristicModule,
@@ -287,13 +298,20 @@ class StatisticalEngine implements DetectionEngine {
       PerplexityCalibration.of(detectLanguage(raw).code, modelId: modelId) !=
       null;
 
-  Future<double?> _tryPerplexity(String text) async {
+  /// 載入 [variantId] 指定的變體並計算困惑度。
+  ///
+  /// 刻意接受變體 id 而不是沿用「使用中」：路由已依文件語言挑過，這裡若再讀
+  /// activeVariant，選出來的門檻與實際跑的模型就會是兩顆不同的東西。
+  Future<double?> _tryPerplexity(String text, String? variantId) async {
     final mm = modelManager;
-    if (mm == null) return null;
-    final active = mm.activeVariant('statistical');
+    if (mm == null || variantId == null) return null;
+    final active = mm
+        .installedVariants('statistical')
+        .where((v) => v.variantId == variantId)
+        .firstOrNull;
     if (active == null) return null;
-    final modelPath = await mm.activeModelPath('statistical');
-    final tokPath = await mm.activeTokenizerPath('statistical');
+    final modelPath = await mm.variantModelPath('statistical', variantId);
+    final tokPath = await mm.variantTokenizerPath('statistical', variantId);
     if (modelPath == null || tokPath == null) return null;
     try {
       if (_scorer == null || _loadedPath != modelPath) {

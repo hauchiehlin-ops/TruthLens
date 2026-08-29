@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:truthlens/core/detection/detection_engine.dart';
+import 'package:truthlens/core/detection/perplexity_calibration.dart';
 import 'package:truthlens/core/detection/engines/statistical_engine.dart';
 import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
 import 'package:truthlens/core/detection/orchestrator.dart';
@@ -526,6 +527,49 @@ void main() {
 /// 依據：HC3 中文語料實測，門檻 60 之下真人與 AI 各佔 100%，區別力 0.0%；
 /// production 管線量到中文真人 41、中文 AI 46，兩者皆低於 60 且順序相反。
 void _perplexityLanguageGate() {
+  group('困惑度模型依語言路由', () {
+    test('中文挑得出 Qwen，挑不到 DistilGPT2', () {
+      // 同一個指標換模型，可分性天差地遠：DistilGPT2 對中文 AUC 0.50
+      // （等於亂猜，被 isUsable 擋下），Qwen2.5-0.5B 是 0.965。
+      expect(
+        PerplexityCalibration.bestModelFor('zh', const [
+          'distilgpt2-ppl-int8',
+          'qwen05b-ppl-int8',
+        ]),
+        'qwen05b-ppl-int8',
+      );
+    });
+
+    test('英文兩顆都可用時，尊重候選順序（使用者選擇優先）', () {
+      expect(
+        PerplexityCalibration.bestModelFor('en', const [
+          'distilgpt2-ppl-int8',
+          'qwen05b-ppl-int8',
+        ]),
+        'distilgpt2-ppl-int8',
+      );
+    });
+
+    test('只裝了對該語言無效的模型時回傳 null，由呼叫端棄權', () {
+      expect(
+        PerplexityCalibration.bestModelFor('zh', const [
+          'distilgpt2-ppl-int8',
+        ]),
+        isNull,
+      );
+    });
+
+    test('未量測過的語言一律回傳 null，不拿別的語言門檻頂替', () {
+      expect(
+        PerplexityCalibration.bestModelFor('th', const [
+          'distilgpt2-ppl-int8',
+          'qwen05b-ppl-int8',
+        ]),
+        isNull,
+      );
+    });
+  });
+
   group('困惑度的語言適用範圍', () {
     test('中文文本不採計困惑度', () {
       expect(
