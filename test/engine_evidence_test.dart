@@ -331,6 +331,31 @@ void main() {
       expect(score.aiProbability, greaterThan(0));
     });
 
+    test('助理招呼語長在版面結構上，剝掉結構就會連證據一起剝掉', () async {
+      // 真實回報：一份 Gemini 回覆被判為「未取得可量化的作者訊號」。原因是
+      // 助理殘留樣式比對的是 analysisText，而 analysisText 刻意剝除標題、
+      // 條列與以冒號結尾的引導句——招呼語正好長在那裡。實測該文件原文命中
+      // 1 次、analysisText 命中 0 次，全 App 特異性最高的訊號就此消失。
+      //
+      // 直接痕跡必須在原文上找；統計特徵才需要乾淨的 analysisText。
+      const document =
+          '### 一、 目前世界最新的研究成果\n\n'
+          '以下為您整理目前世界上最新的研究成果，以及尚待開發的研究缺口：\n\n'
+          '**1. 社群電商下的雙軌從眾機制**\n'
+          '消費者依賴他人的評論或購買數量來做決策，這在資訊過載的情況下特別明顯。\n'
+          '為了獲得群體認同、避免被邊緣化而跟風購買，是另一條獨立的路徑。\n';
+
+      final text = PreprocessedText.from(document);
+      // 前提：該行確實不在 analysisText 裡，否則這條測試就失去意義。
+      expect(text.analysisText.contains('以下為您整理'), isFalse);
+      expect(text.raw.contains('以下為您整理'), isTrue);
+
+      final score = await StylometryEngine().analyze(text, l10n);
+      expect(score.features['assistant_response_artifacts'], 1.0);
+      expect(score.hasEvidence, isTrue);
+      expect(score.votes, isTrue);
+    });
+
     test('聊天助理回覆殘留是高特異性文字證據', () async {
       final score = await StylometryEngine().analyze(
         PreprocessedText.from(

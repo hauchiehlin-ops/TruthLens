@@ -112,8 +112,14 @@ class StylometryEngine implements DetectionEngine {
 
     // 特徵 0：聊天助理回覆框架殘留。單一片語可能只是正文引用，僅給 75%；
     // 命中兩個獨立對話框架時才提高至近乎完整的規則分數。
+    //
+    // 比對 [PreprocessedText.raw] 而非 analysisText：這是直接痕跡，不是統計量。
+    // analysisText 會刻意剝掉標題、條列與以冒號結尾的引導句，好讓統計特徵不被
+    // 版面結構污染——但助理回覆的招呼語正好就長在那些位置。實測一份助理回覆
+    // 文件：「以下為您整理…提供靈感：」整行被剝除，原文命中 1 次、analysisText
+    // 命中 0 次，全 App 特異性最高的訊號就此消失在引擎看到它之前。
     final assistantArtifactHits = assistantResponsePatterns
-        .where((pattern) => pattern.hasMatch(text.analysisText))
+        .where((pattern) => pattern.hasMatch(text.raw))
         .length;
     features['assistant_response_artifacts'] = assistantArtifactHits.toDouble();
     if (assistantArtifactHits > 0) {
