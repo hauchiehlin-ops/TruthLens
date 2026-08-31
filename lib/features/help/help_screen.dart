@@ -117,6 +117,26 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _WorkflowInfographicWidget(l10n: l10n),
           const SizedBox(height: 24),
+          Text(l10n.helpWorkspaceActionsTitle, style: textTheme.titleLarge),
+          const SizedBox(height: 12),
+          _ProseCard(
+            title: l10n.helpWorkspaceImportTitle,
+            body: l10n.helpWorkspaceImportBody,
+          ),
+          _ProseCard(
+            title: l10n.helpWorkspaceNewAnalysisTitle,
+            body: l10n.helpWorkspaceNewAnalysisBody,
+          ),
+          _ProseCard(
+            title: l10n.helpWorkspaceEngineStatusTitle,
+            body: l10n.helpWorkspaceEngineStatusBody,
+          ),
+          _ProseCard(
+            title: l10n.helpWorkspaceIosWebTitle,
+            body: l10n.helpWorkspaceIosWebBody,
+            emphasize: true,
+          ),
+          const SizedBox(height: 24),
           Text(l10n.helpTuningTitle, style: textTheme.titleLarge),
           const SizedBox(height: 12),
           _stepCard(
@@ -240,11 +260,7 @@ class HelpScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        LucideIcons.check,
-                        size: 16,
-                        color: scheme.primary,
-                      ),
+                      Icon(LucideIcons.check, size: 16, color: scheme.primary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(p, style: const TextStyle(height: 1.45)),

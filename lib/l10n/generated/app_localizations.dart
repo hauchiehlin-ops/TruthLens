@@ -3725,7 +3725,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep4Body.
   ///
   /// In en, this message translates to:
-  /// **'Tap \"Start Detection\" and all four engines run in parallel, with live progress shown on screen. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.'**
+  /// **'Tap \"Start Detection\" and the enabled engines run with live progress shown on screen. Desktop browsers may run more work in parallel; iOS Web uses sequential execution and model release to avoid tab reloads. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.'**
   String get helpWorkflowStep4Body;
 
   /// No description provided for @helpWorkflowStep5Title.
@@ -3739,6 +3739,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Command grid is the default. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.'**
   String get helpWorkflowStep5Body;
+
+  /// No description provided for @helpWorkspaceActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace actions and platform limits'**
+  String get helpWorkspaceActionsTitle;
+
+  /// No description provided for @helpWorkspaceImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import document'**
+  String get helpWorkspaceImportTitle;
+
+  /// No description provided for @helpWorkspaceImportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"Import document\" replaces the current input with a newly selected file. If a previous report is visible, importing a new file clears that report and starts a new draft from the new file\'s text and metadata. The imported filename becomes the document identity shown in the workspace, history, and exported report.'**
+  String get helpWorkspaceImportBody;
+
+  /// No description provided for @helpWorkspaceNewAnalysisTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New analysis'**
+  String get helpWorkspaceNewAnalysisTitle;
+
+  /// No description provided for @helpWorkspaceNewAnalysisBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"New analysis\" means start over with a blank workspace. It clears the current imported text, source filename, report, sentence evidence, and analysis progress, then returns to the empty import/paste entry. It should not re-run the previously imported file.'**
+  String get helpWorkspaceNewAnalysisBody;
+
+  /// No description provided for @helpWorkspaceEngineStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine status in reports'**
+  String get helpWorkspaceEngineStatusTitle;
+
+  /// No description provided for @helpWorkspaceEngineStatusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'An engine can be available, executed, and still show no strong evidence. That is different from a missing or disabled model. Reports separate these states: unavailable means the model could not participate; weak direction means it ran but did not cross the evidence gate; no strong signal means it ran and found nothing usable for voting.'**
+  String get helpWorkspaceEngineStatusBody;
+
+  /// No description provided for @helpWorkspaceIosWebTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS browser memory limits'**
+  String get helpWorkspaceIosWebTitle;
+
+  /// No description provided for @helpWorkspaceIosWebBody.
+  ///
+  /// In en, this message translates to:
+  /// **'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.'**
+  String get helpWorkspaceIosWebBody;
 
   /// No description provided for @helpWorkflowStep1ChipOnboarding.
   ///

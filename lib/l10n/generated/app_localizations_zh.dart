@@ -2271,7 +2271,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep4Body =>
-      '點擊「開始檢測」，四個引擎並行執行，畫面即時顯示各引擎完成進度。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。分析進行中可隨時從工具列中止；文件文字會保留，但未完成的結果不會被儲存。';
+      '點擊「開始檢測」，已啟用的引擎會開始執行，畫面即時顯示各引擎完成進度。桌面瀏覽器可執行較多並行工作；iOS Web 會改用循序執行並在每個模型用完後釋放，避免分頁重載。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。分析進行中可隨時從工具列中止；文件文字會保留，但未完成的結果不會被儲存。';
 
   @override
   String get helpWorkflowStep5Title => '查看與匯出結果';
@@ -2279,6 +2279,37 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；預設為指揮網格。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
+
+  @override
+  String get helpWorkspaceActionsTitle => '工作台操作與平台限制';
+
+  @override
+  String get helpWorkspaceImportTitle => '匯入文件';
+
+  @override
+  String get helpWorkspaceImportBody =>
+      '「匯入文件」會用新選擇的檔案取代目前輸入。若畫面已有前次報告，匯入新檔會清除前次報告，並以新檔案的文字與中繼資料建立新的草稿。匯入檔名會成為工作台、歷史紀錄與匯出報告中顯示的文件身分。';
+
+  @override
+  String get helpWorkspaceNewAnalysisTitle => '新的分析';
+
+  @override
+  String get helpWorkspaceNewAnalysisBody =>
+      '「新的分析」代表從空白工作台重新開始。它會清除目前匯入文字、來源檔名、報告、逐句證據與分析進度，回到空白的匯入／貼上入口；不應重新分析上一份已匯入文件。';
+
+  @override
+  String get helpWorkspaceEngineStatusTitle => '報告中的引擎狀態';
+
+  @override
+  String get helpWorkspaceEngineStatusBody =>
+      '引擎可能可用、也實際執行了，但沒有形成強證據。這和模型缺失或被停用不同。報告會分開呈現：無法參與代表模型不能加入分析；弱方向代表有執行但未跨過證據門檻；無強訊號代表有執行，但沒有找到可納入投票的有效證據。';
+
+  @override
+  String get helpWorkspaceIosWebTitle => 'iOS 瀏覽器記憶體限制';
+
+  @override
+  String get helpWorkspaceIosWebBody =>
+      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。TruthLens 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -5518,7 +5549,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4Body =>
-      '点击「开始检测」，四个引擎并行运行，画面即时显示各引擎完成进度。若侦测到非母语写作特征，会自动套用 ESL 偏差修正（可在设置关闭）。分析进行中可随时从工具栏中止；文档文本会保留，但未完成的结果不会被保存。';
+      '点击“开始检测”，已启用的引擎会开始运行，画面即时显示各引擎完成进度。桌面浏览器可运行较多并行工作；iOS Web 会改用循序运行并在每个模型用完后释放，避免标签页重载。若侦测到非母语写作特征，会自动套用 ESL 偏差修正（可在设置关闭）。分析进行中可随时从工具栏中止；文档文本会保留，但未完成的结果不会被保存。';
 
   @override
   String get helpWorkflowStep5Title => '查看与导出结果';
@@ -5526,6 +5557,37 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get helpWorkflowStep5Body =>
       '文档导入、四引擎实时进度与完整报告现在都保留在同一个战情中心工作台。可随时切换“指挥网格”“任务时间轴”与“证据画布”，不会中断或重新分析；默认是指挥网格。结果包含整体判定、AI 概率、信心度、耗时、逐句证据、引擎贡献、链接与文献核实，并可导出 PDF、CSV、JSON、PNG及保存至本机历史。';
+
+  @override
+  String get helpWorkspaceActionsTitle => '工作台操作与平台限制';
+
+  @override
+  String get helpWorkspaceImportTitle => '导入文件';
+
+  @override
+  String get helpWorkspaceImportBody =>
+      '“导入文件”会用新选择的文件取代当前输入。若画面已有前次报告，导入新文件会清除前次报告，并以新文件的文字与元数据建立新的草稿。导入文件名会成为工作台、历史记录与导出报告中显示的文档身份。';
+
+  @override
+  String get helpWorkspaceNewAnalysisTitle => '新的分析';
+
+  @override
+  String get helpWorkspaceNewAnalysisBody =>
+      '“新的分析”代表从空白工作台重新开始。它会清除当前导入文字、来源文件名、报告、逐句证据与分析进度，回到空白的导入／粘贴入口；不应重新分析上一份已导入文件。';
+
+  @override
+  String get helpWorkspaceEngineStatusTitle => '报告中的引擎状态';
+
+  @override
+  String get helpWorkspaceEngineStatusBody =>
+      '引擎可能可用、也实际运行了，但没有形成强证据。这和模型缺失或被停用不同。报告会分开呈现：无法参与代表模型不能加入分析；弱方向代表有运行但未跨过证据门槛；无强信号代表有运行，但没有找到可纳入投票的有效证据。';
+
+  @override
+  String get helpWorkspaceIosWebTitle => 'iOS 浏览器内存限制';
+
+  @override
+  String get helpWorkspaceIosWebBody =>
+      '在 iPhone 与 iPad 浏览器上，所有浏览器都使用 WebKit，每个标签页的内存预算比桌面 macOS 更紧。大型 ONNX 模型可能让分析中的标签页被系统重载。TruthLens 因此会在 iOS Web 依序运行引擎、用完即释放模型，并在遇到 488 MB Qwen PPL 这类过大的困惑度子模型时跳过该子模型，但仍用本机统计特征让统计引擎参与。这能避免分析中途跳回空白页；代价是 macOS 可能纳入完整 PPL 子模型，而 iOS 报告会标示该子模型已跳过。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
@@ -8765,7 +8827,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep4Body =>
-      '點擊「開始檢測」，四個引擎並行執行，畫面即時顯示各引擎完成進度。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。分析進行中可隨時從工具列中止；文件文字會保留，但未完成的結果不會被儲存。';
+      '點擊「開始檢測」，已啟用的引擎會開始執行，畫面即時顯示各引擎完成進度。桌面瀏覽器可執行較多並行工作；iOS Web 會改用循序執行並在每個模型用完後釋放，避免分頁重載。若偵測到非母語寫作特徵，會自動套用 ESL 偏差修正（可在設定關閉）。分析進行中可隨時從工具列中止；文件文字會保留，但未完成的結果不會被儲存。';
 
   @override
   String get helpWorkflowStep5Title => '查看與匯出結果';
@@ -8773,6 +8835,37 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get helpWorkflowStep5Body =>
       '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；預設為指揮網格。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
+
+  @override
+  String get helpWorkspaceActionsTitle => '工作台操作與平台限制';
+
+  @override
+  String get helpWorkspaceImportTitle => '匯入文件';
+
+  @override
+  String get helpWorkspaceImportBody =>
+      '「匯入文件」會用新選擇的檔案取代目前輸入。若畫面已有前次報告，匯入新檔會清除前次報告，並以新檔案的文字與中繼資料建立新的草稿。匯入檔名會成為工作台、歷史紀錄與匯出報告中顯示的文件身分。';
+
+  @override
+  String get helpWorkspaceNewAnalysisTitle => '新的分析';
+
+  @override
+  String get helpWorkspaceNewAnalysisBody =>
+      '「新的分析」代表從空白工作台重新開始。它會清除目前匯入文字、來源檔名、報告、逐句證據與分析進度，回到空白的匯入／貼上入口；不應重新分析上一份已匯入文件。';
+
+  @override
+  String get helpWorkspaceEngineStatusTitle => '報告中的引擎狀態';
+
+  @override
+  String get helpWorkspaceEngineStatusBody =>
+      '引擎可能可用、也實際執行了，但沒有形成強證據。這和模型缺失或被停用不同。報告會分開呈現：無法參與代表模型不能加入分析；弱方向代表有執行但未跨過證據門檻；無強訊號代表有執行，但沒有找到可納入投票的有效證據。';
+
+  @override
+  String get helpWorkspaceIosWebTitle => 'iOS 瀏覽器記憶體限制';
+
+  @override
+  String get helpWorkspaceIosWebBody =>
+      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。TruthLens 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';

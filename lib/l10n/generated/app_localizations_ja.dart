@@ -2295,7 +2295,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkflowStep4Body =>
-      '「検出を開始」をタップすると、4つのエンジンが並行して実行され、画面上に各エンジンの完了状況がリアルタイムで表示されます。非ネイティブの文体特徴が検出された場合、ESLバイアス補正が自動的に適用されます（設定でオフにできます）。';
+      'Tap \"Start Detection\" and the enabled engines run with live progress shown on screen. Desktop browsers may run more work in parallel; iOS Web uses sequential execution and model release to avoid tab reloads. If non-native writing characteristics are detected, ESL bias correction is applied automatically (can be turned off in Settings). You can stop a running analysis at any time from the toolbar; the document text is kept, but unfinished results are not saved.';
 
   @override
   String get helpWorkflowStep5Title => '結果の確認とエクスポート';
@@ -2303,6 +2303,38 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get helpWorkflowStep5Body =>
       'レポートページには、総合AI確率のゲージ、文単位のヒートマップ、4つのエンジンのスコアと理由の内訳、ハイパーリンクの実在性、引用文献の実在性が含まれます。完全なPDFレポート、文単位のCSVデータ、JSON（システム連携用）、PNGサマリーカード（共有用）をエクスポートできます。各分析結果は自動的に「履歴」に保存され、いつでも確認できます。';
+
+  @override
+  String get helpWorkspaceActionsTitle =>
+      'Workspace actions and platform limits';
+
+  @override
+  String get helpWorkspaceImportTitle => 'Import document';
+
+  @override
+  String get helpWorkspaceImportBody =>
+      '\"Import document\" replaces the current input with a newly selected file. If a previous report is visible, importing a new file clears that report and starts a new draft from the new file\'s text and metadata. The imported filename becomes the document identity shown in the workspace, history, and exported report.';
+
+  @override
+  String get helpWorkspaceNewAnalysisTitle => 'New analysis';
+
+  @override
+  String get helpWorkspaceNewAnalysisBody =>
+      '\"New analysis\" means start over with a blank workspace. It clears the current imported text, source filename, report, sentence evidence, and analysis progress, then returns to the empty import/paste entry. It should not re-run the previously imported file.';
+
+  @override
+  String get helpWorkspaceEngineStatusTitle => 'Engine status in reports';
+
+  @override
+  String get helpWorkspaceEngineStatusBody =>
+      'An engine can be available, executed, and still show no strong evidence. That is different from a missing or disabled model. Reports separate these states: unavailable means the model could not participate; weak direction means it ran but did not cross the evidence gate; no strong signal means it ran and found nothing usable for voting.';
+
+  @override
+  String get helpWorkspaceIosWebTitle => 'iOS browser memory limits';
+
+  @override
+  String get helpWorkspaceIosWebBody =>
+      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '初回起動ガイド';

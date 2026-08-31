@@ -83,6 +83,56 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('user guide explains workspace actions and iOS web limits', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: HelpScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final scrollable = find.byType(Scrollable).first;
+    await tester.dragUntilVisible(
+      find.text('Workspace actions and platform limits'),
+      scrollable,
+      const Offset(0, -400),
+    );
+
+    for (final text in [
+      'Import document',
+      'New analysis',
+      'Engine status in reports',
+      'iOS browser memory limits',
+    ]) {
+      await tester.dragUntilVisible(
+        find.text(text),
+        scrollable,
+        const Offset(0, -400),
+      );
+      expect(find.text(text), findsOneWidget);
+    }
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(l10n.helpWorkspaceNewAnalysisBody, contains('should not re-run'));
+    expect(l10n.helpWorkspaceIosWebBody, contains('488 MB Qwen PPL'));
+    expect(l10n.helpWorkspaceIosWebBody, contains('statistical engine active'));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('說明手冊不得殘留 Web-only 之前的跨平台原生描述', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 2400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -123,5 +173,12 @@ void main() {
     expect(l10n.helpAdvantage5, contains('origin forensics'));
     expect(l10n.helpAdvantage6, contains('most likely AI / not-AI direction'));
     expect(l10n.helpAdvantage6, contains('confidence'));
+    expect(
+      l10n.helpWorkflowStep4Body,
+      isNot(contains('all four engines run in parallel')),
+    );
+    expect(l10n.helpWorkspaceNewAnalysisBody, contains('should not re-run'));
+    expect(l10n.helpWorkspaceIosWebBody, contains('iOS Web'));
+    expect(l10n.helpWorkspaceIosWebBody, contains('488 MB Qwen PPL'));
   });
 }
