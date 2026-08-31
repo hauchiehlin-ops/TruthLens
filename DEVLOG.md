@@ -1,5 +1,26 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百六十七次更新）— 新增 Web release 腳本，避免版本號漏升
+
+使用者追問為何 UI/UX commit 後版本號沒有自動提升。確認後發現專案雖已有
+`bump_version.sh`、`commit_and_bump.sh` 與 `commit_with_version.sh`，但這些腳本沒有涵蓋
+Web 版最重要的一步：版本號 bump 後重新 `flutter build web`，讓 `build/web/version.json`
+與實際 bundle metadata 同步。因此新增 `scripts/release_web.sh` 作為後續 Web 版正式交付流程。
+
+腳本流程固定為：
+
+1. 讀取 `pubspec.yaml` 的 `major.minor.patch+build`。
+2. 自動遞增 patch 與 build number。
+3. 重新執行 `flutter build web`。
+4. stage `pubspec.yaml` 與 `build/web`。
+5. 使用傳入訊息建立 commit。
+6. push 到目前分支（可用 `RELEASE_REMOTE` / `RELEASE_BRANCH` 覆寫）。
+
+腳本刻意不做 `git add -A`：它只會額外 stage 版本與 Web 產物，避免把尚未準備好的臨時檔一起
+送出；若執行前已有 staged 的功能修改，則會被同一個 release commit 包含。
+
+**狀態**：✅ `bash -n scripts/release_web.sh` 語法檢查通過。
+
 ## 2026-08-31（第一百六十六次更新）— 首頁入口改成響應式審核工作台
 
 使用者進一步指出不能只改報告頁，入口首頁也必須重新思考版面配置，並要求所有修正都要滿足
