@@ -1,5 +1,19 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十二次更新）— 版本號升級為 minor 版
+
+使用者指出上一輪 workspace layout 修正採手動 `git add/commit/push`，沒有走 release 腳本，因此版本號
+沒有自動更新。確認現有 `scripts/release_web.sh` 目前只支援 patch bump，即使使用也會升到
+`4.11.9+1459`；本次依使用者要求改為 minor 版本狀態。
+
+主要調整：
+
+1. `pubspec.yaml` 從 `4.11.8+1458` 升級為 `4.12.0+1459`。
+2. 重新執行 `flutter build web`，同步更新 `build/web/version.json` 為
+   `version: 4.12.0`、`build_number: 1459`。
+
+**狀態**：✅ `flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百七十一次更新）— 完成後 workspace 聚焦報告與遙測
 
 使用者指出匯入文本分析完成後，畫面最重要的是 `Analysis telemetry` 與
