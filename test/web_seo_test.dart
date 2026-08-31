@@ -32,19 +32,87 @@ void main() {
     expect(structuredData['featureList'], isNotEmpty);
   });
 
-  test('robots and sitemap expose only the canonical application URL', () {
+  test('robots and sitemap expose public SEO entry points', () {
     final robots = File('web/robots.txt').readAsStringSync();
     final sitemap = File('web/sitemap.xml').readAsStringSync();
+    const publicRoutes = [
+      'https://truth-lens-roan-three.vercel.app/',
+      'https://truth-lens-roan-three.vercel.app/free-ai-detector',
+      'https://truth-lens-roan-three.vercel.app/zh/ai-article-detector',
+      'https://truth-lens-roan-three.vercel.app/privacy/local-ai-detector-vs-cloud-upload',
+      'https://truth-lens-roan-three.vercel.app/formats/pdf-ai-detection-limitations',
+      'https://truth-lens-roan-three.vercel.app/formats/docx-editing-history-ai-evidence',
+      'https://truth-lens-roan-three.vercel.app/ai-writing-signs/low-burstiness',
+      'https://truth-lens-roan-three.vercel.app/ai-writing-signs/fake-citations',
+    ];
 
     expect(robots, contains('Allow: /'));
     expect(
       robots,
       contains('Sitemap: https://truth-lens-roan-three.vercel.app/sitemap.xml'),
     );
-    expect(
-      sitemap,
-      contains('<loc>https://truth-lens-roan-three.vercel.app/</loc>'),
-    );
+    for (final route in publicRoutes) {
+      expect(sitemap, contains('<loc>$route</loc>'));
+    }
+    expect(sitemap, contains('<lastmod>2026-09-01</lastmod>'));
+  });
+
+  test('root SEO shell links to crawlable public landing pages', () {
+    final html = File('web/index.html').readAsStringSync();
+
+    expect(html, contains('href="/zh/ai-article-detector"'));
+    expect(html, contains('href="/free-ai-detector"'));
+    expect(html, contains('href="/privacy/local-ai-detector-vs-cloud-upload"'));
+  });
+
+  test('free detector pages are static, indexable, and privacy preserving', () {
+    const pages = [
+      'web/free-ai-detector.html',
+      'web/zh/ai-article-detector.html',
+    ];
+
+    for (final page in pages) {
+      final html = File(page).readAsStringSync();
+
+      expect(html, contains('name="description"'));
+      expect(html, contains('name="robots" content="index, follow'));
+      expect(html, contains('<link rel="canonical"'));
+      expect(html, contains('<script type="application/ld+json">'));
+      expect(html, contains('<h1>'));
+      expect(html, contains('data-detector-input'));
+      expect(html, contains('data-detector-run'));
+      expect(html, contains('data-word-count'));
+      expect(html, contains('/seo/free_detector.js'));
+      expect(html, isNot(contains('flutter_bootstrap.js')));
+    }
+
+    final detectorScript = File('web/seo/free_detector.js').readAsStringSync();
+    expect(detectorScript, isNot(contains('fetch(')));
+    expect(detectorScript, isNot(contains('XMLHttpRequest')));
+    expect(detectorScript, isNot(contains('sendBeacon')));
+    expect(detectorScript, isNot(contains('WebSocket')));
+  });
+
+  test('programmatic SEO articles are useful static pages with app links', () {
+    const pages = [
+      'web/privacy/local-ai-detector-vs-cloud-upload.html',
+      'web/formats/pdf-ai-detection-limitations.html',
+      'web/formats/docx-editing-history-ai-evidence.html',
+      'web/ai-writing-signs/low-burstiness.html',
+      'web/ai-writing-signs/fake-citations.html',
+    ];
+
+    for (final page in pages) {
+      final html = File(page).readAsStringSync();
+
+      expect(html, contains('<meta name="description"'));
+      expect(html, contains('<link rel="canonical"'));
+      expect(html, contains('<script type="application/ld+json">'));
+      expect(html, contains('"@type": "Article"'));
+      expect(html, contains('href="/free-ai-detector"'));
+      expect(html, contains('href="/"'));
+      expect(html, isNot(contains('flutter_bootstrap.js')));
+    }
   });
 
   test('Vercel serves static SEO files before the Flutter fallback', () {
@@ -63,32 +131,35 @@ void main() {
     }
   });
 
-  test(
-    'web bootstrap removes legacy workers and registers only its own',
-    () {
-      final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+  test('web bootstrap removes legacy workers and registers only its own', () {
+    final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
 
-      // Flutter 產生的 worker 會反註冊自己並導航所有 client，在 Android Chrome
-      // 造成重整迴圈。它永遠不該被接回來。
-      expect(bootstrap, isNot(contains('flutter_service_worker_version')));
-      expect(bootstrap, isNot(contains('serviceWorkerSettings:')));
-      expect(bootstrap, contains('navigator.serviceWorker.getRegistrations()'));
-      expect(bootstrap, contains('registration.unregister()'));
-      expect(bootstrap, contains('truthlens-worker-cleanup-v2'));
-      expect(bootstrap, contains('truthlens-worker-migration-v2'));
-      expect(bootstrap, contains('window.localStorage'));
-      expect(bootstrap, contains('window.sessionStorage'));
-      expect(bootstrap, contains('window.caches.delete(name)'));
+    // Flutter 產生的 worker 會反註冊自己並導航所有 client，在 Android Chrome
+    // 造成重整迴圈。它永遠不該被接回來。
+    expect(bootstrap, isNot(contains('flutter_service_worker_version')));
+    expect(bootstrap, isNot(contains('serviceWorkerSettings:')));
+    expect(bootstrap, contains('navigator.serviceWorker.getRegistrations()'));
+    expect(bootstrap, contains('registration.unregister()'));
+    expect(bootstrap, contains('truthlens-worker-cleanup-v2'));
+    expect(bootstrap, contains('truthlens-worker-migration-v2'));
+    expect(bootstrap, contains('window.localStorage'));
+    expect(bootstrap, contains('window.sessionStorage'));
+    expect(bootstrap, contains('window.caches.delete(name)'));
 
-      // 自有 worker 是「可安裝」的前提，Chromium 沒有它就不派送
-      // beforeinstallprompt，安裝按鈕永遠不會出現。
-      expect(bootstrap, contains('navigator.serviceWorker.register(truthLensWorkerScript)'));
-      expect(bootstrap, contains('const truthLensWorkerScript = "truthlens_sw.js"'));
-      // 清理邏輯必須放過自有 worker 與其快取，否則每次載入都會把它清掉。
-      expect(bootstrap, contains('isOwnWorker'));
-      expect(bootstrap, contains('name !== truthLensShellCache'));
-    },
-  );
+    // 自有 worker 是「可安裝」的前提，Chromium 沒有它就不派送
+    // beforeinstallprompt，安裝按鈕永遠不會出現。
+    expect(
+      bootstrap,
+      contains('navigator.serviceWorker.register(truthLensWorkerScript)'),
+    );
+    expect(
+      bootstrap,
+      contains('const truthLensWorkerScript = "truthlens_sw.js"'),
+    );
+    // 清理邏輯必須放過自有 worker 與其快取，否則每次載入都會把它清掉。
+    expect(bootstrap, contains('isOwnWorker'));
+    expect(bootstrap, contains('name !== truthLensShellCache'));
+  });
 
   test('自有 service worker 只做可安裝判準所需的事', () {
     // 只看程式碼：註解裡本來就會提到這些名詞，拿整份原始碼比對會誤判。

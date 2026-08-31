@@ -1,5 +1,28 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百八十八次更新）— 新增免費檢測入口與 SEO 公開內容網
+
+使用者要求完全執行「提高搜尋曝光與登入轉換機率」的產品成長設計。此次先完成不依賴登入、
+可被搜尋引擎直接索引的公開入口：以免費短文檢測工具證明產品價值，並用主題頁承接「AI detector」、
+「本地 AI 檢測」、「PDF AI detection limitations」、「DOCX editing history」與「fake citations」
+等高意圖搜尋。
+
+主要調整：
+
+1. 新增 `free-ai-detector` 英文免費工具頁，可在瀏覽器本機對短文做輕量統計預覽，不上傳文字。
+2. 新增 `zh/ai-article-detector` 繁體中文免費 AI 文章檢測器入口，與英文頁互設 `hreflang`。
+3. 新增 5 個 programmatic SEO 起始頁：本地 AI 檢測與雲端上傳比較、PDF 檢測限制、DOCX 編輯紀錄證據、
+   low burstiness、fake citations。
+4. 首頁 SEO shell 加入可爬的公開頁連結，讓搜尋引擎不必執行 Flutter 也能探索內容網。
+5. 更新 `sitemap.xml`，將所有公開入口加入 canonical URL 清單並統一 `lastmod`。
+6. 新增 SEO 測試，確認免費工具頁為靜態可索引頁、未載入 Flutter bootstrap，且預覽 JS 不使用
+   `fetch`、`XMLHttpRequest`、`sendBeacon` 或 `WebSocket`。
+7. 產品策略上只加入延遲註冊／價值門檻 CTA，不放未實作的 Google/Apple 登入按鈕；等真正導入帳號、
+   端對端同步或報告儲存服務時，再接摩擦最低的一鍵 SSO。
+8. 版本同步升級為 `4.13.0+1471`。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/web_seo_test.dart` 12 項全數通過。
+
 ## 2026-09-01（第一百八十七次更新）— 更新操作說明並同步多國語系
 
 使用者要求重新更新 user guide 並符合多國語系要求。配合近期 iOS Web 分析中途重載、新的分析按鈕定義、

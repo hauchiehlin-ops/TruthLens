@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="description" content="Try a free AI detector preview in your browser. Paste a short text sample and get local, no-upload signals before opening the full TruthLens workspace.">
+  <link rel="canonical" href="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <link rel="alternate" hreflang="en" href="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <link rel="alternate" hreflang="zh-Hant" href="https://truth-lens-roan-three.vercel.app/zh/ai-article-detector">
+  <link rel="alternate" hreflang="x-default" href="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TruthLens">
+  <meta property="og:title" content="Free AI Detector - No Upload Preview">
+  <meta property="og:description" content="Check a short writing sample in your browser. No account, no upload, no server-side document processing.">
+  <meta property="og:url" content="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <meta property="og:image" content="https://truth-lens-roan-three.vercel.app/icons/Icon-512.png">
+  <title>Free AI Detector - No Upload Browser Preview | TruthLens</title>
+  <link rel="stylesheet" href="/seo/seo.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "TruthLens Free AI Detector",
+    "url": "https://truth-lens-roan-three.vercel.app/free-ai-detector",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "inLanguage": ["en", "zh-Hant"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "A browser-only AI writing detector preview for short text samples. The preview uses local statistical signals and does not upload pasted text."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does the free AI detector upload my text?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. The preview runs in the browser and does not send pasted text to a server."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this the full TruthLens analysis engine?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. This page is a lightweight preview for short samples. The full workspace adds document import, multi-engine analysis, citation checks, source evidence, reports, and history."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="tl-header">
+    <nav class="tl-nav" aria-label="Main navigation">
+      <a class="tl-brand" href="/">TruthLens</a>
+      <div class="tl-links">
+        <a href="/zh/ai-article-detector">繁體中文</a>
+        <a href="/privacy/local-ai-detector-vs-cloud-upload">Local vs cloud</a>
+        <a href="/formats/pdf-ai-detection-limitations">PDF limits</a>
+        <a href="/">Open workspace</a>
+      </div>
+    </nav>
+  </header>
+  <main class="tl-main">
+    <section class="tl-hero">
+      <div>
+        <p class="tl-kicker">Free browser preview</p>
+        <h1>Free AI Detector</h1>
+        <p class="tl-lead">Paste a short writing sample and get instant local signals before opening the full TruthLens workspace. This preview is built for discovery: no login, no upload, no waiting room.</p>
+        <div class="tl-actions">
+          <a class="tl-button primary" href="/">Open full workspace</a>
+          <a class="tl-button secondary" href="/zh/ai-article-detector">中文版本</a>
+        </div>
+      </div>
+      <section class="tl-tool" aria-labelledby="detector-title">
+        <h2 id="detector-title">Check a Short Sample</h2>
+        <label for="sample-text">Text sample</label>
+        <textarea id="sample-text" class="tl-textarea" data-detector-input maxlength="2000" placeholder="Paste up to about 220 words. The preview checks local statistical patterns only."></textarea>
+        <div class="tl-toolbar">
+          <span class="tl-counter" data-word-count>0 / 220 words</span>
+          <button class="tl-button primary" type="button" data-detector-run>Analyze preview</button>
+        </div>
+        <div class="tl-result" data-detector-output aria-live="polite">
+          <p>Results will appear here. Your text stays in this browser.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="tl-section tl-grid" aria-label="Why use the full workspace">
+      <article class="tl-panel">
+        <h3>Privacy-first entry</h3>
+        <p>Use the preview without creating an account. Full document analysis runs in the TruthLens local workspace so confidential files are not uploaded for AI scoring.</p>
+      </article>
+      <article class="tl-panel">
+        <h3>Multi-engine evidence</h3>
+        <p>The full app compares transformer, statistical, stylometry, rewriting-defense, citation, and document-source signals instead of treating one score as a verdict.</p>
+      </article>
+      <article class="tl-panel">
+        <h3>Deferred value gate</h3>
+        <p>Open the workspace when you need PDF export, sentence-level reasons, history, calibration, or stronger file forensics. The preview exists to prove value first.</p>
+      </article>
+    </section>
+
+    <section class="tl-section tl-note">
+      <strong>Important:</strong> this free page is a lightweight preview. It is useful for quick screening and education, but it should not be used alone for academic, employment, or disciplinary decisions.
+    </section>
+
+    <section class="tl-section tl-article">
+      <h2>What the Preview Checks</h2>
+      <p>The page looks for simple local patterns such as sentence-length regularity, repeated transition phrases, lexical repetition, and citation-like claims that deserve follow-up. These signals are intentionally conservative and transparent.</p>
+      <p>For long documents, use the full workspace. It can inspect PDF, DOCX, ODT, plain text, OCR input, references, source metadata, and sentence-level evidence without asking you to upload the whole file to a scoring server.</p>
+    </section>
+  </main>
+  <footer class="tl-footer">© 2026 TruthLens. Local-first AI content detection and document forensics.</footer>
+  <script src="/seo/free_detector.js"></script>
+</body>
+</html>

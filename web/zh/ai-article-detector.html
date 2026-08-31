@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="description" content="免費 AI 文章檢測器預覽版。貼上短文即可在瀏覽器本機取得初步訊號，不需登入，也不會上傳文字。">
+  <link rel="canonical" href="https://truth-lens-roan-three.vercel.app/zh/ai-article-detector">
+  <link rel="alternate" hreflang="zh-Hant" href="https://truth-lens-roan-three.vercel.app/zh/ai-article-detector">
+  <link rel="alternate" hreflang="en" href="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <link rel="alternate" hreflang="x-default" href="https://truth-lens-roan-three.vercel.app/free-ai-detector">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TruthLens">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:title" content="免費 AI 文章檢測器｜不需上傳的本機預覽">
+  <meta property="og:description" content="貼上短文，在瀏覽器內取得 AI 寫作初步訊號；完整分析可再開啟 TruthLens 工作台。">
+  <meta property="og:url" content="https://truth-lens-roan-three.vercel.app/zh/ai-article-detector">
+  <meta property="og:image" content="https://truth-lens-roan-three.vercel.app/icons/Icon-512.png">
+  <title>免費 AI 文章檢測器｜不需上傳的本機預覽 - TruthLens</title>
+  <link rel="stylesheet" href="/seo/seo.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "TruthLens 免費 AI 文章檢測器",
+    "url": "https://truth-lens-roan-three.vercel.app/zh/ai-article-detector",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "inLanguage": ["zh-Hant", "en"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "短文用的瀏覽器本機 AI 寫作檢測預覽；只使用輕量統計訊號，不會上傳貼上的文字。"
+  }
+  </script>
+</head>
+<body>
+  <header class="tl-header">
+    <nav class="tl-nav" aria-label="主要導覽">
+      <a class="tl-brand" href="/">TruthLens</a>
+      <div class="tl-links">
+        <a href="/free-ai-detector">English</a>
+        <a href="/privacy/local-ai-detector-vs-cloud-upload">本地與雲端比較</a>
+        <a href="/formats/docx-editing-history-ai-evidence">DOCX 來源證據</a>
+        <a href="/">開啟完整工作台</a>
+      </div>
+    </nav>
+  </header>
+  <main class="tl-main">
+    <section class="tl-hero">
+      <div>
+        <p class="tl-kicker">免費瀏覽器預覽</p>
+        <h1>免費 AI 文章檢測器</h1>
+        <p class="tl-lead">貼上一小段文章，先在瀏覽器本機取得初步訊號。這個入口不需要登入、不上傳文字，也不會把短文送到伺服器評分。</p>
+        <div class="tl-actions">
+          <a class="tl-button primary" href="/">開啟完整工作台</a>
+          <a class="tl-button secondary" href="/free-ai-detector">English version</a>
+        </div>
+      </div>
+      <section class="tl-tool" aria-labelledby="detector-title">
+        <h2 id="detector-title">檢測短文預覽</h2>
+        <label for="sample-text">文字樣本</label>
+        <textarea id="sample-text" class="tl-textarea" data-detector-input maxlength="2000" placeholder="建議貼上 220 字以內。預覽只檢查輕量本機統計特徵。"></textarea>
+        <div class="tl-toolbar">
+          <span class="tl-counter" data-word-count>0 / 220 字預覽</span>
+          <button class="tl-button primary" type="button" data-detector-run>開始預覽</button>
+        </div>
+        <div class="tl-result" data-detector-output aria-live="polite">
+          <p>結果會顯示在這裡。文字只留在這個瀏覽器。</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="tl-section tl-grid" aria-label="完整工作台價值">
+      <article class="tl-panel">
+        <h3>先體驗，再決定</h3>
+        <p>不用登入就能先試短文。需要長文件、逐句理由、PDF 報告或歷史紀錄時，再進入完整 TruthLens 工作台。</p>
+      </article>
+      <article class="tl-panel">
+        <h3>不把單一分數當定案</h3>
+        <p>完整工作台會拆開文字模型、統計特徵、寫作風格、改寫防禦、來源紀錄與文獻核實，讓判讀有上下文。</p>
+      </article>
+      <article class="tl-panel">
+        <h3>主打機密文件不上傳</h3>
+        <p>TruthLens 的核心定位是本地優先。對論文、合約、企業文件與未公開稿件，這點比單一高分更重要。</p>
+      </article>
+    </section>
+
+    <section class="tl-section tl-note">
+      <strong>提醒：</strong>這個免費頁只是短文預覽，不能單獨作為指控或正式判定依據。請用完整報告、逐句證據與文件來源一起判讀。
+    </section>
+  </main>
+  <footer class="tl-footer">© 2026 TruthLens。本地優先 AI 內容檢測與文件鑑識。</footer>
+  <script src="/seo/free_detector.js"></script>
+</body>
+</html>
