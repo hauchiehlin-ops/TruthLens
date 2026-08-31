@@ -69,6 +69,34 @@ void main() {
     );
   });
 
+  testWidgets('desktop workspace modes share the command header', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+
+    for (final mode in [
+      WorkspaceMode.commandGrid,
+      WorkspaceMode.missionTimeline,
+      WorkspaceMode.evidenceCanvas,
+      WorkspaceMode.cosmicFuture,
+      WorkspaceMode.softEducation,
+    ]) {
+      await prefs.setWorkspaceMode(mode);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+
+      expect(find.text('Overall progress:'), findsOneWidget);
+      expect(find.text('Document workspace:'), findsOneWidget);
+      expect(find.text('Live findings:'), findsOneWidget);
+      expect(find.byTooltip('Import File'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('mobile automatic mode uses mission timeline', (tester) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -1,5 +1,26 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百六十八次更新）— Workspace mode 全面套用新版入口指揮列
+
+使用者指出上一輪入口首頁改版只明顯落在 Command grid，切換到其他 workspace mode 後仍像舊版。
+這次把新版入口資訊層級擴展到所有桌面 workspace mode：Command grid、Mission timeline、
+Evidence canvas、Cosmic Future 與 Soft Education 都會顯示同一套狀態／文件／即時證據指揮列，
+並保留匯入、貼上、OCR 與開始分析等核心操作。
+
+主要調整：
+
+1. `WorkspaceScreen` 的 timeline body 現在先呈現共用 workspace command header，再進入進度時間軸
+   與主要內容；因此 Mission timeline、Cosmic Future、Soft Education 都不再回到舊入口。
+2. Evidence canvas 桌面與窄版都補上同一套指揮列，讓證據畫布模式也以文件狀態與主要操作開場。
+3. 共用 header 依 workspace visual theme 調整外觀：標準模式使用 Material surface；Cosmic 使用
+   深色霓虹邊框；Soft Education 使用半透明玻璃感，避免特殊模式混入不協調的淺色卡片。
+4. 新增 widget 測試逐一切換桌面 workspace mode，確認每個 mode 都帶有共用指揮列，避免之後只改到
+   單一 mode 的問題重演。
+
+**狀態**：✅ `flutter test test/workspace_screen_test.dart` 全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條 `prefer_initializing_formals` info）；
+✅ `flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百六十七次更新）— 新增 Web release 腳本，避免版本號漏升
 
 使用者追問為何 UI/UX commit 後版本號沒有自動提升。確認後發現專案雖已有

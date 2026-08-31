@@ -867,6 +867,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _workspaceCommandHeader({required bool compact}) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final visualTheme = _WorkspaceThemeScope.of(context);
     final evidenceCount = _evidenceRows().length;
     final phaseLabel = switch (_phase) {
       _WorkspacePhase.idle => l10n.workspaceWaiting,
@@ -892,12 +893,45 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       tooltip: actionTooltip,
     );
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
+    final decoration = switch (visualTheme) {
+      _WorkspaceVisualTheme.standard => BoxDecoration(
         color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: scheme.outlineVariant),
       ),
+      _WorkspaceVisualTheme.cosmic => BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.56),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
+        boxShadow: [
+          BoxShadow(
+            color: _cosmicCyan.withValues(alpha: 0.18),
+            blurRadius: 18,
+            spreadRadius: -2,
+          ),
+          BoxShadow(
+            color: _cosmicMagenta.withValues(alpha: 0.12),
+            blurRadius: 26,
+            spreadRadius: -6,
+          ),
+        ],
+      ),
+      _WorkspaceVisualTheme.soft => BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: _softTeal.withValues(alpha: 0.14),
+            blurRadius: 22,
+            spreadRadius: -7,
+          ),
+        ],
+      ),
+    };
+
+    return DecoratedBox(
+      decoration: decoration,
       child: Padding(
         padding: EdgeInsets.fromLTRB(12, compact ? 10 : 12, 12, 10),
         child: LayoutBuilder(
@@ -1141,6 +1175,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _timelineBody() {
     return Column(
       children: [
+        _workspaceCommandHeader(compact: false),
+        const SizedBox(height: 10),
         _timelineStrip(),
         const SizedBox(height: 10),
         Expanded(
@@ -1238,6 +1274,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
           return Column(
             children: [
+              _workspaceCommandHeader(compact: false),
+              const SizedBox(height: 10),
               _timelineStrip(),
               const SizedBox(height: 10),
               Expanded(
@@ -1321,7 +1359,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       builder: (context, constraints) {
         const minDoc = 160.0;
         const minTelemetry = 160.0;
-        const fixedHeaderHeight = 112 + 10 + 96 + 10 + 14; // 時間軸 + 動作列 + 拖曳把手
+        const fixedHeaderHeight =
+            96 + 10 + 112 + 10 + 96 + 10 + 14; // 指揮列 + 時間軸 + 動作列 + 拖曳把手
         final available = math.max(
           minDoc + minTelemetry,
           constraints.maxHeight - fixedHeaderHeight,
@@ -1353,6 +1392,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }) {
     return Column(
       children: [
+        _workspaceCommandHeader(compact: true),
+        const SizedBox(height: 10),
         _timelineStrip(),
         const SizedBox(height: 10),
         SizedBox(
@@ -2214,14 +2255,35 @@ class _HeaderMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final color = accent ?? scheme.onSurfaceVariant;
+    final visualTheme = _WorkspaceThemeScope.of(context);
+    final themed = visualTheme != _WorkspaceVisualTheme.standard;
+    final color =
+        accent ??
+        switch (visualTheme) {
+          _WorkspaceVisualTheme.cosmic => _cosmicCyan,
+          _WorkspaceVisualTheme.soft => _softTeal,
+          _WorkspaceVisualTheme.standard => scheme.onSurfaceVariant,
+        };
+    final labelColor = themed ? Colors.white70 : scheme.onSurfaceVariant;
+    final valueColor = themed ? Colors.white : scheme.onSurface;
+    final fillColor = switch (visualTheme) {
+      _WorkspaceVisualTheme.cosmic => Colors.white.withValues(alpha: 0.06),
+      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.10),
+      _WorkspaceVisualTheme.standard =>
+        scheme.surfaceContainerHighest.withValues(alpha: 0.48),
+    };
+    final borderColor = switch (visualTheme) {
+      _WorkspaceVisualTheme.cosmic => _cosmicCyan.withValues(alpha: 0.28),
+      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.16),
+      _WorkspaceVisualTheme.standard => scheme.outlineVariant,
+    };
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 132, maxWidth: 220),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: scheme.surfaceContainerHighest.withValues(alpha: 0.48),
+          color: fillColor,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: scheme.outlineVariant),
+          border: Border.all(color: borderColor),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -2240,7 +2302,7 @@ class _HeaderMetric extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: labelColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -2250,7 +2312,7 @@ class _HeaderMetric extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: scheme.onSurface,
+                        color: valueColor,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
