@@ -3731,7 +3731,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkflowStep5Body.
   ///
   /// In en, this message translates to:
-  /// **'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Automatic uses Command grid on desktop and Mission timeline on mobile. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.'**
+  /// **'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Command grid is the default. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.'**
   String get helpWorkflowStep5Body;
 
   /// No description provided for @helpWorkflowStep1ChipOnboarding.
@@ -4303,12 +4303,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Original layout'**
   String get workspaceModeOriginal;
-
-  /// No description provided for @workspaceModeAuto.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatic'**
-  String get workspaceModeAuto;
 
   /// No description provided for @workspaceModeCommandGrid.
   ///

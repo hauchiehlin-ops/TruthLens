@@ -593,11 +593,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 if (usesSingleColumnWorkspace(constraints)) {
                   return _mobileWorkspace();
                 }
-                final mode = prefs.workspaceMode == WorkspaceMode.automatic
-                    ? (constraints.maxWidth < 980
-                          ? WorkspaceMode.missionTimeline
-                          : WorkspaceMode.commandGrid)
-                    : prefs.workspaceMode;
+                final mode = prefs.workspaceMode;
                 return AnimatedSwitcher(
                   duration: reduceMotion
                       ? Duration.zero
@@ -611,7 +607,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       WorkspaceMode.missionTimeline => _missionTimeline(),
                       WorkspaceMode.evidenceCanvas => _evidenceCanvas(),
                       WorkspaceMode.original => _commandGrid(),
-                      WorkspaceMode.automatic => _commandGrid(),
                     },
                   ),
                 );
@@ -632,6 +627,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               key: const ValueKey('mobile-completed-workspace-flow'),
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
               children: [
+                _mobileCompletedActions(),
+                const SizedBox(height: 8),
                 _mobileProgressPanel(),
                 const SizedBox(height: 8),
                 SizedBox(height: 430, child: _telemetryPanel()),
@@ -663,6 +660,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 const AppCopyrightFooter(),
               ],
             ),
+    );
+  }
+
+  Widget _mobileCompletedActions() {
+    final l10n = AppLocalizations.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Tooltip(
+            message: l10n.workspaceNewAnalysis,
+            child: FilledButton.icon(
+              onPressed: _newAnalysis,
+              icon: Icon(LucideIcons.plus),
+              label: Text(l10n.workspaceNewAnalysis),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

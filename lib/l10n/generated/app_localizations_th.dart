@@ -2697,9 +2697,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get workspaceModeOriginal => 'รูปแบบดั้งเดิม';
 
   @override
-  String get workspaceModeAuto => 'อัตโนมัติ';
-
-  @override
   String get workspaceModeCommandGrid => 'ตารางบัญชาการ';
 
   @override

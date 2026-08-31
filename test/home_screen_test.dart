@@ -44,7 +44,7 @@ void main() {
   });
 
   testWidgets(
-    'automatic workspace is default and original remains selectable',
+    'command grid workspace is default and original remains selectable',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -55,7 +55,7 @@ void main() {
       await tester.pumpWidget(_testApp(prefs));
       await tester.pump();
 
-      expect(prefs.workspaceMode, WorkspaceMode.automatic);
+      expect(prefs.workspaceMode, WorkspaceMode.commandGrid);
       expect(find.text(AppVersion.displayVersion), findsOneWidget);
       expect(find.text('Analysis telemetry'), findsOneWidget);
       expect(find.text('Live findings'), findsOneWidget);
@@ -171,7 +171,10 @@ Future<void> _pumpUntilPromptLoaded(WidgetTester tester) async {
   }
 }
 
-Widget _testApp(PreferencesService prefs, {bool promptModelOnFirstRun = false}) {
+Widget _testApp(
+  PreferencesService prefs, {
+  bool promptModelOnFirstRun = false,
+}) {
   // 明確共用同一組實例：catalog 若沒拿到 MockClient 就會去打真實網路
   // （8 秒逾時），首次啟動提示的載入時間會跟著變成不可預測。
   final modelManager = _FakeModelManager();

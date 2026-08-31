@@ -2626,9 +2626,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceModeOriginal => '元のレイアウト';
 
   @override
-  String get workspaceModeAuto => '自動';
-
-  @override
   String get workspaceModeCommandGrid => 'コマンドグリッド';
 
   @override

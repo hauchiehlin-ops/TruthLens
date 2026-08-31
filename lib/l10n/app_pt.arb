@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Modo do espaço de trabalho",
   "workspaceModeSectionSubtitle": "Escolha como fonte, análise ao vivo e evidências finais compartilham o mesmo espaço.",
   "workspaceModeOriginal": "Layout original",
-  "workspaceModeAuto": "Automático",
   "workspaceModeCommandGrid": "Grade de comando",
   "workspaceModeTimeline": "Linha do tempo da missão",
   "workspaceModeEvidence": "Tela de evidências",

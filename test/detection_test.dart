@@ -179,7 +179,7 @@ The impact of stereoscopic 3D advertising: The role of presence.
       expect(t.entropy, 0);
     });
 
-    test('同段句子合併為分析區塊且不跨越段落', () {
+    test('同段句子仍以單句作為分析區塊', () {
       final t = PreprocessedText.from(
         'This first sentence contains enough words for reliable analysis. '
         'This second sentence keeps the same paragraph context intact.\n\n'
@@ -187,12 +187,11 @@ The impact of stereoscopic 3D advertising: The role of presence.
       );
 
       expect(t.sentences, hasLength(3));
-      expect(t.analysisChunks, hasLength(2));
-      expect(t.sentenceChunkIndices, [0, 0, 1]);
-      expect(t.analysisChunks.first, contains('same paragraph context'));
+      expect(t.analysisChunks, t.sentences);
+      expect(t.sentenceChunkIndices, [0, 1, 2]);
     });
 
-    test('分析區塊最多容納五句', () {
+    test('分析區塊不合併多句，避免跨平台段落抽取差異影響模型輸入', () {
       final sentences = List.generate(
         6,
         (index) =>
@@ -201,8 +200,8 @@ The impact of stereoscopic 3D advertising: The role of presence.
       final t = PreprocessedText.from(sentences);
 
       expect(t.sentences, hasLength(6));
-      expect(t.analysisChunks, hasLength(2));
-      expect(t.sentenceChunkIndices, [0, 0, 0, 0, 0, 1]);
+      expect(t.analysisChunks, t.sentences);
+      expect(t.sentenceChunkIndices, [0, 1, 2, 3, 4, 5]);
     });
 
     test('分析區塊遵守詞元上限並可映射回逐句分數', () {

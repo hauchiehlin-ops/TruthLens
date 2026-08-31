@@ -2734,9 +2734,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get workspaceModeOriginal => 'Mise en page d’origine';
 
   @override
-  String get workspaceModeAuto => 'Automatique';
-
-  @override
   String get workspaceModeCommandGrid => 'Grille de commandement';
 
   @override

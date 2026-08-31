@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "โหมดพื้นที่ทำงาน",
   "workspaceModeSectionSubtitle": "เลือกวิธีแสดงต้นฉบับ การวิเคราะห์สด และหลักฐานสุดท้ายในพื้นที่เดียวกัน",
   "workspaceModeOriginal": "รูปแบบดั้งเดิม",
-  "workspaceModeAuto": "อัตโนมัติ",
   "workspaceModeCommandGrid": "ตารางบัญชาการ",
   "workspaceModeTimeline": "ไทม์ไลน์ภารกิจ",
   "workspaceModeEvidence": "ผืนผ้าใบหลักฐาน",

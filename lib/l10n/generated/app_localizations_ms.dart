@@ -2712,9 +2712,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get workspaceModeOriginal => 'Susun atur asal';
 
   @override
-  String get workspaceModeAuto => 'Automatik';
-
-  @override
   String get workspaceModeCommandGrid => 'Grid arahan';
 
   @override

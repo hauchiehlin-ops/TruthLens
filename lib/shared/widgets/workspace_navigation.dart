@@ -156,7 +156,6 @@ class AppOverflowMenu extends StatelessWidget {
 
   static IconData _modeIcon(WorkspaceMode mode) => switch (mode) {
     WorkspaceMode.original => LucideIcons.rows3,
-    WorkspaceMode.automatic => LucideIcons.zap,
     WorkspaceMode.commandGrid => LucideIcons.grid3x3,
     WorkspaceMode.missionTimeline => LucideIcons.map,
     WorkspaceMode.evidenceCanvas => LucideIcons.checkSquare,
@@ -165,7 +164,6 @@ class AppOverflowMenu extends StatelessWidget {
   static String _modeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
       switch (mode) {
         WorkspaceMode.original => l10n.workspaceModeOriginal,
-        WorkspaceMode.automatic => l10n.workspaceModeAuto,
         WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
         WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
         WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,

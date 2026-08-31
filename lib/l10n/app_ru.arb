@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Режим рабочего пространства",
   "workspaceModeSectionSubtitle": "Выберите размещение источника, анализа в реальном времени и итоговых доказательств.",
   "workspaceModeOriginal": "Исходный макет",
-  "workspaceModeAuto": "Автоматически",
   "workspaceModeCommandGrid": "Командная сетка",
   "workspaceModeTimeline": "Хронология миссии",
   "workspaceModeEvidence": "Полотно доказательств",

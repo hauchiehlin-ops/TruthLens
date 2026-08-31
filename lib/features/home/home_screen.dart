@@ -69,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final mode = context.watch<PreferencesService>().workspaceMode;
     return switch (mode) {
       WorkspaceMode.original => const InputScreen(),
-      WorkspaceMode.automatic ||
       WorkspaceMode.commandGrid ||
       WorkspaceMode.missionTimeline ||
       WorkspaceMode.evidenceCanvas => const WorkspaceScreen(),

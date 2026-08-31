@@ -60,6 +60,25 @@ void main() {
     );
   });
 
+  test(
+    'legacy disabled engine preferences are reset on schema migration',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'disabled_engines': ['transformer', 'statistical'],
+        'engine_preferences_schema': 1,
+      });
+      final preferences = PreferencesService();
+
+      await preferences.load();
+
+      expect(preferences.isEngineEnabled('transformer'), isTrue);
+      expect(preferences.isEngineEnabled('statistical'), isTrue);
+      final storage = await SharedPreferences.getInstance();
+      expect(storage.getStringList('disabled_engines'), isNull);
+      expect(storage.getInt('engine_preferences_schema'), 2);
+    },
+  );
+
   test('removed bibliography credentials are deleted during load', () async {
     SharedPreferences.setMockInitialValues({
       'web_of_science_api_key': 'wos-key',
@@ -79,26 +98,29 @@ void main() {
     );
   });
 
-  test('workspace mode defaults to automatic and persists locally', () async {
-    SharedPreferences.setMockInitialValues({});
-    final preferences = PreferencesService();
-    await preferences.load();
+  test(
+    'workspace mode defaults to command grid and persists locally',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = PreferencesService();
+      await preferences.load();
 
-    expect(preferences.workspaceMode, WorkspaceMode.automatic);
-    await preferences.setWorkspaceMode(WorkspaceMode.evidenceCanvas);
+      expect(preferences.workspaceMode, WorkspaceMode.commandGrid);
+      await preferences.setWorkspaceMode(WorkspaceMode.evidenceCanvas);
 
-    final reloaded = PreferencesService();
-    await reloaded.load();
-    expect(reloaded.workspaceMode, WorkspaceMode.evidenceCanvas);
-  });
+      final reloaded = PreferencesService();
+      await reloaded.load();
+      expect(reloaded.workspaceMode, WorkspaceMode.evidenceCanvas);
+    },
+  );
 
-  test('unknown saved workspace mode falls back to automatic', () async {
+  test('unknown saved workspace mode falls back to command grid', () async {
     SharedPreferences.setMockInitialValues({'workspace_mode': 'retiredMode'});
     final preferences = PreferencesService();
 
     await preferences.load();
 
-    expect(preferences.workspaceMode, WorkspaceMode.automatic);
+    expect(preferences.workspaceMode, WorkspaceMode.commandGrid);
   });
 
   test('workspace mode notifies the UI before persistence completes', () async {
@@ -108,9 +130,11 @@ void main() {
     var notifications = 0;
     preferences.addListener(() => notifications++);
 
-    final persistence = preferences.setWorkspaceMode(WorkspaceMode.commandGrid);
+    final persistence = preferences.setWorkspaceMode(
+      WorkspaceMode.missionTimeline,
+    );
 
-    expect(preferences.workspaceMode, WorkspaceMode.commandGrid);
+    expect(preferences.workspaceMode, WorkspaceMode.missionTimeline);
     expect(notifications, 1);
     await persistence;
   });

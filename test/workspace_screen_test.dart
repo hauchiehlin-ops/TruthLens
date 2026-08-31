@@ -60,7 +60,7 @@ void main() {
     expect(evidenceIndexBadgeWidthFor(1000), 42);
   });
 
-  testWidgets('desktop automatic mode uses command grid', (tester) async {
+  testWidgets('desktop default mode uses command grid', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1400, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final prefs = await _preferences();
@@ -105,7 +105,9 @@ void main() {
     }
   });
 
-  testWidgets('mobile automatic mode uses mission timeline', (tester) async {
+  testWidgets('mobile default mode uses the responsive single-column flow', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final prefs = await _preferences();
@@ -113,6 +115,8 @@ void main() {
     await tester.pumpWidget(_testApp(prefs));
     await tester.pump();
 
+    expect(prefs.workspaceMode, WorkspaceMode.commandGrid);
+    expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
     expect(find.text('Overall progress'), findsOneWidget);
     expect(find.text('Document workspace'), findsOneWidget);
     expect(find.text('Analysis telemetry'), findsOneWidget);
@@ -493,6 +497,7 @@ void main() {
       tester.getTopLeft(find.text('Analysis telemetry')).dy,
       lessThan(360),
     );
+    expect(find.text('New analysis'), findsOneWidget);
 
     await tester.ensureVisible(
       find.byKey(const ValueKey('workspace-report-panel')),
@@ -502,6 +507,15 @@ void main() {
       find.byKey(const ValueKey('workspace-report-panel')),
       findsOneWidget,
     );
+
+    await tester.drag(flow, const Offset(0, 900));
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.tap(find.text('New analysis'));
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Start Detection'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
@@ -527,7 +541,6 @@ Future<PreferencesService> _preferences() async {
   SharedPreferences.setMockInitialValues({});
   final prefs = PreferencesService();
   await prefs.load();
-  await prefs.setWorkspaceMode(WorkspaceMode.automatic);
   return prefs;
 }
 

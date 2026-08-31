@@ -2634,9 +2634,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get workspaceModeOriginal => '기존 레이아웃';
 
   @override
-  String get workspaceModeAuto => '자동';
-
-  @override
   String get workspaceModeCommandGrid => '지휘 그리드';
 
   @override

@@ -238,6 +238,49 @@ void main() {
       expect(text, contains(_l10n.reportBibVerificationSource('Crossref')));
     });
 
+    test('PDF 會完整列出 22 筆文獻後才進入逐句分析', () async {
+      final regular = File(
+        'assets/fonts/NotoSansTC-Regular.ttf',
+      ).readAsBytesSync();
+      final bold = File('assets/fonts/NotoSansTC-Bold.ttf').readAsBytesSync();
+      final checks = List.generate(
+        22,
+        (i) => BibliographyCheckResult(
+          entry: BibliographyEntry(
+            rawText:
+                '${i + 1}. Author $i, "Reference Title $i," Journal of Verification ${i + 1}: 1-2 (2024).',
+            sourceOffset: i,
+            firstAuthorSurname: 'Author',
+            year: 2024,
+            title: 'Reference Title $i',
+            venueTitle: 'Journal of Verification',
+          ),
+          confidence: CitationMatchConfidence.high,
+          matchedTitle: 'Reference Title $i',
+          matchedJournal: 'Journal of Verification',
+          matchedYear: 2024,
+          verificationSource: 'Crossref',
+        ),
+      );
+      final bytes = await ReportExporter.buildPdf(
+        _sampleResult(),
+        _l10n,
+        regularFont: regular.buffer.asByteData(),
+        boldFont: bold.buffer.asByteData(),
+        bibliographyChecks: checks,
+      );
+      final pdf = sf.PdfDocument(inputBytes: bytes);
+      final text = sf.PdfTextExtractor(
+        pdf,
+      ).extractText().replaceAll(RegExp(r'\s+'), ' ');
+      pdf.dispose();
+
+      final lastReference = text.indexOf('Reference Title 21');
+      final sentenceAnalysis = text.indexOf(_l10n.reportSentenceAnalysisTitle);
+      expect(lastReference, greaterThan(-1));
+      expect(sentenceAnalysis, greaterThan(lastReference));
+    });
+
     test('超長單句（如誤貼入的原始文件標記）不應丟出 PdfTooBigPageException', () async {
       final regular = File(
         'assets/fonts/NotoSansTC-Regular.ttf',

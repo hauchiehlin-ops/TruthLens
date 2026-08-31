@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Modo de espacio de trabajo",
   "workspaceModeSectionSubtitle": "Elige cómo comparten un espacio la fuente, el análisis en vivo y la evidencia final.",
   "workspaceModeOriginal": "Diseño original",
-  "workspaceModeAuto": "Automático",
   "workspaceModeCommandGrid": "Cuadrícula de mando",
   "workspaceModeTimeline": "Cronología de misión",
   "workspaceModeEvidence": "Lienzo de evidencia",

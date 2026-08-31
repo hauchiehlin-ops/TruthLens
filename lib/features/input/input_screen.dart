@@ -37,7 +37,6 @@ class InputScreen extends StatefulWidget {
 String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
     switch (mode) {
       WorkspaceMode.original => l10n.workspaceModeOriginal,
-      WorkspaceMode.automatic => l10n.workspaceModeAuto,
       WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
       WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
       WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,

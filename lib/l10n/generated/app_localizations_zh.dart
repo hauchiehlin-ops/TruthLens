@@ -2275,7 +2275,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；自動模式在桌面使用指揮網格、手機使用任務時間軸。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
+      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；預設為指揮網格。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -2592,9 +2592,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get workspaceModeOriginal => '原始版面';
-
-  @override
-  String get workspaceModeAuto => '自動選擇';
 
   @override
   String get workspaceModeCommandGrid => '指揮網格';
@@ -5517,7 +5514,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '文档导入、四引擎实时进度与完整报告现在都保留在同一个战情中心工作台。可随时切换“指挥网格”“任务时间轴”与“证据画布”，不会中断或重新分析；自动模式在桌面使用指挥网格、手机使用任务时间轴。结果包含整体判定、AI 概率、信心度、耗时、逐句证据、引擎贡献、链接与文献核实，并可导出 PDF、CSV、JSON、PNG及保存至本机历史。';
+      '文档导入、四引擎实时进度与完整报告现在都保留在同一个战情中心工作台。可随时切换“指挥网格”“任务时间轴”与“证据画布”，不会中断或重新分析；默认是指挥网格。结果包含整体判定、AI 概率、信心度、耗时、逐句证据、引擎贡献、链接与文献核实，并可导出 PDF、CSV、JSON、PNG及保存至本机历史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
@@ -5834,9 +5831,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get workspaceModeOriginal => '原始版面';
-
-  @override
-  String get workspaceModeAuto => '自动选择';
 
   @override
   String get workspaceModeCommandGrid => '指挥网格';
@@ -8759,7 +8753,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkflowStep5Body =>
-      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；自動模式在桌面使用指揮網格、手機使用任務時間軸。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
+      '文件匯入、四引擎即時進度與完整報告現在都保留在同一個戰情中心工作台。可隨時切換「指揮網格」、「任務時間軸」與「證據畫布」，不會中斷或重新分析；預設為指揮網格。結果包含整體判定、AI 機率、信心度、耗時、逐句證據、引擎貢獻、連結與文獻核實，並可匯出 PDF、CSV、JSON、PNG及保存至本機歷史。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -9076,9 +9070,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceModeOriginal => '原始版面';
-
-  @override
-  String get workspaceModeAuto => '自動選擇';
 
   @override
   String get workspaceModeCommandGrid => '指揮網格';

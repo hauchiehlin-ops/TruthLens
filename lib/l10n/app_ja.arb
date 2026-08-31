@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "ワークスペースモード",
   "workspaceModeSectionSubtitle": "原文、ライブ分析、最終証拠を一つの作業画面に配置する方法を選択します。",
   "workspaceModeOriginal": "元のレイアウト",
-  "workspaceModeAuto": "自動",
   "workspaceModeCommandGrid": "コマンドグリッド",
   "workspaceModeTimeline": "ミッションタイムライン",
   "workspaceModeEvidence": "証拠キャンバス",

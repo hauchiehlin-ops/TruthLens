@@ -2733,9 +2733,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get workspaceModeOriginal => 'Diseño original';
 
   @override
-  String get workspaceModeAuto => 'Automático';
-
-  @override
   String get workspaceModeCommandGrid => 'Cuadrícula de mando';
 
   @override

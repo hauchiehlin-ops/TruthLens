@@ -74,6 +74,7 @@ class _ReportScreenState extends State<ReportScreen> {
       BibliographyVerifier.extractEntries(result.inputText);
   bool _checkingBib = false;
   List<BibliographyCheckResult>? _bibChecks;
+  Future<void>? _verificationFuture;
   int _bibCompleted = 0;
   int _bibTotal = 0;
   BibliographyEntry? _bibCurrentEntry;
@@ -121,6 +122,22 @@ class _ReportScreenState extends State<ReportScreen> {
   /// 已探測過的結果，[forceRecheck] 為 true 時強制重新探測），連線不佳時
   /// 直接顯示提示、不逐筆嘗試逾時的網路請求。
   Future<void> _runVerification({bool forceRecheck = false}) async {
+    final running = _verificationFuture;
+    if (!forceRecheck && running != null) {
+      return running;
+    }
+    final future = _runVerificationBody(forceRecheck: forceRecheck);
+    _verificationFuture = future;
+    try {
+      return await future;
+    } finally {
+      if (identical(_verificationFuture, future)) {
+        _verificationFuture = null;
+      }
+    }
+  }
+
+  Future<void> _runVerificationBody({bool forceRecheck = false}) async {
     if (forceRecheck) _networkAvailable = null;
     if (_detectedUrls.isNotEmpty && mounted) {
       setState(() => _checkingLinks = true);
@@ -131,7 +148,6 @@ class _ReportScreenState extends State<ReportScreen> {
         _bibCompleted = 0;
         _bibTotal = _bibEntries.length;
         _bibCurrentEntry = _bibEntries.first;
-        _bibChecks = const [];
       });
     }
 
@@ -143,6 +159,8 @@ class _ReportScreenState extends State<ReportScreen> {
         setState(() {
           _checkingLinks = false;
           _checkingBib = false;
+          _bibChecks = null;
+          _bibCurrentEntry = null;
         });
       }
       return;
@@ -299,6 +317,8 @@ class _ReportScreenState extends State<ReportScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
     try {
+      await _ensureExportVerificationComplete();
+      if (!mounted) return;
       final path = await exporter(
         result,
         l10n,
@@ -316,6 +336,21 @@ class _ReportScreenState extends State<ReportScreen> {
         SnackBar(content: Text(l10n.reportExportFailed(e.toString()))),
       );
     }
+  }
+
+  Future<void> _ensureExportVerificationComplete() async {
+    if (_verificationFuture case final running?) {
+      await running;
+    }
+    if (!mounted) return;
+    final linkVerificationOn = context
+        .read<PreferencesService>()
+        .linkVerificationEnabled;
+    if (!linkVerificationOn || _bibEntries.isEmpty) return;
+    final checks = _bibChecks;
+    if (checks != null && checks.length >= _bibEntries.length) return;
+    if (_networkAvailable == false) return;
+    await _runVerification(forceRecheck: true);
   }
 
   @override

@@ -2729,9 +2729,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workspaceModeOriginal => 'Ursprüngliches Layout';
 
   @override
-  String get workspaceModeAuto => 'Automatisch';
-
-  @override
   String get workspaceModeCommandGrid => 'Kommandoraster';
 
   @override

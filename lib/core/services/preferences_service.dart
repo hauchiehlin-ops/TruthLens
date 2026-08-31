@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum WorkspaceMode {
-  original,
-  automatic,
-  commandGrid,
-  missionTimeline,
-  evidenceCanvas,
-}
+enum WorkspaceMode { original, commandGrid, missionTimeline, evidenceCanvas }
 
 /// 使用者偏好設定（閾值、主題、ESL 修正開關）
 class PreferencesService extends ChangeNotifier {
@@ -32,6 +26,8 @@ class PreferencesService extends ChangeNotifier {
   static const _kLocale = 'app_locale';
   static const _kWorkspaceMode = 'workspace_mode';
   static const _kEngineWeightPrefix = 'engine_weight_';
+  static const _kEnginePreferencesSchema = 'engine_preferences_schema';
+  static const _currentEnginePreferencesSchema = 2;
 
   SharedPreferences? _prefs;
 
@@ -44,7 +40,7 @@ class PreferencesService extends ChangeNotifier {
   bool linkVerificationEnabled = true;
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
-  WorkspaceMode workspaceMode = WorkspaceMode.automatic;
+  WorkspaceMode workspaceMode = WorkspaceMode.commandGrid;
   Set<String> _disabledEngines = {};
   Map<String, double> _engineWeights = Map.of(defaultEngineWeights);
 
@@ -69,10 +65,18 @@ class PreferencesService extends ChangeNotifier {
       _prefs!.remove('engineering_village_api_key'),
       _prefs!.remove('engineering_village_institution_token'),
     ]);
+    final engineSchema = _prefs!.getInt(_kEnginePreferencesSchema) ?? 0;
+    if (engineSchema < _currentEnginePreferencesSchema) {
+      await _prefs!.remove(_kDisabledEngines);
+      await _prefs!.setInt(
+        _kEnginePreferencesSchema,
+        _currentEnginePreferencesSchema,
+      );
+    }
     locale = _decodeLocale(_prefs!.getString(_kLocale));
     workspaceMode = WorkspaceMode.values.firstWhere(
       (mode) => mode.name == _prefs!.getString(_kWorkspaceMode),
-      orElse: () => WorkspaceMode.automatic,
+      orElse: () => WorkspaceMode.commandGrid,
     );
     _disabledEngines = (_prefs!.getStringList(_kDisabledEngines) ?? []).toSet();
     final loadedWeights = <String, double>{

@@ -6,7 +6,7 @@ import 'language_id.dart';
 /// 中日韓文字以標點斷句、逐字元計詞；其他語言以空白斷詞。
 class PreprocessedText {
   static const int maxAnalysisChunkTokens = 120;
-  static const int maxAnalysisChunkSentences = 5;
+  static const int maxAnalysisChunkSentences = 1;
 
   final String raw;
   final String analysisText;
@@ -93,7 +93,8 @@ class PreprocessedText {
         pendingSentenceIndices.add(sentenceIndex);
         pendingTokenCount += sentenceTokenList.length;
       }
-      // 不跨越原始段落合併，避免把不同主題的句子放進同一推論區塊。
+      // 不跨句合併。INT8 / WebGPU / native ONNX 的微小差異會在多句 chunk
+      // 上被段落抽取差異放大；固定單句輸入讓同一模型堆疊跨平台可比較。
       flushChunk();
     }
 

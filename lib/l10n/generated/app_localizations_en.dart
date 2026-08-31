@@ -2354,7 +2354,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpWorkflowStep5Body =>
-      'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Automatic uses Command grid on desktop and Mission timeline on mobile. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.';
+      'Import, live four-engine progress, and the complete report now remain in one situation-center workspace. Switch among Command grid, Mission timeline, and Evidence canvas at any time without restarting analysis; Command grid is the default. The result includes the verdict, AI probability, confidence, elapsed time, sentence evidence, engine contributions, link checks, and citation checks. You can export PDF, CSV, JSON, or PNG, and every result is saved to local History.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => 'First launch';
@@ -2693,9 +2693,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workspaceModeOriginal => 'Original layout';
-
-  @override
-  String get workspaceModeAuto => 'Automatic';
 
   @override
   String get workspaceModeCommandGrid => 'Command grid';

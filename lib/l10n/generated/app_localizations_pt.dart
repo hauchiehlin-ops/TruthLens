@@ -2723,9 +2723,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get workspaceModeOriginal => 'Layout original';
 
   @override
-  String get workspaceModeAuto => 'Automático';
-
-  @override
   String get workspaceModeCommandGrid => 'Grade de comando';
 
   @override

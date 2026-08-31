@@ -2708,9 +2708,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get workspaceModeOriginal => 'Tata letak asli';
 
   @override
-  String get workspaceModeAuto => 'Otomatis';
-
-  @override
   String get workspaceModeCommandGrid => 'Kisi komando';
 
   @override

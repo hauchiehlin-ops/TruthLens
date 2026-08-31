@@ -1,5 +1,79 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百八十一次更新）— 修正 iOS 引擎偏好殘留與 PDF 半完成文獻匯出
+
+使用者提供 macOS 與 iOS 兩份完整 PDF 報告比對，並確認 iOS 設定中 Transformer／統計引擎實際為開啟。
+重新比對後修正前次判讀：PDF 中「使用者在設定中關閉此引擎」不應直接解讀為使用者真的關閉，而是代表
+分析當下讀到的 persisted engine state 有殘留或不同步。另確認 iOS 匯出的文獻核實只到第 17 筆，
+不是 `pdftotext` 抽取假象，而是報告匯出時拿到了背景驗證尚未完成的部分結果。
+
+主要調整：
+
+1. `PreferencesService` 新增 `engine_preferences_schema` migration；升級後會清掉舊的 `disabled_engines`
+   殘留，讓四個核心文字引擎回到全開，避免 iOS/Web localStorage 舊狀態造成跨裝置結論不一致。
+2. `EnsembleOrchestrator` 在未參與引擎的 `features` 補入 `enabled_by_settings` 與
+   `availability_check_passed`，debug log 也輸出 `enabled`/`available`，之後可明確分辨是設定、模型或
+   runtime 問題。
+3. `ReportScreen` 的匯出流程現在會等待既有背景文獻驗證；若只拿到部分 `_bibChecks`，會在匯出前強制
+   補齊完整文獻清單，避免手機上太快點下載時輸出半份 PDF。
+4. PDF 匯出測試新增 22 筆文獻案例，確認第 22 筆出現在「逐句分析」之前。
+5. 版本同步升級為 `4.12.5+1464`，重新 `flutter build web`，確認 `build/web/version.json`
+   為 `4.12.5/1464`。
+
+**狀態**：✅ `flutter test test/preferences_service_test.dart test/report_exporter_test.dart test/engine_weight_test.dart test/report_composer_test.dart`
+33 項全數通過；✅
+`flutter test test/detection_test.dart test/workspace_screen_test.dart test/preferences_service_test.dart test/report_exporter_test.dart`
+59 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百八十次更新）— 固定 Transformer 逐句輸入以消除跨平台結論漂移
+
+使用者回報同一篇文章在 macOS 與 iOS 仍得到不同分析結論，指出前次只修正 ONNX 批次仍不足。
+本次追到更上游的實際原因：Transformer 分析仍會把同段多句合併成一個 `analysisChunk`，而 PDF
+抽文字、換行與段落重建在 macOS/iOS 可能有細微差異。即使句數相同，某句被包進不同鄰句上下文時，
+同一套模型也會看到不同輸入，最後經句級門檻與加權融合放大成不同總結。
+
+主要調整：
+
+1. `TextStats.maxAnalysisChunkSentences` 從多句區塊改為固定 `1`，Transformer 永遠以單句作為模型輸入，
+   不再讓段落抽取差異影響神經模型上下文。
+2. 保留既有句子清單與逐句對應，但 `analysisChunks` 現在與 `sentences` 一一對齊，讓 macOS、iOS、Web
+   在同一份正文下有相同的模型輸入單位。
+3. 更新切句回歸測試，鎖定不合併多句的行為，避免未來為了效能再次把跨平台穩定性打開破口。
+4. 版本同步升級為 `4.12.4+1463`，重新 `flutter build web`，確認 `build/web/version.json`
+   為 `4.12.4/1463`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/detection_test.dart test/engine_evidence_test.dart test/workspace_screen_test.dart`
+69 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百七十九次更新）— 移除自動工作台模式並補手機新分析入口
+
+使用者要求取消工作台模式中的「自動選擇」，預設改為「指揮網格」，並指出手機版完成分析後沒有
+重啟新分析功能。本次移除 automatic mode 的程式分支、選單項目與本地化字串，並讓既有舊偏好值
+自動 fallback 到 `commandGrid`。
+
+主要調整：
+
+1. `WorkspaceMode` 移除 `automatic`，`PreferencesService` 預設與未知儲存值 fallback 都改為
+   `WorkspaceMode.commandGrid`。
+2. App overflow menu、設定頁 dropdown、首頁路由、輸入頁 mode label 與 workspace layout switch
+   全部移除 automatic 分支；使用者只會看到 Original、Command grid、Mission timeline、Evidence canvas。
+3. 手機完成報告 flow 頂部新增「新的分析 / New analysis」按鈕，直接呼叫既有 `_newAnalysis()`，
+   可從分析結果回到新的輸入流程。
+4. 移除所有語系 ARB 的 `workspaceModeAuto`，更新中英文工作流程說明，並重新產生 generated l10n。
+5. 版本同步升級為 `4.12.3+1462`，重新 `flutter build web`，確認 `build/web/version.json`
+   為 `4.12.3/1462`。
+
+**狀態**：✅ `flutter gen-l10n` 完成；✅ `dart format` 完成；✅
+`flutter test test/preferences_service_test.dart test/home_screen_test.dart test/workspace_screen_test.dart`
+26 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百七十八次更新）— 補上 Web 版本號 4.12.2
 
 使用者指出上一輪 commit/push 後版本號仍未更新。檢查後確認原因是前一輪只提交了原始碼修正，

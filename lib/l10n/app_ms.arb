@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Mod ruang kerja",
   "workspaceModeSectionSubtitle": "Pilih cara sumber, analisis langsung dan bukti akhir berkongsi satu ruang kerja.",
   "workspaceModeOriginal": "Susun atur asal",
-  "workspaceModeAuto": "Automatik",
   "workspaceModeCommandGrid": "Grid arahan",
   "workspaceModeTimeline": "Garis masa misi",
   "workspaceModeEvidence": "Kanvas bukti",

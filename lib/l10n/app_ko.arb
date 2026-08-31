@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "작업 공간 모드",
   "workspaceModeSectionSubtitle": "원문, 실시간 분석, 최종 근거를 한 작업 공간에 배치하는 방식을 선택합니다.",
   "workspaceModeOriginal": "기존 레이아웃",
-  "workspaceModeAuto": "자동",
   "workspaceModeCommandGrid": "지휘 그리드",
   "workspaceModeTimeline": "임무 타임라인",
   "workspaceModeEvidence": "근거 캔버스",

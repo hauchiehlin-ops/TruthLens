@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Arbeitsbereichsmodus",
   "workspaceModeSectionSubtitle": "Wählen Sie, wie Quelle, Live-Analyse und Belege in einem Arbeitsbereich erscheinen.",
   "workspaceModeOriginal": "Ursprüngliches Layout",
-  "workspaceModeAuto": "Automatisch",
   "workspaceModeCommandGrid": "Kommandoraster",
   "workspaceModeTimeline": "Missionszeitachse",
   "workspaceModeEvidence": "Beweisfläche",

@@ -104,8 +104,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
       final enabled = prefs?.isEngineEnabled(role) ?? true;
       final configuredWeight =
           prefs?.engineWeight(role) ?? engine.defaultWeight;
-      final available = enabled && await engine.isAvailable();
-      final rawScore = available
+      final availabilityCheckPassed = enabled && await engine.isAvailable();
+      final rawScore = availabilityCheckPassed
           ? await engine.analyze(
               text,
               loc,
@@ -118,6 +118,10 @@ class EnsembleOrchestrator extends ChangeNotifier {
               aiProbability: 0.5,
               weight: configuredWeight,
               available: false,
+              features: {
+                'enabled_by_settings': enabled ? 1 : 0,
+                'availability_check_passed': availabilityCheckPassed ? 1 : 0,
+              },
               applicability: EngineApplicability.unsupported,
               calibrationReliability: 0,
               reasons: [
@@ -131,7 +135,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
       debugPrint(
         '[Ensemble] $role finished in '
         '${engineElapsed.inMilliseconds}ms '
-        '(available=$available, chunks=${text.analysisChunks.length}, '
+        '(enabled=$enabled, available=$availabilityCheckPassed, '
+        'chunks=${text.analysisChunks.length}, '
         'sentences=${text.sentences.length})',
       );
       onEngineProgress?.call(role, 1);

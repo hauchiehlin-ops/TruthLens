@@ -2715,9 +2715,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get workspaceModeOriginal => 'Исходный макет';
 
   @override
-  String get workspaceModeAuto => 'Автоматически';
-
-  @override
   String get workspaceModeCommandGrid => 'Командная сетка';
 
   @override

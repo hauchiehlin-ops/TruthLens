@@ -1243,7 +1243,6 @@
   "workspaceModeSectionTitle": "Mode d’espace de travail",
   "workspaceModeSectionSubtitle": "Choisissez comment la source, l'analyse en direct et les preuves partagent le même espace.",
   "workspaceModeOriginal": "Mise en page d’origine",
-  "workspaceModeAuto": "Automatique",
   "workspaceModeCommandGrid": "Grille de commandement",
   "workspaceModeTimeline": "Chronologie de mission",
   "workspaceModeEvidence": "Canevas de preuves",
