@@ -193,8 +193,10 @@ class AdversarialEngine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(0.02);
     // 逐文件路由：語言不同，最適用的變體也不同。純英文模型對中文輸入
     // 從未跨過強訊號閾值，等於權重空轉，而使用者看不出這件事。
     _choice = routeFor(
@@ -205,6 +207,7 @@ class AdversarialEngine implements DetectionEngine {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded(l10n);
+      onProgress?.call(0.12);
     } catch (_) {
       detector = null;
     }
@@ -214,7 +217,13 @@ class AdversarialEngine implements DetectionEngine {
 
     List<double> perChunk;
     try {
-      perChunk = await detector.classifySentences(text.analysisChunks);
+      debugPrint('[AdversarialEngine] 推論 ${text.analysisChunks.length} 個分析區塊');
+      perChunk = await detector.classifySentences(
+        text.analysisChunks,
+        onProgress: (progress) =>
+            onProgress?.call(0.12 + progress.clamp(0.0, 1.0) * 0.86),
+      );
+      onProgress?.call(0.98);
     } catch (e) {
       debugPrint('[AdversarialEngine] 模型推論失敗，啟動自動修復: $e');
       detector.dispose();
@@ -250,6 +259,7 @@ class AdversarialEngine implements DetectionEngine {
     // 一篇原生 AI 短文從未被改寫，得到 0% 是正確答案——但那是另一道題的正確答案，
     // 不能當成「這是人寫的」的證據拿去投票。沒偵測到改寫時一律視為沉默。
     final hasEvidence = strongChunkCount > 0;
+    onProgress?.call(1);
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
@@ -264,7 +274,11 @@ class AdversarialEngine implements DetectionEngine {
       },
       modules: [
         if (_choice.variant != null)
-          localizedModelName(_choice.variant!.variantId, _choice.variant!.name, l10n)
+          localizedModelName(
+            _choice.variant!.variantId,
+            _choice.variant!.name,
+            l10n,
+          )
         else
           name(l10n),
       ],

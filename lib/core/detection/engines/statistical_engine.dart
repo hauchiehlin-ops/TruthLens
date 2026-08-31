@@ -33,11 +33,14 @@ class StatisticalEngine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(0.05);
     final burstiness = text.burstiness;
     final ttr = text.typeTokenRatio;
     final entropy = text.entropy;
+    onProgress?.call(0.16);
 
     final reasons = <String>[];
     final features = <String, double>{
@@ -70,8 +73,9 @@ class StatisticalEngine implements DetectionEngine {
     // 因此改為逐文件挑選：在**已安裝**的變體中選第一個對本文件語言查得到
     // 可用門檻的。挑不到就不採計——沿用別顆模型的門檻等於在未知尺度上下結論。
     final installedIds = [
-      for (final v in modelManager?.installedVariants('statistical') ??
-          const <InstalledModel>[])
+      for (final v
+          in modelManager?.installedVariants('statistical') ??
+              const <InstalledModel>[])
         v.variantId,
     ];
     final activeId = modelManager?.activeVariant('statistical')?.variantId;
@@ -86,9 +90,11 @@ class StatisticalEngine implements DetectionEngine {
     final calibration = routedModelId == null
         ? null
         : PerplexityCalibration.of(language.code, modelId: routedModelId);
+    onProgress?.call(0.28);
     final ppl = calibration != null
         ? await _tryPerplexity(text.analysisText, routedModelId)
         : null;
+    onProgress?.call(0.58);
     features['perplexity_calibrated'] = ppl == null ? 0 : 1;
     if (calibration == null) {
       // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
@@ -198,6 +204,7 @@ class StatisticalEngine implements DetectionEngine {
         }
       }
     }
+    onProgress?.call(0.86);
 
     final fusion = _fuseSignals(signals);
     final clampedScore = fusion.aiRatio;
@@ -228,6 +235,7 @@ class StatisticalEngine implements DetectionEngine {
       reasons.add(l10n.engineReasonNeutral);
     }
 
+    onProgress?.call(1);
     return EngineScore(
       engineId: id,
       engineName: name(l10n),

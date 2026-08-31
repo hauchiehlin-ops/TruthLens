@@ -231,12 +231,16 @@ class _FixedEngine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async => EngineScore(
-    engineId: id,
-    engineName: id,
-    aiProbability: probability,
-    weight: defaultWeight,
-    sentenceScores: sentenceScores,
-  );
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(1);
+    return EngineScore(
+      engineId: id,
+      engineName: id,
+      aiProbability: probability,
+      weight: defaultWeight,
+      sentenceScores: sentenceScores,
+    );
+  }
 }

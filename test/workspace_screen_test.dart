@@ -97,6 +97,31 @@ void main() {
     }
   });
 
+  testWidgets('overlay workspace modes keep key labels high contrast', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+
+    for (final mode in [
+      WorkspaceMode.cosmicFuture,
+      WorkspaceMode.softEducation,
+    ]) {
+      await prefs.setWorkspaceMode(mode);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+
+      _expectOpaqueTextColor(tester, 'Overall progress:');
+      _expectOpaqueTextColor(tester, 'Document workspace:');
+      _expectOpaqueTextColor(tester, 'Transformer classifier');
+      _expectOpaqueTextColor(tester, 'Statistical analysis');
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('mobile automatic mode uses mission timeline', (tester) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -280,6 +305,7 @@ void main() {
 
     expect(find.textContaining('0/4 ·'), findsOneWidget);
     expect(find.textContaining('Running:'), findsOneWidget);
+    expect(find.text('39%'), findsWidgets);
 
     await tester.tap(find.byTooltip('More options'));
     await tester.pump();
@@ -386,6 +412,27 @@ class _BlockingEngine implements DetectionEngine {
   String name(AppLocalizations l10n) => id;
 
   @override
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n) =>
-      Completer<EngineScore>().future;
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) {
+    onProgress?.call(0.39);
+    return Completer<EngineScore>().future;
+  }
+}
+
+void _expectOpaqueTextColor(WidgetTester tester, String text) {
+  final widgets = tester.widgetList<Text>(find.text(text));
+  expect(widgets, isNotEmpty, reason: 'Expected to find "$text"');
+  final color = widgets
+      .map((widget) => widget.style?.color)
+      .whereType<Color>()
+      .firstOrNull;
+  expect(color, isNotNull, reason: '"$text" should set an explicit color');
+  expect(
+    color!.a,
+    greaterThanOrEqualTo(0.9),
+    reason: '"$text" should not rely on low-opacity text in overlay modes',
+  );
 }

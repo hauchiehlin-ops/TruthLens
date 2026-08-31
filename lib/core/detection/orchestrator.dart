@@ -87,6 +87,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     AppLocalizations? l10n,
     void Function(String engineId)? onEngineStarted,
     void Function(String engineId)? onEngineDone,
+    void Function(String engineId, double progress)? onEngineProgress,
     void Function(EngineScore score)? onEngineScore,
   }) async {
     final loc = l10n ?? lookupAppLocalizations(const Locale('en'));
@@ -96,14 +97,21 @@ class EnsembleOrchestrator extends ChangeNotifier {
 
     final futures = engines.map((engine) async {
       final role = _roleOf(engine.id);
+      final engineStartedAt = DateTime.now();
       onEngineStarted?.call(role);
+      onEngineProgress?.call(role, 0);
       await Future<void>.delayed(Duration.zero);
       final enabled = prefs?.isEngineEnabled(role) ?? true;
       final configuredWeight =
           prefs?.engineWeight(role) ?? engine.defaultWeight;
       final available = enabled && await engine.isAvailable();
       final rawScore = available
-          ? await engine.analyze(text, loc)
+          ? await engine.analyze(
+              text,
+              loc,
+              onProgress: (progress) =>
+                  onEngineProgress?.call(role, progress.clamp(0.0, 1.0)),
+            )
           : EngineScore(
               engineId: engine.id,
               engineName: engine.name(loc),
@@ -119,6 +127,14 @@ class EnsembleOrchestrator extends ChangeNotifier {
               ],
             );
       final score = rawScore.copyWith(weight: configuredWeight);
+      final engineElapsed = DateTime.now().difference(engineStartedAt);
+      debugPrint(
+        '[Ensemble] $role finished in '
+        '${engineElapsed.inMilliseconds}ms '
+        '(available=$available, chunks=${text.analysisChunks.length}, '
+        'sentences=${text.sentences.length})',
+      );
+      onEngineProgress?.call(role, 1);
       onEngineDone?.call(role);
       onEngineScore?.call(score);
       return score;

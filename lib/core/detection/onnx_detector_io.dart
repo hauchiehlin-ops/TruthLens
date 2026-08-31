@@ -163,8 +163,11 @@ class OnnxDetector {
   }
 
   /// 逐句推論，回傳每句 AI 機率；重複內容由記憶體快取直接回傳。
-  Future<List<double>> classifySentences(List<String> sentences) async {
-    return _batcher.classify(sentences, _classifyBatch);
+  Future<List<double>> classifySentences(
+    List<String> sentences, {
+    void Function(double progress)? onProgress,
+  }) async {
+    return _batcher.classify(sentences, _classifyBatch, onProgress: onProgress);
   }
 
   static List<double> _softmax(List<double> x) {

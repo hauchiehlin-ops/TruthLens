@@ -2,6 +2,8 @@ import '../models/detection_result.dart';
 import '../utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
 
+typedef EngineProgressCallback = void Function(double progress);
+
 /// 檢測引擎共同介面。四個子模型（A/B/C/D）各自實作，
 /// 由 [EnsembleOrchestrator] 加權投票整合。
 abstract class DetectionEngine {
@@ -17,5 +19,10 @@ abstract class DetectionEngine {
   Future<bool> isAvailable();
 
   /// 對預處理後的文本評分；[l10n] 決定判定理由文字的顯示語系。
-  Future<EngineScore> analyze(PreprocessedText text, AppLocalizations l10n);
+  /// [onProgress] 回報 0..1 的實際工作進度；不可細分的引擎至少回報 0 與 1。
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  });
 }

@@ -163,8 +163,10 @@ class TransformerEngine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(0.02);
     // 逐文件路由：語言不同，最適用的變體也不同。純英文模型對中文輸入
     // 從未跨過強訊號閾值，等於權重空轉，而使用者看不出這件事。
     _choice = routeFor(
@@ -175,6 +177,7 @@ class TransformerEngine implements DetectionEngine {
     OnnxDetector? detector;
     try {
       detector = await _ensureLoaded(l10n);
+      onProgress?.call(0.12);
       if (detector == null || text.analysisChunks.isEmpty) {
         return _unavailable(l10n);
       }
@@ -187,7 +190,13 @@ class TransformerEngine implements DetectionEngine {
 
     List<double> perChunk;
     try {
-      perChunk = await detector.classifySentences(text.analysisChunks);
+      debugPrint('[TransformerEngine] 推論 ${text.analysisChunks.length} 個分析區塊');
+      perChunk = await detector.classifySentences(
+        text.analysisChunks,
+        onProgress: (progress) =>
+            onProgress?.call(0.12 + progress.clamp(0.0, 1.0) * 0.86),
+      );
+      onProgress?.call(0.98);
     } catch (e) {
       debugPrint('[TransformerEngine] 模型推論失敗，啟動自動修復: $e');
       detector.dispose();
@@ -235,6 +244,7 @@ class TransformerEngine implements DetectionEngine {
     // 當作支持人類撰寫的證據，只能誠實標記為「本次沒有證據」。
     // TODO: 未來替這個引擎補一條負向證據通道，讓確信的人類判斷也能發聲。
     final hasEvidence = strongChunkCount > 0;
+    onProgress?.call(1);
 
     return EngineScore(
       engineId: id,
@@ -262,7 +272,10 @@ class TransformerEngine implements DetectionEngine {
       // 路由每次分析都可能換變體，使用者只看「Transformer 分類器」無從得知
       // 這次是哪一顆在發言。
       modules: [
-        if (variant != null) localizedModelName(variant.variantId, variant.name, l10n) else name(l10n),
+        if (variant != null)
+          localizedModelName(variant.variantId, variant.name, l10n)
+        else
+          name(l10n),
       ],
       reasons: [
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。

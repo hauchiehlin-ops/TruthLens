@@ -23,8 +23,9 @@ class AdaptiveSentenceBatcher {
 
   Future<List<double>> classify(
     List<String> sentences,
-    SentenceBatchClassifier runBatch,
-  ) async {
+    SentenceBatchClassifier runBatch, {
+    void Function(double progress)? onProgress,
+  }) async {
     if (sentences.isEmpty) return const [];
 
     final uniqueSentences = <String>[];
@@ -66,6 +67,11 @@ class AdaptiveSentenceBatcher {
     final orderedPendingIndices = orderedUniqueIndices
         .where(pendingUniqueIndices.contains)
         .toList();
+    final totalPending = orderedPendingIndices.length;
+    final cachedCount = uniqueSentences.length - totalPending;
+    if (uniqueSentences.isNotEmpty && cachedCount > 0) {
+      onProgress?.call(cachedCount / uniqueSentences.length);
+    }
 
     var offset = 0;
     while (offset < orderedPendingIndices.length) {
@@ -99,6 +105,7 @@ class AdaptiveSentenceBatcher {
         _cache(uniqueSentences[uniqueIndex], score);
       }
       offset += size;
+      onProgress?.call((cachedCount + offset) / uniqueSentences.length);
     }
 
     return [for (final index in originalToUnique) uniqueScores[index]];

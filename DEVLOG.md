@@ -1,5 +1,50 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十次更新）— Analysis telemetry 改為真實進度並補慢速診斷
+
+使用者指出 `Analysis telemetry` 模組進度條不應只是動畫效果，並回報最近幾次長文本分析耗時偏久，
+截圖當下停在 2/4、454 秒仍未完成。檢查後確認目前 UI 只有引擎 started/done 事件，因此 active row
+只能用 Flutter 的不定進度動畫；實際拖住的是 Transformer classifier 與 Adversarial defense 這兩個
+ONNX 神經模型對長文 analysis chunks 的本地推論，不是 OCR、連結檢查或文獻目錄驗證等網路流程。
+
+主要調整：
+
+1. `DetectionEngine.analyze` 新增可選 `onProgress` 回呼，讓引擎可以回報 0..1 的實際工作進度。
+2. `AdaptiveSentenceBatcher`、native/web `OnnxDetector.classifySentences` 支援逐批回報進度；Transformer
+   與 Adversarial 會把模型載入與 chunk 推論拆成可視進度。
+3. Statistical 與 Stylometry 引擎補上階段式進度回報，避免規則式引擎在 UI 上也看起來像卡住。
+4. Workspace UI 新增 `_engineProgress` 狀態，整體進度與每條 telemetry row 都改成 determinate progress；
+   active row 右側會顯示目前百分比。
+5. Orchestrator 會 debug log 每個引擎耗時、可用狀態、分析 chunk 數與句子數；後續若長文仍慢，可直接
+   判斷是模型推論成本、模型載入/修復，或某個引擎異常。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/adaptive_sentence_batcher_test.dart test/engine_weight_test.dart test/engine_evidence_test.dart test/workspace_screen_test.dart`
+全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`prefer_initializing_formals` info）；✅ `flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百六十九次更新）— 修正多工作台背景與文字對比
+
+使用者指出不同 workspace mode 中背景色與文字色對比不足，截圖中入口指揮列、分析遙測、
+進度節點與文件工作台底部提示都有文字幾乎看不見的情況。這次同步掃描 `WorkspaceScreen`
+的共用面板與五個桌面工作台模式，避免只修單一畫面。
+
+主要調整：
+
+1. 新增 workspace overlay 文字層級與分隔線 helper，讓 Cosmic Future / Soft Education 這類深色
+   背景不再沿用 Material 淺色介面的灰階 `onSurfaceVariant`。
+2. 加深特殊工作台的玻璃面板與共用指揮列底色，提升文字、進度條、未啟用 telemetry 狀態的可讀性。
+3. Header metric、timeline node/chip、telemetry row、evidence document 欄位標題與 readiness line
+   都改用明確高對比色；文件、分析、證據等共用面板會同步套用到 Command grid、Mission timeline、
+   Evidence canvas、Cosmic Future 與 Soft Education。
+4. 新增 widget 測試切換 overlay workspace modes，檢查關鍵文字使用不透明明確色，防止之後又退回
+   低 alpha 灰字。
+
+**狀態**：✅ `dart format lib/features/workspace/workspace_screen.dart test/workspace_screen_test.dart`
+完成；✅ `flutter test test/workspace_screen_test.dart` 全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百六十八次更新）— Workspace mode 全面套用新版入口指揮列
 
 使用者指出上一輪入口首頁改版只明顯落在 Command grid，切換到其他 workspace mode 後仍像舊版。

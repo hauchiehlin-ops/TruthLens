@@ -78,8 +78,11 @@ class OnnxDetector {
     ];
   }
 
-  Future<List<double>> classifySentences(List<String> sentences) async {
-    return _batcher.classify(sentences, _classifyBatch);
+  Future<List<double>> classifySentences(
+    List<String> sentences, {
+    void Function(double progress)? onProgress,
+  }) async {
+    return _batcher.classify(sentences, _classifyBatch, onProgress: onProgress);
   }
 
   static List<double> _softmax(List<double> x) {

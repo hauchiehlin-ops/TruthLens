@@ -43,15 +43,19 @@ class _Engine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async => EngineScore(
-    engineId: id,
-    engineName: id,
-    aiProbability: probability,
-    weight: defaultWeight,
-    hasEvidence: evidence,
-    features: features,
-  );
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(1);
+    return EngineScore(
+      engineId: id,
+      engineName: id,
+      aiProbability: probability,
+      weight: defaultWeight,
+      hasEvidence: evidence,
+      features: features,
+    );
+  }
 }
 
 /// 重現回報案例：Transformer/風格/對抗三個引擎沉默（0%），
@@ -552,9 +556,7 @@ void _perplexityLanguageGate() {
 
     test('只裝了對該語言無效的模型時回傳 null，由呼叫端棄權', () {
       expect(
-        PerplexityCalibration.bestModelFor('zh', const [
-          'distilgpt2-ppl-int8',
-        ]),
+        PerplexityCalibration.bestModelFor('zh', const ['distilgpt2-ppl-int8']),
         isNull,
       );
     });

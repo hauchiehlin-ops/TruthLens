@@ -68,6 +68,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   final _done = <String>{};
   final _activeEngines = <String>{};
   final _scores = <String, EngineScore>{};
+  final _engineProgress = <String, double>{};
 
   // 各工作台模式下的面板可拖曳調整大小（使用者手動調整後的期望尺寸，
   // 未調整則為 null，走各自的預設比例／尺寸）。
@@ -171,9 +172,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   double get _overallProgress => switch (_phase) {
     _WorkspacePhase.idle => 0,
     _WorkspacePhase.ready => 0.16,
-    _WorkspacePhase.analyzing => 0.22 + (_done.length / 4 * 0.68),
+    _WorkspacePhase.analyzing => 0.22 + (_meanEngineProgress * 0.68),
     _WorkspacePhase.complete => 1,
   };
+
+  double get _meanEngineProgress {
+    var total = 0.0;
+    for (final role in PreferencesService.engineRoles) {
+      total += _done.contains(role)
+          ? 1
+          : (_engineProgress[role] ?? (_activeEngines.contains(role) ? 0 : 0));
+    }
+    return total / PreferencesService.engineRoles.length;
+  }
 
   int get _secondsSinceProgress {
     final last = _lastProgressAt;
@@ -228,6 +239,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
+      _engineProgress.clear();
       _selectedEvidence = 0;
       _elapsedSeconds = 0;
     });
@@ -256,6 +268,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
+      _engineProgress.clear();
       _selectedEvidence = 0;
     });
   }
@@ -404,6 +417,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
+      _engineProgress.clear();
       _selectedEvidence = 0;
       _analysisStartedAt = startedAt;
       _lastProgressAt = startedAt;
@@ -425,7 +439,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         l10n: l10n,
         onEngineStarted: (id) {
           if (mounted && run == _analysisRun) {
-            setState(() => _activeEngines.add(_engineRole(id)));
+            final role = _engineRole(id);
+            setState(() {
+              _activeEngines.add(role);
+              _engineProgress[role] = 0;
+            });
+          }
+        },
+        onEngineProgress: (id, progress) {
+          if (mounted && run == _analysisRun) {
+            final role = _engineRole(id);
+            setState(() {
+              _engineProgress[role] = progress.clamp(0.0, 1.0);
+              _lastProgressAt = DateTime.now();
+            });
           }
         },
         onEngineDone: (id) {
@@ -434,6 +461,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             setState(() {
               _done.add(role);
               _activeEngines.remove(role);
+              _engineProgress[role] = 1;
               _lastProgressAt = DateTime.now();
             });
           }
@@ -485,12 +513,16 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         _phase = _WorkspacePhase.complete;
         _done.addAll(PreferencesService.engineRoles);
         _activeEngines.clear();
+        for (final role in PreferencesService.engineRoles) {
+          _engineProgress[role] = 1;
+        }
       });
     } catch (_) {
       if (!mounted || run != _analysisRun) return;
       setState(() {
         _phase = _WorkspacePhase.ready;
         _activeEngines.clear();
+        _engineProgress.clear();
       });
       _showMessage(l10n.workspaceAnalysisFailed);
     } finally {
@@ -514,6 +546,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _done.clear();
       _activeEngines.clear();
       _scores.clear();
+      _engineProgress.clear();
       _selectedEvidence = 0;
     });
   }
@@ -810,7 +843,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     ),
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
-                      value: _isAnalyzing ? null : _overallProgress,
+                      value: _overallProgress,
                       minHeight: 6,
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -821,13 +854,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
           const SizedBox(height: 8),
           for (var i = 0; i < labels.length; i++) ...[
-            if (i > 0) const Divider(height: 1),
+            if (i > 0)
+              Divider(height: 1, color: _workspaceDividerColor(context)),
             _EngineTelemetryRow(
               role: labels.keys.elementAt(i),
               label: labels.values.elementAt(i),
               active: _activeEngines.contains(labels.keys.elementAt(i)),
               done: _done.contains(labels.keys.elementAt(i)),
               score: _scores[labels.keys.elementAt(i)]?.aiProbability,
+              progress: _engineProgress[labels.keys.elementAt(i)] ?? 0,
             ),
           ],
         ],
@@ -847,7 +882,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         child: Column(
           children: [
             for (var i = 0; i < evidence.length; i++) ...[
-              if (i > 0) const Divider(height: 1),
+              if (i > 0)
+                Divider(height: 1, color: _workspaceDividerColor(context)),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
@@ -900,7 +936,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         border: Border.all(color: scheme.outlineVariant),
       ),
       _WorkspaceVisualTheme.cosmic => BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.56),
+        color: _workspaceOverlayPanel,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
         boxShadow: [
@@ -917,7 +953,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         ],
       ),
       _WorkspaceVisualTheme.soft => BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.09),
+        color: _workspaceOverlayPanel.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
         boxShadow: [
@@ -1494,7 +1530,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             icon: Icon(LucideIcons.scanLine),
             label: Text(l10n.inputOcrButton),
           ),
-          const Divider(height: 28),
+          Divider(height: 28, color: _workspaceDividerColor(context)),
           Text(
             _sourceFileName.isEmpty ? l10n.workspaceWaiting : _sourceFileName,
             maxLines: 3,
@@ -1672,10 +1708,31 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             ReadinessLimitation.localBaselineMissing =>
               l10n.analysisReadinessBaseline,
           };
-    final color = switch (readiness.ceiling) {
-      ReadinessLevel.low => Theme.of(context).colorScheme.error,
-      ReadinessLevel.moderate => Theme.of(context).colorScheme.tertiary,
-      ReadinessLevel.high => Theme.of(context).colorScheme.primary,
+    final visualTheme = _WorkspaceThemeScope.of(context);
+    final color = switch ((readiness.ceiling, visualTheme)) {
+      (ReadinessLevel.low, _WorkspaceVisualTheme.cosmic) => const Color(
+        0xFFFFB4AB,
+      ),
+      (ReadinessLevel.low, _WorkspaceVisualTheme.soft) => const Color(
+        0xFFFFB4AB,
+      ),
+      (ReadinessLevel.moderate, _WorkspaceVisualTheme.cosmic) => const Color(
+        0xFFFFD166,
+      ),
+      (ReadinessLevel.moderate, _WorkspaceVisualTheme.soft) => const Color(
+        0xFFFFD166,
+      ),
+      (ReadinessLevel.high, _WorkspaceVisualTheme.cosmic) => _cosmicCyan,
+      (ReadinessLevel.high, _WorkspaceVisualTheme.soft) => _softTeal,
+      (ReadinessLevel.low, _WorkspaceVisualTheme.standard) => Theme.of(
+        context,
+      ).colorScheme.error,
+      (ReadinessLevel.moderate, _WorkspaceVisualTheme.standard) => Theme.of(
+        context,
+      ).colorScheme.tertiary,
+      (ReadinessLevel.high, _WorkspaceVisualTheme.standard) => Theme.of(
+        context,
+      ).colorScheme.primary,
     };
     return Row(
       children: [
@@ -1773,7 +1830,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                         }, style: Theme.of(context).textTheme.titleSmall),
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
-                          value: _isAnalyzing ? null : _overallProgress,
+                          value: _overallProgress,
                           minHeight: 6,
                           borderRadius: BorderRadius.circular(3),
                         ),
@@ -1826,7 +1883,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                         maxLines: condensed ? 2 : null,
                         overflow: condensed ? TextOverflow.ellipsis : null,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: _workspaceSecondaryText(context),
                         ),
                       ),
                     ),
@@ -1845,6 +1902,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                                 label: entry.value,
                                 active: _activeEngines.contains(entry.key),
                                 done: _done.contains(entry.key),
+                                progress: _engineProgress[entry.key] ?? 0,
                               ),
                             ),
                         ],
@@ -1852,8 +1910,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     : ListView.separated(
                         padding: EdgeInsets.zero,
                         itemCount: labels.length,
-                        separatorBuilder: (context, index) =>
-                            const Divider(height: 1),
+                        separatorBuilder: (context, index) => Divider(
+                          height: 1,
+                          color: _workspaceDividerColor(context),
+                        ),
                         itemBuilder: (context, index) {
                           final entry = labels.entries.elementAt(index);
                           final group = _engineGroupFor(entry.key, l10n);
@@ -1871,6 +1931,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             active: _activeEngines.contains(entry.key),
                             done: _done.contains(entry.key),
                             score: displayedScore,
+                            progress: _engineProgress[entry.key] ?? 0,
                             relationshipText: group?.relationshipText,
                             reasons: group?.reasons,
                             modules: group?.modules,
@@ -1879,7 +1940,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       ),
               ),
               if (showTimeline && !condensed) ...[
-                const Divider(height: 14),
+                Divider(height: 14, color: _workspaceDividerColor(context)),
                 _timelineStrip(compact: true),
               ],
             ],
@@ -1913,7 +1974,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               height: 2,
               color: i <= active
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).dividerColor,
+                  : _workspaceDividerColor(context),
             ),
           Expanded(
             child: _StageNode(label: labels[i], index: i, active: active),
@@ -1922,7 +1983,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       ],
     );
     if (compact) return strip;
-    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 112,
       child: _Panel(
@@ -1937,9 +1997,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.right,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: _workspaceSecondaryText(context),
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Align(
@@ -1976,7 +2036,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             )
           : ListView.separated(
               itemCount: evidence.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1, color: _workspaceDividerColor(context)),
               itemBuilder: (context, index) {
                 final item = evidence[index];
                 return ListTile(
@@ -2079,7 +2140,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                           l10n.workspaceSentenceColumnHeader,
                           style: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                                color: _workspaceTertiaryText(context),
                               ),
                         ),
                       ),
@@ -2087,7 +2148,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       Text(
                         l10n.workspaceSentenceSignalHeader,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
+                          color: _workspaceTertiaryText(context),
                         ),
                       ),
                     ],
@@ -2141,7 +2202,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                   ),
                 ),
                 if (evidence.isNotEmpty) ...[
-                  const Divider(height: 14),
+                  Divider(height: 14, color: _workspaceDividerColor(context)),
                   Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: Text(
@@ -2264,17 +2325,19 @@ class _HeaderMetric extends StatelessWidget {
           _WorkspaceVisualTheme.soft => _softTeal,
           _WorkspaceVisualTheme.standard => scheme.onSurfaceVariant,
         };
-    final labelColor = themed ? Colors.white70 : scheme.onSurfaceVariant;
-    final valueColor = themed ? Colors.white : scheme.onSurface;
+    final labelColor = themed
+        ? _workspaceOverlayMutedText
+        : scheme.onSurfaceVariant;
+    final valueColor = themed ? _workspaceOverlayText : scheme.onSurface;
     final fillColor = switch (visualTheme) {
-      _WorkspaceVisualTheme.cosmic => Colors.white.withValues(alpha: 0.06),
-      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.10),
+      _WorkspaceVisualTheme.cosmic => Colors.white.withValues(alpha: 0.12),
+      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.14),
       _WorkspaceVisualTheme.standard =>
         scheme.surfaceContainerHighest.withValues(alpha: 0.48),
     };
     final borderColor = switch (visualTheme) {
-      _WorkspaceVisualTheme.cosmic => _cosmicCyan.withValues(alpha: 0.28),
-      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.16),
+      _WorkspaceVisualTheme.cosmic => _cosmicCyan.withValues(alpha: 0.42),
+      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.28),
       _WorkspaceVisualTheme.standard => scheme.outlineVariant,
     };
     return ConstrainedBox(
@@ -2385,6 +2448,34 @@ const _cosmicCyan = Color(0xFF00F0FF);
 const _cosmicMagenta = Color(0xFFFF2FE0);
 const _softTeal = Color(0xFF5EEAD4);
 const _softViolet = Color(0xFFC084FC);
+const _workspaceOverlayPanel = Color(0xE60B1220);
+const _workspaceOverlayText = Color(0xFFFFFFFF);
+const _workspaceOverlayMutedText = Color(0xFFE7EEF8);
+const _workspaceOverlaySubtleText = Color(0xFFC8D3E1);
+const _workspaceOverlayTrack = Color(0xFF8391A5);
+
+bool _isOverlayWorkspace(BuildContext context) =>
+    _WorkspaceThemeScope.of(context) != _WorkspaceVisualTheme.standard;
+
+Color _workspacePrimaryText(BuildContext context) =>
+    _isOverlayWorkspace(context)
+    ? _workspaceOverlayText
+    : Theme.of(context).colorScheme.onSurface;
+
+Color _workspaceSecondaryText(BuildContext context) =>
+    _isOverlayWorkspace(context)
+    ? _workspaceOverlayMutedText
+    : Theme.of(context).colorScheme.onSurfaceVariant;
+
+Color _workspaceTertiaryText(BuildContext context) =>
+    _isOverlayWorkspace(context)
+    ? _workspaceOverlaySubtleText
+    : Theme.of(context).colorScheme.onSurfaceVariant;
+
+Color _workspaceDividerColor(BuildContext context) =>
+    _isOverlayWorkspace(context)
+    ? Colors.white.withValues(alpha: 0.24)
+    : Theme.of(context).dividerColor;
 
 class _Panel extends StatelessWidget {
   final String title;
@@ -2476,7 +2567,7 @@ class _Panel extends StatelessWidget {
   Widget _buildCosmic(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.55),
+        color: _workspaceOverlayPanel,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
         boxShadow: [
@@ -2535,7 +2626,9 @@ class _Panel extends StatelessWidget {
                         ),
                       if (trailing != null)
                         DefaultTextStyle.merge(
-                          style: const TextStyle(color: Colors.white70),
+                          style: const TextStyle(
+                            color: _workspaceOverlayMutedText,
+                          ),
                           child: IconTheme.merge(
                             data: const IconThemeData(color: _cosmicCyan),
                             child: trailing!,
@@ -2590,9 +2683,9 @@ class _Panel extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: _workspaceOverlayPanel.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
             boxShadow: [
               BoxShadow(
                 color: _softTeal.withValues(alpha: 0.12),
@@ -2647,13 +2740,15 @@ class _Panel extends StatelessWidget {
                             child: Icon(
                               LucideIcons.helpCircle,
                               size: 15,
-                              color: Colors.white70,
+                              color: _workspaceOverlayMutedText,
                             ),
                           ),
                         ),
                       if (trailing != null)
                         DefaultTextStyle.merge(
-                          style: const TextStyle(color: Colors.white70),
+                          style: const TextStyle(
+                            color: _workspaceOverlayMutedText,
+                          ),
                           child: IconTheme.merge(
                             data: const IconThemeData(color: _softTeal),
                             child: trailing!,
@@ -2665,7 +2760,7 @@ class _Panel extends StatelessWidget {
                   ),
                 ),
               ),
-              Divider(height: 1, color: Colors.white.withValues(alpha: 0.14)),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.24)),
               if (expandBody)
                 Expanded(
                   child: Padding(
@@ -2961,7 +3056,9 @@ class _ProbabilityGauge extends StatelessWidget {
               painter: _SegmentedEngineRingPainter(
                 states: engineStates,
                 colors: segmentColors,
-                pendingColor: scheme.outlineVariant,
+                pendingColor: _isOverlayWorkspace(context)
+                    ? _workspaceOverlayTrack
+                    : scheme.outlineVariant,
               ),
             ),
             if (analyzing)
@@ -3156,18 +3253,23 @@ class _EngineTelemetryPulse extends StatelessWidget {
   final String label;
   final bool active;
   final bool done;
+  final double progress;
 
   const _EngineTelemetryPulse({
     required this.role,
     required this.label,
     required this.active,
     required this.done,
+    required this.progress,
   });
 
   @override
   Widget build(BuildContext context) {
     final color = _engineColor(context, role);
     final scheme = Theme.of(context).colorScheme;
+    final pendingColor = _isOverlayWorkspace(context)
+        ? _workspaceOverlayTrack
+        : scheme.outlineVariant;
     return Tooltip(
       message: label,
       child: Padding(
@@ -3182,6 +3284,7 @@ class _EngineTelemetryPulse extends StatelessWidget {
                 children: [
                   if (active)
                     CircularProgressIndicator(
+                      value: progress > 0 ? progress.clamp(0.0, 1.0) : null,
                       strokeWidth: 2,
                       color: color,
                       backgroundColor: color.withValues(alpha: 0.12),
@@ -3193,7 +3296,7 @@ class _EngineTelemetryPulse extends StatelessWidget {
                         alpha: done || active ? 0.18 : 0.08,
                       ),
                       border: Border.all(
-                        color: done || active ? color : scheme.outlineVariant,
+                        color: done || active ? color : pendingColor,
                       ),
                     ),
                     child: Icon(_engineIcon(role), size: 17, color: color),
@@ -3214,7 +3317,7 @@ class _EngineTelemetryPulse extends StatelessWidget {
             Container(
               height: 3,
               decoration: BoxDecoration(
-                color: done || active ? color : scheme.outlineVariant,
+                color: done || active ? color : pendingColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -3231,6 +3334,7 @@ class _EngineTelemetryRow extends StatelessWidget {
   final bool active;
   final bool done;
   final double? score;
+  final double progress;
   final String? relationshipText;
   final List<String>? reasons;
 
@@ -3244,6 +3348,7 @@ class _EngineTelemetryRow extends StatelessWidget {
     required this.active,
     required this.done,
     required this.score,
+    required this.progress,
     this.relationshipText,
     this.reasons,
     this.modules,
@@ -3259,13 +3364,8 @@ class _EngineTelemetryRow extends StatelessWidget {
         (relationshipText != null ||
             (reasons?.isNotEmpty ?? false) ||
             (modules?.isNotEmpty ?? false));
-    // cosmic/soft 主題面板背景較深，內文若沿用淺色主題的 onSurfaceVariant
-    // 會呈現深灰字疊深色底、對比不足；改用半透明白字確保可讀性。
-    final isOverlayTheme =
-        _WorkspaceThemeScope.of(context) != _WorkspaceVisualTheme.standard;
-    final detailColor = isOverlayTheme
-        ? Colors.white.withValues(alpha: 0.82)
-        : scheme.onSurfaceVariant;
+    final isOverlayTheme = _isOverlayWorkspace(context);
+    final detailColor = _workspaceSecondaryText(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -3354,7 +3454,11 @@ class _EngineTelemetryRow extends StatelessWidget {
           width: 4,
           height: active ? 42 : 30,
           decoration: BoxDecoration(
-            color: done || active ? color : scheme.outlineVariant,
+            color: done || active
+                ? color
+                : (isOverlayTheme
+                      ? _workspaceOverlayTrack
+                      : scheme.outlineVariant),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -3374,15 +3478,25 @@ class _EngineTelemetryRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: _workspacePrimaryText(context),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(2),
                 child: LinearProgressIndicator(
-                  value: active ? null : (done ? 1 : 0),
+                  value: done ? 1 : progress.clamp(0.0, 1.0),
                   minHeight: 4,
                   color: color,
-                  backgroundColor: scheme.surfaceContainerHighest,
+                  backgroundColor: isOverlayTheme
+                      ? _workspaceOverlayTrack.withValues(alpha: 0.38)
+                      : scheme.surfaceContainerHighest,
                 ),
               ),
             ],
@@ -3412,7 +3526,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                         '—',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: isOverlayTheme
-                              ? Colors.white.withValues(alpha: 0.82)
+                              ? _workspaceOverlayMutedText
                               : scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w700,
                         ),
@@ -3420,20 +3534,34 @@ class _EngineTelemetryRow extends StatelessWidget {
                   ],
                 )
               : active
-              ? Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: color,
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox.square(
+                      dimension: 16,
+                      child: CircularProgressIndicator(
+                        value: progress > 0 ? progress.clamp(0.0, 1.0) : null,
+                        strokeWidth: 2,
+                        color: color,
+                        backgroundColor: isOverlayTheme
+                            ? _workspaceOverlayTrack.withValues(alpha: 0.24)
+                            : scheme.surfaceContainerHighest,
+                      ),
                     ),
-                  ),
+                    Text(
+                      '${(progress.clamp(0.0, 1.0) * 100).round()}%',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: _workspaceSecondaryText(context),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 )
               : Icon(
                   LucideIcons.moreHorizontal,
                   color: isOverlayTheme
-                      ? Colors.white.withValues(alpha: 0.7)
+                      ? _workspaceOverlayMutedText
                       : scheme.onSurfaceVariant,
                 ),
         ),
@@ -3458,6 +3586,16 @@ class _StageNode extends StatelessWidget {
     final complete = index < active;
     final current = index == active;
     final scheme = Theme.of(context).colorScheme;
+    final overlay = _isOverlayWorkspace(context);
+    final inactiveBackground = overlay
+        ? Colors.white.withValues(alpha: 0.16)
+        : scheme.surfaceContainerHighest;
+    final inactiveText = overlay
+        ? _workspaceOverlayMutedText
+        : scheme.onSurface;
+    final inactiveBorder = overlay
+        ? _workspaceOverlayTrack
+        : scheme.outlineVariant;
     return Semantics(
       selected: current,
       child: Column(
@@ -3468,11 +3606,11 @@ class _StageNode extends StatelessWidget {
             height: 26,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: complete || current
-                  ? scheme.primary
-                  : scheme.surfaceContainerHighest,
+              color: complete || current ? scheme.primary : inactiveBackground,
               border: Border.all(
-                color: current ? scheme.onSurface : scheme.outlineVariant,
+                color: current
+                    ? _workspacePrimaryText(context)
+                    : inactiveBorder,
                 width: current ? 2 : 1,
               ),
             ),
@@ -3482,7 +3620,8 @@ class _StageNode extends StatelessWidget {
                 : Text(
                     '${index + 1}',
                     style: TextStyle(
-                      color: current ? scheme.onPrimary : scheme.onSurface,
+                      color: current ? scheme.onPrimary : inactiveText,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
           ),
@@ -3491,7 +3630,12 @@ class _StageNode extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: current
+                  ? _workspacePrimaryText(context)
+                  : _workspaceSecondaryText(context),
+              fontWeight: current ? FontWeight.w700 : FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -3562,11 +3706,16 @@ class _StageChip extends StatelessWidget {
     final complete = index < active;
     final current = index == active;
     final scheme = Theme.of(context).colorScheme;
+    final overlay = _isOverlayWorkspace(context);
     final background = complete || current
         ? scheme.primary
+        : overlay
+        ? Colors.white.withValues(alpha: 0.16)
         : scheme.surfaceContainerHighest;
     final foreground = complete || current
         ? scheme.onPrimary
+        : overlay
+        ? _workspaceOverlayMutedText
         : scheme.onSurfaceVariant;
     return Semantics(
       selected: current,
@@ -3576,7 +3725,9 @@ class _StageChip extends StatelessWidget {
           color: background,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: current ? scheme.onSurface : Colors.transparent,
+            color: current
+                ? _workspacePrimaryText(context)
+                : (overlay ? _workspaceOverlayTrack : Colors.transparent),
             width: 1.5,
           ),
         ),

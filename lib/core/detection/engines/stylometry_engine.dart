@@ -91,8 +91,10 @@ class StylometryEngine implements DetectionEngine {
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(0.05);
     final reasons = <String>[];
     final features = <String, double>{};
     // 規則式引擎的分數代表實際命中特徵；沒有命中時應為 0，不能把
@@ -132,6 +134,7 @@ class StylometryEngine implements DetectionEngine {
         lexicalProbability = null;
       }
     }
+    onProgress?.call(0.35);
 
     // 特徵 0：聊天助理回覆框架殘留。單一片語可能只是正文引用，僅給 75%；
     // 命中兩個獨立對話框架時才提高至近乎完整的規則分數。
@@ -151,6 +154,7 @@ class StylometryEngine implements DetectionEngine {
         l10n.engineReasonAssistantResponseArtifact(assistantArtifactHits),
       );
     }
+    onProgress?.call(0.55);
 
     // 版面慣例只在已經有語句招呼時才加分。單看版面密度無法分辨——實測人類
     // 撰寫的技術文件在標題比例（18.6% 對 8.3%）、粗體數（142 對 27）與 emoji
@@ -187,6 +191,7 @@ class StylometryEngine implements DetectionEngine {
         ),
       );
     }
+    onProgress?.call(0.72);
 
     // 特徵 2：句式開頭重複（連續句子以相同詞開頭）
     var repeatedOpeners = 0;
@@ -214,6 +219,7 @@ class StylometryEngine implements DetectionEngine {
         bulletLines / text.sentences.length > 0.4) {
       score += 0.15;
     }
+    onProgress?.call(0.88);
 
     // 本引擎只在命中 AI 風格特徵時加分，從不因「文筆像人」而扣分。
     // 因此沒命中任何特徵時它是沉默，不是在投「人類」一票。
@@ -250,6 +256,7 @@ class StylometryEngine implements DetectionEngine {
         ? 0.99
         : math.max(lexicalProbability, 0.5 + score.clamp(0.0, 1.0) * 0.35);
 
+    onProgress?.call(1);
     return EngineScore(
       engineId: id,
       engineName: name(l10n),
