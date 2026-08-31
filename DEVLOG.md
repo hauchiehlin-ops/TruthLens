@@ -1,5 +1,21 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十八次更新）— 補上 Web 版本號 4.12.2
+
+使用者指出上一輪 commit/push 後版本號仍未更新。檢查後確認原因是前一輪只提交了原始碼修正，
+沒有同步執行 release 版號 bump 與 `flutter build web`，因此 `pubspec.yaml` 與 `build/web/version.json`
+仍停在 `4.12.1+1460`。
+
+主要調整：
+
+1. `pubspec.yaml` 從 `4.12.1+1460` 升級為 `4.12.2+1461`。
+2. 重新執行 `flutter build web`，同步更新 `build/web/version.json` 為
+   `version: 4.12.2`、`build_number: 1461`。
+3. Web bundle 同步反映上一輪已移除的 workspace mode 視覺程式碼與 `google_fonts` 依賴。
+
+**狀態**：✅ `flutter build web` 成功產出 `build/web`，且已確認
+`build/web/version.json` 為 `4.12.2/1461`。
+
 ## 2026-08-31（第一百七十七次更新）— 修正跨平台分析結論漂移與低覆蓋提示
 
 使用者同意修正前次指出的兩個報告問題，並追問「分析模組都相同的情況下，為何仍會得到不同結論」。
