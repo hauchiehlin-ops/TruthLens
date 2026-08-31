@@ -1,5 +1,31 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十一次更新）— 完成後 workspace 聚焦報告與遙測
+
+使用者指出匯入文本分析完成後，畫面最重要的是 `Analysis telemetry` 與
+`AI Content Detection Report`，但現有 workspace mode 把文件工作台與 live findings
+放在首屏主要區域，報告被推到下方，且右側出現兩個重複的「新的分析」加號入口。
+
+主要調整：
+
+1. 新增完成態共用 workspace layout：桌面寬版改為「AI content detection report 主欄 +
+   Analysis telemetry 側欄」，live findings 與 document source preview 降為參考區。
+2. Command grid、Mission timeline、Evidence canvas、Cosmic Future、Soft Education 在
+   `_result != null` 時全部走同一套完成態布局，避免各模式各自保留舊版資訊層級。
+3. 手機與窄版完成態改為可捲動流程，先顯示 overall progress 與 analysis telemetry，再進入
+   report，最後才是 live findings 與文件來源預覽，符合小螢幕閱讀順序。
+4. 移除 report panel 右上角的重複 plus，只保留共用 command header 的「新的分析」入口。
+5. Telemetry 完成後的白話總結與四引擎列改放進同一個可捲動區，修掉側欄高度不足時的
+   bottom overflow；AI evidence gauge 也改用縮放內容，避免手機 50px 圓形內文字溢出。
+6. 新增完成態 widget 測試，覆蓋桌面完成布局、五種 workspace mode 的共用完成態布局、
+   以及手機完成態的 responsive flow。
+
+**狀態**：✅ `dart format lib/features/workspace/workspace_screen.dart test/workspace_screen_test.dart`
+完成；✅ `flutter test test/workspace_screen_test.dart` 15 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百七十次更新）— Analysis telemetry 改為真實進度並補慢速診斷
 
 使用者指出 `Analysis telemetry` 模組進度條不應只是動畫效果，並回報最近幾次長文本分析耗時偏久，

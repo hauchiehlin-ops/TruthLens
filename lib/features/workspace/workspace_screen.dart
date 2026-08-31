@@ -626,15 +626,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return SafeArea(
       top: false,
       child: _result != null
-          ? Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: Column(
-                children: [
-                  _mobileProgressPanel(),
-                  const SizedBox(height: 8),
-                  Expanded(child: _reportPanel()),
-                ],
-              ),
+          ? ListView(
+              key: const ValueKey('mobile-completed-workspace-flow'),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
+              children: [
+                _mobileProgressPanel(),
+                const SizedBox(height: 8),
+                SizedBox(height: 430, child: _telemetryPanel()),
+                const SizedBox(height: 8),
+                SizedBox(height: 760, child: _reportPanel()),
+                const SizedBox(height: 8),
+                SizedBox(height: 280, child: _liveFindingsPanel()),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 220,
+                  child: _sourcePreviewPanel(compact: true),
+                ),
+                const AppCopyrightFooter(),
+              ],
             )
           : ListView(
               key: const ValueKey('mobile-workspace-flow'),
@@ -1042,6 +1051,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   Widget _commandGrid() {
     final completed = _result != null;
+    if (completed) return _completedWorkspace();
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 980) return _compactCommandGrid();
@@ -1118,6 +1128,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _compactCommandGrid() {
+    if (_result != null) return _completedWorkspace();
     const minSectionHeight = 160.0;
     const maxSectionHeight = 640.0;
     final sourceHeight = (_compactGridSourceHeight ?? 390).clamp(
@@ -1177,6 +1188,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _missionTimeline() {
+    if (_result != null) return _completedWorkspace();
     return Padding(padding: const EdgeInsets.all(10), child: _timelineBody());
   }
 
@@ -1188,7 +1200,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       child: Stack(
         children: [
           const Positioned.fill(child: _CosmicBackground()),
-          Padding(padding: const EdgeInsets.all(10), child: _timelineBody()),
+          _result != null
+              ? _completedWorkspace()
+              : Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: _timelineBody(),
+                ),
         ],
       ),
     );
@@ -1202,7 +1219,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       child: Stack(
         children: [
           const Positioned.fill(child: _FluidBackground()),
-          Padding(padding: const EdgeInsets.all(10), child: _timelineBody()),
+          _result != null
+              ? _completedWorkspace()
+              : Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: _timelineBody(),
+                ),
         ],
       ),
     );
@@ -1285,6 +1307,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _evidenceCanvas() {
+    if (_result != null) return _completedWorkspace();
     return Padding(
       padding: const EdgeInsets.all(10),
       child: LayoutBuilder(
@@ -1379,6 +1402,80 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       }),
                     ),
                     SizedBox(width: telemetryWidth, child: _telemetryPanel()),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _completedWorkspace() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 980;
+          final headerHeight = compact ? 112.0 : 84.0;
+          if (compact || constraints.maxHeight < 720) {
+            return ListView(
+              key: const ValueKey('completed-workspace-flow'),
+              children: [
+                SizedBox(
+                  height: headerHeight,
+                  child: _workspaceCommandHeader(compact: true),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(height: 380, child: _telemetryPanel()),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: math.max(700.0, constraints.maxHeight * 0.9),
+                  child: _reportPanel(),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(height: 280, child: _liveFindingsPanel()),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 220,
+                  child: _sourcePreviewPanel(compact: true),
+                ),
+              ],
+            );
+          }
+
+          final sidebarWidth = constraints.maxWidth >= 1500 ? 480.0 : 420.0;
+          return Column(
+            children: [
+              SizedBox(
+                height: headerHeight,
+                child: _workspaceCommandHeader(compact: false),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(flex: 7, child: _reportPanel()),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: sidebarWidth
+                          .clamp(360.0, constraints.maxWidth * 0.36)
+                          .toDouble(),
+                      child: Column(
+                        children: [
+                          Expanded(flex: 5, child: _telemetryPanel()),
+                          const SizedBox(height: 10),
+                          Expanded(flex: 3, child: _liveFindingsPanel()),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: 190,
+                            child: _sourcePreviewPanel(compact: true),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1666,6 +1763,54 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
+  Widget _sourcePreviewPanel({required bool compact}) {
+    final l10n = AppLocalizations.of(context);
+    return _Panel(
+      key: const ValueKey('workspace-source-preview-panel'),
+      title: l10n.workspaceDocument,
+      icon: LucideIcons.fileText,
+      trailing: _sourceFileName.isEmpty
+          ? null
+          : Tooltip(
+              message: _sourceFileName,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: compact ? 150 : 220),
+                child: Text(
+                  _sourceFileName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              readOnly: true,
+              maxLines: null,
+              expands: true,
+              textAlignVertical: TextAlignVertical.top,
+              decoration: InputDecoration(
+                hintText: l10n.inputHint,
+                contentPadding: const EdgeInsets.all(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.inputCharCount(_controller.text.trim().length),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: _workspaceSecondaryText(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _analysisReadinessLine() {
     final l10n = AppLocalizations.of(context);
     final prefs = context.watch<PreferencesService>();
@@ -1787,6 +1932,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         .toList();
     final waitingTooLong = _isAnalyzing && _secondsSinceProgress >= 20;
     return _Panel(
+      key: const ValueKey('workspace-telemetry-panel'),
       title: l10n.workspaceTelemetry,
       icon: LucideIcons.activity,
       trailing: Text(
@@ -1839,22 +1985,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                   ),
                 ],
               ),
-              if (!_isAnalyzing && !condensed) ...[
-                Builder(
-                  builder: (context) {
-                    final summary = buildTelemetrySummary(
-                      _result,
-                      l10n,
-                      publication: _publicationEvidence,
-                    );
-                    if (summary.isEmpty) return const SizedBox.shrink();
-                    return _TelemetrySummaryCard(
-                      title: l10n.telemetrySummaryTitle,
-                      lines: summary,
-                    );
-                  },
-                ),
-              ],
               if (_isAnalyzing) ...[
                 const SizedBox(height: 6),
                 Row(
@@ -1907,36 +2037,57 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                             ),
                         ],
                       )
-                    : ListView.separated(
+                    : ListView(
                         padding: EdgeInsets.zero,
-                        itemCount: labels.length,
-                        separatorBuilder: (context, index) => Divider(
-                          height: 1,
-                          color: _workspaceDividerColor(context),
-                        ),
-                        itemBuilder: (context, index) {
-                          final entry = labels.entries.elementAt(index);
-                          final group = _engineGroupFor(entry.key, l10n);
-                          final liveScore = _scores[entry.key];
-                          final displayedScore = group != null
-                              ? group.hasDirectionalSignal
-                                    ? group.probability
-                                    : null
-                              : liveScore?.hasEvidence == true
-                              ? liveScore?.aiProbability
-                              : null;
-                          return _EngineTelemetryRow(
-                            role: entry.key,
-                            label: entry.value,
-                            active: _activeEngines.contains(entry.key),
-                            done: _done.contains(entry.key),
-                            score: displayedScore,
-                            progress: _engineProgress[entry.key] ?? 0,
-                            relationshipText: group?.relationshipText,
-                            reasons: group?.reasons,
-                            modules: group?.modules,
-                          );
-                        },
+                        children: [
+                          if (!_isAnalyzing)
+                            Builder(
+                              builder: (context) {
+                                final summary = buildTelemetrySummary(
+                                  _result,
+                                  l10n,
+                                  publication: _publicationEvidence,
+                                );
+                                if (summary.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
+                                return _TelemetrySummaryCard(
+                                  title: l10n.telemetrySummaryTitle,
+                                  lines: summary,
+                                );
+                              },
+                            ),
+                          for (final entry in labels.entries) ...[
+                            Divider(
+                              height: 1,
+                              color: _workspaceDividerColor(context),
+                            ),
+                            Builder(
+                              builder: (context) {
+                                final group = _engineGroupFor(entry.key, l10n);
+                                final liveScore = _scores[entry.key];
+                                final displayedScore = group != null
+                                    ? group.hasDirectionalSignal
+                                          ? group.probability
+                                          : null
+                                    : liveScore?.hasEvidence == true
+                                    ? liveScore?.aiProbability
+                                    : null;
+                                return _EngineTelemetryRow(
+                                  role: entry.key,
+                                  label: entry.value,
+                                  active: _activeEngines.contains(entry.key),
+                                  done: _done.contains(entry.key),
+                                  score: displayedScore,
+                                  progress: _engineProgress[entry.key] ?? 0,
+                                  relationshipText: group?.relationshipText,
+                                  reasons: group?.reasons,
+                                  modules: group?.modules,
+                                );
+                              },
+                            ),
+                          ],
+                        ],
                       ),
               ),
               if (showTimeline && !condensed) ...[
@@ -2021,6 +2172,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final l10n = AppLocalizations.of(context);
     final evidence = _evidenceRows();
     return _Panel(
+      key: const ValueKey('workspace-live-findings-panel'),
       title: l10n.workspaceLiveFindings,
       icon: LucideIcons.target,
       infoTooltip: evidence.isEmpty
@@ -2220,40 +2372,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final result = _result;
     if (result == null) return const SizedBox.shrink();
     return _Panel(
+      key: const ValueKey('workspace-report-panel'),
       title: AppLocalizations.of(context).workspaceAnalysisComplete,
       icon: LucideIcons.barChart,
-      // 必須用 Builder 取得 _Panel 子樹的 context：_WorkspaceThemeScope 建立在
-      // WorkspaceScreen 的子樹裡，直接用 State 的 context 去查永遠只會拿到
-      // standard，於是 cosmic/soft 深色面板上會套到淺色系的近黑色而幾乎看不見。
-      trailing: Builder(
-        builder: (context) {
-          final scheme = Theme.of(context).colorScheme;
-          final theme = _WorkspaceThemeScope.of(context);
-          // 「新的分析」是本面板唯一的動作鈕，只靠線條圖示在深色主題下太弱，
-          // 補一層對比色底與外框，讓它在三種主題下都明顯是可按的按鈕。
-          final (foreground, background) = switch (theme) {
-            _WorkspaceVisualTheme.cosmic => (
-              Colors.black,
-              _cosmicCyan.withValues(alpha: 0.95),
-            ),
-            _WorkspaceVisualTheme.soft => (
-              Colors.black87,
-              Colors.white.withValues(alpha: 0.9),
-            ),
-            _WorkspaceVisualTheme.standard => (
-              scheme.onPrimaryContainer,
-              scheme.primaryContainer,
-            ),
-          };
-          return IconButton(
-            onPressed: _newAnalysis,
-            icon: Icon(LucideIcons.plus, size: 18, color: foreground),
-            tooltip: AppLocalizations.of(context).workspaceNewAnalysis,
-            visualDensity: VisualDensity.compact,
-            style: IconButton.styleFrom(backgroundColor: background),
-          );
-        },
-      ),
       padding: EdgeInsets.zero,
       child: ReportScreen(
         key: ValueKey(result.id),
@@ -2487,6 +2608,7 @@ class _Panel extends StatelessWidget {
   final bool expandBody;
 
   const _Panel({
+    super.key,
     required this.title,
     required this.icon,
     required this.child,
@@ -3083,33 +3205,36 @@ class _ProbabilityGauge extends StatelessWidget {
                     // 誤以為「解析/分析中」階段的工作流程進度就是判讀結果（曾造成混淆）。
                     // 完成前改以圖示表示狀態，證據指數只在真正判定完成後才出現。
                     child: complete
-                        ? Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${(probability * 100).round()}',
-                                style:
-                                    (compact
-                                            ? Theme.of(
-                                                context,
-                                              ).textTheme.titleMedium
-                                            : Theme.of(
-                                                context,
-                                              ).textTheme.titleLarge)
-                                        ?.copyWith(
-                                          color: color,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                              ),
-                              Text(
-                                l10n.workspaceAiEvidenceIndexShort,
-                                style: Theme.of(context).textTheme.labelSmall
-                                    ?.copyWith(
-                                      color: color,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                            ],
+                        ? FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${(probability * 100).round()}',
+                                  style:
+                                      (compact
+                                              ? Theme.of(
+                                                  context,
+                                                ).textTheme.titleMedium
+                                              : Theme.of(
+                                                  context,
+                                                ).textTheme.titleLarge)
+                                          ?.copyWith(
+                                            color: color,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                ),
+                                Text(
+                                  l10n.workspaceAiEvidenceIndexShort,
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: color,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ],
+                            ),
                           )
                         : Icon(
                             analyzing

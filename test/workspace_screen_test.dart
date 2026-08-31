@@ -9,7 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truthlens/core/services/calibration_service.dart';
 import 'package:truthlens/core/detection/model_catalog_service.dart';
+import 'package:truthlens/core/detection/llm_manager.dart';
 import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:truthlens/core/detection/report_llm_service.dart';
 import 'package:truthlens/core/detection/detection_engine.dart';
 import 'package:truthlens/core/detection/orchestrator.dart';
 import 'package:truthlens/core/models/detection_result.dart';
@@ -290,7 +292,13 @@ void main() {
           _BlockingEngine(role),
       ],
     );
-    await tester.pumpWidget(_testApp(prefs, orchestrator: orchestrator));
+    await tester.pumpWidget(
+      _testApp(
+        prefs,
+        orchestrator: orchestrator,
+        historyRepository: _MemoryHistoryRepository(),
+      ),
+    );
     await tester.pump();
 
     const source =
@@ -343,6 +351,185 @@ void main() {
       source,
     );
   });
+
+  testWidgets('completed desktop workspace emphasizes report and telemetry', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+    await prefs.setModelPromptSuppressed(true);
+    final orchestrator = EnsembleOrchestrator(
+      engines: [
+        for (final role in PreferencesService.engineRoles)
+          _CompletingEngine(
+            role,
+            probability: role == 'statistical' ? 0.62 : 0.35,
+          ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _testApp(
+        prefs,
+        orchestrator: orchestrator,
+        historyRepository: _MemoryHistoryRepository(),
+      ),
+    );
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).first, _completedSource());
+    await tester.pump();
+    await tester.tap(find.text('Start Detection'));
+    await _pumpCompletedAnalysis(tester);
+
+    expect(
+      find.byKey(const ValueKey('workspace-report-panel')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('workspace-telemetry-panel')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('workspace-live-findings-panel')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('workspace-source-preview-panel')),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('New analysis'), findsOneWidget);
+
+    final reportSize = tester.getSize(
+      find.byKey(const ValueKey('workspace-report-panel')),
+    );
+    final telemetrySize = tester.getSize(
+      find.byKey(const ValueKey('workspace-telemetry-panel')),
+    );
+    final sourceSize = tester.getSize(
+      find.byKey(const ValueKey('workspace-source-preview-panel')),
+    );
+    expect(
+      reportSize.width * reportSize.height,
+      greaterThan(telemetrySize.width * telemetrySize.height),
+    );
+    expect(telemetrySize.height, greaterThan(sourceSize.height));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('completed workspace modes reuse the focused responsive layout', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+    await prefs.setModelPromptSuppressed(true);
+    final orchestrator = EnsembleOrchestrator(
+      engines: [
+        for (final role in PreferencesService.engineRoles)
+          _CompletingEngine(role, probability: 0.42),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _testApp(
+        prefs,
+        orchestrator: orchestrator,
+        historyRepository: _MemoryHistoryRepository(),
+      ),
+    );
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).first, _completedSource());
+    await tester.pump();
+    await tester.tap(find.text('Start Detection'));
+    await _pumpCompletedAnalysis(tester);
+
+    for (final mode in [
+      WorkspaceMode.commandGrid,
+      WorkspaceMode.missionTimeline,
+      WorkspaceMode.evidenceCanvas,
+      WorkspaceMode.cosmicFuture,
+      WorkspaceMode.softEducation,
+    ]) {
+      await prefs.setWorkspaceMode(mode);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+
+      expect(
+        find.byKey(const ValueKey('workspace-report-panel')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('workspace-telemetry-panel')),
+        findsOneWidget,
+      );
+      expect(find.byTooltip('New analysis'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('completed mobile workspace leads with telemetry before report', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+    await prefs.setModelPromptSuppressed(true);
+    final orchestrator = EnsembleOrchestrator(
+      engines: [
+        for (final role in PreferencesService.engineRoles)
+          _CompletingEngine(role, probability: 0.42),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _testApp(
+        prefs,
+        orchestrator: orchestrator,
+        historyRepository: _MemoryHistoryRepository(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, _completedSource());
+    await tester.pump();
+    await tester.tap(find.text('Start Detection'));
+    await _pumpCompletedAnalysis(tester);
+
+    final flow = find.byKey(const ValueKey('mobile-completed-workspace-flow'));
+    expect(flow, findsOneWidget);
+    expect(find.text('Analysis telemetry'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Analysis telemetry')).dy,
+      lessThan(360),
+    );
+
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('workspace-report-panel')),
+    );
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(
+      find.byKey(const ValueKey('workspace-report-panel')),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+}
+
+Future<void> _pumpCompletedAnalysis(WidgetTester tester) async {
+  for (var i = 0; i < 40; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    if (find
+            .byKey(const ValueKey('workspace-report-panel'))
+            .evaluate()
+            .isNotEmpty ||
+        find
+            .byKey(const ValueKey('mobile-completed-workspace-flow'))
+            .evaluate()
+            .isNotEmpty) {
+      await tester.pump(const Duration(milliseconds: 100));
+      return;
+    }
+  }
 }
 
 Future<PreferencesService> _preferences() async {
@@ -356,10 +543,19 @@ Future<PreferencesService> _preferences() async {
 Widget _testApp(
   PreferencesService prefs, {
   EnsembleOrchestrator? orchestrator,
+  HistoryRepository? historyRepository,
 }) => MultiProvider(
   providers: [
     ChangeNotifierProvider.value(value: prefs),
     ChangeNotifierProvider<ModelManager>.value(value: _FakeModelManager()),
+    ChangeNotifierProvider<LlmManager>(
+      create: (context) =>
+          LlmManager(modelManager: context.read<ModelManager>()),
+    ),
+    Provider<ReportLlmService>(
+      create: (context) =>
+          ReportLlmService(llmManager: context.read<LlmManager>()),
+    ),
     ChangeNotifierProvider<CalibrationService>.value(
       value: CalibrationService(),
     ),
@@ -367,7 +563,7 @@ Widget _testApp(
       value: orchestrator ?? EnsembleOrchestrator(engines: const []),
     ),
     Provider(create: (_) => ModelCatalogService()),
-    Provider(create: (_) => HistoryRepository()),
+    Provider(create: (_) => historyRepository ?? HistoryRepository()),
   ],
   child: const MaterialApp(
     locale: Locale('en'),
@@ -394,6 +590,37 @@ class _FakeModelManager extends ModelManager {
 
   @override
   bool isInstalled(String role) => false;
+
+  @override
+  bool isVariantInstalled(String role, String variantId) => false;
+
+  @override
+  InstalledModel? activeVariant(String role) => null;
+
+  @override
+  Future<String?> activeModelPath(String role) async => null;
+}
+
+class _MemoryHistoryRepository extends HistoryRepository {
+  final List<DetectionResult> _saved = [];
+
+  @override
+  Future<void> save(DetectionResult result) async {
+    _saved.add(result);
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _saved.removeWhere((result) => result.id == id);
+  }
+
+  @override
+  Future<List<HistoryEntry>> list({String? query}) async => const [];
+
+  @override
+  Future<void> clearAll() async {
+    _saved.clear();
+  }
 }
 
 class _BlockingEngine implements DetectionEngine {
@@ -421,6 +648,53 @@ class _BlockingEngine implements DetectionEngine {
     return Completer<EngineScore>().future;
   }
 }
+
+class _CompletingEngine implements DetectionEngine {
+  @override
+  final String id;
+
+  final double probability;
+
+  _CompletingEngine(this.id, {required this.probability});
+
+  @override
+  double get defaultWeight => PreferencesService.defaultEngineWeights[id]!;
+
+  @override
+  Future<bool> isAvailable() async => true;
+
+  @override
+  String name(AppLocalizations l10n) => id;
+
+  @override
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    onProgress?.call(0.35);
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    onProgress?.call(1);
+    return EngineScore(
+      engineId: id,
+      engineName: id,
+      aiProbability: probability,
+      weight: defaultWeight,
+      features: {'coverage': 1},
+      reasons: const ['Test evidence produced a directional signal.'],
+      sentenceScores: List<double>.filled(text.sentences.length, probability),
+      modules: ['$id-test-module'],
+      hasEvidence: true,
+    );
+  }
+}
+
+String _completedSource() => List.generate(
+  10,
+  (index) =>
+      'This completed workspace sample sentence number $index has enough '
+      'detail for local analysis and keeps the generated report available.',
+).join(' ');
 
 void _expectOpaqueTextColor(WidgetTester tester, String text) {
   final widgets = tester.widgetList<Text>(find.text(text));
