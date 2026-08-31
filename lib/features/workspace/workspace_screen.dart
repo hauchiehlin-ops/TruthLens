@@ -948,9 +948,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final actionButton = IconButton.filled(
       onPressed: _isAnalyzing
           ? _confirmStopAnalysis
-          : (canAnalyze
-                ? _startAnalysis
-                : (_result != null ? _newAnalysis : null)),
+          : (_result != null
+                ? _newAnalysis
+                : (canAnalyze ? _startAnalysis : null)),
       icon: Icon(
         _isAnalyzing
             ? LucideIcons.stopCircle

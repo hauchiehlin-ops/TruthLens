@@ -1,5 +1,24 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百八十三次更新）— 修正桌面「新的分析」誤重跑既有文件
+
+使用者回報更新到 `v4.12.5` 後，點選「新的分析」仍會針對既有匯入文件重新分析，而不是回到空白入口。
+重新檢查後確認：完成狀態下的桌面 command header 主要按鈕雖然顯示 plus icon 與「新的分析」tooltip，
+但 `onPressed` 的判斷順序先檢查 `canAnalyze`；因為完成報告仍保留原文件文字，所以實際呼叫了
+`_startAnalysis()`，造成「新分析」按鈕變成「重跑目前文件」。
+
+主要調整：
+
+1. 桌面 command header 的主要動作改為完成狀態優先：`_result != null` 時一律呼叫 `_newAnalysis()`。
+2. 保留尚未完成、已有文字時才呼叫 `_startAnalysis()` 的行為。
+3. 補強桌面與手機 workspace 測試，確認點擊「新的分析」後文字框會清空、報告面板消失並回到開始檢測入口。
+4. 版本同步升級為 `4.12.7+1466`。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/workspace_screen_test.dart`
+15 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.12.7/1466`。
+
 ## 2026-08-31（第一百八十二次更新）— 修正 iOS Web 分析中途分頁崩潰
 
 使用者回報 iOS 匯入文件後點擊「開始檢測」，分析尚未完成時會跳到 Chrome 的「無法開啟這個網頁」。

@@ -399,6 +399,17 @@ void main() {
       greaterThan(telemetrySize.width * telemetrySize.height),
     );
     expect(telemetrySize.height, greaterThan(sourceSize.height));
+
+    await tester.tap(find.byTooltip('New analysis'));
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      isEmpty,
+    );
+    expect(find.text('Start Detection'), findsOneWidget);
+    expect(find.byKey(const ValueKey('workspace-report-panel')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -515,6 +526,10 @@ void main() {
 
     expect(find.byKey(const ValueKey('mobile-workspace-flow')), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      isEmpty,
+    );
     expect(find.text('Start Detection'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
