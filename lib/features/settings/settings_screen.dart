@@ -22,7 +22,6 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/workspace_navigation.dart'
     show kSupportedLanguageOptions;
 import '../onboarding/model_options_list.dart';
-import 'model_import_screen.dart';
 import 'engine_weight_settings.dart';
 import 'web_ocr_settings.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -461,18 +460,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const Divider(),
-          ListTile(
-            leading: Icon(LucideIcons.upload),
-            title: Text(l10n.settingsCustomImportTitle),
-            subtitle: Text(l10n.settingsCustomImportSubtitle),
-            trailing: TextButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
-              ),
-              child: Text(l10n.settingsOpenButton),
-            ),
-          ),
-          const Divider(),
           if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
           ListTile(
             leading: Icon(LucideIcons.info),
@@ -540,23 +527,7 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settingsModelManagerAppBarTitle),
-        actions: [
-          IconButton(
-            icon: Icon(LucideIcons.upload),
-            tooltip: l10n.settingsImportTooltip,
-            onPressed: () async {
-              final imported = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
-              );
-              if (imported == true) {
-                _load();
-              }
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.settingsModelManagerAppBarTitle)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(

@@ -67,39 +67,37 @@ class ModelOptionsList extends StatelessWidget {
 
   Widget _roleSection(BuildContext context, ProvisionPlan plan) {
     final l10n = AppLocalizations.of(context);
-    final manager = context.watch<ModelManager>();
-    final customModels = manager
-        .installedVariants(plan.role)
-        .where((m) => m.imported)
-        .toList();
+    final scheme = Theme.of(context).colorScheme;
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              ModelOptionsList.roleLabel(plan.role, plan.roleName, l10n),
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            for (final v in plan.variants) _VariantTile(plan: plan, variant: v),
-            if (customModels.isNotEmpty) ...[
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(
-                  l10n.modelListCustomImportedLabel,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: scheme.primary,
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-              ),
-              for (final custom in customModels)
-                _CustomModelTile(role: plan.role, model: custom),
-            ],
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    ModelOptionsList.roleLabel(plan.role, plan.roleName, l10n),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            for (final v in plan.variants) _VariantTile(plan: plan, variant: v),
           ],
         ),
       ),
@@ -135,20 +133,24 @@ class _VariantTile extends StatelessWidget {
             rs?.downloadingVariantId == variant.id;
         final hasUpdate = installed && manager.hasUpdate(plan.role, variant);
         final recommended = plan.isRecommended(variant);
+        final scheme = Theme.of(context).colorScheme;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
+            color: isActive
+                ? scheme.primaryContainer.withValues(alpha: 0.18)
+                : scheme.surfaceContainerHighest.withValues(alpha: 0.36),
             border: Border.all(
               color: isActive
-                  ? Theme.of(context).colorScheme.primary
+                  ? scheme.primary
                   : recommended
-                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
-                  : Theme.of(context).dividerColor,
+                  ? scheme.primary.withValues(alpha: 0.45)
+                  : scheme.outlineVariant,
               width: isActive ? 2 : 1,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,6 +199,7 @@ class _VariantTile extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 8),
+              Divider(height: 16, color: scheme.outlineVariant),
               if (downloadingThis)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,124 +340,5 @@ class _VariantTile extends StatelessWidget {
     if (confirmed == true) {
       await manager.removeVariant(plan.role, variant.id);
     }
-  }
-}
-
-class _CustomModelTile extends StatelessWidget {
-  final String role;
-  final InstalledModel model;
-  const _CustomModelTile({required this.role, required this.model});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Consumer<ModelManager>(
-      builder: (context, manager, _) {
-        final rs = manager.roleState(role);
-        final isActive = rs?.activeVariantId == model.variantId;
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isActive
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).dividerColor,
-              width: isActive ? 2 : 1,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Chip(
-                    avatar: Icon(LucideIcons.star, size: 16),
-                    label: Text(l10n.modelListCustomChip),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      localizedModelName(
-                        model.variantId,
-                        model.name,
-                        l10n,
-                      ),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  if (isActive)
-                    Chip(
-                      avatar: Icon(LucideIcons.checkCircle, size: 16),
-                      label: Text(l10n.modelListActiveChip),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              Text(
-                l10n.modelListSizeTokenizerLabel(
-                  ModelOptionsList.sizeLabel(model.sizeBytes),
-                  model.tokenizer,
-                  model.aiLabelIndex,
-                ),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  if (!isActive)
-                    OutlinedButton.icon(
-                      onPressed: () => manager.setActive(role, model.variantId),
-                      icon: Icon(LucideIcons.arrowLeftRight, size: 18),
-                      label: Text(l10n.modelListSetActiveButton),
-                    ),
-                  IconButton(
-                    icon: Icon(LucideIcons.trash),
-                    tooltip: l10n.modelListDeleteTooltip,
-                    onPressed: () async {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(l10n.modelListDeleteConfirmTitle),
-                          content: Text(
-                            l10n.modelListDeleteCustomConfirmBody(
-                              localizedModelName(
-                                model.variantId,
-                                model.name,
-                                l10n,
-                              ),
-                              ModelOptionsList.sizeLabel(model.sizeBytes),
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: Text(l10n.commonCancel),
-                            ),
-                            FilledButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: Text(l10n.commonDelete),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirmed == true) {
-                        await manager.removeVariant(role, model.variantId);
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 }

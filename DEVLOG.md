@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百六十四次更新）— Web-only 後移除自訂 ONNX 匯入入口，並調整競品比較呈現
+
+使用者確認 TruthLens 後續只在 Web 端運行，截圖圈出的兩個「自訂 ONNX 模型匯入與測試」
+入口已不再成立。這次移除設定頁、首頁右側設定面板、行動設定抽屜與「AI 模型管理」AppBar
+上的自訂匯入入口，並刪除不再可達的 `model_import_screen*` 畫面檔。模型管理清單也不再額外
+展示「自訂匯入模型」區塊，回到內建／可下載模型的單一路徑，避免使用者在 Web 版看到已取消
+的進階功能。
+
+同時針對使用者提到的 UI/UX 單調感，參考 GPTZero、Turnitin、Originality.ai、Copyleaks 與
+Winston AI 的公開產品說明後，整理出更適合 TruthLens 的呈現方向：工作流上要更像「審核工作台」
+而不是設定清單，重點應放在貼上／上傳入口、逐句標示、右側解讀、證據來源、歷史與匯出。這次先
+落地兩個低風險改動：
+
+1. 模型管理卡片改成較緊實的專業工具視覺：角色左側狀態條、6px 圓角、淡色狀態底、操作區分隔線，
+   減少整頁只有灰底框線的單調感。
+2. 說明頁的競品比較卡改成帶圖示與狀態摘要的比較卡，從「大段條列」往「產品可信度說明」靠近。
+   同時移除手冊中仍顯示的自訂模型匯入優勢與第 5 步調適流程，避免 Web-only 後敘事衝突。
+
+**狀態**：✅ `flutter test test/input_screen_mobile_settings_test.dart test/help_screen_test.dart test/model_options_localization_test.dart`
+全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`prefer_initializing_formals` info）；✅ `flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-29（第一百六十三次更新）— 舊版 Word 匯入不再盲掃整個二進位檔
 
 使用者回報 `.doc` 檔案解析能力太差，匯入後幾乎都是亂碼。追到

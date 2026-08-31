@@ -106,7 +106,6 @@ class HelpScreen extends StatelessWidget {
                   _Bullet(l10n.helpAdvantage1),
                   _Bullet(l10n.helpAdvantage2),
                   _Bullet(l10n.helpAdvantage3),
-                  _Bullet(l10n.helpAdvantage4),
                   _Bullet(l10n.helpAdvantage5),
                   _Bullet(l10n.helpAdvantage6),
                 ],
@@ -143,12 +142,6 @@ class HelpScreen extends StatelessWidget {
             step: 4,
             title: l10n.helpTuningStep4Title,
             body: l10n.helpTuningStep4Body,
-          ),
-          _stepCard(
-            context,
-            step: 5,
-            title: l10n.helpTuningStep5Title,
-            body: l10n.helpTuningStep5Body,
           ),
           const SizedBox(height: 24),
 
@@ -199,17 +192,66 @@ class HelpScreen extends StatelessWidget {
     required String title,
     required List<String> points,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerLow,
+          border: Border.all(color: scheme.outlineVariant),
+          borderRadius: BorderRadius.circular(6),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              for (final p in points) _Bullet(p),
+              Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: scheme.primaryContainer.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      LucideIcons.scanSearch,
+                      size: 18,
+                      color: scheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              for (final p in points)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        LucideIcons.check,
+                        size: 16,
+                        color: scheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(p, style: const TextStyle(height: 1.45)),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

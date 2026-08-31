@@ -22,7 +22,6 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/workspace_navigation.dart';
 import '../onboarding/model_prompt.dart';
-import '../settings/model_import_screen.dart';
 import '../settings/settings_screen.dart' show ModelManagerScreen;
 import '../settings/engine_weight_settings.dart';
 import '../settings/web_ocr_settings.dart';
@@ -956,26 +955,6 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
           ),
           const Divider(),
 
-          // 自訂模型匯入
-          ListTile(
-            dense: true,
-            leading: Icon(LucideIcons.upload),
-            title: Text(
-              l10n.settingsCustomImportTitle,
-              style: Theme.of(context).textTheme.labelSmall,
-            ),
-            subtitle: Text(
-              l10n.settingsCustomImportSubtitle,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ModelImportScreen()),
-              );
-            },
-          ),
-          const Divider(),
-
           // Web OCR 設定
           if (kIsWeb) ...[
             const WebOcrSettingsCard(compact: true),
@@ -1113,18 +1092,6 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ModelManagerScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Icon(LucideIcons.upload),
-              title: Text(l10n.settingsCustomImportTitle),
-              subtitle: Text(l10n.settingsCustomImportSubtitle),
-              trailing: Icon(LucideIcons.chevronRight, size: 16),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ModelImportScreen()),
                 );
               },
             ),

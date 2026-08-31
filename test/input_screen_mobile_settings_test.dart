@@ -58,12 +58,7 @@ void main() {
     );
     expect(find.text('AI Model Management'), findsOneWidget);
 
-    await tester.dragUntilVisible(
-      find.text('Custom ONNX model import & test'),
-      scrollable,
-      const Offset(0, -300),
-    );
-    expect(find.text('Custom ONNX model import & test'), findsOneWidget);
+    expect(find.text('Custom ONNX model import & test'), findsNothing);
 
     await tester.dragUntilVisible(
       find.text('AI model weights'),
