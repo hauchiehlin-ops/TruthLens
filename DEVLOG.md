@@ -1,5 +1,62 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十五次更新）— Web 版本號升級為 4.12.1
+
+配合本輪 workspace mode 修復與 Live findings 編號修正，在 commit/push 前同步更新 Web 版本狀態，
+避免部署後 UI 仍顯示上一個 `4.12.0+1459`。
+
+主要調整：
+
+1. `pubspec.yaml` 從 `4.12.0+1459` 升級為 `4.12.1+1460`。
+2. 重新執行 `flutter build web`，同步更新 `build/web/version.json` 為
+   `version: 4.12.1`、`build_number: 1460`。
+
+**狀態**：✅ `flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百七十四次更新）— 修回完成報告頁的 workspace mode 差異
+
+使用者指出完成報告頁切換 workspace mode 沒有反應，且 Cosmic / Soft 看起來相同，部分文字對比仍不足。
+檢查後確認原因是前一輪為了突顯 `Analysis telemetry` 與 `AI Content Detection Report`，在 `_result != null`
+時讓 Command grid、Mission timeline、Evidence canvas、Cosmic Future、Soft Education 全部直接走同一個
+`_completedWorkspace()`，導致 mode 本身的布局差異被抹平。
+
+主要調整：
+
+1. 完成態改為「共用資訊優先順序，但保留各 workspace mode 骨架」：Command grid、Mission timeline、
+   Evidence canvas、Cosmic Future、Soft Education 都有獨立 completed mode key 與差異化布局。
+2. Mission / Cosmic / Soft 完成態保留 timeline strip；Evidence canvas 完成態保留左側參考欄邏輯；
+   Soft completed mode 改成 telemetry-leading layout，與 Cosmic 的 report-leading layout 明確區分。
+3. Cosmic / Soft 的 TextField 實際文字、placeholder、telemetry summary card 標題與內文改用 overlay
+   高對比色，修掉 DefaultTextStyle 無法覆蓋 TextField 與自繪卡片文字的盲點。
+4. 測試補強：完成報告後逐一切換 workspace mode，驗證各 mode-specific key 會出現；Cosmic 的 telemetry
+   位於 report 右側、Soft 的 telemetry 位於 report 左側，並檢查 overlay 關鍵文字不是低透明灰字。
+
+**狀態**：✅ `dart format lib/features/workspace/workspace_screen.dart test/workspace_screen_test.dart`
+完成；✅ `flutter test test/workspace_screen_test.dart` 16 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百七十三次更新）— 修正 Live findings 三位數編號裁切
+
+使用者指出 `Live findings` 清單在 99 之後看起來出現 `10、10、10...11、111` 的錯誤順序。
+檢查後確認不是分析結果排序錯誤，而是清單編號使用固定 24px 圓形 `CircleAvatar`，`100` 到 `109`
+等三位數會被裁切，只剩前兩位看起來像 `10`。
+
+主要調整：
+
+1. 將 workspace 的 evidence/live findings 編號從固定圓形改為可依位數放寬的膠囊 badge。
+2. 新增 `evidenceIndexBadgeWidthFor` 測試用 helper，確保 99 維持 26px、100/111 改用 34px、
+   1000 起繼續按位數增加寬度。
+3. 桌面 `Live findings` 與手機 evidence panel 共用同一個編號 badge，避免不同工作台/響應式版面
+   再出現同類裁切。
+
+**狀態**：✅ `dart format lib/features/workspace/workspace_screen.dart test/workspace_screen_test.dart`
+完成；✅ `flutter test test/workspace_screen_test.dart` 16 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`。
+
 ## 2026-08-31（第一百七十二次更新）— 版本號升級為 minor 版
 
 使用者指出上一輪 workspace layout 修正採手動 `git add/commit/push`，沒有走 release 腳本，因此版本號

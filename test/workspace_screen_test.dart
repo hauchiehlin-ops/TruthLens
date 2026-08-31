@@ -52,6 +52,14 @@ void main() {
     );
   });
 
+  test('evidence index badges reserve width for three-digit numbering', () {
+    expect(evidenceIndexBadgeWidthFor(1), 26);
+    expect(evidenceIndexBadgeWidthFor(99), 26);
+    expect(evidenceIndexBadgeWidthFor(100), 34);
+    expect(evidenceIndexBadgeWidthFor(111), 34);
+    expect(evidenceIndexBadgeWidthFor(1000), 42);
+  });
+
   testWidgets('desktop automatic mode uses command grid', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1400, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -444,17 +452,21 @@ void main() {
     await tester.tap(find.text('Start Detection'));
     await _pumpCompletedAnalysis(tester);
 
-    for (final mode in [
-      WorkspaceMode.commandGrid,
-      WorkspaceMode.missionTimeline,
-      WorkspaceMode.evidenceCanvas,
-      WorkspaceMode.cosmicFuture,
-      WorkspaceMode.softEducation,
-    ]) {
+    final expectedModeKeys = {
+      WorkspaceMode.commandGrid: 'completed-command-grid',
+      WorkspaceMode.missionTimeline: 'completed-mission-timeline',
+      WorkspaceMode.evidenceCanvas: 'completed-evidence-canvas',
+      WorkspaceMode.cosmicFuture: 'completed-cosmic-future',
+      WorkspaceMode.softEducation: 'completed-soft-education',
+    };
+
+    for (final entry in expectedModeKeys.entries) {
+      final mode = entry.key;
       await prefs.setWorkspaceMode(mode);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 350));
 
+      expect(find.byKey(ValueKey(entry.value)), findsOneWidget);
       expect(
         find.byKey(const ValueKey('workspace-report-panel')),
         findsOneWidget,
@@ -464,6 +476,28 @@ void main() {
         findsOneWidget,
       );
       expect(find.byTooltip('New analysis'), findsOneWidget);
+      final reportRect = tester.getRect(
+        find.byKey(const ValueKey('workspace-report-panel')),
+      );
+      final telemetryRect = tester.getRect(
+        find.byKey(const ValueKey('workspace-telemetry-panel')),
+      );
+      if (mode == WorkspaceMode.cosmicFuture) {
+        expect(telemetryRect.left, greaterThan(reportRect.right));
+      }
+      if (mode == WorkspaceMode.softEducation) {
+        expect(telemetryRect.right, lessThan(reportRect.left));
+      }
+      if (mode == WorkspaceMode.cosmicFuture) {
+        _expectOpaqueTextColor(tester, 'ANALYSIS TELEMETRY');
+        _expectOpaqueTextColor(tester, 'What this adds up to');
+        _expectOpaqueTextColor(tester, 'DOCUMENT WORKSPACE');
+      }
+      if (mode == WorkspaceMode.softEducation) {
+        _expectOpaqueTextColor(tester, 'Analysis telemetry');
+        _expectOpaqueTextColor(tester, 'What this adds up to');
+        _expectOpaqueTextColor(tester, 'Document workspace');
+      }
       expect(tester.takeException(), isNull);
     }
   });

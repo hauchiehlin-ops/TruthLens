@@ -47,6 +47,12 @@ bool usesSingleColumnWorkspace(BoxConstraints constraints) =>
     constraints.maxWidth < 840 ||
     (constraints.maxHeight < 620 && constraints.maxWidth < 1200);
 
+@visibleForTesting
+double evidenceIndexBadgeWidthFor(int index) {
+  final digits = math.max(1, index).toString().length;
+  return digits <= 2 ? 26.0 : 34.0 + (digits - 3) * 8.0;
+}
+
 /// 單頁戰情中心：匯入、分析進度與完整報告共用同一份狀態。
 class WorkspaceScreen extends StatefulWidget {
   final AnalysisRequest? initialRequest;
@@ -748,8 +754,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             minLines: shortViewport ? 4 : 8,
             maxLines: shortViewport ? 8 : 14,
             textAlignVertical: TextAlignVertical.top,
+            style: TextStyle(color: _workspacePrimaryText(context)),
             decoration: InputDecoration(
               hintText: l10n.inputHint,
+              hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
               contentPadding: const EdgeInsets.all(12),
             ),
             onChanged: _recordWorkspaceEdit,
@@ -896,7 +904,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(radius: 12, child: Text('${i + 1}')),
+                leading: _EvidenceIndexBadge(
+                  index: i + 1,
+                  probability: evidence[i].$2,
+                ),
                 title: Text(evidence[i].$1),
                 trailing: Text(
                   _sentenceSignalLabel(evidence[i].$2, evidence[i].$3),
@@ -1051,7 +1062,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   Widget _commandGrid() {
     final completed = _result != null;
-    if (completed) return _completedWorkspace();
+    if (completed) {
+      return _completedWorkspace(
+        modeKey: 'completed-command-grid',
+        includeTimeline: false,
+      );
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 980) return _compactCommandGrid();
@@ -1128,7 +1144,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _compactCommandGrid() {
-    if (_result != null) return _completedWorkspace();
+    if (_result != null) {
+      return _completedWorkspace(
+        modeKey: 'completed-command-grid-compact',
+        includeTimeline: false,
+      );
+    }
     const minSectionHeight = 160.0;
     const maxSectionHeight = 640.0;
     final sourceHeight = (_compactGridSourceHeight ?? 390).clamp(
@@ -1188,7 +1209,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _missionTimeline() {
-    if (_result != null) return _completedWorkspace();
+    if (_result != null) {
+      return _completedWorkspace(
+        modeKey: 'completed-mission-timeline',
+        includeTimeline: true,
+      );
+    }
     return Padding(padding: const EdgeInsets.all(10), child: _timelineBody());
   }
 
@@ -1201,7 +1227,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         children: [
           const Positioned.fill(child: _CosmicBackground()),
           _result != null
-              ? _completedWorkspace()
+              ? _completedWorkspace(
+                  modeKey: 'completed-cosmic-future',
+                  includeTimeline: true,
+                )
               : Padding(
                   padding: const EdgeInsets.all(10),
                   child: _timelineBody(),
@@ -1220,7 +1249,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         children: [
           const Positioned.fill(child: _FluidBackground()),
           _result != null
-              ? _completedWorkspace()
+              ? _completedWorkspace(
+                  modeKey: 'completed-soft-education',
+                  includeTimeline: true,
+                  telemetryLeadingRail: true,
+                )
               : Padding(
                   padding: const EdgeInsets.all(10),
                   child: _timelineBody(),
@@ -1307,7 +1340,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   Widget _evidenceCanvas() {
-    if (_result != null) return _completedWorkspace();
+    if (_result != null) {
+      return _completedWorkspace(
+        modeKey: 'completed-evidence-canvas',
+        includeTimeline: true,
+        evidenceReferenceRail: true,
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(10),
       child: LayoutBuilder(
@@ -1412,77 +1451,158 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
-  Widget _completedWorkspace() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < 980;
-          final headerHeight = compact ? 112.0 : 84.0;
-          if (compact || constraints.maxHeight < 720) {
-            return ListView(
-              key: const ValueKey('completed-workspace-flow'),
+  Widget _completedWorkspace({
+    required String modeKey,
+    required bool includeTimeline,
+    bool evidenceReferenceRail = false,
+    bool telemetryLeadingRail = false,
+  }) {
+    return KeyedSubtree(
+      key: ValueKey(modeKey),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 980;
+            final headerHeight = compact ? 112.0 : 84.0;
+            if (compact || constraints.maxHeight < 720) {
+              return ListView(
+                key: ValueKey('$modeKey-flow'),
+                children: [
+                  SizedBox(
+                    height: headerHeight,
+                    child: _workspaceCommandHeader(compact: true),
+                  ),
+                  if (includeTimeline) ...[
+                    const SizedBox(height: 10),
+                    _timelineStrip(),
+                  ],
+                  const SizedBox(height: 10),
+                  SizedBox(height: 380, child: _telemetryPanel()),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: math.max(700.0, constraints.maxHeight * 0.9),
+                    child: _reportPanel(),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(height: 280, child: _liveFindingsPanel()),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 220,
+                    child: _sourcePreviewPanel(compact: true),
+                  ),
+                ],
+              );
+            }
+
+            return Column(
               children: [
                 SizedBox(
                   height: headerHeight,
-                  child: _workspaceCommandHeader(compact: true),
+                  child: _workspaceCommandHeader(compact: false),
                 ),
+                if (includeTimeline) ...[
+                  const SizedBox(height: 10),
+                  _timelineStrip(),
+                ],
                 const SizedBox(height: 10),
-                SizedBox(height: 380, child: _telemetryPanel()),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: math.max(700.0, constraints.maxHeight * 0.9),
-                  child: _reportPanel(),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(height: 280, child: _liveFindingsPanel()),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 220,
-                  child: _sourcePreviewPanel(compact: true),
+                Expanded(
+                  child: evidenceReferenceRail
+                      ? _completedEvidenceBody(constraints)
+                      : telemetryLeadingRail
+                      ? _completedTelemetryLeadingBody(constraints)
+                      : _completedReportTelemetryBody(constraints),
                 ),
               ],
             );
-          }
-
-          final sidebarWidth = constraints.maxWidth >= 1500 ? 480.0 : 420.0;
-          return Column(
-            children: [
-              SizedBox(
-                height: headerHeight,
-                child: _workspaceCommandHeader(compact: false),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(flex: 7, child: _reportPanel()),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: sidebarWidth
-                          .clamp(360.0, constraints.maxWidth * 0.36)
-                          .toDouble(),
-                      child: Column(
-                        children: [
-                          Expanded(flex: 5, child: _telemetryPanel()),
-                          const SizedBox(height: 10),
-                          Expanded(flex: 3, child: _liveFindingsPanel()),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            height: 190,
-                            child: _sourcePreviewPanel(compact: true),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+          },
+        ),
       ),
+    );
+  }
+
+  Widget _completedReportTelemetryBody(BoxConstraints constraints) {
+    final sidebarWidth = constraints.maxWidth >= 1500 ? 480.0 : 420.0;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(flex: 7, child: _reportPanel()),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: sidebarWidth
+              .clamp(360.0, constraints.maxWidth * 0.36)
+              .toDouble(),
+          child: Column(
+            children: [
+              Expanded(flex: 5, child: _telemetryPanel()),
+              const SizedBox(height: 10),
+              Expanded(flex: 3, child: _liveFindingsPanel()),
+              const SizedBox(height: 10),
+              SizedBox(height: 190, child: _sourcePreviewPanel(compact: true)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _completedEvidenceBody(BoxConstraints constraints) {
+    final railWidth = constraints.maxWidth >= 1500 ? 300.0 : 260.0;
+    final telemetryWidth = constraints.maxWidth >= 1500 ? 420.0 : 360.0;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: railWidth.clamp(220.0, constraints.maxWidth * 0.24).toDouble(),
+          child: Column(
+            children: [
+              Expanded(child: _liveFindingsPanel()),
+              const SizedBox(height: 10),
+              SizedBox(height: 210, child: _sourcePreviewPanel(compact: true)),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(flex: 6, child: _reportPanel()),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: telemetryWidth
+              .clamp(320.0, constraints.maxWidth * 0.3)
+              .toDouble(),
+          child: _telemetryPanel(),
+        ),
+      ],
+    );
+  }
+
+  Widget _completedTelemetryLeadingBody(BoxConstraints constraints) {
+    final leadingWidth = constraints.maxWidth >= 1500 ? 420.0 : 360.0;
+    final referenceWidth = constraints.maxWidth >= 1500 ? 320.0 : 280.0;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: leadingWidth
+              .clamp(320.0, constraints.maxWidth * 0.3)
+              .toDouble(),
+          child: _telemetryPanel(),
+        ),
+        const SizedBox(width: 10),
+        Expanded(flex: 6, child: _reportPanel()),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: referenceWidth
+              .clamp(240.0, constraints.maxWidth * 0.24)
+              .toDouble(),
+          child: Column(
+            children: [
+              Expanded(child: _liveFindingsPanel()),
+              const SizedBox(height: 10),
+              SizedBox(height: 210, child: _sourcePreviewPanel(compact: true)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -1685,8 +1805,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               maxLines: null,
               expands: true,
               textAlignVertical: TextAlignVertical.top,
+              style: TextStyle(color: _workspacePrimaryText(context)),
               decoration: InputDecoration(
                 hintText: l10n.inputHint,
+                hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
                 contentPadding: const EdgeInsets.all(12),
               ),
               onChanged: _recordWorkspaceEdit,
@@ -1793,8 +1915,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               maxLines: null,
               expands: true,
               textAlignVertical: TextAlignVertical.top,
+              style: TextStyle(color: _workspacePrimaryText(context)),
               decoration: InputDecoration(
                 hintText: l10n.inputHint,
+                hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
                 contentPadding: const EdgeInsets.all(12),
               ),
             ),
@@ -2187,6 +2311,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ),
             )
           : ListView.separated(
+              key: const ValueKey('workspace-live-findings-list'),
               itemCount: evidence.length,
               separatorBuilder: (context, index) =>
                   Divider(height: 1, color: _workspaceDividerColor(context)),
@@ -2195,13 +2320,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 return ListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    radius: 12,
-                    backgroundColor: AppTheme.verdictColor(
-                      item.$2,
-                      brightness: Theme.of(context).brightness,
-                    ).withValues(alpha: 0.18),
-                    child: Text('${index + 1}'),
+                  leading: _EvidenceIndexBadge(
+                    index: index + 1,
+                    probability: item.$2,
                   ),
                   title: Text(item.$1),
                   trailing: Text(_sentenceSignalLabel(item.$2, item.$3)),
@@ -2274,7 +2395,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               maxLines: null,
               expands: true,
               textAlignVertical: TextAlignVertical.top,
-              decoration: InputDecoration(hintText: l10n.inputHint),
+              style: TextStyle(color: _workspacePrimaryText(context)),
+              decoration: InputDecoration(
+                hintText: l10n.inputHint,
+                hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
+              ),
               onChanged: _recordWorkspaceEdit,
             )
           : Column(
@@ -3327,32 +3452,44 @@ class _TelemetrySummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final overlay = _isOverlayWorkspace(context);
+    final iconColor = overlay
+        ? _workspaceOverlayText
+        : theme.colorScheme.primary;
+    final titleColor = overlay
+        ? _workspaceOverlayText
+        : theme.colorScheme.primary;
+    final bodyColor = overlay
+        ? _workspaceOverlayMutedText
+        : theme.colorScheme.onSurfaceVariant;
+    final backgroundColor = overlay
+        ? Colors.white.withValues(alpha: 0.12)
+        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
+    final borderColor = overlay
+        ? Colors.white.withValues(alpha: 0.32)
+        : theme.dividerColor;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: theme.dividerColor),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                LucideIcons.messageSquare,
-                size: 16,
-                color: theme.colorScheme.primary,
-              ),
+              Icon(LucideIcons.messageSquare, size: 16, color: iconColor),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   title,
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+                    color: titleColor,
                   ),
                 ),
               ),
@@ -3364,10 +3501,59 @@ class _TelemetrySummaryCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 line,
-                style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: bodyColor,
+                  height: 1.5,
+                ),
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _EvidenceIndexBadge extends StatelessWidget {
+  final int index;
+  final double probability;
+
+  const _EvidenceIndexBadge({required this.index, required this.probability});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = '$index';
+    final color = AppTheme.verdictColor(
+      probability,
+      brightness: Theme.of(context).brightness,
+    );
+    final width = evidenceIndexBadgeWidthFor(index);
+    return Semantics(
+      label: label,
+      child: SizedBox(
+        key: ValueKey('evidence-index-$index'),
+        width: width,
+        height: 26,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(13),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
