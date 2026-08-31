@@ -637,5 +637,29 @@ void _perplexityLanguageGate() {
     test('空字串不崩潰', () {
       expect(StatisticalEngine.supportsPerplexity('   '), isFalse);
     });
+
+    test('iOS Web 會略過過大的困惑度模型以避免分頁重載', () {
+      expect(
+        StatisticalEngine.shouldSkipPerplexityOnConstrainedWeb(
+          constrainedMobileWeb: true,
+          modelSizeBytes: 488 * 1000 * 1000,
+        ),
+        isTrue,
+      );
+      expect(
+        StatisticalEngine.shouldSkipPerplexityOnConstrainedWeb(
+          constrainedMobileWeb: true,
+          modelSizeBytes: 120 * 1000 * 1000,
+        ),
+        isFalse,
+      );
+      expect(
+        StatisticalEngine.shouldSkipPerplexityOnConstrainedWeb(
+          constrainedMobileWeb: false,
+          modelSizeBytes: 488 * 1000 * 1000,
+        ),
+        isFalse,
+      );
+    });
   });
 }

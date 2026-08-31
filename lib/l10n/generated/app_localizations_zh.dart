@@ -2775,6 +2775,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS 瀏覽器記憶體限制：已略過大型困惑度模型（約 $sizeMb MB），改用本機統計特徵，避免分析中途重載。';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       '這個格式不含編輯紀錄。PDF、圖片與直接貼上的文字都沒有「怎麼寫出來的」歷程，因此分析完全依賴文本統計。若能取得 .docx、.odt 或 .doc 原始檔，其編輯歷程是強得多的證據——而且不像文本統計，它不會隨語言模型進步而失效。';
 
@@ -6017,6 +6022,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS 浏览器内存限制：已跳过大型困惑度模型（约 $sizeMb MB），改用本机统计特征，避免分析中途重载。';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       '这个格式不含编辑记录。PDF、图片与直接粘贴的文字都没有「怎么写出来的」历程，因此分析完全依赖文本统计。若能取得 .docx、.odt 或 .doc 原始档，其编辑历程是强得多的证据——而且不像文本统计，它不会随语言模型进步而失效。';
 
@@ -9256,6 +9266,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String engineReasonPplNoCalibrationForModel(String model, String language) {
     return '本次未採計語言模型困惑度：目前使用的模型「$model」尚未量測過 $language 的門檻。沒有校準尺度時，原始數值不代表任何意義，因此寧可不採計也不猜。';
+  }
+
+  @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS 瀏覽器記憶體限制：已略過大型困惑度模型（約 $sizeMb MB），改用本機統計特徵，避免分析中途重載。';
   }
 
   @override

@@ -1290,6 +1290,7 @@
   "engineLanguageUnsupported": "\"{variant}\"은 {language}를 포함하지 않습니다. 점수는 참고용이며 어느 방향의 근거도 되지 않습니다.",
   "engineReasonPplLanguageUndetermined": "언어 모델 혼란도를 반영하지 않았습니다. 이 문서의 언어를 판정할 수 없어 비교할 보정 기준값이 없기 때문입니다. 언어를 추측하면 잘못된 척도를 적용하게 되며, 그것이 바로 이 검사가 막으려는 오류입니다.",
   "engineReasonPplNoCalibrationForModel": "언어 모델 혼란도를 반영하지 않았습니다. 사용 중인 모델 \"{model}\"에는 {language}의 기준값이 아직 측정되지 않았습니다. 보정된 척도가 없으면 원시 값은 아무 의미가 없으므로, 추측하지 않고 제외했습니다.",
+  "engineReasonPplSkippedConstrainedWeb": "iOS browser memory limit: skipped the large perplexity model (~{sizeMb} MB) and used local statistical features to avoid a reload during analysis.",
   "inputNoEditingRecordHint": "이 형식에는 편집 기록이 없습니다. PDF·이미지·붙여넣은 텍스트는 어떻게 작성되었는지의 이력을 남기지 않으므로, 분석은 전적으로 텍스트 통계에 의존합니다. 원본 .docx·.odt·.doc를 구할 수 있다면 그 편집 이력이 훨씬 강한 근거이며, 텍스트 통계와 달리 언어 모델이 발전해도 약해지지 않습니다.",
   "reportLowScoreNotProofOfHuman": "점수가 낮다고 해서 사람이 썼다는 확인은 아닙니다. 이번에는 출처 근거가 없어 이 판정은 텍스트 통계에만 기대고 있습니다. 텍스트 통계는 정형화된 글은 안정적으로 잡아내지만, 현행 모델이 잘 쓴 결과물은 잡아내지 못합니다.",
   "reportProvenanceContradictsLowScore": "파일 자체의 편집 기록이 이 낮은 점수와 모순됩니다. 출처 근거는 언어 모델이 발전해도 약해지지 않지만, 텍스트 통계는 현행 모델이 잘 쓴 결과물을 가려내지 못합니다. 위의 점수로 결론을 내리기 전에 아래의 출처 근거를 먼저 확인하십시오.",

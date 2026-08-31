@@ -1,5 +1,29 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百八十六次更新）— 避免 iOS Web 載入大型 PPL 模型時重載
+
+使用者再次回報 iOS 匯入文件後點擊「開始檢測」，分析中途仍跳回空白首頁。重新檢查後確認：
+上一輪已讓 iOS Web 依序執行並釋放每個 ONNX session，但統計分析目前使用的 Qwen2.5-0.5B
+困惑度模型本身約 488 MB；Web 版 `PerplexityScorer` 需要先把模型讀進 JS 記憶體，再交給
+ONNX Runtime 配置 session 與推論張量。這不是「統計引擎關閉」，而是單一大型 PPL 子模組足以讓
+iOS WebKit 分頁被系統重載。
+
+主要調整：
+
+1. `StatisticalEngine` 在 iOS/iPadOS Web 受限 runtime 下，若路由到的 perplexity 模型超過安全大小，
+   會略過大型 PPL 子模組，改用 burstiness、MATTR、compression 等本機統計特徵完成分析。
+2. 報告理由新增明確訊息，標示「iOS 瀏覽器記憶體限制：已略過大型困惑度模型」，避免誤解為整個統計
+   引擎未參與。
+3. features 新增 `perplexity_skipped_constrained_web` 與 `perplexity_model_size_mb`，方便日後比對
+   macOS/iOS 結果差異。
+4. 版本同步升級為 `4.12.10+1469`。
+
+**狀態**：✅ `flutter gen-l10n` 完成；✅ `dart format` 完成；✅
+`flutter test test/engine_evidence_test.dart test/pan25_tfidf_scorer_test.dart`
+34 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.12.10/1469`。
+
 ## 2026-08-31（第一百八十五次更新）— 區分「未參與」與「已執行但無強訊號」
 
 使用者提供 iOS 模型管理截圖，確認 Transformer、統計、Adversarial 與 LLM 模型都已安裝／使用中，

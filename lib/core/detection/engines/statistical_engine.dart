@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../l10n/generated/app_localizations.dart';
 import '../../models/detection_result.dart';
 import '../../utils/language_id.dart';
@@ -8,17 +10,21 @@ import '../detection_engine.dart';
 import '../compression_profile.dart';
 import '../model_manager.dart';
 import '../perplexity_scorer.dart';
+import '../web_runtime.dart';
+
+const int _constrainedWebPerplexityMaxBytes = 180 * 1024 * 1024;
 
 /// 子模型 B：統計特徵分析器。
 /// 若 DistilGPT2 困惑度模型（statistical role）已安裝，納入真 Perplexity（ONNX 端上）；
 /// 否則以 Burstiness / Entropy / TTR 的啟發式組合運作。此引擎恆可用（有回退）。
 class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager? modelManager;
+  final bool? constrainedMobileWebOverride;
 
   PerplexityScorer? _scorer;
   String? _loadedPath;
 
-  StatisticalEngine({this.modelManager});
+  StatisticalEngine({this.modelManager, this.constrainedMobileWebOverride});
 
   @override
   String get id => 'statistical';
@@ -90,13 +96,28 @@ class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
     final calibration = routedModelId == null
         ? null
         : PerplexityCalibration.of(language.code, modelId: routedModelId);
+    final routedModel = _installedStatisticalVariant(routedModelId);
+    final skipLargePerplexity = shouldSkipPerplexityOnConstrainedWeb(
+      constrainedMobileWeb:
+          constrainedMobileWebOverride ?? isConstrainedMobileWebRuntime,
+      modelSizeBytes: routedModel?.sizeBytes,
+    );
     onProgress?.call(0.28);
-    final ppl = calibration != null
+    final ppl = calibration != null && !skipLargePerplexity
         ? await _tryPerplexity(text.analysisText, routedModelId)
         : null;
     onProgress?.call(0.58);
     features['perplexity_calibrated'] = ppl == null ? 0 : 1;
-    if (calibration == null) {
+    features['perplexity_skipped_constrained_web'] = skipLargePerplexity
+        ? 1
+        : 0;
+    if (routedModel != null) {
+      features['perplexity_model_size_mb'] = routedModel.sizeBytes / 1000000;
+    }
+    if (skipLargePerplexity) {
+      final sizeMb = ((routedModel?.sizeBytes ?? 0) / 1000000).round();
+      reasons.add(l10n.engineReasonPplSkippedConstrainedWeb(sizeMb));
+    } else if (calibration == null) {
       // 三種「不採計」的原因對使用者的意義完全不同，必須分開講。
       // 先前一律套用中日韓文那段說明，結果一篇英文論文被告知
       // 「對中日韓文而言……」——訊息本身就在誤導。
@@ -306,6 +327,24 @@ class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
       PerplexityCalibration.of(detectLanguage(raw).code, modelId: modelId) !=
       null;
 
+  @visibleForTesting
+  static bool shouldSkipPerplexityOnConstrainedWeb({
+    required bool constrainedMobileWeb,
+    required int? modelSizeBytes,
+  }) {
+    return constrainedMobileWeb &&
+        modelSizeBytes != null &&
+        modelSizeBytes > _constrainedWebPerplexityMaxBytes;
+  }
+
+  InstalledModel? _installedStatisticalVariant(String? variantId) {
+    if (variantId == null) return null;
+    return modelManager
+        ?.installedVariants('statistical')
+        .where((v) => v.variantId == variantId)
+        .firstOrNull;
+  }
+
   /// 載入 [variantId] 指定的變體並計算困惑度。
   ///
   /// 刻意接受變體 id 而不是沿用「使用中」：路由已依文件語言挑過，這裡若再讀
@@ -313,10 +352,7 @@ class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
   Future<double?> _tryPerplexity(String text, String? variantId) async {
     final mm = modelManager;
     if (mm == null || variantId == null) return null;
-    final active = mm
-        .installedVariants('statistical')
-        .where((v) => v.variantId == variantId)
-        .firstOrNull;
+    final active = _installedStatisticalVariant(variantId);
     if (active == null) return null;
     final modelPath = await mm.variantModelPath('statistical', variantId);
     final tokPath = await mm.variantTokenizerPath('statistical', variantId);

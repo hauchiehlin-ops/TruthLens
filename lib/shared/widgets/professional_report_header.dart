@@ -1926,10 +1926,15 @@ class EngineGroup {
     final available = availableScores.isNotEmpty;
     double? directionalProbability(EngineScore score) {
       if (score.votes) return score.aiProbability;
+      final weakDirection =
+          (score.aiProbability - 0.5).abs() >= 0.05 &&
+          score.aiProbability > 0.05 &&
+          score.aiProbability < 0.95;
       if (score.available &&
           !score.hasEvidence &&
           score.applicability != EngineApplicability.unsupported &&
-          score.calibrationReliability > 0) {
+          score.calibrationReliability > 0 &&
+          weakDirection) {
         return score.aiProbability;
       }
       return null;

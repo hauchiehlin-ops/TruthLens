@@ -2880,6 +2880,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS browser memory limit: skipped the large perplexity model (~$sizeMb MB) and used local statistical features to avoid a reload during analysis.';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       'This format carries no editing record. PDFs, images and pasted text hold no history of how they were written, so the analysis rests entirely on text statistics. If you can obtain the original .docx, .odt or .doc, its editing history is far stronger evidence — and unlike text statistics, it does not weaken as language models improve.';
 

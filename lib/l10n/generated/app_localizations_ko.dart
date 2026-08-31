@@ -2817,6 +2817,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS browser memory limit: skipped the large perplexity model (~$sizeMb MB) and used local statistical features to avoid a reload during analysis.';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       '이 형식에는 편집 기록이 없습니다. PDF·이미지·붙여넣은 텍스트는 어떻게 작성되었는지의 이력을 남기지 않으므로, 분석은 전적으로 텍스트 통계에 의존합니다. 원본 .docx·.odt·.doc를 구할 수 있다면 그 편집 이력이 훨씬 강한 근거이며, 텍스트 통계와 달리 언어 모델이 발전해도 약해지지 않습니다.';
 

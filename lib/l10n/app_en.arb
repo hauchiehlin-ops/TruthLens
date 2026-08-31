@@ -2368,6 +2368,15 @@
       }
     }
   },
+  "engineReasonPplSkippedConstrainedWeb": "iOS browser memory limit: skipped the large perplexity model (~{sizeMb} MB) and used local statistical features to avoid a reload during analysis.",
+  "@engineReasonPplSkippedConstrainedWeb": {
+    "description": "Perplexity skipped on constrained iOS web runtimes because the selected model is too large to load safely",
+    "placeholders": {
+      "sizeMb": {
+        "type": "int"
+      }
+    }
+  },
   "inputNoEditingRecordHint": "This format carries no editing record. PDFs, images and pasted text hold no history of how they were written, so the analysis rests entirely on text statistics. If you can obtain the original .docx, .odt or .doc, its editing history is far stronger evidence — and unlike text statistics, it does not weaken as language models improve.",
   "@inputNoEditingRecordHint": {
     "description": "Guidance shown when the imported format has no editing record"

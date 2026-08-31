@@ -2898,6 +2898,11 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS browser memory limit: skipped the large perplexity model (~$sizeMb MB) and used local statistical features to avoid a reload during analysis.';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       'Format ini tidak membawa rekod suntingan. PDF, imej dan teks yang ditampal tidak menyimpan sejarah cara ia ditulis, jadi analisis bergantung sepenuhnya pada statistik teks. Jika anda boleh mendapatkan fail .docx, .odt atau .doc asal, sejarah suntingannya ialah bukti yang jauh lebih kukuh — dan tidak seperti statistik teks, ia tidak melemah apabila model bahasa bertambah baik.';
 

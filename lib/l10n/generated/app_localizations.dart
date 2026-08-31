@@ -4595,6 +4595,12 @@ abstract class AppLocalizations {
   /// **'Perplexity was not used: the model in use (“{model}”) has no measured threshold for {language} yet. Its raw value carries no meaning without a calibrated scale, so it is left out rather than guessed at.'**
   String engineReasonPplNoCalibrationForModel(String model, String language);
 
+  /// Perplexity skipped on constrained iOS web runtimes because the selected model is too large to load safely
+  ///
+  /// In en, this message translates to:
+  /// **'iOS browser memory limit: skipped the large perplexity model (~{sizeMb} MB) and used local statistical features to avoid a reload during analysis.'**
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb);
+
   /// Guidance shown when the imported format has no editing record
   ///
   /// In en, this message translates to:

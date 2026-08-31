@@ -2901,6 +2901,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String engineReasonPplSkippedConstrainedWeb(int sizeMb) {
+    return 'iOS browser memory limit: skipped the large perplexity model (~$sizeMb MB) and used local statistical features to avoid a reload during analysis.';
+  }
+
+  @override
   String get inputNoEditingRecordHint =>
       'Этот формат не содержит истории правок. PDF, изображения и вставленный текст не сохраняют сведений о том, как они создавались, поэтому анализ опирается только на текстовую статистику. Если удастся получить исходный .docx, .odt или .doc, его история правок — гораздо более веское свидетельство, и в отличие от статистики она не слабеет по мере развития языковых моделей.';
 
