@@ -17,11 +17,10 @@ class OnnxDetector {
   final TextTokenizer _tokenizer;
   final int maxLen;
   final int aiLabelIndex; // 輸出中對應「AI」的類別索引（依模型 id2label）
-  // Dynamic INT8 activation scales can vary when unrelated sentences share a
-  // batch. Native inference therefore keeps exact one-sentence semantics while
-  // still benefiting from duplicate elimination and the in-memory LRU cache.
+  // Keep the same one-sentence semantics as the web runtime so an identical
+  // model stack does not drift across platforms.
   final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
-    initialBatchSize: 1,
+    initialBatchSize: kDeterministicOnnxSentenceBatchSize,
   );
 
   OnnxDetector._(

@@ -116,7 +116,15 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.textContaining('Four-engine text-model raw score: 22%'),
+        find.textContaining('Fused text-evidence score: 22%'),
+        findsNWidgets(2),
+      );
+      expect(
+        find.textContaining('Fused text-evidence score: 22% · Confidence'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Core text engines did not fully participate'),
         findsOneWidget,
       );
       expect(
@@ -217,7 +225,11 @@ void main() {
       expect(find.text('No quantifiable authorship signal'), findsNWidgets(2));
       expect(find.text('AI evidence index: not estimable'), findsNWidgets(2));
       expect(
-        find.textContaining('Four-engine text-model raw score: 13%'),
+        find.textContaining('Fused text-evidence score: 13%'),
+        findsNWidgets(2),
+      );
+      expect(
+        find.textContaining('Fused text-evidence score: 13% · Confidence'),
         findsOneWidget,
       );
       expect(find.text('More likely AI-generated'), findsNothing);
@@ -342,7 +354,7 @@ void main() {
     expect(findingsTop, lessThan(matrixTop));
   });
 
-  testWidgets('整合判讀卡同時顯示方向、指數、原始分數與信心，窄畫面不溢位', (tester) async {
+  testWidgets('整合判讀卡同時顯示方向、指數、文字證據分數與信心，窄畫面不溢位', (tester) async {
     await tester.binding.setSurfaceSize(const Size(360, 1600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -383,8 +395,19 @@ void main() {
       find.text('AI evidence index: $integratedPercent/100'),
       findsNWidgets(2),
     );
-    expect(find.textContaining('Text-model score: 22%'), findsOneWidget);
+    expect(
+      find.textContaining('Fused text-evidence score: 22%'),
+      findsNWidgets(2),
+    );
+    expect(
+      find.textContaining('Fused text-evidence score: 22% · Confidence'),
+      findsOneWidget,
+    );
     expect(find.textContaining('Confidence: $confidence'), findsNWidgets(2));
+    expect(
+      find.textContaining('Core text engines did not fully participate'),
+      findsOneWidget,
+    );
     expect(find.text(evidenceGate), findsOneWidget);
     expect(find.text('AI probability < 20%'), findsNothing);
   });

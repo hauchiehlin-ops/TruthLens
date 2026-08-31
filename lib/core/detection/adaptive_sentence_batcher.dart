@@ -4,6 +4,11 @@ import 'dart:math' as math;
 typedef SentenceBatchClassifier =
     Future<List<double>> Function(List<String> sentences);
 
+/// INT8 Transformer classifiers must run with one sentence per ONNX call for
+/// cross-platform parity. Dynamic activation scales can otherwise depend on
+/// unrelated sentences that happen to share the same batch.
+const int kDeterministicOnnxSentenceBatchSize = 1;
+
 /// Runs sentence inference in small batches while preserving sentence order.
 ///
 /// Exact duplicates are evaluated once. Models exported with a fixed batch

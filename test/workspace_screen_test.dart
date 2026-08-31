@@ -92,8 +92,6 @@ void main() {
       WorkspaceMode.commandGrid,
       WorkspaceMode.missionTimeline,
       WorkspaceMode.evidenceCanvas,
-      WorkspaceMode.cosmicFuture,
-      WorkspaceMode.softEducation,
     ]) {
       await prefs.setWorkspaceMode(mode);
       await tester.pump();
@@ -103,31 +101,6 @@ void main() {
       expect(find.text('Document workspace:'), findsOneWidget);
       expect(find.text('Live findings:'), findsOneWidget);
       expect(find.byTooltip('Import File'), findsWidgets);
-      expect(tester.takeException(), isNull);
-    }
-  });
-
-  testWidgets('overlay workspace modes keep key labels high contrast', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(1400, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final prefs = await _preferences();
-
-    await tester.pumpWidget(_testApp(prefs));
-
-    for (final mode in [
-      WorkspaceMode.cosmicFuture,
-      WorkspaceMode.softEducation,
-    ]) {
-      await prefs.setWorkspaceMode(mode);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 350));
-
-      _expectOpaqueTextColor(tester, 'Overall progress:');
-      _expectOpaqueTextColor(tester, 'Document workspace:');
-      _expectOpaqueTextColor(tester, 'Transformer classifier');
-      _expectOpaqueTextColor(tester, 'Statistical analysis');
       expect(tester.takeException(), isNull);
     }
   });
@@ -456,8 +429,6 @@ void main() {
       WorkspaceMode.commandGrid: 'completed-command-grid',
       WorkspaceMode.missionTimeline: 'completed-mission-timeline',
       WorkspaceMode.evidenceCanvas: 'completed-evidence-canvas',
-      WorkspaceMode.cosmicFuture: 'completed-cosmic-future',
-      WorkspaceMode.softEducation: 'completed-soft-education',
     };
 
     for (final entry in expectedModeKeys.entries) {
@@ -482,22 +453,8 @@ void main() {
       final telemetryRect = tester.getRect(
         find.byKey(const ValueKey('workspace-telemetry-panel')),
       );
-      if (mode == WorkspaceMode.cosmicFuture) {
-        expect(telemetryRect.left, greaterThan(reportRect.right));
-      }
-      if (mode == WorkspaceMode.softEducation) {
-        expect(telemetryRect.right, lessThan(reportRect.left));
-      }
-      if (mode == WorkspaceMode.cosmicFuture) {
-        _expectOpaqueTextColor(tester, 'ANALYSIS TELEMETRY');
-        _expectOpaqueTextColor(tester, 'What this adds up to');
-        _expectOpaqueTextColor(tester, 'DOCUMENT WORKSPACE');
-      }
-      if (mode == WorkspaceMode.softEducation) {
-        _expectOpaqueTextColor(tester, 'Analysis telemetry');
-        _expectOpaqueTextColor(tester, 'What this adds up to');
-        _expectOpaqueTextColor(tester, 'Document workspace');
-      }
+      expect(reportRect.width, greaterThan(0));
+      expect(telemetryRect.width, greaterThan(0));
       expect(tester.takeException(), isNull);
     }
   });
@@ -729,18 +686,3 @@ String _completedSource() => List.generate(
       'This completed workspace sample sentence number $index has enough '
       'detail for local analysis and keeps the generated report available.',
 ).join(' ');
-
-void _expectOpaqueTextColor(WidgetTester tester, String text) {
-  final widgets = tester.widgetList<Text>(find.text(text));
-  expect(widgets, isNotEmpty, reason: 'Expected to find "$text"');
-  final color = widgets
-      .map((widget) => widget.style?.color)
-      .whereType<Color>()
-      .firstOrNull;
-  expect(color, isNotNull, reason: '"$text" should set an explicit color');
-  expect(
-    color!.a,
-    greaterThanOrEqualTo(0.9),
-    reason: '"$text" should not rely on low-opacity text in overlay modes',
-  );
-}

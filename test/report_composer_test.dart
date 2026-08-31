@@ -122,7 +122,7 @@ void main() {
     final notBanner = notFlagged.components.firstWhere(
       (c) => c.type == ReportComponentType.thresholdBanner,
     );
-    expect(flaggedBanner.body, contains('text-model raw score'));
+    expect(flaggedBanner.body, contains('fused text-evidence score'));
     expect(flaggedBanner.body, contains('diagnostic marker'));
     expect(flaggedBanner.body, contains('integrated assessment'));
     expect(flaggedBanner.body, isNot(contains('marks this text as AI')));

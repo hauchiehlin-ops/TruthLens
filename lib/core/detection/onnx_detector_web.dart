@@ -16,11 +16,11 @@ class OnnxDetector {
   final TextTokenizer _tokenizer;
   final int maxLen;
   final int aiLabelIndex;
-  // Web ONNX calls share a non-reentrant queue. Small batches substantially
-  // reduce Dart/JS/WASM crossings while the adaptive fallback preserves
-  // compatibility with imported models that expose a fixed batch dimension.
+  // Dynamic INT8 activation scales can vary when unrelated sentences share a
+  // batch. Use the same deterministic one-sentence semantics as native so the
+  // same model stack produces comparable sentence scores across platforms.
   final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
-    initialBatchSize: 4,
+    initialBatchSize: kDeterministicOnnxSentenceBatchSize,
   );
 
   OnnxDetector._(

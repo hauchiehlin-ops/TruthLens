@@ -2707,12 +2707,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workspaceModeEvidence => 'Evidence canvas';
 
   @override
-  String get workspaceModeCosmicFuture => 'Cosmic Future';
-
-  @override
-  String get workspaceModeSoftEducation => 'Soft Education';
-
-  @override
   String get workspaceModeTooltip => 'Switch workspace mode';
 
   @override
@@ -3075,7 +3069,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return 'Text-model score: $percent%';
+    return 'Fused text-evidence score: $percent%';
   }
 
   @override
@@ -3096,6 +3090,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return 'Evidence sufficiency: $percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      'Core text engines did not fully participate. This is a low-coverage screening result and should not be compared directly with a complete model analysis. Complete the recommended analysis models in Model Management; if they are already installed, check tokenizer support, missing files, or Web/ONNX Runtime compatibility.';
 
   @override
   String get integratedEvidenceTierScreening => 'preliminary screening';
@@ -3143,7 +3141,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return 'Four-engine text-model raw score: $percent%. This is one input to the integrated assessment, not a second verdict.';
+    return 'Fused text-evidence score: $percent%. This is one input to the integrated assessment, not a second verdict.';
   }
 
   @override
@@ -3156,7 +3154,7 @@ class AppLocalizationsEn extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
+    return 'The fused text-evidence score is $aiPercent%, reaching the $thresholdPercent% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.';
   }
 
   @override
@@ -3164,7 +3162,7 @@ class AppLocalizationsEn extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return 'The text-model raw score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
+    return 'The fused text-evidence score is $aiPercent%, below the $thresholdPercent% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.';
   }
 
   @override

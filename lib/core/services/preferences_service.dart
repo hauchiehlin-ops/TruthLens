@@ -7,8 +7,6 @@ enum WorkspaceMode {
   commandGrid,
   missionTimeline,
   evidenceCanvas,
-  cosmicFuture,
-  softEducation,
 }
 
 /// 使用者偏好設定（閾值、主題、ESL 修正開關）

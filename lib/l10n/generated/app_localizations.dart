@@ -4328,18 +4328,6 @@ abstract class AppLocalizations {
   /// **'Evidence canvas'**
   String get workspaceModeEvidence;
 
-  /// No description provided for @workspaceModeCosmicFuture.
-  ///
-  /// In en, this message translates to:
-  /// **'Cosmic Future'**
-  String get workspaceModeCosmicFuture;
-
-  /// No description provided for @workspaceModeSoftEducation.
-  ///
-  /// In en, this message translates to:
-  /// **'Soft Education'**
-  String get workspaceModeSoftEducation;
-
   /// No description provided for @workspaceModeTooltip.
   ///
   /// In en, this message translates to:
@@ -4902,7 +4890,7 @@ abstract class AppLocalizations {
   /// No description provided for @integratedTextScoreLabel.
   ///
   /// In en, this message translates to:
-  /// **'Text-model score: {percent}%'**
+  /// **'Fused text-evidence score: {percent}%'**
   String integratedTextScoreLabel(int percent);
 
   /// No description provided for @integratedConfidenceLabel.
@@ -4934,6 +4922,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Evidence sufficiency: {percent}/100 · {tier}'**
   String integratedEvidenceSufficiency(int percent, String tier);
+
+  /// No description provided for @integratedIncompleteModelWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Core text engines did not fully participate. This is a low-coverage screening result and should not be compared directly with a complete model analysis. Complete the recommended analysis models in Model Management; if they are already installed, check tokenizer support, missing files, or Web/ONNX Runtime compatibility.'**
+  String get integratedIncompleteModelWarning;
 
   /// No description provided for @integratedEvidenceTierScreening.
   ///
@@ -5004,7 +4998,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportSynthesisTextScoreContext.
   ///
   /// In en, this message translates to:
-  /// **'Four-engine text-model raw score: {percent}%. This is one input to the integrated assessment, not a second verdict.'**
+  /// **'Fused text-evidence score: {percent}%. This is one input to the integrated assessment, not a second verdict.'**
   String reportSynthesisTextScoreContext(int percent);
 
   /// No description provided for @reportSynthesisStrongestTextSignal.
@@ -5016,13 +5010,13 @@ abstract class AppLocalizations {
   /// No description provided for @composerTextScoreThresholdReached.
   ///
   /// In en, this message translates to:
-  /// **'The text-model raw score is {aiPercent}%, reaching the {thresholdPercent}% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.'**
+  /// **'The fused text-evidence score is {aiPercent}%, reaching the {thresholdPercent}% diagnostic marker. This is a text-signal observation only; the integrated assessment above remains the report\'s authorship direction.'**
   String composerTextScoreThresholdReached(int aiPercent, int thresholdPercent);
 
   /// No description provided for @composerTextScoreThresholdNotReached.
   ///
   /// In en, this message translates to:
-  /// **'The text-model raw score is {aiPercent}%, below the {thresholdPercent}% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.'**
+  /// **'The fused text-evidence score is {aiPercent}%, below the {thresholdPercent}% diagnostic marker. Missing that marker is not evidence of human authorship; the integrated assessment above remains the report\'s authorship direction.'**
   String composerTextScoreThresholdNotReached(
     int aiPercent,
     int thresholdPercent,

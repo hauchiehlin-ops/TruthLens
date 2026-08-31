@@ -2745,12 +2745,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get workspaceModeEvidence => 'Lienzo de evidencia';
 
   @override
-  String get workspaceModeCosmicFuture => 'Futuro cósmico';
-
-  @override
-  String get workspaceModeSoftEducation => 'Educación suave';
-
-  @override
   String get workspaceModeTooltip => 'Cambiar modo de espacio de trabajo';
 
   @override
@@ -3136,6 +3130,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return 'Suficiencia de la evidencia: $percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      'Core text engines did not fully participate. This is a low-coverage screening result and should not be compared directly with a complete model analysis. Complete the recommended analysis models in Model Management; if they are already installed, check tokenizer support, missing files, or Web/ONNX Runtime compatibility.';
 
   @override
   String get integratedEvidenceTierScreening => 'cribado preliminar';

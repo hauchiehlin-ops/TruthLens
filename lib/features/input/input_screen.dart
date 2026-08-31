@@ -41,8 +41,6 @@ String workspaceModeLabel(WorkspaceMode mode, AppLocalizations l10n) =>
       WorkspaceMode.commandGrid => l10n.workspaceModeCommandGrid,
       WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
       WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
-      WorkspaceMode.cosmicFuture => l10n.workspaceModeCosmicFuture,
-      WorkspaceMode.softEducation => l10n.workspaceModeSoftEducation,
     };
 
 class _InputScreenState extends State<InputScreen> {

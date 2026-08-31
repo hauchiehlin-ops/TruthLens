@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:truthlens/core/detection/adaptive_sentence_batcher.dart';
 import 'package:truthlens/core/detection/detection_engine.dart';
 import 'package:truthlens/core/detection/perplexity_calibration.dart';
 import 'package:truthlens/core/detection/engines/statistical_engine.dart';
@@ -127,6 +128,13 @@ final _longText = List.generate(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final l10n = lookupAppLocalizations(const Locale('en'));
+
+  test(
+    'ONNX sentence classifier uses deterministic single-sentence batches',
+    () {
+      expect(kDeterministicOnnxSentenceBatchSize, 1);
+    },
+  );
 
   group('沉默的引擎不投票', () {
     test('單一家族不被沉默引擎稀釋，但不能冒充跨家族共識', () async {

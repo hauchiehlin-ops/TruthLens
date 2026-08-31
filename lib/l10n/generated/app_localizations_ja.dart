@@ -2638,12 +2638,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workspaceModeEvidence => '証拠キャンバス';
 
   @override
-  String get workspaceModeCosmicFuture => '宇宙未来風';
-
-  @override
-  String get workspaceModeSoftEducation => '教育文柔風';
-
-  @override
   String get workspaceModeTooltip => 'ワークスペースモードを切り替え';
 
   @override
@@ -3017,6 +3011,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return '根拠の充足度：$percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      'Core text engines did not fully participate. This is a low-coverage screening result and should not be compared directly with a complete model analysis. Complete the recommended analysis models in Model Management; if they are already installed, check tokenizer support, missing files, or Web/ONNX Runtime compatibility.';
 
   @override
   String get integratedEvidenceTierScreening => '予備的スクリーニング';

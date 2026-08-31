@@ -2125,7 +2125,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。文字模型原始分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。融合後文字證據分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2606,12 +2606,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
-  String get workspaceModeCosmicFuture => '宇宙未來風';
-
-  @override
-  String get workspaceModeSoftEducation => '教育文柔風';
-
-  @override
   String get workspaceModeTooltip => '切換工作台模式';
 
   @override
@@ -2962,7 +2956,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return '文字模型原始分數：$percent%';
+    return '融合後文字證據分數：$percent%';
   }
 
   @override
@@ -2983,6 +2977,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return '證據充分度：$percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      '核心文字引擎未完整參與，本次是低覆蓋篩查結果，不能和完整模型分析直接比較。請到模型管理補齊推薦分析模型；若已安裝仍未參與，請檢查 tokenizer 支援、模型檔案或 Web/ONNX Runtime 相容性。';
 
   @override
   String get integratedEvidenceTierScreening => '初步篩查';
@@ -3029,7 +3027,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return '四引擎文字模型原始分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
+    return '融合後文字證據分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
   }
 
   @override
@@ -3042,7 +3040,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
+    return '融合後文字證據分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
   }
 
   @override
@@ -3050,7 +3048,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
+    return '融合後文字證據分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
   }
 
   @override
@@ -5369,7 +5367,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎检查直接文字痕迹；写作过程、文件来源、草稿演进、任务契合及来源完整性则作为分开呈现的鉴识证据，文件内容不会上传到任何服务器。\n\n只有具作者特异性的信号能提高 AI 判定。报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。文字模型原始分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
+      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎检查直接文字痕迹；写作过程、文件来源、草稿演进、任务契合及来源完整性则作为分开呈现的鉴识证据，文件内容不会上传到任何服务器。\n\n只有具作者特异性的信号能提高 AI 判定。报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。融合后文字证据分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -5850,12 +5848,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get workspaceModeEvidence => '证据画布';
 
   @override
-  String get workspaceModeCosmicFuture => '宇宙未来风';
-
-  @override
-  String get workspaceModeSoftEducation => '教育文柔风';
-
-  @override
   String get workspaceModeTooltip => '切换工作台模式';
 
   @override
@@ -6206,7 +6198,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return '文字模型原始分数：$percent%';
+    return '融合后文字证据分数：$percent%';
   }
 
   @override
@@ -6227,6 +6219,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return '证据充分度：$percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      '核心文字引擎未完整参与，本次是低覆盖筛查结果，不能和完整模型分析直接比较。请到模型管理补齐推荐分析模型；若已安装仍未参与，请检查 tokenizer 支持、模型文件或 Web/ONNX Runtime 兼容性。';
 
   @override
   String get integratedEvidenceTierScreening => '初步筛查';
@@ -6273,7 +6269,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return '四引擎文字模型原始分数为 $percent%；它只是整合判读的一项输入，不是另一个综合判定。';
+    return '融合后文字证据分数为 $percent%；它只是整合判读的一项输入，不是另一个综合判定。';
   }
 
   @override
@@ -6286,7 +6282,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分数为 $aiPercent%，已达 $thresholdPercent% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。';
+    return '融合后文字证据分数为 $aiPercent%，已达 $thresholdPercent% 诊断标记。这只代表文字信号；报告的作者方向仍以整合判读为准。';
   }
 
   @override
@@ -6294,7 +6290,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分数为 $aiPercent%，低于 $thresholdPercent% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。';
+    return '融合后文字证据分数为 $aiPercent%，低于 $thresholdPercent% 诊断标记。未达标记不代表人类撰写；报告的作者方向仍以整合判读为准。';
   }
 
   @override
@@ -8613,7 +8609,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；融合後文字證據分數、原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -9094,12 +9090,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get workspaceModeEvidence => '證據畫布';
 
   @override
-  String get workspaceModeCosmicFuture => '宇宙未來風';
-
-  @override
-  String get workspaceModeSoftEducation => '教育文柔風';
-
-  @override
   String get workspaceModeTooltip => '切換工作台模式';
 
   @override
@@ -9450,7 +9440,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String integratedTextScoreLabel(int percent) {
-    return '文字模型原始分數：$percent%';
+    return '融合後文字證據分數：$percent%';
   }
 
   @override
@@ -9471,6 +9461,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return '證據充分度：$percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      '核心文字引擎未完整參與，本次是低覆蓋篩查結果，不能和完整模型分析直接比較。請到模型管理補齊推薦分析模型；若已安裝仍未參與，請檢查 tokenizer 支援、模型檔案或 Web/ONNX Runtime 相容性。';
 
   @override
   String get integratedEvidenceTierScreening => '初步篩查';
@@ -9517,7 +9511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String reportSynthesisTextScoreContext(int percent) {
-    return '四引擎文字模型原始分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
+    return '融合後文字證據分數為 $percent%；它只是整合判讀的一項輸入，不是另一個綜合判定。';
   }
 
   @override
@@ -9530,7 +9524,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
+    return '融合後文字證據分數為 $aiPercent%，已達 $thresholdPercent% 診斷標記。這只代表文字訊號；報告的作者方向仍以整合判讀為準。';
   }
 
   @override
@@ -9538,7 +9532,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     int aiPercent,
     int thresholdPercent,
   ) {
-    return '文字模型原始分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
+    return '融合後文字證據分數為 $aiPercent%，低於 $thresholdPercent% 診斷標記。未達標記不代表人類撰寫；報告的作者方向仍以整合判讀為準。';
   }
 
   @override

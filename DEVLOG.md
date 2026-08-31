@@ -1,5 +1,49 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百七十七次更新）— 修正跨平台分析結論漂移與低覆蓋提示
+
+使用者同意修正前次指出的兩個報告問題，並追問「分析模組都相同的情況下，為何仍會得到不同結論」。
+本次確認一個實際跨平台差異：native ONNX 端已使用單句推論避免 INT8 動態量化批次漂移，但 Web/iOS
+路徑仍以 4 句一批執行 Transformer 分類器；同一句的 logits 可能因同批其他句子不同而改變，進而影響
+60% 句級門檻與整合判讀。
+
+主要調整：
+
+1. 新增 `kDeterministicOnnxSentenceBatchSize = 1`，讓 native 與 Web ONNX Transformer 句級分類共同使用
+   單句批次，避免同模型、同 tokenizer、同切句時因批次組成產生跨平台分數漂移。
+2. 將整合判讀中的「文字模型原始分數」改名為「融合後文字證據分數」，同步更新摘要卡、synthesis、
+   composer 門檻說明、說明文字與 generated l10n，避免把家族融合後的證據值誤稱為 raw score。
+3. 在整合作者判讀卡加入核心模型未完整參與／適用性覆蓋過低 warning，明確標示此類結果是低覆蓋篩查，
+   不能和完整模型分析直接比較，並引導檢查模型管理、tokenizer、缺檔或 Web/ONNX Runtime 相容性。
+4. 測試補強：鎖定 ONNX 句級分類必須維持單句批次，並更新報告頁頭與 report composer 測試，覆蓋新命名與
+   不完整模型提示。
+
+**狀態**：✅ `flutter gen-l10n` 完成；✅ `dart format` 完成；✅
+`flutter test test/professional_report_header_test.dart test/engine_evidence_test.dart test/report_composer_test.dart`
+44 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）。
+
+## 2026-08-31（第一百七十六次更新）— 移除 Cosmic / Soft workspace mode
+
+使用者要求刪除 workspace mode 中的 comic/soft（程式中對應為 `cosmicFuture` / `softEducation`），
+並清理無用程式碼。本次將這兩個純視覺變體完整移除，保留 Original、Automatic、Command grid、
+Mission timeline、Evidence canvas 五種模式。
+
+主要調整：
+
+1. 移除 `WorkspaceMode.cosmicFuture` 與 `WorkspaceMode.softEducation`，並同步更新首頁路由、
+   overflow menu、設定頁與輸入頁的 mode label switch。
+2. 刪除 workspace screen 中只服務 Cosmic / Soft 的 overlay theme scope、毛玻璃面板分支、
+   背景動畫 painter、高對比 overlay 色彩分支與完成態 layout key。
+3. 移除所有語系 ARB 中不再使用的 `workspaceModeCosmicFuture` / `workspaceModeSoftEducation`，
+   並重新產生 generated l10n。
+4. 移除已無使用者的 `google_fonts` 依賴，並更新 `pubspec.lock`。
+5. 更新 workspace widget tests，刪除 overlay 專用測試並保留現有三種 workspace layout 的完成態驗證。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/workspace_screen_test.dart`
+15 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）。
+
 ## 2026-08-31（第一百七十五次更新）— Web 版本號升級為 4.12.1
 
 配合本輪 workspace mode 修復與 Live findings 編號修正，在 commit/push 前同步更新 Web 版本狀態，

@@ -621,6 +621,10 @@ class _VerdictSummaryCard extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final compact = constraints.maxWidth < 480;
+                  final incompleteCoreStack = _hasIncompleteCoreTextStack(
+                    result,
+                    assessment,
+                  );
                   final iconBadge = Container(
                     width: compact ? 56 : 80,
                     height: compact ? 56 : 80,
@@ -691,6 +695,34 @@ class _VerdictSummaryCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (incompleteCoreStack) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.tertiaryContainer.withValues(
+                              alpha: 0.55,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: scheme.tertiary.withValues(alpha: 0.45),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.integratedIncompleteModelWarning,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: scheme.onTertiaryContainer,
+                                  height: 1.45,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
+                      ],
                       if (integratedBoundaryExplanation(assessment, l10n)
                           case final explanation?) ...[
                         const SizedBox(height: 6),
@@ -924,6 +956,19 @@ class _VerdictSummaryCard extends StatelessWidget {
       ),
     );
   }
+}
+
+bool _hasIncompleteCoreTextStack(
+  DetectionResult result,
+  IntegratedAssessment assessment,
+) {
+  bool roleVotes(String role) => result.engineScores.any(
+    (score) => EngineGroup._roleOf(score.engineId) == role && score.votes,
+  );
+  final lowCoverage =
+      assessment.independentEvidenceFamilies <= 1 ||
+      assessment.applicabilityCoverage < 0.35;
+  return lowCoverage || !roleVotes('transformer') || !roleVotes('statistical');
 }
 
 /// 三列指標卡

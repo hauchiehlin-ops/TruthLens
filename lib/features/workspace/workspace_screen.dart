@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -614,8 +612,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                       WorkspaceMode.evidenceCanvas => _evidenceCanvas(),
                       WorkspaceMode.original => _commandGrid(),
                       WorkspaceMode.automatic => _commandGrid(),
-                      WorkspaceMode.cosmicFuture => _cosmicFutureLayout(),
-                      WorkspaceMode.softEducation => _softEducationLayout(),
                     },
                   ),
                 );
@@ -923,7 +919,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _workspaceCommandHeader({required bool compact}) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final visualTheme = _WorkspaceThemeScope.of(context);
     final evidenceCount = _evidenceRows().length;
     final phaseLabel = switch (_phase) {
       _WorkspacePhase.idle => l10n.workspaceWaiting,
@@ -949,45 +944,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       tooltip: actionTooltip,
     );
 
-    final decoration = switch (visualTheme) {
-      _WorkspaceVisualTheme.standard => BoxDecoration(
+    return DecoratedBox(
+      decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: scheme.outlineVariant),
       ),
-      _WorkspaceVisualTheme.cosmic => BoxDecoration(
-        color: _workspaceOverlayPanel,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
-        boxShadow: [
-          BoxShadow(
-            color: _cosmicCyan.withValues(alpha: 0.18),
-            blurRadius: 18,
-            spreadRadius: -2,
-          ),
-          BoxShadow(
-            color: _cosmicMagenta.withValues(alpha: 0.12),
-            blurRadius: 26,
-            spreadRadius: -6,
-          ),
-        ],
-      ),
-      _WorkspaceVisualTheme.soft => BoxDecoration(
-        color: _workspaceOverlayPanel.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-        boxShadow: [
-          BoxShadow(
-            color: _softTeal.withValues(alpha: 0.14),
-            blurRadius: 22,
-            spreadRadius: -7,
-          ),
-        ],
-      ),
-    };
-
-    return DecoratedBox(
-      decoration: decoration,
       child: Padding(
         padding: EdgeInsets.fromLTRB(12, compact ? 10 : 12, 12, 10),
         child: LayoutBuilder(
@@ -1218,51 +1180,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return Padding(padding: const EdgeInsets.all(10), child: _timelineBody());
   }
 
-  /// 宇宙未來風：純黑背景、青紫霓虹發光懸浮面板，內容與任務時間軸模式相同，
-  /// 只是外觀套上 [_WorkspaceVisualTheme.cosmic]。
-  Widget _cosmicFutureLayout() {
-    return _WorkspaceThemeScope(
-      theme: _WorkspaceVisualTheme.cosmic,
-      child: Stack(
-        children: [
-          const Positioned.fill(child: _CosmicBackground()),
-          _result != null
-              ? _completedWorkspace(
-                  modeKey: 'completed-cosmic-future',
-                  includeTimeline: true,
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: _timelineBody(),
-                ),
-        ],
-      ),
-    );
-  }
-
-  /// 教育文柔風：深色毛玻璃卡片 + 動態流體漸層背景，內容配置與任務時間軸
-  /// 模式相同，只是外觀套上 [_WorkspaceVisualTheme.soft]。
-  Widget _softEducationLayout() {
-    return _WorkspaceThemeScope(
-      theme: _WorkspaceVisualTheme.soft,
-      child: Stack(
-        children: [
-          const Positioned.fill(child: _FluidBackground()),
-          _result != null
-              ? _completedWorkspace(
-                  modeKey: 'completed-soft-education',
-                  includeTimeline: true,
-                  telemetryLeadingRail: true,
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: _timelineBody(),
-                ),
-        ],
-      ),
-    );
-  }
-
   Widget _timelineBody() {
     return Column(
       children: [
@@ -1455,7 +1372,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     required String modeKey,
     required bool includeTimeline,
     bool evidenceReferenceRail = false,
-    bool telemetryLeadingRail = false,
   }) {
     return KeyedSubtree(
       key: ValueKey(modeKey),
@@ -1509,8 +1425,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 Expanded(
                   child: evidenceReferenceRail
                       ? _completedEvidenceBody(constraints)
-                      : telemetryLeadingRail
-                      ? _completedTelemetryLeadingBody(constraints)
                       : _completedReportTelemetryBody(constraints),
                 ),
               ],
@@ -1575,37 +1489,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
-  Widget _completedTelemetryLeadingBody(BoxConstraints constraints) {
-    final leadingWidth = constraints.maxWidth >= 1500 ? 420.0 : 360.0;
-    final referenceWidth = constraints.maxWidth >= 1500 ? 320.0 : 280.0;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(
-          width: leadingWidth
-              .clamp(320.0, constraints.maxWidth * 0.3)
-              .toDouble(),
-          child: _telemetryPanel(),
-        ),
-        const SizedBox(width: 10),
-        Expanded(flex: 6, child: _reportPanel()),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: referenceWidth
-              .clamp(240.0, constraints.maxWidth * 0.24)
-              .toDouble(),
-          child: Column(
-            children: [
-              Expanded(child: _liveFindingsPanel()),
-              const SizedBox(height: 10),
-              SizedBox(height: 210, child: _sourcePreviewPanel(compact: true)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _compactEvidenceCanvas() {
     final l10n = AppLocalizations.of(context);
     return LayoutBuilder(
@@ -1659,12 +1542,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               builder: (context) {
                 // 同 _sourcePanel：裸 IconButton 會退回淺色系調校的
                 // onSurfaceVariant 灰階，在本面板深色背景下對比不足。
-                final scheme = Theme.of(context).colorScheme;
-                final iconColor = switch (_WorkspaceThemeScope.of(context)) {
-                  _WorkspaceVisualTheme.cosmic => _cosmicCyan,
-                  _WorkspaceVisualTheme.soft => Colors.white,
-                  _WorkspaceVisualTheme.standard => scheme.onSurface,
-                };
+                final iconColor = Theme.of(context).colorScheme.onSurface;
                 return Row(
                   children: [
                     Expanded(
@@ -1817,16 +1695,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           const SizedBox(height: 8),
           Builder(
             builder: (context) {
-              // 這三個動作按鈕裸用 IconButton 時會退回 M3 預設的
-              // onSurfaceVariant 灰階，是為一般淺色 Material 介面調校的，
-              // 在本面板較深的背景（含 cosmic/soft 主題）下對比不足；
-              // 依目前視覺主題明確指定顏色，與同面板其他圖示一致。
-              final scheme = Theme.of(context).colorScheme;
-              final iconColor = switch (_WorkspaceThemeScope.of(context)) {
-                _WorkspaceVisualTheme.cosmic => _cosmicCyan,
-                _WorkspaceVisualTheme.soft => Colors.white,
-                _WorkspaceVisualTheme.standard => scheme.onSurface,
-              };
+              final iconColor = Theme.of(context).colorScheme.onSurface;
               return Row(
                 children: [
                   Text(
@@ -1977,31 +1846,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             ReadinessLimitation.localBaselineMissing =>
               l10n.analysisReadinessBaseline,
           };
-    final visualTheme = _WorkspaceThemeScope.of(context);
-    final color = switch ((readiness.ceiling, visualTheme)) {
-      (ReadinessLevel.low, _WorkspaceVisualTheme.cosmic) => const Color(
-        0xFFFFB4AB,
-      ),
-      (ReadinessLevel.low, _WorkspaceVisualTheme.soft) => const Color(
-        0xFFFFB4AB,
-      ),
-      (ReadinessLevel.moderate, _WorkspaceVisualTheme.cosmic) => const Color(
-        0xFFFFD166,
-      ),
-      (ReadinessLevel.moderate, _WorkspaceVisualTheme.soft) => const Color(
-        0xFFFFD166,
-      ),
-      (ReadinessLevel.high, _WorkspaceVisualTheme.cosmic) => _cosmicCyan,
-      (ReadinessLevel.high, _WorkspaceVisualTheme.soft) => _softTeal,
-      (ReadinessLevel.low, _WorkspaceVisualTheme.standard) => Theme.of(
-        context,
-      ).colorScheme.error,
-      (ReadinessLevel.moderate, _WorkspaceVisualTheme.standard) => Theme.of(
-        context,
-      ).colorScheme.tertiary,
-      (ReadinessLevel.high, _WorkspaceVisualTheme.standard) => Theme.of(
-        context,
-      ).colorScheme.primary,
+    final color = switch (readiness.ceiling) {
+      ReadinessLevel.low => Theme.of(context).colorScheme.error,
+      ReadinessLevel.moderate => Theme.of(context).colorScheme.tertiary,
+      ReadinessLevel.high => Theme.of(context).colorScheme.primary,
     };
     return Row(
       children: [
@@ -2562,30 +2410,11 @@ class _HeaderMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final visualTheme = _WorkspaceThemeScope.of(context);
-    final themed = visualTheme != _WorkspaceVisualTheme.standard;
-    final color =
-        accent ??
-        switch (visualTheme) {
-          _WorkspaceVisualTheme.cosmic => _cosmicCyan,
-          _WorkspaceVisualTheme.soft => _softTeal,
-          _WorkspaceVisualTheme.standard => scheme.onSurfaceVariant,
-        };
-    final labelColor = themed
-        ? _workspaceOverlayMutedText
-        : scheme.onSurfaceVariant;
-    final valueColor = themed ? _workspaceOverlayText : scheme.onSurface;
-    final fillColor = switch (visualTheme) {
-      _WorkspaceVisualTheme.cosmic => Colors.white.withValues(alpha: 0.12),
-      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.14),
-      _WorkspaceVisualTheme.standard =>
-        scheme.surfaceContainerHighest.withValues(alpha: 0.48),
-    };
-    final borderColor = switch (visualTheme) {
-      _WorkspaceVisualTheme.cosmic => _cosmicCyan.withValues(alpha: 0.42),
-      _WorkspaceVisualTheme.soft => Colors.white.withValues(alpha: 0.28),
-      _WorkspaceVisualTheme.standard => scheme.outlineVariant,
-    };
+    final color = accent ?? scheme.onSurfaceVariant;
+    final labelColor = scheme.onSurfaceVariant;
+    final valueColor = scheme.onSurface;
+    final fillColor = scheme.surfaceContainerHighest.withValues(alpha: 0.48);
+    final borderColor = scheme.outlineVariant;
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 132, maxWidth: 220),
       child: DecoratedBox(
@@ -2668,60 +2497,17 @@ class _PanelDragHandleVertical extends StatelessWidget {
   }
 }
 
-/// 工作台視覺主題：標準（沿用 Material 配色）、宇宙未來風（純黑 + 青紫霓虹發光）、
-/// 教育文柔風（深色毛玻璃 + 柔霓虹）。透過 InheritedWidget 往下傳遞，讓
-/// [_Panel] 等既有內容元件不必改動呼叫方式即可套用截然不同的外觀。
-enum _WorkspaceVisualTheme { standard, cosmic, soft }
-
-class _WorkspaceThemeScope extends InheritedWidget {
-  final _WorkspaceVisualTheme theme;
-
-  const _WorkspaceThemeScope({required this.theme, required super.child});
-
-  static _WorkspaceVisualTheme of(BuildContext context) {
-    return context
-            .dependOnInheritedWidgetOfExactType<_WorkspaceThemeScope>()
-            ?.theme ??
-        _WorkspaceVisualTheme.standard;
-  }
-
-  @override
-  bool updateShouldNotify(_WorkspaceThemeScope oldWidget) =>
-      theme != oldWidget.theme;
-}
-
-const _cosmicCyan = Color(0xFF00F0FF);
-const _cosmicMagenta = Color(0xFFFF2FE0);
-const _softTeal = Color(0xFF5EEAD4);
-const _softViolet = Color(0xFFC084FC);
-const _workspaceOverlayPanel = Color(0xE60B1220);
-const _workspaceOverlayText = Color(0xFFFFFFFF);
-const _workspaceOverlayMutedText = Color(0xFFE7EEF8);
-const _workspaceOverlaySubtleText = Color(0xFFC8D3E1);
-const _workspaceOverlayTrack = Color(0xFF8391A5);
-
-bool _isOverlayWorkspace(BuildContext context) =>
-    _WorkspaceThemeScope.of(context) != _WorkspaceVisualTheme.standard;
-
 Color _workspacePrimaryText(BuildContext context) =>
-    _isOverlayWorkspace(context)
-    ? _workspaceOverlayText
-    : Theme.of(context).colorScheme.onSurface;
+    Theme.of(context).colorScheme.onSurface;
 
 Color _workspaceSecondaryText(BuildContext context) =>
-    _isOverlayWorkspace(context)
-    ? _workspaceOverlayMutedText
-    : Theme.of(context).colorScheme.onSurfaceVariant;
+    Theme.of(context).colorScheme.onSurfaceVariant;
 
 Color _workspaceTertiaryText(BuildContext context) =>
-    _isOverlayWorkspace(context)
-    ? _workspaceOverlaySubtleText
-    : Theme.of(context).colorScheme.onSurfaceVariant;
+    Theme.of(context).colorScheme.onSurfaceVariant;
 
 Color _workspaceDividerColor(BuildContext context) =>
-    _isOverlayWorkspace(context)
-    ? Colors.white.withValues(alpha: 0.24)
-    : Theme.of(context).dividerColor;
+    Theme.of(context).dividerColor;
 
 class _Panel extends StatelessWidget {
   final String title;
@@ -2745,14 +2531,6 @@ class _Panel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (_WorkspaceThemeScope.of(context)) {
-      _WorkspaceVisualTheme.cosmic => _buildCosmic(context),
-      _WorkspaceVisualTheme.soft => _buildSoft(context),
-      _WorkspaceVisualTheme.standard => _buildStandard(context),
-    };
-  }
-
-  Widget _buildStandard(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2810,453 +2588,6 @@ class _Panel extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildCosmic(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _workspaceOverlayPanel,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _cosmicCyan.withValues(alpha: 0.55)),
-        boxShadow: [
-          BoxShadow(
-            color: _cosmicCyan.withValues(alpha: 0.22),
-            blurRadius: 18,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: _cosmicMagenta.withValues(alpha: 0.14),
-            blurRadius: 28,
-            spreadRadius: -4,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 44,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      Icon(icon, size: 17, color: _cosmicCyan),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          title.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.orbitron(
-                            fontSize: 12,
-                            letterSpacing: 1.4,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      if (infoTooltip != null)
-                        Tooltip(
-                          message: infoTooltip!,
-                          triggerMode: TooltipTriggerMode.tap,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Icon(
-                              LucideIcons.helpCircle,
-                              size: 15,
-                              color: _cosmicCyan.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ),
-                      if (trailing != null)
-                        DefaultTextStyle.merge(
-                          style: const TextStyle(
-                            color: _workspaceOverlayMutedText,
-                          ),
-                          child: IconTheme.merge(
-                            data: const IconThemeData(color: _cosmicCyan),
-                            child: trailing!,
-                          ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 1,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      _cosmicCyan.withValues(alpha: 0.6),
-                      _cosmicMagenta.withValues(alpha: 0.6),
-                    ],
-                  ),
-                ),
-              ),
-              if (expandBody)
-                Expanded(
-                  child: Padding(
-                    padding: padding,
-                    child: DefaultTextStyle.merge(
-                      style: const TextStyle(color: Colors.white),
-                      child: child,
-                    ),
-                  ),
-                )
-              else
-                Padding(
-                  padding: padding,
-                  child: DefaultTextStyle.merge(
-                    style: const TextStyle(color: Colors.white),
-                    child: child,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSoft(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          decoration: BoxDecoration(
-            color: _workspaceOverlayPanel.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
-            boxShadow: [
-              BoxShadow(
-                color: _softTeal.withValues(alpha: 0.12),
-                blurRadius: 24,
-                spreadRadius: -6,
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 46,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
-                    children: [
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [
-                              _softTeal.withValues(alpha: 0.35),
-                              _softViolet.withValues(alpha: 0.35),
-                            ],
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(6),
-                          child: Icon(icon, size: 15, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.quicksand(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      if (infoTooltip != null)
-                        Tooltip(
-                          message: infoTooltip!,
-                          triggerMode: TooltipTriggerMode.tap,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Icon(
-                              LucideIcons.helpCircle,
-                              size: 15,
-                              color: _workspaceOverlayMutedText,
-                            ),
-                          ),
-                        ),
-                      if (trailing != null)
-                        DefaultTextStyle.merge(
-                          style: const TextStyle(
-                            color: _workspaceOverlayMutedText,
-                          ),
-                          child: IconTheme.merge(
-                            data: const IconThemeData(color: _softTeal),
-                            child: trailing!,
-                          ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                    ],
-                  ),
-                ),
-              ),
-              Divider(height: 1, color: Colors.white.withValues(alpha: 0.24)),
-              if (expandBody)
-                Expanded(
-                  child: Padding(
-                    padding: padding,
-                    child: DefaultTextStyle.merge(
-                      style: GoogleFonts.quicksand(color: Colors.white),
-                      child: child,
-                    ),
-                  ),
-                )
-              else
-                Padding(
-                  padding: padding,
-                  child: DefaultTextStyle.merge(
-                    style: GoogleFonts.quicksand(color: Colors.white),
-                    child: child,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 宇宙未來風背景：純黑底 + 緩慢漂移的青紫霓虹光暈、透視格線與閃爍星點。
-class _CosmicBackground extends StatefulWidget {
-  const _CosmicBackground();
-
-  @override
-  State<_CosmicBackground> createState() => _CosmicBackgroundState();
-}
-
-class _CosmicBackgroundState extends State<_CosmicBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final List<_CosmicStar> _stars;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 48),
-    )..repeat();
-    final rng = math.Random(7);
-    _stars = List.generate(
-      90,
-      (_) => _CosmicStar(
-        dx: rng.nextDouble(),
-        dy: rng.nextDouble(),
-        radius: rng.nextDouble() * 1.6 + 0.4,
-        phase: rng.nextDouble() * math.pi * 2,
-        speed: rng.nextDouble() * 0.6 + 0.4,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) {
-      return CustomPaint(
-        painter: _CosmicPainter(t: 0, stars: _stars),
-        size: Size.infinite,
-      );
-    }
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => CustomPaint(
-        painter: _CosmicPainter(t: _controller.value, stars: _stars),
-        size: Size.infinite,
-      ),
-    );
-  }
-}
-
-class _CosmicStar {
-  final double dx;
-  final double dy;
-  final double radius;
-  final double phase;
-  final double speed;
-
-  const _CosmicStar({
-    required this.dx,
-    required this.dy,
-    required this.radius,
-    required this.phase,
-    required this.speed,
-  });
-}
-
-class _CosmicPainter extends CustomPainter {
-  final double t;
-  final List<_CosmicStar> stars;
-
-  const _CosmicPainter({required this.t, required this.stars});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final bounds = Offset.zero & size;
-    canvas.drawRect(bounds, Paint()..color = const Color(0xFF020006));
-
-    final angle = t * 2 * math.pi;
-    final glow1 = Offset(
-      size.width * (0.22 + 0.08 * math.sin(angle)),
-      size.height * (0.28 + 0.06 * math.cos(angle)),
-    );
-    final glow2 = Offset(
-      size.width * (0.8 + 0.07 * math.cos(angle * 0.7)),
-      size.height * (0.72 + 0.07 * math.sin(angle * 0.7)),
-    );
-    final glowRadius = size.shortestSide * 0.38;
-    canvas.drawCircle(
-      glow1,
-      glowRadius,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [_cosmicCyan.withValues(alpha: 0.18), Colors.transparent],
-        ).createShader(Rect.fromCircle(center: glow1, radius: glowRadius)),
-    );
-    canvas.drawCircle(
-      glow2,
-      glowRadius * 0.9,
-      Paint()
-        ..shader =
-            RadialGradient(
-              colors: [
-                _cosmicMagenta.withValues(alpha: 0.15),
-                Colors.transparent,
-              ],
-            ).createShader(
-              Rect.fromCircle(center: glow2, radius: glowRadius * 0.9),
-            ),
-    );
-
-    final gridPaint = Paint()
-      ..color = _cosmicCyan.withValues(alpha: 0.05)
-      ..strokeWidth = 1;
-    const lines = 10;
-    for (var i = 0; i <= lines; i++) {
-      final y = size.height * (i / lines);
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
-    }
-
-    for (final star in stars) {
-      final twinkle =
-          0.35 + 0.65 * (0.5 + 0.5 * math.sin(angle * star.speed + star.phase));
-      canvas.drawCircle(
-        Offset(size.width * star.dx, size.height * star.dy),
-        star.radius,
-        Paint()..color = Colors.white.withValues(alpha: twinkle * 0.85),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _CosmicPainter oldDelegate) =>
-      oldDelegate.t != t;
-}
-
-/// 教育文柔風背景：深色底 + 數個緩慢漂移、模糊柔化的漸層光斑，
-/// 以 2D 動畫近似「流體動力學」流動質感，搭配前景毛玻璃卡片使用。
-class _FluidBackground extends StatefulWidget {
-  const _FluidBackground();
-
-  @override
-  State<_FluidBackground> createState() => _FluidBackgroundState();
-}
-
-class _FluidBackgroundState extends State<_FluidBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 34),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.of(context).disableAnimations) {
-      return CustomPaint(painter: _FluidPainter(t: 0), size: Size.infinite);
-    }
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => CustomPaint(
-        painter: _FluidPainter(t: _controller.value),
-        size: Size.infinite,
-      ),
-    );
-  }
-}
-
-class _FluidPainter extends CustomPainter {
-  final double t;
-
-  const _FluidPainter({required this.t});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = const Color(0xFF0B0F1A),
-    );
-
-    final angle = t * 2 * math.pi;
-    final blobs = <(Color, double, double, double, double)>[
-      (_softTeal, 0.25, 0.3, 1.0, 0.0),
-      (_softViolet, 0.75, 0.25, 0.85, 1.4),
-      (const Color(0xFFF472B6), 0.35, 0.75, 0.9, 2.6),
-      (_softTeal, 0.72, 0.72, 0.7, 4.1),
-    ];
-    for (final (color, bx, by, scale, phase) in blobs) {
-      final dx = bx + 0.07 * math.sin(angle + phase);
-      final dy = by + 0.07 * math.cos(angle * 0.8 + phase);
-      final center = Offset(size.width * dx, size.height * dy);
-      final radius = size.shortestSide * 0.32 * scale;
-      canvas.drawCircle(
-        center,
-        radius,
-        Paint()
-          ..shader = RadialGradient(
-            colors: [color.withValues(alpha: 0.32), color.withValues(alpha: 0)],
-          ).createShader(Rect.fromCircle(center: center, radius: radius))
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 40),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _FluidPainter oldDelegate) => oldDelegate.t != t;
 }
 
 class _ProbabilityGauge extends StatelessWidget {
@@ -3303,9 +2634,7 @@ class _ProbabilityGauge extends StatelessWidget {
               painter: _SegmentedEngineRingPainter(
                 states: engineStates,
                 colors: segmentColors,
-                pendingColor: _isOverlayWorkspace(context)
-                    ? _workspaceOverlayTrack
-                    : scheme.outlineVariant,
+                pendingColor: scheme.outlineVariant,
               ),
             ),
             if (analyzing)
@@ -3452,22 +2781,12 @@ class _TelemetrySummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final overlay = _isOverlayWorkspace(context);
-    final iconColor = overlay
-        ? _workspaceOverlayText
-        : theme.colorScheme.primary;
-    final titleColor = overlay
-        ? _workspaceOverlayText
-        : theme.colorScheme.primary;
-    final bodyColor = overlay
-        ? _workspaceOverlayMutedText
-        : theme.colorScheme.onSurfaceVariant;
-    final backgroundColor = overlay
-        ? Colors.white.withValues(alpha: 0.12)
-        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
-    final borderColor = overlay
-        ? Colors.white.withValues(alpha: 0.32)
-        : theme.dividerColor;
+    final iconColor = theme.colorScheme.primary;
+    final titleColor = theme.colorScheme.primary;
+    final bodyColor = theme.colorScheme.onSurfaceVariant;
+    final backgroundColor = theme.colorScheme.surfaceContainerHighest
+        .withValues(alpha: 0.5);
+    final borderColor = theme.dividerColor;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 12),
@@ -3578,9 +2897,7 @@ class _EngineTelemetryPulse extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _engineColor(context, role);
     final scheme = Theme.of(context).colorScheme;
-    final pendingColor = _isOverlayWorkspace(context)
-        ? _workspaceOverlayTrack
-        : scheme.outlineVariant;
+    final pendingColor = scheme.outlineVariant;
     return Tooltip(
       message: label,
       child: Padding(
@@ -3675,17 +2992,13 @@ class _EngineTelemetryRow extends StatelessWidget {
         (relationshipText != null ||
             (reasons?.isNotEmpty ?? false) ||
             (modules?.isNotEmpty ?? false));
-    final isOverlayTheme = _isOverlayWorkspace(context);
     final detailColor = _workspaceSecondaryText(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 42,
-            child: _buildRow(context, scheme, color, icon, isOverlayTheme),
-          ),
+          SizedBox(height: 42, child: _buildRow(context, scheme, color, icon)),
           if (showDetail)
             Padding(
               padding: const EdgeInsets.only(left: 54, top: 4),
@@ -3756,7 +3069,6 @@ class _EngineTelemetryRow extends StatelessWidget {
     ColorScheme scheme,
     Color color,
     IconData icon,
-    bool isOverlayTheme,
   ) {
     return Row(
       children: [
@@ -3765,11 +3077,7 @@ class _EngineTelemetryRow extends StatelessWidget {
           width: 4,
           height: active ? 42 : 30,
           decoration: BoxDecoration(
-            color: done || active
-                ? color
-                : (isOverlayTheme
-                      ? _workspaceOverlayTrack
-                      : scheme.outlineVariant),
+            color: done || active ? color : scheme.outlineVariant,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -3805,9 +3113,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                   value: done ? 1 : progress.clamp(0.0, 1.0),
                   minHeight: 4,
                   color: color,
-                  backgroundColor: isOverlayTheme
-                      ? _workspaceOverlayTrack.withValues(alpha: 0.38)
-                      : scheme.surfaceContainerHighest,
+                  backgroundColor: scheme.surfaceContainerHighest,
                 ),
               ),
             ],
@@ -3826,9 +3132,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                       Text(
                         '${(score! * 100).round()}%',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: isOverlayTheme
-                              ? Colors.white
-                              : scheme.onSurface,
+                          color: scheme.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                       )
@@ -3836,9 +3140,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                       Text(
                         '—',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: isOverlayTheme
-                              ? _workspaceOverlayMutedText
-                              : scheme.onSurfaceVariant,
+                          color: scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -3855,9 +3157,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                         value: progress > 0 ? progress.clamp(0.0, 1.0) : null,
                         strokeWidth: 2,
                         color: color,
-                        backgroundColor: isOverlayTheme
-                            ? _workspaceOverlayTrack.withValues(alpha: 0.24)
-                            : scheme.surfaceContainerHighest,
+                        backgroundColor: scheme.surfaceContainerHighest,
                       ),
                     ),
                     Text(
@@ -3871,9 +3171,7 @@ class _EngineTelemetryRow extends StatelessWidget {
                 )
               : Icon(
                   LucideIcons.moreHorizontal,
-                  color: isOverlayTheme
-                      ? _workspaceOverlayMutedText
-                      : scheme.onSurfaceVariant,
+                  color: scheme.onSurfaceVariant,
                 ),
         ),
       ],
@@ -3897,16 +3195,9 @@ class _StageNode extends StatelessWidget {
     final complete = index < active;
     final current = index == active;
     final scheme = Theme.of(context).colorScheme;
-    final overlay = _isOverlayWorkspace(context);
-    final inactiveBackground = overlay
-        ? Colors.white.withValues(alpha: 0.16)
-        : scheme.surfaceContainerHighest;
-    final inactiveText = overlay
-        ? _workspaceOverlayMutedText
-        : scheme.onSurface;
-    final inactiveBorder = overlay
-        ? _workspaceOverlayTrack
-        : scheme.outlineVariant;
+    final inactiveBackground = scheme.surfaceContainerHighest;
+    final inactiveText = scheme.onSurface;
+    final inactiveBorder = scheme.outlineVariant;
     return Semantics(
       selected: current,
       child: Column(
@@ -4017,16 +3308,11 @@ class _StageChip extends StatelessWidget {
     final complete = index < active;
     final current = index == active;
     final scheme = Theme.of(context).colorScheme;
-    final overlay = _isOverlayWorkspace(context);
     final background = complete || current
         ? scheme.primary
-        : overlay
-        ? Colors.white.withValues(alpha: 0.16)
         : scheme.surfaceContainerHighest;
     final foreground = complete || current
         ? scheme.onPrimary
-        : overlay
-        ? _workspaceOverlayMutedText
         : scheme.onSurfaceVariant;
     return Semantics(
       selected: current,
@@ -4038,7 +3324,7 @@ class _StageChip extends StatelessWidget {
           border: Border.all(
             color: current
                 ? _workspacePrimaryText(context)
-                : (overlay ? _workspaceOverlayTrack : Colors.transparent),
+                : Colors.transparent,
             width: 1.5,
           ),
         ),

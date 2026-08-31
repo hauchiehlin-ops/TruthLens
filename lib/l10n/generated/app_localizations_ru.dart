@@ -2727,12 +2727,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get workspaceModeEvidence => 'Полотно доказательств';
 
   @override
-  String get workspaceModeCosmicFuture => 'Космическое будущее';
-
-  @override
-  String get workspaceModeSoftEducation => 'Мягкое образование';
-
-  @override
   String get workspaceModeTooltip => 'Сменить режим рабочего пространства';
 
   @override
@@ -3118,6 +3112,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String integratedEvidenceSufficiency(int percent, String tier) {
     return 'Достаточность доказательств: $percent/100 · $tier';
   }
+
+  @override
+  String get integratedIncompleteModelWarning =>
+      'Core text engines did not fully participate. This is a low-coverage screening result and should not be compared directly with a complete model analysis. Complete the recommended analysis models in Model Management; if they are already installed, check tokenizer support, missing files, or Web/ONNX Runtime compatibility.';
 
   @override
   String get integratedEvidenceTierScreening => 'предварительный скрининг';

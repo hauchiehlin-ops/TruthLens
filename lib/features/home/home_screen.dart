@@ -48,7 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
         for (final item in choice.selected) {
           // 逐顆依序下載。並行會讓數百 MB 的請求互相搶頻寬，
           // 進度也變得無從解讀。單顆失敗不影響其餘（模型頁會顯示該顆的錯誤）。
-          await provisioner.downloadVariant(item.role, item.variant, l10n: l10n);
+          await provisioner.downloadVariant(
+            item.role,
+            item.variant,
+            l10n: l10n,
+          );
         }
 
       case ModelPromptResult.skip:
@@ -68,9 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WorkspaceMode.automatic ||
       WorkspaceMode.commandGrid ||
       WorkspaceMode.missionTimeline ||
-      WorkspaceMode.evidenceCanvas ||
-      WorkspaceMode.cosmicFuture ||
-      WorkspaceMode.softEducation => const WorkspaceScreen(),
+      WorkspaceMode.evidenceCanvas => const WorkspaceScreen(),
     };
   }
 }
