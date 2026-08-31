@@ -591,6 +591,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'Tidak ada sinyal arah';
 
   @override
+  String get reportEngineExecutedNoStrongSignal =>
+      'Dijalankan, tanpa sinyal kuat';
+
+  @override
   String get reportEngineSignalExplanation =>
       'Sinyal AI adalah probabilitas mesin untuk dokumen ini. Bobot yang diatur mengendalikan pengaruhnya, dan poin kontribusi dialokasikan agar jumlah yang ditampilkan sama persis dengan probabilitas AI keseluruhan. ‘Tidak terdeteksi’ berarti di bawah ambang sinyal kuat 60%, bukan berarti nilainya harus nol.';
 

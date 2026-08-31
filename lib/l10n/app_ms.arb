@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "Arah lemah {percent}/100",
   "reportEngineNoDirectionalSignal": "Tiada isyarat arah",
+  "reportEngineExecutedNoStrongSignal": "Dijalankan, tiada isyarat kuat",
   "reportEngineSignalExplanation": "Isyarat AI ialah kebarangkalian enjin untuk dokumen ini. Berat yang ditetapkan mengawal pengaruhnya dan mata sumbangan diagihkan supaya jumlah yang dipaparkan sepadan tepat dengan kebarangkalian AI keseluruhan. ‘Tidak dikesan’ bermaksud di bawah ambang isyarat kuat 60%, bukan semestinya bernilai sifar.",
   "engineReasonAdversarialNoStrongSentence": "Tiada satu pun daripada {total} ayat melepasi ambang parafrasa kuat; isyarat lemah yang ditentukur ialah {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {

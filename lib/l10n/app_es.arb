@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "Dirección débil {percent}/100",
   "reportEngineNoDirectionalSignal": "Sin señal direccional",
+  "reportEngineExecutedNoStrongSignal": "Ejecutado, sin señal fuerte",
   "reportEngineSignalExplanation": "La señal de IA es la probabilidad asignada por el motor a este documento. El peso configurado controla su influencia y los puntos de contribución se distribuyen para que la suma mostrada coincida exactamente con la probabilidad global de IA. «No detectado» significa que está por debajo del umbral de señal fuerte del 60 %, no que el valor sea necesariamente cero.",
   "engineReasonAdversarialNoStrongSentence": "Ninguna de las {total} oraciones superó el umbral fuerte de paráfrasis; la señal débil calibrada es del {percent} %",
   "@engineReasonAdversarialNoStrongSentence": {

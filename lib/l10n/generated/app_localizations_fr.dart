@@ -596,6 +596,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'Aucun signal directionnel';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => 'Exécuté, aucun signal fort';
+
+  @override
   String get reportEngineSignalExplanation =>
       'Le signal IA est la probabilité attribuée à ce document par le moteur. Le poids configuré détermine son influence et les points de contribution sont répartis afin que leur somme affichée corresponde exactement à la probabilité IA globale. « Non détecté » signifie sous le seuil de signal fort de 60 %, et non nécessairement une valeur nulle.';
 

@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "Arah lemah {percent}/100",
   "reportEngineNoDirectionalSignal": "Tidak ada sinyal arah",
+  "reportEngineExecutedNoStrongSignal": "Dijalankan, tanpa sinyal kuat",
   "reportEngineSignalExplanation": "Sinyal AI adalah probabilitas mesin untuk dokumen ini. Bobot yang diatur mengendalikan pengaruhnya, dan poin kontribusi dialokasikan agar jumlah yang ditampilkan sama persis dengan probabilitas AI keseluruhan. ‘Tidak terdeteksi’ berarti di bawah ambang sinyal kuat 60%, bukan berarti nilainya harus nol.",
   "engineReasonAdversarialNoStrongSentence": "Tidak satu pun dari {total} kalimat melewati ambang parafrasa kuat; sinyal lemah yang dikalibrasi adalah {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {

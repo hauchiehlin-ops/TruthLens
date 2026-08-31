@@ -596,6 +596,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'Kein gerichtetes Signal';
 
   @override
+  String get reportEngineExecutedNoStrongSignal =>
+      'Ausgeführt, kein starkes Signal';
+
+  @override
   String get reportEngineSignalExplanation =>
       'Das KI-Signal ist die Wahrscheinlichkeit dieses Moduls für das Dokument. Das eingestellte Gewicht bestimmt seinen Einfluss; die Beitragspunkte werden so verteilt, dass ihre angezeigte Summe genau der gesamten KI-Wahrscheinlichkeit entspricht. „Nicht erkannt“ bedeutet unterhalb der starken Signalschwelle von 60 %, nicht zwingend den Wert null.';
 

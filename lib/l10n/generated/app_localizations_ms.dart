@@ -588,6 +588,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'Tiada isyarat arah';
 
   @override
+  String get reportEngineExecutedNoStrongSignal =>
+      'Dijalankan, tiada isyarat kuat';
+
+  @override
   String get reportEngineSignalExplanation =>
       'Isyarat AI ialah kebarangkalian enjin untuk dokumen ini. Berat yang ditetapkan mengawal pengaruhnya dan mata sumbangan diagihkan supaya jumlah yang dipaparkan sepadan tepat dengan kebarangkalian AI keseluruhan. ‘Tidak dikesan’ bermaksud di bawah ambang isyarat kuat 60%, bukan semestinya bernilai sifar.';
 

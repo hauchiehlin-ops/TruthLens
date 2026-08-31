@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "弱い方向性 {percent}/100",
   "reportEngineNoDirectionalSignal": "方向性シグナルなし",
+  "reportEngineExecutedNoStrongSignal": "実行済み、強いシグナルなし",
   "reportEngineSignalExplanation": "AI信号は、この文書に対する各エンジンの確率です。設定した重みが影響度を決め、表示される寄与ポイントの合計が総合AI確率と正確に一致するよう配分されます。「未検出」は強い信号のしきい値60%未満を意味し、必ずしも数値が0という意味ではありません。",
   "engineReasonAdversarialNoStrongSentence": "{total}文のいずれも強い言い換え信号のしきい値を超えませんでした。校正後の弱い信号は{percent}%です",
   "@engineReasonAdversarialNoStrongSentence": {

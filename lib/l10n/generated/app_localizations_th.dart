@@ -586,6 +586,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'ไม่มีสัญญาณบอกทิศทาง';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => 'ทำงานแล้ว ไม่มีสัญญาณแรง';
+
+  @override
   String get reportEngineSignalExplanation =>
       'สัญญาณ AI คือความน่าจะเป็นที่แต่ละเอนจินประเมินให้เอกสารนี้ น้ำหนักที่ตั้งไว้กำหนดอิทธิพล และคะแนนการมีส่วนร่วมจะถูกจัดสรรให้ผลรวมที่แสดงตรงกับความน่าจะเป็น AI โดยรวมพอดี ‘ไม่พบ’ หมายถึงต่ำกว่าเกณฑ์สัญญาณชัดเจน 60% ไม่ได้หมายความว่าค่าต้องเป็นศูนย์';
 

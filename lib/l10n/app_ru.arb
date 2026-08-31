@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "Слабое направление {percent}/100",
   "reportEngineNoDirectionalSignal": "Направленный сигнал отсутствует",
+  "reportEngineExecutedNoStrongSignal": "Выполнено, сильного сигнала нет",
   "reportEngineSignalExplanation": "Сигнал ИИ — это вероятность, назначенная модулем этому документу. Заданный вес определяет его влияние, а баллы вклада распределяются так, чтобы их отображаемая сумма точно совпадала с общей вероятностью ИИ. «Не обнаружено» означает значение ниже порога сильного сигнала 60%, а не обязательно ноль.",
   "engineReasonAdversarialNoStrongSentence": "Ни одно из {total} предложений не превысило порог сильного сигнала перефразирования; откалиброванный слабый сигнал составляет {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {

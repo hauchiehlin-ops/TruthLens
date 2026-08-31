@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百八十五次更新）— 區分「未參與」與「已執行但無強訊號」
+
+使用者提供 iOS 模型管理截圖，確認 Transformer、統計、Adversarial 與 LLM 模型都已安裝／使用中，
+但分析報告的鑑識矩陣仍把 Transformer 與改寫防禦顯示為「未參與」。重新檢查後確認這不是模型缺失，
+而是報告顯示層把兩種狀態混在一起：`available=false` 的真正未參與，以及 `available=true` 但
+`hasEvidence=false` 的「模型已執行，只是沒有跨過強 AI 證據門檻」。
+
+主要調整：
+
+1. 鑑識矩陣中 `available=false` 才顯示「未參與」。
+2. `available=true`、`hasEvidence=false` 的分類器會顯示弱方向分數；沒有方向時顯示「已執行，無強訊號」。
+3. 更新報告說明文字，避免把「未跨強證據門檻」誤說成模型缺席。
+4. 版本同步升級為 `4.12.9+1468`。
+
+**狀態**：✅ `flutter gen-l10n` 完成；✅ `dart format` 完成；✅
+`flutter test test/professional_report_header_test.dart` 8 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.12.9/1468`。
+
 ## 2026-08-31（第一百八十四次更新）— 降低 iOS Web 長文件分析記憶體峰值
 
 使用者回報 iOS 匯入文件後點擊「開始檢測」，分析中途仍會跳回空白首頁。這表示 iOS WebKit 分頁仍可能

@@ -1051,10 +1051,16 @@ abstract class AppLocalizations {
   /// **'No directional signal'**
   String get reportEngineNoDirectionalSignal;
 
+  /// No description provided for @reportEngineExecutedNoStrongSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Ran, no strong signal'**
+  String get reportEngineExecutedNoStrongSignal;
+
   /// No description provided for @reportEngineSignalExplanation.
   ///
   /// In en, this message translates to:
-  /// **'Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.'**
+  /// **'Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that ran but did not cross a strong-evidence threshold are shown as weak direction or no strong signal, not as missing.'**
   String get reportEngineSignalExplanation;
 
   /// No description provided for @engineReasonAdversarialNoStrongSentence.

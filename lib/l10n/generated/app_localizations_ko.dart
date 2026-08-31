@@ -567,6 +567,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => '방향성 신호 없음';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => '실행됨, 강한 신호 없음';
+
+  @override
   String get reportEngineSignalExplanation =>
       'AI 신호는 이 문서에 대한 각 엔진의 확률입니다. 설정한 가중치가 영향도를 결정하며, 표시된 기여 점수의 합이 전체 AI 확률과 정확히 일치하도록 배분됩니다. ‘감지되지 않음’은 강한 신호 기준인 60% 미만이라는 뜻이며 반드시 0이라는 뜻은 아닙니다.';
 

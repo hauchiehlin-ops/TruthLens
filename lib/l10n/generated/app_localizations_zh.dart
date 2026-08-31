@@ -561,8 +561,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => '未形成方向性訊號';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => '已執行，無強訊號';
+
+  @override
   String get reportEngineSignalExplanation =>
-      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；沒有跨過門檻或折扣後方向的引擎顯示「未形成方向性訊號」，不再以 50% 冒充量測結果。';
+      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；已執行但未跨過強證據門檻的引擎會顯示弱方向或無強訊號，不再誤標為模型缺席。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {
@@ -3800,8 +3803,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reportEngineNoDirectionalSignal => '未形成方向性信号';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => '已执行，无强信号';
+
+  @override
   String get reportEngineSignalExplanation =>
-      '各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；没有跨过阈值或折扣后方向的引擎显示“未形成方向性信号”，不再以 50% 冒充量测结果。';
+      '各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；已执行但未跨过强证据阈值的引擎会显示弱方向或无强信号，不再误标为模型缺席。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {
@@ -7039,8 +7045,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reportEngineNoDirectionalSignal => '未形成方向性訊號';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => '已執行，無強訊號';
+
+  @override
   String get reportEngineSignalExplanation =>
-      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；沒有跨過門檻或折扣後方向的引擎顯示「未形成方向性訊號」，不再以 50% 冒充量測結果。';
+      '各數值是診斷用證據指數，不是準確率。設定權重決定影響比例；已執行但未跨過強證據門檻的引擎會顯示弱方向或無強訊號，不再誤標為模型缺席。';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {

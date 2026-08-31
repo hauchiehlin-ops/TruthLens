@@ -583,8 +583,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'No directional signal';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => 'Ran, no strong signal';
+
+  @override
   String get reportEngineSignalExplanation =>
-      'Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.';
+      'Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that ran but did not cross a strong-evidence threshold are shown as weak direction or no strong signal, not as missing.';
 
   @override
   String engineReasonAdversarialNoStrongSentence(int total, int percent) {

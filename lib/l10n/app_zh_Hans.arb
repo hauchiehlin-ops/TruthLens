@@ -180,6 +180,7 @@
   "reportEngineSignalLabel": "AI 信号指数 {percent}/100",
   "reportEngineDirectionalIndex": "弱方向 {percent}/100",
   "reportEngineNoDirectionalSignal": "未形成方向性信号",
+  "reportEngineExecutedNoStrongSignal": "已执行，无强信号",
   "@reportEngineSignalLabel": {
     "placeholders": {
       "percent": {
@@ -187,7 +188,7 @@
       }
     }
   },
-  "reportEngineSignalExplanation": "各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；没有跨过阈值或折扣后方向的引擎显示“未形成方向性信号”，不再以 50% 冒充量测结果。",
+  "reportEngineSignalExplanation": "各数值是诊断用证据指数，不是准确率。设置权重决定影响比例；已执行但未跨过强证据阈值的引擎会显示弱方向或无强信号，不再误标为模型缺席。",
   "engineReasonAdversarialNoStrongSentence": "{total} 个句子均未跨越强改写信号阈值；校准后的微弱信号为 {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {
     "placeholders": {

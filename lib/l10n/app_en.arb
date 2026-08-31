@@ -441,7 +441,8 @@
     }
   },
   "reportEngineNoDirectionalSignal": "No directional signal",
-  "reportEngineSignalExplanation": "Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that find no threshold-qualified or discounted directional signal show ‘No directional signal’ instead of a misleading 50%.",
+  "reportEngineExecutedNoStrongSignal": "Ran, no strong signal",
+  "reportEngineSignalExplanation": "Each value is a diagnostic evidence index, not an accuracy probability. Configured weight controls influence. Engines that ran but did not cross a strong-evidence threshold are shown as weak direction or no strong signal, not as missing.",
   "engineReasonAdversarialNoStrongSentence": "None of {total} sentences crossed the strong paraphrase threshold; the calibrated weak signal is {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {
     "placeholders": {

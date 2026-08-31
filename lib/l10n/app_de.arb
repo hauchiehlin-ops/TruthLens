@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "Schwache Richtung {percent}/100",
   "reportEngineNoDirectionalSignal": "Kein gerichtetes Signal",
+  "reportEngineExecutedNoStrongSignal": "Ausgeführt, kein starkes Signal",
   "reportEngineSignalExplanation": "Das KI-Signal ist die Wahrscheinlichkeit dieses Moduls für das Dokument. Das eingestellte Gewicht bestimmt seinen Einfluss; die Beitragspunkte werden so verteilt, dass ihre angezeigte Summe genau der gesamten KI-Wahrscheinlichkeit entspricht. „Nicht erkannt“ bedeutet unterhalb der starken Signalschwelle von 60 %, nicht zwingend den Wert null.",
   "engineReasonAdversarialNoStrongSentence": "Keiner von {total} Sätzen überschritt die Schwelle für ein starkes Umschreibungssignal; das kalibrierte schwache Signal beträgt {percent} %",
   "@engineReasonAdversarialNoStrongSentence": {

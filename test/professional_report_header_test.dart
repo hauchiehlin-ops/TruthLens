@@ -411,4 +411,77 @@ void main() {
     expect(find.text(evidenceGate), findsOneWidget);
     expect(find.text('AI probability < 20%'), findsNothing);
   });
+
+  testWidgets(
+    'executed engines without strong evidence are not shown missing',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1400, 1500));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final result = DetectionResult(
+        id: 'executed-silent-engine',
+        analyzedAt: DateTime(2026, 8, 31),
+        inputText: _sampleBody,
+        aiProbability: 0.22,
+        verdict: Verdict.likelyHuman,
+        engineScores: const [
+          EngineScore(
+            engineId: 'transformer',
+            engineName: 'Transformer classifier',
+            aiProbability: 0.08,
+            weight: 0.40,
+            hasEvidence: false,
+            reasons: ['No sentence crossed the strong AI evidence threshold.'],
+          ),
+          EngineScore(
+            engineId: 'statistical',
+            engineName: 'Statistical analysis',
+            aiProbability: 0.26,
+            weight: 0.25,
+          ),
+          EngineScore(
+            engineId: 'stylometry',
+            engineName: 'Stylometry analysis',
+            aiProbability: 0.50,
+            weight: 0.20,
+          ),
+          EngineScore(
+            engineId: 'adversarial',
+            engineName: 'Adversarial defense',
+            aiProbability: 0.02,
+            weight: 0.15,
+            available: false,
+            hasEvidence: false,
+          ),
+        ],
+        sentences: [
+          for (var i = 0; i < 8; i++)
+            SentenceScore(
+              index: i,
+              text: 'A complete sentence numbered $i for the regression test.',
+              aiProbability: 0.22,
+            ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        _testApp(
+          ProfessionalReportHeader(result: result, onDownloadPdf: () {}),
+        ),
+      );
+
+      final scrollable = find.byType(Scrollable).first;
+      for (
+        var i = 0;
+        i < 8 && find.text('Multi-evidence assessment').evaluate().isEmpty;
+        i++
+      ) {
+        await tester.drag(scrollable, const Offset(0, -500));
+        await tester.pumpAndSettle();
+      }
+
+      expect(find.text('Weak direction 8/100'), findsOneWidget);
+      expect(find.text('Not involved'), findsOneWidget);
+    },
+  );
 }

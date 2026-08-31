@@ -566,6 +566,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => '方向性シグナルなし';
 
   @override
+  String get reportEngineExecutedNoStrongSignal => '実行済み、強いシグナルなし';
+
+  @override
   String get reportEngineSignalExplanation =>
       'AI信号は、この文書に対する各エンジンの確率です。設定した重みが影響度を決め、表示される寄与ポイントの合計が総合AI確率と正確に一致するよう配分されます。「未検出」は強い信号のしきい値60%未満を意味し、必ずしも数値が0という意味ではありません。';
 

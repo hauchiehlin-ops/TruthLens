@@ -187,6 +187,7 @@
   },
   "reportEngineDirectionalIndex": "ทิศทางอ่อน {percent}/100",
   "reportEngineNoDirectionalSignal": "ไม่มีสัญญาณบอกทิศทาง",
+  "reportEngineExecutedNoStrongSignal": "ทำงานแล้ว ไม่มีสัญญาณแรง",
   "reportEngineSignalExplanation": "สัญญาณ AI คือความน่าจะเป็นที่แต่ละเอนจินประเมินให้เอกสารนี้ น้ำหนักที่ตั้งไว้กำหนดอิทธิพล และคะแนนการมีส่วนร่วมจะถูกจัดสรรให้ผลรวมที่แสดงตรงกับความน่าจะเป็น AI โดยรวมพอดี ‘ไม่พบ’ หมายถึงต่ำกว่าเกณฑ์สัญญาณชัดเจน 60% ไม่ได้หมายความว่าค่าต้องเป็นศูนย์",
   "engineReasonAdversarialNoStrongSentence": "ไม่มีประโยคใดจาก {total} ประโยคเกินเกณฑ์สัญญาณการถอดความที่ชัดเจน สัญญาณอ่อนหลังการปรับเทียบคือ {percent}%",
   "@engineReasonAdversarialNoStrongSentence": {

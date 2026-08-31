@@ -1283,7 +1283,7 @@ class _EngineContributionCard extends StatelessWidget {
                                       ? l10n.reportEngineDirectionalIndex(
                                           (group.probability * 100).round(),
                                         )
-                                      : l10n.reportEngineNoDirectionalSignal,
+                                      : l10n.reportEngineExecutedNoStrongSignal,
                                   maxLines: 2,
                                   textAlign: TextAlign.end,
                                   overflow: TextOverflow.ellipsis,
@@ -1926,6 +1926,12 @@ class EngineGroup {
     final available = availableScores.isNotEmpty;
     double? directionalProbability(EngineScore score) {
       if (score.votes) return score.aiProbability;
+      if (score.available &&
+          !score.hasEvidence &&
+          score.applicability != EngineApplicability.unsupported &&
+          score.calibrationReliability > 0) {
+        return score.aiProbability;
+      }
       return null;
     }
 

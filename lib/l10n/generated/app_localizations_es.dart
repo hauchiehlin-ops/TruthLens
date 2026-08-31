@@ -596,6 +596,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportEngineNoDirectionalSignal => 'Sin señal direccional';
 
   @override
+  String get reportEngineExecutedNoStrongSignal =>
+      'Ejecutado, sin señal fuerte';
+
+  @override
   String get reportEngineSignalExplanation =>
       'La señal de IA es la probabilidad asignada por el motor a este documento. El peso configurado controla su influencia y los puntos de contribución se distribuyen para que la suma mostrada coincida exactamente con la probabilidad global de IA. «No detectado» significa que está por debajo del umbral de señal fuerte del 60 %, no que el valor sea necesariamente cero.';
 
