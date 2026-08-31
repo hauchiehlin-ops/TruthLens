@@ -235,6 +235,7 @@ void main() {
       'adversarial',
     ]);
     expect(result.availableEngineCount, 4);
+    expect(probe.releaseCount, 4);
   });
 }
 
@@ -275,9 +276,10 @@ class _FixedEngine implements DetectionEngine {
 class _ConcurrencyProbe {
   int active = 0;
   int maxActive = 0;
+  int releaseCount = 0;
 }
 
-class _RecordingEngine implements DetectionEngine {
+class _RecordingEngine implements DetectionEngine, ReleasableDetectionEngine {
   @override
   final String id;
   final double probability;
@@ -311,5 +313,10 @@ class _RecordingEngine implements DetectionEngine {
       aiProbability: probability,
       weight: defaultWeight,
     );
+  }
+
+  @override
+  void releaseResources() {
+    probe.releaseCount += 1;
   }
 }

@@ -26,3 +26,8 @@ abstract class DetectionEngine {
     EngineProgressCallback? onProgress,
   });
 }
+
+/// 引擎若持有大型模型 session，可實作此介面讓協調器在受限 runtime 下主動釋放。
+abstract class ReleasableDetectionEngine {
+  void releaseResources();
+}

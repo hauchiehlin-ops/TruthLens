@@ -1,5 +1,28 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百八十四次更新）— 降低 iOS Web 長文件分析記憶體峰值
+
+使用者回報 iOS 匯入文件後點擊「開始檢測」，分析中途仍會跳回空白首頁。這表示 iOS WebKit 分頁仍可能
+在長文件 ONNX/WASM 推論期間被系統重載；上一輪只把引擎改為依序執行，但 Transformer 跑完後仍快取著
+ONNX session，Adversarial/Statistical 載入時仍可能讓多個大型模型同時留在瀏覽器記憶體。
+
+主要調整：
+
+1. 新增 `ReleasableDetectionEngine`，讓持有大型模型 session 的引擎可被協調器主動釋放。
+2. `TransformerEngine`、`StatisticalEngine`、`AdversarialEngine` 實作受控釋放；iOS Web sequential
+   execution 每跑完一個引擎就立即清掉其 ONNX/perplexity session。
+3. Web ONNX 逐句推論在 iOS 受限 runtime 下加入 12ms batch 間隔，避免長時間連續 WASM 工作讓 WebKit
+   無法喘息。
+4. 補強 sequential execution 測試，確認全部引擎仍會執行，且每個引擎跑完都會釋放資源。
+5. 版本同步升級為 `4.12.8+1467`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter test test/engine_weight_test.dart test/detection_test.dart test/workspace_screen_test.dart`
+46 項全數通過；✅ `flutter build web` 成功產出 `build/web`，確認
+`build/web/version.json` 為 `4.12.8/1467`。
+
 ## 2026-08-31（第一百八十三次更新）— 修正桌面「新的分析」誤重跑既有文件
 
 使用者回報更新到 `v4.12.5` 後，點選「新的分析」仍會針對既有匯入文件重新分析，而不是回到空白入口。

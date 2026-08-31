@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'adaptive_sentence_batcher.dart';
 import 'text_tokenizer.dart';
 import 'web_js_bridge.dart';
+import 'web_runtime.dart';
 
 /// 以 onnxruntime-web 執行 Transformer 分類器的瀏覽器端推論。
 /// [modelPath]/[tokenizerJsonPath] 在 web 上是 OPFS 儲存鍵（即 ModelManager 的
@@ -21,6 +22,9 @@ class OnnxDetector {
   // same model stack produces comparable sentence scores across platforms.
   final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
     initialBatchSize: kDeterministicOnnxSentenceBatchSize,
+    interBatchDelay: isConstrainedMobileWebRuntime
+        ? const Duration(milliseconds: 12)
+        : Duration.zero,
   );
 
   OnnxDetector._(

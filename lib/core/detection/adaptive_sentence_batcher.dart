@@ -17,12 +17,16 @@ const int kDeterministicOnnxSentenceBatchSize = 1;
 class AdaptiveSentenceBatcher {
   int _preferredBatchSize;
   final int cacheCapacity;
+  final Duration interBatchDelay;
   final LinkedHashMap<String, double> _scoreCache = LinkedHashMap();
 
-  AdaptiveSentenceBatcher({int initialBatchSize = 8, this.cacheCapacity = 2048})
-    : assert(initialBatchSize > 0),
-      assert(cacheCapacity >= 0),
-      _preferredBatchSize = initialBatchSize;
+  AdaptiveSentenceBatcher({
+    int initialBatchSize = 8,
+    this.cacheCapacity = 2048,
+    this.interBatchDelay = Duration.zero,
+  }) : assert(initialBatchSize > 0),
+       assert(cacheCapacity >= 0),
+       _preferredBatchSize = initialBatchSize;
 
   int get preferredBatchSize => _preferredBatchSize;
 
@@ -91,7 +95,7 @@ class AdaptiveSentenceBatcher {
       try {
         // Native ONNX inference is synchronous. Yield between batches so the
         // UI can repaint progress and process workspace-mode changes.
-        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(interBatchDelay);
         scores = await runBatch(batch);
       } catch (_) {
         if (size == 1) rethrow;

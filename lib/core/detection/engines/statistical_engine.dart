@@ -12,7 +12,7 @@ import '../perplexity_scorer.dart';
 /// 子模型 B：統計特徵分析器。
 /// 若 DistilGPT2 困惑度模型（statistical role）已安裝，納入真 Perplexity（ONNX 端上）；
 /// 否則以 Burstiness / Entropy / TTR 的啟發式組合運作。此引擎恆可用（有回退）。
-class StatisticalEngine implements DetectionEngine {
+class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager? modelManager;
 
   PerplexityScorer? _scorer;
@@ -337,5 +337,12 @@ class StatisticalEngine implements DetectionEngine {
     } catch (_) {
       return null; // 載入/推論失敗 → 回退啟發式
     }
+  }
+
+  @override
+  void releaseResources() {
+    _scorer?.dispose();
+    _scorer = null;
+    _loadedPath = null;
   }
 }

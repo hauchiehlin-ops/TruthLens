@@ -15,7 +15,7 @@ import '../onnx_detector.dart';
 /// 對 QuillBot / Undetectable.ai 等改寫規避具韌性；推論使用保留段落上下文的
 /// 受控區塊，再映射回逐句分數供報告使用。
 /// 使用中模型與 tokenizer 檔皆需存在才可用；否則回報 unavailable（優雅降級）。
-class AdversarialEngine implements DetectionEngine {
+class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager modelManager;
   final String? variantId;
 
@@ -316,5 +316,12 @@ class AdversarialEngine implements DetectionEngine {
     } catch (_) {
       return l10n.engineAdversarialRepairFailed;
     }
+  }
+
+  @override
+  void releaseResources() {
+    _detector?.dispose();
+    _detector = null;
+    _loadedModelPath = null;
   }
 }

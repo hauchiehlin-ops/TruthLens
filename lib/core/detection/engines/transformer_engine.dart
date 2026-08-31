@@ -18,7 +18,7 @@ import '../onnx_detector.dart';
 /// 受控區塊推論，並將區塊分數映射回逐句報告。
 /// 支援 WordPiece（BERT 系）與 byte-level BPE（RoBERTa 系）tokenizer。
 /// 分類器一定需要 tokenizer；若使用中模型缺 tokenizer 或檔案不存在，回報 unavailable。
-class TransformerEngine implements DetectionEngine {
+class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager modelManager;
   final String? variantId;
 
@@ -355,5 +355,12 @@ class TransformerEngine implements DetectionEngine {
     } catch (_) {
       return l10n.engineTransformerRepairFailed;
     }
+  }
+
+  @override
+  void releaseResources() {
+    _detector?.dispose();
+    _detector = null;
+    _loadedModelPath = null;
   }
 }

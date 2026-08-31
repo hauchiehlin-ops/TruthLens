@@ -159,7 +159,13 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final scores = <EngineScore>[];
     if (runSequentially) {
       for (final engine in engines) {
-        scores.add(await runEngine(engine));
+        try {
+          scores.add(await runEngine(engine));
+        } finally {
+          if (engine is ReleasableDetectionEngine) {
+            (engine as ReleasableDetectionEngine).releaseResources();
+          }
+        }
       }
     } else {
       scores.addAll(await Future.wait(engines.map(runEngine)));
