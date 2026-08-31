@@ -1,5 +1,50 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百六十六次更新）— 首頁入口改成響應式審核工作台
+
+使用者進一步指出不能只改報告頁，入口首頁也必須重新思考版面配置，並要求所有修正都要滿足
+不同平台與螢幕尺寸的響應式展示。這次把預設首頁 `WorkspaceScreen` 從單純三欄並排，調整成更像
+主流 AI 檢測／審核工具的工作台入口：先讓使用者看見目前案件狀態、文件字數、即時證據數與主要
+操作，再進入文件輸入、模型遙測與逐句證據。
+
+主要調整：
+
+1. 桌面寬版新增工作台指揮列：用狀態、文件、即時證據三個指標建立第一屏資訊層級，右側改成
+   icon action group，降低文字按鈕堆疊造成的雜訊。
+2. 桌面預設欄寬重新分配：文件輸入欄從偏窄的設定感版面改為較寬的主要工作區，遙測與證據欄退為
+   輔助決策資訊，讓入口首頁更符合「先輸入、再分析、再看證據」的工作流。
+3. 平板／窄版改用同一套指揮列 + 可捲動區塊：文件、遙測、即時證據依序排列，保留可拖曳調整高度，
+   避免中間尺寸卡在擁擠三欄。
+4. 手機版排序改為輸入優先：先呈現文件輸入與匯入動作，再看進度、模型遙測與證據，符合小螢幕上
+   使用者真正要先完成的任務。
+5. 舊版原始輸入頁的動作列由固定 `Row` 改為 `Wrap`，在窄畫面或放大字級下按鈕可自然換行，
+   不再硬擠或溢位。
+
+**狀態**：✅ `flutter test test/workspace_screen_test.dart test/home_screen_test.dart test/input_screen_mobile_settings_test.dart test/professional_report_header_test.dart`
+全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`prefer_initializing_formals` info）；✅ `flutter build web` 成功產出 `build/web`。
+
+## 2026-08-31（第一百六十五次更新）— 報告頁 UI/UX 改版落到使用者實際看到的畫面
+
+使用者指出上一輪所謂 UI/UX 調整在實際報告頁「看起來跟先前一樣」。確認後發現原因很直接：
+上一輪主要動到模型管理頁與說明頁比較卡，並沒有碰使用者截圖中的核心報告畫面。這次修正方向：
+把報告第一屏從「文件式大標題 + 深色結論卡」改成更接近主流審核產品的「案件 metadata bar +
+白底風險摘要 + 可追查證據分區」。
+
+主要調整：
+
+1. `ProfessionalReportHeader` 新增 `_ReportIdentityBar`：左側文件審核 icon，右側保留 PDF 匯出，
+   中間以 pill 顯示分析時間與可疑句／可分析句數，讓報告更像審核案件，而不是普通文章頁。
+2. 主判定卡從大面積深藍漸層改為主題白底、細框、左側風險色條與語意 icon。這會直接改變使用者
+   截圖中最醒目的第一張大卡，避免「整體過暗、過像單一色塊」。
+3. 可查證事實、三列指標、引擎貢獻卡統一為 6px 圓角、主題色 surface、outlineVariant 細框，
+   減少灰底／藍底／白底混雜造成的拼貼感。
+4. 補強窄畫面可用性：metadata pill 的長文字允許兩行與省略，避免 320px 或放大字級下溢位；
+   檔名字級仍維持標題 70%，保留既有階層測試。
+
+**狀態**：✅ `flutter test test/professional_report_header_test.dart` 全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條 `prefer_initializing_formals` info）。
+
 ## 2026-08-31（第一百六十四次更新）— Web-only 後移除自訂 ONNX 匯入入口，並調整競品比較呈現
 
 使用者確認 TruthLens 後續只在 Web 端運行，截圖圈出的兩個「自訂 ONNX 模型匯入與測試」

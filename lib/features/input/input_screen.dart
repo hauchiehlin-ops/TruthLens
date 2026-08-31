@@ -490,21 +490,21 @@ class _InputScreenState extends State<InputScreen> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 12,
+                              runSpacing: 8,
                               children: [
                                 OutlinedButton.icon(
                                   onPressed: _pasteFromClipboard,
                                   icon: Icon(LucideIcons.clipboard),
                                   label: Text(l10n.inputPasteButton),
                                 ),
-                                const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _scanImage,
                                   icon: Icon(LucideIcons.camera),
                                   label: Text(l10n.inputOcrButton),
                                 ),
-                                const SizedBox(width: 12),
                                 OutlinedButton.icon(
                                   onPressed: _importDocument,
                                   icon: Icon(LucideIcons.folderOpen),
@@ -664,21 +664,21 @@ class _InputScreenState extends State<InputScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        runSpacing: 8,
                         children: [
                           OutlinedButton.icon(
                             onPressed: _pasteFromClipboard,
                             icon: Icon(LucideIcons.clipboard),
                             label: Text(l10n.inputPasteButton),
                           ),
-                          const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: _scanImage,
                             icon: Icon(LucideIcons.camera),
                             label: Text(l10n.inputOcrButton),
                           ),
-                          const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: _importDocument,
                             icon: Icon(LucideIcons.folderOpen),

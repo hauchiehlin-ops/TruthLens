@@ -129,89 +129,15 @@ class ProfessionalReportHeader extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
-          // 1. 頂部工具欄
+          // 1. 報告 metadata bar：把畫面從「文件標題」拉到「審核案件」的心智模型。
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final details = Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 主題與檔名分行：檔名可能很長，接在主題後面會把兩者
-                    // 擠成一團而無法辨識何者為何。檔名再縮 30% 拉開層級。
-                    Text(
-                      l10n.reportAiContentReportTitle,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: headingColorFor(context),
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (result.sourceFileName.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Builder(
-                        builder: (context) {
-                          final base = Theme.of(
-                            context,
-                          ).textTheme.headlineSmall;
-                          return Text(
-                            result.sourceFileName,
-                            style: base?.copyWith(
-                              // 主題字級的 70%
-                              fontSize: (base.fontSize ?? 24) * 0.7,
-                              fontWeight: FontWeight.w600,
-                              color: headingColorFor(
-                                context,
-                              ).withValues(alpha: 0.85),
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        },
-                      ),
-                    ],
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.reportAnalysisTimeLabel(
-                        DateTime.now().toString().split('.')[0],
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: headingColorFor(context).withValues(alpha: 0.65),
-                      ),
-                    ),
-                  ],
-                );
-                final download = FilledButton.icon(
-                  onPressed: onDownloadPdf,
-                  icon: Icon(LucideIcons.download),
-                  label: Text(l10n.reportDownloadPdfButton),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B5B95), // 紫
-                  ),
-                );
-                if (constraints.maxWidth < 520) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      details,
-                      const SizedBox(height: 12),
-                      Align(alignment: Alignment.centerLeft, child: download),
-                    ],
-                  );
-                }
-                return Row(
-                  children: [
-                    Expanded(child: details),
-                    const SizedBox(width: 16),
-                    download,
-                  ],
-                );
-              },
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: _ReportIdentityBar(
+              result: result,
+              l10n: l10n,
+              onDownloadPdf: onDownloadPdf,
             ),
           ),
-          const Divider(thickness: 2),
 
           // 2. 整合作者判讀置頂。使用者先取得本次最可能方向，再依序往下
           //    核對可查證事實、證據覆蓋與各引擎細節。
@@ -346,7 +272,7 @@ class _VerifiableFindingsCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: hasConcern ? scheme.error : scheme.outlineVariant,
           width: hasConcern ? 2 : 1,
@@ -408,6 +334,169 @@ class _VerifiableFindingsCard extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReportIdentityBar extends StatelessWidget {
+  final DetectionResult result;
+  final AppLocalizations l10n;
+  final VoidCallback onDownloadPdf;
+
+  const _ReportIdentityBar({
+    required this.result,
+    required this.l10n,
+    required this.onDownloadPdf,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final details = Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer.withValues(alpha: 0.72),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  LucideIcons.fileCheck2,
+                  color: scheme.onPrimaryContainer,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.reportAiContentReportTitle,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: scheme.onSurface,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (result.sourceFileName.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Builder(
+                        builder: (context) {
+                          final base = Theme.of(context).textTheme.titleLarge;
+                          return Text(
+                            result.sourceFileName,
+                            style: base?.copyWith(
+                              fontSize: (base.fontSize ?? 22) * 0.7,
+                              fontWeight: FontWeight.w700,
+                              color: scheme.primary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        _MetaPill(
+                          icon: LucideIcons.clock3,
+                          label: l10n.reportAnalysisTimeLabel(
+                            DateTime.now().toString().split('.')[0],
+                          ),
+                        ),
+                        _MetaPill(
+                          icon: LucideIcons.fileText,
+                          label: l10n.reportStrongAiSentenceCount(
+                            result.aiSentenceCount,
+                            result.analyzableSentenceCount,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+          final download = FilledButton.icon(
+            onPressed: onDownloadPdf,
+            icon: Icon(LucideIcons.download),
+            label: Text(l10n.reportDownloadPdfButton),
+          );
+          if (constraints.maxWidth < 620) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                details,
+                const SizedBox(height: 12),
+                Align(alignment: Alignment.centerLeft, child: download),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: details),
+              const SizedBox(width: 16),
+              download,
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MetaPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _MetaPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+                height: 1.2,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -495,305 +584,343 @@ class _VerdictSummaryCard extends StatelessWidget {
       IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
       IntegratedConfidence.high => l10n.integratedConfidenceHigh,
     };
+    final scheme = Theme.of(context).colorScheme;
+    final foreground = scheme.onSurface;
+    final muted = scheme.onSurfaceVariant;
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: verdictGradient(verdict),
+        borderRadius: BorderRadius.circular(6),
+        color: scheme.surfaceContainerLow,
+        border: Border.all(color: base.withValues(alpha: 0.38), width: 1.3),
         boxShadow: [
           BoxShadow(
-            color: base.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < 480;
-          final iconBadge = Container(
-            width: compact ? 56 : 80,
-            height: compact ? 56 : 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
-            child: Center(
-              // 圖示與底色同步分級：只靠顏色分辨對色盲使用者不友善，
-              // 形狀是第二條獨立的辨識線索。
-              child: Icon(
-                switch (assessment.direction) {
-                  IntegratedDirection.likelyAi => LucideIcons.cpu,
-                  IntegratedDirection.likelyMixed => LucideIcons.layers,
-                  IntegratedDirection.likelyHuman => LucideIcons.pencil,
-                  IntegratedDirection.balanced => LucideIcons.scale,
-                },
-                size: compact ? 28 : 40,
-                color: Colors.white,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Container(
+              width: 8,
+              height: 128,
+              decoration: BoxDecoration(
+                color: base,
+                borderRadius: BorderRadius.circular(6),
               ),
             ),
-          );
-          final content = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.integratedAssessmentTitle,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                integratedConclusionLabel(assessment, l10n),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                integratedLikelihoodText(assessment, l10n),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                '${l10n.integratedTextScoreLabel((result.aiProbability * 100).round())} · '
-                '${l10n.integratedConfidenceLabel(confidence)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.88),
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                l10n.integratedEvidenceSufficiency(
-                  assessment.evidenceSufficiency,
-                  integratedEvidenceTierLabel(assessment, l10n),
-                ),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.88),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (integratedBoundaryExplanation(assessment, l10n)
-                  case final explanation?) ...[
-                const SizedBox(height: 6),
-                Text(
-                  explanation,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white,
-                    height: 1.35,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 3),
-              Text(
-                l10n.integratedEvidenceCoverage(
-                  assessment.independentEvidenceFamilies,
-                  (assessment.applicabilityCoverage * 100).round(),
-                ),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.88),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                assessment.stabilityAvailable
-                    ? l10n.integratedStabilityLabel(
-                        (assessment.stabilityScore * 100).round(),
-                        (assessment.lowerBound * 100).round(),
-                        (assessment.upperBound * 100).round(),
-                      )
-                    : l10n.integratedStabilityUnavailable,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.88),
-                ),
-              ),
-              if (result.inputQuality.extractionQuality < 0.95) ...[
-                const SizedBox(height: 3),
-                Text(
-                  l10n.integratedInputQualityLabel(
-                    (result.inputQuality.extractionQuality * 100).round(),
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.88),
-                  ),
-                ),
-              ],
-              if (result.calibration.isApplicable) ...[
-                const SizedBox(height: 3),
-                Text(
-                  l10n.integratedCalibrationLabel(
-                    result.calibration.pValue.toStringAsFixed(3),
-                    result.calibration.calibrationSize,
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.88),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 3),
-              Text(
-                assessment.passesAiEvidenceGate
-                    ? l10n.integratedEvidenceGatePassed
-                    : l10n.integratedEvidenceGateNotPassed,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.88),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (!assessment.hasAuthorshipEvidence) ...[
-                Text(
-                  l10n.integratedNeutralBaseline,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white,
-                    height: 1.4,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              Text(
-                l10n.integratedIndexCaveat,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.white70,
-                  height: 1.4,
-                ),
-              ),
-              if (result.hasEvidenceLimitations) ...[
-                const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.35),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 480;
+                  final iconBadge = Container(
+                    width: compact ? 56 : 80,
+                    height: compact ? 56 : 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      color: base.withValues(alpha: 0.12),
+                      border: Border.all(color: base.withValues(alpha: 0.35)),
                     ),
-                  ),
-                  child: Text(
-                    l10n.integratedQualifiedWarning(
-                      describeAbstention(result, l10n),
-                    ),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      height: 1.45,
-                    ),
-                  ),
-                ),
-              ],
-              // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
-              // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
-              // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
-              // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
-              // 旁邊，塞進下方的說明卡等於沒說。
-              if (_lowScoreCaveat(
-                    result,
-                    citations: citations,
-                    publication: publication,
-                  ) !=
-                  _LowScoreCaveat.none) ...[
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    // 證據互相矛盾時加重底色與框線：這不是補充說明，
-                    // 是「別只看上面那個數字」的告誡
-                    color: Colors.white.withValues(
-                      alpha:
-                          _lowScoreCaveat(
-                                result,
-                                citations: citations,
-                                publication: publication,
-                              ) ==
-                              _LowScoreCaveat.provenanceContradicts
-                          ? 0.22
-                          : 0.12,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.white.withValues(
-                        alpha:
-                            _lowScoreCaveat(
-                                  result,
-                                  citations: citations,
-                                  publication: publication,
-                                ) ==
-                                _LowScoreCaveat.provenanceContradicts
-                            ? 0.70
-                            : 0.28,
+                    child: Center(
+                      // 圖示與底色同步分級：只靠顏色分辨對色盲使用者不友善，
+                      // 形狀是第二條獨立的辨識線索。
+                      child: Icon(
+                        switch (assessment.direction) {
+                          IntegratedDirection.likelyAi => LucideIcons.cpu,
+                          IntegratedDirection.likelyMixed => LucideIcons.layers,
+                          IntegratedDirection.likelyHuman => LucideIcons.pencil,
+                          IntegratedDirection.balanced => LucideIcons.scale,
+                        },
+                        size: compact ? 28 : 40,
+                        color: base,
                       ),
                     ),
-                  ),
-                  child: Row(
+                  );
+                  final content = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        _lowScoreCaveat(
-                                  result,
-                                  citations: citations,
-                                  publication: publication,
-                                ) ==
-                                _LowScoreCaveat.provenanceContradicts
-                            ? LucideIcons.alertTriangle
-                            : LucideIcons.info,
-                        size: 16,
-                        color: Colors.white,
+                      Text(
+                        l10n.integratedAssessmentTitle,
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: muted,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _lowScoreCaveat(
-                                    result,
-                                    citations: citations,
-                                    publication: publication,
-                                  ) ==
-                                  _LowScoreCaveat.provenanceContradicts
-                              ? l10n.reportProvenanceContradictsLowScore
-                              : l10n.reportLowScoreNotProofOfHuman,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.92),
-                                height: 1.4,
-                              ),
+                      const SizedBox(height: 3),
+                      Text(
+                        integratedConclusionLabel(assessment, l10n),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: foreground,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        integratedLikelihoodText(assessment, l10n),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: foreground,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '${l10n.integratedTextScoreLabel((result.aiProbability * 100).round())} · '
+                        '${l10n.integratedConfidenceLabel(confidence)}',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: muted),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        l10n.integratedEvidenceSufficiency(
+                          assessment.evidenceSufficiency,
+                          integratedEvidenceTierLabel(assessment, l10n),
+                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: foreground,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (integratedBoundaryExplanation(assessment, l10n)
+                          case final explanation?) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          explanation,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: foreground,
+                                height: 1.35,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                      const SizedBox(height: 3),
+                      Text(
+                        l10n.integratedEvidenceCoverage(
+                          assessment.independentEvidenceFamilies,
+                          (assessment.applicabilityCoverage * 100).round(),
+                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: muted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        assessment.stabilityAvailable
+                            ? l10n.integratedStabilityLabel(
+                                (assessment.stabilityScore * 100).round(),
+                                (assessment.lowerBound * 100).round(),
+                                (assessment.upperBound * 100).round(),
+                              )
+                            : l10n.integratedStabilityUnavailable,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: muted),
+                      ),
+                      if (result.inputQuality.extractionQuality < 0.95) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          l10n.integratedInputQualityLabel(
+                            (result.inputQuality.extractionQuality * 100)
+                                .round(),
+                          ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: muted),
+                        ),
+                      ],
+                      if (result.calibration.isApplicable) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          l10n.integratedCalibrationLabel(
+                            result.calibration.pValue.toStringAsFixed(3),
+                            result.calibration.calibrationSize,
+                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: muted,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                      const SizedBox(height: 3),
+                      Text(
+                        assessment.passesAiEvidenceGate
+                            ? l10n.integratedEvidenceGatePassed
+                            : l10n.integratedEvidenceGateNotPassed,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: muted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (!assessment.hasAuthorshipEvidence) ...[
+                        Text(
+                          l10n.integratedNeutralBaseline,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: foreground,
+                                height: 1.4,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      Text(
+                        l10n.integratedIndexCaveat,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: muted,
+                          height: 1.4,
+                        ),
+                      ),
+                      if (result.hasEvidenceLimitations) ...[
+                        const SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.errorContainer.withValues(
+                              alpha: 0.48,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: scheme.error.withValues(alpha: 0.45),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.integratedQualifiedWarning(
+                              describeAbstention(result, l10n),
+                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: scheme.onErrorContainer,
+                                  height: 1.45,
+                                ),
+                          ),
+                        ),
+                      ],
+                      // 偏人類的低分，在沒有來源證據時**不構成人類撰寫的確認**。
+                      // 實測：2026 世代 LLM 的中文散文困惑度落在真人分布內，
+                      // 一篇 ChatGPT 中文因此被判為「可能人類」。文本統計只能指認
+                      // 罐頭式寫作，指認不了寫得好的 AI 文本——這句話必須放在判定
+                      // 旁邊，塞進下方的說明卡等於沒說。
+                      if (_lowScoreCaveat(
+                            result,
+                            citations: citations,
+                            publication: publication,
+                          ) !=
+                          _LowScoreCaveat.none) ...[
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            // 證據互相矛盾時加重底色與框線：這不是補充說明，
+                            // 是「別只看上面那個數字」的告誡
+                            color: base.withValues(
+                              alpha:
+                                  _lowScoreCaveat(
+                                        result,
+                                        citations: citations,
+                                        publication: publication,
+                                      ) ==
+                                      _LowScoreCaveat.provenanceContradicts
+                                  ? 0.22
+                                  : 0.12,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: base.withValues(
+                                alpha:
+                                    _lowScoreCaveat(
+                                          result,
+                                          citations: citations,
+                                          publication: publication,
+                                        ) ==
+                                        _LowScoreCaveat.provenanceContradicts
+                                    ? 0.70
+                                    : 0.28,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                _lowScoreCaveat(
+                                          result,
+                                          citations: citations,
+                                          publication: publication,
+                                        ) ==
+                                        _LowScoreCaveat.provenanceContradicts
+                                    ? LucideIcons.alertTriangle
+                                    : LucideIcons.info,
+                                size: 16,
+                                color: base,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _lowScoreCaveat(
+                                            result,
+                                            citations: citations,
+                                            publication: publication,
+                                          ) ==
+                                          _LowScoreCaveat.provenanceContradicts
+                                      ? l10n.reportProvenanceContradictsLowScore
+                                      : l10n.reportLowScoreNotProofOfHuman,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: foreground,
+                                        height: 1.4,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
-                  ),
-                ),
-              ],
-            ],
-          );
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [iconBadge, const SizedBox(height: 14), content],
-            );
-          }
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              iconBadge,
-              const SizedBox(width: 20),
-              Expanded(child: content),
-            ],
-          );
-        },
+                  );
+                  if (compact) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        iconBadge,
+                        const SizedBox(height: 14),
+                        content,
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      iconBadge,
+                      const SizedBox(width: 20),
+                      Expanded(child: content),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -887,9 +1014,12 @@ class _MetricCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.grey[50],
-        border: Border.all(color: Colors.grey[200]!, width: 1),
+        borderRadius: BorderRadius.circular(6),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          width: 1,
+        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -903,7 +1033,7 @@ class _MetricCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -915,15 +1045,15 @@ class _MetricCard extends StatelessWidget {
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E3A5F),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -954,9 +1084,9 @@ class _EngineContributionCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.grey[200]!),
+        borderRadius: BorderRadius.circular(6),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -964,7 +1094,11 @@ class _EngineContributionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(LucideIcons.layers, color: Color(0xFF6B5B95), size: 20),
+              Icon(
+                LucideIcons.layers,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -972,7 +1106,7 @@ class _EngineContributionCard extends StatelessWidget {
                   softWrap: true,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -1011,7 +1145,7 @@ class _EngineContributionCard extends StatelessWidget {
           Text(
             l10n.reportTextEngineSignalExplanation,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[500],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.25,
             ),
           ),
@@ -1023,9 +1157,9 @@ class _EngineContributionCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 AppLocalizations.of(context).reportNoEngineData,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             )
           else
@@ -1043,7 +1177,7 @@ class _EngineContributionCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: group.available
                             ? const Color(0xFF6B5B95)
-                            : Colors.grey[300],
+                            : Theme.of(context).colorScheme.outlineVariant,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1069,7 +1203,9 @@ class _EngineContributionCard extends StatelessWidget {
                                           .labelMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w700,
-                                            color: const Color(0xFF1E3A5F),
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                           ),
                                     ),
                                     const SizedBox(height: 2),
@@ -1080,7 +1216,11 @@ class _EngineContributionCard extends StatelessWidget {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
-                                          ?.copyWith(color: Colors.grey[600]),
+                                          ?.copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -1105,8 +1245,12 @@ class _EngineContributionCard extends StatelessWidget {
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
                                         color: group.hasDirectionalSignal
-                                            ? const Color(0xFF1E3A5F)
-                                            : Colors.grey[600],
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -1121,13 +1265,15 @@ class _EngineContributionCard extends StatelessWidget {
                                   ? group.probability
                                   : 0,
                               minHeight: 4,
-                              backgroundColor: Colors.grey[200],
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 !group.available
-                                    ? Colors.grey[300]!
+                                    ? Theme.of(context).colorScheme.outline
                                     : group.probability > 0.7
-                                    ? const Color(0xFF6B5B95)
-                                    : const Color(0xFF1E3A5F),
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                           ),

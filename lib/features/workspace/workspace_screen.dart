@@ -607,9 +607,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               key: const ValueKey('mobile-workspace-flow'),
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
               children: [
-                _mobileProgressPanel(),
-                const SizedBox(height: 8),
                 _mobileSourcePanel(),
+                const SizedBox(height: 8),
+                _mobileProgressPanel(),
                 const SizedBox(height: 8),
                 _mobileTelemetryPanel(),
                 if (_evidenceRows().isNotEmpty) ...[
@@ -864,6 +864,112 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
+  Widget _workspaceCommandHeader({required bool compact}) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final evidenceCount = _evidenceRows().length;
+    final phaseLabel = switch (_phase) {
+      _WorkspacePhase.idle => l10n.workspaceWaiting,
+      _WorkspacePhase.ready => l10n.workspaceStageParse,
+      _WorkspacePhase.analyzing => l10n.workspaceAnalyzing,
+      _WorkspacePhase.complete => l10n.workspaceAnalysisComplete,
+    };
+    final canAnalyze = _controller.text.trim().isNotEmpty && !_isAnalyzing;
+    final actionTooltip = _isAnalyzing
+        ? l10n.workspaceStopAnalysis
+        : (_result != null ? l10n.workspaceNewAnalysis : l10n.inputStartButton);
+    final actionButton = IconButton.filled(
+      onPressed: _isAnalyzing
+          ? _confirmStopAnalysis
+          : (canAnalyze
+                ? _startAnalysis
+                : (_result != null ? _newAnalysis : null)),
+      icon: Icon(
+        _isAnalyzing
+            ? LucideIcons.stopCircle
+            : (_result != null ? LucideIcons.plus : LucideIcons.play),
+      ),
+      tooltip: actionTooltip,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(12, compact ? 10 : 12, 12, 10),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final tight = compact || constraints.maxWidth < 760;
+            final metrics = [
+              _HeaderMetric(
+                icon: LucideIcons.activity,
+                label: l10n.workspaceOverallProgress,
+                value: phaseLabel,
+                accent: scheme.primary,
+              ),
+              _HeaderMetric(
+                icon: LucideIcons.fileText,
+                label: l10n.workspaceDocument,
+                value: l10n.inputCharCount(_controller.text.trim().length),
+              ),
+              _HeaderMetric(
+                icon: LucideIcons.target,
+                label: l10n.workspaceLiveFindings,
+                value: '$evidenceCount',
+              ),
+            ];
+            final actions = Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              alignment: tight ? WrapAlignment.start : WrapAlignment.end,
+              children: [
+                IconButton.filledTonal(
+                  onPressed: _isAnalyzing ? null : _importDocument,
+                  icon: Icon(LucideIcons.folderOpen),
+                  tooltip: l10n.inputImportButton,
+                ),
+                IconButton(
+                  onPressed: _isAnalyzing ? null : _pasteFromClipboard,
+                  icon: Icon(LucideIcons.clipboard),
+                  tooltip: l10n.inputPasteButton,
+                ),
+                IconButton(
+                  onPressed: _isAnalyzing ? null : _scanImage,
+                  icon: Icon(LucideIcons.scanLine),
+                  tooltip: l10n.inputOcrButton,
+                ),
+                actionButton,
+              ],
+            );
+
+            if (tight) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(spacing: 8, runSpacing: 8, children: metrics),
+                  const SizedBox(height: 8),
+                  actions,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(
+                  child: Wrap(spacing: 8, runSpacing: 8, children: metrics),
+                ),
+                const SizedBox(width: 12),
+                actions,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _commandGrid() {
     final completed = _result != null;
     return LayoutBuilder(
@@ -871,26 +977,36 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         if (constraints.maxWidth < 980) return _compactCommandGrid();
         const dividerWidth = 14.0;
         const minPanelWidth = 220.0;
+        final headerHeight = _result == null ? 104.0 : 84.0;
         final available = constraints.maxWidth - dividerWidth * 2 - 20;
         final maxSource = math.max(
           minPanelWidth,
           available - minPanelWidth * 2,
         );
-        final sourceWidth = (_commandGridSourceWidth ?? 330).clamp(
+        final sourceWidth = (_commandGridSourceWidth ?? 440).clamp(
           minPanelWidth,
           maxSource,
         );
         final remaining = available - sourceWidth;
         final maxTelemetry = math.max(minPanelWidth, remaining - minPanelWidth);
-        final telemetryWidth = (_commandGridTelemetryWidth ?? remaining * 5 / 8)
-            .clamp(minPanelWidth, maxTelemetry);
+        final telemetryWidth = (_commandGridTelemetryWidth ?? 380).clamp(
+          minPanelWidth,
+          maxTelemetry,
+        );
         final findingsWidth = remaining - telemetryWidth;
         return Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               SizedBox(
-                height: completed ? 360 : constraints.maxHeight - 20,
+                height: headerHeight,
+                child: _workspaceCommandHeader(compact: false),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: completed
+                    ? math.min(360, constraints.maxHeight - headerHeight - 40)
+                    : constraints.maxHeight - headerHeight - 30,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -950,6 +1066,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       padding: const EdgeInsets.all(10),
       child: ListView(
         children: [
+          _workspaceCommandHeader(compact: true),
+          const SizedBox(height: 10),
           SizedBox(height: sourceHeight, child: _sourcePanel(compact: false)),
           _PanelDragHandleVertical(
             onDrag: (dy) => setState(() {
@@ -1832,9 +1950,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     child: Text('${index + 1}'),
                   ),
                   title: Text(item.$1),
-                  trailing: Text(
-                    _sentenceSignalLabel(item.$2, item.$3),
-                  ),
+                  trailing: Text(_sentenceSignalLabel(item.$2, item.$3)),
                 );
               },
             ),
@@ -1974,9 +2090,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                                 ),
                                 Expanded(child: Text(item.$1)),
                                 const SizedBox(width: 8),
-                                Text(
-                                  _sentenceSignalLabel(item.$2, item.$3),
-                                ),
+                                Text(_sentenceSignalLabel(item.$2, item.$3)),
                               ],
                             ),
                           ),
@@ -2077,6 +2191,73 @@ class _PanelDragHandle extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderMetric extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color? accent;
+
+  const _HeaderMetric({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final color = accent ?? scheme.onSurfaceVariant;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 132, maxWidth: 220),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerHighest.withValues(alpha: 0.48),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: scheme.outlineVariant),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$label:',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: scheme.onSurface,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
