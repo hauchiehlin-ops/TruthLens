@@ -209,6 +209,33 @@ void main() {
       expect(result.aiSentenceCount, 0);
     },
   );
+
+  test('sequential execution keeps all engines but avoids overlap', () async {
+    final probe = _ConcurrencyProbe();
+    final orchestrator = EnsembleOrchestrator(
+      sequentialExecutionOverride: true,
+      engines: [
+        _RecordingEngine('transformer', 0.10, probe),
+        _RecordingEngine('statistical', 0.20, probe),
+        _RecordingEngine('stylometry', 0.30, probe),
+        _RecordingEngine('adversarial', 0.40, probe),
+      ],
+    );
+
+    final result = await orchestrator.analyze(
+      'This complete sentence provides enough content for reliable analysis.',
+      eslCorrectionEnabled: false,
+    );
+
+    expect(probe.maxActive, 1);
+    expect(result.engineScores.map((score) => score.engineId), [
+      'transformer',
+      'statistical',
+      'stylometry',
+      'adversarial',
+    ]);
+    expect(result.availableEngineCount, 4);
+  });
 }
 
 class _FixedEngine implements DetectionEngine {
@@ -241,6 +268,48 @@ class _FixedEngine implements DetectionEngine {
       aiProbability: probability,
       weight: defaultWeight,
       sentenceScores: sentenceScores,
+    );
+  }
+}
+
+class _ConcurrencyProbe {
+  int active = 0;
+  int maxActive = 0;
+}
+
+class _RecordingEngine implements DetectionEngine {
+  @override
+  final String id;
+  final double probability;
+  final _ConcurrencyProbe probe;
+
+  const _RecordingEngine(this.id, this.probability, this.probe);
+
+  @override
+  double get defaultWeight => PreferencesService.defaultEngineWeights[id]!;
+
+  @override
+  Future<bool> isAvailable() async => true;
+
+  @override
+  String name(AppLocalizations l10n) => id;
+
+  @override
+  Future<EngineScore> analyze(
+    PreprocessedText text,
+    AppLocalizations l10n, {
+    EngineProgressCallback? onProgress,
+  }) async {
+    probe.active += 1;
+    if (probe.active > probe.maxActive) probe.maxActive = probe.active;
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    probe.active -= 1;
+    onProgress?.call(1);
+    return EngineScore(
+      engineId: id,
+      engineName: id,
+      aiProbability: probability,
+      weight: defaultWeight,
     );
   }
 }

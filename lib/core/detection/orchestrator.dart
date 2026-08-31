@@ -20,6 +20,7 @@ import 'engines/statistical_engine.dart';
 import 'engines/stylometry_engine.dart';
 import 'engines/transformer_engine.dart';
 import 'model_manager.dart';
+import 'web_runtime.dart';
 
 /// 分析協調器：驅動四個子模型，先依獨立證據家族去除重複訊號，再融合判讀。
 ///
@@ -28,10 +29,12 @@ import 'model_manager.dart';
 /// 不會反過來提高自己的權重。
 class EnsembleOrchestrator extends ChangeNotifier {
   final List<DetectionEngine> engines;
+  final bool? sequentialExecutionOverride;
 
   EnsembleOrchestrator({
     List<DetectionEngine>? engines,
     ModelManager? modelManager,
+    this.sequentialExecutionOverride,
   }) : engines = engines ?? _defaultEngines(modelManager ?? ModelManager());
 
   /// 重新掃描後續分析所使用的引擎狀態。
@@ -95,7 +98,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final text = PreprocessedText.from(input);
     final profile = AnalysisProfile.fromText(input);
 
-    final futures = engines.map((engine) async {
+    Future<EngineScore> runEngine(DetectionEngine engine) async {
       final role = _roleOf(engine.id);
       final engineStartedAt = DateTime.now();
       onEngineStarted?.call(role);
@@ -143,9 +146,24 @@ class EnsembleOrchestrator extends ChangeNotifier {
       onEngineDone?.call(role);
       onEngineScore?.call(score);
       return score;
-    });
+    }
 
-    final scores = await Future.wait(futures);
+    final runSequentially =
+        sequentialExecutionOverride ?? isConstrainedMobileWebRuntime;
+    if (runSequentially) {
+      debugPrint(
+        '[Ensemble] Constrained mobile Web runtime detected; '
+        'running engines sequentially to reduce peak memory.',
+      );
+    }
+    final scores = <EngineScore>[];
+    if (runSequentially) {
+      for (final engine in engines) {
+        scores.add(await runEngine(engine));
+      }
+    } else {
+      scores.addAll(await Future.wait(engines.map(runEngine)));
+    }
 
     final eslAdjusted = eslCorrectionEnabled && _detectEslStyle(text);
     final fusion = TextEvidenceFusion.evaluate(

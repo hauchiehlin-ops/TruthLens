@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-08-31（第一百八十二次更新）— 修正 iOS Web 分析中途分頁崩潰
+
+使用者回報 iOS 匯入文件後點擊「開始檢測」，分析尚未完成時會跳到 Chrome 的「無法開啟這個網頁」。
+這不是一般 Flutter route 被切走，而是 iOS WebKit 分頁在長時間 WASM/ONNX 推論期間被系統終止。
+前一輪為了跨平台結論一致性，已把 Transformer/對抗模型改成逐句推論；在 138 句長文件上，若四個引擎仍
+同時啟動，iOS 會同時承受多模型 session、tokenizer 與句級推論佇列的記憶體尖峰。
+
+主要調整：
+
+1. 新增 Web runtime 偵測，辨識 iPhone/iPad 與 iPadOS desktop UA 形態。
+2. `EnsembleOrchestrator` 在 iOS Web 受限 runtime 下改為逐引擎依序分析，保留 Transformer、統計、
+   風格與對抗四個模組，不再用「關閉模組」換穩定性。
+3. 保留桌面與一般 Web 的並行分析路徑，避免影響 macOS/桌面端效能。
+4. 新增回歸測試，確認 sequential execution 仍會執行全部引擎，且同時間只會有一個引擎進入分析。
+5. 版本同步升級為 `4.12.6+1465`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/engine_weight_test.dart test/detection_test.dart test/workspace_screen_test.dart`
+46 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.12.6/1465`。
+
 ## 2026-08-31（第一百八十一次更新）— 修正 iOS 引擎偏好殘留與 PDF 半完成文獻匯出
 
 使用者提供 macOS 與 iOS 兩份完整 PDF 報告比對，並確認 iOS 設定中 Transformer／統計引擎實際為開啟。
