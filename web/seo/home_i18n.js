@@ -17,6 +17,10 @@
 
   const content = {
     en: {
+      changelogTitle: "Latest Updates",
+      changelog1: "v6.0.0 - Rebranded to OmniTrace with a new multidimensional forensics logo.",
+      changelog2: "v5.0.0 - Added programmatic SEO engine and multilingual static pages.",
+      footerText: "Local-first AI content detection and document forensics.",
       title: 'OmniTrace AI Content Detection and Document Forensics',
       lead:
         'Analyze Traditional Chinese, English, and multilingual documents on-device with text models, statistical signals, stylometry, rewriting defense, and source evidence.',
@@ -108,6 +112,10 @@
       noscript: 'OmniTrace 需要 JavaScript 与 WebAssembly 才能在浏览器内运行本地 AI 分析。',
     },
     ja: {
+      changelogTitle: "最新のアップデート",
+      changelog1: "v6.0.0 - OmniTraceにブランド名を変更し、新しい多次元フォレンジックロゴを導入。",
+      changelog2: "v5.0.0 - プログラマティックSEOエンジンと多言語静的ページを追加しました。",
+      footerText: "ローカル優先の AI コンテンツ検出と文書フォレンジック。",
       title: 'OmniTrace AI コンテンツ検出と文書フォレンジック',
       lead:
         '繁体字中国語、英語、多言語文書を端末上で分析し、テキストモデル、統計、文体、書き換え防御、出所証拠を統合します。',
@@ -135,6 +143,10 @@
       noscript: 'OmniTrace のローカル AI 分析には JavaScript と WebAssembly が必要です。',
     },
     ko: {
+      changelogTitle: "최근 업데이트",
+      changelog1: "v6.0.0 - OmniTrace로 브랜드 변경 및 새로운 다차원 포렌식 로고 도입.",
+      changelog2: "v5.0.0 - 프로그래밍 방식 SEO 엔진 및 다국어 정적 페이지 추가.",
+      footerText: "로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.",
       title: 'OmniTrace AI 콘텐츠 감지 및 문서 포렌식',
       lead:
         '번체 중국어, 영어, 다국어 문서를 기기에서 분석하고 텍스트 모델, 통계, 문체, 재작성 방어, 출처 증거를 결합합니다.',
@@ -162,6 +174,10 @@
       noscript: 'OmniTrace가 브라우저에서 로컬 AI 분석을 실행하려면 JavaScript와 WebAssembly가 필요합니다.',
     },
     th: {
+      changelogTitle: "อัปเดตล่าสุด",
+      changelog1: "v6.0.0 - เปลี่ยนชื่อแบรนด์เป็น OmniTrace พร้อมโลโก้การตรวจสอบหลายมิติใหม่",
+      changelog2: "v5.0.0 - เพิ่มเครื่องมือ SEO และหน้าเว็บแบบคงที่หลายภาษา",
+      footerText: "การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง",
       title: 'OmniTrace การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
       lead:
         'วิเคราะห์เอกสารจีนตัวเต็ม อังกฤษ และหลายภาษาในอุปกรณ์ ด้วยโมเดลข้อความ สถิติ สไตล์การเขียน การป้องกันการเขียนใหม่ และหลักฐานที่มา',
@@ -189,6 +205,10 @@
       noscript: 'OmniTrace ต้องใช้ JavaScript และ WebAssembly เพื่อวิเคราะห์ AI ในเบราว์เซอร์',
     },
     ms: {
+      changelogTitle: "Kemas Kini Terkini",
+      changelog1: "v6.0.0 - Menjenamakan semula kepada OmniTrace dengan logo forensik pelbagai dimensi baharu.",
+      changelog2: "v5.0.0 - Menambah enjin SEO programatik dan halaman statik berbilang bahasa.",
+      footerText: "Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.",
       title: 'OmniTrace Pengesanan Kandungan AI dan Forensik Dokumen',
       lead:
         'Analisis dokumen Cina Tradisional, Inggeris dan pelbagai bahasa pada peranti dengan model teks, statistik, gaya, pertahanan tulis semula dan bukti sumber.',
@@ -216,6 +236,10 @@
       noscript: 'OmniTrace memerlukan JavaScript dan WebAssembly untuk menjalankan analisis AI setempat dalam pelayar.',
     },
     es: {
+      changelogTitle: "Últimas actualizaciones",
+      changelog1: "v6.0.0 - Cambio de marca a OmniTrace con un nuevo logotipo de análisis multidimensional.",
+      changelog2: "v5.0.0 - Se agregó motor SEO programático y páginas estáticas multilingües.",
+      footerText: "Detección de contenido IA y análisis documental local primero.",
       title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
         'Analiza documentos en chino tradicional, inglés y varios idiomas en el dispositivo con modelos de texto, estadísticas, estilo, defensa contra reescritura y evidencia de origen.',
@@ -243,6 +267,10 @@
       noscript: 'OmniTrace necesita JavaScript y WebAssembly para ejecutar análisis local de IA en el navegador.',
     },
     id: {
+      changelogTitle: "Pembaruan Terbaru",
+      changelog1: "v6.0.0 - Ganti nama menjadi OmniTrace dengan logo forensik multidimensi baru.",
+      changelog2: "v5.0.0 - Menambahkan mesin SEO programatik dan halaman statis multibahasa.",
+      footerText: "Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.",
       title: 'OmniTrace Deteksi Konten AI dan Forensik Dokumen',
       lead:
         'Analisis dokumen Tionghoa Tradisional, Inggris, dan multibahasa di perangkat dengan model teks, statistik, gaya, pertahanan penulisan ulang, dan bukti sumber.',
@@ -270,6 +298,10 @@
       noscript: 'OmniTrace membutuhkan JavaScript dan WebAssembly untuk menjalankan analisis AI lokal di browser.',
     },
     ru: {
+      changelogTitle: "Последние обновления",
+      changelog1: "v6.0.0 - Ребрендинг в OmniTrace с новым многомерным криминалистическим логотипом.",
+      changelog2: "v5.0.0 - Добавлен программный SEO-движок и многоязычные статические страницы.",
+      footerText: "Локальная AI-проверка контента и экспертиза документов.",
       title: 'OmniTrace: AI-проверка контента и экспертиза документов',
       lead:
         'Анализируйте документы на традиционном китайском, английском и других языках локально: текстовые модели, статистика, стиль, защита от перефразирования и доказательства источника.',
@@ -297,6 +329,10 @@
       noscript: 'OmniTrace требует JavaScript и WebAssembly для локального анализа AI в браузере.',
     },
     de: {
+      changelogTitle: "Neueste Updates",
+      changelog1: "v6.0.0 - Umbenennung in OmniTrace mit einem neuen mehrdimensionalen Forensik-Logo.",
+      changelog2: "v5.0.0 - Programmatische SEO-Engine und mehrsprachige statische Seiten hinzugefügt.",
+      footerText: "Lokale KI-Inhaltserkennung und Dokumentforensik.",
       title: 'OmniTrace KI-Inhaltserkennung und Dokumentforensik',
       lead:
         'Analysieren Sie traditionell chinesische, englische und mehrsprachige Dokumente lokal mit Textmodellen, Statistik, Stilometrie, Umschreibschutz und Quellenbelegen.',
@@ -324,6 +360,10 @@
       noscript: 'OmniTrace benötigt JavaScript und WebAssembly für lokale KI-Analyse im Browser.',
     },
     fr: {
+      changelogTitle: "Dernières mises à jour",
+      changelog1: "v6.0.0 - Changement de marque pour OmniTrace avec un nouveau logo de criminalistique multidimensionnelle.",
+      changelog2: "v5.0.0 - Ajout d'un moteur SEO programmatique et de pages statiques multilingues.",
+      footerText: "Détection de contenu IA et analyse documentaire locale.",
       title: 'OmniTrace Détection de Contenu IA et Analyse Documentaire',
       lead:
         'Analysez localement des documents en chinois traditionnel, anglais et autres langues avec modèles texte, statistiques, stylométrie, défense contre la réécriture et preuves d’origine.',
@@ -352,8 +392,8 @@
     },
     pt: {
       changelogTitle: "Últimas Atualizações",
-      changelog1: "v4.13.10 - Melhoria na análise da tabela de peças DOCX, aumentando a precisão da extração de texto.",
-      changelog2: "v4.13.9 - Adicionada extração completa de citações em PDF e validação Crossref.",
+      changelog1: "v6.0.0 - Rebranding para OmniTrace com um novo logotipo de forense multidimensional.",
+      changelog2: "v5.0.0 - Adicionado motor SEO programático e páginas estáticas multilíngues.",
       footerText: "Detecção de conteúdo IA e forense documental local-first.",
       title: 'OmniTrace Detecção de Conteúdo IA e Forense Documental',
       lead:
