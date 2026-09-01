@@ -75,9 +75,13 @@
     body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     #seo-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; }
     .seo-shell__content { width: min(680px, 100%); }
+    .seo-shell__topbar { align-items: center; display: flex; justify-content: flex-end; margin-bottom: 22px; }
+    .seo-shell__language { align-items: center; display: flex; gap: 10px; color: #465064; font-size: 14px; }
+    .seo-shell__language select { min-height: 38px; min-width: 170px; border: 1px solid #c3cad8; border-radius: 6px; background: #fff; color: #172033; font: inherit; padding: 0 34px 0 12px; }
     .seo-shell__brand { margin: 0 0 12px; font-size: clamp(30px, 8vw, 48px); line-height: 1.1; }
     .seo-shell__lead { margin: 0; color: #465064; font-size: 17px; line-height: 1.65; }
     .seo-shell__features { margin: 22px 0 0; padding-left: 22px; color: #303a4f; line-height: 1.8; }
+    .seo-shell__section-title { color: #303a4f; font-size: 17px; margin: 24px 0 0; }
     .seo-shell__links { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 24px; }
     .seo-shell__links a { border: 1px solid #c3cad8; border-radius: 7px; color: #31558f; padding: 12px 14px; text-decoration: none; }
     .seo-shell__links a:hover, .seo-shell__links a:focus-visible { border-color: #3e5c97; background: #eef3fb; }
@@ -87,6 +91,8 @@
     @media (prefers-color-scheme: dark) {
       html, body { background: #0f1826; color: #f3f6fb; }
       .seo-shell__lead, .seo-shell__features { color: #c6cedc; }
+      .seo-shell__section-title, .seo-shell__language { color: #c6cedc; }
+      .seo-shell__language select { background: #172033; border-color: #556781; color: #f3f6fb; }
       .seo-shell__status { color: #9cb8f0; }
       #seo-shell-retry { border-color: #9cb8f0; background: #9cb8f0; color: #0f1826; }
     }
@@ -103,37 +109,42 @@
 <body>
   <main id="seo-shell">
     <section class="seo-shell__content" aria-labelledby="seo-title">
+      <div class="seo-shell__topbar">
+        <div class="seo-shell__language" data-home-language aria-label="Language"></div>
+      </div>
       <h1 id="seo-title" class="seo-shell__brand">TruthLens AI 內容檢測與文件鑑識</h1>
-      <p class="seo-shell__lead">
+      <p class="seo-shell__lead" data-home-lead>
         在裝置端分析繁體中文、英文與多語文件，整合文字模型、統計特徵、寫作風格、
         改寫防禦及文件來源證據，提供逐句訊號、判讀信心與可查證理由。
       </p>
       <ul class="seo-shell__features">
-        <li>核心 AI 推論與文件內容留在本機處理</li>
-        <li>以多個獨立證據家族交叉檢查，不把單一分數當作定案</li>
-        <li>支援 PDF、DOCX、ODT、純文字與 OCR 匯入</li>
-        <li>提供來源紀錄、引用驗證與可匯出的分析報告</li>
+        <li data-home-feature>核心 AI 推論與文件內容留在本機處理</li>
+        <li data-home-feature>以多個獨立證據家族交叉檢查，不把單一分數當作定案</li>
+        <li data-home-feature>支援 PDF、DOCX、ODT、純文字與 OCR 匯入</li>
+        <li data-home-feature>提供來源紀錄、引用驗證與可匯出的分析報告</li>
       </ul>
       <p class="seo-shell__lead">
-        先試用公開入口：
-        <a href="/zh/ai-article-detector">免費 AI 文章檢測器</a>、
-        <a href="/free-ai-detector">Free AI Detector</a>、
-        <a href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>。
+        <span data-home-intro-prefix>先試用公開入口：</span>
+        <a data-home-intro-link data-path="/zh/ai-article-detector" href="/zh/ai-article-detector">免費 AI 文章檢測器</a>、
+        <a data-home-intro-link data-path="/free-ai-detector" href="/free-ai-detector">Free AI Detector</a>、
+        <a data-home-intro-link data-path="/privacy/local-ai-detector-vs-cloud-upload" href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>。
       </p>
+      <h2 class="seo-shell__section-title" data-home-guide-label>公開工具與指南</h2>
       <nav class="seo-shell__links" aria-label="公開工具與指南">
-        <a href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>
-        <a href="/formats/pdf-ai-detection-limitations">PDF AI 檢測限制</a>
-        <a href="/formats/docx-editing-history-ai-evidence">DOCX 編輯紀錄證據</a>
-        <a href="/ai-writing-signs/fake-citations">假文獻與引用核實</a>
-        <a href="/ai-writing-signs/low-burstiness">Low burstiness 是什麼</a>
-        <a href="/zh/ai-article-detector">免費短文預覽（繁中）</a>
-        <a href="/free-ai-detector">Free short-text preview</a>
+        <a data-home-card-link href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>
+        <a data-home-card-link href="/formats/pdf-ai-detection-limitations">PDF AI 檢測限制</a>
+        <a data-home-card-link href="/formats/docx-editing-history-ai-evidence">DOCX 編輯紀錄證據</a>
+        <a data-home-card-link href="/ai-writing-signs/fake-citations">假文獻與引用核實</a>
+        <a data-home-card-link href="/ai-writing-signs/low-burstiness">Low burstiness 是什麼</a>
+        <a data-home-card-link href="/zh/ai-article-detector">免費短文預覽（繁中）</a>
+        <a data-home-card-link href="/free-ai-detector">Free short-text preview</a>
       </nav>
       <p class="seo-shell__status" role="status">公開資訊會停留在此頁；按下按鈕後才進入本地檢測工作台。</p>
       <a id="seo-shell-start" href="/?workspace=1">開啟檢測工作台</a>
       <noscript>TruthLens 需要 JavaScript 與 WebAssembly 才能在瀏覽器內執行本地 AI 分析。</noscript>
     </section>
   </main>
+  <script src="seo/home_i18n.js"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

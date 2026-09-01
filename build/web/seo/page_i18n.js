@@ -1,4 +1,36 @@
 (function () {
+  const languages = [
+    ['zh-Hant', '繁體中文'],
+    ['zh-Hans', '简体中文'],
+    ['en', 'English'],
+    ['ja', '日本語'],
+    ['ko', '한국어'],
+    ['th', 'ไทย'],
+    ['ms', 'Bahasa Melayu'],
+    ['es', 'Español'],
+    ['id', 'Bahasa Indonesia'],
+    ['ru', 'Русский'],
+    ['de', 'Deutsch'],
+    ['fr', 'Français'],
+    ['pt', 'Português'],
+  ];
+
+  const languageLabels = {
+    en: 'Language',
+    'zh-Hant': '語言',
+    'zh-Hans': '语言',
+    ja: '言語',
+    ko: '언어',
+    th: 'ภาษา',
+    ms: 'Bahasa',
+    es: 'Idioma',
+    id: 'Bahasa',
+    ru: 'Язык',
+    de: 'Sprache',
+    fr: 'Langue',
+    pt: 'Idioma',
+  };
+
   const common = {
     en: {
       lang: 'en', nav: ['Free detector', 'Privacy guide', 'PDF limits', 'DOCX evidence', 'Open workspace'],
@@ -74,8 +106,115 @@
     if (node && value) node.textContent = value;
   }
 
+  function storedLanguage() {
+    try {
+      return window.localStorage.getItem('truthlens-public-lang');
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function storeLanguage(lang) {
+    try {
+      window.localStorage.setItem('truthlens-public-lang', lang);
+    } catch (_) {}
+  }
+
+  function localizedPath(path, lang) {
+    if (!path) return path;
+    const url = new URL(path, window.location.origin);
+    url.searchParams.set('lang', lang);
+    return url.pathname + url.search + url.hash;
+  }
+
+  function workspacePath(lang) {
+    return '/?workspace=1&lang=' + encodeURIComponent(lang);
+  }
+
+  function renderLanguagePicker(lang) {
+    const nav = document.querySelector('.tl-nav');
+    if (!nav || document.querySelector('.tl-language')) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'tl-language';
+
+    const label = document.createElement('label');
+    label.setAttribute('for', 'tl-public-language');
+    label.textContent = languageLabels[lang] || languageLabels.en;
+
+    const select = document.createElement('select');
+    select.id = 'tl-public-language';
+    languages.forEach(([code, name]) => {
+      const option = document.createElement('option');
+      option.value = code;
+      option.textContent = name;
+      option.selected = code === lang;
+      select.appendChild(option);
+    });
+    select.addEventListener('change', () => {
+      storeLanguage(select.value);
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', select.value);
+      window.location.href = url.pathname + url.search + url.hash;
+    });
+
+    wrap.append(label, select);
+    nav.appendChild(wrap);
+  }
+
+  function translateDetectorLanding(key, pack, page) {
+    if (key !== 'free' && key !== 'zhFree') return;
+    const body = pack.article.body;
+    const actions = document.querySelectorAll('.tl-actions a');
+    if (actions[0]) actions[0].textContent = pack.nav[4];
+    if (actions[1]) actions[1].textContent = pack.nav[0];
+    setText('#detector-title', page[0]);
+
+    const panelTitles = document.querySelectorAll('.tl-panel h3');
+    const panelBodies = document.querySelectorAll('.tl-panel p');
+    if (panelTitles[0]) panelTitles[0].textContent = page[1];
+    if (panelBodies[0]) panelBodies[0].textContent = page[2];
+    if (panelTitles[1]) panelTitles[1].textContent = body[0];
+    if (panelBodies[1]) panelBodies[1].textContent = body[1];
+    if (panelTitles[2]) panelTitles[2].textContent = body[2];
+    if (panelBodies[2]) panelBodies[2].textContent = body[3];
+
+    const note = document.querySelector('.tl-note');
+    if (note) {
+      note.replaceChildren();
+      const strong = document.createElement('strong');
+      strong.textContent = body[0] + ':';
+      note.append(strong, ' ' + body[1]);
+    }
+
+    const article = document.querySelector('section.tl-article');
+    if (article) {
+      article.innerHTML = '';
+      const h2a = document.createElement('h2');
+      h2a.textContent = body[0];
+      const p1 = document.createElement('p');
+      p1.textContent = body[1];
+      const h2b = document.createElement('h2');
+      h2b.textContent = body[2];
+      const p2 = document.createElement('p');
+      p2.textContent = body[3];
+      article.append(h2a, p1, h2b, p2);
+    }
+
+    const footer = document.querySelector('.tl-footer');
+    if (footer) footer.textContent = '© 2026 TruthLens. ' + page[2];
+  }
+
   const params = new URLSearchParams(window.location.search || '');
-  const pack = common[normalize(params.get('lang') || navigator.language || document.documentElement.lang)] || common.en;
+  const pack =
+    common[
+      normalize(
+        params.get('lang') ||
+          storedLanguage() ||
+          navigator.language ||
+          document.documentElement.lang,
+      )
+    ] || common.en;
   const key = pageKey();
   const page = pack.pages[key] || common.en.pages[key];
   if (!page) return;
@@ -94,16 +233,32 @@
   if (input) input.setAttribute('placeholder', pack.detectorPlaceholder);
   const result = document.querySelector('[data-detector-output] p');
   if (result) result.textContent = pack.detectorInitial;
+  window.truthLensPublicLang = pack.lang;
 
   const navLinks = document.querySelectorAll('.tl-links a');
   navLinks.forEach((link, index) => {
     if (pack.nav[index]) link.textContent = pack.nav[index];
     const href = link.getAttribute('href');
-    if (href && href.startsWith('/') && !href.startsWith('/?')) {
-      const separator = href.includes('?') ? '&' : '?';
-      link.setAttribute('href', href + separator + 'lang=' + encodeURIComponent(pack.lang));
+    if (href === '/') {
+      link.setAttribute('href', workspacePath(pack.lang));
+    } else if (href && href.startsWith('/')) {
+      link.setAttribute('href', localizedPath(href, pack.lang));
     }
   });
+  const brand = document.querySelector('.tl-brand');
+  if (brand) brand.setAttribute('href', '/?lang=' + encodeURIComponent(pack.lang));
+  document.querySelectorAll('.tl-actions a, main a').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (link.classList.contains('tl-brand')) return;
+    if (href === '/') {
+      link.setAttribute('href', workspacePath(pack.lang));
+    } else if (href && href.startsWith('/')) {
+      link.setAttribute('href', localizedPath(href, pack.lang));
+    }
+  });
+  renderLanguagePicker(pack.lang);
+  storeLanguage(pack.lang);
+  translateDetectorLanding(key, pack, page);
 
   const article = document.querySelector('main.tl-article');
   if (article && key !== 'free' && key !== 'zhFree') {

@@ -75,6 +75,25 @@ a {
   color: var(--brand-strong);
 }
 
+.tl-language {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.tl-language select {
+  background: #fff;
+  border: 1px solid #b8c1d4;
+  border-radius: 7px;
+  color: var(--ink);
+  font: inherit;
+  min-height: 38px;
+  min-width: 160px;
+  padding: 0 34px 0 12px;
+}
+
 .tl-main {
   margin: 0 auto;
   max-width: 1120px;
@@ -279,5 +298,15 @@ h3 {
 
   .tl-main {
     padding-top: 28px;
+  }
+
+  .tl-nav {
+    align-items: stretch;
+  }
+
+  .tl-links,
+  .tl-language,
+  .tl-language select {
+    width: 100%;
   }
 }

@@ -20,6 +20,11 @@ void main() {
     );
     expect(html, contains('property="og:title"'));
     expect(html, contains('<main id="seo-shell">'));
+    expect(html, contains('data-home-language'));
+    expect(html, contains('data-home-lead'));
+    expect(html, contains('data-home-feature'));
+    expect(html, contains('data-home-card-link'));
+    expect(html, contains('seo/home_i18n.js'));
     expect(html, contains('<h1 id="seo-title"'));
     expect(html, contains('aria-label="公開工具與指南"'));
     expect(html, contains('id="seo-shell-start"'));
@@ -126,6 +131,7 @@ void main() {
 
   test('public static pages can render in the app-selected locale', () {
     final i18n = File('web/seo/page_i18n.js').readAsStringSync();
+    final homeI18n = File('web/seo/home_i18n.js').readAsStringSync();
 
     for (final locale in [
       'zh-Hant',
@@ -143,11 +149,29 @@ void main() {
       'pt',
     ]) {
       expect(i18n, contains("lang: '$locale'"));
+      expect(homeI18n, contains("'$locale'"));
     }
     expect(i18n, contains("new URLSearchParams(window.location.search"));
     expect(i18n, contains("params.get('lang')"));
+    expect(
+      i18n,
+      contains("window.localStorage.getItem('truthlens-public-lang')"),
+    );
+    expect(
+      i18n,
+      contains("window.localStorage.setItem('truthlens-public-lang'"),
+    );
+    expect(i18n, contains("renderLanguagePicker(pack.lang)"));
+    expect(i18n, contains("workspace=1&lang="));
     expect(i18n, contains('document.documentElement.lang = pack.lang'));
     expect(i18n, contains('document.title = page[0]'));
+    expect(
+      homeI18n,
+      contains("window.localStorage.getItem('truthlens-public-lang')"),
+    );
+    expect(homeI18n, contains("data-home-language"));
+    expect(homeI18n, contains("data-home-card-link"));
+    expect(homeI18n, contains("workspace=1&lang="));
   });
 
   test('Vercel serves static SEO files before the Flutter fallback', () {
