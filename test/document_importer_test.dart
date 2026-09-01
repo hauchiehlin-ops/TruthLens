@@ -222,6 +222,20 @@ for validating an imported academic document before content detection begins.
         expect(text, contains('必須由 0Table 的 CLX piece table 指回來'));
       });
 
+      test('舊版 .doc 保留 Word 段落與分頁邊界，避免整頁被接成巨句', () {
+        const original =
+            '第一章 緒論\r本研究探討人工智慧內容檢測的可靠度。\r'
+            '第二段說明舊版 Word 的段落符號必須保留。\f'
+            '第二章 文獻回顧\r後續頁次也應該維持可斷句的段落結構。';
+
+        final bytes = _minimalOleDocWithPieceTable(original);
+        final text = DocumentImporter.parseBytes(bytes, extension: 'doc');
+
+        expect(text, contains('第一章 緒論\n\n本研究探討'));
+        expect(text, contains('必須保留。\n\n第二章 文獻回顧'));
+        expect(text, contains('後續頁次也應該維持可斷句的段落結構。'));
+      });
+
       test('舊版 .doc 透過 Word Binary piece table 抽取壓縮英文主文', () {
         const original =
             'Chapter one introduces local document analysis and explains why '
@@ -236,6 +250,41 @@ for validating an imported academic document before content detection begins.
           contains('Chapter one introduces local document analysis'),
         );
         expect(text, contains('piece table parser instead of raw stream'));
+      });
+
+      test('舊版 .doc piece table 不完整時會比較較完整的掃描候選', () {
+        const indexedText =
+            'Abstract. This short indexed fragment is readable but incomplete.';
+        const laterText =
+            'Chapter two explains the full thesis discussion. It includes many '
+            'readable sentences about modulated Couette flow, Taylor vortex '
+            'flow, experimental observations, numerical comparisons, and '
+            'stability analysis across the remaining pages.';
+        final wordDocument = Uint8List(2048);
+        final wordData = ByteData.sublistView(wordDocument);
+        wordData.setUint16(0, 0xA5EC, Endian.little);
+        wordData.setUint16(0x0A, 0, Endian.little);
+        final indexedBytes = _utf16Le(indexedText);
+        final laterBytes = _utf16Le(laterText);
+        wordDocument.setRange(768, 768 + indexedBytes.length, indexedBytes);
+        wordDocument.setRange(1300, 1300 + laterBytes.length, laterBytes);
+        final clx = _wordBinaryClx(
+          charCount: indexedText.length,
+          fileOffset: 768,
+          compressed: false,
+        );
+        wordData.setUint32(0x01A2, 0, Endian.little);
+        wordData.setUint32(0x01A6, clx.length, Endian.little);
+
+        final bytes = _minimalOleDocWithStreams({
+          'WordDocument': wordDocument,
+          '0Table': clx,
+        });
+        final text = DocumentImporter.parseBytes(bytes, extension: 'doc');
+
+        expect(text, contains('Abstract. This short indexed fragment'));
+        expect(text, contains('Chapter two explains the full thesis'));
+        expect(text.length, greaterThan(indexedText.length * 2));
       });
 
       test('ODT（Google 文件匯出的 OpenDocument）可正確抽取分段文字', () {

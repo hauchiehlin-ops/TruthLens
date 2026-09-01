@@ -513,8 +513,38 @@ class DocumentImporter {
     if (tokens.length >= 12 && singleCharacterTokens / tokens.length > 0.55) {
       score -= 0.30;
     }
+    if (_looksLikeRepeatedBinaryNoise(trimmed)) score -= 0.50;
     if (trimmed.length >= 200 && languageAnchors == 0) score -= 0.18;
     return score.clamp(0.0, 1.0);
+  }
+
+  static bool _looksLikeRepeatedBinaryNoise(String text) {
+    final lines = text
+        .split(RegExp(r'\r?\n+'))
+        .map((line) => line.trim())
+        .where((line) => line.length >= 6)
+        .toList();
+    if (lines.length < 8) return false;
+
+    final counts = <String, int>{};
+    for (final line in lines) {
+      counts[line] = (counts[line] ?? 0) + 1;
+    }
+    final mostRepeated = counts.values.fold<int>(0, math.max);
+    if (mostRepeated / lines.length >= 0.40 && counts.length <= 4) {
+      return true;
+    }
+
+    final compact = text.replaceAll(RegExp(r'\s+'), '');
+    if (compact.length < 120) return false;
+    final windows = <String, int>{};
+    for (var i = 0; i + 12 <= compact.length; i += 12) {
+      final window = compact.substring(i, i + 12);
+      windows[window] = (windows[window] ?? 0) + 1;
+    }
+    if (windows.length < 4) return true;
+    final topWindow = windows.values.fold<int>(0, math.max);
+    return topWindow / windows.values.fold<int>(0, (a, b) => a + b) >= 0.35;
   }
 
   static bool _looksLikeRawPdfStructure(String text) {
@@ -546,9 +576,10 @@ class DocumentImporter {
   static String _parseLegacyDoc(List<int> bytes) {
     final cfb = _CompoundBinaryFile.tryParse(bytes);
     final sources = <List<int>>[];
+    final candidates = <String>[];
     if (cfb != null) {
       final pieceTableText = _parseWordBinaryPieceTable(cfb);
-      if (_isUsableText(pieceTableText)) return pieceTableText;
+      if (pieceTableText.trim().isNotEmpty) candidates.add(pieceTableText);
 
       for (final name in const ['WordDocument', '0Table', '1Table']) {
         final stream = cfb.readStream(name);
@@ -557,13 +588,16 @@ class DocumentImporter {
     }
     if (sources.isEmpty) sources.add(bytes);
 
-    final candidates = <String>[];
     for (final source in sources) {
       candidates
-        ..addAll(_scanUtf16LeTextRuns(source, alignment: 0))
-        ..addAll(_scanUtf16LeTextRuns(source, alignment: 1))
-        ..addAll(_scanUtf8TextRuns(source))
-        ..addAll(_scanAsciiTextRuns(source));
+        ..addAll(
+          _legacyTextRunCandidates(_scanUtf16LeTextRuns(source, alignment: 0)),
+        )
+        ..addAll(
+          _legacyTextRunCandidates(_scanUtf16LeTextRuns(source, alignment: 1)),
+        )
+        ..addAll(_legacyTextRunCandidates(_scanUtf8TextRuns(source)))
+        ..addAll(_legacyTextRunCandidates(_scanAsciiTextRuns(source)));
     }
 
     var best = '';
@@ -578,6 +612,19 @@ class DocumentImporter {
       }
     }
     return bestScore >= _minimumPdfTextQuality ? best : '';
+  }
+
+  static Iterable<String> _legacyTextRunCandidates(
+    Iterable<String> runs,
+  ) sync* {
+    final materialized = runs.toList(growable: false);
+    if (materialized.isEmpty) return;
+    for (final run in materialized) {
+      yield run;
+    }
+    if (materialized.length > 1) {
+      yield materialized.join('\n\n');
+    }
   }
 
   /// Word 97-2003 `.doc` 的正文通常不是連續純文字，而是由 WordDocument
@@ -683,13 +730,13 @@ class DocumentImporter {
     if (offset < 0 || byteLength <= 0 || offset + byteLength > bytes.length) {
       return '';
     }
-    final codes = <int>[];
+    final buffer = StringBuffer();
     final data = ByteData.sublistView(bytes);
     for (var i = 0; i < byteLength; i += 2) {
       final codePoint = data.getUint16(offset + i, Endian.little);
-      codes.add(_normalizeWordBinaryControlChar(codePoint));
+      buffer.write(_normalizeWordBinaryCodePoint(codePoint));
     }
-    return String.fromCharCodes(codes);
+    return buffer.toString();
   }
 
   static String _decodeWordBinaryCompressedPiece(
@@ -700,18 +747,25 @@ class DocumentImporter {
     if (offset < 0 || charCount <= 0 || offset + charCount > bytes.length) {
       return '';
     }
-    final codes = <int>[];
+    final buffer = StringBuffer();
     for (var i = 0; i < charCount; i++) {
-      codes.add(_normalizeWordBinaryControlChar(bytes[offset + i]));
+      buffer.write(_normalizeWordBinaryCodePoint(bytes[offset + i]));
     }
-    return String.fromCharCodes(codes);
+    return buffer.toString();
   }
 
-  static int _normalizeWordBinaryControlChar(int codePoint) {
+  static String _normalizeWordBinaryCodePoint(int codePoint) {
     return switch (codePoint) {
-      0x0007 || 0x000d || 0x000b => 0x000a,
-      0x0009 => 0x0009,
-      _ => codePoint,
+      // Word paragraph marks and page/section breaks are semantic boundaries.
+      // Keeping them as blank lines prevents downstream line reflow from
+      // merging separate thesis paragraphs into one giant sentence candidate.
+      0x000d || 0x000c => '\u2029',
+      0x000b => '\n',
+      0x0007 => '\t',
+      0x0009 => '\t',
+      0x00a0 => ' ',
+      0x00ad || 0xfffc => '',
+      _ => String.fromCharCode(codePoint),
     };
   }
 
@@ -805,11 +859,18 @@ class DocumentImporter {
   }
 
   static String _cleanExtractedLegacyText(String text) {
-    return text
+    var result = text
+        .replaceAll('\u2029', '\n\n')
+        .replaceAll('\u2028', '\n')
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n')
+        .replaceAll(RegExp(r'\x13[^\x14\x15]{0,2000}\x14'), '')
         .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '')
+        .replaceAll(RegExp(r'[\uE000-\uF8FF\uFFFC]'), '')
         .replaceAll(RegExp(r'[ \t]{2,}'), ' ')
         .replaceAll(RegExp(r'\n{3,}'), '\n\n')
         .trim();
+    return result;
   }
 }
 
