@@ -1,5 +1,30 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十九次更新）— 修復 Web 模型下載代理回退
+
+使用者回報：模型管理頁今天修改後無法下載模型，畫面顯示
+`ClientException: Failed to fetch`，且失敗 URL 落在正式站
+`/api/proxy?url=https://huggingface.co/...`。追查後確認 Web 下載候選清單雖先試
+HuggingFace 直連，但最後會把 HuggingFace 模型也導到同源／正式 Vercel proxy；當直連或鏡像失敗時，
+使用者只看到最後一個 proxy 錯誤，真正失敗來源被遮住，也讓 HF 下載被 Vercel 端點狀態拖累。
+
+主要調整：
+
+1. 新增 `modelDownloadCandidateUrls()`，集中管理 Web 模型下載來源候選清單。
+2. HuggingFace 模型改為只嘗試 `huggingface.co` 直連與 `hf-mirror.com` 鏡像，不再落到
+   `/api/proxy`；GitHub Releases 等缺 CORS 的來源仍保留同源 proxy 與正式站 proxy 回退。
+3. Web 下載失敗訊息改為彙整每個候選來源的錯誤摘要，不再只顯示最後一個 Vercel proxy 錯誤。
+4. 新增測試鎖住 HuggingFace 不走 proxy、GitHub 仍保留 proxy 回退且去除重複候選 URL。
+5. 順手修正三個 integration tests 的舊 `package:truthlens/...` import，改為目前套件名
+   `package:omnitrace/...`，避免全專案 analyze 因舊包名直接報 error。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/model_download_urls_test.dart` 2 項全數通過；✅
+`flutter analyze lib/core/detection/model_download_urls.dart lib/core/detection/model_manager_web.dart test/model_download_urls_test.dart`
+無問題；✅ `flutter analyze --no-fatal-infos` 通過；⚠️ 全專案 `flutter analyze` 已無 error，
+但仍因既有 info 級 lint 回傳非零（8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals`、6 條 `tool/generate_seo_pages.dart` 的
+`avoid_print`）。
+
 ## 2026-09-01（第一百九十八次更新）— 改善舊版 `.doc` 主文抽取
 
 使用者回報：舊版 Word `.doc` 匯入後辨識率很差，只抓到文獻參考附近的少量文字，主文幾乎沒有進入

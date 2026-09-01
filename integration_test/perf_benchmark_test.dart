@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:truthlens/core/detection/onnx_detector.dart';
-import 'package:truthlens/core/detection/perplexity_scorer.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/onnx_detector.dart';
+import 'package:omnitrace/core/detection/perplexity_scorer.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// 真實 ONNX 推論效能基準（macOS），對照 implementation_plan.md 第十節：
 ///   500 字 < 5 秒、5000 字 < 30 秒。
@@ -40,12 +40,19 @@ void main() {
     }
     final detector = await OnnxDetector.load(
       modelPath: modelPath,
-      tokenizerJsonPath: p.join(support.path, 'models', 'verify_tokenizer.json'),
+      tokenizerJsonPath: p.join(
+        support.path,
+        'models',
+        'verify_tokenizer.json',
+      ),
     );
     final scorer = await PerplexityScorer.load(
       modelPath: gpt2Path,
-      tokenizerJsonPath:
-          p.join(support.path, 'models', 'verify_gpt2_tokenizer.json'),
+      tokenizerJsonPath: p.join(
+        support.path,
+        'models',
+        'verify_gpt2_tokenizer.json',
+      ),
     );
 
     final text = _text(chars);
@@ -61,8 +68,10 @@ void main() {
 
     final secs = sw.elapsedMilliseconds / 1000;
     // ignore: avoid_print
-    print('[$chars 字 / ${sentences.length} 句] 分類+困惑度 = '
-        '${secs.toStringAsFixed(2)}s（目標 < ${budgetSeconds}s）');
+    print(
+      '[$chars 字 / ${sentences.length} 句] 分類+困惑度 = '
+      '${secs.toStringAsFixed(2)}s（目標 < ${budgetSeconds}s）',
+    );
     expect(secs, lessThan(budgetSeconds));
   }
 

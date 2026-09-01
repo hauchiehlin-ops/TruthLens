@@ -10,6 +10,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'device_capabilities.dart';
 import 'model_catalog.dart';
 import 'model_catalog_service.dart';
+import 'model_download_urls.dart';
 import 'model_manager_types.dart';
 import 'model_registry.dart';
 import 'web_js_bridge.dart';
@@ -54,7 +55,6 @@ class ModelManager extends ChangeNotifier {
   bool get hasAnyUpdate => _rolesWithUpdate.isNotEmpty;
   bool roleHasUpdate(String role) => _rolesWithUpdate.contains(role);
 
-
   /// 讓 catalog 的校準修正抵達既有安裝：模型檔相同（sha256 一致）時，
   /// 直接更新門檻與語言涵蓋，不要求重新下載。
   ///
@@ -68,7 +68,8 @@ class ModelManager extends ChangeNotifier {
       var changed = false;
       for (final role in _roles.keys.toList()) {
         final state = _roles[role]!;
-        final variants = catalog.forRole(role)?.variants ?? const <ModelVariant>[];
+        final variants =
+            catalog.forRole(role)?.variants ?? const <ModelVariant>[];
         final updated = <String, InstalledModel>{};
         for (final entry in state.installed.entries) {
           final installed = entry.value;
@@ -302,7 +303,11 @@ class ModelManager extends ChangeNotifier {
     AppLocalizations? l10n,
   }) async {
     if (!variant.isDownloadable) {
-      _mark(role, InstallState.failed, error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源');
+      _mark(
+        role,
+        InstallState.failed,
+        error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源',
+      );
       return false;
     }
     // OPFS 的配額是可用磁碟的一個比例，不是固定值，而且寫爆時才拋錯——
@@ -475,29 +480,7 @@ class ModelManager extends ChangeNotifier {
   }
 
   List<String> _candidateUrls(String originalUrl) {
-    final urlsToTry = <String>[];
-
-    final proxyPath = '/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
-    final sameOriginProxy = Uri.base.resolve(proxyPath).toString();
-    final prodVercelProxy =
-        'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
-
-    if (originalUrl.contains('huggingface.co')) {
-      urlsToTry.add(originalUrl);
-      urlsToTry.add(originalUrl.replaceAll('huggingface.co', 'hf-mirror.com'));
-      urlsToTry.add(sameOriginProxy);
-      urlsToTry.add(prodVercelProxy);
-    } else if (originalUrl.contains('github.com')) {
-      // GitHub Releases downloads lack browser CORS headers, prioritize same-origin Edge proxy
-      urlsToTry.add(sameOriginProxy);
-      urlsToTry.add(prodVercelProxy);
-      urlsToTry.add(originalUrl);
-    } else {
-      urlsToTry.add(sameOriginProxy);
-      urlsToTry.add(prodVercelProxy);
-      urlsToTry.add(originalUrl);
-    }
-    return urlsToTry;
+    return modelDownloadCandidateUrls(originalUrl);
   }
 
   /// 串流下載並直接寫入 OPFS，全程不把整份檔案留在記憶體中——逐塊
@@ -509,7 +492,7 @@ class ModelManager extends ChangeNotifier {
     int? expected,
     void Function(double)? onProgress,
   }) async {
-    Object? lastError;
+    final failures = <String>[];
     for (final url in _candidateUrls(originalUrl)) {
       try {
         final result = await _tryChunkedDownloadToFile(
@@ -522,10 +505,13 @@ class ModelManager extends ChangeNotifier {
           return result;
         }
       } catch (e) {
-        lastError = e;
+        failures.add('${_downloadSourceLabel(url)}: $e');
       }
     }
-    throw lastError ?? http.ClientException('無可用的下載連線，請檢查網路狀態');
+    throw http.ClientException(
+      failures.isEmpty ? '無可用的下載連線，請檢查網路狀態' : '所有下載來源都失敗：${failures.join('；')}',
+      Uri.tryParse(originalUrl),
+    );
   }
 
   Future<Uint8List> _streamDownload(
@@ -533,7 +519,7 @@ class ModelManager extends ChangeNotifier {
     int? expected,
     void Function(double)? onProgress,
   }) async {
-    Object? lastError;
+    final failures = <String>[];
     for (final url in _candidateUrls(originalUrl)) {
       try {
         final result = await _tryChunkedDownload(
@@ -545,10 +531,24 @@ class ModelManager extends ChangeNotifier {
           return result;
         }
       } catch (e) {
-        lastError = e;
+        failures.add('${_downloadSourceLabel(url)}: $e');
       }
     }
-    throw lastError ?? http.ClientException('無可用的下載連線，請檢查網路狀態');
+    throw http.ClientException(
+      failures.isEmpty ? '無可用的下載連線，請檢查網路狀態' : '所有下載來源都失敗：${failures.join('；')}',
+      Uri.tryParse(originalUrl),
+    );
+  }
+
+  String _downloadSourceLabel(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return '未知來源';
+    if (uri.path == '/api/proxy') {
+      final proxied = uri.queryParameters['url'];
+      final proxiedHost = proxied == null ? null : Uri.tryParse(proxied)?.host;
+      return '${uri.host} proxy${proxiedHost == null ? '' : ' → $proxiedHost'}';
+    }
+    return uri.host;
   }
 
   /// 以 2MB 分塊 (Range: bytes=start-end) 執行斷點續傳下載

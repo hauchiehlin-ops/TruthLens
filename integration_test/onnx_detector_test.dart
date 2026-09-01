@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:truthlens/core/detection/onnx_detector.dart';
-import 'package:truthlens/core/detection/perplexity_scorer.dart';
+import 'package:omnitrace/core/detection/onnx_detector.dart';
+import 'package:omnitrace/core/detection/perplexity_scorer.dart';
 
 /// 在真實裝置/桌面上（原生 ONNX Runtime 可用）驗證端上推論。
 /// 使用本地訓練的 distilbert-multilingual INT8 模型。
@@ -22,10 +22,16 @@ void main() {
   test('ONNX Runtime 端上推論：載入模型並分類中英文', () async {
     final support = await getApplicationSupportDirectory();
     final modelPath = p.join(support.path, 'models', 'verify_model.onnx');
-    final tokenizerPath =
-        p.join(support.path, 'models', 'verify_tokenizer.json');
-    expect(File(modelPath).existsSync(), isTrue,
-        reason: '請先把模型複製進沙盒容器（見檔案上方註解）');
+    final tokenizerPath = p.join(
+      support.path,
+      'models',
+      'verify_tokenizer.json',
+    );
+    expect(
+      File(modelPath).existsSync(),
+      isTrue,
+      reason: '請先把模型複製進沙盒容器（見檔案上方註解）',
+    );
 
     final detector = await OnnxDetector.load(
       modelPath: modelPath,
@@ -43,8 +49,7 @@ void main() {
 
     final aiProb = await detector.classify(aiText);
     final humanProb = await detector.classify(humanText);
-    final zhProb =
-        await detector.classify('人工智慧正在深刻地改變我們的生活與工作方式。');
+    final zhProb = await detector.classify('人工智慧正在深刻地改變我們的生活與工作方式。');
 
     // 機率合法
     for (final p in [aiProb, humanProb, zhProb]) {
@@ -53,8 +58,11 @@ void main() {
     // 中文也能推論（不崩潰、產出合法機率）
     expect(zhProb, inInclusiveRange(0.0, 1.0));
     // 方向性：AI 風格文本的 AI 機率高於人類口語
-    expect(aiProb, greaterThan(humanProb),
-        reason: 'AI=$aiProb human=$humanProb');
+    expect(
+      aiProb,
+      greaterThan(humanProb),
+      reason: 'AI=$aiProb human=$humanProb',
+    );
 
     detector.dispose();
     // ignore: avoid_print
@@ -64,8 +72,11 @@ void main() {
   test('RoBERTa BPE 端上推論（若容器內有模型）', () async {
     final support = await getApplicationSupportDirectory();
     final modelPath = p.join(support.path, 'models', 'verify_roberta.onnx');
-    final tokPath =
-        p.join(support.path, 'models', 'verify_roberta_tokenizer.json');
+    final tokPath = p.join(
+      support.path,
+      'models',
+      'verify_roberta_tokenizer.json',
+    );
     if (!File(modelPath).existsSync()) {
       markTestSkipped('容器內無 roberta 模型；跳過');
       return;
@@ -77,7 +88,8 @@ void main() {
       aiLabelIndex: 0, // roberta-openai-detector：index 0 = fake/AI
     );
     final p1 = await detector.classify(
-        'The quick brown fox jumps over the lazy dog near the river bank.');
+      'The quick brown fox jumps over the lazy dog near the river bank.',
+    );
     expect(p1, inInclusiveRange(0.0, 1.0));
     detector.dispose();
     // ignore: avoid_print
@@ -86,10 +98,16 @@ void main() {
 
   test('對抗模組 D：改寫後的 AI 文本仍被正確判定為 AI', () async {
     final support = await getApplicationSupportDirectory();
-    final modelPath =
-        p.join(support.path, 'models', 'verify_adversarial_model.onnx');
-    final tokPath =
-        p.join(support.path, 'models', 'verify_adversarial_tokenizer.json');
+    final modelPath = p.join(
+      support.path,
+      'models',
+      'verify_adversarial_model.onnx',
+    );
+    final tokPath = p.join(
+      support.path,
+      'models',
+      'verify_adversarial_tokenizer.json',
+    );
     if (!File(modelPath).existsSync()) {
       markTestSkipped('容器內無對抗模組 D 模型；跳過');
       return;
@@ -119,8 +137,7 @@ void main() {
 
     expect(nativeProb, greaterThan(0.9), reason: '原生 AI 應高機率判為 AI');
     // 核心驗證：改寫後仍應維持高 AI 機率（未被規避），而非大幅掉到偏人類
-    expect(paraProb, greaterThan(0.9),
-        reason: '改寫後的 AI 文本不應被規避（掉到低機率）');
+    expect(paraProb, greaterThan(0.9), reason: '改寫後的 AI 文本不應被規避（掉到低機率）');
     expect(humanProb, lessThan(0.1), reason: '人類文本應低機率');
 
     // ignore: avoid_print
@@ -130,8 +147,11 @@ void main() {
   test('DistilGPT2 困惑度：AI 風格低於人類口語', () async {
     final support = await getApplicationSupportDirectory();
     final modelPath = p.join(support.path, 'models', 'verify_gpt2.onnx');
-    final tokPath =
-        p.join(support.path, 'models', 'verify_gpt2_tokenizer.json');
+    final tokPath = p.join(
+      support.path,
+      'models',
+      'verify_gpt2_tokenizer.json',
+    );
     if (!File(modelPath).existsSync()) {
       markTestSkipped('容器內無 distilgpt2 模型；跳過');
       return;
@@ -141,11 +161,13 @@ void main() {
       tokenizerJsonPath: tokPath,
     );
     final aiPpl = await scorer.perplexity(
-        'It is important to note that artificial intelligence is transforming '
-        'industries. Furthermore, these advancements offer significant benefits.');
+      'It is important to note that artificial intelligence is transforming '
+      'industries. Furthermore, these advancements offer significant benefits.',
+    );
     final humanPpl = await scorer.perplexity(
-        'ugh my train was late again lol, ended up walking half way and my '
-        'coffee spilled everywhere, what a morning honestly');
+      'ugh my train was late again lol, ended up walking half way and my '
+      'coffee spilled everywhere, what a morning honestly',
+    );
     scorer.dispose();
 
     expect(aiPpl, isNotNull);
