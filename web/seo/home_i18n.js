@@ -17,10 +17,6 @@
 
   const content = {
     en: {
-      changelogTitle: "Latest Updates",
-      changelog1: "Improved DOCX piece table parsing for better text extraction accuracy.",
-      changelog2: "Added comprehensive PDF citation extraction and crossref verification.",
-      footerText: "TruthLens - Local-first AI Content Detection",
       title: 'TruthLens AI Content Detection and Document Forensics',
       lead:
         'Analyze Traditional Chinese, English, and multilingual documents on-device with text models, statistical signals, stylometry, rewriting defense, and source evidence.',
@@ -54,10 +50,6 @@
         'TruthLens needs JavaScript and WebAssembly to run local AI analysis in the browser.',
     },
     'zh-Hant': {
-      changelogTitle: "近期更新",
-      changelog1: "改善 DOCX piece table 解析，提升文字抽取準確度。",
-      changelog2: "新增完整的 PDF 引用文獻抽取與 Crossref 驗證。",
-      footerText: "TruthLens - 本地優先 AI 內容檢測",
       title: 'TruthLens AI 內容檢測與文件鑑識',
       lead:
         '在裝置端分析繁體中文、英文與多語文件，整合文字模型、統計特徵、寫作風格、改寫防禦及文件來源證據。',
@@ -359,6 +351,10 @@
       noscript: 'TruthLens nécessite JavaScript et WebAssembly pour l’analyse IA locale dans le navigateur.',
     },
     pt: {
+      changelogTitle: "Últimas Atualizações",
+      changelog1: "v4.13.10 - Melhoria na análise da tabela de peças DOCX, aumentando a precisão da extração de texto.",
+      changelog2: "v4.13.9 - Adicionada extração completa de citações em PDF e validação Crossref.",
+      footerText: "Detecção de conteúdo IA e forense documental local-first.",
       title: 'TruthLens Detecção de Conteúdo IA e Forense Documental',
       lead:
         'Analise documentos em chinês tradicional, inglês e vários idiomas no dispositivo com modelos de texto, estatísticas, estilo, defesa contra reescrita e evidências de origem.',

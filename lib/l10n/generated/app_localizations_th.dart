@@ -148,7 +148,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get analysisAppBarTitle => 'กำลังวิเคราะห์';
 
   @override
-  String get analysisEngineTransformer => 'ตัวจำแนก Transformer';
+  String get analysisEngineTransformer => 'ตัวจำแนกทรานสฟอร์เมอร์';
 
   @override
   String get analysisEngineStatistical => 'การวิเคราะห์เชิงสถิติ';
@@ -787,7 +787,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get reportVerdictHumanLikelihood => 'การเขียนของมนุษย์';
 
   @override
-  String get reportRadarRoleTransformer => 'ตัวจำแนก Transformer';
+  String get reportRadarRoleTransformer => 'ตัวจำแนกทรานสฟอร์เมอร์';
 
   @override
   String get reportRadarRoleStatistical => 'การวิเคราะห์ทางสถิติ';
@@ -2405,7 +2405,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get helpWorkflowStep1ChipUpdateCheck => 'ตรวจอัปเดตอัตโนมัติ';
 
   @override
-  String get helpWorkflowStep2ChipTransformer => 'Transformer (40%)';
+  String get helpWorkflowStep2ChipTransformer => 'ทรานสฟอร์เมอร์ (40%)';
 
   @override
   String get helpWorkflowStep2ChipStatistics => 'วิเคราะห์สถิติ (25%)';
@@ -2505,7 +2505,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get helpLinkRoleTransformer =>
-      'ตัวจำแนก AI หลายภาษา（Transformer, น้ำหนัก 40%）';
+      'ตัวจำแนก AI หลายภาษา（ทรานสฟอร์เมอร์, น้ำหนัก 40%）';
 
   @override
   String get helpLinkRoleStatistical =>
