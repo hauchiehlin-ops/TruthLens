@@ -54,6 +54,10 @@
         'OmniTrace needs JavaScript and WebAssembly to run local AI analysis in the browser.',
     },
     'zh-Hant': {
+      changelogTitle: "近期更新",
+      changelog1: "v6.0.0 - 品牌全新升級為 OmniTrace，並導入發光數據流圖示。",
+      changelog2: "v5.0.0 - 新增多國語系靜態頁面矩陣與自動化 SEO 引擎。",
+      footerText: "本地優先 AI 內容檢測與文件鑑識。",
       title: 'OmniTrace AI 內容檢測與文件鑑識',
       lead:
         '在裝置端分析繁體中文、英文與多語文件，整合文字模型、統計特徵、寫作風格、改寫防禦及文件來源證據。',
@@ -85,6 +89,10 @@
       noscript: 'OmniTrace 需要 JavaScript 與 WebAssembly 才能在瀏覽器內執行本地 AI 分析。',
     },
     'zh-Hans': {
+      changelogTitle: "近期更新",
+      changelog1: "v6.0.0 - 品牌全新升级为 OmniTrace，并导入发光数据流图标。",
+      changelog2: "v5.0.0 - 新增多国语系静态页面矩阵与自动化 SEO 引擎。",
+      footerText: "本地优先 AI 内容检测与文件鉴识。",
       title: 'OmniTrace AI 内容检测与文件鉴识',
       lead:
         '在设备端分析简体中文、英文与多语言文件，整合文字模型、统计特征、写作风格、改写防御及文件来源证据。',
@@ -238,7 +246,7 @@
     es: {
       changelogTitle: "Últimas actualizaciones",
       changelog1: "v6.0.0 - Cambio de marca a OmniTrace con un nuevo logotipo de análisis multidimensional.",
-      changelog2: "v5.0.0 - Se agregó motor SEO programático y páginas estáticas multilingües.",
+      changelog2: "v5.0.0 - Se agregó motor SEO programático y páginas estáticas multilingues.",
       footerText: "Detección de contenido IA y análisis documental local primero.",
       title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
