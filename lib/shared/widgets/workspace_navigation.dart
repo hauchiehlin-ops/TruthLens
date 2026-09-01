@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
@@ -21,6 +24,33 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
   (Locale('de'), 'Deutsch'),
   (Locale('fr'), 'Français'),
   (Locale('pt'), 'Português'),
+];
+
+const _publicPageOrigin = 'https://truth-lens-roan-three.vercel.app';
+
+const List<({String label, String path})> kPublicSeoEntryPoints = [
+  (label: 'Free AI Detector', path: '/free-ai-detector'),
+  (label: '免費 AI 文章檢測器', path: '/zh/ai-article-detector'),
+  (
+    label: 'Local AI detector vs cloud upload',
+    path: '/privacy/local-ai-detector-vs-cloud-upload',
+  ),
+  (
+    label: 'PDF AI detection limitations',
+    path: '/formats/pdf-ai-detection-limitations',
+  ),
+  (
+    label: 'DOCX editing history evidence',
+    path: '/formats/docx-editing-history-ai-evidence',
+  ),
+  (
+    label: 'Low burstiness in AI writing',
+    path: '/ai-writing-signs/low-burstiness',
+  ),
+  (
+    label: 'Fake citations as an AI writing signal',
+    path: '/ai-writing-signs/fake-citations',
+  ),
 ];
 
 class AppIdentityTitle extends StatelessWidget {
@@ -129,6 +159,18 @@ class AppOverflowMenu extends StatelessWidget {
           ],
           child: Text(l10n.workspaceLanguageMenuTitle),
         ),
+        SubmenuButton(
+          leadingIcon: Icon(LucideIcons.globe),
+          menuChildren: [
+            for (final entry in kPublicSeoEntryPoints)
+              MenuItemButton(
+                leadingIcon: Icon(LucideIcons.externalLink),
+                onPressed: () => unawaited(_openPublicPage(entry.path)),
+                child: Text(entry.label),
+              ),
+          ],
+          child: const Text('公開工具與指南'),
+        ),
         MenuItemButton(
           leadingIcon: Icon(LucideIcons.history),
           onPressed: onHistory,
@@ -168,4 +210,9 @@ class AppOverflowMenu extends StatelessWidget {
         WorkspaceMode.missionTimeline => l10n.workspaceModeTimeline,
         WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
       };
+
+  static Future<void> _openPublicPage(String path) async {
+    final uri = Uri.parse('$_publicPageOrigin$path');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 }

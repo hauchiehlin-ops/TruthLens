@@ -1,5 +1,24 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百八十九次更新）— 首頁工作台顯示公開工具入口
+
+使用者指出：雖然前一版已新增 `/free-ai-detector`、繁中入口與 5 個 SEO 內容頁，但在目前首頁
+`https://truth-lens-roan-three.vercel.app/` 正常啟動 Flutter 工作台後，使用者看不到這些入口。
+重新確認後，原因是首頁 SEO shell 只存在於原始 HTML 與 Flutter 啟動前畫面；啟動完成後會由工作台 UI
+接管，因此搜尋引擎可爬不等於一般使用者可見。
+
+主要調整：
+
+1. 右上角三點選單新增「公開工具與指南」子選單。
+2. 子選單直接列出 7 個公開入口：Free AI Detector、繁中免費 AI 文章檢測器、本地 vs 雲端、PDF 限制、
+   DOCX 來源證據、low burstiness 與 fake citations。
+3. 使用既有 `url_launcher` 以外部瀏覽器／分頁開啟公開頁，不把首頁改成登入頁或純行銷頁。
+4. 新增 widget test，確認首頁工作台的 overflow menu 會顯示完整公開入口清單。
+5. 版本同步升級為 `4.13.1+1472`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/workspace_screen_test.dart test/web_seo_test.dart` 28 項全數通過。
+
 ## 2026-09-01（第一百八十八次更新）— 新增免費檢測入口與 SEO 公開內容網
 
 使用者要求完全執行「提高搜尋曝光與登入轉換機率」的產品成長設計。此次先完成不依賴登入、

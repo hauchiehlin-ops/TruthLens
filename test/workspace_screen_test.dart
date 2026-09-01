@@ -105,6 +105,32 @@ void main() {
     }
   });
 
+  testWidgets('overflow menu exposes public SEO tools and guides', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final prefs = await _preferences();
+
+    await tester.pumpWidget(_testApp(prefs));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    expect(find.text('公開工具與指南'), findsOneWidget);
+
+    await tester.tap(find.text('公開工具與指南'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Free AI Detector'), findsOneWidget);
+    expect(find.text('免費 AI 文章檢測器'), findsOneWidget);
+    expect(find.text('Local AI detector vs cloud upload'), findsOneWidget);
+    expect(find.text('PDF AI detection limitations'), findsOneWidget);
+    expect(find.text('DOCX editing history evidence'), findsOneWidget);
+    expect(find.text('Low burstiness in AI writing'), findsOneWidget);
+    expect(find.text('Fake citations as an AI writing signal'), findsOneWidget);
+  });
+
   testWidgets('mobile default mode uses the responsive single-column flow', (
     tester,
   ) async {
