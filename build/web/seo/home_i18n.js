@@ -28,7 +28,7 @@
       ],
       introPrefix: 'Start with public resources:',
       introLinks: [
-        'Free AI article detector',
+        'Traditional Chinese AI article detector',
         'Free short-text detector',
         'Local AI detection vs cloud upload',
       ],
@@ -39,8 +39,8 @@
         'DOCX editing history evidence',
         'Fake citations and reference checks',
         'What low burstiness means',
-        'Free short-text detector',
         'Traditional Chinese AI article detector',
+        'Free short-text detector',
       ],
       status:
         'Public information stays on this page; open the local workspace only when you choose.',
@@ -72,8 +72,8 @@
         'DOCX 編輯紀錄證據',
         '假文獻與引用核實',
         'Low burstiness 是什麼',
-        '免費繁中短文檢測器',
-        '免費短文檢測器',
+        '免費繁中 AI 文章檢測器',
+        '免費通用短文檢測器',
       ],
       status: '公開資訊會停留在此頁；按下按鈕後才進入本地檢測工作台。',
       start: '開啟檢測工作台',
@@ -99,8 +99,8 @@
         'DOCX 编辑记录证据',
         '虚假文献与引用核实',
         'Low burstiness 是什么',
-        '免费繁中短文检测器',
-        '免费短文检测器',
+        '免费繁中 AI 文章检测器',
+        '免费通用短文检测器',
       ],
       status: '公开信息会停留在此页；按下按钮后才进入本地检测工作台。',
       start: '打开检测工作台',
@@ -126,8 +126,8 @@
         'DOCX 編集履歴の証拠',
         '偽引用と参考文献チェック',
         'Low burstiness の意味',
-        '繁体字中国語の無料短文検出',
-        '無料短文検出ツール',
+        '繁体字中国語 AI 文章検出ツール',
+        '汎用の無料短文検出ツール',
       ],
       status: '公開情報はこのページに残ります。選択した時だけローカルワークスペースを開きます。',
       start: '検出ワークスペースを開く',
@@ -153,8 +153,8 @@
         'DOCX 편집 기록 증거',
         '가짜 인용 및 참고문헌 확인',
         'Low burstiness 의미',
-        '번체 중국어 무료 짧은 글 감지기',
-        '무료 짧은 글 감지기',
+        '번체 중국어 AI 글 감지기',
+        '범용 무료 짧은 글 감지기',
       ],
       status: '공개 정보는 이 페이지에 머뭅니다. 선택할 때만 로컬 작업 공간을 엽니다.',
       start: '감지 작업 공간 열기',
@@ -180,8 +180,8 @@
         'หลักฐานประวัติการแก้ไข DOCX',
         'การอ้างอิงปลอมและการตรวจเอกสารอ้างอิง',
         'Low burstiness คืออะไร',
-        'ตัวตรวจข้อความสั้นภาษาจีนตัวเต็มฟรี',
-        'ตัวตรวจข้อความสั้นฟรี',
+        'ตัวตรวจบทความ AI ภาษาจีนตัวเต็มฟรี',
+        'ตัวตรวจข้อความสั้นทั่วไปฟรี',
       ],
       status: 'ข้อมูลสาธารณะจะอยู่ในหน้านี้ และจะเปิดพื้นที่ทำงานเมื่อคุณกดเท่านั้น',
       start: 'เปิดพื้นที่ทำงานตรวจจับ',
@@ -207,8 +207,8 @@
         'Bukti sejarah suntingan DOCX',
         'Semakan petikan palsu dan rujukan',
         'Maksud low burstiness',
-        'Pengesan teks pendek Cina Tradisional percuma',
-        'Pengesan teks pendek percuma',
+        'Pengesan artikel AI Cina Tradisional percuma',
+        'Pengesan teks pendek umum percuma',
       ],
       status: 'Maklumat awam kekal pada halaman ini; ruang kerja setempat hanya dibuka apabila anda memilih.',
       start: 'Buka ruang kerja pengesanan',
@@ -234,8 +234,8 @@
         'Evidencia del historial de edición DOCX',
         'Citas falsas y verificación de referencias',
         'Qué significa low burstiness',
-        'Detector gratuito de texto breve en chino tradicional',
-        'Detector gratuito de texto breve',
+        'Detector gratuito de artículos IA en chino tradicional',
+        'Detector gratuito general de texto breve',
       ],
       status: 'La información pública permanece en esta página; el área local se abre solo cuando lo eliges.',
       start: 'Abrir área de detección',
@@ -261,8 +261,8 @@
         'Bukti riwayat penyuntingan DOCX',
         'Kutipan palsu dan pemeriksaan referensi',
         'Arti low burstiness',
-        'Detektor teks pendek Tionghoa Tradisional gratis',
-        'Detektor teks pendek gratis',
+        'Detektor artikel AI Tionghoa Tradisional gratis',
+        'Detektor teks pendek umum gratis',
       ],
       status: 'Informasi publik tetap di halaman ini; ruang kerja lokal dibuka hanya saat Anda memilih.',
       start: 'Buka ruang kerja deteksi',
@@ -288,8 +288,8 @@
         'История редактирования DOCX как доказательство',
         'Фальшивые цитаты и проверка источников',
         'Что означает low burstiness',
-        'Бесплатный детектор короткого текста на традиционном китайском',
-        'Бесплатный детектор короткого текста',
+        'Бесплатный детектор AI-статей на традиционном китайском',
+        'Бесплатный универсальный детектор короткого текста',
       ],
       status: 'Открытая информация остается на этой странице; локальная рабочая область открывается только по кнопке.',
       start: 'Открыть рабочую область',
@@ -315,8 +315,8 @@
         'DOCX-Bearbeitungshistorie als Nachweis',
         'Falsche Zitate und Quellenprüfung',
         'Was low burstiness bedeutet',
-        'Kostenloser Kurztext-Detektor für traditionelles Chinesisch',
-        'Kostenloser Kurztext-Detektor',
+        'Kostenloser KI-Artikelprüfer für traditionelles Chinesisch',
+        'Kostenloser allgemeiner Kurztext-Detektor',
       ],
       status: 'Öffentliche Informationen bleiben auf dieser Seite; der lokale Arbeitsbereich öffnet sich erst per Klick.',
       start: 'Prüf-Arbeitsbereich öffnen',
@@ -342,8 +342,8 @@
         'Historique DOCX comme indice',
         'Fausses citations et vérification des références',
         'Ce que signifie low burstiness',
-        'Détecteur gratuit de texte court en chinois traditionnel',
-        'Détecteur gratuit de texte court',
+        'Détecteur gratuit d’articles IA en chinois traditionnel',
+        'Détecteur général gratuit de texte court',
       ],
       status: 'Les informations publiques restent sur cette page ; l’espace local ne s’ouvre que lorsque vous le choisissez.',
       start: 'Ouvrir l’espace de détection',
@@ -369,8 +369,8 @@
         'Histórico de edição DOCX como evidência',
         'Citações falsas e verificação de referências',
         'O que significa low burstiness',
-        'Detector gratuito de texto curto em chinês tradicional',
-        'Detector gratuito de texto curto',
+        'Detector gratuito de artigos IA em chinês tradicional',
+        'Detector geral gratuito de texto curto',
       ],
       status: 'As informações públicas ficam nesta página; o workspace local só abre quando você escolher.',
       start: 'Abrir workspace de detecção',
@@ -428,16 +428,21 @@
     introLinks.forEach((link, index) => {
       link.textContent = pack.introLinks[index];
       link.setAttribute('href', link.getAttribute('data-path') + '?lang=' + encodeURIComponent(lang));
+      link.addEventListener('click', () => storeLanguage(lang), { once: true });
     });
 
     const cards = document.querySelectorAll('[data-home-card-link]');
     cards.forEach((link, index) => {
       link.textContent = pack.cards[index];
       link.setAttribute('href', routes[index] + '?lang=' + encodeURIComponent(lang));
+      link.addEventListener('click', () => storeLanguage(lang), { once: true });
     });
 
     const start = document.getElementById('seo-shell-start');
-    if (start) start.setAttribute('href', '/?workspace=1&lang=' + encodeURIComponent(lang));
+    if (start) {
+      start.setAttribute('href', '/?workspace=1&lang=' + encodeURIComponent(lang));
+      start.addEventListener('click', () => storeLanguage(lang), { once: true });
+    }
   }
 
   function renderLanguagePicker(lang, pack) {
@@ -458,16 +463,20 @@
       option.selected = code === lang;
       select.appendChild(option);
     });
+    select.value = lang;
     select.addEventListener('change', () => {
-      storeLanguage(select.value);
+      const nextLang = normalize(select.value);
+      select.value = nextLang;
+      storeLanguage(nextLang);
       const url = new URL(window.location.href);
-      url.searchParams.set('lang', select.value);
+      url.searchParams.set('lang', nextLang);
       window.history.replaceState(null, '', url.pathname + url.search);
-      applyHome(select.value);
+      applyHome(nextLang);
     });
 
     host.append(label, select);
     host.setAttribute('aria-label', pack.language);
+    host.dataset.currentLang = lang;
   }
 
   function applyHome(lang) {

@@ -68,8 +68,8 @@
       lang: 'zh-Hant', nav: ['免費檢測器', '隱私指南', 'PDF 限制', 'DOCX 證據', '開啟工作台'],
       detectorLabel: '文字樣本', detectorButton: '開始預覽', detectorPlaceholder: '建議貼上 220 字以內。預覽只檢查輕量本機統計特徵。', detectorInitial: '結果會顯示在這裡。文字只留在這個瀏覽器。',
       pages: {
-        free: ['免費 AI 文章檢測器', '免費瀏覽器預覽', '貼上一小段文章，先在瀏覽器本機取得初步訊號；不需登入，也不會上傳文字。'],
-        zhFree: ['免費 AI 文章檢測器', '免費瀏覽器預覽', '這是繁體中文入口，提供不需上傳的短文初步檢測。'],
+        free: ['免費通用短文檢測器', '多語短文預覽', '貼上一小段任意語言文章，先在瀏覽器本機取得初步訊號；不需登入，也不會上傳文字。'],
+        zhFree: ['繁中 AI 文章檢測器', '繁體中文入口', '這是繁體中文文章入口，針對繁中使用者提供不需上傳的短文初步檢測。'],
         localVsCloud: ['本地 AI 檢測與雲端上傳比較', '隱私指南', '比較本地檢測與需要上傳機密草稿的雲端工具。'],
         pdfLimits: ['PDF AI 檢測限制', '文件鑑識', 'PDF 適合抽取可見文字，但通常不適合證明文件實際如何被撰寫。'],
         docxEvidence: ['DOCX 編輯紀錄證據', '來源證據', '原始可編輯檔可能保留 PDF 或複製文字看不到的撰寫過程線索。'],
@@ -80,7 +80,7 @@
     },
     'zh-Hans': {
       lang: 'zh-Hans', nav: ['免费检测器', '隐私指南', 'PDF 限制', 'DOCX 证据', '打开工作台'], detectorLabel: '文字样本', detectorButton: '开始预览', detectorPlaceholder: '建议粘贴 220 字以内。预览只检查轻量本地统计特征。', detectorInitial: '结果会显示在这里。文字只留在这个浏览器。',
-      pages: { free: ['免费 AI 文章检测器','免费浏览器预览','粘贴一小段文章，在浏览器本地取得初步信号；无需登录，也不会上传文字。'], zhFree: ['繁体中文 AI 检测器','免费浏览器预览','这是繁体中文入口，提供无需上传的短文初步检测。'], localVsCloud: ['本地 AI 检测与云端上传比较','隐私指南','比较本地检测与需要上传机密草稿的云端工具。'], pdfLimits: ['PDF AI 检测限制','文件鉴识','PDF 适合提取可见文字，但通常不适合证明文件实际如何被撰写。'], docxEvidence: ['DOCX 编辑记录证据','来源证据','原始可编辑文件可能保留 PDF 或复制文字看不到的写作过程线索。'], lowBurstiness: ['AI 写作的低突发性','写作信号','句长和节奏过度整齐可能是 AI 信号，但必须和其他证据一起解读。'], fakeCitations: ['虚假文献与引用核实','引用检查','看似合理的参考文献仍需核对 DOI、期刊、作者与题名。'] }, article: { body: ['需要了解的事','TruthLens 会拆分文字信号、文件来源证据与文献核实，避免把单一薄弱信号误当成结论。','如何使用','可先阅读公开指南或试用短文预览；需要逐句理由、文件导入、历史记录与 PDF 导出时，再打开完整本地工作台。'] }
+      pages: { free: ['免费通用短文检测器','多语短文预览','粘贴一小段任意语言文章，在浏览器本地取得初步信号；无需登录，也不会上传文字。'], zhFree: ['繁中 AI 文章检测器','繁体中文入口','这是繁体中文文章入口，针对繁中使用者提供无需上传的短文初步检测。'], localVsCloud: ['本地 AI 检测与云端上传比较','隐私指南','比较本地检测与需要上传机密草稿的云端工具。'], pdfLimits: ['PDF AI 检测限制','文件鉴识','PDF 适合提取可见文字，但通常不适合证明文件实际如何被撰写。'], docxEvidence: ['DOCX 编辑记录证据','来源证据','原始可编辑文件可能保留 PDF 或复制文字看不到的写作过程线索。'], lowBurstiness: ['AI 写作的低突发性','写作信号','句长和节奏过度整齐可能是 AI 信号，但必须和其他证据一起解读。'], fakeCitations: ['虚假文献与引用核实','引用检查','看似合理的参考文献仍需核对 DOI、期刊、作者与题名。'] }, article: { body: ['需要了解的事','TruthLens 会拆分文字信号、文件来源证据与文献核实，避免把单一薄弱信号误当成结论。','如何使用','可先阅读公开指南或试用短文预览；需要逐句理由、文件导入、历史记录与 PDF 导出时，再打开完整本地工作台。'] }
     },
     ja: { lang: 'ja', nav: ['無料検出', 'プライバシー', 'PDF の限界', 'DOCX 証拠', 'ワークスペースを開く'], detectorLabel: 'テキストサンプル', detectorButton: 'プレビュー分析', detectorPlaceholder: '約 220 語以内を貼り付けてください。軽量なローカル統計だけを確認します。', detectorInitial: '結果はここに表示されます。テキストはこのブラウザ内に残ります。', pages: { free: ['無料 AI 文章検出ツール','無料ブラウザプレビュー','短い文章を貼り付けるだけで、アップロードなしにローカルの初期シグナルを確認できます。'], zhFree: ['繁体字中国語 AI 検出ツール','無料ブラウザプレビュー','繁体字中国語向けの短文プレビュー入口です。'], localVsCloud: ['ローカル AI 検出とクラウドアップロードの比較','プライバシーガイド','機密草稿をアップロードするツールとローカル検出を比較します。'], pdfLimits: ['PDF の AI 検出の限界','ファイル鑑識','PDF は表示テキストの抽出には有用ですが、執筆過程の証明には弱い形式です。'], docxEvidence: ['DOCX 編集履歴の証拠','出所証拠','編集可能な元ファイルには、PDF やコピー文では見えない執筆履歴が残る場合があります。'], lowBurstiness: ['AI 文章における低バースト性','文章シグナル','文の長さやリズムが整いすぎる場合、AI の兆候になり得ますが単独では判断できません。'], fakeCitations: ['偽引用と参考文献チェック','参考文献チェック','もっともらしい参考文献でも DOI、雑誌、著者、題名の確認が必要です。'] }, article: { body: ['知っておくこと','TruthLens は文章シグナル、ファイル出所、参考文献確認を分けて表示し、弱いシグナルを結論にしません。','使い方','公開ガイドや短文プレビューから始め、逐文理由、ファイル取り込み、履歴、PDF 出力が必要なときに完全なローカルワークスペースを開きます。'] } },
     ko: { lang: 'ko', nav: ['무료 감지기','개인정보 가이드','PDF 한계','DOCX 증거','작업 공간 열기'], detectorLabel: '텍스트 샘플', detectorButton: '미리 분석', detectorPlaceholder: '약 220단어 이내를 붙여넣으세요. 가벼운 로컬 통계만 확인합니다.', detectorInitial: '결과가 여기에 표시됩니다. 텍스트는 이 브라우저에만 남습니다.', pages: { free: ['무료 AI 글 감지기','무료 브라우저 미리보기','짧은 글을 붙여넣고 업로드 없이 로컬 초기 신호를 확인합니다.'], zhFree: ['번체 중국어 AI 감지기','무료 브라우저 미리보기','번체 중국어용 짧은 글 미리보기 입구입니다.'], localVsCloud: ['로컬 AI 감지와 클라우드 업로드 비교','개인정보 가이드','기밀 초안을 업로드해야 하는 도구와 로컬 감지를 비교합니다.'], pdfLimits: ['PDF AI 감지의 한계','파일 포렌식','PDF는 보이는 텍스트 추출에는 유용하지만 작성 과정을 증명하기에는 약합니다.'], docxEvidence: ['DOCX 편집 기록 증거','출처 증거','원본 편집 파일은 PDF나 복사 텍스트에 없는 작성 과정 단서를 보존할 수 있습니다.'], lowBurstiness: ['AI 글쓰기의 낮은 버스티니스','쓰기 신호','문장 길이와 리듬이 지나치게 일정하면 AI 신호일 수 있지만 단독 판단은 위험합니다.'], fakeCitations: ['가짜 인용 및 참고문헌 확인','참고문헌 확인','그럴듯한 참고문헌도 DOI, 저널, 저자, 제목 확인이 필요합니다.'] }, article: { body: ['알아둘 점','TruthLens는 텍스트 신호, 파일 출처 증거, 참고문헌 검증을 분리해 약한 신호 하나가 결론이 되지 않도록 합니다.','사용 방법','공개 가이드나 짧은 글 미리보기로 시작하고, 문장별 이유, 파일 가져오기, 기록, PDF 내보내기가 필요할 때 전체 로컬 작업 공간을 엽니다.'] } },
@@ -167,14 +167,18 @@
       option.selected = code === lang;
       select.appendChild(option);
     });
+    select.value = lang;
     select.addEventListener('change', () => {
-      storeLanguage(select.value);
+      const nextLang = normalize(select.value);
+      select.value = nextLang;
+      storeLanguage(nextLang);
       const url = new URL(window.location.href);
-      url.searchParams.set('lang', select.value);
+      url.searchParams.set('lang', nextLang);
       window.location.href = url.pathname + url.search + url.hash;
     });
 
     wrap.append(label, select);
+    wrap.dataset.currentLang = lang;
     nav.appendChild(wrap);
   }
 
@@ -445,6 +449,7 @@
     } else if (href && href.startsWith('/')) {
       link.setAttribute('href', localizedPath(href, pack.lang));
     }
+    link.addEventListener('click', () => storeLanguage(pack.lang), { once: true });
   });
   const brand = document.querySelector('.tl-brand');
   if (brand) brand.setAttribute('href', '/?lang=' + encodeURIComponent(pack.lang));
@@ -456,6 +461,7 @@
     } else if (href && href.startsWith('/')) {
       link.setAttribute('href', localizedPath(href, pack.lang));
     }
+    link.addEventListener('click', () => storeLanguage(pack.lang), { once: true });
   });
   renderLanguagePicker(pack.lang);
   storeLanguage(pack.lang);

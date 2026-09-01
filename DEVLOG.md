@@ -1,5 +1,28 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十四次更新）— 修正公開頁語系狀態與免費入口混淆
+
+使用者回報：公開首頁切換英文後，文字已變英文但語系選單仍顯示繁體中文，且之後無法可靠切回繁中；
+選擇泰文後點擊下方子功能頁，內容會掉回英文；另外 `/free-ai-detector` 與
+`/zh/ai-article-detector` 兩個免費入口看起來過於相同，實際路徑與標籤也有混淆。
+
+主要調整：
+
+1. 首頁與公開子頁的語系選單建立後都會明確設定 `select.value = lang`，避免畫面文字與選單顯示不同步。
+2. 語系切換時先 normalize 再寫入 URL 與 `truthlens-public-lang`，避免瀏覽器歷史快取或 select 狀態殘留。
+3. 首頁與公開子頁的內部連結在點擊前會再次保存目前語系，讓泰文等語系跳轉到子頁時穩定延續 `?lang=`。
+4. 修正首頁卡片與 URL 順序：`/zh/ai-article-detector` 固定顯示為繁中 AI 文章檢測器，
+   `/free-ai-detector` 固定顯示為通用免費短文檢測器，不再互相顛倒。
+5. 繁中／簡中公開頁資料中明確區分「免費通用短文檢測器」與「繁中 AI 文章檢測器」。
+6. 新增測試鎖住 select value 同步、語系保存與兩個免費入口的標籤／路徑順序。
+7. 版本同步升級為 `4.13.6+1477`。
+
+**狀態**：✅ `node --check` 通過 `home_i18n.js` / `page_i18n.js`；✅ `dart format` 完成；✅
+`flutter test test/web_seo_test.dart` 14 項全數通過；✅ `flutter analyze --no-fatal-infos`
+通過（仍列出既有 8 條 `detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals`
+info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/version.json`
+為 `4.13.6/1477`。
+
 ## 2026-09-01（第一百九十三次更新）— 深度清理公開頁混語系文字
 
 使用者回報：首頁「公開工具與指南」與 7 個公開子頁雖已加入語系切換，但內文、卡片、提示、

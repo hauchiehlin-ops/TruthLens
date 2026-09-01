@@ -172,7 +172,17 @@ void main() {
     expect(homeI18n, contains("data-home-language"));
     expect(homeI18n, contains("data-home-card-link"));
     expect(homeI18n, contains("workspace=1&lang="));
+    expect(homeI18n, contains('select.value = lang'));
+    expect(homeI18n, contains('const nextLang = normalize(select.value)'));
     expect(homeI18n, isNot(contains("'Free short-text preview'")));
+    expect(
+      homeI18n.indexOf("'免費繁中 AI 文章檢測器'"),
+      lessThan(homeI18n.indexOf("'免費通用短文檢測器'")),
+    );
+    expect(
+      homeI18n.indexOf('/zh/ai-article-detector'),
+      lessThan(homeI18n.indexOf('/free-ai-detector')),
+    );
     expect(homeI18n, contains('免費短文檢測器'));
     expect(homeI18n, contains('無料短文検出ツール'));
     expect(homeI18n, contains('무료 짧은 글 감지기'));
@@ -182,6 +192,10 @@ void main() {
     expect(i18n, contains('開啟另一個免費入口'));
     expect(i18n, contains('別の無料入口を開く'));
     expect(i18n, contains('다른 무료 입구 열기'));
+    expect(i18n, contains('select.value = lang'));
+    expect(i18n, contains('const nextLang = normalize(select.value)'));
+    expect(i18n, contains('繁中 AI 文章檢測器'));
+    expect(i18n, contains('免費通用短文檢測器'));
   });
 
   test('Vercel serves static SEO files before the Flutter fallback', () {
