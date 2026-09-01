@@ -146,6 +146,43 @@ for validating an imported academic document before content detection begins.
         );
       });
 
+      test('一般流式 PDF 文字層不應觸發 OCR 備援', () {
+        const text = '''
+This document contains ordinary paragraphs with complete sentences.
+The PDF text layer follows a readable order and keeps enough context for analysis.
+The importer should trust this text layer without rasterizing every page.
+''';
+
+        expect(
+          DocumentImporter.pdfTextLayerReliability(text, pageCount: 2),
+          greaterThanOrEqualTo(0.75),
+        );
+        expect(
+          DocumentImporter.shouldTryPdfOcrFallback(text, pageCount: 2),
+          isFalse,
+        );
+      });
+
+      test('短行密集且分析保留率低的舊式 PDF 文字層會觸發 OCR 備援', () {
+        final fragmented = List.generate(
+          96,
+          (index) => index.isEven ? '本研究資料分析$index' : '引擎性能測試$index',
+        ).join('\n');
+
+        expect(
+          DocumentImporter.pdfTextQuality(fragmented),
+          greaterThanOrEqualTo(0.62),
+        );
+        expect(
+          DocumentImporter.pdfTextLayerReliability(fragmented, pageCount: 8),
+          lessThan(0.75),
+        );
+        expect(
+          DocumentImporter.shouldTryPdfOcrFallback(fragmented, pageCount: 8),
+          isTrue,
+        );
+      });
+
       test('常見 UTF-8 誤解碼亂碼應被 PDF 文字品質檢查拒絕', () {
         const mojibake = '''
 Ã¤Â¸Â­Ã¦â€“â€¡ Ã¥â€¦Â§Ã¥Â®Â¹ Ã¦ÂªÂ¢Ã¦Â¸Â¬ Ã§ÂµÂÃ¦Å¾Å“

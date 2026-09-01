@@ -18,8 +18,8 @@
   const content = {
     en: {
       changelogTitle: "Latest Updates",
-      changelog1: "v6.0.0 - Rebranded to OmniTrace with a new multidimensional forensics logo.",
-      changelog2: "v5.0.0 - Added programmatic SEO engine and multilingual static pages.",
+      changelog1: "v6.2.0 - Enhanced legacy DOCX and PDF text extraction and import coverage.",
+      changelog2: "v6.0.0 - Rebranded to OmniTrace with a new multidimensional forensics logo.",
       footerText: "Local-first AI content detection and document forensics.",
       title: 'OmniTrace AI Content Detection and Document Forensics',
       lead:
@@ -55,8 +55,8 @@
     },
     'zh-Hant': {
       changelogTitle: "近期更新",
-      changelog1: "v6.0.0 - 品牌全新升級為 OmniTrace，並導入發光數據流圖示。",
-      changelog2: "v5.0.0 - 新增多國語系靜態頁面矩陣與自動化 SEO 引擎。",
+      changelog1: "v6.2.0 - 強化舊版 DOCX 與 PDF 匯入與文字擷取覆蓋率。",
+      changelog2: "v6.0.0 - 品牌全新升級為 OmniTrace，並導入發光數據流圖示。",
       footerText: "本地優先 AI 內容檢測與文件鑑識。",
       title: 'OmniTrace AI 內容檢測與文件鑑識',
       lead:
@@ -90,8 +90,8 @@
     },
     'zh-Hans': {
       changelogTitle: "近期更新",
-      changelog1: "v6.0.0 - 品牌全新升级为 OmniTrace，并导入发光数据流图标。",
-      changelog2: "v5.0.0 - 新增多国语系静态页面矩阵与自动化 SEO 引擎。",
+      changelog1: "v6.2.0 - 强化旧版 DOCX 与 PDF 导入与文本提取覆盖率。",
+      changelog2: "v6.0.0 - 品牌全新升级为 OmniTrace，并导入发光数据流图标。",
       footerText: "本地优先 AI 内容检测与文件鉴识。",
       title: 'OmniTrace AI 内容检测与文件鉴识',
       lead:
@@ -121,8 +121,8 @@
     },
     ja: {
       changelogTitle: "最新のアップデート",
-      changelog1: "v6.0.0 - OmniTraceにブランド名を変更し、新しい多次元フォレンジックロゴを導入。",
-      changelog2: "v5.0.0 - プログラマティックSEOエンジンと多言語静的ページを追加しました。",
+      changelog1: "v6.2.0 - 以前のDOCXおよびPDFのインポートとテキスト抽出のカバレッジを強化しました。",
+      changelog2: "v6.0.0 - OmniTraceにブランド名を変更し、新しい多次元フォレンジックロゴを導入。",
       footerText: "ローカル優先の AI コンテンツ検出と文書フォレンジック。",
       title: 'OmniTrace AI コンテンツ検出と文書フォレンジック',
       lead:
@@ -152,8 +152,8 @@
     },
     ko: {
       changelogTitle: "최근 업데이트",
-      changelog1: "v6.0.0 - OmniTrace로 브랜드 변경 및 새로운 다차원 포렌식 로고 도입.",
-      changelog2: "v5.0.0 - 프로그래밍 방식 SEO 엔진 및 다국어 정적 페이지 추가.",
+      changelog1: "v6.2.0 - 기존 DOCX 및 PDF 가져오기 및 텍스트 추출 커버리지를 강화했습니다.",
+      changelog2: "v6.0.0 - OmniTrace로 브랜드 변경 및 새로운 다차원 포렌식 로고 도입.",
       footerText: "로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.",
       title: 'OmniTrace AI 콘텐츠 감지 및 문서 포렌식',
       lead:
@@ -183,8 +183,8 @@
     },
     th: {
       changelogTitle: "อัปเดตล่าสุด",
-      changelog1: "v6.0.0 - เปลี่ยนชื่อแบรนด์เป็น OmniTrace พร้อมโลโก้การตรวจสอบหลายมิติใหม่",
-      changelog2: "v5.0.0 - เพิ่มเครื่องมือ SEO และหน้าเว็บแบบคงที่หลายภาษา",
+      changelog1: "v6.2.0 - ปรับปรุงการนำเข้า DOCX และ PDF แบบเก่าและการครอบคลุมการดึงข้อความ",
+      changelog2: "v6.0.0 - เปลี่ยนชื่อแบรนด์เป็น OmniTrace พร้อมโลโก้การตรวจสอบหลายมิติใหม่",
       footerText: "การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง",
       title: 'OmniTrace การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
       lead:
@@ -214,8 +214,8 @@
     },
     ms: {
       changelogTitle: "Kemas Kini Terkini",
-      changelog1: "v6.0.0 - Menjenamakan semula kepada OmniTrace dengan logo forensik pelbagai dimensi baharu.",
-      changelog2: "v5.0.0 - Menambah enjin SEO programatik dan halaman statik berbilang bahasa.",
+      changelog1: "v6.2.0 - Mempertingkat liputan import dan pengekstrakan teks DOCX dan PDF warisan.",
+      changelog2: "v6.0.0 - Menjenamakan semula kepada OmniTrace dengan logo forensik pelbagai dimensi baharu.",
       footerText: "Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.",
       title: 'OmniTrace Pengesanan Kandungan AI dan Forensik Dokumen',
       lead:
@@ -245,8 +245,8 @@
     },
     es: {
       changelogTitle: "Últimas actualizaciones",
-      changelog1: "v6.0.0 - Cambio de marca a OmniTrace con un nuevo logotipo de análisis multidimensional.",
-      changelog2: "v5.0.0 - Se agregó motor SEO programático y páginas estáticas multilingues.",
+      changelog1: "v6.2.0 - Se mejoró la importación de DOCX y PDF heredados y la cobertura de extracción de texto.",
+      changelog2: "v6.0.0 - Cambio de marca a OmniTrace con un nuevo logotipo de análisis multidimensional.",
       footerText: "Detección de contenido IA y análisis documental local primero.",
       title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
@@ -276,8 +276,8 @@
     },
     id: {
       changelogTitle: "Pembaruan Terbaru",
-      changelog1: "v6.0.0 - Ganti nama menjadi OmniTrace dengan logo forensik multidimensi baru.",
-      changelog2: "v5.0.0 - Menambahkan mesin SEO programatik dan halaman statis multibahasa.",
+      changelog1: "v6.2.0 - Meningkatkan cakupan impor dan ekstraksi teks DOCX dan PDF versi lama.",
+      changelog2: "v6.0.0 - Ganti nama menjadi OmniTrace dengan logo forensik multidimensi baru.",
       footerText: "Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.",
       title: 'OmniTrace Deteksi Konten AI dan Forensik Dokumen',
       lead:
@@ -307,8 +307,8 @@
     },
     ru: {
       changelogTitle: "Последние обновления",
-      changelog1: "v6.0.0 - Ребрендинг в OmniTrace с новым многомерным криминалистическим логотипом.",
-      changelog2: "v5.0.0 - Добавлен программный SEO-движок и многоязычные статические страницы.",
+      changelog1: "v6.2.0 - Улучшен импорт старых DOCX и PDF, а также полнота извлечения текста.",
+      changelog2: "v6.0.0 - Ребрендинг в OmniTrace с новым многомерным криминалистическим логотипом.",
       footerText: "Локальная AI-проверка контента и экспертиза документов.",
       title: 'OmniTrace: AI-проверка контента и экспертиза документов',
       lead:
@@ -338,8 +338,8 @@
     },
     de: {
       changelogTitle: "Neueste Updates",
-      changelog1: "v6.0.0 - Umbenennung in OmniTrace mit einem neuen mehrdimensionalen Forensik-Logo.",
-      changelog2: "v5.0.0 - Programmatische SEO-Engine und mehrsprachige statische Seiten hinzugefügt.",
+      changelog1: "v6.2.0 - Verbesserter Import von alten DOCX- und PDF-Dateien sowie höhere Textextraktionsabdeckung.",
+      changelog2: "v6.0.0 - Umbenennung in OmniTrace mit einem neuen mehrdimensionalen Forensik-Logo.",
       footerText: "Lokale KI-Inhaltserkennung und Dokumentforensik.",
       title: 'OmniTrace KI-Inhaltserkennung und Dokumentforensik',
       lead:
@@ -369,8 +369,8 @@
     },
     fr: {
       changelogTitle: "Dernières mises à jour",
-      changelog1: "v6.0.0 - Changement de marque pour OmniTrace avec un nouveau logo de criminalistique multidimensionnelle.",
-      changelog2: "v5.0.0 - Ajout d'un moteur SEO programmatique et de pages statiques multilingues.",
+      changelog1: "v6.2.0 - Amélioration de l'importation des anciens DOCX et PDF et de la couverture de l'extraction de texte.",
+      changelog2: "v6.0.0 - Changement de marque pour OmniTrace avec un nouveau logo de criminalistique multidimensionnelle.",
       footerText: "Détection de contenu IA et analyse documentaire locale.",
       title: 'OmniTrace Détection de Contenu IA et Analyse Documentaire',
       lead:
@@ -400,8 +400,8 @@
     },
     pt: {
       changelogTitle: "Últimas Atualizações",
-      changelog1: "v6.0.0 - Rebranding para OmniTrace com um novo logotipo de forense multidimensional.",
-      changelog2: "v5.0.0 - Adicionado motor SEO programático e páginas estáticas multilíngues.",
+      changelog1: "v6.2.0 - Melhoria na importação de DOCX e PDF antigos e na cobertura de extração de texto.",
+      changelog2: "v6.0.0 - Rebranding para OmniTrace com um novo logotipo de forense multidimensional.",
       footerText: "Detecção de conteúdo IA e forense documental local-first.",
       title: 'OmniTrace Detecção de Conteúdo IA e Forense Documental',
       lead:

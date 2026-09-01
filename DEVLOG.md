@@ -1,5 +1,29 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-09-02（第二百零二次更新）— 修正舊式雙欄 PDF 文字層誤判完整
+
+使用者回報：研討會 PDF 匯入後沒有完全截取所有文字內容，實際看起來只剩前、後段落。以
+`2001-A Simulation Study for the Off-Design Performance of a Twin-Spool Mixed-Flow Type Turbofan Engine`
+為例檢查後確認：這份 PDF 是 Word 透過 `PScript5.dll` 與 Acrobat Distiller 6.0 產生的未標籤化
+PDF 1.4，8 頁皆有文字層，但雙欄、表格、公式與舊中文字型讓文字層「可讀但不忠實」。既有
+`pdfTextQuality()` 只判斷不像亂碼，因此 Syncfusion / PDFium 都拿到 `1.000`，導致匯入流程直接採用
+文字層，不會啟動 OCR 備援。
+
+主要調整：
+
+1. PDF 候選選擇新增 `_PdfTextCandidate` 評分，不再只看亂碼品質；同時計入可見字覆蓋量、平均行長、
+   預處理後可分析字元保留率，以及多頁短行碎裂程度。
+2. `_parsePdf()` 對文字層可讀但疑似版面抽取不足的 PDF，會在有 OCR callback 時繼續跑 OCR，並把 OCR
+   結果與文字層候選一起評分選最佳；若沒有 OCR callback，仍回傳文字層，但將 extraction quality 壓低，
+   讓 UI 顯示低抽取品質限制。
+3. 新增 `pdfTextLayerReliability()` 與 `shouldTryPdfOcrFallback()` 測試入口，鎖住一般流式 PDF 不觸發 OCR、
+   舊式短行密集文字層會觸發 OCR 的行為。
+4. 使用實際 PDF 做本機只讀探測：Syncfusion 文字層約 `16056` 字元、`pdfTextQuality=1.000`，新
+   reliability 降為 `0.720`，`shouldTryOcr=true`，成功抓到這類「看似可讀但不完整」的 PDF。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/document_importer_test.dart` 20 項全數通過；
+✅ 實際 PDF 臨時探測通過後已移除探測檔。
+
 ## 2026-09-02（第二百零一次更新）— 強化舊版 `.doc` 全文覆蓋與段落斷句
 
 使用者回報：上一輪 `.doc` 修正雖有進展，但以上傳的博士論文原始 `.doc` 為例，仍像是只辨識前面幾頁，

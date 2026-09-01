@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../detection/device_capabilities.dart';
 import '../detection/model_catalog.dart' show PerformanceTier;
 import '../models/input_quality.dart';
+import '../utils/text_stats.dart';
 import 'web_file_picker.dart' if (dart.library.io) 'web_file_picker_stub.dart';
 
 typedef PdfOcrRecognizer =
@@ -130,7 +131,7 @@ class DocumentImporter {
     try {
       if (normalizedExtension == 'pdf') {
         final text = _extractSyncfusionPdfText(bytes);
-        return _isUsableText(text) ? text : '';
+        return _bestPdfTextCandidate([text])?.text ?? '';
       } else if (normalizedExtension == 'docx') {
         // DOCX 離線解壓與 <w:t> 文字提取
         return _parseDocx(bytes);
@@ -213,16 +214,28 @@ class DocumentImporter {
       }
       pdfiumText = buffer.toString();
 
-      final bestText = _bestPdfTextCandidate([pdfiumText, syncfusionText]);
-      if (bestText.isNotEmpty) {
+      final textLayerCandidate = _bestPdfTextCandidate([
+        pdfiumText,
+        syncfusionText,
+      ], pageCount: document.pages.length);
+      if (textLayerCandidate != null &&
+          !_shouldTryPdfOcrFallback(
+            textLayerCandidate,
+            pageCount: document.pages.length,
+          )) {
         return _PdfParseResult(
-          text: bestText,
-          quality: pdfTextQuality(bestText),
+          text: textLayerCandidate.text,
+          quality: textLayerCandidate.reliability,
         );
       }
 
       if (pdfOcr == null) {
-        return const _PdfParseResult(issue: PdfImportIssue.needsOcr);
+        return textLayerCandidate != null
+            ? _PdfParseResult(
+                text: textLayerCandidate.text,
+                quality: textLayerCandidate.reliability,
+              )
+            : const _PdfParseResult(issue: PdfImportIssue.needsOcr);
       }
 
       final tier = (await DeviceCapabilities.detect()).tier;
@@ -265,34 +278,160 @@ class DocumentImporter {
         }
       }
       final recognized = ocrText.toString().trim();
-      return recognized.isEmpty
-          ? const _PdfParseResult(issue: PdfImportIssue.unreadable)
-          : _PdfParseResult(
-              text: recognized,
-              usedOcr: true,
-              quality: pdfTextQuality(recognized) * 0.85,
-            );
+      if (recognized.isEmpty) {
+        return textLayerCandidate != null
+            ? _PdfParseResult(
+                text: textLayerCandidate.text,
+                quality: textLayerCandidate.reliability,
+              )
+            : const _PdfParseResult(issue: PdfImportIssue.unreadable);
+      }
+
+      final ocrCandidate = _scorePdfTextCandidate(
+        recognized,
+        pageCount: document.pages.length,
+        ocr: true,
+      );
+      final bestCandidate = _choosePdfTextCandidate([
+        if (textLayerCandidate != null) textLayerCandidate,
+        if (ocrCandidate.usable) ocrCandidate,
+      ]);
+      if (bestCandidate == null) {
+        return const _PdfParseResult(issue: PdfImportIssue.unreadable);
+      }
+      return _PdfParseResult(
+        text: bestCandidate.text,
+        usedOcr: bestCandidate.ocr,
+        quality: bestCandidate.reliability,
+      );
     } catch (_) {
       final fallback = _bestPdfTextCandidate([syncfusionText]);
-      return fallback.isEmpty
+      return fallback == null
           ? const _PdfParseResult(issue: PdfImportIssue.unreadable)
-          : _PdfParseResult(text: fallback, quality: pdfTextQuality(fallback));
+          : _PdfParseResult(text: fallback.text, quality: fallback.reliability);
     } finally {
       await document?.dispose();
     }
   }
 
-  static String _bestPdfTextCandidate(Iterable<String> candidates) {
-    var best = '';
-    var bestScore = 0.0;
-    for (final candidate in candidates) {
-      final score = pdfTextQuality(candidate);
-      if (score > bestScore) {
+  static _PdfTextCandidate? _bestPdfTextCandidate(
+    Iterable<String> candidates, {
+    int pageCount = 1,
+  }) {
+    return _choosePdfTextCandidate(
+      candidates.map(
+        (text) => _scorePdfTextCandidate(text, pageCount: pageCount),
+      ),
+    );
+  }
+
+  static _PdfTextCandidate? _choosePdfTextCandidate(
+    Iterable<_PdfTextCandidate> candidates,
+  ) {
+    _PdfTextCandidate? best;
+    for (final candidate in candidates.where((candidate) => candidate.usable)) {
+      if (best == null ||
+          candidate.selectionScore > best.selectionScore ||
+          candidate.selectionScore == best.selectionScore &&
+              candidate.visibleCharacters > best.visibleCharacters) {
         best = candidate;
-        bestScore = score;
       }
     }
-    return bestScore >= _minimumPdfTextQuality ? best : '';
+    return best;
+  }
+
+  static _PdfTextCandidate _scorePdfTextCandidate(
+    String text, {
+    int pageCount = 1,
+    bool ocr = false,
+  }) {
+    final trimmed = text.trim();
+    final quality = pdfTextQuality(trimmed);
+    final visibleCharacters = _visibleCharacterCount(trimmed);
+    final nonEmptyLines = trimmed
+        .split(RegExp(r'\r?\n'))
+        .where((line) => line.trim().isNotEmpty)
+        .length;
+    final averageLineVisibleCharacters = nonEmptyLines == 0
+        ? visibleCharacters.toDouble()
+        : visibleCharacters / nonEmptyLines;
+    final analysisVisibleCharacters = _analysisVisibleCharacterCount(trimmed);
+    final analysisRetention = visibleCharacters == 0
+        ? 0.0
+        : (analysisVisibleCharacters / visibleCharacters).clamp(0.0, 1.0);
+    final pageCoverage = visibleCharacters / math.max(1, pageCount);
+    final fragmentedLines =
+        nonEmptyLines >= math.max(24, pageCount * 8) &&
+        averageLineVisibleCharacters < 18;
+    final sparseMultiPageText = pageCount >= 4 && pageCoverage < 1400;
+    final lowAnalysisRetention =
+        visibleCharacters >= 1000 && analysisRetention < 0.72;
+
+    var reliability = quality;
+    if (fragmentedLines) reliability -= 0.16;
+    if (sparseMultiPageText) reliability -= 0.10;
+    if (lowAnalysisRetention) reliability -= 0.12;
+    if (ocr) reliability *= 0.94;
+    reliability = reliability.clamp(0.0, 1.0);
+
+    final selectionScore =
+        reliability * 0.55 +
+        (visibleCharacters / 12000).clamp(0.0, 1.0) * 0.25 +
+        analysisRetention * 0.15 +
+        (averageLineVisibleCharacters / 45).clamp(0.0, 1.0) * 0.05;
+
+    return _PdfTextCandidate(
+      text: trimmed,
+      quality: quality,
+      reliability: reliability,
+      selectionScore: selectionScore,
+      visibleCharacters: visibleCharacters,
+      analysisRetention: analysisRetention,
+      fragmentedLines: fragmentedLines,
+      sparseMultiPageText: sparseMultiPageText,
+      lowAnalysisRetention: lowAnalysisRetention,
+      ocr: ocr,
+    );
+  }
+
+  @visibleForTesting
+  static double pdfTextLayerReliability(String text, {int pageCount = 1}) {
+    return _scorePdfTextCandidate(text, pageCount: pageCount).reliability;
+  }
+
+  @visibleForTesting
+  static bool shouldTryPdfOcrFallback(String text, {int pageCount = 1}) {
+    final candidate = _scorePdfTextCandidate(text, pageCount: pageCount);
+    return _shouldTryPdfOcrFallback(candidate, pageCount: pageCount);
+  }
+
+  static bool _shouldTryPdfOcrFallback(
+    _PdfTextCandidate candidate, {
+    required int pageCount,
+  }) {
+    if (!candidate.usable || pageCount <= 1) return false;
+    if (candidate.reliability >= 0.75 &&
+        !candidate.fragmentedLines &&
+        !candidate.lowAnalysisRetention) {
+      return false;
+    }
+    return candidate.fragmentedLines ||
+        candidate.lowAnalysisRetention ||
+        candidate.sparseMultiPageText;
+  }
+
+  static int _analysisVisibleCharacterCount(String text) {
+    try {
+      return _visibleCharacterCount(PreprocessedText.from(text).analysisText);
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  static int _visibleCharacterCount(String text) {
+    return text.runes
+        .where((rune) => !RegExp(r'\s').hasMatch(String.fromCharCode(rune)))
+        .length;
   }
 
   /// 移除常見的 Markdown 格式符號、HTML 標籤、LaTeX 數學公式、頁首頁尾與頁碼噪音，純化文字供 AI 分析
@@ -1148,6 +1287,34 @@ class _PdfParseResult {
     this.issue = PdfImportIssue.none,
     this.quality = 0,
   });
+}
+
+class _PdfTextCandidate {
+  final String text;
+  final double quality;
+  final double reliability;
+  final double selectionScore;
+  final int visibleCharacters;
+  final double analysisRetention;
+  final bool fragmentedLines;
+  final bool sparseMultiPageText;
+  final bool lowAnalysisRetention;
+  final bool ocr;
+
+  const _PdfTextCandidate({
+    required this.text,
+    required this.quality,
+    required this.reliability,
+    required this.selectionScore,
+    required this.visibleCharacters,
+    required this.analysisRetention,
+    required this.fragmentedLines,
+    required this.sparseMultiPageText,
+    required this.lowAnalysisRetention,
+    required this.ocr,
+  });
+
+  bool get usable => quality >= DocumentImporter._minimumPdfTextQuality;
 }
 
 /// 圖片選取（供 OCR 使用）
