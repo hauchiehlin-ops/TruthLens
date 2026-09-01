@@ -90,4 +90,24 @@ void main() {
       }
     }
   });
+
+  test('regression: 官方 catalog 不得指向私有 HF 或改名前 repo', () {
+    for (final model in catalog.models) {
+      for (final v in model.variants) {
+        for (final url in [v.url, v.tokenizerUrl, v.pageUrl]) {
+          if (url == null || url.isEmpty) continue;
+          expect(
+            url,
+            isNot(contains('hauchieh/omnitrace-models')),
+            reason: '${v.id} 指向目前匿名下載會回 HTTP 401 的 HuggingFace repo',
+          );
+          expect(
+            url,
+            isNot(contains('hauchiehlin-ops/OmniTrace')),
+            reason: '${v.id} 不得再指向改名前的 OmniTrace repo',
+          );
+        }
+      }
+    }
+  });
 }

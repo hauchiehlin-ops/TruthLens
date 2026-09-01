@@ -58,6 +58,13 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --release
 
+      - name: Prepare Vercel output
+        run: |
+          cp web/vercel.json build/web/vercel.json
+          mkdir -p build/web/api
+          cp web/api/proxy.js build/web/api/proxy.js
+          test -f build/web/api/proxy.js
+
       - name: Link Vercel project
         working-directory: ./build/web
         run: >-

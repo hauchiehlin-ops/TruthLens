@@ -1,5 +1,42 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-09-01（第二百次更新）— 修復改名後模型下載與遠端 catalog 來源
+
+使用者回報：AI 模型管理仍有多個模型無法下載／更新，並懷疑是否和應用程式改名有關。追查後確認是
+多個改名與託管來源殘留造成的連鎖問題：
+
+1. `hauchieh/omnitrace-models` HuggingFace repo 目前對匿名下載回 `HTTP 401 Invalid username or password`，
+   因此多語言 Transformer、兩個中文 Transformer、Qwen 困惑度、Adversarial 等指向該 repo 的 URL 都會失敗。
+2. `ModelCatalogService.remoteUrl` 仍指向改名前的
+   `hauchiehlin-ops/OmniTrace/main/assets/model_catalog.json`，實測為 404，導致線上 App 回退到打包的舊 catalog。
+3. 多處 production proxy fallback 仍硬編碼 `omni-trace-roan-three.vercel.app`，實測該 deployment 已回
+   `DEPLOYMENT_NOT_FOUND`。
+4. GitHub Actions production deploy 已連續失敗，原因是 repository 目前只有 `VERCEL_TOKEN` secret，缺
+   `VERCEL_ORG_ID` 與 `VERCEL_PROJECT_ID`；因此 push 後不會自動更新 production。
+
+主要調整：
+
+1. 依使用者明確授權，公開發布中文 Transformer 模型與 tokenizer 到 GitHub Release
+   `v0.4-models-zh-transformer`：
+   `truthlens_zh_detector_int8.onnx`、`truthlens_zh_detector_tokenizer.json`、
+   `aigc_detector_zhv3_int8.onnx`、`aigc_detector_zhv3_tokenizer.json`。
+2. `assets/model_catalog.json` 改用公開 GitHub Release URL：
+   - mBERT 多語言偵測器 → `v0.2-models-detector`
+   - OmniTrace 中文偵測器與 AIGC zh-v3 → `v0.4-models-zh-transformer`
+   - Qwen2.5-0.5B 困惑度 → `v0.3-models-statistical`
+   - Adversarial 改寫偵測 → `models-v1`
+3. `ModelCatalogService.remoteUrl` 改指向 `hauchiehlin-ops/TruthLens/main/assets/model_catalog.json`。
+4. 將模型下載、連結檢查、文獻檢查、公開頁 canonical/sitemap 產生器等 source 中的舊
+   `omni-trace-roan-three.vercel.app` fallback 改為 `truthlens.vercel.app`。
+5. 補強 catalog regression tests：禁止官方 catalog 指向目前匿名 401 的私有 HF repo，以及改名前的
+   `hauchiehlin-ops/OmniTrace` repo。
+
+**狀態**：✅ GitHub Release `v0.4-models-zh-transformer` 建立完成；✅ 新發布的兩顆中文模型與既有
+GitHub Release 模型皆以 `curl -L -r 0-15` 驗證可公開 range 下載（HTTP 206）；✅
+`jq empty assets/model_catalog.json` 通過；✅ `dart format` 完成；✅
+`flutter test test/model_catalog_test.dart test/model_catalog_asset_test.dart test/model_download_urls_test.dart`
+16 項全數通過；⚠️ production Vercel 仍需補齊 `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` secrets 後才會自動部署。
+
 ## 2026-09-01（第一百九十九次更新）— 修復 Web 模型下載代理回退
 
 使用者回報：模型管理頁今天修改後無法下載模型，畫面顯示

@@ -63,12 +63,12 @@ class LinkVerifier {
     // 可用的正式代理。舊 omni-trace-band-b 專案已失效，不得再作 fallback。
     try {
       if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
-        return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+        return 'https://truthlens.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://truthlens.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 

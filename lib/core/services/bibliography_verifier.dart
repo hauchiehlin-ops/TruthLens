@@ -140,7 +140,7 @@ class BibliographyVerifier {
     // 都會請求到不存在的 localhost `/api/proxy`。
     final appHost = Uri.base.host.toLowerCase();
     if (appHost == 'localhost' || appHost == '127.0.0.1' || appHost == '::1') {
-      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url='
+      return 'https://truthlens.vercel.app/api/proxy?url='
           '${Uri.encodeComponent(targetUrl)}';
     }
 
@@ -626,10 +626,18 @@ class BibliographyVerifier {
     // 結構化定位資訊：有這些才有資格在帶敘事語氣時仍被當成條目
     // （例如某些中文書目會寫成「…，見第 12 卷第 3 期」）。
     final hasStructuredLocator =
-        RegExp(r'^\s*\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]').hasMatch(block) ||
+        RegExp(
+          r'^\s*\[\s*(?!(?:18|19|20)\d\d\b)\d{1,3}\s*\]',
+        ).hasMatch(block) ||
         RegExp(r'\b\d+\s*[\(\:]\s*\d+\s*[\)\:]?\s*\d*\b').hasMatch(block) ||
-        RegExp(r'\b(?:pp?|pages|vol|no)\.\s*\d+', caseSensitive: false).hasMatch(block) ||
-        RegExp(r'(?:https?:\/\/|doi:\s*|arXiv:\s*)', caseSensitive: false).hasMatch(block);
+        RegExp(
+          r'\b(?:pp?|pages|vol|no)\.\s*\d+',
+          caseSensitive: false,
+        ).hasMatch(block) ||
+        RegExp(
+          r'(?:https?:\/\/|doi:\s*|arXiv:\s*)',
+          caseSensitive: false,
+        ).hasMatch(block);
 
     // 敘事散文不是書目條目。一篇「教你怎麼投期刊」的文章滿篇都是「期刊」，
     // 但它句句都在對讀者說話——這是最可靠的區隔。
@@ -1084,7 +1092,7 @@ class BibliographyVerifier {
               uri,
               headers: {
                 'User-Agent':
-                    'OmniTrace/1.0 (https://github.com/hauchiehlin-ops/OmniTrace; mailto:support@omnitrace.app)',
+                    'OmniTrace/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@omnitrace.app)',
               },
             )
             .timeout(timeout);

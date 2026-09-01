@@ -6,7 +6,7 @@
 List<String> modelDownloadCandidateUrls(
   String originalUrl, {
   Uri? baseUri,
-  String productionOrigin = 'https://omni-trace-roan-three.vercel.app',
+  String productionOrigin = 'https://truthlens.vercel.app',
 }) {
   final original = Uri.parse(originalUrl);
   final candidates = <String>[];

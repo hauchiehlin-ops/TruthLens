@@ -27,7 +27,7 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
   (Locale('pt'), 'Português'),
 ];
 
-const _publicPageOrigin = 'https://omni-trace-roan-three.vercel.app';
+const _publicPageOrigin = 'https://truthlens.vercel.app';
 
 enum PublicSeoEntryPoint {
   freeDetector('/free-ai-detector'),

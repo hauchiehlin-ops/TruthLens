@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:omnitrace/core/detection/model_catalog_service.dart';
 
 /// 隨 App 打包的 catalog 是模型接線的唯一真相來源，
 /// 而接線錯誤會**靜默失效**——模型照樣下載、照樣推論，只是輸出全是垃圾。
@@ -129,7 +130,7 @@ void main() {
       (v) => v['id'] == 'aigc-detector-zhv3-int8',
     );
     final legacy = variants.firstWhere(
-      (v) => v['id'] == 'truthlens-mbert-multilingual-int8',
+      (v) => v['id'] == 'omnitrace-mbert-multilingual-int8',
     );
 
     expect(modern['languages'], contains('zh'));
@@ -158,28 +159,35 @@ void main() {
     }
   });
 
-  test('模型來源必須支援瀏覽器 CORS，不得使用 GitHub Releases', () {
-    // GitHub Releases 的資產最終由 Azure Blob 經 Fastly 提供，
-    // 完全不回 access-control-allow-origin，瀏覽器 fetch() 一律被阻擋。
-    // App 雖有 Edge 代理備援，但本機開發環境（flutter run -d web-server）
-    // 沒有 /api/proxy，等於完全下載不了——實測 2026-08-19 確認。
+  test('模型來源不得指向已改為私有或舊專案的下載位置', () {
     for (final model in catalog['models'] as List) {
       for (final v in ((model as Map)['variants'] as List)) {
         final variant = v as Map<String, dynamic>;
         for (final key in ['url', 'tokenizer_url']) {
           final url = variant[key] as String?;
           if (url == null || url.isEmpty) continue;
+          final uri = Uri.parse(url);
           expect(
-            Uri.parse(url).host,
-            isNot(anyOf('github.com', 'objects.githubusercontent.com')),
+            url,
+            isNot(contains('hauchieh/omnitrace-models')),
             reason:
-                '${variant['id']} 的 $key 指向 GitHub Releases，'
-                '該來源無 CORS 標頭。請改用 HuggingFace 等支援 CORS 的主機，'
-                'GitHub Releases 只作封存鏡像。',
+                '${variant['id']} 的 $key 指向目前匿名下載會回 HTTP 401 的私有 HuggingFace repo',
           );
+          if (uri.host == 'github.com') {
+            expect(
+              uri.pathSegments,
+              contains('TruthLens'),
+              reason: '${variant['id']} 的 $key 不得再指向改名前的 OmniTrace release',
+            );
+          }
         }
       }
     }
+  });
+
+  test('遠端 catalog 來源必須指向目前 TruthLens repo', () {
+    expect(ModelCatalogService.remoteUrl, contains('/TruthLens/'));
+    expect(ModelCatalogService.remoteUrl, isNot(contains('/OmniTrace/')));
   });
 }
 

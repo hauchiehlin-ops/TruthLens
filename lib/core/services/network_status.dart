@@ -14,12 +14,12 @@ class NetworkStatus {
     // 使用不同端點，造成「探測離線、實際服務正常」的矛盾狀態。
     try {
       if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
-        return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+        return 'https://truthlens.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://truthlens.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 
