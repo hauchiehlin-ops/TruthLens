@@ -31,6 +31,22 @@
     pt: 'Idioma',
   };
 
+  const navLabels = {
+    en: 'Main navigation',
+    'zh-Hant': '主要導覽',
+    'zh-Hans': '主要导航',
+    ja: 'メインナビゲーション',
+    ko: '기본 탐색',
+    th: 'การนำทางหลัก',
+    ms: 'Navigasi utama',
+    es: 'Navegación principal',
+    id: 'Navigasi utama',
+    ru: 'Основная навигация',
+    de: 'Hauptnavigation',
+    fr: 'Navigation principale',
+    pt: 'Navegação principal',
+  };
+
   const common = {
     en: {
       lang: 'en', nav: ['Free detector', 'Privacy guide', 'PDF limits', 'DOCX evidence', 'Open workspace'],
@@ -162,47 +178,226 @@
     nav.appendChild(wrap);
   }
 
+  function detectorLandingCopy(lang) {
+    const copy = {
+      en: {
+        actionSecondary: 'Open the other free entry',
+        panels: [
+          ['Free browser preview', 'Try short text without an account. Use the full TruthLens workspace when you need long documents, sentence-level reasons, PDF export, or history.'],
+          ['Multi-engine evidence', 'The full workspace separates text model, statistical, stylometry, rewriting defense, source-file, and reference-check signals so one score does not become the verdict.'],
+          ['Private documents stay local', 'TruthLens is local-first. For papers, contracts, internal drafts, and unpublished work, that privacy boundary matters as much as the score.'],
+        ],
+        noteTitle: 'Important',
+        note: 'This free page is a short-text preview. It should not be used alone for academic, employment, or disciplinary decisions.',
+        article: ['What the preview checks', 'It looks for local signals such as sentence rhythm, repeated transitions, lexical repetition, and citation-like claims that deserve follow-up.', 'When to use the full workspace', 'Use the full workspace for PDF, DOCX, ODT, plain text, OCR, reference checks, source metadata, sentence-level evidence, history, and report export.'],
+        footer: 'Local-first AI content detection and document forensics.',
+      },
+      'zh-Hant': {
+        actionSecondary: '開啟另一個免費入口',
+        panels: [
+          ['免費瀏覽器預覽', '不需登入即可先試短文。需要長文件、逐句理由、PDF 報告或歷史紀錄時，再使用完整 TruthLens 工作台。'],
+          ['多引擎證據', '完整工作台會拆開文字模型、統計特徵、寫作風格、改寫防禦、來源檔案與文獻核實訊號，不把單一分數當成結論。'],
+          ['機密文件留在本機', 'TruthLens 採本地優先。對論文、合約、內部草稿與未公開稿件，這條隱私界線和分數同樣重要。'],
+        ],
+        noteTitle: '提醒',
+        note: '這個免費頁是短文預覽，不能單獨作為學術、聘僱或懲戒決策依據。',
+        article: ['預覽會檢查什麼', '它會檢查句子節奏、重複轉折、詞彙重複與引用型主張等需要後續確認的本機訊號。', '何時使用完整工作台', '需要 PDF、DOCX、ODT、純文字、OCR、文獻核實、來源中繼資料、逐句證據、歷史紀錄與報告匯出時，請使用完整工作台。'],
+        footer: '本地優先 AI 內容檢測與文件鑑識。',
+      },
+      'zh-Hans': {
+        actionSecondary: '打开另一个免费入口',
+        panels: [
+          ['免费浏览器预览', '无需登录即可先试短文。需要长文档、逐句理由、PDF 报告或历史记录时，再使用完整 TruthLens 工作台。'],
+          ['多引擎证据', '完整工作台会拆分文字模型、统计特征、写作风格、改写防御、来源文件与文献核实信号，不把单一分数当成结论。'],
+          ['机密文件留在本机', 'TruthLens 采用本地优先。对论文、合同、内部草稿与未公开稿件，这条隐私边界和分数同样重要。'],
+        ],
+        noteTitle: '提醒',
+        note: '这个免费页是短文预览，不能单独作为学术、聘用或纪律决策依据。',
+        article: ['预览会检查什么', '它会检查句子节奏、重复转折、词汇重复与引用型主张等需要后续确认的本地信号。', '何时使用完整工作台', '需要 PDF、DOCX、ODT、纯文本、OCR、文献核实、来源元数据、逐句证据、历史记录与报告导出时，请使用完整工作台。'],
+        footer: '本地优先 AI 内容检测与文件鉴识。',
+      },
+      ja: {
+        actionSecondary: '別の無料入口を開く',
+        panels: [
+          ['無料ブラウザプレビュー', 'ログインなしで短文を試せます。長文、文ごとの理由、PDF レポート、履歴が必要な場合は完全な TruthLens ワークスペースを使用してください。'],
+          ['複数エンジンの証拠', '完全版ではテキストモデル、統計、文体、書き換え防御、出所ファイル、参考文献確認を分け、単一スコアを結論にしません。'],
+          ['機密文書はローカルに保持', 'TruthLens はローカル優先です。論文、契約、内部草稿、未公開原稿では、このプライバシー境界がスコアと同じくらい重要です。'],
+        ],
+        noteTitle: '重要',
+        note: 'この無料ページは短文プレビューです。学術、雇用、懲戒上の判断に単独で使わないでください。',
+        article: ['プレビューで確認すること', '文のリズム、繰り返しの接続表現、語彙反復、確認が必要な引用らしい主張などのローカル信号を見ます。', '完全版を使う場面', 'PDF、DOCX、ODT、プレーンテキスト、OCR、参考文献確認、出所メタデータ、文ごとの証拠、履歴、レポート出力が必要な場合に使います。'],
+        footer: 'ローカル優先の AI コンテンツ検出と文書フォレンジック。',
+      },
+      ko: {
+        actionSecondary: '다른 무료 입구 열기',
+        panels: [
+          ['무료 브라우저 미리보기', '로그인 없이 짧은 글을 먼저 시험할 수 있습니다. 긴 문서, 문장별 이유, PDF 보고서, 기록이 필요하면 전체 TruthLens 작업 공간을 사용하세요.'],
+          ['다중 엔진 증거', '전체 작업 공간은 텍스트 모델, 통계, 문체, 재작성 방어, 원본 파일, 참고문헌 검증 신호를 분리하여 단일 점수를 결론으로 만들지 않습니다.'],
+          ['기밀 문서는 로컬에 유지', 'TruthLens는 로컬 우선입니다. 논문, 계약서, 내부 초안, 미공개 원고에서는 이 개인정보 경계가 점수만큼 중요합니다.'],
+        ],
+        noteTitle: '중요',
+        note: '이 무료 페이지는 짧은 글 미리보기입니다. 학업, 고용, 징계 판단에 단독으로 사용하지 마세요.',
+        article: ['미리보기가 확인하는 것', '문장 리듬, 반복 전환 표현, 어휘 반복, 후속 확인이 필요한 인용형 주장 같은 로컬 신호를 봅니다.', '전체 작업 공간이 필요한 때', 'PDF, DOCX, ODT, 일반 텍스트, OCR, 참고문헌 검증, 출처 메타데이터, 문장별 증거, 기록, 보고서 내보내기가 필요할 때 사용합니다.'],
+        footer: '로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.',
+      },
+      th: {
+        actionSecondary: 'เปิดทางเข้าฟรีอีกหน้า',
+        panels: [
+          ['ตัวอย่างฟรีในเบราว์เซอร์', 'ลองข้อความสั้นได้โดยไม่ต้องเข้าสู่ระบบ หากต้องใช้เอกสารยาว เหตุผลรายประโยค รายงาน PDF หรือประวัติ ให้ใช้พื้นที่ทำงาน TruthLens แบบเต็ม'],
+          ['หลักฐานหลายเครื่องยนต์', 'พื้นที่ทำงานเต็มแยกโมเดลข้อความ สถิติ สไตล์การเขียน การป้องกันการเขียนใหม่ ไฟล์ต้นทาง และการตรวจอ้างอิง จึงไม่ให้คะแนนเดียวกลายเป็นข้อสรุป'],
+          ['เอกสารลับอยู่ในเครื่อง', 'TruthLens ให้ความสำคัญกับการประมวลผลในเครื่อง สำหรับวิทยานิพนธ์ สัญญา ร่างภายใน และงานที่ยังไม่เผยแพร่ ขอบเขตความเป็นส่วนตัวนี้สำคัญเท่าคะแนน'],
+        ],
+        noteTitle: 'สำคัญ',
+        note: 'หน้านี้เป็นตัวอย่างข้อความสั้นฟรี ไม่ควรใช้เดี่ยว ๆ เพื่อตัดสินทางวิชาการ การจ้างงาน หรือวินัย',
+        article: ['ตัวอย่างตรวจอะไร', 'ตรวจสัญญาณในเครื่อง เช่น จังหวะประโยค คำเชื่อมซ้ำ การซ้ำคำ และข้ออ้างคล้ายการอ้างอิงที่ควรตรวจต่อ', 'เมื่อใดควรใช้พื้นที่ทำงานเต็ม', 'ใช้เมื่อจำเป็นต้องตรวจ PDF, DOCX, ODT, ข้อความล้วน, OCR, เอกสารอ้างอิง เมทาดาทาแหล่งที่มา หลักฐานรายประโยค ประวัติ และส่งออกรายงาน'],
+        footer: 'การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง',
+      },
+      ms: {
+        actionSecondary: 'Buka pintu masuk percuma lain',
+        panels: [
+          ['Pratonton percuma dalam pelayar', 'Cuba teks pendek tanpa log masuk. Gunakan ruang kerja TruthLens penuh apabila anda perlukan dokumen panjang, sebab per ayat, laporan PDF atau sejarah.'],
+          ['Bukti berbilang enjin', 'Ruang kerja penuh memisahkan model teks, statistik, gaya, pertahanan tulis semula, fail sumber dan semakan rujukan supaya satu skor tidak menjadi keputusan.'],
+          ['Dokumen sulit kekal setempat', 'TruthLens mengutamakan pemprosesan setempat. Untuk tesis, kontrak, draf dalaman dan manuskrip belum diterbitkan, sempadan privasi ini sama penting dengan skor.'],
+        ],
+        noteTitle: 'Penting',
+        note: 'Halaman percuma ini ialah pratonton teks pendek. Jangan gunakannya secara tunggal untuk keputusan akademik, pekerjaan atau disiplin.',
+        article: ['Perkara yang diperiksa', 'Ia memeriksa isyarat setempat seperti ritma ayat, peralihan berulang, pengulangan leksikal dan dakwaan seperti petikan yang perlu disusuli.', 'Bila menggunakan ruang kerja penuh', 'Gunakan untuk PDF, DOCX, ODT, teks biasa, OCR, semakan rujukan, metadata sumber, bukti per ayat, sejarah dan eksport laporan.'],
+        footer: 'Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.',
+      },
+      es: {
+        actionSecondary: 'Abrir otra entrada gratuita',
+        panels: [
+          ['Vista previa gratuita en el navegador', 'Prueba texto breve sin iniciar sesión. Usa el área completa de TruthLens cuando necesites documentos largos, razones por frase, informe PDF o historial.'],
+          ['Evidencia de varios motores', 'El área completa separa modelo textual, estadísticas, estilo, defensa contra reescritura, archivo fuente y referencias para que una puntuación no sea el veredicto.'],
+          ['Los documentos confidenciales quedan locales', 'TruthLens prioriza lo local. Para tesis, contratos, borradores internos y manuscritos inéditos, ese límite de privacidad importa tanto como la puntuación.'],
+        ],
+        noteTitle: 'Importante',
+        note: 'Esta página gratuita es una vista previa de texto breve. No debe usarse sola para decisiones académicas, laborales o disciplinarias.',
+        article: ['Qué revisa la vista previa', 'Revisa señales locales como ritmo de frases, transiciones repetidas, repetición léxica y afirmaciones tipo cita que requieren seguimiento.', 'Cuándo usar el área completa', 'Úsala para PDF, DOCX, ODT, texto plano, OCR, revisión de referencias, metadatos de origen, evidencia por frase, historial y exportación de informes.'],
+        footer: 'Detección de contenido IA y análisis documental local primero.',
+      },
+      id: {
+        actionSecondary: 'Buka pintu gratis lain',
+        panels: [
+          ['Pratinjau gratis di browser', 'Coba teks pendek tanpa login. Gunakan ruang kerja TruthLens penuh saat perlu dokumen panjang, alasan per kalimat, laporan PDF, atau riwayat.'],
+          ['Bukti multi-mesin', 'Ruang kerja penuh memisahkan model teks, statistik, gaya, pertahanan penulisan ulang, file sumber, dan pemeriksaan referensi agar satu skor tidak menjadi vonis.'],
+          ['Dokumen rahasia tetap lokal', 'TruthLens mengutamakan pemrosesan lokal. Untuk tesis, kontrak, draf internal, dan naskah belum terbit, batas privasi ini sama pentingnya dengan skor.'],
+        ],
+        noteTitle: 'Penting',
+        note: 'Halaman gratis ini adalah pratinjau teks pendek. Jangan gunakan sendirian untuk keputusan akademik, pekerjaan, atau disipliner.',
+        article: ['Yang diperiksa pratinjau', 'Pratinjau memeriksa sinyal lokal seperti ritme kalimat, transisi berulang, pengulangan leksikal, dan klaim mirip kutipan yang perlu ditindaklanjuti.', 'Kapan memakai ruang kerja penuh', 'Gunakan untuk PDF, DOCX, ODT, teks biasa, OCR, pemeriksaan referensi, metadata sumber, bukti per kalimat, riwayat, dan ekspor laporan.'],
+        footer: 'Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.',
+      },
+      ru: {
+        actionSecondary: 'Открыть другой бесплатный вход',
+        panels: [
+          ['Бесплатный предпросмотр в браузере', 'Проверьте короткий текст без входа. Полная рабочая область TruthLens нужна для длинных документов, построчных причин, PDF-отчета или истории.'],
+          ['Доказательства нескольких модулей', 'Полная рабочая область разделяет текстовую модель, статистику, стиль, защиту от переписывания, исходный файл и проверку ссылок, чтобы один балл не становился вердиктом.'],
+          ['Конфиденциальные документы остаются локально', 'TruthLens работает локально прежде всего. Для диссертаций, договоров, внутренних черновиков и неопубликованных текстов эта граница приватности важна не меньше оценки.'],
+        ],
+        noteTitle: 'Важно',
+        note: 'Эта бесплатная страница является предпросмотром короткого текста. Не используйте ее отдельно для академических, трудовых или дисциплинарных решений.',
+        article: ['Что проверяет предпросмотр', 'Он проверяет локальные признаки: ритм предложений, повторяющиеся переходы, лексические повторы и похожие на цитаты утверждения, требующие проверки.', 'Когда использовать полную рабочую область', 'Используйте ее для PDF, DOCX, ODT, обычного текста, OCR, проверки ссылок, метаданных источника, построчных доказательств, истории и экспорта отчетов.'],
+        footer: 'Локальная AI-проверка контента и экспертиза документов.',
+      },
+      de: {
+        actionSecondary: 'Anderen kostenlosen Einstieg öffnen',
+        panels: [
+          ['Kostenlose Browser-Vorschau', 'Testen Sie kurzen Text ohne Anmeldung. Nutzen Sie den vollständigen TruthLens-Arbeitsbereich für lange Dokumente, Satzbelege, PDF-Berichte oder Verlauf.'],
+          ['Mehrere Belegmodule', 'Der vollständige Arbeitsbereich trennt Textmodell, Statistik, Stilometrie, Umschreibschutz, Quelldatei und Referenzprüfung, damit ein einzelner Wert kein Urteil wird.'],
+          ['Vertrauliche Dokumente bleiben lokal', 'TruthLens ist lokal zuerst. Für Abschlussarbeiten, Verträge, interne Entwürfe und unveröffentlichte Manuskripte ist diese Datenschutzgrenze so wichtig wie die Punktzahl.'],
+        ],
+        noteTitle: 'Wichtig',
+        note: 'Diese kostenlose Seite ist eine Kurztext-Vorschau. Sie sollte nicht allein für akademische, arbeitsrechtliche oder disziplinarische Entscheidungen verwendet werden.',
+        article: ['Was die Vorschau prüft', 'Sie prüft lokale Signale wie Satzrhythmus, wiederholte Übergänge, Wortwiederholungen und zitationsartige Aussagen, die nachverfolgt werden sollten.', 'Wann der vollständige Arbeitsbereich sinnvoll ist', 'Nutzen Sie ihn für PDF, DOCX, ODT, Klartext, OCR, Referenzprüfung, Quellenmetadaten, Satzbelege, Verlauf und Berichtsexport.'],
+        footer: 'Lokale KI-Inhaltserkennung und Dokumentforensik.',
+      },
+      fr: {
+        actionSecondary: 'Ouvrir une autre entrée gratuite',
+        panels: [
+          ['Aperçu gratuit dans le navigateur', 'Essayez un texte court sans compte. Utilisez l’espace TruthLens complet pour les longs documents, les raisons par phrase, le rapport PDF ou l’historique.'],
+          ['Indices multi-moteurs', 'L’espace complet sépare modèle texte, statistiques, stylométrie, défense contre la réécriture, fichier source et vérification des références afin qu’un seul score ne devienne pas un verdict.'],
+          ['Les documents confidentiels restent locaux', 'TruthLens privilégie le local. Pour thèses, contrats, brouillons internes et manuscrits non publiés, cette limite de confidentialité compte autant que le score.'],
+        ],
+        noteTitle: 'Important',
+        note: 'Cette page gratuite est un aperçu de texte court. Elle ne doit pas être utilisée seule pour des décisions académiques, professionnelles ou disciplinaires.',
+        article: ['Ce que vérifie l’aperçu', 'Il examine des signaux locaux comme le rythme des phrases, les transitions répétées, la répétition lexicale et les affirmations proches de citations à vérifier.', 'Quand utiliser l’espace complet', 'Utilisez-le pour PDF, DOCX, ODT, texte brut, OCR, vérification des références, métadonnées de source, preuves par phrase, historique et export de rapports.'],
+        footer: 'Détection de contenu IA et analyse documentaire locale.',
+      },
+      pt: {
+        actionSecondary: 'Abrir outra entrada gratuita',
+        panels: [
+          ['Prévia gratuita no navegador', 'Teste texto curto sem login. Use o workspace completo do TruthLens quando precisar de documentos longos, motivos por frase, relatório PDF ou histórico.'],
+          ['Evidência de vários motores', 'O workspace completo separa modelo textual, estatísticas, estilo, defesa contra reescrita, arquivo fonte e verificação de referências para que uma pontuação não vire veredito.'],
+          ['Documentos confidenciais ficam locais', 'TruthLens prioriza o local. Para teses, contratos, rascunhos internos e manuscritos inéditos, essa fronteira de privacidade importa tanto quanto a pontuação.'],
+        ],
+        noteTitle: 'Importante',
+        note: 'Esta página gratuita é uma prévia de texto curto. Não deve ser usada sozinha para decisões acadêmicas, profissionais ou disciplinares.',
+        article: ['O que a prévia verifica', 'Ela verifica sinais locais como ritmo das frases, transições repetidas, repetição lexical e afirmações parecidas com citações que merecem acompanhamento.', 'Quando usar o workspace completo', 'Use para PDF, DOCX, ODT, texto simples, OCR, verificação de referências, metadados de origem, evidência por frase, histórico e exportação de relatórios.'],
+        footer: 'Detecção de conteúdo IA e forense documental local-first.',
+      },
+    };
+    return copy[lang] || copy.en;
+  }
+
+  function articleFooter(lang) {
+    const footers = {
+      en: 'Local-first AI content detection and document forensics.',
+      'zh-Hant': '本地優先 AI 內容檢測與文件鑑識。',
+      'zh-Hans': '本地优先 AI 内容检测与文件鉴识。',
+      ja: 'ローカル優先の AI コンテンツ検出と文書フォレンジック。',
+      ko: '로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.',
+      th: 'การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง',
+      ms: 'Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.',
+      es: 'Detección de contenido IA y análisis documental local primero.',
+      id: 'Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.',
+      ru: 'Локальная AI-проверка контента и экспертиза документов.',
+      de: 'Lokale KI-Inhaltserkennung und Dokumentforensik.',
+      fr: 'Détection de contenu IA et analyse documentaire locale.',
+      pt: 'Detecção de conteúdo IA e forense documental local-first.',
+    };
+    return footers[lang] || footers.en;
+  }
+
   function translateDetectorLanding(key, pack, page) {
     if (key !== 'free' && key !== 'zhFree') return;
-    const body = pack.article.body;
+    const body = detectorLandingCopy(pack.lang);
     const actions = document.querySelectorAll('.tl-actions a');
     if (actions[0]) actions[0].textContent = pack.nav[4];
-    if (actions[1]) actions[1].textContent = pack.nav[0];
+    if (actions[1]) actions[1].textContent = body.actionSecondary;
     setText('#detector-title', page[0]);
 
     const panelTitles = document.querySelectorAll('.tl-panel h3');
     const panelBodies = document.querySelectorAll('.tl-panel p');
-    if (panelTitles[0]) panelTitles[0].textContent = page[1];
-    if (panelBodies[0]) panelBodies[0].textContent = page[2];
-    if (panelTitles[1]) panelTitles[1].textContent = body[0];
-    if (panelBodies[1]) panelBodies[1].textContent = body[1];
-    if (panelTitles[2]) panelTitles[2].textContent = body[2];
-    if (panelBodies[2]) panelBodies[2].textContent = body[3];
+    body.panels.forEach((panel, index) => {
+      if (panelTitles[index]) panelTitles[index].textContent = panel[0];
+      if (panelBodies[index]) panelBodies[index].textContent = panel[1];
+    });
 
     const note = document.querySelector('.tl-note');
     if (note) {
       note.replaceChildren();
       const strong = document.createElement('strong');
-      strong.textContent = body[0] + ':';
-      note.append(strong, ' ' + body[1]);
+      strong.textContent = body.noteTitle + ':';
+      note.append(strong, ' ' + body.note);
     }
 
     const article = document.querySelector('section.tl-article');
     if (article) {
       article.innerHTML = '';
       const h2a = document.createElement('h2');
-      h2a.textContent = body[0];
+      h2a.textContent = body.article[0];
       const p1 = document.createElement('p');
-      p1.textContent = body[1];
+      p1.textContent = body.article[1];
       const h2b = document.createElement('h2');
-      h2b.textContent = body[2];
+      h2b.textContent = body.article[2];
       const p2 = document.createElement('p');
-      p2.textContent = body[3];
+      p2.textContent = body.article[3];
       article.append(h2a, p1, h2b, p2);
     }
 
     const footer = document.querySelector('.tl-footer');
-    if (footer) footer.textContent = '© 2026 TruthLens. ' + page[2];
+    if (footer) footer.textContent = '© 2026 TruthLens. ' + body.footer;
   }
 
   const params = new URLSearchParams(window.location.search || '');
@@ -223,6 +418,12 @@
   document.title = page[0] + ' | TruthLens';
   const description = document.querySelector('meta[name="description"]');
   if (description) description.setAttribute('content', page[2]);
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', page[0]);
+  const ogDescription = document.querySelector('meta[property="og:description"]');
+  if (ogDescription) ogDescription.setAttribute('content', page[2]);
+  const nav = document.querySelector('.tl-nav');
+  if (nav) nav.setAttribute('aria-label', navLabels[pack.lang] || navLabels.en);
 
   setText('h1', page[0]);
   setText('.tl-kicker', page[1]);
@@ -281,5 +482,7 @@
     const p2 = document.createElement('p');
     p2.textContent = body[3];
     article.append(kicker, h1, lead, h2a, p1, h2b, p2);
+    const footer = document.querySelector('.tl-footer');
+    if (footer) footer.textContent = '© 2026 TruthLens. ' + articleFooter(pack.lang);
   }
 })();

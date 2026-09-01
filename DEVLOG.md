@@ -1,5 +1,25 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十三次更新）— 深度清理公開頁混語系文字
+
+使用者回報：首頁「公開工具與指南」與 7 個公開子頁雖已加入語系切換，但內文、卡片、提示、
+狀態與 footer 仍可見中英混雜，其他語系也可能出現同樣問題。此次把公開頁視為完整產品介面，
+重新掃描可見文字與可近用標籤，將非專業術語的介面文字改為跟隨目前語系。
+
+主要調整：
+
+1. 首頁 `home_i18n.js` 清除非英文語系中的 `Free AI Detector`、`Free short-text preview` 等介面英文殘留。
+2. 免費短文檢測頁改用 `detectorLandingCopy()`，三張價值卡、提醒區、下方文章、CTA 與 footer 都改為各語系專屬文案。
+3. 公開頁共用 `page_i18n.js` 會同步更新 `og:title`、`og:description`、導覽列 `aria-label` 與文章 footer。
+4. 保留 `AI`、`PDF`、`DOCX`、`ODT`、`OCR`、`DOI`、`WebAssembly`、`TruthLens`、`Low burstiness` 等專業術語，其餘說明文字本地化。
+5. 新增測試防止首頁非英文資料再出現 `Free short-text preview`，並確認免費檢測頁有繁中、日文、韓文等專屬文字。
+6. 版本同步升級為 `4.13.5+1476`。
+
+**狀態**：✅ `dart format` 完成；✅ `flutter test test/web_seo_test.dart` 14 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條 `detectrl_zh_char_scorer.dart`
+的 `prefer_initializing_formals` info）；✅ `flutter build web` 成功產出 `build/web`，
+確認 `build/web/version.json` 為 `4.13.5/1476`。
+
 ## 2026-09-01（第一百九十二次更新）— 首頁公開入口納入多國語系
 
 使用者指出：根網址的公開資訊頁從第一屏開始就應該滿足多國語系需求，並具備語系選單；

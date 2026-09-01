@@ -172,6 +172,16 @@ void main() {
     expect(homeI18n, contains("data-home-language"));
     expect(homeI18n, contains("data-home-card-link"));
     expect(homeI18n, contains("workspace=1&lang="));
+    expect(homeI18n, isNot(contains("'Free short-text preview'")));
+    expect(homeI18n, contains('免費短文檢測器'));
+    expect(homeI18n, contains('無料短文検出ツール'));
+    expect(homeI18n, contains('무료 짧은 글 감지기'));
+    expect(i18n, contains('detectorLandingCopy(pack.lang)'));
+    expect(i18n, contains('articleFooter(pack.lang)'));
+    expect(i18n, contains("nav.setAttribute('aria-label'"));
+    expect(i18n, contains('開啟另一個免費入口'));
+    expect(i18n, contains('別の無料入口を開く'));
+    expect(i18n, contains('다른 무료 입구 열기'));
   });
 
   test('Vercel serves static SEO files before the Flutter fallback', () {
