@@ -44,6 +44,7 @@ const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
 const truthLensWorkerScript = "truthlens_sw.js";
 const truthLensShellCache = "truthlens-shell-v1";
 const truthLensPublicLanguageKey = "truthlens-public-lang";
+const truthLensFlutterLocaleKey = "flutter.app_locale";
 
 function normalizeTruthLensLocale(value) {
   if (value == null || value === "") return "zh-Hant";
@@ -80,6 +81,33 @@ function currentTruthLensPublicLocale() {
       navigator.language ||
       document.documentElement.lang,
   );
+}
+
+function encodeTruthLensFlutterLocale(lang) {
+  const normalized = normalizeTruthLensLocale(lang);
+  if (normalized === "zh-Hant") return "zh_Hant";
+  if (normalized === "zh-Hans") return "zh_Hans";
+  return normalized;
+}
+
+function persistTruthLensLocale(lang) {
+  const normalized = normalizeTruthLensLocale(lang);
+  writeTruthLensStorage(window.localStorage, truthLensPublicLanguageKey, normalized);
+  writeTruthLensStorage(
+    window.localStorage,
+    truthLensFlutterLocaleKey,
+    JSON.stringify(encodeTruthLensFlutterLocale(normalized)),
+  );
+  return normalized;
+}
+
+function truthLensWorkspaceUrl(lang) {
+  const url = new URL(window.location.href);
+  url.pathname = "/";
+  url.search = "";
+  url.searchParams.set("workspace", "1");
+  url.searchParams.set("lang", normalizeTruthLensLocale(lang));
+  return url.pathname + url.search;
 }
 
 function truthLensStartupCopy(key) {
@@ -128,6 +156,66 @@ function truthLensStartupCopy(key) {
       de: "Neu laden",
       fr: "Recharger",
       pt: "Recarregar",
+    },
+    loading: {
+      en: "Loading the local analysis workspace...",
+      "zh-Hant": "正在載入本地檢測工作台…",
+      "zh-Hans": "正在载入本地检测工作台…",
+      ja: "ローカル検出ワークスペースを読み込んでいます…",
+      ko: "로컬 감지 작업 공간을 불러오는 중입니다…",
+      th: "กำลังโหลดพื้นที่ทำงานตรวจจับในเครื่อง…",
+      ms: "Memuatkan ruang kerja pengesanan setempat...",
+      es: "Cargando el área de detección local...",
+      id: "Memuat ruang kerja deteksi lokal...",
+      ru: "Загрузка локальной рабочей области проверки...",
+      de: "Lokaler Erkennungsbereich wird geladen...",
+      fr: "Chargement de l’espace de détection local...",
+      pt: "Carregando o workspace de detecção local...",
+    },
+    loadingCompat: {
+      en: "Loading the local analysis workspace in {platform} compatibility mode...",
+      "zh-Hant": "正在以 {platform} 相容模式載入本地檢測工作台…",
+      "zh-Hans": "正在以 {platform} 兼容模式载入本地检测工作台…",
+      ja: "{platform} 互換モードでローカル検出ワークスペースを読み込んでいます…",
+      ko: "{platform} 호환 모드로 로컬 감지 작업 공간을 불러오는 중입니다…",
+      th: "กำลังโหลดพื้นที่ทำงานตรวจจับในเครื่องด้วยโหมดเข้ากันได้กับ {platform}…",
+      ms: "Memuatkan ruang kerja pengesanan setempat dalam mod keserasian {platform}...",
+      es: "Cargando el área de detección local en modo compatible con {platform}...",
+      id: "Memuat ruang kerja deteksi lokal dalam mode kompatibilitas {platform}...",
+      ru: "Загрузка локальной рабочей области проверки в режиме совместимости {platform}...",
+      de: "Lokaler Erkennungsbereich wird im {platform}-Kompatibilitätsmodus geladen...",
+      fr: "Chargement de l’espace de détection local en mode de compatibilité {platform}...",
+      pt: "Carregando o workspace de detecção local no modo de compatibilidade {platform}...",
+    },
+    initializing: {
+      en: "Initializing the workspace interface...",
+      "zh-Hant": "正在初始化工作台介面…",
+      "zh-Hans": "正在初始化工作台界面…",
+      ja: "ワークスペース画面を初期化しています…",
+      ko: "작업 공간 인터페이스를 초기화하는 중입니다…",
+      th: "กำลังเริ่มต้นส่วนติดต่อพื้นที่ทำงาน…",
+      ms: "Memulakan antara muka ruang kerja...",
+      es: "Inicializando la interfaz del área de trabajo...",
+      id: "Menginisialisasi antarmuka ruang kerja...",
+      ru: "Инициализация интерфейса рабочей области...",
+      de: "Arbeitsbereich-Oberfläche wird initialisiert...",
+      fr: "Initialisation de l’interface de l’espace de travail...",
+      pt: "Inicializando a interface do workspace...",
+    },
+    opening: {
+      en: "Opening detection workspace...",
+      "zh-Hant": "正在開啟檢測工作台…",
+      "zh-Hans": "正在打开检测工作台…",
+      ja: "検出ワークスペースを開いています…",
+      ko: "감지 작업 공간을 여는 중입니다…",
+      th: "กำลังเปิดพื้นที่ทำงานตรวจจับ…",
+      ms: "Membuka ruang kerja pengesanan...",
+      es: "Abriendo el área de detección...",
+      id: "Membuka ruang kerja deteksi...",
+      ru: "Открытие рабочей области проверки...",
+      de: "Erkennungsbereich wird geöffnet...",
+      fr: "Ouverture de l’espace de détection...",
+      pt: "Abrindo o workspace de detecção...",
     },
   };
   const lang = currentTruthLensPublicLocale();
@@ -279,6 +367,7 @@ function registerTruthLensWorker() {
 }
 
 async function bootTruthLens() {
+  persistTruthLensLocale(currentTruthLensPublicLocale());
   let hadLegacyWorker = false;
   try {
     hadLegacyWorker = await removeLegacyFlutterWorker();
@@ -325,8 +414,8 @@ async function bootTruthLens() {
   try {
     updateTruthLensStartupStatus(
       compatibilityPlatform != null
-        ? `正在以 ${compatibilityPlatform} 相容模式載入本機分析工作台…`
-        : "正在載入本機分析工作台…",
+        ? truthLensStartupCopy("loadingCompat").replace("{platform}", compatibilityPlatform)
+        : truthLensStartupCopy("loading"),
     );
     await _flutter.loader.load({
       // Do not pass serviceWorkerSettings. Flutter's generated worker now
@@ -335,7 +424,7 @@ async function bootTruthLens() {
       config: flutterConfig,
       onEntrypointLoaded: async function(engineInitializer) {
         try {
-          updateTruthLensStartupStatus("正在初始化工作台介面…");
+          updateTruthLensStartupStatus(truthLensStartupCopy("initializing"));
           // Loader settings choose the CanvasKit asset. Passing the same
           // settings into initializeEngine is required for engine options such
           // as canvasKitForceCpuOnly to take effect.
@@ -379,11 +468,12 @@ function wireTruthLensStartButton() {
   if (!start) return;
   start.addEventListener("click", (event) => {
     event.preventDefault();
+    const lang = persistTruthLensLocale(currentTruthLensPublicLocale());
     if (window.history && window.history.replaceState) {
-      window.history.replaceState(null, "", "/?workspace=1");
+      window.history.replaceState(null, "", truthLensWorkspaceUrl(lang));
     }
     start.setAttribute("aria-disabled", "true");
-    start.textContent = "正在開啟檢測工作台…";
+    start.textContent = truthLensStartupCopy("opening");
     bootTruthLens();
   });
 }

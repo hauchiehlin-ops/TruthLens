@@ -1,5 +1,32 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十七次更新）— 統一公開頁與工作台語系狀態來源
+
+使用者回報：首頁選定韓文、泰文等非中英文語系後，公開子功能頁仍會掉回英文，而進入主工作台又
+可能顯示中文；語系選單也曾出現清單值消失，導致整個應用程式看起來像各頁各自維護語系。
+
+主要調整：
+
+1. 公開首頁與公開子頁的語系保存改為同時寫入 `truthlens-public-lang` 與 Flutter web 會讀取的
+   `flutter.app_locale`，並使用 shared_preferences web 所需的 JSON 編碼，讓公開入口和主工作台讀同一個語系狀態。
+2. 首頁與公開子頁新增全域內部連結攔截：點擊任何站內連結時會依「點擊當下」的語系重新補上 `?lang=`，
+   避免靜態 href 或舊 DOM listener 造成非中英文語系掉回英文。
+3. `flutter_bootstrap.js` 進入工作台前會先持久化目前公開語系，並把網址保留為 `/?workspace=1&lang=...`，
+   不再把 `lang` 參數移除後讓舊工作台偏好值覆蓋。
+4. Flutter 啟動前的「載入工作台、相容模式、初始化、開啟中」等狀態文字改為跟隨目前語系，
+   避免從公開頁到工作台的過渡畫面固定顯示中文。
+5. 新增測試鎖住 `flutter.app_locale` 橋接、內部連結語系保留、工作台 URL 語系保留與啟動狀態本地化。
+6. 版本同步升級為 `4.13.9+1480`。
+
+**狀態**：✅ `node --check` 通過 `home_i18n.js` / `page_i18n.js` / `flutter_bootstrap.js`；
+✅ `dart format` 完成；✅
+`flutter test test/web_seo_test.dart` 16 項全數通過；✅
+`flutter test test/public_locale_codes_test.dart test/preferences_service_test.dart` 11 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web --release` 成功產出 `build/web`，確認 `build/web/version.json`
+為 `4.13.9/1480`。
+
 ## 2026-09-01（第一百九十六次更新）— 穩定公開頁與工作台語系連動
 
 使用者回報：公開首頁切換到韓文等非中英文語系後，語系選擇清單可能顯示空白；點擊公開子功能頁時，

@@ -161,6 +161,10 @@ void main() {
       i18n,
       contains("window.localStorage.setItem('truthlens-public-lang'"),
     );
+    expect(i18n, contains("window.localStorage.setItem('flutter.app_locale'"));
+    expect(i18n, contains('JSON.stringify(flutterLocale)'));
+    expect(i18n, contains('function localizedInternalHref'));
+    expect(i18n, contains("document.addEventListener('click'"));
     expect(i18n, contains("renderLanguagePicker(pack.lang)"));
     expect(i18n, contains("workspace=1&lang="));
     expect(i18n, contains('document.documentElement.lang = pack.lang'));
@@ -169,6 +173,13 @@ void main() {
       homeI18n,
       contains("window.localStorage.getItem('truthlens-public-lang')"),
     );
+    expect(
+      homeI18n,
+      contains("window.localStorage.setItem('flutter.app_locale'"),
+    );
+    expect(homeI18n, contains('JSON.stringify(flutterLocale)'));
+    expect(homeI18n, contains('function localizeInternalHref'));
+    expect(homeI18n, contains("document.addEventListener('click'"));
     expect(homeI18n, contains("data-home-language"));
     expect(homeI18n, contains("data-home-card-link"));
     expect(homeI18n, contains("workspace=1&lang="));
@@ -369,7 +380,9 @@ void main() {
     );
     expect(
       mainSource,
-      contains('_applyPublicLocaleOverride(prefs, fallback: launchPublicLocale)'),
+      contains(
+        '_applyPublicLocaleOverride(prefs, fallback: launchPublicLocale)',
+      ),
     );
     expect(mainSource, contains('final launchPublicLocale = kIsWeb'));
     expect(
@@ -403,10 +416,24 @@ void main() {
 
     expect(bootstrap, contains('function currentTruthLensPublicLocale()'));
     expect(bootstrap, contains('truthLensPublicLanguageKey'));
+    expect(bootstrap, contains('truthLensFlutterLocaleKey'));
+    expect(bootstrap, contains('function encodeTruthLensFlutterLocale(lang)'));
+    expect(bootstrap, contains('function persistTruthLensLocale(lang)'));
+    expect(bootstrap, contains('JSON.stringify(encodeTruthLensFlutterLocale'));
+    expect(bootstrap, contains('function truthLensWorkspaceUrl(lang)'));
+    expect(bootstrap, contains('url.searchParams.set("lang"'));
     expect(bootstrap, contains('function truthLensStartupCopy(key)'));
     expect(bootstrap, contains('truthLensStartupCopy("slow")'));
     expect(bootstrap, contains('truthLensStartupCopy("failed")'));
     expect(bootstrap, contains('truthLensStartupCopy("retry")'));
+    expect(bootstrap, contains('truthLensStartupCopy("loading")'));
+    expect(bootstrap, contains('truthLensStartupCopy("loadingCompat")'));
+    expect(bootstrap, contains('truthLensStartupCopy("initializing")'));
+    expect(bootstrap, contains('truthLensStartupCopy("opening")'));
+    expect(
+      bootstrap,
+      isNot(contains('replaceState(null, "", "/?workspace=1")')),
+    );
     expect(bootstrap, contains('ko: "로컬 분석 구성 요소와 데이터를 복원하는 중입니다.'));
     expect(bootstrap, contains('th: "กำลังกู้คืนส่วนประกอบ'));
   });

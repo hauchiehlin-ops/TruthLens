@@ -413,9 +413,26 @@
   }
 
   function storeLanguage(lang) {
+    const normalized = normalize(lang);
+    const flutterLocale = normalized === 'zh-Hant'
+      ? 'zh_Hant'
+      : normalized === 'zh-Hans'
+        ? 'zh_Hans'
+        : normalized;
     try {
-      window.localStorage.setItem('truthlens-public-lang', lang);
+      window.localStorage.setItem('truthlens-public-lang', normalized);
+      window.localStorage.setItem('flutter.app_locale', JSON.stringify(flutterLocale));
     } catch (_) {}
+  }
+
+  function localizeInternalHref(href, lang) {
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+      return href;
+    }
+    const url = new URL(href, window.location.origin);
+    if (url.origin !== window.location.origin) return href;
+    url.searchParams.set('lang', normalize(lang));
+    return url.pathname + url.search + url.hash;
   }
 
   function setText(selector, value) {
@@ -504,6 +521,23 @@
     applyLinks(pack, normalized);
     storeLanguage(normalized);
   }
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest && event.target.closest('a[href]');
+    if (!link) return;
+    const lang = normalize(
+      document.querySelector('[data-home-language]')?.dataset.currentLang ||
+        document.documentElement.lang ||
+        selectedLanguage(),
+    );
+    storeLanguage(lang);
+    const href = link.getAttribute('href');
+    const localized = localizeInternalHref(href, lang);
+    if (localized && localized !== href) {
+      event.preventDefault();
+      window.location.href = localized;
+    }
+  }, true);
 
   applyHome(selectedLanguage());
 })();
