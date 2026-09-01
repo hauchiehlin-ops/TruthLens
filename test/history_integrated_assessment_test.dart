@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/history_repository.dart';
-import 'package:truthlens/core/services/integrated_assessment.dart';
+import 'package:omnitrace/core/services/history_repository.dart';
+import 'package:omnitrace/core/services/integrated_assessment.dart';
 
 void main() {
   test('舊歷史資料沒有整合欄位時以原分數低信心回退', () {

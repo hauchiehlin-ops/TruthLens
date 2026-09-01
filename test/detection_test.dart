@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 void main() {
   group('PreprocessedText', () {

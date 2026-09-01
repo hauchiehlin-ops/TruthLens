@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/pwa_install.dart';
+import 'package:omnitrace/core/services/pwa_install.dart';
 
 void main() {
   // 這組測試跑在 VM 上，載入的是 pwa_install_io.dart。它守的是「共用 UI 不必

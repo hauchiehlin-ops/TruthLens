@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/engines/transformer_engine.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
-import 'package:truthlens/core/detection/variant_router.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/engines/transformer_engine.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/variant_router.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 Map<String, dynamic> _variant(
   String id,

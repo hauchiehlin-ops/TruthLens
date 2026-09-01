@@ -11,13 +11,13 @@ class HelpScreen extends StatelessWidget {
   static const _officialLinkUrls = [
     'https://huggingface.co/onnx-community/chatgpt-detector-roberta-ONNX',
     'https://huggingface.co/Xenova/distilgpt2',
-    'https://github.com/hauchiehlin-ops/TruthLens/releases/tag/models-v1',
+    'https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/models-v1',
     'https://huggingface.co/google/gemma-2-2b-it',
   ];
   static const _officialLinkNames = [
     'onnx-community/chatgpt-detector-roberta-ONNX',
     'Xenova/distilgpt2',
-    'TruthLens GitHub Releases (models-v1)',
+    'OmniTrace GitHub Releases (models-v1)',
     'google/gemma-2-2b-it',
   ];
 

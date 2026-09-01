@@ -7,7 +7,7 @@ import Vision
 enum OcrPlugin {
   static func register(with registrar: FlutterViewController) {
     let channel = FlutterMethodChannel(
-      name: "com.truthlens/ocr",
+      name: "com.omnitrace/ocr",
       binaryMessenger: registrar.engine.binaryMessenger)
 
     channel.setMethodCallHandler { call, result in

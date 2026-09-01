@@ -17,7 +17,7 @@ import 'ocr_failure.dart';
 /// 原生端未實作的平台會拋 [MissingPluginException]，此處捕捉後回傳 null，
 /// UI 顯示「此平台尚未支援 OCR」。
 class OcrService {
-  static const _channel = MethodChannel('com.truthlens/ocr');
+  static const _channel = MethodChannel('com.omnitrace/ocr');
 
   // Web 版以 localStorage 存放，原生版以 SharedPreferences 持久化；
   // 為維持與共用 UI（settings_screen）相同的同步 API，採記憶體快取 + 非同步落地。
@@ -132,7 +132,7 @@ class OcrService {
   }) async {
     final extension = mimeType == 'image/jpeg' ? 'jpg' : 'png';
     final file = File(
-      '${Directory.systemTemp.path}/truthlens_pdf_ocr_${DateTime.now().microsecondsSinceEpoch}.$extension',
+      '${Directory.systemTemp.path}/omnitrace_pdf_ocr_${DateTime.now().microsecondsSinceEpoch}.$extension',
     );
     try {
       await file.writeAsBytes(bytes, flush: true);

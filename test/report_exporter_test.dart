@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/bibliography_verifier.dart';
-import 'package:truthlens/core/services/report_exporter.dart';
-import 'package:truthlens/features/report/report_document.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/bibliography_verifier.dart';
+import 'package:omnitrace/core/services/report_exporter.dart';
+import 'package:omnitrace/features/report/report_document.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 final _l10n = lookupAppLocalizations(const Locale('en'));
 

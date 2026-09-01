@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/citation_evidence.dart';
-import 'package:truthlens/core/services/claim_audit.dart';
-import 'package:truthlens/core/services/forensic_evidence.dart';
-import 'package:truthlens/core/services/writing_session.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/citation_evidence.dart';
+import 'package:omnitrace/core/services/claim_audit.dart';
+import 'package:omnitrace/core/services/forensic_evidence.dart';
+import 'package:omnitrace/core/services/writing_session.dart';
 
 void main() {
   DetectionResult result({WritingSession writing = WritingSession.empty}) =>

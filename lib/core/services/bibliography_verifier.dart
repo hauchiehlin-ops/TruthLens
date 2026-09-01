@@ -140,7 +140,7 @@ class BibliographyVerifier {
     // 都會請求到不存在的 localhost `/api/proxy`。
     final appHost = Uri.base.host.toLowerCase();
     if (appHost == 'localhost' || appHost == '127.0.0.1' || appHost == '::1') {
-      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url='
+      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url='
           '${Uri.encodeComponent(targetUrl)}';
     }
 
@@ -1084,7 +1084,7 @@ class BibliographyVerifier {
               uri,
               headers: {
                 'User-Agent':
-                    'TruthLens/1.0 (https://github.com/hauchiehlin-ops/TruthLens; mailto:support@truthlens.app)',
+                    'OmniTrace/1.0 (https://github.com/hauchiehlin-ops/OmniTrace; mailto:support@omnitrace.app)',
               },
             )
             .timeout(timeout);
@@ -1198,7 +1198,7 @@ class BibliographyVerifier {
         final proxiedUrl = _getProxiedUrl(baseUrl);
         final uri = Uri.parse(
           proxiedUrl,
-        ).replace(queryParameters: {'mailto': 'support@truthlens.app'});
+        ).replace(queryParameters: {'mailto': 'support@omnitrace.app'});
         final response = await _httpGetWithRetry(client, uri, timeout);
         if (response != null && response.statusCode == 200) {
           final message =
@@ -1258,7 +1258,7 @@ class BibliographyVerifier {
             'query.title': titleVariant,
             'query.container-title': entry.venueTitle!,
             'rows': '8',
-            'mailto': 'support@truthlens.app',
+            'mailto': 'support@omnitrace.app',
           };
           final uri = Uri.parse(
             _getProxiedUrl('https://api.crossref.org/works'),
@@ -1293,7 +1293,7 @@ class BibliographyVerifier {
         final queryParams = <String, String>{
           'query.title': titleVariant,
           'rows': '8',
-          'mailto': 'support@truthlens.app',
+          'mailto': 'support@omnitrace.app',
         };
         final author = entry.firstAuthorSurname;
         if (author != null && author.length >= 2) {
@@ -1335,7 +1335,7 @@ class BibliographyVerifier {
         final queryParams = <String, String>{
           'query.bibliographic': bibQuery,
           'rows': '8',
-          'mailto': 'support@truthlens.app',
+          'mailto': 'support@omnitrace.app',
         };
         final uri = Uri.parse(
           _getProxiedUrl('https://api.crossref.org/works'),
@@ -1694,7 +1694,7 @@ class BibliographyVerifier {
       matchedTitle: best.title,
       matchedJournal: '${best.venue} (local classical-reference index)',
       matchedYear: best.year,
-      verificationSource: 'TruthLens built-in classical-reference index',
+      verificationSource: 'OmniTrace built-in classical-reference index',
       journalNameMismatch:
           bestIsHighConfidence &&
           _journalNameMismatch(entry.venueTitle, best.venue),

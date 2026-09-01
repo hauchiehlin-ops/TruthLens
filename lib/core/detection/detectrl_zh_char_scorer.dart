@@ -59,7 +59,7 @@ class DetectRlZhCharScorer {
   static Future<DetectRlZhCharScorer> _load() async {
     final decoded = jsonDecode(await rootBundle.loadString(assetPath));
     if (decoded is! Map<String, dynamic> ||
-        decoded['format'] != 'truthlens-detectrl-zh-char-svm-v1') {
+        decoded['format'] != 'omnitrace-detectrl-zh-char-svm-v1') {
       throw const FormatException('Unsupported DetectRL-ZH model asset');
     }
     final terms = (decoded['terms'] as List).cast<String>();

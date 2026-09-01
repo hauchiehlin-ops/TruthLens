@@ -6,37 +6,37 @@ import 'dart:typed_data';
 /// Uint8Array）跨越 JS 邊界，複雜的瀏覽器 API（FileSystemHandle、InferenceSession…）
 /// 一律留在 JS 端處理，降低 interop 型別對應出錯的風險。
 
-@JS('truthlensFs.readBytes')
+@JS('omnitraceFs.readBytes')
 external JSPromise<JSUint8Array?> _fsReadBytes(JSString fileName);
 
-@JS('truthlensFs.writeBytes')
+@JS('omnitraceFs.writeBytes')
 external JSPromise<JSAny?> _fsWriteBytes(JSString fileName, JSUint8Array bytes);
 
-@JS('truthlensFs.exists')
+@JS('omnitraceFs.exists')
 external JSPromise<JSBoolean> _fsExists(JSString fileName);
 
-@JS('truthlensFs.size')
+@JS('omnitraceFs.size')
 external JSPromise<JSNumber> _fsSize(JSString fileName);
 
-@JS('truthlensFs.deleteFile')
+@JS('omnitraceFs.deleteFile')
 external JSPromise<JSAny?> _fsDeleteFile(JSString fileName);
 
-@JS('truthlensFs.readText')
+@JS('omnitraceFs.readText')
 external JSPromise<JSString?> _fsReadText(JSString fileName);
 
-@JS('truthlensFs.writeText')
+@JS('omnitraceFs.writeText')
 external JSPromise<JSAny?> _fsWriteText(JSString fileName, JSString text);
 
-@JS('truthlensFs.openWritable')
+@JS('omnitraceFs.openWritable')
 external JSPromise<JSObject> _fsOpenWritable(JSString fileName);
 
-@JS('truthlensFs.writeChunk')
+@JS('omnitraceFs.writeChunk')
 external JSPromise<JSAny?> _fsWriteChunk(JSObject writable, JSUint8Array bytes);
 
-@JS('truthlensFs.closeWritable')
+@JS('omnitraceFs.closeWritable')
 external JSPromise<JSAny?> _fsCloseWritable(JSObject writable);
 
-@JS('truthlensFs.abortWritable')
+@JS('omnitraceFs.abortWritable')
 external JSPromise<JSAny?> _fsAbortWritable(JSObject writable);
 
 /// OPFS（瀏覽器沙盒檔案系統）存取，供 web 版 ModelManager 快取已下載模型。
@@ -92,13 +92,13 @@ extension type _OrtRunResult._(JSObject _) implements JSObject {
   external JSArray<JSNumber> get dims;
 }
 
-@JS('truthlensOrt.loadModel')
+@JS('omnitraceOrt.loadModel')
 external JSPromise<JSString> _ortLoadModel(
   JSString modelId,
   JSUint8Array bytes,
 );
 
-@JS('truthlensOrt.runBatch')
+@JS('omnitraceOrt.runBatch')
 external JSPromise<_OrtRunResult> _ortRunBatch(
   JSString modelId,
   JSInt32Array inputIds,
@@ -108,10 +108,10 @@ external JSPromise<_OrtRunResult> _ortRunBatch(
   JSString? runtimeJson,
 );
 
-@JS('truthlensOrt.releaseModel')
+@JS('omnitraceOrt.releaseModel')
 external void _ortReleaseModel(JSString modelId);
 
-@JS('truthlensOrt.epKind')
+@JS('omnitraceOrt.epKind')
 external JSString? _ortEpKind();
 
 /// 單一模型的 onnxruntime-web session 包裝。[modelId] 須跨呼叫維持一致
@@ -180,16 +180,16 @@ class WebOrtSession {
 /// 目前使用中的 execution provider('webgpu' / 'wasm'),尚未載入任何模型時為 null。
 String? currentOrtExecutionProvider() => _ortEpKind()?.toDart;
 
-@JS('truthlensDb.put')
+@JS('omnitraceDb.put')
 external JSPromise<JSAny?> _dbPut(JSString entryJson);
 
-@JS('truthlensDb.getAllJson')
+@JS('omnitraceDb.getAllJson')
 external JSPromise<JSString> _dbGetAllJson();
 
-@JS('truthlensDb.deleteEntry')
+@JS('omnitraceDb.deleteEntry')
 external JSPromise<JSAny?> _dbDeleteEntry(JSString id);
 
-@JS('truthlensDb.clear')
+@JS('omnitraceDb.clear')
 external JSPromise<JSAny?> _dbClear();
 
 /// IndexedDB 存取，供 web 版 HistoryRepository 持久化歷史紀錄。單筆紀錄以 JSON

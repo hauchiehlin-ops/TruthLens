@@ -178,7 +178,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelNecessityText =>
-      '未下載神經網路偵測模型時，TruthLens 仍可運作，但僅使用統計與風格分析，準確度與多語言支援有限。下載模型後，多語言 Transformer 分類器會加入集成投票，大幅提升判定準確度與可靠度。模型在裝置端執行，下載後不會上傳任何內容。';
+      '未下載神經網路偵測模型時，OmniTrace 仍可運作，但僅使用統計與風格分析，準確度與多語言支援有限。下載模型後，多語言 Transformer 分類器會加入集成投票，大幅提升判定準確度與可靠度。模型在裝置端執行，下載後不會上傳任何內容。';
 
   @override
   String get modelPromptTitle => '建議下載偵測模型以獲得完整分析';
@@ -197,7 +197,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
+      'OmniTrace 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
 
   @override
   String get firstRunModelPromptLater => '現在不用';
@@ -213,7 +213,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '這份中文文件尚未安裝現代中文偵測器（約 98 MB）。舊多語言模型只以早期生成文本校準，容易漏掉目前 DeepSeek、Gemini 與 GPT 類型的中文寫作。建議下載專用的裝置端模型後再分析；也可繼續使用較弱的跨語言備援。';
 
   @override
-  String get onboardingWelcomeTitle => '歡迎使用 TruthLens';
+  String get onboardingWelcomeTitle => '歡迎使用 OmniTrace';
 
   @override
   String get onboardingHeadline => '裝置端 AI 內容檢測';
@@ -242,7 +242,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get onboardingStorageNotPersisted =>
-      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 TruthLens 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
+      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 OmniTrace 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
 
   @override
   String get onboardingInstallAppButton => '安裝成應用程式';
@@ -730,7 +730,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
+      'OmniTrace 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
 
   @override
   String get reportModelCalibrationTitle => '模型基準自動校準';
@@ -968,7 +968,7 @@ class AppLocalizationsZh extends AppLocalizations {
     String runInstruction,
     String testButton,
   ) {
-    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
+    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，OmniTrace Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
   }
 
   @override
@@ -1122,7 +1122,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpShiftBody =>
-      '市面上的偵測器幾乎都在回答同一個問題：「這段文字看起來像不像 AI 寫的？」\n\n這是一場必輸的軍備競賽。模型越強，生成文字的統計特徵就越接近人類；而改寫工具的進步速度遠快於偵測器。在這條路上，伺服器端的大模型只是輸得慢一點。\n\nTruthLens 改問另一個問題：「關於這份文件是怎麼產生的，我們手上有哪些證據？各自有多強？」\n\n也就是從「文字風格推測」轉向「來源證據 ＋ 統計上誠實的結論」。這是為什麼本工具刻意不追求單一分數的準確度排名，而是把每一項證據分開攤給你看，並在證據不足時明白說不知道。瀏覽器端執行帶來的真正優勢不是推論速度，而是它看得到伺服器看不到的東西——完整的檔案，以及你自己蒐集的族群基準。';
+      '市面上的偵測器幾乎都在回答同一個問題：「這段文字看起來像不像 AI 寫的？」\n\n這是一場必輸的軍備競賽。模型越強，生成文字的統計特徵就越接近人類；而改寫工具的進步速度遠快於偵測器。在這條路上，伺服器端的大模型只是輸得慢一點。\n\nOmniTrace 改問另一個問題：「關於這份文件是怎麼產生的，我們手上有哪些證據？各自有多強？」\n\n也就是從「文字風格推測」轉向「來源證據 ＋ 統計上誠實的結論」。這是為什麼本工具刻意不追求單一分數的準確度排名，而是把每一項證據分開攤給你看，並在證據不足時明白說不知道。瀏覽器端執行帶來的真正優勢不是推論速度，而是它看得到伺服器看不到的東西——完整的檔案，以及你自己蒐集的族群基準。';
 
   @override
   String get helpPillarsTitle => '二、五個支柱';
@@ -1689,11 +1689,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get summaryCardFooter => '核心 AI 推論皆在裝置端執行';
 
   @override
-  String get exportReportTitle => 'TruthLens 檢測報告';
+  String get exportReportTitle => 'OmniTrace 檢測報告';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · 第 $page / $total 頁';
+    return 'OmniTrace · 第 $page / $total 頁';
   }
 
   @override
@@ -1928,7 +1928,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modelNameMbertMultilingual => '多語言偵測器（英+中・INT8）';
 
   @override
-  String get modelNameTruthlensZh => 'TruthLens 中文偵測器（2026 生成器・INT8）';
+  String get modelNameTruthlensZh => 'OmniTrace 中文偵測器（2026 生成器・INT8）';
 
   @override
   String get modelNameAigcZhv3 => '現代中文偵測器（DeepSeek／GPT-4・INT8）';
@@ -2124,11 +2124,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpAppBarTitle => '操作說明';
 
   @override
-  String get helpAboutTitle => '關於 TruthLens';
+  String get helpAboutTitle => '關於 OmniTrace';
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。融合後文字證據分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'OmniTrace 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。報告固定提供較可能是 AI／較可能不是 AI 的方向、整合可能性指數與獨立信心等級。融合後文字證據分數及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -2142,64 +2142,64 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
+      'GPTZero 的運算主要在雲端進行、文件需上傳；OmniTrace 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero 首創的 Perplexity／Burstiness 指標與逐句高亮，TruthLens 已納入，並疊加 Transformer 分類器、風格特徵分析與對抗式防禦，形成四模型集成投票，而非單一指標判定。';
+      'GPTZero 首創的 Perplexity／Burstiness 指標與逐句高亮，OmniTrace 已納入，並疊加 Transformer 分類器、風格特徵分析與對抗式防禦，形成四模型集成投票，而非單一指標判定。';
 
   @override
-  String get helpVsGptZero3 => 'GPTZero 為訂閱制；TruthLens 無需訂閱、無使用次數限制。';
+  String get helpVsGptZero3 => 'GPTZero 為訂閱制；OmniTrace 無需訂閱、無使用次數限制。';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin 僅開放機構採購，個人無法直接購買；TruthLens 任何人皆可安裝使用。';
+      'Turnitin 僅開放機構採購，個人無法直接購買；OmniTrace 任何人皆可安裝使用。';
 
   @override
   String get helpVsTurnitin2 =>
-      'Turnitin 的判定過程接近黑箱；TruthLens 提供逐句 AI 機率、命中的寫作模式，以及四引擎個別評分與理由明細。';
+      'Turnitin 的判定過程接近黑箱；OmniTrace 提供逐句 AI 機率、命中的寫作模式，以及四引擎個別評分與理由明細。';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin 主要判斷二元「是否為 AI」；TruthLens 支援段落／句子級的人類／AI／混合標示。';
+      'Turnitin 主要判斷二元「是否為 AI」；OmniTrace 支援段落／句子級的人類／AI／混合標示。';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
+      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；OmniTrace 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai 有事實查核與可讀性分析概念；TruthLens 以本地端風格特徵模組呼應，且離線也能完成基礎分析。';
+      'Originality.ai 有事實查核與可讀性分析概念；OmniTrace 以本地端風格特徵模組呼應，且離線也能完成基礎分析。';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks 以雲端 API 為主，強項是低偽陽性率與多語系支援；TruthLens 採用同樣理念的 XLM-RoBERTa 多語言基底模型與多模型集成投票，但文件內容不會上傳至任何伺服器。';
+      'Copyleaks 以雲端 API 為主，強項是低偽陽性率與多語系支援；OmniTrace 採用同樣理念的 XLM-RoBERTa 多語言基底模型與多模型集成投票，但文件內容不會上傳至任何伺服器。';
 
   @override
-  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；TruthLens 沒有用量限制。';
+  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；OmniTrace 沒有用量限制。';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
+      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；OmniTrace 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI 以報告排版精美著稱；TruthLens 提供 AI 動態生成排版報告（未安裝 LLM 時自動退回模板），可匯出 PDF／CSV／JSON／PNG 四種格式。';
+      'Winston AI 以報告排版精美著稱；OmniTrace 提供 AI 動態生成排版報告（未安裝 LLM 時自動退回模板），可匯出 PDF／CSV／JSON／PNG 四種格式。';
 
   @override
-  String get helpAdvantagesTitle => 'TruthLens 的獨有優勢';
+  String get helpAdvantagesTitle => 'OmniTrace 的獨有優勢';
 
   @override
   String get helpAdvantage1 =>
@@ -2309,7 +2309,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。TruthLens 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
+      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。OmniTrace 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -2443,7 +2443,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
+      'OmniTrace 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
 
   @override
   String get privacyWebOverview2 =>
@@ -2457,14 +2457,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens 不收集任何與您的身分連結的資料，也不將任何資料用於追蹤，因此不需要 App 追蹤透明度（ATT）權限。';
+      'OmniTrace 不收集任何與您的身分連結的資料，也不將任何資料用於追蹤，因此不需要 App 追蹤透明度（ATT）權限。';
 
   @override
   String get privacyIosOverview2 =>
       '本 App 使用系統提供的檔案選擇器存取您主動選擇的文件或圖片；未經您選擇的檔案，App 無法存取（iOS App Sandbox 限制）。';
 
   @override
-  String get privacyAndroidOverview1 => 'TruthLens 不收集個人資料，也不與任何第三方分享使用者資料。';
+  String get privacyAndroidOverview1 => 'OmniTrace 不收集個人資料，也不與任何第三方分享使用者資料。';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -2472,7 +2472,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens 在 macOS App Sandbox 下執行，僅能存取您透過系統檔案對話框主動選擇的檔案（files.user-selected.read-write），無法自行瀏覽或存取其他檔案或資料夾。';
+      'OmniTrace 在 macOS App Sandbox 下執行，僅能存取您透過系統檔案對話框主動選擇的檔案（files.user-selected.read-write），無法自行瀏覽或存取其他檔案或資料夾。';
 
   @override
   String get privacyMacosOverview2 =>
@@ -2480,7 +2480,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens 為單機桌面應用程式，資料儲存於您本機使用者資料夾內（如 AppData／Documents），不會同步至雲端。';
+      'OmniTrace 為單機桌面應用程式，資料儲存於您本機使用者資料夾內（如 AppData／Documents），不會同步至雲端。';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -2488,15 +2488,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens 沒有使用者帳號、不需登入，也沒有任何形式的廣告或第三方追蹤 SDK。';
+      'OmniTrace 沒有使用者帳號、不需登入，也沒有任何形式的廣告或第三方追蹤 SDK。';
 
   @override
   String get privacyDataHandling2 =>
-      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。TruthLens 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
+      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。OmniTrace 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果與歷史紀錄僅儲存在您瀏覽器裝置本機的儲存空間中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。在 App 內清除歷史紀錄，或在瀏覽器中清除本網站資料，即會移除此本機副本，TruthLens 不持有任何副本。';
+      '分析結果與歷史紀錄僅儲存在您瀏覽器裝置本機的儲存空間中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。在 App 內清除歷史紀錄，或在瀏覽器中清除本網站資料，即會移除此本機副本，OmniTrace 不持有任何副本。';
 
   @override
   String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列支援或選用功能需要連線：';
@@ -2533,7 +2533,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyDisclaimer =>
-      '本頁內容為 TruthLens 依實際功能行為撰寫的隱私權說明，非律師審閱之正式法律文件；如需與您所在地區的法規進行正式合規審查，建議另行諮詢專業法律意見。';
+      '本頁內容為 OmniTrace 依實際功能行為撰寫的隱私權說明，非律師審閱之正式法律文件；如需與您所在地區的法規進行正式合規審查，建議另行諮詢專業法律意見。';
 
   @override
   String get privacySectionOverviewIos => '概要（對應 App Store 隱私權「營養標籤」）';
@@ -3276,7 +3276,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get firstRunModelManualBody =>
-      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。';
+      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 OmniTrace 仍可使用統計與風格引擎正常運作。';
 
   @override
   String get commonGotIt => '了解';
@@ -3480,7 +3480,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get modelNecessityText =>
-      '未下载神经网络侦测模型时，TruthLens 仍可运作，但仅使用统计与风格分析，准确度与多语言支持有限。下载模型后，多语言 Transformer 分类器会加入集成投票，大幅提升判定准确度与可靠度。模型在设备端运行，下载后不会上传任何内容。';
+      '未下载神经网络侦测模型时，OmniTrace 仍可运作，但仅使用统计与风格分析，准确度与多语言支持有限。下载模型后，多语言 Transformer 分类器会加入集成投票，大幅提升判定准确度与可靠度。模型在设备端运行，下载后不会上传任何内容。';
 
   @override
   String get modelPromptTitle => '建议下载侦测模型以获得完整分析';
@@ -3499,7 +3499,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens 现在就能用：统计与风格引擎已经就绪。加入设备端神经网络模型后，多语言分类器会加入集成投票，准确度与语言涵盖会明显提升。模型完全在你的浏览器内执行，不会上传你的文件。你也可以稍后从“设置 → AI 模型管理”再决定。';
+      'OmniTrace 现在就能用：统计与风格引擎已经就绪。加入设备端神经网络模型后，多语言分类器会加入集成投票，准确度与语言涵盖会明显提升。模型完全在你的浏览器内执行，不会上传你的文件。你也可以稍后从“设置 → AI 模型管理”再决定。';
 
   @override
   String get firstRunModelPromptLater => '现在不用';
@@ -3515,7 +3515,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '这份中文文件尚未安装现代中文侦测器（约 98 MB）。旧多语言模型只以早期生成文本校准，容易漏掉目前 DeepSeek、Gemini 与 GPT 类型的中文写作。建议下载专用的装置端模型后再分析；也可继续使用较弱的跨语言备用模型。';
 
   @override
-  String get onboardingWelcomeTitle => '欢迎使用 TruthLens';
+  String get onboardingWelcomeTitle => '欢迎使用 OmniTrace';
 
   @override
   String get onboardingHeadline => '设备端 AI 内容检测';
@@ -3544,7 +3544,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get onboardingStorageNotPersisted =>
-      '已下载的模型尚未受到自动清理的保护。磁盘空间不足时浏览器可能将其回收，届时必须重新下载。把 TruthLens 安装成应用程序，可大幅提高浏览器保留这些模型的机会。';
+      '已下载的模型尚未受到自动清理的保护。磁盘空间不足时浏览器可能将其回收，届时必须重新下载。把 OmniTrace 安装成应用程序，可大幅提高浏览器保留这些模型的机会。';
 
   @override
   String get onboardingInstallAppButton => '安装成应用程序';
@@ -4032,7 +4032,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens 零上传离线隐私认证：内容 100% 于设备端完成运算，无云端数据库存储。';
+      'OmniTrace 零上传离线隐私认证：内容 100% 于设备端完成运算，无云端数据库存储。';
 
   @override
   String get reportModelCalibrationTitle => '模型基准自动校准';
@@ -4270,7 +4270,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     String runInstruction,
     String testButton,
   ) {
-    return '已检测到 $osName，并已自动填入本地端点：\n$endpoint\n\n浏览器已开始下载 $fileName。基于浏览器安全限制，TruthLens Web 不能直接替您执行安装包或修改系统启动项。\n\n请完成以下步骤：\n1. 运行下载的安装包：$runInstruction\n2. 等待终端或窗口显示 OCR 服务已就绪。\n3. 回到此窗口按「$testButton」。\n\n测试成功后，图片 OCR 会优先使用这个本地服务；图片内容不会送往 Gemini，除非您另外设置 Gemini API 密钥作为备援。';
+    return '已检测到 $osName，并已自动填入本地端点：\n$endpoint\n\n浏览器已开始下载 $fileName。基于浏览器安全限制，OmniTrace Web 不能直接替您执行安装包或修改系统启动项。\n\n请完成以下步骤：\n1. 运行下载的安装包：$runInstruction\n2. 等待终端或窗口显示 OCR 服务已就绪。\n3. 回到此窗口按「$testButton」。\n\n测试成功后，图片 OCR 会优先使用这个本地服务；图片内容不会送往 Gemini，除非您另外设置 Gemini API 密钥作为备援。';
   }
 
   @override
@@ -4424,7 +4424,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpShiftBody =>
-      '市面上的检测器几乎都在回答同一个问题：「这段文字看起来像不像 AI 写的？」\n\n这是一场必输的军备竞赛。模型越强，生成文字的统计特征就越接近人类；而改写工具的进步速度远快于检测器。在这条路上，服务器端的大模型只是输得慢一点。\n\nTruthLens 改问另一个问题：「关于这份文件是怎么产生的，我们手上有哪些证据？各自有多强？」\n\n也就是从「文字风格推测」转向「来源证据 ＋ 统计上诚实的结论」。这是为什么本工具刻意不追求单一分数的准确度排名，而是把每一项证据分开摊给你看，并在证据不足时明白说不知道。浏览器端执行带来的真正优势不是推论速度，而是它看得到服务器看不到的东西——完整的文件，以及你自己收集的族群基准。';
+      '市面上的检测器几乎都在回答同一个问题：「这段文字看起来像不像 AI 写的？」\n\n这是一场必输的军备竞赛。模型越强，生成文字的统计特征就越接近人类；而改写工具的进步速度远快于检测器。在这条路上，服务器端的大模型只是输得慢一点。\n\nOmniTrace 改问另一个问题：「关于这份文件是怎么产生的，我们手上有哪些证据？各自有多强？」\n\n也就是从「文字风格推测」转向「来源证据 ＋ 统计上诚实的结论」。这是为什么本工具刻意不追求单一分数的准确度排名，而是把每一项证据分开摊给你看，并在证据不足时明白说不知道。浏览器端执行带来的真正优势不是推论速度，而是它看得到服务器看不到的东西——完整的文件，以及你自己收集的族群基准。';
 
   @override
   String get helpPillarsTitle => '二、五个支柱';
@@ -4991,11 +4991,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get summaryCardFooter => '内核 AI 推论皆在设备端运行';
 
   @override
-  String get exportReportTitle => 'TruthLens 检测报告';
+  String get exportReportTitle => 'OmniTrace 检测报告';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · 第 $page / $total 页';
+    return 'OmniTrace · 第 $page / $total 页';
   }
 
   @override
@@ -5230,7 +5230,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get modelNameMbertMultilingual => '多语言检测器（英+中・INT8）';
 
   @override
-  String get modelNameTruthlensZh => 'TruthLens 中文检测器（2026 生成器・INT8）';
+  String get modelNameTruthlensZh => 'OmniTrace 中文检测器（2026 生成器・INT8）';
 
   @override
   String get modelNameAigcZhv3 => '现代中文检测器（DeepSeek／GPT-4・INT8）';
@@ -5426,11 +5426,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get helpAppBarTitle => '操作说明';
 
   @override
-  String get helpAboutTitle => '关于 TruthLens';
+  String get helpAboutTitle => '关于 OmniTrace';
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎检查直接文字痕迹；写作过程、文件来源、草稿演进、任务契合及来源完整性则作为分开呈现的鉴识证据，文件内容不会上传到任何服务器。\n\n只有具作者特异性的信号能提高 AI 判定。报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。融合后文字证据分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
+      'OmniTrace 是一款**完全在浏览器端执行**的 AI 内容检测工具。四个文字分析引擎检查直接文字痕迹；写作过程、文件来源、草稿演进、任务契合及来源完整性则作为分开呈现的鉴识证据，文件内容不会上传到任何服务器。\n\n只有具作者特异性的信号能提高 AI 判定。报告固定提供较可能是 AI／较可能不是 AI 的方向、整合可能性指数与独立信心等级。融合后文字证据分数及每一条证据仍会分开显示，避免低信心方向被包装成确定证明。';
 
   @override
   String get helpComparisonTitle => '与市面主流工具比较';
@@ -5444,64 +5444,64 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的运算主要在云端进行、文件需上传；TruthLens 四个检测引擎皆在你的浏览器内执行，文件内容不外传。';
+      'GPTZero 的运算主要在云端进行、文件需上传；OmniTrace 四个检测引擎皆在你的浏览器内执行，文件内容不外传。';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero 首创的 Perplexity／Burstiness 指针与逐句高亮，TruthLens 已纳入，并叠加 Transformer 分类器、风格特征分析与对抗式防御，形成四模型集成投票，而非单一指针判定。';
+      'GPTZero 首创的 Perplexity／Burstiness 指针与逐句高亮，OmniTrace 已纳入，并叠加 Transformer 分类器、风格特征分析与对抗式防御，形成四模型集成投票，而非单一指针判定。';
 
   @override
-  String get helpVsGptZero3 => 'GPTZero 为订阅制；TruthLens 无需订阅、无使用次数限制。';
+  String get helpVsGptZero3 => 'GPTZero 为订阅制；OmniTrace 无需订阅、无使用次数限制。';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin 仅开放机构采购，个人无法直接购买；TruthLens 任何人皆可安装使用。';
+      'Turnitin 仅开放机构采购，个人无法直接购买；OmniTrace 任何人皆可安装使用。';
 
   @override
   String get helpVsTurnitin2 =>
-      'Turnitin 的判定过程接近黑箱；TruthLens 提供逐句 AI 几率、命中的写作模式，以及四引擎个别评分与理由明细。';
+      'Turnitin 的判定过程接近黑箱；OmniTrace 提供逐句 AI 几率、命中的写作模式，以及四引擎个别评分与理由明细。';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin 主要判断二元「是否为 AI」；TruthLens 支持段落／句子级的人类／AI／混合标示。';
+      'Turnitin 主要判断二元「是否为 AI」；OmniTrace 支持段落／句子级的人类／AI／混合标示。';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 为按篇计费的订阅制，且需将文件上传云端；TruthLens 核心运算在浏览器端完成，无需订阅也无使用次数限制。';
+      'Originality.ai 为按篇计费的订阅制，且需将文件上传云端；OmniTrace 核心运算在浏览器端完成，无需订阅也无使用次数限制。';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai 有事实查核与可读性分析概念；TruthLens 以本地端风格特征模块呼应，且脱机也能完成基础分析。';
+      'Originality.ai 有事实查核与可读性分析概念；OmniTrace 以本地端风格特征模块呼应，且脱机也能完成基础分析。';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks 以云端 API 为主，强项是低伪阳性率与多语系支持；TruthLens 采用同样理念的 XLM-RoBERTa 多语言基底模型与多模型集成投票，但文档内容不会上传至任何服务器。';
+      'Copyleaks 以云端 API 为主，强项是低伪阳性率与多语系支持；OmniTrace 采用同样理念的 XLM-RoBERTa 多语言基底模型与多模型集成投票，但文档内容不会上传至任何服务器。';
 
   @override
-  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；TruthLens 没有用量限制。';
+  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；OmniTrace 没有用量限制。';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 图片识别需上传图片至云端；TruthLens 的 OCR 优先使用你自行设定的本地 OCR 服务器，只有在你主动提供 Gemini API 密钥时才会使用云端备援——用不用云端由你决定。';
+      'Winston AI 的 OCR 图片识别需上传图片至云端；OmniTrace 的 OCR 优先使用你自行设定的本地 OCR 服务器，只有在你主动提供 Gemini API 密钥时才会使用云端备援——用不用云端由你决定。';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI 以报告排版精美著称；TruthLens 提供 AI 动态生成排版报告（未安装 LLM 时自动退回模板），可导出 PDF／CSV／JSON／PNG 四种格式。';
+      'Winston AI 以报告排版精美著称；OmniTrace 提供 AI 动态生成排版报告（未安装 LLM 时自动退回模板），可导出 PDF／CSV／JSON／PNG 四种格式。';
 
   @override
-  String get helpAdvantagesTitle => 'TruthLens 的独有优势';
+  String get helpAdvantagesTitle => 'OmniTrace 的独有优势';
 
   @override
   String get helpAdvantage1 =>
@@ -5611,7 +5611,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      '在 iPhone 与 iPad 浏览器上，所有浏览器都使用 WebKit，每个标签页的内存预算比桌面 macOS 更紧。大型 ONNX 模型可能让分析中的标签页被系统重载。TruthLens 因此会在 iOS Web 依序运行引擎、用完即释放模型，并在遇到 488 MB Qwen PPL 这类过大的困惑度子模型时跳过该子模型，但仍用本机统计特征让统计引擎参与。这能避免分析中途跳回空白页；代价是 macOS 可能纳入完整 PPL 子模型，而 iOS 报告会标示该子模型已跳过。';
+      '在 iPhone 与 iPad 浏览器上，所有浏览器都使用 WebKit，每个标签页的内存预算比桌面 macOS 更紧。大型 ONNX 模型可能让分析中的标签页被系统重载。OmniTrace 因此会在 iOS Web 依序运行引擎、用完即释放模型，并在遇到 488 MB Qwen PPL 这类过大的困惑度子模型时跳过该子模型，但仍用本机统计特征让统计引擎参与。这能避免分析中途跳回空白页；代价是 macOS 可能纳入完整 PPL 子模型，而 iOS 报告会标示该子模型已跳过。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次启动引导';
@@ -5745,7 +5745,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens 完全以网页应用程序的形式在您的浏览器标签页中运行，不需要安装；文档文本与分析结果不会离开您的设备，下载的检测模型也只缓存在浏览器自身的沙盒存储空间（OPFS）中，不在任何服务器上。';
+      'OmniTrace 完全以网页应用程序的形式在您的浏览器标签页中运行，不需要安装；文档文本与分析结果不会离开您的设备，下载的检测模型也只缓存在浏览器自身的沙盒存储空间（OPFS）中，不在任何服务器上。';
 
   @override
   String get privacyWebOverview2 =>
@@ -5759,14 +5759,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens 不收集任何与您的身分链接的数据，也不将任何数据用于追踪，因此不需要 App 追踪透明度（ATT）权限。';
+      'OmniTrace 不收集任何与您的身分链接的数据，也不将任何数据用于追踪，因此不需要 App 追踪透明度（ATT）权限。';
 
   @override
   String get privacyIosOverview2 =>
       '本 App 使用系统提供的文件选择器访问您主动选择的文档或图片；未经您选择的文件，App 无法访问（iOS App Sandbox 限制）。';
 
   @override
-  String get privacyAndroidOverview1 => 'TruthLens 不收集个人数据，也不与任何第三方分享用户数据。';
+  String get privacyAndroidOverview1 => 'OmniTrace 不收集个人数据，也不与任何第三方分享用户数据。';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -5774,7 +5774,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens 在 macOS App Sandbox 下运行，仅能访问您通过系统文件对话框主动选择的文件（files.user-selected.read-write），无法自行浏览或访问其他文件或文件夹。';
+      'OmniTrace 在 macOS App Sandbox 下运行，仅能访问您通过系统文件对话框主动选择的文件（files.user-selected.read-write），无法自行浏览或访问其他文件或文件夹。';
 
   @override
   String get privacyMacosOverview2 =>
@@ -5782,7 +5782,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens 为单机桌面应用程序，数据保存于您本机用户文件夹内（如 AppData／Documents），不会同步至云端。';
+      'OmniTrace 为单机桌面应用程序，数据保存于您本机用户文件夹内（如 AppData／Documents），不会同步至云端。';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -5790,15 +5790,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens 没有用户帐号、不需登录，也没有任何形式的广告或第三方追踪 SDK。';
+      'OmniTrace 没有用户帐号、不需登录，也没有任何形式的广告或第三方追踪 SDK。';
 
   @override
   String get privacyDataHandling2 =>
-      '您输入、粘贴或导入的文本内容，皆在您的设备上由本机 AI 模型完成分析。TruthLens 不会将文档文本上传到自有服务器或第三方 AI 检测服务。';
+      '您输入、粘贴或导入的文本内容，皆在您的设备上由本机 AI 模型完成分析。OmniTrace 不会将文档文本上传到自有服务器或第三方 AI 检测服务。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析结果与历史纪录仅保存在您浏览器设备本机的存储空间中；纪录包含分析文本、分数、时间，以及导入文档时的来源文件名。在 App 内清除历史纪录，或在浏览器中清除本网站数据，即会移除此本机副本，TruthLens 不持有任何副本。';
+      '分析结果与历史纪录仅保存在您浏览器设备本机的存储空间中；纪录包含分析文本、分数、时间，以及导入文档时的来源文件名。在 App 内清除历史纪录，或在浏览器中清除本网站数据，即会移除此本机副本，OmniTrace 不持有任何副本。';
 
   @override
   String get privacyNetworkIntro => '本 App 的内核 AI 侦测完全在设备端运行，但下列支持或选用功能需要连接：';
@@ -5835,7 +5835,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get privacyDisclaimer =>
-      '本页内容为 TruthLens 依实际功能行为撰写的隐私权说明，非律师审阅之正式法律文档；如需与您所在地区的法规进行正式合规审查，建议另行咨询专业法律意见。';
+      '本页内容为 OmniTrace 依实际功能行为撰写的隐私权说明，非律师审阅之正式法律文档；如需与您所在地区的法规进行正式合规审查，建议另行咨询专业法律意见。';
 
   @override
   String get privacySectionOverviewIos => '概要（对应 App Store 隐私权「营养标签」）';
@@ -6578,7 +6578,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get firstRunModelManualBody =>
-      '您随时可以自行下载：打开「设定」（顶部工具栏的齿轮图标），选择「AI 模型管理」。在此之前 TruthLens 仍可使用统计与风格引擎正常运作。';
+      '您随时可以自行下载：打开「设定」（顶部工具栏的齿轮图标），选择「AI 模型管理」。在此之前 OmniTrace 仍可使用统计与风格引擎正常运作。';
 
   @override
   String get commonGotIt => '了解';
@@ -6782,7 +6782,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get modelNecessityText =>
-      '未下載神經網路偵測模型時，TruthLens 仍可運作，但僅使用統計與風格分析，準確度與多語言支援有限。下載模型後，多語言 Transformer 分類器會加入集成投票，大幅提升判定準確度與可靠度。模型在裝置端執行，下載後不會上傳任何內容。';
+      '未下載神經網路偵測模型時，OmniTrace 仍可運作，但僅使用統計與風格分析，準確度與多語言支援有限。下載模型後，多語言 Transformer 分類器會加入集成投票，大幅提升判定準確度與可靠度。模型在裝置端執行，下載後不會上傳任何內容。';
 
   @override
   String get modelPromptTitle => '建議下載偵測模型以獲得完整分析';
@@ -6801,7 +6801,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
+      'OmniTrace 現在就能用：統計與風格引擎已經就緒。加入裝置端神經網路模型後，多語言分類器會加入集成投票，準確度與語言涵蓋會明顯提升。模型完全在你的瀏覽器內執行，不會上傳你的文件。你也可以稍後從「設定 → AI 模型管理」再決定。';
 
   @override
   String get firstRunModelPromptLater => '現在不用';
@@ -6817,7 +6817,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '這份中文文件尚未安裝現代中文偵測器（約 98 MB）。舊多語言模型只以早期生成文本校準，容易漏掉目前 DeepSeek、Gemini 與 GPT 類型的中文寫作。建議下載專用的裝置端模型後再分析；也可繼續使用較弱的跨語言備援。';
 
   @override
-  String get onboardingWelcomeTitle => '歡迎使用 TruthLens';
+  String get onboardingWelcomeTitle => '歡迎使用 OmniTrace';
 
   @override
   String get onboardingHeadline => '裝置端 AI 內容檢測';
@@ -6846,7 +6846,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get onboardingStorageNotPersisted =>
-      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 TruthLens 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
+      '已下載的模型尚未受到自動清理的保護。磁碟空間不足時瀏覽器可能將其回收，屆時必須重新下載。把 OmniTrace 安裝成應用程式，可大幅提高瀏覽器保留這些模型的機會。';
 
   @override
   String get onboardingInstallAppButton => '安裝成應用程式';
@@ -7334,7 +7334,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
+      'OmniTrace 零上傳安全認證：本檢測 100% 於裝置端離線計算，未經雲端傳輸與資料庫儲存。';
 
   @override
   String get reportModelCalibrationTitle => '模型基準自動校準';
@@ -7572,7 +7572,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     String runInstruction,
     String testButton,
   ) {
-    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，TruthLens Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
+    return '已偵測到 $osName，並已自動填入本地端點：\n$endpoint\n\n瀏覽器已開始下載 $fileName。基於瀏覽器安全限制，OmniTrace Web 不能直接替您執行安裝檔或修改系統啟動項目。\n\n請完成以下步驟：\n1. 執行下載的安裝檔：$runInstruction\n2. 等待終端機或視窗顯示 OCR 服務已就緒。\n3. 回到此視窗按「$testButton」。\n\n測試成功後，圖片 OCR 會優先使用這個本地服務；圖片內容不會送往 Gemini，除非您另外設定 Gemini API 金鑰作為備援。';
   }
 
   @override
@@ -7726,7 +7726,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpShiftBody =>
-      '市面上的偵測器幾乎都在回答同一個問題：「這段文字看起來像不像 AI 寫的？」\n\n這是一場必輸的軍備競賽。模型越強，生成文字的統計特徵就越接近人類；而改寫工具的進步速度遠快於偵測器。在這條路上，伺服器端的大模型只是輸得慢一點。\n\nTruthLens 改問另一個問題：「關於這份文件是怎麼產生的，我們手上有哪些證據？各自有多強？」\n\n也就是從「文字風格推測」轉向「來源證據 ＋ 統計上誠實的結論」。這是為什麼本工具刻意不追求單一分數的準確度排名，而是把每一項證據分開攤給你看，並在證據不足時明白說不知道。瀏覽器端執行帶來的真正優勢不是推論速度，而是它看得到伺服器看不到的東西——完整的檔案，以及你自己蒐集的族群基準。';
+      '市面上的偵測器幾乎都在回答同一個問題：「這段文字看起來像不像 AI 寫的？」\n\n這是一場必輸的軍備競賽。模型越強，生成文字的統計特徵就越接近人類；而改寫工具的進步速度遠快於偵測器。在這條路上，伺服器端的大模型只是輸得慢一點。\n\nOmniTrace 改問另一個問題：「關於這份文件是怎麼產生的，我們手上有哪些證據？各自有多強？」\n\n也就是從「文字風格推測」轉向「來源證據 ＋ 統計上誠實的結論」。這是為什麼本工具刻意不追求單一分數的準確度排名，而是把每一項證據分開攤給你看，並在證據不足時明白說不知道。瀏覽器端執行帶來的真正優勢不是推論速度，而是它看得到伺服器看不到的東西——完整的檔案，以及你自己蒐集的族群基準。';
 
   @override
   String get helpPillarsTitle => '二、五個支柱';
@@ -8293,11 +8293,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get summaryCardFooter => '核心 AI 推論皆在裝置端執行';
 
   @override
-  String get exportReportTitle => 'TruthLens 檢測報告';
+  String get exportReportTitle => 'OmniTrace 檢測報告';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · 第 $page / $total 頁';
+    return 'OmniTrace · 第 $page / $total 頁';
   }
 
   @override
@@ -8532,7 +8532,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get modelNameMbertMultilingual => '多語言偵測器（英+中・INT8）';
 
   @override
-  String get modelNameTruthlensZh => 'TruthLens 中文偵測器（2026 生成器・INT8）';
+  String get modelNameTruthlensZh => 'OmniTrace 中文偵測器（2026 生成器・INT8）';
 
   @override
   String get modelNameAigcZhv3 => '現代中文偵測器（DeepSeek／GPT-4・INT8）';
@@ -8728,11 +8728,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get helpAppBarTitle => '操作說明';
 
   @override
-  String get helpAboutTitle => '關於 TruthLens';
+  String get helpAboutTitle => '關於 OmniTrace';
 
   @override
   String get helpAboutBody =>
-      'TruthLens 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；融合後文字證據分數、原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
+      'OmniTrace 是一款**完全在瀏覽器端執行**的 AI 內容檢測工具。四個文字分析引擎檢查直接文字痕跡；寫作過程、文件來源及來源完整性則作為分開呈現的鑑識證據，文件內容不會上傳到任何伺服器。\n\n只有具作者特異性的訊號能提高 AI 判定。相關引擎會先合併為獨立證據家族，高分不會反過來增加自身權重。報告區分較可能真人、人機混合及較可能 AI 生成，並提供整合可能性指數與獨立信心等級；融合後文字證據分數、原始引擎訊號及每一條證據仍會分開顯示，避免低信心方向被包裝成確定證明。';
 
   @override
   String get helpComparisonTitle => '與市面主流工具比較';
@@ -8746,64 +8746,64 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero 的運算主要在雲端進行、文件需上傳；TruthLens 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
+      'GPTZero 的運算主要在雲端進行、文件需上傳；OmniTrace 四個偵測引擎皆在你的瀏覽器內執行，文件內容不外傳。';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero 首創的 Perplexity／Burstiness 指標與逐句高亮，TruthLens 已納入，並疊加 Transformer 分類器、風格特徵分析與對抗式防禦，形成四模型集成投票，而非單一指標判定。';
+      'GPTZero 首創的 Perplexity／Burstiness 指標與逐句高亮，OmniTrace 已納入，並疊加 Transformer 分類器、風格特徵分析與對抗式防禦，形成四模型集成投票，而非單一指標判定。';
 
   @override
-  String get helpVsGptZero3 => 'GPTZero 為訂閱制；TruthLens 無需訂閱、無使用次數限制。';
+  String get helpVsGptZero3 => 'GPTZero 為訂閱制；OmniTrace 無需訂閱、無使用次數限制。';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin 僅開放機構採購，個人無法直接購買；TruthLens 任何人皆可安裝使用。';
+      'Turnitin 僅開放機構採購，個人無法直接購買；OmniTrace 任何人皆可安裝使用。';
 
   @override
   String get helpVsTurnitin2 =>
-      'Turnitin 的判定過程接近黑箱；TruthLens 提供逐句 AI 機率、命中的寫作模式，以及四引擎個別評分與理由明細。';
+      'Turnitin 的判定過程接近黑箱；OmniTrace 提供逐句 AI 機率、命中的寫作模式，以及四引擎個別評分與理由明細。';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin 主要判斷二元「是否為 AI」；TruthLens 支援段落／句子級的人類／AI／混合標示。';
+      'Turnitin 主要判斷二元「是否為 AI」；OmniTrace 支援段落／句子級的人類／AI／混合標示。';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；TruthLens 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
+      'Originality.ai 為按篇計費的訂閱制，且需將文件上傳雲端；OmniTrace 核心運算在瀏覽器端完成，無需訂閱也無使用次數限制。';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai 有事實查核與可讀性分析概念；TruthLens 以本地端風格特徵模組呼應，且離線也能完成基礎分析。';
+      'Originality.ai 有事實查核與可讀性分析概念；OmniTrace 以本地端風格特徵模組呼應，且離線也能完成基礎分析。';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks 以雲端 API 為主，強項是低偽陽性率與多語系支援；TruthLens 採用同樣理念的 XLM-RoBERTa 多語言基底模型與多模型集成投票，但文件內容不會上傳至任何伺服器。';
+      'Copyleaks 以雲端 API 為主，強項是低偽陽性率與多語系支援；OmniTrace 採用同樣理念的 XLM-RoBERTa 多語言基底模型與多模型集成投票，但文件內容不會上傳至任何伺服器。';
 
   @override
-  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；TruthLens 沒有用量限制。';
+  String get helpVsCopyleaks2 => 'Copyleaks 依方案而定有 API 用量限制；OmniTrace 沒有用量限制。';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；TruthLens 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
+      'Winston AI 的 OCR 圖片辨識需上傳圖片至雲端；OmniTrace 的 OCR 優先使用你自行設定的本地 OCR 伺服器，只有在你主動提供 Gemini API 金鑰時才會使用雲端備援——用不用雲端由你決定。';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI 以報告排版精美著稱；TruthLens 提供 AI 動態生成排版報告（未安裝 LLM 時自動退回模板），可匯出 PDF／CSV／JSON／PNG 四種格式。';
+      'Winston AI 以報告排版精美著稱；OmniTrace 提供 AI 動態生成排版報告（未安裝 LLM 時自動退回模板），可匯出 PDF／CSV／JSON／PNG 四種格式。';
 
   @override
-  String get helpAdvantagesTitle => 'TruthLens 的獨有優勢';
+  String get helpAdvantagesTitle => 'OmniTrace 的獨有優勢';
 
   @override
   String get helpAdvantage1 =>
@@ -8913,7 +8913,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。TruthLens 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
+      '在 iPhone 與 iPad 瀏覽器上，所有瀏覽器都使用 WebKit，每個分頁的記憶體預算比桌面 macOS 更緊。大型 ONNX 模型可能讓分析中的分頁被系統重載。OmniTrace 因此會在 iOS Web 依序執行引擎、用完即釋放模型，並在遇到 488 MB Qwen PPL 這類過大的困惑度子模型時略過該子模型，但仍用本機統計特徵讓統計引擎參與。這能避免分析中途跳回空白頁；代價是 macOS 可能納入完整 PPL 子模型，而 iOS 報告會標示該子模型已略過。';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '首次啟動引導';
@@ -9047,7 +9047,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
+      'OmniTrace 完全以網頁應用程式的形式在您的瀏覽器分頁中執行，不需要安裝；文件文字與分析結果不會離開您的裝置，下載的偵測模型也只快取在瀏覽器自身的沙盒儲存空間（OPFS）中，不在任何伺服器上。';
 
   @override
   String get privacyWebOverview2 =>
@@ -9061,14 +9061,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens 不收集任何與您的身分連結的資料，也不將任何資料用於追蹤，因此不需要 App 追蹤透明度（ATT）權限。';
+      'OmniTrace 不收集任何與您的身分連結的資料，也不將任何資料用於追蹤，因此不需要 App 追蹤透明度（ATT）權限。';
 
   @override
   String get privacyIosOverview2 =>
       '本 App 使用系統提供的檔案選擇器存取您主動選擇的文件或圖片；未經您選擇的檔案，App 無法存取（iOS App Sandbox 限制）。';
 
   @override
-  String get privacyAndroidOverview1 => 'TruthLens 不收集個人資料，也不與任何第三方分享使用者資料。';
+  String get privacyAndroidOverview1 => 'OmniTrace 不收集個人資料，也不與任何第三方分享使用者資料。';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -9076,7 +9076,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens 在 macOS App Sandbox 下執行，僅能存取您透過系統檔案對話框主動選擇的檔案（files.user-selected.read-write），無法自行瀏覽或存取其他檔案或資料夾。';
+      'OmniTrace 在 macOS App Sandbox 下執行，僅能存取您透過系統檔案對話框主動選擇的檔案（files.user-selected.read-write），無法自行瀏覽或存取其他檔案或資料夾。';
 
   @override
   String get privacyMacosOverview2 =>
@@ -9084,7 +9084,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens 為單機桌面應用程式，資料儲存於您本機使用者資料夾內（如 AppData／Documents），不會同步至雲端。';
+      'OmniTrace 為單機桌面應用程式，資料儲存於您本機使用者資料夾內（如 AppData／Documents），不會同步至雲端。';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -9092,15 +9092,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens 沒有使用者帳號、不需登入，也沒有任何形式的廣告或第三方追蹤 SDK。';
+      'OmniTrace 沒有使用者帳號、不需登入，也沒有任何形式的廣告或第三方追蹤 SDK。';
 
   @override
   String get privacyDataHandling2 =>
-      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。TruthLens 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
+      '您輸入、貼上或匯入的文字內容，皆在您的裝置上由本機 AI 模型完成分析。OmniTrace 不會將文件文字上傳到自有伺服器或第三方 AI 偵測服務。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果與歷史紀錄僅儲存在您瀏覽器裝置本機的儲存空間中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。在 App 內清除歷史紀錄，或在瀏覽器中清除本網站資料，即會移除此本機副本，TruthLens 不持有任何副本。';
+      '分析結果與歷史紀錄僅儲存在您瀏覽器裝置本機的儲存空間中；紀錄包含分析文字、分數、時間，以及匯入文件時的來源檔名。在 App 內清除歷史紀錄，或在瀏覽器中清除本網站資料，即會移除此本機副本，OmniTrace 不持有任何副本。';
 
   @override
   String get privacyNetworkIntro => '本 App 的核心 AI 偵測完全在裝置端執行，但下列支援或選用功能需要連線：';
@@ -9137,7 +9137,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyDisclaimer =>
-      '本頁內容為 TruthLens 依實際功能行為撰寫的隱私權說明，非律師審閱之正式法律文件；如需與您所在地區的法規進行正式合規審查，建議另行諮詢專業法律意見。';
+      '本頁內容為 OmniTrace 依實際功能行為撰寫的隱私權說明，非律師審閱之正式法律文件；如需與您所在地區的法規進行正式合規審查，建議另行諮詢專業法律意見。';
 
   @override
   String get privacySectionOverviewIos => '概要（對應 App Store 隱私權「營養標籤」）';
@@ -9880,7 +9880,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get firstRunModelManualBody =>
-      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。';
+      '您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 OmniTrace 仍可使用統計與風格引擎正常運作。';
 
   @override
   String get commonGotIt => '了解';

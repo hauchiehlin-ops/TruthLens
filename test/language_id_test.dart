@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/perplexity_calibration.dart';
-import 'package:truthlens/core/utils/language_id.dart';
+import 'package:omnitrace/core/detection/perplexity_calibration.dart';
+import 'package:omnitrace/core/utils/language_id.dart';
 
 void main() {
   group('文字系統判定', () {

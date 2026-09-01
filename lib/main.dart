@@ -84,7 +84,7 @@ Future<void> main() async {
       !modelManager.isInstalled('transformer');
 
   runApp(
-    TruthLensApp(
+    OmniTraceApp(
       prefs: prefs,
       modelManager: modelManager,
       provisioner: provisioner,
@@ -147,7 +147,7 @@ Future<void> _runStartupTask(
   }
 }
 
-class TruthLensApp extends StatelessWidget {
+class OmniTraceApp extends StatelessWidget {
   final PreferencesService prefs;
   final ModelManager modelManager;
   final ModelProvisioner provisioner;
@@ -157,7 +157,7 @@ class TruthLensApp extends StatelessWidget {
   /// 首次啟動且尚未安裝偵測模型：首頁顯示一次性提示，詢問是否前往模型頁。
   final bool promptModelOnFirstRun;
 
-  const TruthLensApp({
+  const OmniTraceApp({
     super.key,
     required this.prefs,
     required this.modelManager,
@@ -195,7 +195,7 @@ class TruthLensApp extends StatelessWidget {
       ],
       child: Consumer<PreferencesService>(
         builder: (context, prefs, _) => MaterialApp.router(
-          title: 'TruthLens',
+          title: 'OmniTrace',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),

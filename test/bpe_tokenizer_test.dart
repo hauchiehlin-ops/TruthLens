@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/bpe_tokenizer.dart';
+import 'package:omnitrace/core/detection/bpe_tokenizer.dart';
 
 /// 以真實 RoBERTa tokenizer.json 驗證 byte-level BPE，逐 id 對照原生 tokenizer 輸出。
 /// tokenizer.json 為本地快取（gitignored）；不存在時跳過，不影響 CI。

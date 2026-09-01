@@ -17,7 +17,7 @@
 
   const content = {
     en: {
-      title: 'TruthLens AI Content Detection and Document Forensics',
+      title: 'OmniTrace AI Content Detection and Document Forensics',
       lead:
         'Analyze Traditional Chinese, English, and multilingual documents on-device with text models, statistical signals, stylometry, rewriting defense, and source evidence.',
       features: [
@@ -47,10 +47,10 @@
       start: 'Open detection workspace',
       language: 'Language',
       noscript:
-        'TruthLens needs JavaScript and WebAssembly to run local AI analysis in the browser.',
+        'OmniTrace needs JavaScript and WebAssembly to run local AI analysis in the browser.',
     },
     'zh-Hant': {
-      title: 'TruthLens AI 內容檢測與文件鑑識',
+      title: 'OmniTrace AI 內容檢測與文件鑑識',
       lead:
         '在裝置端分析繁體中文、英文與多語文件，整合文字模型、統計特徵、寫作風格、改寫防禦及文件來源證據。',
       features: [
@@ -78,10 +78,10 @@
       status: '公開資訊會停留在此頁；按下按鈕後才進入本地檢測工作台。',
       start: '開啟檢測工作台',
       language: '語言',
-      noscript: 'TruthLens 需要 JavaScript 與 WebAssembly 才能在瀏覽器內執行本地 AI 分析。',
+      noscript: 'OmniTrace 需要 JavaScript 與 WebAssembly 才能在瀏覽器內執行本地 AI 分析。',
     },
     'zh-Hans': {
-      title: 'TruthLens AI 内容检测与文件鉴识',
+      title: 'OmniTrace AI 内容检测与文件鉴识',
       lead:
         '在设备端分析简体中文、英文与多语言文件，整合文字模型、统计特征、写作风格、改写防御及文件来源证据。',
       features: [
@@ -105,10 +105,10 @@
       status: '公开信息会停留在此页；按下按钮后才进入本地检测工作台。',
       start: '打开检测工作台',
       language: '语言',
-      noscript: 'TruthLens 需要 JavaScript 与 WebAssembly 才能在浏览器内运行本地 AI 分析。',
+      noscript: 'OmniTrace 需要 JavaScript 与 WebAssembly 才能在浏览器内运行本地 AI 分析。',
     },
     ja: {
-      title: 'TruthLens AI コンテンツ検出と文書フォレンジック',
+      title: 'OmniTrace AI コンテンツ検出と文書フォレンジック',
       lead:
         '繁体字中国語、英語、多言語文書を端末上で分析し、テキストモデル、統計、文体、書き換え防御、出所証拠を統合します。',
       features: [
@@ -132,10 +132,10 @@
       status: '公開情報はこのページに残ります。選択した時だけローカルワークスペースを開きます。',
       start: '検出ワークスペースを開く',
       language: '言語',
-      noscript: 'TruthLens のローカル AI 分析には JavaScript と WebAssembly が必要です。',
+      noscript: 'OmniTrace のローカル AI 分析には JavaScript と WebAssembly が必要です。',
     },
     ko: {
-      title: 'TruthLens AI 콘텐츠 감지 및 문서 포렌식',
+      title: 'OmniTrace AI 콘텐츠 감지 및 문서 포렌식',
       lead:
         '번체 중국어, 영어, 다국어 문서를 기기에서 분석하고 텍스트 모델, 통계, 문체, 재작성 방어, 출처 증거를 결합합니다.',
       features: [
@@ -159,10 +159,10 @@
       status: '공개 정보는 이 페이지에 머뭅니다. 선택할 때만 로컬 작업 공간을 엽니다.',
       start: '감지 작업 공간 열기',
       language: '언어',
-      noscript: 'TruthLens가 브라우저에서 로컬 AI 분석을 실행하려면 JavaScript와 WebAssembly가 필요합니다.',
+      noscript: 'OmniTrace가 브라우저에서 로컬 AI 분석을 실행하려면 JavaScript와 WebAssembly가 필요합니다.',
     },
     th: {
-      title: 'TruthLens การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
+      title: 'OmniTrace การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
       lead:
         'วิเคราะห์เอกสารจีนตัวเต็ม อังกฤษ และหลายภาษาในอุปกรณ์ ด้วยโมเดลข้อความ สถิติ สไตล์การเขียน การป้องกันการเขียนใหม่ และหลักฐานที่มา',
       features: [
@@ -186,10 +186,10 @@
       status: 'ข้อมูลสาธารณะจะอยู่ในหน้านี้ และจะเปิดพื้นที่ทำงานเมื่อคุณกดเท่านั้น',
       start: 'เปิดพื้นที่ทำงานตรวจจับ',
       language: 'ภาษา',
-      noscript: 'TruthLens ต้องใช้ JavaScript และ WebAssembly เพื่อวิเคราะห์ AI ในเบราว์เซอร์',
+      noscript: 'OmniTrace ต้องใช้ JavaScript และ WebAssembly เพื่อวิเคราะห์ AI ในเบราว์เซอร์',
     },
     ms: {
-      title: 'TruthLens Pengesanan Kandungan AI dan Forensik Dokumen',
+      title: 'OmniTrace Pengesanan Kandungan AI dan Forensik Dokumen',
       lead:
         'Analisis dokumen Cina Tradisional, Inggeris dan pelbagai bahasa pada peranti dengan model teks, statistik, gaya, pertahanan tulis semula dan bukti sumber.',
       features: [
@@ -213,10 +213,10 @@
       status: 'Maklumat awam kekal pada halaman ini; ruang kerja setempat hanya dibuka apabila anda memilih.',
       start: 'Buka ruang kerja pengesanan',
       language: 'Bahasa',
-      noscript: 'TruthLens memerlukan JavaScript dan WebAssembly untuk menjalankan analisis AI setempat dalam pelayar.',
+      noscript: 'OmniTrace memerlukan JavaScript dan WebAssembly untuk menjalankan analisis AI setempat dalam pelayar.',
     },
     es: {
-      title: 'TruthLens Detección de Contenido IA y Forense Documental',
+      title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
         'Analiza documentos en chino tradicional, inglés y varios idiomas en el dispositivo con modelos de texto, estadísticas, estilo, defensa contra reescritura y evidencia de origen.',
       features: [
@@ -240,10 +240,10 @@
       status: 'La información pública permanece en esta página; el área local se abre solo cuando lo eliges.',
       start: 'Abrir área de detección',
       language: 'Idioma',
-      noscript: 'TruthLens necesita JavaScript y WebAssembly para ejecutar análisis local de IA en el navegador.',
+      noscript: 'OmniTrace necesita JavaScript y WebAssembly para ejecutar análisis local de IA en el navegador.',
     },
     id: {
-      title: 'TruthLens Deteksi Konten AI dan Forensik Dokumen',
+      title: 'OmniTrace Deteksi Konten AI dan Forensik Dokumen',
       lead:
         'Analisis dokumen Tionghoa Tradisional, Inggris, dan multibahasa di perangkat dengan model teks, statistik, gaya, pertahanan penulisan ulang, dan bukti sumber.',
       features: [
@@ -267,10 +267,10 @@
       status: 'Informasi publik tetap di halaman ini; ruang kerja lokal dibuka hanya saat Anda memilih.',
       start: 'Buka ruang kerja deteksi',
       language: 'Bahasa',
-      noscript: 'TruthLens membutuhkan JavaScript dan WebAssembly untuk menjalankan analisis AI lokal di browser.',
+      noscript: 'OmniTrace membutuhkan JavaScript dan WebAssembly untuk menjalankan analisis AI lokal di browser.',
     },
     ru: {
-      title: 'TruthLens: AI-проверка контента и экспертиза документов',
+      title: 'OmniTrace: AI-проверка контента и экспертиза документов',
       lead:
         'Анализируйте документы на традиционном китайском, английском и других языках локально: текстовые модели, статистика, стиль, защита от перефразирования и доказательства источника.',
       features: [
@@ -294,10 +294,10 @@
       status: 'Открытая информация остается на этой странице; локальная рабочая область открывается только по кнопке.',
       start: 'Открыть рабочую область',
       language: 'Язык',
-      noscript: 'TruthLens требует JavaScript и WebAssembly для локального анализа AI в браузере.',
+      noscript: 'OmniTrace требует JavaScript и WebAssembly для локального анализа AI в браузере.',
     },
     de: {
-      title: 'TruthLens KI-Inhaltserkennung und Dokumentforensik',
+      title: 'OmniTrace KI-Inhaltserkennung und Dokumentforensik',
       lead:
         'Analysieren Sie traditionell chinesische, englische und mehrsprachige Dokumente lokal mit Textmodellen, Statistik, Stilometrie, Umschreibschutz und Quellenbelegen.',
       features: [
@@ -321,10 +321,10 @@
       status: 'Öffentliche Informationen bleiben auf dieser Seite; der lokale Arbeitsbereich öffnet sich erst per Klick.',
       start: 'Prüf-Arbeitsbereich öffnen',
       language: 'Sprache',
-      noscript: 'TruthLens benötigt JavaScript und WebAssembly für lokale KI-Analyse im Browser.',
+      noscript: 'OmniTrace benötigt JavaScript und WebAssembly für lokale KI-Analyse im Browser.',
     },
     fr: {
-      title: 'TruthLens Détection de Contenu IA et Analyse Documentaire',
+      title: 'OmniTrace Détection de Contenu IA et Analyse Documentaire',
       lead:
         'Analysez localement des documents en chinois traditionnel, anglais et autres langues avec modèles texte, statistiques, stylométrie, défense contre la réécriture et preuves d’origine.',
       features: [
@@ -348,10 +348,14 @@
       status: 'Les informations publiques restent sur cette page ; l’espace local ne s’ouvre que lorsque vous le choisissez.',
       start: 'Ouvrir l’espace de détection',
       language: 'Langue',
-      noscript: 'TruthLens nécessite JavaScript et WebAssembly pour l’analyse IA locale dans le navigateur.',
+      noscript: 'OmniTrace nécessite JavaScript et WebAssembly pour l’analyse IA locale dans le navigateur.',
     },
     pt: {
-      title: 'TruthLens Detecção de Conteúdo IA e Forense Documental',
+      changelogTitle: "Últimas Atualizações",
+      changelog1: "v4.13.10 - Melhoria na análise da tabela de peças DOCX, aumentando a precisão da extração de texto.",
+      changelog2: "v4.13.9 - Adicionada extração completa de citações em PDF e validação Crossref.",
+      footerText: "Detecção de conteúdo IA e forense documental local-first.",
+      title: 'OmniTrace Detecção de Conteúdo IA e Forense Documental',
       lead:
         'Analise documentos em chinês tradicional, inglês e vários idiomas no dispositivo com modelos de texto, estatísticas, estilo, defesa contra reescrita e evidências de origem.',
       features: [
@@ -375,7 +379,7 @@
       status: 'As informações públicas ficam nesta página; o workspace local só abre quando você escolher.',
       start: 'Abrir workspace de detecção',
       language: 'Idioma',
-      noscript: 'TruthLens precisa de JavaScript e WebAssembly para executar análise local de IA no navegador.',
+      noscript: 'OmniTrace precisa de JavaScript e WebAssembly para executar análise local de IA no navegador.',
     },
   };
 
@@ -390,12 +394,12 @@
   ];
 
   function normalize(value) {
-    if (!value) return 'zh-Hant';
+    if (!value) return 'en';
     const lower = value.replace('_', '-').toLowerCase();
     if (lower === 'zh-hant' || lower === 'zh-tw' || lower === 'zh-hk') return 'zh-Hant';
     if (lower === 'zh-hans' || lower === 'zh-cn' || lower === 'zh-sg') return 'zh-Hans';
     const base = lower.split('-')[0];
-    return content[base] ? base : 'zh-Hant';
+    return content[base] ? base : 'en';
   }
 
   function selectedLanguage() {
@@ -403,7 +407,7 @@
     try {
       return normalize(
         params.get('lang') ||
-          window.localStorage.getItem('truthlens-public-lang') ||
+          window.localStorage.getItem('omnitrace-public-lang') ||
           navigator.language ||
           document.documentElement.lang,
       );
@@ -420,7 +424,7 @@
         ? 'zh_Hans'
         : normalized;
     try {
-      window.localStorage.setItem('truthlens-public-lang', normalized);
+      window.localStorage.setItem('omnitrace-public-lang', normalized);
       window.localStorage.setItem('flutter.app_locale', JSON.stringify(flutterLocale));
     } catch (_) {}
   }
@@ -483,7 +487,7 @@
       select.appendChild(option);
     });
     select.value = lang;
-    if (select.value !== lang) select.value = 'zh-Hant';
+    if (select.value !== lang) select.value = 'en';
     select.addEventListener('change', () => {
       const nextLang = normalize(select.value);
       select.value = nextLang;
@@ -500,10 +504,10 @@
   }
 
   function applyHome(lang) {
-    const pack = content[normalize(lang)] || content['zh-Hant'];
-    const normalized = pack === content['zh-Hant'] ? 'zh-Hant' : pack.lang;
+    const normalized = normalize(lang);
+    const pack = content[normalized] || content.en;
     document.documentElement.lang = normalized;
-    document.title = pack.title + ' | TruthLens';
+    document.title = pack.title + ' | OmniTrace';
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute('content', pack.lead);
     setText('#seo-title', pack.title);
@@ -513,6 +517,10 @@
     setText('.seo-shell__status', pack.status);
     setText('#seo-shell-start', pack.start);
     setText('noscript', pack.noscript);
+    setText("[data-home-changelog-title]", pack.changelogTitle || content.en.changelogTitle);
+    setText("[data-home-changelog-1]", pack.changelog1 || content.en.changelog1);
+    setText("[data-home-changelog-2]", pack.changelog2 || content.en.changelog2);
+    setText("[data-home-footer]", pack.footerText || content.en.footerText);
 
     document.querySelectorAll('[data-home-feature]').forEach((item, index) => {
       item.textContent = pack.features[index];

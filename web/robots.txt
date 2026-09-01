@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://truth-lens-roan-three.vercel.app/sitemap.xml
+Sitemap: https://omni-trace-roan-three.vercel.app/sitemap.xml

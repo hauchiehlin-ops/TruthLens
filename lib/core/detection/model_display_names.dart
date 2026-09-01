@@ -12,13 +12,13 @@ String localizedModelName(
   String? catalogName,
   AppLocalizations l10n,
 ) => switch (variantId) {
-  'truthlens-mbert-multilingual-int8' => l10n.modelNameMbertMultilingual,
-  'truthlens-zh-detector-int8' => l10n.modelNameTruthlensZh,
+  'omnitrace-mbert-multilingual-int8' => l10n.modelNameMbertMultilingual,
+  'omnitrace-zh-detector-int8' => l10n.modelNameTruthlensZh,
   'aigc-detector-zhv3-int8' => l10n.modelNameAigcZhv3,
   'chatgpt-detector-roberta-onnx-int8' => l10n.modelNameRobertaEn,
   'qwen05b-ppl-int8' => l10n.modelNameQwenPpl,
   'distilgpt2-ppl-int8' => l10n.modelNameDistilgpt2Ppl,
-  'truthlens-adversarial-distil-int8' => l10n.modelNameAdversarial,
+  'omnitrace-adversarial-distil-int8' => l10n.modelNameAdversarial,
   'gemma-2-2b-it-q4km' => l10n.modelNameGemma2Llm,
   _ => catalogName ?? variantId,
 };

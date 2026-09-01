@@ -5,11 +5,11 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-// 註：TruthLens 為暫定名（plan 審核項目），正式名確定後更新此處與各平台。
-PRODUCT_NAME = TruthLens
+// 註：OmniTrace 為暫定名（plan 審核項目），正式名確定後更新此處與各平台。
+PRODUCT_NAME = OmniTrace
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.truthlens.truthlens
+PRODUCT_BUNDLE_IDENTIFIER = com.omnitrace.omnitrace
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.truthlens. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.omnitrace. All rights reserved.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
-import 'package:truthlens/shared/widgets/suspicious_sentences_list.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/shared/widgets/suspicious_sentences_list.dart';
 
 void main() {
   testWidgets('filter controls wrap without overflow at 320px', (tester) async {

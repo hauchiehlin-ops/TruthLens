@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
-import 'package:truthlens/features/report/report_composer.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
+import 'package:omnitrace/features/report/report_composer.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 /// 純 Dart 熱路徑效能基準（不含原生模型推論）。
 /// 對照 implementation_plan.md 第十節；此處量測前處理 + 啟發式引擎 + 報告生成。

@@ -1,4 +1,4 @@
-# 🔍 TruthLens — AI 內容檢測系統
+# 🔍 OmniTrace — AI 內容檢測系統
 
 > **為教育工作者打造的精準 AI 檢測工具**
 > 
@@ -26,7 +26,7 @@
 #### **第 1 步：開啟應用**
 ```bash
 # 在瀏覽器打開：
-https://truthlens.vercel.app
+https://omnitrace.vercel.app
 ```
 或在本地開發伺服器運行：
 ```bash
@@ -87,8 +87,8 @@ flutter run -d web-server
 **本地部署**（可選，適合學校內網）：
 ```bash
 # 克隆專案
-git clone https://github.com/hauchiehlin-ops/TruthLens.git
-cd TruthLens
+git clone https://github.com/hauchiehlin-ops/OmniTrace.git
+cd OmniTrace
 
 # 安裝依賴
 flutter pub get
@@ -171,14 +171,14 @@ AI 句子比例：8/45 (18%)  | 分析耗時：2.3s  | 可信度：92%
 ### 📖 深入了解
 
 - **完整文檔**：[docs/implementation_plan.md](docs/implementation_plan.md)
-- **隱私政策**：[在應用中查看](https://truthlens.vercel.app/#/privacy)
+- **隱私政策**：[在應用中查看](https://omnitrace.vercel.app/#/privacy)
 - **模型列表**：[所有 5 個核心模型詳解](docs/model_integration_testing.md)
 - **開發指南**：[CLAUDE.md](CLAUDE.md)（面向開發者）
 
 ### 🤝 社群與回饋
 
-- **報告問題**：[GitHub Issues](https://github.com/hauchiehlin-ops/TruthLens/issues)
-- **功能建議**：[GitHub Discussions](https://github.com/hauchiehlin-ops/TruthLens/discussions)
+- **報告問題**：[GitHub Issues](https://github.com/hauchiehlin-ops/OmniTrace/issues)
+- **功能建議**：[GitHub Discussions](https://github.com/hauchiehlin-ops/OmniTrace/discussions)
 - **聯絡方式**：hauchieh.lin@gmail.com
 
 ---
@@ -201,7 +201,7 @@ AI 句子比例：8/45 (18%)  | 分析耗時：2.3s  | 可信度：92%
 #### **Step 1: Open the App**
 ```bash
 # In your browser:
-https://truthlens.vercel.app
+https://omnitrace.vercel.app
 ```
 Or run locally:
 ```bash
@@ -262,8 +262,8 @@ Suspicious Sentences List → Only AI-flagged sentences + page numbers
 **Self-hosted deployment** (optional, for school intranet):
 ```bash
 # Clone repository
-git clone https://github.com/hauchiehlin-ops/TruthLens.git
-cd TruthLens
+git clone https://github.com/hauchiehlin-ops/OmniTrace.git
+cd OmniTrace
 
 # Install dependencies
 flutter pub get
@@ -346,14 +346,14 @@ All network features **can be disabled in settings**.
 ### 📖 Learn More
 
 - **Full Documentation**: [docs/implementation_plan.md](docs/implementation_plan.md)
-- **Privacy Policy**: [View in app](https://truthlens.vercel.app/#/privacy)
+- **Privacy Policy**: [View in app](https://omnitrace.vercel.app/#/privacy)
 - **Model List**: [All 5 core models explained](docs/model_integration_testing.md)
 - **Developer Guide**: [CLAUDE.md](CLAUDE.md) (for developers)
 
 ### 🤝 Community & Feedback
 
-- **Report Issues**: [GitHub Issues](https://github.com/hauchiehlin-ops/TruthLens/issues)
-- **Feature Requests**: [GitHub Discussions](https://github.com/hauchiehlin-ops/TruthLens/discussions)
+- **Report Issues**: [GitHub Issues](https://github.com/hauchiehlin-ops/OmniTrace/issues)
+- **Feature Requests**: [GitHub Discussions](https://github.com/hauchiehlin-ops/OmniTrace/discussions)
 - **Contact**: hauchieh.lin@gmail.com
 
 ---
@@ -376,7 +376,7 @@ All network features **can be disabled in settings**.
 #### **第 1 步：打开应用**
 ```bash
 # 在浏览器打开：
-https://truthlens.vercel.app
+https://omnitrace.vercel.app
 ```
 或在本地开发服务器运行：
 ```bash
@@ -437,8 +437,8 @@ flutter run -d web-server
 **本地部署**（可选，适合学校内网）：
 ```bash
 # 克隆项目
-git clone https://github.com/hauchiehlin-ops/TruthLens.git
-cd TruthLens
+git clone https://github.com/hauchiehlin-ops/OmniTrace.git
+cd OmniTrace
 
 # 安装依赖
 flutter pub get
@@ -521,16 +521,16 @@ AI 句子比例：8/45 (18%)  | 分析耗时：2.3s  | 可信度：92%
 ### 📖 深入了解
 
 - **完整文档**：[docs/implementation_plan.md](docs/implementation_plan.md)
-- **隐私政策**：[在应用中查看](https://truthlens.vercel.app/#/privacy)
+- **隐私政策**：[在应用中查看](https://omnitrace.vercel.app/#/privacy)
 - **模型列表**：[所有 5 个核心模型详解](docs/model_integration_testing.md)
 - **开发指南**：[CLAUDE.md](CLAUDE.md)（面向开发者）
 
 ### 🤝 社区与反馈
 
-- **报告问题**：[GitHub Issues](https://github.com/hauchiehlin-ops/TruthLens/issues)
-- **功能建议**：[GitHub Discussions](https://github.com/hauchiehlin-ops/TruthLens/discussions)
+- **报告问题**：[GitHub Issues](https://github.com/hauchiehlin-ops/OmniTrace/issues)
+- **功能建议**：[GitHub Discussions](https://github.com/hauchiehlin-ops/OmniTrace/discussions)
 - **联系方式**：hauchieh.lin@gmail.com
 
 ---
 
-**版本**：TruthLens v3.0.1 | **最後更新**：2026-08-10 | **許可證**：MIT
+**版本**：OmniTrace v3.0.1 | **最後更新**：2026-08-10 | **許可證**：MIT

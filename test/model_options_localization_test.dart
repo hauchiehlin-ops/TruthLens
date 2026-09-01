@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
-import 'package:truthlens/core/detection/model_display_names.dart';
-import 'package:truthlens/features/onboarding/model_options_list.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/model_catalog.dart';
+import 'package:omnitrace/core/detection/model_display_names.dart';
+import 'package:omnitrace/features/onboarding/model_options_list.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   final l10n = lookupAppLocalizations(const Locale('en'));

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/claim_audit.dart';
+import 'package:omnitrace/core/services/claim_audit.dart';
 
 void main() {
   test('找出中英文可查核主張，並辨識附近引用', () {

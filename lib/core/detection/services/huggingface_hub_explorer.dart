@@ -8,7 +8,7 @@ import '../model_catalog.dart';
 /// 動態查詢 HuggingFace Hub REST API 獲取最新的 AI 檢測開源 ONNX / GGUF 模型。
 class HuggingFaceHubExplorer {
   static const searchApiUrl =
-      'https://huggingface.co/api/models?search=truthlens-detector&full=true';
+      'https://huggingface.co/api/models?search=omnitrace-detector&full=true';
 
   final http.Client _client;
   HuggingFaceHubExplorer({http.Client? client})

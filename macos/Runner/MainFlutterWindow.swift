@@ -10,7 +10,7 @@ class MainFlutterWindow: NSWindow {
 
     RegisterGeneratedPlugins(registry: flutterViewController)
 
-    // TruthLens 原生外掛
+    // OmniTrace 原生外掛
     OcrPlugin.register(with: flutterViewController)
     DevicePlugin.register(with: flutterViewController)
 

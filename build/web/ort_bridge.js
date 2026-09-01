@@ -1,4 +1,4 @@
-// TruthLens Web 推論橋接：包裝 onnxruntime-web，供 Dart (dart:js_interop) 呼叫。
+// OmniTrace Web 推論橋接：包裝 onnxruntime-web，供 Dart (dart:js_interop) 呼叫。
 // 所有檔案自我托管於 assets/ort/，並在必要時提供彈性降級與 CDN 備援，符合本地優先原則——
 // 推論運算全程在瀏覽器（WASM / WebGPU）內完成，不上傳模型或文本。
 (function () {
@@ -59,7 +59,7 @@
       try {
         await loadScript(script);
       } catch (e) {
-        console.warn('[truthlensOrt] 本地 script 載入失敗，嘗試 fallback：', e);
+        console.warn('[omnitraceOrt] 本地 script 載入失敗，嘗試 fallback：', e);
         const cdnScript = hasGpu
           ? 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.webgpu.min.js'
           : 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.wasm.min.js';
@@ -108,7 +108,7 @@
           break;
         } catch (e) {
           lastError = e;
-          console.warn('[truthlensOrt] ' + eps.join('/') + ' 建立 session 失敗，嘗試後續 provider：', e);
+          console.warn('[omnitraceOrt] ' + eps.join('/') + ' 建立 session 失敗，嘗試後續 provider：', e);
         }
       }
 
@@ -120,7 +120,7 @@
           session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] });
           usedEp = 'wasm';
         } catch (fallbackError) {
-          console.error('[truthlensOrt] 所有 ONNX Runtime session 建立方式皆失敗：', fallbackError);
+          console.error('[omnitraceOrt] 所有 ONNX Runtime session 建立方式皆失敗：', fallbackError);
           throw lastError || fallbackError;
         }
       }
@@ -164,7 +164,7 @@
           if (mentionsExpectedType(e, tensorType)) {
             break;
           }
-          console.warn('[truthlensOrt] ' + tensorType + ' 輸入推論失敗，嘗試其他型別：', e);
+          console.warn('[omnitraceOrt] ' + tensorType + ' 輸入推論失敗，嘗試其他型別：', e);
         }
       }
 
@@ -192,7 +192,7 @@
     try {
       return JSON.parse(runtimeJson);
     } catch (e) {
-      console.warn('[truthlensOrt] runtime 規格解析失敗，忽略：', e);
+      console.warn('[omnitraceOrt] runtime 規格解析失敗，忽略：', e);
       return null;
     }
   }
@@ -314,5 +314,5 @@
     return state.epKind;
   }
 
-  window.truthlensOrt = { loadModel, run, runBatch, releaseModel, epKind, ensureOrt };
+  window.omnitraceOrt = { loadModel, run, runBatch, releaseModel, epKind, ensureOrt };
 })();

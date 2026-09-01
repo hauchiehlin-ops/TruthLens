@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
-import 'package:truthlens/core/detection/engines/statistical_engine.dart';
-import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
-import 'package:truthlens/core/detection/pan25_tfidf_scorer.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/integrated_assessment.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/engines/statistical_engine.dart';
+import 'package:omnitrace/core/detection/engines/stylometry_engine.dart';
+import 'package:omnitrace/core/detection/pan25_tfidf_scorer.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/integrated_assessment.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 const geminiExcerpt =
     '# Navigating the Crucible: The Shifting Sands of East Asian Geopolitics in the 21st Century '

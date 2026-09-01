@@ -1,4 +1,4 @@
-// TruthLens 自有 service worker。
+// OmniTrace 自有 service worker。
 //
 // 唯一目的：滿足 Chromium 判定「可安裝」所需的 fetch handler，讓
 // beforeinstallprompt 得以派送。裝成應用程式後 navigator.storage.persist()
@@ -14,7 +14,7 @@
 // 後備。網路正常時永遠拿到最新內容，不可能陳舊；網路斷線時至少開得起來。
 'use strict';
 
-const SHELL_CACHE = 'truthlens-shell-v1';
+const SHELL_CACHE = 'omnitrace-shell-v1';
 const SHELL_URL = 'index.html';
 
 self.addEventListener('install', (event) => {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/authorship_delta.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/authorship_delta.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// 換一個問題：不問「是不是 AI 寫的」，問「像不像這位作者平常的寫法」。
 /// 前者會隨模型進步愈來愈難答；後者錨定在人身上，不隨模型世代失效。

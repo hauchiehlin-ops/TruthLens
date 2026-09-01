@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/services/preferences_service.dart';
-import 'package:truthlens/features/settings/engine_weight_settings.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/services/preferences_service.dart';
+import 'package:omnitrace/features/settings/engine_weight_settings.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   testWidgets(

@@ -4,7 +4,7 @@ import 'package:web/web.dart' as web;
 
 import 'public_locale_codes.dart';
 
-const _publicLocaleStorageKey = 'truthlens-public-lang';
+const _publicLocaleStorageKey = 'omnitrace-public-lang';
 
 Locale? readPublicLocaleOverride({bool explicitOnly = false}) {
   final queryLocale = publicLocaleFromCode(Uri.base.queryParameters['lang']);

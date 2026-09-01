@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/evasion_scanner.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/citation_evidence.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/features/report/verifiable_findings.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/evasion_scanner.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/citation_evidence.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/features/report/verifiable_findings.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 /// 這份清單的價值在於**每一條都能被獨立驗證**。
 /// 混進機率或分數會讓整份清單降級成「又一個判斷」。

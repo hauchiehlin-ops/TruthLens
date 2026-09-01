@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/writing_session.dart';
-import 'package:truthlens/features/report/verifiable_findings.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/writing_session.dart';
+import 'package:omnitrace/features/report/verifiable_findings.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 /// 這是唯一不會被下一代模型追上的方法：它記錄的不是文字本身，
 /// 而是文字如何出現在編輯器裡。一次貼上 2000 字與打了三小時，

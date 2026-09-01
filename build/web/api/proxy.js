@@ -28,7 +28,7 @@ export default async function handler(req) {
   try {
     const range = req.headers.get('range');
     const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) TruthLens/1.0',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) OmniTrace/1.0',
     };
     if (range) {
       headers['Range'] = range;

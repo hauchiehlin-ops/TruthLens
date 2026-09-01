@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/utils/public_locale_codes.dart';
+import 'package:omnitrace/core/utils/public_locale_codes.dart';
 
 void main() {
   test('public locale parser normalizes supported web language codes', () {

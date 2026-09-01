@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/features/help/help_screen.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/features/help/help_screen.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   testWidgets('workflow chips follow the English locale', (tester) async {

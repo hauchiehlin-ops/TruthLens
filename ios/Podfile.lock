@@ -8,12 +8,12 @@ PODS:
     - onnxruntime-objc/Core (= 1.15.1)
   - onnxruntime-objc/Core (1.15.1):
     - onnxruntime-c (= 1.15.1)
-  - TruthLensLlamaBridge (1.0.0)
+  - OmniTraceLlamaBridge (1.0.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - onnxruntime (from `.symlinks/plugins/onnxruntime/ios`)
-  - TruthLensLlamaBridge (from `.`)
+  - OmniTraceLlamaBridge (from `.`)
 
 SPEC REPOS:
   trunk:
@@ -25,7 +25,7 @@ EXTERNAL SOURCES:
     :path: Flutter
   onnxruntime:
     :path: ".symlinks/plugins/onnxruntime/ios"
-  TruthLensLlamaBridge:
+  OmniTraceLlamaBridge:
     :path: "."
 
 SPEC CHECKSUMS:
@@ -33,7 +33,7 @@ SPEC CHECKSUMS:
   onnxruntime: 2ab1957eb029c71d47f7bb35cc4efc9f0d297828
   onnxruntime-c: ebdcfd8650bcbd10121c125262f99dea681b92a3
   onnxruntime-objc: ae7acec7a3d03eaf072d340afed7a35635c1c2a6
-  TruthLensLlamaBridge: 008a170be5541ddafe839f455b6ddb23f7da91e9
+  OmniTraceLlamaBridge: 008a170be5541ddafe839f455b6ddb23f7da91e9
 
 PODFILE CHECKSUM: 4c6db27ffb13ba9545ab595d3cd0edbef776fe45
 

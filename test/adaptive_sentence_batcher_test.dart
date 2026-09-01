@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/adaptive_sentence_batcher.dart';
+import 'package:omnitrace/core/detection/adaptive_sentence_batcher.dart';
 
 void main() {
   test('batches unique sentences and restores duplicate positions', () async {

@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_display_names.dart';
-import 'package:truthlens/features/onboarding/model_options_list.dart';
-import 'package:truthlens/core/services/ocr_failure.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/model_display_names.dart';
+import 'package:omnitrace/features/onboarding/model_options_list.dart';
+import 'package:omnitrace/core/services/ocr_failure.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   test('所有語系的鍵齊備，缺漏會靜默回退英文而不報錯', () {

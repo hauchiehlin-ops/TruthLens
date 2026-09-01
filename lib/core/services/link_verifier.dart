@@ -60,15 +60,15 @@ class LinkVerifier {
     if (!kIsWeb) return targetUrl;
 
     // 正式部署優先使用同源代理；本機靜態伺服器沒有 `/api/proxy`，改走目前
-    // 可用的正式代理。舊 truth-lens-band-b 專案已失效，不得再作 fallback。
+    // 可用的正式代理。舊 omni-trace-band-b 專案已失效，不得再作 fallback。
     try {
       if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
-        return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+        return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 

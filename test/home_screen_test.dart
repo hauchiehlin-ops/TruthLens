@@ -6,14 +6,14 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/detection/model_catalog_service.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
-import 'package:truthlens/core/detection/model_provisioner.dart';
-import 'package:truthlens/core/services/ocr_config_notifier.dart';
-import 'package:truthlens/core/services/preferences_service.dart';
-import 'package:truthlens/core/utils/app_version.dart';
-import 'package:truthlens/features/home/home_screen.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/model_catalog_service.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/model_provisioner.dart';
+import 'package:omnitrace/core/services/ocr_config_notifier.dart';
+import 'package:omnitrace/core/services/preferences_service.dart';
+import 'package:omnitrace/core/utils/app_version.dart';
+import 'package:omnitrace/features/home/home_screen.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();

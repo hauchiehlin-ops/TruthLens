@@ -690,7 +690,7 @@ class ModelManager extends ChangeNotifier {
       final request = http.Request('GET', Uri.parse(currentUrl));
       request.followRedirects = false; // 手動處理重定向，避免標頭洩漏至 AWS S3 引發 403
       request.headers['User-Agent'] =
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0';
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 OmniTrace/1.0';
 
       if (existingLen > 0 && redirectCount == 0) {
         request.headers['Range'] = 'bytes=$existingLen-';

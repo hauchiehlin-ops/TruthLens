@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/link_verifier.dart';
-import 'package:truthlens/core/services/publication_evidence.dart';
+import 'package:omnitrace/core/services/link_verifier.dart';
+import 'package:omnitrace/core/services/publication_evidence.dart';
 
 void main() {
   test('只從文件開頭抽取來源 DOI，不抓參考文獻 DOI', () {

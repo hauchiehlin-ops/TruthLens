@@ -3,11 +3,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/calibration_service.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
-import 'package:truthlens/shared/widgets/professional_report_header.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/calibration_service.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/shared/widgets/professional_report_header.dart';
 
 /// 今天實際踩到的失敗模式：一篇 ChatGPT 中文被判為「可能人類」。
 /// 成因不是 bug——2026 世代 LLM 的中文散文困惑度落在真人分布內

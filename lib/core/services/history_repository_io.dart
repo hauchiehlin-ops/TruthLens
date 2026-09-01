@@ -21,7 +21,7 @@ class HistoryRepository {
     }
     final dir = await getApplicationSupportDirectory();
     _db = await openDatabase(
-      p.join(dir.path, 'truthlens_history.db'),
+      p.join(dir.path, 'omnitrace_history.db'),
       version: 4,
       onCreate: (db, _) => db.execute('''
         CREATE TABLE history (

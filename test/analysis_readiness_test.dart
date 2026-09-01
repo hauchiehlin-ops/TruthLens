@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/input_quality.dart';
-import 'package:truthlens/core/services/analysis_readiness.dart';
+import 'package:omnitrace/core/models/input_quality.dart';
+import 'package:omnitrace/core/services/analysis_readiness.dart';
 
 const _longText =
     'This first sentence establishes a concrete question for the analysis. '

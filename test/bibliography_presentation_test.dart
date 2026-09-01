@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/bibliography_verifier.dart';
-import 'package:truthlens/features/report/bibliography_presentation.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/services/bibliography_verifier.dart';
+import 'package:omnitrace/features/report/bibliography_presentation.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   final l10n = lookupAppLocalizations(const Locale('en'));

@@ -399,7 +399,7 @@ abstract class AppLocalizations {
   /// No description provided for @modelNecessityText.
   ///
   /// In en, this message translates to:
-  /// **'Without a downloaded neural detection model, TruthLens still works, but only using statistical and stylistic analysis with limited accuracy and language coverage. After downloading a model, the multilingual Transformer classifier joins the ensemble vote, significantly improving accuracy and reliability. The model runs on-device; once downloaded, it never uploads any content.'**
+  /// **'Without a downloaded neural detection model, OmniTrace still works, but only using statistical and stylistic analysis with limited accuracy and language coverage. After downloading a model, the multilingual Transformer classifier joins the ensemble vote, significantly improving accuracy and reliability. The model runs on-device; once downloaded, it never uploads any content.'**
   String get modelNecessityText;
 
   /// No description provided for @modelPromptTitle.
@@ -435,7 +435,7 @@ abstract class AppLocalizations {
   /// No description provided for @firstRunModelPromptBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens already works: the statistical and stylistic engines are ready now. Adding an on-device neural model brings the multilingual classifier into the ensemble vote, which markedly improves accuracy and language coverage. The model runs entirely in your browser and never uploads your documents. You can also decide later from \"Settings → AI Model Management\".'**
+  /// **'OmniTrace already works: the statistical and stylistic engines are ready now. Adding an on-device neural model brings the multilingual classifier into the ensemble vote, which markedly improves accuracy and language coverage. The model runs entirely in your browser and never uploads your documents. You can also decide later from \"Settings → AI Model Management\".'**
   String get firstRunModelPromptBody;
 
   /// No description provided for @firstRunModelPromptLater.
@@ -465,7 +465,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to TruthLens'**
+  /// **'Welcome to OmniTrace'**
   String get onboardingWelcomeTitle;
 
   /// No description provided for @onboardingHeadline.
@@ -513,7 +513,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingStorageNotPersisted.
   ///
   /// In en, this message translates to:
-  /// **'Downloaded models are not yet protected from automatic cleanup. If disk space runs low the browser may reclaim them and you would have to download again. Installing TruthLens as an app makes the browser far more likely to keep them.'**
+  /// **'Downloaded models are not yet protected from automatic cleanup. If disk space runs low the browser may reclaim them and you would have to download again. Installing OmniTrace as an app makes the browser far more likely to keep them.'**
   String get onboardingStorageNotPersisted;
 
   /// No description provided for @onboardingInstallAppButton.
@@ -1339,7 +1339,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySealNoticeText.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.'**
+  /// **'OmniTrace Zero-Cloud Privacy Audit Seal: Processed 100% on-device without cloud upload or database persistence.'**
   String get privacySealNoticeText;
 
   /// No description provided for @reportModelCalibrationTitle.
@@ -1733,7 +1733,7 @@ abstract class AppLocalizations {
   /// No description provided for @ocrAssistantDownloadedBody.
   ///
   /// In en, this message translates to:
-  /// **'{osName} was detected, and the local endpoint has been filled in automatically:\n{endpoint}\n\nYour browser has started downloading {fileName}. For browser security reasons, TruthLens Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: {runInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “{testButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.'**
+  /// **'{osName} was detected, and the local endpoint has been filled in automatically:\n{endpoint}\n\nYour browser has started downloading {fileName}. For browser security reasons, OmniTrace Web cannot execute the installer or change startup settings directly.\n\nNext steps:\n1. Run the downloaded installer: {runInstruction}\n2. Wait until the terminal or window says the OCR service is ready.\n3. Return here and select “{testButton}”.\n\nAfter the test succeeds, Image OCR will use this local service first. Images will not be sent to Gemini unless you also configure a Gemini API key as fallback.'**
   String ocrAssistantDownloadedBody(
     String osName,
     String endpoint,
@@ -1991,7 +1991,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpShiftBody.
   ///
   /// In en, this message translates to:
-  /// **'Nearly every detector on the market answers the same question: does this text look like it was written by AI?\n\nThat is an arms race you lose. The stronger the model, the closer its output sits to human writing statistically — and paraphrasing tools improve far faster than detectors do. On that road a large server-side model merely loses more slowly.\n\nTruthLens asks a different question: what evidence do we actually hold about how this document came to exist, and how strong is each piece?\n\nThat is a shift from guessing at writing style to weighing origin evidence alongside statistically honest conclusions. It is why this tool deliberately does not chase a place in the single-score accuracy rankings, but lays each piece of evidence out separately and says plainly when it does not know. The real advantage of running in your browser is not inference speed — it is seeing what a server never gets to see: the complete file, and the baseline you collected yourself.'**
+  /// **'Nearly every detector on the market answers the same question: does this text look like it was written by AI?\n\nThat is an arms race you lose. The stronger the model, the closer its output sits to human writing statistically — and paraphrasing tools improve far faster than detectors do. On that road a large server-side model merely loses more slowly.\n\nOmniTrace asks a different question: what evidence do we actually hold about how this document came to exist, and how strong is each piece?\n\nThat is a shift from guessing at writing style to weighing origin evidence alongside statistically honest conclusions. It is why this tool deliberately does not chase a place in the single-score accuracy rankings, but lays each piece of evidence out separately and says plainly when it does not know. The real advantage of running in your browser is not inference speed — it is seeing what a server never gets to see: the complete file, and the baseline you collected yourself.'**
   String get helpShiftBody;
 
   /// No description provided for @helpPillarsTitle.
@@ -2805,7 +2805,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportBibUncertainNoReliableResponse.
   ///
   /// In en, this message translates to:
-  /// **'{base}: verification sources returned no reliable response or the entry lacks enough information; TruthLens does not treat this citation as verified.'**
+  /// **'{base}: verification sources returned no reliable response or the entry lacks enough information; OmniTrace does not treat this citation as verified.'**
   String reportBibUncertainNoReliableResponse(String base);
 
   /// No description provided for @reportNetworkWarningTitle.
@@ -2847,13 +2847,13 @@ abstract class AppLocalizations {
   /// No description provided for @exportReportTitle.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens Detection Report'**
+  /// **'OmniTrace Detection Report'**
   String get exportReportTitle;
 
   /// No description provided for @pdfPageFooter.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens · Page {page} / {total}'**
+  /// **'OmniTrace · Page {page} / {total}'**
   String pdfPageFooter(int page, int total);
 
   /// No description provided for @pdfAnalyzedAtElapsed.
@@ -3191,7 +3191,7 @@ abstract class AppLocalizations {
   /// No description provided for @modelNameTruthlensZh.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens Chinese detector (2026 generators · INT8)'**
+  /// **'OmniTrace Chinese detector (2026 generators · INT8)'**
   String get modelNameTruthlensZh;
 
   /// No description provided for @modelNameAigcZhv3.
@@ -3485,13 +3485,13 @@ abstract class AppLocalizations {
   /// No description provided for @helpAboutTitle.
   ///
   /// In en, this message translates to:
-  /// **'About TruthLens'**
+  /// **'About OmniTrace'**
   String get helpAboutTitle;
 
   /// No description provided for @helpAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
+  /// **'OmniTrace is an AI content detector that runs **entirely inside your browser**. Four text-analysis engines evaluate direct text traces; writing process, document origin and source integrity are shown as separate forensic evidence, and your document never leaves the machine.\n\nOnly authorship-specific signals can raise the AI verdict. Correlated engines are merged into independent evidence families before fusion, and a high score never increases its own weight. The report distinguishes likely human, human-AI mixed and likely AI-generated writing, with an integrated likelihood index and separate confidence level. The original engine signals and each evidence axis remain visible, so a low-confidence direction cannot masquerade as proof.'**
   String get helpAboutBody;
 
   /// No description provided for @helpComparisonTitle.
@@ -3515,19 +3515,19 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsGptZero1.
   ///
   /// In en, this message translates to:
-  /// **'GPTZero does most of its work in the cloud and requires uploading your document; all four TruthLens engines run inside your own browser, and the content is never sent anywhere.'**
+  /// **'GPTZero does most of its work in the cloud and requires uploading your document; all four OmniTrace engines run inside your own browser, and the content is never sent anywhere.'**
   String get helpVsGptZero1;
 
   /// No description provided for @helpVsGptZero2.
   ///
   /// In en, this message translates to:
-  /// **'GPTZero pioneered Perplexity/Burstiness metrics and sentence highlighting — TruthLens incorporates these and layers on a Transformer classifier, stylometric analysis, and adversarial defense, forming a four-model ensemble vote rather than a single metric.'**
+  /// **'GPTZero pioneered Perplexity/Burstiness metrics and sentence highlighting — OmniTrace incorporates these and layers on a Transformer classifier, stylometric analysis, and adversarial defense, forming a four-model ensemble vote rather than a single metric.'**
   String get helpVsGptZero2;
 
   /// No description provided for @helpVsGptZero3.
   ///
   /// In en, this message translates to:
-  /// **'GPTZero is subscription-based; TruthLens requires no subscription and has no usage limits.'**
+  /// **'GPTZero is subscription-based; OmniTrace requires no subscription and has no usage limits.'**
   String get helpVsGptZero3;
 
   /// No description provided for @helpVsTurnitinTitle.
@@ -3539,19 +3539,19 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsTurnitin1.
   ///
   /// In en, this message translates to:
-  /// **'Turnitin is sold only to institutions; individuals cannot purchase it directly. Anyone can install and use TruthLens.'**
+  /// **'Turnitin is sold only to institutions; individuals cannot purchase it directly. Anyone can install and use OmniTrace.'**
   String get helpVsTurnitin1;
 
   /// No description provided for @helpVsTurnitin2.
   ///
   /// In en, this message translates to:
-  /// **'Turnitin\'s decision process is close to a black box; TruthLens provides per-sentence AI probability, matched writing patterns, and a breakdown of each engine\'s score and reasoning.'**
+  /// **'Turnitin\'s decision process is close to a black box; OmniTrace provides per-sentence AI probability, matched writing patterns, and a breakdown of each engine\'s score and reasoning.'**
   String get helpVsTurnitin2;
 
   /// No description provided for @helpVsTurnitin3.
   ///
   /// In en, this message translates to:
-  /// **'Turnitin mainly gives a binary \"is it AI\" call; TruthLens supports paragraph/sentence-level human/AI/mixed labeling.'**
+  /// **'Turnitin mainly gives a binary \"is it AI\" call; OmniTrace supports paragraph/sentence-level human/AI/mixed labeling.'**
   String get helpVsTurnitin3;
 
   /// No description provided for @helpVsOriginalityTitle.
@@ -3563,13 +3563,13 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsOriginality1.
   ///
   /// In en, this message translates to:
-  /// **'Originality.ai charges per piece on a subscription and requires uploading to the cloud; TruthLens does its core work in the browser, with no subscription and no usage cap.'**
+  /// **'Originality.ai charges per piece on a subscription and requires uploading to the cloud; OmniTrace does its core work in the browser, with no subscription and no usage cap.'**
   String get helpVsOriginality1;
 
   /// No description provided for @helpVsOriginality2.
   ///
   /// In en, this message translates to:
-  /// **'Originality.ai offers fact-checking and readability analysis concepts; TruthLens echoes this with an on-device stylistic-feature module, and can do basic analysis offline too.'**
+  /// **'Originality.ai offers fact-checking and readability analysis concepts; OmniTrace echoes this with an on-device stylistic-feature module, and can do basic analysis offline too.'**
   String get helpVsOriginality2;
 
   /// No description provided for @helpVsCopyleaksTitle.
@@ -3581,13 +3581,13 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsCopyleaks1.
   ///
   /// In en, this message translates to:
-  /// **'Copyleaks is mainly a cloud API known for low false-positive rates and strong multilingual support; TruthLens adopts the same philosophy with an XLM-RoBERTa multilingual base model and multi-model ensemble voting, but your document content is never uploaded to any server.'**
+  /// **'Copyleaks is mainly a cloud API known for low false-positive rates and strong multilingual support; OmniTrace adopts the same philosophy with an XLM-RoBERTa multilingual base model and multi-model ensemble voting, but your document content is never uploaded to any server.'**
   String get helpVsCopyleaks1;
 
   /// No description provided for @helpVsCopyleaks2.
   ///
   /// In en, this message translates to:
-  /// **'Copyleaks has API usage limits depending on plan; TruthLens has no usage limits.'**
+  /// **'Copyleaks has API usage limits depending on plan; OmniTrace has no usage limits.'**
   String get helpVsCopyleaks2;
 
   /// No description provided for @helpVsWinstonTitle.
@@ -3599,19 +3599,19 @@ abstract class AppLocalizations {
   /// No description provided for @helpVsWinston1.
   ///
   /// In en, this message translates to:
-  /// **'Winston AI\'s image OCR uploads the picture to the cloud; TruthLens OCR prefers a local OCR server that you configure, and only falls back to the cloud if you supply a Gemini API key yourself — whether the cloud is involved at all stays your decision.'**
+  /// **'Winston AI\'s image OCR uploads the picture to the cloud; OmniTrace OCR prefers a local OCR server that you configure, and only falls back to the cloud if you supply a Gemini API key yourself — whether the cloud is involved at all stays your decision.'**
   String get helpVsWinston1;
 
   /// No description provided for @helpVsWinston2.
   ///
   /// In en, this message translates to:
-  /// **'Winston AI is known for polished, printable reports; TruthLens generates a dynamic AI-written report layout (falling back to a template if no LLM is installed), exportable as PDF/CSV/JSON/PNG.'**
+  /// **'Winston AI is known for polished, printable reports; OmniTrace generates a dynamic AI-written report layout (falling back to a template if no LLM is installed), exportable as PDF/CSV/JSON/PNG.'**
   String get helpVsWinston2;
 
   /// No description provided for @helpAdvantagesTitle.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens-only advantages'**
+  /// **'OmniTrace-only advantages'**
   String get helpAdvantagesTitle;
 
   /// No description provided for @helpAdvantage1.
@@ -3791,7 +3791,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpWorkspaceIosWebBody.
   ///
   /// In en, this message translates to:
-  /// **'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.'**
+  /// **'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. OmniTrace therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.'**
   String get helpWorkspaceIosWebBody;
 
   /// No description provided for @helpWorkflowStep1ChipOnboarding.
@@ -4037,7 +4037,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyWebOverview1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.'**
+  /// **'OmniTrace runs entirely as a web app in your browser tab. There is nothing to install; document text and analysis never leave your device, and downloaded detection models are cached in your browser\'s own sandboxed storage (OPFS), not on any server.'**
   String get privacyWebOverview1;
 
   /// No description provided for @privacyWebOverview2.
@@ -4061,7 +4061,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyIosOverview1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens does not collect any data linked to your identity, and does not use any data for tracking, so it does not require App Tracking Transparency (ATT) permission.'**
+  /// **'OmniTrace does not collect any data linked to your identity, and does not use any data for tracking, so it does not require App Tracking Transparency (ATT) permission.'**
   String get privacyIosOverview1;
 
   /// No description provided for @privacyIosOverview2.
@@ -4073,7 +4073,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyAndroidOverview1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens does not collect personal data and does not share user data with any third party.'**
+  /// **'OmniTrace does not collect personal data and does not share user data with any third party.'**
   String get privacyAndroidOverview1;
 
   /// No description provided for @privacyAndroidOverview2.
@@ -4085,7 +4085,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyMacosOverview1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens runs under macOS App Sandbox and can only access files you actively selected via the system file dialog (files.user-selected.read-write) — it cannot browse or access any other files or folders on its own.'**
+  /// **'OmniTrace runs under macOS App Sandbox and can only access files you actively selected via the system file dialog (files.user-selected.read-write) — it cannot browse or access any other files or folders on its own.'**
   String get privacyMacosOverview1;
 
   /// No description provided for @privacyMacosOverview2.
@@ -4097,7 +4097,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyWindowsOverview1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens is a standalone desktop app; data is stored in your local user folder (e.g. AppData/Documents) and is never synced to the cloud.'**
+  /// **'OmniTrace is a standalone desktop app; data is stored in your local user folder (e.g. AppData/Documents) and is never synced to the cloud.'**
   String get privacyWindowsOverview1;
 
   /// No description provided for @privacyWindowsOverview2.
@@ -4109,19 +4109,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataHandling1.
   ///
   /// In en, this message translates to:
-  /// **'TruthLens has no user accounts, requires no sign-in, and contains no advertising or third-party tracking SDKs of any kind.'**
+  /// **'OmniTrace has no user accounts, requires no sign-in, and contains no advertising or third-party tracking SDKs of any kind.'**
   String get privacyDataHandling1;
 
   /// No description provided for @privacyDataHandling2.
   ///
   /// In en, this message translates to:
-  /// **'Any text you type, paste, or import is analyzed entirely by on-device AI models on your own device. TruthLens does not upload document text to its own server or to a third-party AI-detection service.'**
+  /// **'Any text you type, paste, or import is analyzed entirely by on-device AI models on your own device. OmniTrace does not upload document text to its own server or to a third-party AI-detection service.'**
   String get privacyDataHandling2;
 
   /// No description provided for @privacyDataHandling3.
   ///
   /// In en, this message translates to:
-  /// **'Analysis results and history are stored only in your browser\'s local storage on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; clearing History in the app, or clearing this site\'s data in your browser, removes this local copy — TruthLens keeps no copy anywhere.'**
+  /// **'Analysis results and history are stored only in your browser\'s local storage on your device. History includes the analyzed text, scores, time, and the source file name when you imported a file; clearing History in the app, or clearing this site\'s data in your browser, removes this local copy — OmniTrace keeps no copy anywhere.'**
   String get privacyDataHandling3;
 
   /// No description provided for @privacyNetworkIntro.
@@ -4187,7 +4187,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDisclaimer.
   ///
   /// In en, this message translates to:
-  /// **'This page is a privacy explanation TruthLens wrote to reflect its actual functional behavior, not a lawyer-reviewed formal legal document; for a formal compliance review under the laws of your region, please consult independent legal counsel.'**
+  /// **'This page is a privacy explanation OmniTrace wrote to reflect its actual functional behavior, not a lawyer-reviewed formal legal document; for a formal compliance review under the laws of your region, please consult independent legal counsel.'**
   String get privacyDisclaimer;
 
   /// No description provided for @privacySectionOverviewIos.
@@ -5371,7 +5371,7 @@ abstract class AppLocalizations {
   /// No description provided for @firstRunModelManualBody.
   ///
   /// In en, this message translates to:
-  /// **'You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then TruthLens keeps working with its statistical and stylistic engines.'**
+  /// **'You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then OmniTrace keeps working with its statistical and stylistic engines.'**
   String get firstRunModelManualBody;
 
   /// No description provided for @commonGotIt.

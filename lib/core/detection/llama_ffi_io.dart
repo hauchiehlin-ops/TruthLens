@@ -4,7 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
-// ── TruthLens llama 橋接 dylib 的 C ABI（見 native/llama_bridge/truthlens_llama.h）──
+// ── OmniTrace llama 橋接 dylib 的 C ABI（見 native/llama_bridge/omnitrace_llama.h）──
 // 只綁 primitive + 指標，所有 by-value 結構/取樣器細節都封在 C++ 橋接層，
 // 避免在 Dart 端手刻 llama.cpp 結構佈局造成 ABI 崩潰。
 
@@ -72,7 +72,7 @@ class LlamaFfi {
         // 綁定期即驗證符號存在；缺任何一個都視為不可用。
         _lib!.lookupFunction<_TlInitNative, _TlInit>('tl_llama_init')();
         _available = true;
-        debugPrint('TruthLens llama bridge loaded.');
+        debugPrint('OmniTrace llama bridge loaded.');
       }
     } catch (e) {
       debugPrint('Failed to load llama bridge: $e');
@@ -82,9 +82,9 @@ class LlamaFfi {
 
   /// 橋接 dylib/so 的檔名（各平台）。
   static String get _libFileName {
-    if (Platform.isWindows) return 'truthlens_llama.dll';
-    if (Platform.isMacOS) return 'libtruthlens_llama.dylib';
-    return 'libtruthlens_llama.so'; // Android / Linux
+    if (Platform.isWindows) return 'omnitrace_llama.dll';
+    if (Platform.isMacOS) return 'libomnitrace_llama.dylib';
+    return 'libomnitrace_llama.so'; // Android / Linux
   }
 
   static ffi.DynamicLibrary? _loadLibrary() {
@@ -124,7 +124,7 @@ class LlamaFfi {
         // process() 在部分 iOS runtime 下找不到 framework 匯出符號。
         try {
           return ffi.DynamicLibrary.open(
-            'TruthLensLlamaBridge.framework/TruthLensLlamaBridge',
+            'OmniTraceLlamaBridge.framework/OmniTraceLlamaBridge',
           );
         } catch (_) {
           // 靜態連進 app 的後備路徑。

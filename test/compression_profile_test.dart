@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/compression_profile.dart';
+import 'package:omnitrace/core/detection/compression_profile.dart';
 
 import 'pan25_tfidf_scorer_test.dart' show geminiExcerpt;
 

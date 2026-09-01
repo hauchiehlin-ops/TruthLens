@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/text_tokenizer.dart';
+import 'package:omnitrace/core/detection/text_tokenizer.dart';
 
 void main() {
   test('pads a sentence batch and masks padding tokens', () {

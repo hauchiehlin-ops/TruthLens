@@ -199,7 +199,7 @@ class DocumentImporter {
     try {
       document = await pdfrx.PdfDocument.openData(
         bytes,
-        sourceName: 'truthlens-import-${DateTime.now().microsecondsSinceEpoch}',
+        sourceName: 'omnitrace-import-${DateTime.now().microsecondsSinceEpoch}',
       );
       final buffer = StringBuffer();
       for (final page in document.pages) {

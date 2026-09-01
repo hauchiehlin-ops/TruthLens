@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/evasion_scanner.dart';
-import 'package:truthlens/core/models/input_quality.dart';
+import 'package:omnitrace/core/detection/evasion_scanner.dart';
+import 'package:omnitrace/core/models/input_quality.dart';
 
 /// 這是整套系統裡唯一確定性的檢查：不估機率，只回報「有沒有」。
 /// 它指向的不是「這段文字像 AI」，而是「有人刻意規避偵測」——

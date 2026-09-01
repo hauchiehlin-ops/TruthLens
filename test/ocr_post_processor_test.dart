@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/utils/ocr_post_processor.dart';
+import 'package:omnitrace/core/utils/ocr_post_processor.dart';
 
 void main() {
   group('OcrPostProcessor', () {

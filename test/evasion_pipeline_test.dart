@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/evasion_scanner.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/detection/evasion_scanner.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
 
 /// 掃描器若沒接進管線就等於沒做。這裡確認 analyze() 的結果真的帶著它。
 void main() {

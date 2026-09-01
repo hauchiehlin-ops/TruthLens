@@ -1,6 +1,6 @@
 {
-    "name": "TruthLens AI 內容檢測與文件鑑識",
-    "short_name": "TruthLens",
+    "name": "OmniTrace AI 內容檢測與文件鑑識",
+    "short_name": "OmniTrace",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7F7FF",

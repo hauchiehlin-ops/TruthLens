@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// P4 多語系測試：檢測管線需在多種語言與混合文本下穩健運作、不崩潰，
 /// 且 ESL 偏差修正在合理情境觸發。

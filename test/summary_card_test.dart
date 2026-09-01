@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/features/report/summary_card.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/features/report/summary_card.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

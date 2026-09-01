@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/analysis_profile.dart';
-import 'package:truthlens/core/detection/evidence_fusion.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/models/calibration_evidence.dart';
-import 'package:truthlens/core/models/input_quality.dart';
-import 'package:truthlens/core/services/citation_evidence.dart';
-import 'package:truthlens/core/services/claim_audit.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/core/services/forensic_evidence.dart';
-import 'package:truthlens/core/services/integrated_assessment.dart';
-import 'package:truthlens/core/services/publication_evidence.dart';
-import 'package:truthlens/core/services/writing_session.dart';
+import 'package:omnitrace/core/detection/analysis_profile.dart';
+import 'package:omnitrace/core/detection/evidence_fusion.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/models/calibration_evidence.dart';
+import 'package:omnitrace/core/models/input_quality.dart';
+import 'package:omnitrace/core/services/citation_evidence.dart';
+import 'package:omnitrace/core/services/claim_audit.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/core/services/forensic_evidence.dart';
+import 'package:omnitrace/core/services/integrated_assessment.dart';
+import 'package:omnitrace/core/services/publication_evidence.dart';
+import 'package:omnitrace/core/services/writing_session.dart';
 
 DetectionResult _result({
   double textScore = 0.13,

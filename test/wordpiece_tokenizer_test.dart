@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/wordpiece_tokenizer.dart';
+import 'package:omnitrace/core/detection/wordpiece_tokenizer.dart';
 
 /// 以最小詞表驗證 WordPiece 演算法（CJK 逐字、標點切分、## 續接、貪婪最長匹配）。
 /// 期望值取自真實 bert-base-multilingual-cased tokenizer 的輸出。

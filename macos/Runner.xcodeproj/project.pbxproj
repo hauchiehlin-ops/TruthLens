@@ -29,7 +29,7 @@
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		411C68F478115CABE5E68476 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D985E3A9B07CB18D07996F3 /* Pods_RunnerTests.framework */; };
 		44944D6E73BFE86F5F768F1A /* libggml-base.0.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = E7A8E335889BAF01302D0061 /* libggml-base.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		685DCF08D287339294EA3F86 /* libtruthlens_llama.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		685DCF08D287339294EA3F86 /* libomnitrace_llama.dylib in Embed llama Libraries */ = {isa = PBXBuildFile; fileRef = B89C28E8EE835FF789C6ADD8 /* libomnitrace_llama.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		7A0C0CA10000000000000001 /* OcrPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0C0CA10000000000000002 /* OcrPlugin.swift */; };
 		7A0C0CA10000000000000003 /* DevicePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0C0CA10000000000000004 /* DevicePlugin.swift */; };
@@ -81,7 +81,7 @@
 				7B147347AFF3168B065BD92D /* libggml-metal.0.dylib in Embed llama Libraries */,
 				8A7805C0933856211FF50D48 /* libggml.0.dylib in Embed llama Libraries */,
 				E2867EEA3DAECE926389050D /* libllama.0.dylib in Embed llama Libraries */,
-				685DCF08D287339294EA3F86 /* libtruthlens_llama.dylib in Embed llama Libraries */,
+				685DCF08D287339294EA3F86 /* libomnitrace_llama.dylib in Embed llama Libraries */,
 			);
 			name = "Embed llama Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,7 +97,7 @@
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
 		335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedPluginRegistrant.swift; sourceTree = "<group>"; };
-		33CC10ED2044A3C60003C045 /* truthlens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = truthlens.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		33CC10ED2044A3C60003C045 /* omnitrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = omnitrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33CC10F02044A3C60003C045 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		33CC10F22044A3C60003C045 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Runner/Assets.xcassets; sourceTree = "<group>"; };
 		33CC10F52044A3C60003C045 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -119,7 +119,7 @@
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		98B4D05F0F98806D6502D204 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		A8621EA9CE0A6A5FA93C2F34 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
-		B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libtruthlens_llama.dylib; sourceTree = "<group>"; };
+		B89C28E8EE835FF789C6ADD8 /* libomnitrace_llama.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libomnitrace_llama.dylib; sourceTree = "<group>"; };
 		C1448608DB8D425105187665 /* libllama.0.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; path = libllama.0.dylib; sourceTree = "<group>"; };
 		DF819F15458E4CE50C7AE0DE /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		E0E0D07893669F7CA2D668A2 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 		33CC10EE2044A3C60003C045 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				33CC10ED2044A3C60003C045 /* truthlens.app */,
+				33CC10ED2044A3C60003C045 /* omnitrace.app */,
 				331C80D5294CF71000263BE5 /* RunnerTests.xctest */,
 			);
 			name = Products;
@@ -250,7 +250,7 @@
 				22B7227AA92784E9A8CB569C /* libggml-metal.0.dylib */,
 				FF5A71AF0D0A6368D801F11D /* libggml.0.dylib */,
 				C1448608DB8D425105187665 /* libllama.0.dylib */,
-				B89C28E8EE835FF789C6ADD8 /* libtruthlens_llama.dylib */,
+				B89C28E8EE835FF789C6ADD8 /* libomnitrace_llama.dylib */,
 			);
 			name = Libs;
 			path = Libs;
@@ -310,7 +310,7 @@
 				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
 			);
 			productName = Runner;
-			productReference = 33CC10ED2044A3C60003C045 /* truthlens.app */;
+			productReference = 33CC10ED2044A3C60003C045 /* omnitrace.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -545,10 +545,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.truthlens.truthlens.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omnitrace.omnitrace.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/truthlens.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/truthlens";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/omnitrace.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/omnitrace";
 			};
 			name = Debug;
 		};
@@ -560,10 +560,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.truthlens.truthlens.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omnitrace.omnitrace.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/truthlens.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/truthlens";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/omnitrace.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/omnitrace";
 			};
 			name = Release;
 		};
@@ -575,10 +575,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.truthlens.truthlens.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.omnitrace.omnitrace.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/truthlens.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/truthlens";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/omnitrace.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/omnitrace";
 			};
 			name = Profile;
 		};

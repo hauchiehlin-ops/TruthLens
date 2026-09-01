@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/calibration_exporter.dart';
-import 'package:truthlens/core/services/calibration_service.dart';
+import 'package:omnitrace/core/services/calibration_exporter.dart';
+import 'package:omnitrace/core/services/calibration_service.dart';
 
 CalibrationSample _s({
   required String id,

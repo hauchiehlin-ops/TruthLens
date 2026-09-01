@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/features/report/report_composer.dart';
-import 'package:truthlens/features/report/report_document.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/features/report/report_composer.dart';
+import 'package:omnitrace/features/report/report_document.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 DetectionResult _result({
   required double ai,

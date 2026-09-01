@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
 
 File _writeMockModel(File file, int byteValue) =>
     file..writeAsBytesSync(List<int>.filled(128 * 1024, byteValue));

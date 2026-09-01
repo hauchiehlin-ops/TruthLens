@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:truthlens/core/services/network_status.dart';
+import 'package:omnitrace/core/services/network_status.dart';
 
 void main() {
   group('NetworkStatus.isOnline', () {

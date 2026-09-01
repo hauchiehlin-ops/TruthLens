@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en" translate="no">
 <head>
   <base href="/">
   <meta charset="UTF-8">
@@ -8,64 +8,64 @@
   <meta name="theme-color" content="#3E5C97">
   <meta name="color-scheme" content="light dark">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="description" content="TruthLens 是本地優先的多語 AI 內容檢測與文件鑑識工具，整合文字模型、統計特徵、寫作風格、改寫防禦、來源紀錄與可查證證據，提供透明且可解釋的作者判讀。">
-  <meta name="keywords" content="AI 內容檢測,AI 文章檢測,AI detector,文件鑑識,AI 寫作辨識,繁體中文 AI 檢測,本地 AI 工具">
-  <meta name="author" content="TruthLens">
+  <meta name="description" content="OmniTrace is a local-first multilingual AI content detection and document forensics tool with text models, statistical signals, stylometry, rewriting defense, source records, and verifiable evidence.">
+  <meta name="keywords" content="AI content detection,AI article detector,AI detector,document forensics,AI writing detection,Traditional Chinese AI detector,local AI tool">
+  <meta name="author" content="OmniTrace">
 
-  <link rel="canonical" href="https://truth-lens-roan-three.vercel.app/">
-  <link rel="alternate" hreflang="zh-Hant" href="https://truth-lens-roan-three.vercel.app/">
-  <link rel="alternate" hreflang="x-default" href="https://truth-lens-roan-three.vercel.app/">
+  <link rel="canonical" href="https://omni-trace-roan-three.vercel.app/">
+  <link rel="alternate" hreflang="en" href="https://omni-trace-roan-three.vercel.app/">
+  <link rel="alternate" hreflang="x-default" href="https://omni-trace-roan-three.vercel.app/">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="TruthLens">
-  <meta property="og:locale" content="zh_TW">
-  <meta property="og:title" content="TruthLens｜本地優先 AI 內容檢測與文件鑑識">
-  <meta property="og:description" content="以多引擎、來源證據與透明信心指標分析 AI 生成內容，核心文件內容留在裝置端處理。">
-  <meta property="og:url" content="https://truth-lens-roan-three.vercel.app/">
-  <meta property="og:image" content="https://truth-lens-roan-three.vercel.app/icons/Icon-512.png">
+  <meta property="og:site_name" content="OmniTrace">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="OmniTrace | Local-first AI Content Detection and Document Forensics">
+  <meta property="og:description" content="Analyze AI-generated writing with multi-engine signals, source evidence, and transparent confidence indicators while keeping document content on device.">
+  <meta property="og:url" content="https://omni-trace-roan-three.vercel.app/">
+  <meta property="og:image" content="https://omni-trace-roan-three.vercel.app/icons/Icon-512.png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
-  <meta property="og:image:alt" content="TruthLens 應用程式圖示">
+  <meta property="og:image:alt" content="OmniTrace app icon">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="TruthLens｜AI 內容檢測與文件鑑識">
-  <meta name="twitter:description" content="本地優先、透明可解釋的多語 AI 作者判讀工具。">
-  <meta name="twitter:image" content="https://truth-lens-roan-three.vercel.app/icons/Icon-512.png">
+  <meta name="twitter:title" content="OmniTrace | AI Content Detection and Document Forensics">
+  <meta name="twitter:description" content="Local-first, transparent, multilingual AI authorship analysis.">
+  <meta name="twitter:image" content="https://omni-trace-roan-three.vercel.app/icons/Icon-512.png">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="TruthLens">
+  <meta name="apple-mobile-web-app-title" content="OmniTrace">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
-  <title>TruthLens｜本地優先 AI 內容檢測與文件鑑識</title>
+  <title>OmniTrace</title>
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "TruthLens",
-    "url": "https://truth-lens-roan-three.vercel.app/",
-    "image": "https://truth-lens-roan-three.vercel.app/icons/Icon-512.png",
-    "description": "本地優先的多語 AI 內容檢測與文件鑑識工具，提供逐句訊號、來源證據、信心上限與可解釋報告。",
+    "name": "OmniTrace",
+    "url": "https://omni-trace-roan-three.vercel.app/",
+    "image": "https://omni-trace-roan-three.vercel.app/icons/Icon-512.png",
+    "description": "Local-first multilingual AI content detection and document forensics with sentence-level signals, source evidence, confidence limits, and explainable reports.",
     "applicationCategory": "UtilitiesApplication",
     "applicationSubCategory": "AI content detection and document forensics",
     "operatingSystem": "Web, iOS, Android, macOS, Windows",
     "browserRequirements": "Requires JavaScript and WebAssembly",
     "inLanguage": ["zh-Hant", "zh-Hans", "en", "ja", "ko", "th", "ms", "es", "id", "ru", "de", "fr", "pt"],
     "featureList": [
-      "多語 AI 內容檢測",
-      "逐句 AI 訊號分析",
-      "文件來源與編輯紀錄鑑識",
-      "引用與超連結驗證",
-      "本地優先的裝置端推論",
-      "可解釋的信心與證據報告"
+      "Multilingual AI content detection",
+      "Sentence-level AI signal analysis",
+      "Document source and editing-history forensics",
+      "Citation and link verification",
+      "Local-first on-device inference",
+      "Explainable confidence and evidence reports"
     ],
     "publisher": {
       "@type": "Organization",
-      "name": "TruthLens"
+      "name": "OmniTrace"
     }
   }
   </script>
@@ -98,7 +98,7 @@
     }
   </style>
 
-  <!-- TruthLens 端上推論橋接：執行期與模型均採自我托管，文件內容不送往伺服器。 -->
+  <!-- OmniTrace 端上推論橋接：執行期與模型均採自我托管，文件內容不送往伺服器。 -->
   <!-- 必須早於 flutter_bootstrap.js：beforeinstallprompt 只派送一次，
        且通常在 Flutter 啟動前就已觸發。 -->
   <script src="pwa_bridge.js"></script>
@@ -112,38 +112,51 @@
       <div class="seo-shell__topbar">
         <div class="seo-shell__language" data-home-language aria-label="Language"></div>
       </div>
-      <h1 id="seo-title" class="seo-shell__brand">TruthLens AI 內容檢測與文件鑑識</h1>
+      <h1 id="seo-title" class="seo-shell__brand">OmniTrace AI Content Detection and Document Forensics</h1>
       <p class="seo-shell__lead" data-home-lead>
-        在裝置端分析繁體中文、英文與多語文件，整合文字模型、統計特徵、寫作風格、
-        改寫防禦及文件來源證據，提供逐句訊號、判讀信心與可查證理由。
+        Analyze Traditional Chinese, English, and multilingual documents on-device with text models,
+        statistical signals, stylometry, rewriting defense, and source evidence.
       </p>
       <ul class="seo-shell__features">
-        <li data-home-feature>核心 AI 推論與文件內容留在本機處理</li>
-        <li data-home-feature>以多個獨立證據家族交叉檢查，不把單一分數當作定案</li>
-        <li data-home-feature>支援 PDF、DOCX、ODT、純文字與 OCR 匯入</li>
-        <li data-home-feature>提供來源紀錄、引用驗證與可匯出的分析報告</li>
+        <li data-home-feature>Core AI inference and document content stay on this device</li>
+        <li data-home-feature>Multiple independent evidence families are cross-checked</li>
+        <li data-home-feature>Supports PDF, DOCX, ODT, plain text, and OCR import</li>
+        <li data-home-feature>Provides source evidence, citation checks, and exportable reports</li>
       </ul>
       <p class="seo-shell__lead">
-        <span data-home-intro-prefix>先試用公開入口：</span>
-        <a data-home-intro-link data-path="/zh/ai-article-detector" href="/zh/ai-article-detector">免費 AI 文章檢測器</a>、
-        <a data-home-intro-link data-path="/free-ai-detector" href="/free-ai-detector">Free AI Detector</a>、
-        <a data-home-intro-link data-path="/privacy/local-ai-detector-vs-cloud-upload" href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>。
+        <span data-home-intro-prefix>Start with public resources:</span>
+        <a data-home-intro-link data-path="/zh/ai-article-detector" href="/zh/ai-article-detector">Traditional Chinese AI article detector</a>,
+        <a data-home-intro-link data-path="/free-ai-detector" href="/free-ai-detector">Free short-text detector</a>,
+        <a data-home-intro-link data-path="/privacy/local-ai-detector-vs-cloud-upload" href="/privacy/local-ai-detector-vs-cloud-upload">Local AI detection vs cloud upload</a>.
       </p>
-      <h2 class="seo-shell__section-title" data-home-guide-label>公開工具與指南</h2>
-      <nav class="seo-shell__links" aria-label="公開工具與指南">
-        <a data-home-card-link href="/privacy/local-ai-detector-vs-cloud-upload">本地 AI 檢測與雲端上傳比較</a>
-        <a data-home-card-link href="/formats/pdf-ai-detection-limitations">PDF AI 檢測限制</a>
-        <a data-home-card-link href="/formats/docx-editing-history-ai-evidence">DOCX 編輯紀錄證據</a>
-        <a data-home-card-link href="/ai-writing-signs/fake-citations">假文獻與引用核實</a>
-        <a data-home-card-link href="/ai-writing-signs/low-burstiness">Low burstiness 是什麼</a>
-        <a data-home-card-link href="/zh/ai-article-detector">免費短文預覽（繁中）</a>
-        <a data-home-card-link href="/free-ai-detector">Free short-text preview</a>
+      <h2 class="seo-shell__section-title" data-home-guide-label>Public tools and guides</h2>
+      <nav class="seo-shell__links" aria-label="Public tools and guides">
+        <a data-home-card-link href="/privacy/local-ai-detector-vs-cloud-upload">Local AI detection vs cloud upload</a>
+        <a data-home-card-link href="/formats/pdf-ai-detection-limitations">PDF AI detection limits</a>
+        <a data-home-card-link href="/formats/docx-editing-history-ai-evidence">DOCX editing history evidence</a>
+        <a data-home-card-link href="/ai-writing-signs/fake-citations">Fake citations and reference checks</a>
+        <a data-home-card-link href="/ai-writing-signs/low-burstiness">What low burstiness means</a>
+        <a data-home-card-link href="/zh/ai-article-detector">Traditional Chinese AI article detector</a>
+        <a data-home-card-link href="/free-ai-detector">Free short-text detector</a>
       </nav>
-      <p class="seo-shell__status" role="status">公開資訊會停留在此頁；按下按鈕後才進入本地檢測工作台。</p>
-      <a id="seo-shell-start" href="/?workspace=1">開啟檢測工作台</a>
-      <noscript>TruthLens 需要 JavaScript 與 WebAssembly 才能在瀏覽器內執行本地 AI 分析。</noscript>
+      <p class="seo-shell__status" role="status">Public information stays on this page; open the local workspace only when you choose.</p>
+      <a id="seo-shell-start" href="/?workspace=1">Open detection workspace</a>
+      <noscript>OmniTrace needs JavaScript and WebAssembly to run local AI analysis in the browser.</noscript>
+      
+      <section id="changelog" style="margin-top: 40px; border-top: 1px solid #c3cad8; padding-top: 20px;">
+        <h2 class="seo-shell__section-title" data-home-changelog-title>Latest Updates</h2>
+        <ul class="seo-shell__features">
+          <li><strong>v4.13.10</strong> - <span data-home-changelog-1>Improved DOCX piece table parsing for better text extraction accuracy.</span></li>
+          <li><strong>v4.13.9</strong> - <span data-home-changelog-2>Added comprehensive PDF citation extraction and crossref verification.</span></li>
+        </ul>
+      </section>
     </section>
   </main>
+
+  <footer style="text-align: center; padding: 20px; font-size: 13px; color: #465064; border-top: 1px solid #eef3fb; margin-top: 40px;">
+    <a href="/sitemap_directory.html" style="color: #31558f; text-decoration: none;">Sitemap Directory</a> | 
+    <span data-home-footer>OmniTrace - Local-first AI Content Detection</span>
+  </footer>
   <script src="seo/home_i18n.js"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

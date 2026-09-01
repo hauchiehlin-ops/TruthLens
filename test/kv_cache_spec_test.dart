@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
-import 'package:truthlens/core/detection/model_manager_types.dart';
+import 'package:omnitrace/core/detection/model_catalog.dart';
+import 'package:omnitrace/core/detection/model_manager_types.dart';
 
 /// KV cache 的 heads/head_dim 是**靜態維度**，錯了會直接推論失敗。
 /// onnxruntime-web 1.19.2 的 inputMetadata 不保證提供形狀，因此這些數字

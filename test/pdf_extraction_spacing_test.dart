@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart' show Rect;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:truthlens/core/utils/language_id.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/utils/language_id.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// PDF 抽取必須保留單字之間的空白。
 ///

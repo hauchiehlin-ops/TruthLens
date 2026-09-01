@@ -1,4 +1,4 @@
-# TruthLens 開發日誌（DEVLOG）
+# OmniTrace 開發日誌（DEVLOG）
 
 ## 2026-09-01（第一百九十八次更新）— 改善舊版 `.doc` 主文抽取
 
@@ -33,7 +33,7 @@
 
 主要調整：
 
-1. 公開首頁與公開子頁的語系保存改為同時寫入 `truthlens-public-lang` 與 Flutter web 會讀取的
+1. 公開首頁與公開子頁的語系保存改為同時寫入 `omnitrace-public-lang` 與 Flutter web 會讀取的
    `flutter.app_locale`，並使用 shared_preferences web 所需的 JSON 編碼，讓公開入口和主工作台讀同一個語系狀態。
 2. 首頁與公開子頁新增全域內部連結攔截：點擊任何站內連結時會依「點擊當下」的語系重新補上 `?lang=`，
    避免靜態 href 或舊 DOM listener 造成非中英文語系掉回英文。
@@ -87,7 +87,7 @@
 主要調整：
 
 1. 新增公開頁／工作台共用語系代碼工具，統一處理 `zh-Hant`、`zh-Hans`、泰文、日文、韓文等 13 種公開入口語系。
-2. 新增 web 語系橋接層，Flutter 啟動時會讀取 URL `?lang=` 與 `truthlens-public-lang`，並套用到 `PreferencesService.locale`。
+2. 新增 web 語系橋接層，Flutter 啟動時會讀取 URL `?lang=` 與 `omnitrace-public-lang`，並套用到 `PreferencesService.locale`。
 3. 即使 web 偏好載入因 OPFS 或瀏覽器狀態逾時延後，偏好載入完成後仍會再次套用公開頁語系，避免被舊 `app_locale` 覆蓋。
 4. `PreferencesService.setLocale()` 現在會同步回寫公開頁語系狀態，工作台內切換語言後，再開公開工具與指南也會沿用同一語系。
 5. App 內公開工具連結改用同一套語系碼轉換函式，避免公開頁與工作台各自維護 `zh` 變體規則。
@@ -110,7 +110,7 @@
 主要調整：
 
 1. 首頁與公開子頁的語系選單建立後都會明確設定 `select.value = lang`，避免畫面文字與選單顯示不同步。
-2. 語系切換時先 normalize 再寫入 URL 與 `truthlens-public-lang`，避免瀏覽器歷史快取或 select 狀態殘留。
+2. 語系切換時先 normalize 再寫入 URL 與 `omnitrace-public-lang`，避免瀏覽器歷史快取或 select 狀態殘留。
 3. 首頁與公開子頁的內部連結在點擊前會再次保存目前語系，讓泰文等語系跳轉到子頁時穩定延續 `?lang=`。
 4. 修正首頁卡片與 URL 順序：`/zh/ai-article-detector` 固定顯示為繁中 AI 文章檢測器，
    `/free-ai-detector` 固定顯示為通用免費短文檢測器，不再互相顛倒。
@@ -135,7 +135,7 @@ info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/v
 1. 首頁 `home_i18n.js` 清除非英文語系中的 `Free AI Detector`、`Free short-text preview` 等介面英文殘留。
 2. 免費短文檢測頁改用 `detectorLandingCopy()`，三張價值卡、提醒區、下方文章、CTA 與 footer 都改為各語系專屬文案。
 3. 公開頁共用 `page_i18n.js` 會同步更新 `og:title`、`og:description`、導覽列 `aria-label` 與文章 footer。
-4. 保留 `AI`、`PDF`、`DOCX`、`ODT`、`OCR`、`DOI`、`WebAssembly`、`TruthLens`、`Low burstiness` 等專業術語，其餘說明文字本地化。
+4. 保留 `AI`、`PDF`、`DOCX`、`ODT`、`OCR`、`DOI`、`WebAssembly`、`OmniTrace`、`Low burstiness` 等專業術語，其餘說明文字本地化。
 5. 新增測試防止首頁非英文資料再出現 `Free short-text preview`，並確認免費檢測頁有繁中、日文、韓文等專屬文字。
 6. 版本同步升級為 `4.13.5+1476`。
 
@@ -153,7 +153,7 @@ info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/v
 
 1. 新增 `web/seo/home_i18n.js`，首頁 SEO shell 會依 `?lang=`、先前選擇或瀏覽器語系套用 13 種語系。
 2. 首頁新增語系選單，並讓標題、說明、功能列、公開入口連結卡、狀態文字與「開啟檢測工作台」按鈕同步翻譯。
-3. 首頁與公開頁共用 `truthlens-public-lang` 本機語系狀態，切換後所有內部公開連結都會附上相同 `?lang=`。
+3. 首頁與公開頁共用 `omnitrace-public-lang` 本機語系狀態，切換後所有內部公開連結都會附上相同 `?lang=`。
 4. 公開靜態頁的 `page_i18n.js` 新增語系選單、跨頁語系保存與工作台深連結 `/?workspace=1&lang=...`。
 5. 免費短文檢測器的頁內文字、說明卡、提醒區、文章段落、計數器與預覽結果文字改為跟隨目前公開頁語系。
 6. 新增測試鎖住首頁 i18n hook、公開頁 localStorage 語系同步、語系選單與 workspace lang 深連結。
@@ -188,7 +188,7 @@ info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/v
 ## 2026-09-01（第一百九十次更新）— 首頁公開資訊改為手動進入工作台
 
 使用者回報：從首頁網址進入時，初始公開資訊頁跳轉太快，內容尚未看清楚就進入檢測首頁。
-重新檢查後確認原因是 `web/flutter_bootstrap.js` 在首頁載入時會立即呼叫 `bootTruthLens()`，
+重新檢查後確認原因是 `web/flutter_bootstrap.js` 在首頁載入時會立即呼叫 `bootOmniTrace()`，
 導致 `index.html` 的 SEO shell 和公開工具連結只短暫閃現，然後被 Flutter 工作台移除。
 
 主要調整：
@@ -198,7 +198,7 @@ info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/v
 3. 支援 `/?workspace=1` 與 `#workspace` 直接進入工作台，保留深連結與快速啟動能力。
 4. 首頁直接列出 7 個公開入口，讓使用者一進站即可看到 SEO/指南內容，而不是只藏在三點選單。
 5. 新增測試確認首頁含有公開工具與指南、啟動按鈕，以及 bootstrap 不再無條件自動呼叫
-   `bootTruthLens()`。
+   `bootOmniTrace()`。
 6. 版本同步升級為 `4.13.2+1473`。
 
 **狀態**：✅ `dart format` 完成；✅
@@ -210,7 +210,7 @@ info）；✅ `flutter build web` 成功產出 `build/web`，確認 `build/web/v
 ## 2026-09-01（第一百八十九次更新）— 首頁工作台顯示公開工具入口
 
 使用者指出：雖然前一版已新增 `/free-ai-detector`、繁中入口與 5 個 SEO 內容頁，但在目前首頁
-`https://truth-lens-roan-three.vercel.app/` 正常啟動 Flutter 工作台後，使用者看不到這些入口。
+`https://omni-trace-roan-three.vercel.app/` 正常啟動 Flutter 工作台後，使用者看不到這些入口。
 重新確認後，原因是首頁 SEO shell 只存在於原始 HTML 與 Flutter 啟動前畫面；啟動完成後會由工作台 UI
 接管，因此搜尋引擎可爬不等於一般使用者可見。
 
@@ -744,14 +744,14 @@ Web 版最重要的一步：版本號 bump 後重新 `flutter build web`，讓 `
 
 ## 2026-08-31（第一百六十四次更新）— Web-only 後移除自訂 ONNX 匯入入口，並調整競品比較呈現
 
-使用者確認 TruthLens 後續只在 Web 端運行，截圖圈出的兩個「自訂 ONNX 模型匯入與測試」
+使用者確認 OmniTrace 後續只在 Web 端運行，截圖圈出的兩個「自訂 ONNX 模型匯入與測試」
 入口已不再成立。這次移除設定頁、首頁右側設定面板、行動設定抽屜與「AI 模型管理」AppBar
 上的自訂匯入入口，並刪除不再可達的 `model_import_screen*` 畫面檔。模型管理清單也不再額外
 展示「自訂匯入模型」區塊，回到內建／可下載模型的單一路徑，避免使用者在 Web 版看到已取消
 的進階功能。
 
 同時針對使用者提到的 UI/UX 單調感，參考 GPTZero、Turnitin、Originality.ai、Copyleaks 與
-Winston AI 的公開產品說明後，整理出更適合 TruthLens 的呈現方向：工作流上要更像「審核工作台」
+Winston AI 的公開產品說明後，整理出更適合 OmniTrace 的呈現方向：工作流上要更像「審核工作台」
 而不是設定清單，重點應放在貼上／上傳入口、逐句標示、右側解讀、證據來源、歷史與匯出。這次先
 落地兩個低風險改動：
 
@@ -1045,7 +1045,7 @@ DetectRL-X 上誤報 1.09%、**超出合約的 1% 預算**。改以本專案三�
 分生成器：Gemini 71.1%、GPT-4o 77.5%、Qwen-Max 88.9%、DeepSeek-V3 54.9%。
 主要進步在助理語域；DetectRL-X 召回略降是誤報收緊的代價。
 
-模型已上傳至 `hauchieh/truthlens-models`（98MB INT8），下載後核對 sha256 一致、
+模型已上傳至 `hauchieh/omnitrace-models`（98MB INT8），下載後核對 sha256 一致、
 `access-control-allow-origin: *`（瀏覽器可直接抓）。catalog 已接上並排在
 zhv3 之前。
 
@@ -1272,7 +1272,7 @@ decision 甚至更偏人類（-0.409 → -0.685）。它屬於「助理回覆」
 只有校準數字改了，要人重新下載 98MB 不合理。因此新增
 `syncCalibrationFromCatalog()`：**sha256 一致時**直接同步門檻與語言涵蓋，不要求重新
 下載；sha256 不同代表模型真的換了，仍交由 `checkForUpdates` 提示。catalog 版本號
-維持 `3.0-truthlens-cal1`，避免誤觸更新提示。
+維持 `3.0-omnitrace-cal1`，避免誤觸更新提示。
 
 測試守住兩件事：`withCalibration` 只換門檻與語言、其餘欄位原封不動；sha256 不符時
 門檻不得被靜默改寫。
@@ -1288,7 +1288,7 @@ decision 甚至更偏人類（-0.409 → -0.685）。它屬於「助理回覆」
 （Flutter 產生的 worker 會反註冊自己並導航所有 client，在 Android Chrome 造成重整
 迴圈，見 `b940e8f`）。也就是說擋住 PWA 的不是按鈕，是更底層的架構決定。
 
-**自有 SW（`web/truthlens_sw.js`）**：只做滿足可安裝判準所需的最小工作，並刻意避開
+**自有 SW（`web/omnitrace_sw.js`）**：只做滿足可安裝判準所需的最小工作，並刻意避開
 當初出事的三件事——不在 activate 反註冊自己、不呼叫 `client.navigate()`、不預先快取
 任何應用程式資產（`main.dart.js`、CanvasKit、模型一律不碰）。唯一行為是導覽請求走
 網路優先，成功時順手更新一份 `index.html` 當離線後備：網路正常時永遠最新，不可能陳舊。
@@ -1296,11 +1296,11 @@ decision 甚至更偏人類（-0.409 → -0.685）。它屬於「助理回覆」
 
 `removeLegacyFlutterWorker()` 原本會反註冊**所有** worker，若不處理，每次載入都會把
 自有 SW 清掉、安裝提示永遠不出現。已改為依 scriptURL 排除自己，快取清理同樣放過
-`truthlens-shell-v1`。註冊時機放在應用程式跑起來之後，絕不擋啟動路徑。
+`omnitrace-shell-v1`。註冊時機放在應用程式跑起來之後，絕不擋啟動路徑。
 
 **回歸驗證（實機 release 建置 + 本機伺服器）**：連續兩次重載，SW 均存活且持續接管、
 `navEntries` 每次都是 1（無重整迴圈）、`sessionStorage` 的清理旗標維持 null（清理邏輯
-正確判定自有 worker 不是舊 worker）、快取只有 `truthlens-shell-v1`、無 console 錯誤、
+正確判定自有 worker 不是舊 worker）、快取只有 `omnitrace-shell-v1`、無 console 錯誤、
 Flutter 每次都正常啟動。離線後備確認已快取且內容正確（5,698 bytes，含 bootstrap 與
 pwa_bridge）。
 
@@ -1769,7 +1769,7 @@ Web 連線探測、DOI 查核、文獻查核與模型下載的本機備援端點
 固定高度與拖曳工作台維持不變；可疑內容標題與篩選列也允許自然換行，不再於窄版
 截去文字或把筆數推到卡片外。新增 320×568 極窄視窗回歸測試，鎖定無固定卡片裁切。
 
-**SEO 與可存取性**：Web 初始 HTML 改為描述 TruthLens 的可見啟動畫面，加入唯一
+**SEO 與可存取性**：Web 初始 HTML 改為描述 OmniTrace 的可見啟動畫面，加入唯一
 title、description、canonical、robots、Open Graph、Twitter Card 與 WebApplication
 JSON-LD；新增 `robots.txt`、`sitemap.xml`，並讓 Vercel 先處理靜態檔再回退 Flutter
 路由。Web 啟動時主動建立 Flutter semantics DOM，提升螢幕閱讀器與機器理解能力。
@@ -2641,7 +2641,7 @@ PDF 抽取結果與 pypdf 不同。新的訊息會直接印出模型 ID 與語�
 
 ## 2026-08-19（第一百零三次更新）— 模型全數改托管 HuggingFace，解決 GitHub Releases 的 CORS 死路
 
-**已上架** [hauchieh/truthlens-models](https://huggingface.co/hauchieh/truthlens-models)：
+**已上架** [hauchieh/omnitrace-models](https://huggingface.co/hauchieh/omnitrace-models)：
 `mbert_detector_int8.onnx`、`qwen05b_ppl_int8.onnx`、`adversarial_int8.onnx`
 及三份對應 tokenizer，Apache-2.0，模型卡附完整評測與門檻依據。
 
@@ -2691,7 +2691,7 @@ v0.3 的資產實際上叫 `model_int8.onnx` 與 `tokenizer.json`，而 catalog 
 
 `model_manager_web.dart` 早已針對此點設計了三段候選（同源 Edge 代理 → 公用
 Vercel 代理 → 原始網址），註解也明確寫著 GitHub Releases 缺 CORS。但實測
-**公用代理備援 `truth-lens-band-b.vercel.app/api/proxy` 已失效**：
+**公用代理備援 `omni-trace-band-b.vercel.app/api/proxy` 已失效**：
 回 307 轉址後給出一份 478KB 的 HTML（`data-dpl-id`，Vercel 部署保護頁），
 而非模型位元組。因此目前只有同源代理這條路可用——**在 `flutter run -d web-server`
 的本機開發環境下沒有 `/api/proxy`（那是 Vercel function），GitHub 來源會完全下載不了。**
@@ -2740,7 +2740,7 @@ GitHub Releases 保留為封存鏡像。
 新增測試斷言表中每個模型 ID 都存在於 catalog。統計引擎改查**使用中變體**的門檻，
 使用者自行匯入的模型沒有校準資料則不採計——沿用別顆模型的門檻等於在未知尺度上下結論。
 
-**已上架** [v0.3-models-statistical](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.3-models-statistical)：
+**已上架** [v0.3-models-statistical](https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/v0.3-models-statistical)：
 `qwen05b_ppl_int8.onnx`（512MB）+ tokenizer，SHA256 已填入 catalog，
 並附完整的門檻量測依據。catalog 版本 2026-08-18b，多語模型排在 DistilGPT2 之前。
 
@@ -2758,7 +2758,7 @@ GitHub Releases 保留為封存鏡像。
 ## 2026-08-18（第一百次更新）— 多語偵測器上架，並修掉讓多語路徑從未生效的 tokenizer 錯配
 
 **根因找到了**：`assets/model_catalog.json` 裡的多語變體
-`truthlens-multilingual-distil-int8` 有三處錯誤：
+`omnitrace-multilingual-distil-int8` 有三處錯誤：
 
 1. `tokenizer: "roberta-bpe"`——但模型是 distilbert 底座（WordPiece，詞表 119547）
 2. `tokenizer_url` 指向 **chatgpt-detector-roberta 的 tokenizer**，詞表完全不同
@@ -2771,7 +2771,7 @@ GitHub Releases 保留為封存鏡像。
 **而且它指向的產物本身就是未收斂的早期檢查點**：實測分布內 AUC 中文 0.776 /
 英文 0.832，在 0.6 強訊號閾值下對中文 AI 文本命中率 **0%**。
 
-**已上架** [v0.2-models-detector](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.2-models-detector)：
+**已上架** [v0.2-models-detector](https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/v0.2-models-detector)：
 `mbert_detector_int8.onnx`（135MB）+ 配對正確的 `mbert_detector_tokenizer.json`，
 SHA256 已填入 catalog。catalog 版本更新為 2026-08-18，多語變體排到英文專用變體之前
 （純英文模型對中日韓文結構上無效，不該排在前面）。catalog 由
@@ -4317,7 +4317,7 @@ google-deepmind/synthid-text。
 
 **修復內容**：✅ **完成**
 
-- 匯出的 TruthLens Detection Report 現在包含與畫面一致的文獻核實結果
+- 匯出的 OmniTrace Detection Report 現在包含與畫面一致的文獻核實結果
 - Web OCR 從設定、啟動到連線確認都有可操作指引，不再只顯示技術介面格式
 - 英文及其他介面語系不再被模型目錄或 OCR 卡片的中文硬編碼污染
 
@@ -5645,10 +5645,10 @@ git push origin main
      - 語言選擇 (15+ 語言支援)
      - 模型管理（指向 ModelManagerScreen）
      - Web OCR 設定（Gemini API + 本地伺服器）
-     - 版本資訊（TruthLens v${displayVersion}）
+     - 版本資訊（OmniTrace v${displayVersion}）
 
 4. **版本號位置確認**
-   - 版本號已在 AppBar 標題中（TruthLens v3.0.0）
+   - 版本號已在 AppBar 標題中（OmniTrace v3.0.0）
    - 位置：應用名稱右側，視覺容器內，符合需求
 
 5. **模型下載續傳能力確認**
@@ -5739,7 +5739,7 @@ git push origin main
 
 6. **集成配置**
    - `Runner-Bridging-Header.h`：Swift ↔ Objective-C 橋接
-   - TruthLens-Bridging-Header.h：備用配置
+   - OmniTrace-Bridging-Header.h：備用配置
 
 **推論流程圖**
 ```
@@ -5802,7 +5802,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **修正內容**
 
 1. **iOS MethodChannel 實裝** (`ios/Runner/InferencePlugin.swift`)
-   - 新增 `com.truthlens/inference` MethodChannel，負責 `ping`, `loadModel`, `classify`, `perplexity`, `unload` 五個操作
+   - 新增 `com.omnitrace/inference` MethodChannel，負責 `ping`, `loadModel`, `classify`, `perplexity`, `unload` 五個操作
    - 自動在 AppDelegate 中註冊，使 Dart 端的原生推論調用不再拋出 `MissingPluginException`
    - 支援 Core ML (.mlmodel) 和 ONNX (.onnx) 模型偵測
 
@@ -5898,10 +5898,10 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 
-- **App Store Connect 90068 (MinimumOSVersion) 合規修復 (`project.pbxproj`, `Podfile`, `TruthLensLlamaBridge.podspec`, `AppFrameworkInfo.plist`)**：
+- **App Store Connect 90068 (MinimumOSVersion) 合規修復 (`project.pbxproj`, `Podfile`, `OmniTraceLlamaBridge.podspec`, `AppFrameworkInfo.plist`)**：
   - 將 Xcode 專案中 Debug、Release、Profile 各配置之 `IPHONEOS_DEPLOYMENT_TARGET` 全數由 `13.0` 調升至 `15.0`。
   - 在 `Podfile` 明確指定 `platform :ios, '15.0'`，並於 `post_install` 鉤子中強制覆寫所有第三方 Pod Target 之 Deployment Target 為 15.0，防止打包時因相依套件殘留舊版本導致 App Store Connect 警告/拒絕上架。
-  - 同步更新 `TruthLensLlamaBridge.podspec`（`s.ios.deployment_target = '15.0'`）與 `AppFrameworkInfo.plist`（加入 `MinimumOSVersion = 15.0`）。
+  - 同步更新 `OmniTraceLlamaBridge.podspec`（`s.ios.deployment_target = '15.0'`）與 `AppFrameworkInfo.plist`（加入 `MinimumOSVersion = 15.0`）。
 - **解除文獻分析判讀筆數限制 (`bibliography_verifier.dart`, `report_screen.dart`)**：
   - 移除 `BibliographyVerifier.verifyAll` 內部原本的 `entries.take(maxEntriesPerCheck)`（30 筆）截斷限制，長篇學術論文中無論有 50、100 筆或更多參考文獻，均會全量送往 Crossref / OpenAlex 核實。
   - 移除報告頁面中「僅核實前 30 筆」的提示標籤，完整顯示所有條目及其驗證徽章。
@@ -6014,7 +6014,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - **驗證與部署**：
   - 新增針對 `4.Simon ... 9.Lope` 完整連寫字串之單元測試，**全數 9 筆/22 筆 100% 獨立切分**！
   - 全專案 **147 / 147** 個單元測試 100% 綠燈通過！
-  - 最新應用程式已重新編譯並覆蓋部署至 `/Applications/TruthLens.app`（時間戳 **00:25**）。
+  - 最新應用程式已重新編譯並覆蓋部署至 `/Applications/OmniTrace.app`（時間戳 **00:25**）。
 
 ## 2026-08-03 — [重磅修復] 解決文獻條目遺失 (3-9條) 與真實文獻被誤判為虛構 (紅燈) 之根因
 
@@ -6028,7 +6028,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   - **OCR 介詞連寫自動修復 Engine**：新增 `ocrCompoundedWords` (`of`, `with`, `for`, `from`, `and`) 自動反向分割正則 `([a-zA-Z]{3,})$cp(?=\b|[\s\.:,])`，精準還原 `Onset of`, `Order of`, `Reversing and`, `Flow with` 正確英文單字。
 - **驗證**：
   - 全專案 **147 / 147** 個測試全數綠燈通過！
-  - 打包並部署最新 `/Applications/TruthLens.app`（時間戳 **18:57**）。
+  - 打包並部署最新 `/Applications/OmniTrace.app`（時間戳 **18:57**）。
 
 ## 2026-08-03 — [崩潰修復] 徹底解決退出 App (`-[NSApplication terminate:]`) 時 `ggml_metal_rsets_free` 觸發 SIGABRT (Abort Trap 6) 崩潰
 
@@ -6042,11 +6042,11 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - **修法 (`ggml-metal-device.m` & `ggml-metal-device.cpp` & `build_macos.sh`)**：
   - **靜態解構安全化 (`ggml-metal-device.m`)**：將 `GGML_ASSERT([rsets->data count] == 0);` 替換為安全防禦 `if ([rsets->data count] > 0) { [rsets->data removeAllObjects]; }`。在 App 退出時靜態清空物件，絕不調用 `abort()`。
   - **Metal Device 實體快取 (`ggml-metal-device.cpp`)**：重構 `ggml_metal_device_get(int device)`，優先重用已建立之 Metal Device，避免重複初始化。
-  - **全新 C++ 原生庫編譯與部署**：執行 `build_macos.sh` 重新編譯 `libggml-metal.0.dylib`、`libtruthlens_llama.dylib` 等全套 dynamic libraries，完成 Flutter 全新 Release 打包，更新至 `/Applications/TruthLens.app`。
+  - **全新 C++ 原生庫編譯與部署**：執行 `build_macos.sh` 重新編譯 `libggml-metal.0.dylib`、`libomnitrace_llama.dylib` 等全套 dynamic libraries，完成 Flutter 全新 Release 打包，更新至 `/Applications/OmniTrace.app`。
 - **驗證**：
   - 全專案 **146 / 146** 個單元測試 100% 綠燈通過！
   - `flutter analyze` 零警告、零錯誤！
-  - 最新 `/Applications/TruthLens.app` 已產出（時間戳 Aug 3 18:38）。
+  - 最新 `/Applications/OmniTrace.app` 已產出（時間戳 Aug 3 18:38）。
 
 ## 2026-08-03 — [參考文獻核實最優化重構] 徹底解決全紅誤判、頻率限制 (HTTP 429) 與 OCR 連寫斷行瑕疵
 
@@ -6059,7 +6059,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   4. **全字元集 Jaccard 比對防偽漏洞**：舊版 `_titleSimilarity` 使用字元集交集，由於英文常用字母高密度重疊，導致完全無關英文句子交集率亦達 0.50，誤導比對機制。
 
 - **修法 (`bibliography_verifier.dart`)**：
-  - **導入 Crossref Polite Pool & Exponential Backoff 指數退避重試**：請求帶上 `mailto=support@truthlens.app` 與官方 User-Agent，享有高優先級獨立佇列；遇到 HTTP 429 自動進行多輪重試（300ms ➔ 600ms ➔ 1200ms）。
+  - **導入 Crossref Polite Pool & Exponential Backoff 指數退避重試**：請求帶上 `mailto=support@omnitrace.app` 與官方 User-Agent，享有高優先級獨立佇列；遇到 HTTP 429 自動進行多輪重試（300ms ➔ 600ms ➔ 1200ms）。
   - **嚴格校正 HTTP 狀態碼與信心度**：**只有在 HTTP 200 OK 且資料庫 100% 傳回 0 筆匹配時，才可標示為 `notFound` (紅燈)；凡遇到 HTTP 429 或連線異常，一律安全退回 `uncertain` (黃燈)**，絕不誤報為虛構文獻！
   - **升級連寫條目切分正則 (`(?<=[a-zA-Z\)])\s*\d{1,3}\.\s+[A-Z]`)**：精準切分 `FLOW3. Donnelly` 與 `(1923)3. Donnelly`，同時避免將頁碼 `155-183.` 誤切。
   - **引進 Trigram (3-Gram) 序列相似度 Engine**：精準隔絕無關主題 (相似度 = 0.0)，並具備抗 OCR 小錯字能力 (如 `Couette Fow` vs `Couette Flow` 相似度 > 0.91)。
@@ -6081,7 +6081,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   - 兩項驗證各自完成時獨立觸發 `setState`，UI 畫面**秒速呈現最新綠燈結果 🟢**，絕不再受前置連線卡死！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 重新產出最新 Release App（`Aug 3 08:42`），覆蓋 `/Applications/TruthLens.app` 並重新開啟！
+  - 重新產出最新 Release App（`Aug 3 08:42`），覆蓋 `/Applications/OmniTrace.app` 並重新開啟！
 
 **做了什麼**
 
@@ -6097,19 +6097,19 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - **驗證**：
   - Python 腳本實測該 22 筆經典論文（包含 Couette 1890, Taylor 1923, Donnelly 1958, Simon 1960 等），**22 / 22 筆 100% 全數綠燈命中 🟢！零偽陽性，零誤判！**
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 產出最新 Release App（`Aug 3 08:20`），覆蓋 `/Applications/TruthLens.app` 並重新開啟！
+  - 產出最新 Release App（`Aug 3 08:20`），覆蓋 `/Applications/OmniTrace.app` 並重新開啟！
 
 **做了什麼**
 
 - **Root Cause 終極透視**：針對使用者提問「*看檔案修改時間還是停留在更早之前？我一直在執行的並非是你重新編譯過的？*」進一步檢視系統層級時間戳。發現了最關鍵的建置系統快取阻擋問題：
   1. **Flutter/Xcode 增量快取阻擋**：先前執行 `flutter build macos` 時，因為原生部分檔案並未全部被 Xcode 認定變更，導致 Xcode 重用了 06:04 的舊 App 快取包，修改時間完全沒有更新！
-  2. **`rsync` 複製未更新頂層時間戳**：舊的複製指令未能更新 `/Applications/TruthLens.app` 頂層包的時間戳記，導致使用者電腦一直在執行 06:04 舊的 App 執行檔！
+  2. **`rsync` 複製未更新頂層時間戳**：舊的複製指令未能更新 `/Applications/OmniTrace.app` 頂層包的時間戳記，導致使用者電腦一直在執行 06:04 舊的 App 執行檔！
 - **修法**：
-  1. **執行 `flutter clean` & `rm -rf build /Applications/TruthLens.app`**：完全刪除全域舊 build 目錄與 /Applications 中的舊 App 包！
+  1. **執行 `flutter clean` & `rm -rf build /Applications/OmniTrace.app`**：完全刪除全域舊 build 目錄與 /Applications 中的舊 App 包！
   2. **100% 全全新 Release 重新編譯 (`flutter build macos`)**：重新完整拉取依賴並產出全新的 Release App（時間戳精準更新至 **08:13**）！
-  3. **完整全新覆蓋**：以 `cp -R` 乾淨複製至 `/Applications/TruthLens.app`！
+  3. **完整全新覆蓋**：以 `cp -R` 乾淨複製至 `/Applications/OmniTrace.app`！
 - **驗證**：
-  - `ls -ld /Applications/TruthLens.app` 實測時間戳為 **Aug 3 08:13**！
+  - `ls -ld /Applications/OmniTrace.app` 實測時間戳為 **Aug 3 08:13**！
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
   - 最新版 App 已完成開啟！
 
@@ -6124,7 +6124,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   - **效果**：`Three-tori in a`、`Turbulent in a` 100% 恢復正常英文文法與半形空格！傳給 Crossref 與 OpenAlex 秒速精準匹配！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/OmniTrace.app` 並重新開啟！
 
 **做了什麼**
 
@@ -6138,7 +6138,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - **驗證**：
   - Python 實測帶 150ms 間隔連發 10 筆真實論文請求，**10/10 全數 100% 取得 Crossref 正確論文回應**！
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/OmniTrace.app` 並重新開啟！
 
 **做了什麼**
 
@@ -6155,7 +6155,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
      - **全自動將所有被壓扁連寫的英文字詞與介詞拆解**（如 `Relationfor` ➔ `Relation for`、`Flowbetween` ➔ `Flow between`、`Modesof` ➔ `Modes of`、`Turbulentina` ➔ `Turbulent in a`），且**完全不誤傷** `Taylor`、`Analysis` 等合法字詞尾端！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/TruthLens.app` 並重新開啟！
+  - 重新編譯產出 macOS Release App，覆蓋 `/Applications/OmniTrace.app` 並重新開啟！
 
 **做了什麼**
 
@@ -6167,7 +6167,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   2. **內文段落語意過濾器 (`_preprocessOcrText`)**：在預處理加入 `^\s*\d{1,3}\.\s+(?:Therefore|Under|In\s+this|However...)` 正則，**100% 抹除所有偽裝成條目編號的內文說明段落**！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 已編譯 Release 包更新 `/Applications/TruthLens.app`。
+  - 已編譯 Release 包更新 `/Applications/OmniTrace.app`。
 
 ---
 
@@ -6184,7 +6184,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   2. **孤立行首頁碼自動清洗器 (`_parseLineEntry`)**：部署 `^\d{1,4}[\.\,]?\s+(?=[A-Z][a-zÀ-ÖØ-öø-ÿ])` 濾網，**100% 抹除任何殘留於作者姓氏正前方的孤立數字**！
 - **驗證**：
   - 全專案 **145 / 145** 個單元測試全數綠燈通過！
-  - 已編譯 Release 包更新 `/Applications/TruthLens.app`。
+  - 已編譯 Release 包更新 `/Applications/OmniTrace.app`。
 
 ---
 
@@ -6226,10 +6226,10 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 
-- **Root Cause 診斷**：分析使用者提供之 macOS Crash Report（Signal: SIGABRT, Termination: Abort trap 6）。當使用者退出 App (`AppKit -[NSApplication terminate:]`) 時，主執行緒走 `exit()` 並調用 `__cxa_finalize_ranges` 執行 C++ 靜態解構函式。原本 `truthlens_llama.cpp` 中帶有 `__attribute__((destructor))` 的 `tl_llama_auto_cleanup()` 觸發了 `llama_backend_free()` → `ggml_metal_device_free()` → `ggml_metal_rsets_free()`，而當下背景 GCD 佇列 (`com.apple.root.default-qos`) 仍有非同步 `__ggml_metal_rsets_init_block_invoke` 在執行，導致 `ggml_metal` 檢測到不一致並觸發 `ggml_abort()` 拋出 SIGABRT 崩潰。
-- **修法 (`truthlens_llama.cpp` & `build_macos.sh`)**：
-  - 移除 `truthlens_llama.cpp` 中不安全的 `__attribute__((destructor))` 全域解構掛勾，防止進程退出階段發起危險的非同步 Metal 資源釋放。
-  - 重新執行 `build_macos.sh` 完成 llama 橋接層編譯 (100% 成功)，新版原生 `libtruthlens_llama.dylib` 已更新至 `macos/Libs/`。
+- **Root Cause 診斷**：分析使用者提供之 macOS Crash Report（Signal: SIGABRT, Termination: Abort trap 6）。當使用者退出 App (`AppKit -[NSApplication terminate:]`) 時，主執行緒走 `exit()` 並調用 `__cxa_finalize_ranges` 執行 C++ 靜態解構函式。原本 `omnitrace_llama.cpp` 中帶有 `__attribute__((destructor))` 的 `tl_llama_auto_cleanup()` 觸發了 `llama_backend_free()` → `ggml_metal_device_free()` → `ggml_metal_rsets_free()`，而當下背景 GCD 佇列 (`com.apple.root.default-qos`) 仍有非同步 `__ggml_metal_rsets_init_block_invoke` 在執行，導致 `ggml_metal` 檢測到不一致並觸發 `ggml_abort()` 拋出 SIGABRT 崩潰。
+- **修法 (`omnitrace_llama.cpp` & `build_macos.sh`)**：
+  - 移除 `omnitrace_llama.cpp` 中不安全的 `__attribute__((destructor))` 全域解構掛勾，防止進程退出階段發起危險的非同步 Metal 資源釋放。
+  - 重新執行 `build_macos.sh` 完成 llama 橋接層編譯 (100% 成功)，新版原生 `libomnitrace_llama.dylib` 已更新至 `macos/Libs/`。
 - **驗證**：`flutter analyze` 零警告，全專案 **140/140** 個測試綠燈通過。
 
 ---
@@ -6277,7 +6277,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   2. **302 Redirect 標頭洩漏**：GitHub Releases 轉址至 AWS S3 (`objects.githubusercontent.com`) 時，若預設跟隨轉址並攜帶原始 domain 的標頭或重複的 Range 標頭，會導致 S3 簽名校驗失效並返回 HTTP 403。
   3. **Fallback Mirror 機制**：原本 IO 端 `_streamDownload` 未在失敗時進行備用鏡像 retry。
 - **修法 (`model_manager_io.dart` & `model_manager_web.dart`)**：
-  - 手動處理 HTTP 301/302/307/308 重定向 (`followRedirects = false`)，並攜帶標準 `User-Agent` 標頭 (`Mozilla/5.0 ... TruthLens/1.0`)。
+  - 手動處理 HTTP 301/302/307/308 重定向 (`followRedirects = false`)，並攜帶標準 `User-Agent` 標頭 (`Mozilla/5.0 ... OmniTrace/1.0`)。
   - 重定向至 AWS S3 時避免重新攜帶 Range 與異質 Host 標頭，確保 AWS S3 pre-signed URL 通過認證。
   - 在 `_streamDownload` 引入 Candidate Mirrors 列表 (`urlsToTry`)，GitHub Releases 下載失敗時自動 fallback 嘗試熱門鏡像代理（如 `ghproxy.net`）。
 
@@ -6292,8 +6292,8 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 
-- **標點與格式修復 (PrivacyPolicyScreen Punctuation Fix)**：修復 [privacy_policy_screen.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/features/help/privacy_policy_screen.dart) 中拼接字串後方硬編碼的中文句號 `。`，確保英文、法文、德文、日文等 14 種語言在顯示平台專屬條文時標點符號 100% 正確合規。
-- **14 國語系資產檔補全 (100% Zero Untranslated Messages)**：校對並補齊 [app_zh.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh_Hant.arb)、[app_en.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_en.arb)、`app_ja.arb`、`app_ko.arb`、`app_de.arb`、`app_es.arb`、`app_fr.arb`、`app_id.arb`、`app_ms.arb`、`app_pt.arb`、`app_ru.arb`、`app_th.arb` 等全數 14 種語言資產檔，納入最新動態引擎權重標籤、100% 本地隱私認證標章、Model Benchmark 自動校準與 HuggingFace 社群探尋標籤。
+- **標點與格式修復 (PrivacyPolicyScreen Punctuation Fix)**：修復 [privacy_policy_screen.dart](file:///Users/barretlin/GitProjects/OmniTrace/lib/features/help/privacy_policy_screen.dart) 中拼接字串後方硬編碼的中文句號 `。`，確保英文、法文、德文、日文等 14 種語言在顯示平台專屬條文時標點符號 100% 正確合規。
+- **14 國語系資產檔補全 (100% Zero Untranslated Messages)**：校對並補齊 [app_zh.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_zh_Hant.arb)、[app_en.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_en.arb)、`app_ja.arb`、`app_ko.arb`、`app_de.arb`、`app_es.arb`、`app_fr.arb`、`app_id.arb`、`app_ms.arb`、`app_pt.arb`、`app_ru.arb`、`app_th.arb` 等全數 14 種語言資產檔，納入最新動態引擎權重標籤、100% 本地隱私認證標章、Model Benchmark 自動校準與 HuggingFace 社群探尋標籤。
 - **自動化語系校對**：執行 `flutter gen-l10n`，達成 **0 個未翻譯訊息 (0 untranslated messages)** 完美目標。
 
 **驗證**
@@ -6307,8 +6307,8 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 
 - **Root Cause 診斷與解決**：定位並排除 Keychain 中存在重複 Developer ID 憑證導致 `codesign` 標籤混淆 (ambiguous) 的問題，改以憑證指紋 `3C0BB4182588CCDCEF3D567A2BD0C1DBB90ACCCB` 精確簽署。
-- **全動態庫遞迴簽署 (Hardened Runtime + Timestamp)**：對 `TruthLens.app` 內部的所有原生動態庫 (`libggml*.dylib`, `libllama*.dylib`, `libonnxruntime*.dylib`, `libtruthlens_llama.dylib`, `FlutterMacOS.framework`, `objective_c.framework`, `sqlite3.framework`) 進行全數硬化簽署與安全時間戳記附隨。
-- **DMG 容器簽署與 Apple 公證 (Stapled Ticket)**：對打包產出之 `dist/TruthLens-v1.0.0.dmg` 進行容器簽署並成功送交 Apple notarytool 通過公證 (`status: Accepted`，Submission ID: `647fe89c-fcde-4969-88e2-682bfc377c9a`)，完成票據釘印 (`xcrun stapler staple`)。
+- **全動態庫遞迴簽署 (Hardened Runtime + Timestamp)**：對 `OmniTrace.app` 內部的所有原生動態庫 (`libggml*.dylib`, `libllama*.dylib`, `libonnxruntime*.dylib`, `libomnitrace_llama.dylib`, `FlutterMacOS.framework`, `objective_c.framework`, `sqlite3.framework`) 進行全數硬化簽署與安全時間戳記附隨。
+- **DMG 容器簽署與 Apple 公證 (Stapled Ticket)**：對打包產出之 `dist/OmniTrace-v1.0.0.dmg` 進行容器簽署並成功送交 Apple notarytool 通過公證 (`status: Accepted`，Submission ID: `647fe89c-fcde-4969-88e2-682bfc377c9a`)，完成票據釘印 (`xcrun stapler staple`)。
 
 **驗證**
 
@@ -6322,7 +6322,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - **iOS 平台權限合規**：在 `ios/Runner/Info.plist` 擴充 `NSPhotoLibraryUsageDescription` 與 `NSCameraUsageDescription` 隱私聲明，確保 iOS 裝置端照片與相機離線 OCR 辨識順暢，防止 App Store 上架退件。
 - **macOS 沙盒與權限配置**：驗證 `DebugProfile.entitlements` 與 `Release.entitlements` 的 `com.apple.security.app-sandbox`、`com.apple.security.files.user-selected.read-write`、`com.apple.security.network.client` 與 `com.apple.security.cs.allow-unsigned-executable-memory`，確保在 App Sandbox 下兼顧零上傳安全與原生 JIT / ONNX Runtime 加速。
 - **Android 網路與檔案權限**：在 `android/app/src/main/AndroidManifest.xml` 新增 `android.permission.INTERNET`，確保在 Release Build 模式下能正常發起遠端模型目錄探索、斷點續傳下載與 Crossref 參考文獻比對。
-- **Windows C++ 原生動態鏈結**：驗證 `windows/CMakeLists.txt` 後處理，確保 `truthlens_llama.dll` 與 ONNX Runtime 動態庫能自動複製並附隨發布於執行檔目錄。
+- **Windows C++ 原生動態鏈結**：驗證 `windows/CMakeLists.txt` 後處理，確保 `omnitrace_llama.dll` 與 ONNX Runtime 動態庫能自動複製並附隨發布於執行檔目錄。
 - **全平台單元與整合測試**：全專案 **139/139** 個測試綠燈通過，`flutter analyze` 0 警告。
 
 **驗證**
@@ -6334,10 +6334,10 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 
-- **專業化報告排版與動態多模型明細 (Professional Report & Dynamic Engine Breakdown)**：升級 [report_screen.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/features/report/report_screen.dart) 與 [report_exporter.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/services/report_exporter.dart)，在 UI 報告與產出之 PDF 報告中展示「🔐 [ 零上傳安全認證 ] TruthLens 離線檢測證明」卡片，並為每個動態探尋與載入之 AI 檢測模型標示權重 Chip（如 `權重 40%`）與個別判定理由。
-- **多國語系操作說明與 100% 離線隱私權政策全方位更新 (Localized Manual & Privacy Policy)**：更新 `lib/l10n/` 字典檔（[app_en.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_en.arb)、[app_zh.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/TruthLens/lib/l10n/app_zh_Hant.arb) 等 14 語言），納入最新的文字/PDF/DOCX 匯入說明、代碼/公式護盾、HuggingFace 社群模型自動探尋、Model Benchmark 端上校準、Crossref 參考文獻比對與 100% On-Device 本地零上傳隱私權條文說明，並以 `flutter gen-l10n` 重新產生本地化類別。
-- **自動 Benchmark 效能評測與權重推薦 (Option C Auto-Calibration)**：新增 `ModelBenchmarkService`（[model_benchmark_service.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/model_benchmark_service.dart)），內建 10 句標準檢測語料對照集，自動量測端上推論正確率與延遲。
-- **HuggingFace Hub 自動探尋與訂閱 (Option A HuggingFace Auto-Explorer)**：新增 `HuggingFaceHubExplorer`（[huggingface_hub_explorer.dart](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/services/huggingface_hub_explorer.dart)），自動查詢 HuggingFace Hub REST API，併入 [ModelCatalog](file:///Users/barretlin/GitProjects/TruthLens/lib/core/detection/model_catalog.dart)。
+- **專業化報告排版與動態多模型明細 (Professional Report & Dynamic Engine Breakdown)**：升級 [report_screen.dart](file:///Users/barretlin/GitProjects/OmniTrace/lib/features/report/report_screen.dart) 與 [report_exporter.dart](file:///Users/barretlin/GitProjects/OmniTrace/lib/core/services/report_exporter.dart)，在 UI 報告與產出之 PDF 報告中展示「🔐 [ 零上傳安全認證 ] OmniTrace 離線檢測證明」卡片，並為每個動態探尋與載入之 AI 檢測模型標示權重 Chip（如 `權重 40%`）與個別判定理由。
+- **多國語系操作說明與 100% 離線隱私權政策全方位更新 (Localized Manual & Privacy Policy)**：更新 `lib/l10n/` 字典檔（[app_en.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_en.arb)、[app_zh.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_zh.arb)、[app_zh_Hant.arb](file:///Users/barretlin/GitProjects/OmniTrace/lib/l10n/app_zh_Hant.arb) 等 14 語言），納入最新的文字/PDF/DOCX 匯入說明、代碼/公式護盾、HuggingFace 社群模型自動探尋、Model Benchmark 端上校準、Crossref 參考文獻比對與 100% On-Device 本地零上傳隱私權條文說明，並以 `flutter gen-l10n` 重新產生本地化類別。
+- **自動 Benchmark 效能評測與權重推薦 (Option C Auto-Calibration)**：新增 `ModelBenchmarkService`（[model_benchmark_service.dart](file:///Users/barretlin/GitProjects/OmniTrace/lib/core/detection/services/model_benchmark_service.dart)），內建 10 句標準檢測語料對照集，自動量測端上推論正確率與延遲。
+- **HuggingFace Hub 自動探尋與訂閱 (Option A HuggingFace Auto-Explorer)**：新增 `HuggingFaceHubExplorer`（[huggingface_hub_explorer.dart](file:///Users/barretlin/GitProjects/OmniTrace/lib/core/detection/services/huggingface_hub_explorer.dart)），自動查詢 HuggingFace Hub REST API，併入 [ModelCatalog](file:///Users/barretlin/GitProjects/OmniTrace/lib/core/detection/model_catalog.dart)。
 - **動態 Ensemble 模型探索路由 (Option B Dynamic Ensemble Weighted Routing)**：升級 `EnsembleOrchestrator._defaultEngines`，動態掃描載入所有已安裝變體。
 - **單元測試套件擴充**：新增 `test/auto_discovery_and_calibration_test.dart`。
 
@@ -6386,18 +6386,18 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 
 - 修復 Android debug build：將 AGP 固定到 Flutter 支援且避開 AGP 9 built-in Kotlin 衝突的 `8.11.1`，保留 `android.builtInKotlin=false`，解決 `file_picker` Kotlin plugin 類別未編譯導致 `FilePickerPlugin` 找不到的問題
-- Android LLM：新增 `native/llama_bridge/build_android.sh`，用同一份 `truthlens_llama.cpp` 建出 `libtruthlens_llama.so`，並打包 `libllama.so` / `libggml*.so` 到 `arm64-v8a` 與 `x86_64`；移除不完整的 `armeabi-v7a/libllama.so`
-- iOS LLM：新增 `ios/TruthLensLlamaBridge.podspec` 與 wrapper source，透過 CocoaPods 編譯 `TruthLensLlamaBridge.framework`，並 vendored link `ios/Libs/llama.xcframework`；iOS build 產物已確認含 `TruthLensLlamaBridge.framework`、`llama.framework` 與 `tl_llama_*` 匯出符號
-- Dart FFI：iOS 載入路徑改為優先開啟 `TruthLensLlamaBridge.framework/TruthLensLlamaBridge`，再回退 `DynamicLibrary.process()`，避免 framework 已打包但 runtime 查不到 `tl_llama_*` 符號
-- Windows LLM：新增 `native/llama_bridge/build_windows.ps1`，並更新 `windows/CMakeLists.txt`，讓 Windows host 產出的 `truthlens_llama.dll` / `llama.dll` / `ggml*.dll` 會複製並安裝到 `truthlens.exe` 同目錄
+- Android LLM：新增 `native/llama_bridge/build_android.sh`，用同一份 `omnitrace_llama.cpp` 建出 `libomnitrace_llama.so`，並打包 `libllama.so` / `libggml*.so` 到 `arm64-v8a` 與 `x86_64`；移除不完整的 `armeabi-v7a/libllama.so`
+- iOS LLM：新增 `ios/OmniTraceLlamaBridge.podspec` 與 wrapper source，透過 CocoaPods 編譯 `OmniTraceLlamaBridge.framework`，並 vendored link `ios/Libs/llama.xcframework`；iOS build 產物已確認含 `OmniTraceLlamaBridge.framework`、`llama.framework` 與 `tl_llama_*` 匯出符號
+- Dart FFI：iOS 載入路徑改為優先開啟 `OmniTraceLlamaBridge.framework/OmniTraceLlamaBridge`，再回退 `DynamicLibrary.process()`，避免 framework 已打包但 runtime 查不到 `tl_llama_*` 符號
+- Windows LLM：新增 `native/llama_bridge/build_windows.ps1`，並更新 `windows/CMakeLists.txt`，讓 Windows host 產出的 `omnitrace_llama.dll` / `llama.dll` / `ggml*.dll` 會複製並安裝到 `omnitrace.exe` 同目錄
 - 更新 catalog / LLM platform / release checklist 文件，避免舊文字誤稱 Android 只有 `libllama` 或 iOS/Windows 未提供 bridge
 - 報告匯出：`ReportExporter` 現可接收畫面上的 `ReportDocument`，JSON/PDF 會匯出 Gemma/LLM 生成的 headline 與 narrative，不再在匯出時重新套模板造成畫面與檔案不一致
 
 **驗證**
 
-- `flutter build apk --debug` 通過，APK 內含 `libtruthlens_llama.so`、`libllama.so`、`libggml*.so`（arm64-v8a / x86_64）
-- `flutter build ios --no-codesign` 通過，並以 `nm` 確認 `TruthLensLlamaBridge.framework` 匯出 `tl_llama_init/load/generate/free/backend_free`
-- `flutter build macos --debug` 通過，app bundle 內含 `libtruthlens_llama.dylib`、`libllama.0.dylib`、`libggml*.dylib`
+- `flutter build apk --debug` 通過，APK 內含 `libomnitrace_llama.so`、`libllama.so`、`libggml*.so`（arm64-v8a / x86_64）
+- `flutter build ios --no-codesign` 通過，並以 `nm` 確認 `OmniTraceLlamaBridge.framework` 匯出 `tl_llama_init/load/generate/free/backend_free`
+- `flutter build macos --debug` 通過，app bundle 內含 `libomnitrace_llama.dylib`、`libllama.0.dylib`、`libggml*.dylib`
 - 本機 macOS 真 GGUF smoke 通過：從 App sandbox 載入 `llm__gemma-2-2b-it-q4km.gguf`，llama.cpp 顯示 `general.architecture = gemma2`，Metal 載入並生成非空文字
 - `flutter test integration_test/full_analysis_test.dart -d macos` 通過，Transformer 真模型參與投票並產出逐句分數
 - `flutter analyze` 與 `flutter test` 通過；新增測試覆蓋 LLM `ReportDocument` 匯出 JSON/PDF
@@ -6438,13 +6438,13 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 ### 本次實作（macOS 打通）
 - **native/llama_bridge/**：薄 C ABI 橋接層，包住現行 llama.cpp C++ API（`llama_model_load_from_file` / `llama_init_from_model` / `llama_sampler_*` + 標準 decode→sample→detokenize 迴圈），套 Gemma 對話模板。版本敏感的 by-value 結構留在 C++ 側，Dart 只綁 primitive + char*。
-  - `truthlens_llama.{h,cpp}`、`CMakeLists.txt`、`build_macos.sh`（可重現建置：shared + Metal）
+  - `omnitrace_llama.{h,cpp}`、`CMakeLists.txt`、`build_macos.sh`（可重現建置：shared + Metal）
 - **llama_ffi_io.dart**：重寫為綁定橋接 API + 真正的 load/generate；以「執行檔相對 Frameworks 路徑」載入 dylib。
 - **macos/Libs/**：建好的 arm64 dylib 全套（bridge + libllama + 5×libggml，~5MB），皆帶 `@loader_path` rpath。
 - **Runner.xcodeproj**：新增「Embed llama Libraries」Copy Files→Frameworks 階段（Code Sign On Copy）。
 
 ### 實機驗證結果 ✅
-- App 從 bundle 載入 bridge（日誌 `TruthLens llama bridge loaded.`）
+- App 從 bundle 載入 bridge（日誌 `OmniTrace llama bridge loaded.`）
 - llama.cpp 以 **Metal GPU** 載入下載的 Gemma-2-2B GGUF（RSS ~3GB）
 - 生成真報告：標題 `## 內容檢測報告：混合`（58%，與實際 verdict 相符）——無 timeout/模板回退
 - 對照舊 mock 的寫死 `94%`，確認是真推論輸出
@@ -6483,7 +6483,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 ### GitHub Release 上架 ✅
 
-- **Release**: [v0.1-models-llm](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-llm)
+- **Release**: [v0.1-models-llm](https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/v0.1-models-llm)
 - 1.59 GiB < GitHub 2GB 單檔限制 → **無需分割**，單檔直傳
 - 已驗證下載 URL 回 `206`（可存取）
 
@@ -6494,11 +6494,11 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - ✅ `sha256` → 填入實際校驗和（原為 null）
 - ✅ `size_bytes` → 1708582752（實測值）
 - ✅ `id`/`name`/`source`/`page_url` → 更正為 Gemma-2-2B-IT
-- （遠端 catalog `truthlens/models` 為 404 佔位符，App 回退本地 asset，故此更新即生效）
+- （遠端 catalog `omnitrace/models` 為 404 佔位符，App 回退本地 asset，故此更新即生效）
 
 ### 架構定位：本地優先、遠程備援 ✅
 
-依 TruthLens 核心設計原則（本地優先），確認推論優先順序：
+依 OmniTrace 核心設計原則（本地優先），確認推論優先順序：
 1. **裝置端 llama.cpp**（主路徑）— Gemma-2-2B-IT GGUF
 2. **遠程 API**（備援）— 本地失敗才啟用（上次 session 建立的 4 提供商）
 3. **模板報告**（最終回退）— 確定性生成
@@ -6598,14 +6598,14 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 
 ### 1️⃣ 多語言偵測器上傳到 GitHub Releases ✅
-- **Release**: [v0.1-models-detector](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-detector)
+- **Release**: [v0.1-models-detector](https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/v0.1-models-detector)
 - **檔案**: `xlmr_detector_int8.onnx` (129MB)
 - **內容**: XLM-RoBERTa 多語言 AI 內容偵測器（INT8 量化）
 - **MD5**: `925c2df39732fe1ea94df9fcf157827b`
 - **效能**: 英文 91.5% accuracy、繁中 89.2% accuracy（HC3 測試集）
 
 ### 2️⃣ 困惑度評分模型發佈 ✅
-- **Release**: [v0.1-models-statistical](https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.1-models-statistical)
+- **Release**: [v0.1-models-statistical](https://github.com/hauchiehlin-ops/OmniTrace/releases/tag/v0.1-models-statistical)
 - **檔案**: `distilgpt2_int8.onnx` (115MB)
 - **功能**: DistilGPT2 困惑度計算器（統計分析引擎 B）
 - **MD5**: `bc8e7e5836873799412394346075ddf8`
@@ -6728,8 +6728,8 @@ Softmax → AI 機率 (0.0 ~ 1.0)
   - 驗證時間戳記：2026-07-12T05:29:07.421Z
   
 - **測試環境**：
-  - Debug 版本（truthlens-web）：Dart JSON 反序列化錯誤已知（非阻塞）
-  - Release 版本（truthlens-web-release）：正常運行 ✅
+  - Debug 版本（omnitrace-web）：Dart JSON 反序列化錯誤已知（非阻塞）
+  - Release 版本（omnitrace-web-release）：正常運行 ✅
 
 **為什麼**
 - Gemini Free Tier 配額限制（1500 req/day）需主動限流避免 quota exceeded
@@ -6918,7 +6918,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 - 新增 [help_screen.dart](lib/features/help/help_screen.dart)（操作說明）：
-  1. 產品介紹 + 與市面五大主流工具（GPTZero、Turnitin、Originality.ai、Copyleaks、Winston AI）逐一比較，並列出 TruthLens 獨有優勢（超連結／文獻真實性驗證、ESL 偏差修正、自訂模型匯入）
+  1. 產品介紹 + 與市面五大主流工具（GPTZero、Turnitin、Originality.ai、Copyleaks、Winston AI）逐一比較，並列出 OmniTrace 獨有優勢（超連結／文獻真實性驗證、ESL 偏差修正、自訂模型匯入）
   2. 完整操作流程（5 步驟）：模型下載與更新 → 如何選用模型（各引擎權重與目的效果）→ 文檔上傳 → 開始分析 → 查看與匯出結果
   3. 模型下載與調適教學（零基礎，5 步驟）：開啟模型管理 → 依裝置能力挑選 → 下載與套用 → 更新 → 進階自訂模型匯入；並附四個模型角色的官方下載連結（Transformer/統計/對抗式/LLM，取自 `assets/model_catalog.json` 的真實 `page_url`），點擊以 `url_launcher` 開啟系統瀏覽器
 - 新增 [privacy_policy_screen.dart](lib/features/help/privacy_policy_screen.dart)（隱私權政策）：以 `defaultTargetPlatform` 偵測目前執行的作業系統，顯示對應平台措辭的政策內容（iOS／Android／macOS／Windows 各有專屬章節呼應該平台的商店揭露慣例，如 App Store 隱私「營養標籤」、Google Play「資料安全」、macOS App Sandbox 權限），核心資料處理與連線行為說明四平台一致（因為實際行為本來就相同，只是揭露格式不同），並附非法律文件聲明
@@ -7066,7 +7066,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - 使用者回報「AI 模型管理」的「自訂匯入的模型」下顯示三筆完全相同的 `adversarial_paraphrase_quantized` 項目，查證後確認**不是畫面顯示錯誤**：`installed.json` 裡真的有三筆獨立記錄（各自佔一份 67.6MB 實體檔案），是我先前多輪驗證沙盒修復時反覆點擊「確認匯入」留下的測試殘留（`importLocalModel()` 本來就沒有去重機制，每次點擊都會產生新的 `custom_<timestamp>` 項目）
 - **踩雷**：第一次直接編輯容器內 `installed.json` 清理後，重新讀取發現改的東西「消失」了——查出來是有一個 **Release 版本**的 App 仍在背景執行（PID 4282），它持有自己記憶體內的舊狀態，某個時機點又把舊資料寫回覆蓋了我的編輯（這也解釋了使用者截圖其實來自 Release 版而非我一直在測的 Debug 版）。確認關閉該 process 後才重新清理，這次核對「無執行中 process」的前提下寫入才真正生效
 - 順便發現**第 4 筆**同源重複——在 `adversarial` 角色底下也有一筆匯入且**目前為使用中變體**，先不動、留待使用者決定是否也要處理
-- **後續已處理**：詢問使用者後，選擇「改回正式版並刪除該筆匯入」——將 `adversarial` 角色的使用中變體改回已上架的 `truthlens-adversarial-distil-int8`（GitHub Releases 版），並移除 `custom_1783205696118` 的 manifest 項目與實體檔案。用 computer-use 重新啟動 App 檢查「對抗式防禦（改寫偵測）」區塊，確認顯示的使用中模型正確為官方 INT8 版、自訂匯入清單中不再有重複項
+- **後續已處理**：詢問使用者後，選擇「改回正式版並刪除該筆匯入」——將 `adversarial` 角色的使用中變體改回已上架的 `omnitrace-adversarial-distil-int8`（GitHub Releases 版），並移除 `custom_1783205696118` 的 manifest 項目與實體檔案。用 computer-use 重新啟動 App 檢查「對抗式防禦（改寫偵測）」區塊，確認顯示的使用中模型正確為官方 INT8 版、自訂匯入清單中不再有重複項
 - **清理**：保留最新一筆（`custom_1783177871987`），刪除另外兩筆的 manifest 項目與實體檔案（`.onnx` + `.tokenizer.json`）
 - **匯入前去重偵測**（新功能）：
   - `InstalledModel` 新增 `sha256` 欄位（持久化於 manifest）
@@ -7093,7 +7093,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 - 使用者授權將 `adversarial_int8.onnx`（135,729,550 bytes）與對應 `tokenizer.json` 上傳至 GitHub Releases
-- **權限排查**：`gh` CLI 當時登入帳號對 `hauchiehlin-ops/TruthLens` 只有 `push: false`（唯讀），儘管同一 session 稍早的 `git push` 確實成功過（兩者用的認證路徑不同，具體原因未完全查明）。請使用者改用 `gh auth login` 切換到有 write 權限的帳號（`hauchiehlin-ops` 本人），切換後 `gh api` 確認 `push: true`/`admin: true` 才繼續
+- **權限排查**：`gh` CLI 當時登入帳號對 `hauchiehlin-ops/OmniTrace` 只有 `push: false`（唯讀），儘管同一 session 稍早的 `git push` 確實成功過（兩者用的認證路徑不同，具體原因未完全查明）。請使用者改用 `gh auth login` 切換到有 write 權限的帳號（`hauchiehlin-ops` 本人），切換後 `gh api` 確認 `push: true`/`admin: true` 才繼續
 - 建立 release `models-v1`，上傳兩檔案；下載 URL 經 `curl -IL` 確認可公開存取（200，content-length 與檔案大小完全吻合）；本地與下載回來的檔案 sha256 皆為 `fc17982...e41b`，確認上傳無損毀
 - 更新 [assets/model_catalog.json](assets/model_catalog.json)：`adversarial` 角色的 `url`/`tokenizer_url` 填入真實 GitHub Releases 網址、`sha256` 填入實際雜湊、`size_bytes` 校正為精確位元組數、`page_url` 指向 release 頁面
 - **端到端實機驗證**：用 computer-use 啟動 App，在「AI 模型管理」對「改寫偵測模型」按下真實下載——完整走過下載進度顯示（54%→100%）、sha256 驗證、寫入 manifest、自動設為使用中變體；事後核對容器內檔案位元組數與 sha256 皆與 catalog 記錄一致
@@ -7108,7 +7108,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - 上傳前後皆做 sha256 比對（本地檔案 vs 下載回來的檔案 vs 填入 catalog 的值），三方一致才視為完成，而非只信任上傳指令回傳成功
 
 **待辦/遺留問題**
-- 多語言偵測器（`truthlens-multilingual-distil-int8`）仍待比照本次流程上傳
+- 多語言偵測器（`omnitrace-multilingual-distil-int8`）仍待比照本次流程上傳
 - LLM（Gemma/Qwen GGUF）與其餘模型的來源網址維持現狀（非本次範圍）
 
 ---
@@ -7152,7 +7152,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 - 使用者回報 [model_import_screen.dart](lib/features/settings/model_import_screen.dart) 的「匯入自訂 ONNX 模型」畫面出現「模型匯入失敗，請檢查權限或日誌」
-- 根因：畫面的 `_autoDetectLocalModel()` 直接用硬編碼絕對路徑（`/Users/barretlin/GitProjects/TruthLens/training_tools/adversarial_paraphrase_quantized.onnx`）建立 `File` 物件，**繞過了 `FilePicker`**。macOS App Sandbox（`com.apple.security.app-sandbox`）下只有透過系統選檔對話框挑選的檔案才有讀取權限（`files.user-selected.read-write`），硬編碼路徑完全沒有授權，導致 `ModelManager.importLocalModel` 內的 `modelFile.copy(target.path)` 擲出權限例外
+- 根因：畫面的 `_autoDetectLocalModel()` 直接用硬編碼絕對路徑（`/Users/barretlin/GitProjects/OmniTrace/training_tools/adversarial_paraphrase_quantized.onnx`）建立 `File` 物件，**繞過了 `FilePicker`**。macOS App Sandbox（`com.apple.security.app-sandbox`）下只有透過系統選檔對話框挑選的檔案才有讀取權限（`files.user-selected.read-write`），硬編碼路徑完全沒有授權，導致 `ModelManager.importLocalModel` 內的 `modelFile.copy(target.path)` 擲出權限例外
 - **驗證根因**：用不受沙盒限制的 `dart run` 直接讀該檔案成功（67MB 正常讀出），證明檔案本身無恙，問題確實出在沙盒化 App 對此路徑無存取權限；並確認 entitlements 檔只有 `files.user-selected.read-write`，無任何廣域檔案系統權限
 - **修法**：移除整段硬編碶自動偵測（`_autoDetectLocalModel`、`_hasLocalUpdate`/`_localFileTime` 狀態、對應的「一鍵下載安裝」提示卡片 UI），保留原本正確使用 `FilePicker` 的手動選檔流程（模型/tokenizer 皆經選檔對話框，此路徑本就正常運作，已由既有 model_import_test.dart 覆蓋）；並在類別上加註解說明為何不可用硬編碼路徑
 - 驗證：77 單元測試全過、analyze 零問題、macOS build 綠燈
@@ -7246,7 +7246,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 - **跨平台 OCR & 記憶體偵測**：
   - iOS: 於 [AppDelegate.swift](ios/Runner/AppDelegate.swift) 實作 Vision 框架的 `VNRecognizeTextRequest` 與 `ProcessInfo` 實體記憶體獲取。
-  - Android: 於 [MainActivity.kt](android/app/src/main/kotlin/com/truthlens/truthlens/MainActivity.kt) 整合 Google ML Kit 繁中/日文/拉丁文 Text Recognition 與 `ActivityManager.MemoryInfo`。並於 [build.gradle.kts](android/app/build.gradle.kts) 新增 ML Kit 依賴。
+  - Android: 於 [MainActivity.kt](android/app/src/main/kotlin/com/omnitrace/omnitrace/MainActivity.kt) 整合 Google ML Kit 繁中/日文/拉丁文 Text Recognition 與 `ActivityManager.MemoryInfo`。並於 [build.gradle.kts](android/app/build.gradle.kts) 新增 ML Kit 依賴。
   - Windows: 於 [flutter_window.cpp](windows/runner/flutter_window.cpp) 整合 C++/WinRT 的 `Windows.Media.Ocr` OCR 引擎與 `GetPhysicallyInstalledSystemMemory`。並於 [CMakeLists.txt](windows/runner/CMakeLists.txt) 連結 `windowsapp` 函式庫。
 - **llama.cpp FFI 整合**：
   - 新增 [llama_ffi.dart](lib/core/detection/llama_ffi.dart)：建立 `dart:ffi` 對 `llama.cpp` 的 C API 繫結 (GGUF 載入與推論)，且對 struct/opaque 符合 Dart 3 `base`/`final` 修飾符。
@@ -7434,7 +7434,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **做了什麼**
 - **多語系測試** [multilingual_test.dart](test/multilingual_test.dart)：斷句/統計涵蓋英/中/日/中英混合；端到端檢測涵蓋英/中/西；ESL 修正觸發與開關驗證。全過
-- **上架準備**：macOS 顯示名稱設為 TruthLens（暫定）；撰寫 [docs/release_checklist.md](docs/release_checklist.md)——依 plan 第四階段的完整發佈檢查清單（功能完整度、四平台適配、商店資產、隱私權限、效能目標、簽章發佈），並標出阻塞上架的三個待拍板項（名稱/定價/HC3 商用授權）
+- **上架準備**：macOS 顯示名稱設為 OmniTrace（暫定）；撰寫 [docs/release_checklist.md](docs/release_checklist.md)——依 plan 第四階段的完整發佈檢查清單（功能完整度、四平台適配、商店資產、隱私權限、效能目標、簽章發佈），並標出阻塞上架的三個待拍板項（名稱/定價/HC3 商用授權）
 - 全專案 **35 項測試全過**、analyze 零問題
 
 **為什麼**
@@ -7454,7 +7454,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 ## 2026-07-03 — [P3 智慧報告] OCR 圖像文字辨識（macOS 原生實作）
 
 **做了什麼**
-- [ocr_service.dart](lib/core/services/ocr_service.dart)：OCR 橋接（`MethodChannel('com.truthlens/ocr')`，ping/recognize），不支援的平台優雅回退
+- [ocr_service.dart](lib/core/services/ocr_service.dart)：OCR 橋接（`MethodChannel('com.omnitrace/ocr')`，ping/recognize），不支援的平台優雅回退
 - **macOS 原生實作** [OcrPlugin.swift](macos/Runner/OcrPlugin.swift)：用 Apple Vision（`VNRecognizeTextRequest`，on-device、無需下載模型、支援中英多語），註冊於 MainFlutterWindow；手動把 Swift 檔加入 Xcode 專案 4 處引用（pbxproj）
 - 首頁「圖片辨識」按鈕啟用：選圖 → OCR → 填入文字框（`ImagePicker` 用 file_picker 選圖）
 - **實測驗證**：獨立 Swift 腳本畫「測試文字 Hello OCR 123」→ Vision 正確辨識中英混合；macOS build 綠燈
@@ -7478,7 +7478,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 - **報告文件模型** [report_document.dart](lib/features/report/report_document.dart)：`ReportDocument`（版面模板 id、headline、有序元件清單、生成來源 llm/template）+ 8 種 `ReportComponentType`
 - **確定性報告生成器** [report_composer.dart](lib/features/report/report_composer.dart)：規則式選版面（ai_alert / mixed_detailed / human_clean / paraphrase_alert）+ 中文自然語言解讀（分佈、主要特徵、引擎理由、改寫警告、ESL 說明）。完全離線，即 plan 模組 2 的「確定性回退」
-- **LLM 報告橋接** [report_llm_service.dart](lib/core/detection/report_llm_service.dart)：`MethodChannel('com.truthlens/report_llm')`，LLM 就緒時生成、逾時（30 秒）或原生不可用時**透明回退**至確定性生成器——確保任何裝置都能出報告
+- **LLM 報告橋接** [report_llm_service.dart](lib/core/detection/report_llm_service.dart)：`MethodChannel('com.omnitrace/report_llm')`，LLM 就緒時生成、逾時（30 秒）或原生不可用時**透明回退**至確定性生成器——確保任何裝置都能出報告
 - **報告頁動態化**：改 StatefulWidget，依 `ReportDocument` 元件順序渲染，標示「AI 智慧生成 / 模板生成」徽章
 - 測試：新增 `report_composer_test.dart`（7 項，版面選擇/警告元件/閾值文字）；共 **24 項全過**，analyze 零問題，macOS build 綠燈
 
@@ -7533,7 +7533,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 **做了什麼**
 - **模型登記表** [model_registry.dart](lib/core/detection/model_registry.dart)：四子模型 + LLM 的規格（分層 tier、後端 backend、檔名、大小、版本、URL/sha256 佔位），對應 plan 第五/八節
 - **模型管理器** [model_manager.dart](lib/core/detection/model_manager.dart)（ChangeNotifier）：安裝狀態偵測、http 串流下載含進度、sha256 校驗、`.part` 暫存 + 原子 rename 熱替換、移除；目錄與 http client 可注入以供測試
-- **原生推論橋接** [native_inference_service.dart](lib/core/detection/native_inference_service.dart)：Dart 端 `MethodChannel('com.truthlens/inference')`，契約 ping/loadModel/classify/perplexity/unload；原生端未實作時捕捉 `MissingPluginException` → 引擎優雅降級。契約文件見 [docs/native_inference_bridge.md](docs/native_inference_bridge.md)
+- **原生推論橋接** [native_inference_service.dart](lib/core/detection/native_inference_service.dart)：Dart 端 `MethodChannel('com.omnitrace/inference')`，契約 ping/loadModel/classify/perplexity/unload；原生端未實作時捕捉 `MissingPluginException` → 引擎優雅降級。契約文件見 [docs/native_inference_bridge.md](docs/native_inference_bridge.md)
 - **引擎重構**：Transformer(A)、對抗(D) 改走 ModelManager + NativeInferenceService（未安裝→unavailable）；統計(B) 在 DistilGPT2 就緒時納入真困惑度、否則保留啟發式（恆可用）
 - **信心閾值落地**：設定頁滑桿的閾值真正接進判定，DetectionResult 新增 `flaggedAsAi`（越過閾值才標記 AI，調高可降偽陽性）；報告頁顯示閾值判定 chip
 - **模型管理 UI**：設定頁「AI 模型管理」從佔位改成可運作的 `ModelManagerScreen`（列出安裝狀態、下載進度、移除；未發佈者顯示「即將推出」）
@@ -7586,7 +7586,7 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - 讀取使用者提供的整體設計架構文件，存入 `docs/implementation_plan.md` 作為專案正式規格
 - 建立記憶與記錄體系：`CLAUDE.md`（專案文件，每次 session 自動載入）、本檔 `DEVLOG.md`（含記錄規則）、Claude 跨 session 記憶（MEMORY.md + memory 檔）
 - 環境盤點：macOS（Darwin 27）、Xcode 與 Android Studio 已安裝；Flutter/Dart 原本未安裝，透過 Homebrew cask 安裝 Flutter 3.44.4（stable）
-- `flutter create`（ios/android/macos/windows 四平台，package 名 `truthlens`，org `com.truthlens`），依規格建立目錄結構並實作第一版可運行骨架：
+- `flutter create`（ios/android/macos/windows 四平台，package 名 `omnitrace`，org `com.omnitrace`），依規格建立目錄結構並實作第一版可運行骨架：
   - **檢測引擎**：`DetectionEngine` 介面 + 四子引擎。統計引擎（B）與風格引擎（C）已有可運作的啟發式實作（burstiness/TTR/entropy、過渡詞密度、句式重複）；Transformer（A）與對抗模組（D）為 stub，回報 unavailable
   - **協調器** `EnsembleOrchestrator`：加權投票（40/25/20/15），不可用引擎自動按比例重新分配權重；ESL 偏差修正（偵測到非母語風格時統計引擎權重減半，可在設定關閉）；句子級評分
   - **五大畫面**：輸入（貼上/OCR/匯入，後兩者為 P1/P3 待辦）、分析進度（四引擎即時狀態）、報告（儀表 + 引擎明細 + 逐句熱力高亮）、歷史（SQLite + 搜尋 + 重新分析）、設定（閾值滑桿/ESL 開關/主題）

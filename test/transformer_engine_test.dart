@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/engines/transformer_engine.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/engines/transformer_engine.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
 
 /// 驗證 Transformer 引擎的可用性判斷：分類器一定要有真實 tokenizer 且檔案存在。
 void main() {

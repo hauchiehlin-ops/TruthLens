@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/core/services/rsid_map.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/core/services/rsid_map.dart';
 
 /// 只數全文有幾個相異 RSID，得到的是整份文件一個結論。
 /// 逐段展開之後，能指出**哪幾段**屬於同一批——這把「這份文件可疑」

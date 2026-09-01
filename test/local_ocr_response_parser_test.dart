@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/local_ocr_response_parser.dart';
+import 'package:omnitrace/core/services/local_ocr_response_parser.dart';
 
 void main() {
   test('parses current companion server top-level block list', () {

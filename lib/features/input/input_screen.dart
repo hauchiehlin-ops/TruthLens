@@ -966,7 +966,7 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
                 children: [
                   Icon(LucideIcons.info, size: 18),
                   const SizedBox(width: 8),
-                  const Text('TruthLens'),
+                  const Text('OmniTrace'),
                 ],
               ),
               const SizedBox(height: 4),
@@ -1171,7 +1171,7 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
             const Divider(),
             ListTile(
               leading: Icon(LucideIcons.info),
-              title: const Text('TruthLens'),
+              title: const Text('OmniTrace'),
               subtitle: ValueListenableBuilder<AppVersionInfo>(
                 valueListenable: AppVersion.listenable,
                 builder: (context, info, _) => Text(

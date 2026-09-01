@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/publication_evidence.dart';
-import 'package:truthlens/features/workspace/telemetry_summary.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/publication_evidence.dart';
+import 'package:omnitrace/features/workspace/telemetry_summary.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 /// 足以通過棄權字數門檻的正文
 final _longText = List.filled(200, 'alpha').join(' ');

@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/perplexity_calibration.dart';
-import 'package:truthlens/core/utils/language_id.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/perplexity_calibration.dart';
+import 'package:omnitrace/core/utils/language_id.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// 迴歸測試：一篇真實的英文學術 PDF 論文，困惑度指標必須被採計。
 ///

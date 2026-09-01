@@ -1,7 +1,7 @@
-TruthLens Chinese detector notice
+OmniTrace Chinese detector notice
 
-Model: truthlens_zh_detector_int8.onnx
-Hosted: https://huggingface.co/hauchieh/truthlens-models
+Model: omnitrace_zh_detector_int8.onnx
+Hosted: https://huggingface.co/hauchieh/omnitrace-models
 
 Base model
 ----------
@@ -22,7 +22,7 @@ and reported once on each of three corpora that took no part in training.
 It is one-sided: crossing it supports AI authorship, but a score below it is an
 abstention, never a vote for human authorship.
 
-Fine-tuning, quantisation and calibration are TruthLens work and are not
+Fine-tuning, quantisation and calibration are OmniTrace work and are not
 representations made by the base-model or corpus authors.
 
 Reproduce with training/train_zh_detector.py and

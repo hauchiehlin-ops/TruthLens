@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/llama_ffi.dart';
-import 'package:truthlens/core/detection/llm_manager.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/llama_ffi.dart';
+import 'package:omnitrace/core/detection/llm_manager.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
 
 void main() {
   test('LlamaFfi availability and loading check', () {

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/lexical_calibration.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
+import 'package:omnitrace/core/detection/lexical_calibration.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
 
 /// 原始 TTR 有兩個獨立的缺陷，兩個都會讓判定與內容無關：
 /// 1. 隨文件長度下降（同一篇論文 0.584 → 0.405）

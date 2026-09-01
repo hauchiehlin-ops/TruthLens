@@ -7,7 +7,7 @@ import 'model_catalog.dart';
 /// 偵測裝置硬體能力，供 catalog 選出最適模型變體。
 /// RAM 由原生端提供（macOS 已實作 DevicePlugin）；取不到時以 CPU 核心數與平台估算。
 class DeviceCapabilities {
-  static const _channel = MethodChannel('com.truthlens/device');
+  static const _channel = MethodChannel('com.omnitrace/device');
 
   final int totalRamMb;
   final int processors;

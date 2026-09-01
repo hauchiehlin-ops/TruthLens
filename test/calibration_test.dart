@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/services/calibration_service.dart';
-import 'package:truthlens/core/utils/language_id.dart';
+import 'package:omnitrace/core/services/calibration_service.dart';
+import 'package:omnitrace/core/utils/language_id.dart';
 
 void main() {
   group('共形 p 值', () {

@@ -3,14 +3,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/services/calibration_service.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/citation_evidence.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/core/services/integrated_assessment.dart';
-import 'package:truthlens/core/services/writing_session.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
-import 'package:truthlens/shared/widgets/professional_report_header.dart';
+import 'package:omnitrace/core/services/calibration_service.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/citation_evidence.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/core/services/integrated_assessment.dart';
+import 'package:omnitrace/core/services/writing_session.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/shared/widgets/professional_report_header.dart';
 
 /// 報告頁頭內含共形校準卡，需要 CalibrationService provider 才能建構
 Widget _testApp(Widget child, {Locale locale = const Locale('en')}) =>

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:truthlens/core/services/link_verifier.dart';
+import 'package:omnitrace/core/services/link_verifier.dart';
 
 void main() {
   group('LinkVerifier.isDoiUrl', () {

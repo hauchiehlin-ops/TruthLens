@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/analysis_profile.dart';
-import 'package:truthlens/core/detection/evidence_fusion.dart';
-import 'package:truthlens/core/models/detection_result.dart';
+import 'package:omnitrace/core/detection/analysis_profile.dart';
+import 'package:omnitrace/core/detection/evidence_fusion.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
 
 EngineScore _score(
   String id,

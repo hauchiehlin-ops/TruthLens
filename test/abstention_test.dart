@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/features/workspace/telemetry_summary.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/features/workspace/telemetry_summary.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 /// 產生指定句數的可分析句子（每句都夠長，確保通過 isAnalyzableSentence）
 List<SentenceScore> _sentences(int count, {double score = 0.3}) => [

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
 
 /// 以真實的 zip 容器結構組出 DOCX，確保解析走的是與實際檔案相同的路徑
 List<int> _docx({

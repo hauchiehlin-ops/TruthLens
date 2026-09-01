@@ -286,7 +286,7 @@ class ReportLlmService {
   /// 語言須為使用者目前選擇的 App 語系（BCP-47 語言代碼），確保 LLM 生成的
   /// 報告文字與其餘介面語言一致，而非固定輸出中文。
   String _buildPrompt(Map<String, dynamic> payload, String targetLocale) {
-    return '''You are the TruthLens AI content detection report writer.
+    return '''You are the OmniTrace AI content detection report writer.
 Below is the structured result (JSON) from the detection engines. Write a concise analysis report.
 
 ${const JsonEncoder.withIndent('  ').convert(payload)}

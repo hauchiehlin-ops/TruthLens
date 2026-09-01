@@ -1,6 +1,6 @@
 DetectRL-ZH character n-gram detector notice
 
-This bundled asset (detectrl_zh_char_svm.json) is trained by TruthLens from two
+This bundled asset (detectrl_zh_char_svm.json) is trained by OmniTrace from two
 public corpora. The model file contains only learned vectorizer terms, IDF
 weights and linear coefficients — no corpus text is redistributed.
 

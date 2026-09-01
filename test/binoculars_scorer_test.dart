@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/binoculars_scorer.dart';
+import 'package:omnitrace/core/detection/binoculars_scorer.dart';
 
 /// 由機率分布轉為 log 機率
 List<double> _log(List<double> probs) =>

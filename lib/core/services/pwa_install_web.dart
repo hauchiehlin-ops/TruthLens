@@ -12,13 +12,13 @@ enum PwaInstallOutcome {
   unavailable,
 }
 
-@JS('truthlensPwa.canInstall')
+@JS('omnitracePwa.canInstall')
 external JSBoolean _canInstall();
 
-@JS('truthlensPwa.isInstalled')
+@JS('omnitracePwa.isInstalled')
 external JSBoolean _isInstalled();
 
-@JS('truthlensPwa.promptInstall')
+@JS('omnitracePwa.promptInstall')
 external JSPromise<JSString> _promptInstall();
 
 /// 對 web/pwa_bridge.js 的薄封裝。

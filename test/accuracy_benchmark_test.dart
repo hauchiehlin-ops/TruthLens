@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/services/integrated_assessment.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/services/integrated_assessment.dart';
 
 void main() {
   group('Heuristic-only detection smoke benchmark', () {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_manager_types.dart';
-import 'package:truthlens/core/detection/variant_router.dart';
+import 'package:omnitrace/core/detection/model_manager_types.dart';
+import 'package:omnitrace/core/detection/variant_router.dart';
 
 InstalledModel _m(String id, List<String> languages) => InstalledModel(
   role: 'transformer',

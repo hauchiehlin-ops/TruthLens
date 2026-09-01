@@ -1,16 +1,16 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/adaptive_sentence_batcher.dart';
-import 'package:truthlens/core/detection/detection_engine.dart';
-import 'package:truthlens/core/detection/perplexity_calibration.dart';
-import 'package:truthlens/core/detection/engines/statistical_engine.dart';
-import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
-import 'package:truthlens/features/workspace/telemetry_summary.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
-import 'package:truthlens/shared/widgets/professional_report_header.dart';
+import 'package:omnitrace/core/detection/adaptive_sentence_batcher.dart';
+import 'package:omnitrace/core/detection/detection_engine.dart';
+import 'package:omnitrace/core/detection/perplexity_calibration.dart';
+import 'package:omnitrace/core/detection/engines/statistical_engine.dart';
+import 'package:omnitrace/core/detection/engines/stylometry_engine.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
+import 'package:omnitrace/features/workspace/telemetry_summary.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/shared/widgets/professional_report_header.dart';
 
 /// 假引擎：可指定分數與「有沒有找到證據」
 class _Engine implements DetectionEngine {

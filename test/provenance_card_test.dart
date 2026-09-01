@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/document_provenance.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
-import 'package:truthlens/shared/widgets/provenance_card.dart';
+import 'package:omnitrace/core/services/document_provenance.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/shared/widgets/provenance_card.dart';
 
 Widget _app(DocumentProvenance provenance) => MaterialApp(
   locale: const Locale('en'),

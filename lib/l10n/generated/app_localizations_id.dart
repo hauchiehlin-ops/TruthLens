@@ -184,7 +184,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get modelNecessityText =>
-      'Tanpa mengunduh model deteksi jaringan saraf, TruthLens tetap berfungsi tetapi hanya menggunakan analisis statistik dan gaya penulisan, dengan akurasi dan dukungan multibahasa yang terbatas. Setelah model diunduh, pengklasifikasi Transformer multibahasa akan ikut serta dalam pemungutan suara ensemble, secara signifikan meningkatkan akurasi dan keandalan. Model berjalan di perangkat; setelah diunduh, model tidak mengunggah konten apa pun.';
+      'Tanpa mengunduh model deteksi jaringan saraf, OmniTrace tetap berfungsi tetapi hanya menggunakan analisis statistik dan gaya penulisan, dengan akurasi dan dukungan multibahasa yang terbatas. Setelah model diunduh, pengklasifikasi Transformer multibahasa akan ikut serta dalam pemungutan suara ensemble, secara signifikan meningkatkan akurasi dan keandalan. Model berjalan di perangkat; setelah diunduh, model tidak mengunggah konten apa pun.';
 
   @override
   String get modelPromptTitle =>
@@ -204,7 +204,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens sudah dapat digunakan: mesin statistik dan stilistika siap sekarang. Menambahkan model neural di perangkat akan menyertakan pengklasifikasi multibahasa dalam pemungutan suara ensemble, sehingga akurasi dan cakupan bahasa meningkat nyata. Model berjalan sepenuhnya di peramban Anda dan tidak pernah mengunggah dokumen Anda. Anda juga dapat memutuskannya nanti dari \"Pengaturan → Manajemen Model AI\".';
+      'OmniTrace sudah dapat digunakan: mesin statistik dan stilistika siap sekarang. Menambahkan model neural di perangkat akan menyertakan pengklasifikasi multibahasa dalam pemungutan suara ensemble, sehingga akurasi dan cakupan bahasa meningkat nyata. Model berjalan sepenuhnya di peramban Anda dan tidak pernah mengunggah dokumen Anda. Anda juga dapat memutuskannya nanti dari \"Pengaturan → Manajemen Model AI\".';
 
   @override
   String get firstRunModelPromptLater => 'Nanti saja';
@@ -221,7 +221,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Dokumen berbahasa Tionghoa ini saat ini belum memiliki detektor Tionghoa modern (sekitar 98 MB). Model multibahasa yang lama dikalibrasi pada teks generasi awal dan dapat melewatkan tulisan Tionghoa masa kini bergaya DeepSeek, Gemini, dan GPT. Unduh model khusus di perangkat untuk hasil yang lebih terkalibrasi, atau lanjutkan dengan cadangan lintas bahasa yang lebih lemah.';
 
   @override
-  String get onboardingWelcomeTitle => 'Selamat datang di TruthLens';
+  String get onboardingWelcomeTitle => 'Selamat datang di OmniTrace';
 
   @override
   String get onboardingHeadline => 'Deteksi konten AI di perangkat';
@@ -251,7 +251,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get onboardingStorageNotPersisted =>
-      'Model yang sudah diunduh belum terlindungi dari pembersihan otomatis. Jika ruang disk menipis, peramban dapat menghapusnya dan Anda harus mengunduh ulang. Memasang TruthLens sebagai aplikasi membuat peramban jauh lebih mungkin mempertahankannya.';
+      'Model yang sudah diunduh belum terlindungi dari pembersihan otomatis. Jika ruang disk menipis, peramban dapat menghapusnya dan Anda harus mengunduh ulang. Memasang OmniTrace sebagai aplikasi membuat peramban jauh lebih mungkin mempertahankannya.';
 
   @override
   String get onboardingInstallAppButton => 'Pasang sebagai aplikasi';
@@ -765,7 +765,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacySealNoticeText =>
-      'Segel Privasi 100% Offline TruthLens: Diproses di perangkat tanpa penyimpanan awan.';
+      'Segel Privasi 100% Offline OmniTrace: Diproses di perangkat tanpa penyimpanan awan.';
 
   @override
   String get reportModelCalibrationTitle =>
@@ -1016,7 +1016,7 @@ class AppLocalizationsId extends AppLocalizations {
     String runInstruction,
     String testButton,
   ) {
-    return '$osName terdeteksi, dan endpoint lokal telah diisi otomatis:\n$endpoint\n\nPeramban Anda mulai mengunduh $fileName. Demi keamanan peramban, TruthLens Web tidak dapat menjalankan pemasang atau mengubah pengaturan startup.\n\nLangkah berikutnya:\n1. Jalankan pemasang yang diunduh: $runInstruction\n2. Tunggu hingga terminal atau jendela menyatakan layanan OCR siap.\n3. Kembali ke sini dan pilih \"$testButton\".\n\nSetelah pengujian berhasil, OCR gambar akan memakai layanan lokal ini lebih dulu. Gambar tidak dikirim ke Gemini kecuali Anda juga mengatur kunci API Gemini sebagai cadangan.';
+    return '$osName terdeteksi, dan endpoint lokal telah diisi otomatis:\n$endpoint\n\nPeramban Anda mulai mengunduh $fileName. Demi keamanan peramban, OmniTrace Web tidak dapat menjalankan pemasang atau mengubah pengaturan startup.\n\nLangkah berikutnya:\n1. Jalankan pemasang yang diunduh: $runInstruction\n2. Tunggu hingga terminal atau jendela menyatakan layanan OCR siap.\n3. Kembali ke sini dan pilih \"$testButton\".\n\nSetelah pengujian berhasil, OCR gambar akan memakai layanan lokal ini lebih dulu. Gambar tidak dikirim ke Gemini kecuali Anda juga mengatur kunci API Gemini sebagai cadangan.';
   }
 
   @override
@@ -1177,7 +1177,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get helpShiftBody =>
-      'Hampir semua detektor di pasaran menjawab pertanyaan yang sama: apakah teks ini tampak ditulis AI?\n\nItu perlombaan senjata yang pasti kalah. Makin kuat modelnya, makin dekat keluarannya dengan tulisan manusia secara statistik — dan alat parafrase membaik jauh lebih cepat daripada detektor. Di jalur itu, model besar di server hanya kalah lebih lambat.\n\nTruthLens mengajukan pertanyaan lain: bukti apa yang sebenarnya kita pegang tentang bagaimana dokumen ini terwujud, dan seberapa kuat masing-masing?\n\nItulah pergeseran dari menebak gaya tulisan menuju menimbang bukti asal-usul beserta kesimpulan yang jujur secara statistik. Karena itulah alat ini sengaja tidak mengejar peringkat ketepatan skor tunggal, melainkan membentangkan tiap bukti secara terpisah dan berterus terang ketika tidak tahu. Keunggulan sesungguhnya dari berjalan di peramban bukan kecepatan, melainkan melihat apa yang tak pernah dilihat server: berkas yang utuh, dan basis yang Anda kumpulkan sendiri.';
+      'Hampir semua detektor di pasaran menjawab pertanyaan yang sama: apakah teks ini tampak ditulis AI?\n\nItu perlombaan senjata yang pasti kalah. Makin kuat modelnya, makin dekat keluarannya dengan tulisan manusia secara statistik — dan alat parafrase membaik jauh lebih cepat daripada detektor. Di jalur itu, model besar di server hanya kalah lebih lambat.\n\nOmniTrace mengajukan pertanyaan lain: bukti apa yang sebenarnya kita pegang tentang bagaimana dokumen ini terwujud, dan seberapa kuat masing-masing?\n\nItulah pergeseran dari menebak gaya tulisan menuju menimbang bukti asal-usul beserta kesimpulan yang jujur secara statistik. Karena itulah alat ini sengaja tidak mengejar peringkat ketepatan skor tunggal, melainkan membentangkan tiap bukti secara terpisah dan berterus terang ketika tidak tahu. Keunggulan sesungguhnya dari berjalan di peramban bukan kecepatan, melainkan melihat apa yang tak pernah dilihat server: berkas yang utuh, dan basis yang Anda kumpulkan sendiri.';
 
   @override
   String get helpPillarsTitle => '2. Lima pilar';
@@ -1737,7 +1737,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base: sumber verifikasi tidak memberikan respons yang andal atau entri kekurangan informasi yang cukup; TruthLens tidak menganggap kutipan ini terverifikasi.';
+    return '$base: sumber verifikasi tidak memberikan respons yang andal atau entri kekurangan informasi yang cukup; OmniTrace tidak menganggap kutipan ini terverifikasi.';
   }
 
   @override
@@ -1763,11 +1763,11 @@ class AppLocalizationsId extends AppLocalizations {
       'Inferensi AI inti berjalan sepenuhnya di perangkat';
 
   @override
-  String get exportReportTitle => 'Laporan Deteksi TruthLens';
+  String get exportReportTitle => 'Laporan Deteksi OmniTrace';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · Halaman $page / $total';
+    return 'OmniTrace · Halaman $page / $total';
   }
 
   @override
@@ -2010,7 +2010,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get modelNameTruthlensZh =>
-      'Detektor Tionghoa TruthLens (generator 2026 · INT8)';
+      'Detektor Tionghoa OmniTrace (generator 2026 · INT8)';
 
   @override
   String get modelNameAigcZhv3 =>
@@ -2219,11 +2219,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get helpAppBarTitle => 'Panduan Pengguna';
 
   @override
-  String get helpAboutTitle => 'Tentang TruthLens';
+  String get helpAboutTitle => 'Tentang OmniTrace';
 
   @override
   String get helpAboutBody =>
-      'TruthLens adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai probabilitas AI yang digolongkan ke lima rentang tetap (di bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Titik potongnya tidak dapat diubah, sehingga dokumen yang sama selalu jatuh di rentang yang sama. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.';
+      'OmniTrace adalah pendeteksi konten AI yang berjalan **sepenuhnya di dalam peramban Anda**. Empat mesin independen — pengklasifikasi neural Transformer, analisis ciri statistik, stilometri, dan deteksi penulisan ulang adversarial — memberi suara berbobot apakah teks dibuat AI, dan dokumen Anda tidak pernah meninggalkan perangkat.\n\nLaporan menyatakan putusannya sebagai probabilitas AI yang digolongkan ke lima rentang tetap (di bawah 20%, 20–40%, 40–60%, 60–80%, 80% ke atas), disertai bukti per kalimat, kontribusi tiap mesin, bukti asal dokumen, dan nama berkas saat mengimpor. Titik potongnya tidak dapat diubah, sehingga dokumen yang sama selalu jatuh di rentang yang sama. Bila buktinya tipis — kalimat atau kata terlalu sedikit, atau mesin terlalu berselisih — ia mengatakannya terus terang alih-alih memaksakan skor.';
 
   @override
   String get helpComparisonTitle => 'Perbandingan dengan alat terkemuka';
@@ -2237,66 +2237,66 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero mengerjakan sebagian besar prosesnya di awan dan mengharuskan unggah dokumen; keempat mesin TruthLens berjalan di peramban Anda sendiri dan isinya tidak dikirim ke mana pun.';
+      'GPTZero mengerjakan sebagian besar prosesnya di awan dan mengharuskan unggah dokumen; keempat mesin OmniTrace berjalan di peramban Anda sendiri dan isinya tidak dikirim ke mana pun.';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero mempelopori metrik Perplexity/Burstiness dan penyorotan kalimat — TruthLens menggabungkan ini dan menambahkan pengklasifikasi Transformer, analisis stilometri, dan pertahanan adversarial, membentuk pemungutan suara ensemble empat model, bukan metrik tunggal.';
+      'GPTZero mempelopori metrik Perplexity/Burstiness dan penyorotan kalimat — OmniTrace menggabungkan ini dan menambahkan pengklasifikasi Transformer, analisis stilometri, dan pertahanan adversarial, membentuk pemungutan suara ensemble empat model, bukan metrik tunggal.';
 
   @override
   String get helpVsGptZero3 =>
-      'GPTZero berbasis langganan; TruthLens tidak memerlukan langganan dan tidak ada batas penggunaan.';
+      'GPTZero berbasis langganan; OmniTrace tidak memerlukan langganan dan tidak ada batas penggunaan.';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin hanya dijual kepada institusi; individu tidak dapat membelinya secara langsung. Siapa pun dapat memasang dan menggunakan TruthLens.';
+      'Turnitin hanya dijual kepada institusi; individu tidak dapat membelinya secara langsung. Siapa pun dapat memasang dan menggunakan OmniTrace.';
 
   @override
   String get helpVsTurnitin2 =>
-      'Proses keputusan Turnitin hampir seperti kotak hitam; TruthLens menyediakan probabilitas AI tiap kalimat, pola penulisan yang cocok, serta rincian skor dan alasan tiap mesin.';
+      'Proses keputusan Turnitin hampir seperti kotak hitam; OmniTrace menyediakan probabilitas AI tiap kalimat, pola penulisan yang cocok, serta rincian skor dan alasan tiap mesin.';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin sebagian besar memberikan hasil biner \"apakah ini AI\"; TruthLens mendukung pelabelan manusia/AI/campuran di tingkat paragraf/kalimat.';
+      'Turnitin sebagian besar memberikan hasil biner \"apakah ini AI\"; OmniTrace mendukung pelabelan manusia/AI/campuran di tingkat paragraf/kalimat.';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai menagih per naskah lewat langganan dan mengharuskan unggah ke awan; TruthLens mengerjakan bagian intinya di peramban, tanpa langganan dan tanpa batas pemakaian.';
+      'Originality.ai menagih per naskah lewat langganan dan mengharuskan unggah ke awan; OmniTrace mengerjakan bagian intinya di peramban, tanpa langganan dan tanpa batas pemakaian.';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai menawarkan konsep pemeriksaan fakta dan analisis keterbacaan; TruthLens menjawab ini dengan modul fitur gaya di perangkat, dan dapat melakukan analisis dasar bahkan secara offline.';
+      'Originality.ai menawarkan konsep pemeriksaan fakta dan analisis keterbacaan; OmniTrace menjawab ini dengan modul fitur gaya di perangkat, dan dapat melakukan analisis dasar bahkan secara offline.';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks terutama adalah API cloud yang dikenal karena tingkat positif palsu yang rendah dan dukungan multibahasa yang kuat; TruthLens berbagi filosofi ini dengan model dasar multibahasa XLM-RoBERTa dan pemungutan suara ensemble multi-model, tetapi konten dokumen Anda tidak pernah diunggah ke server mana pun.';
+      'Copyleaks terutama adalah API cloud yang dikenal karena tingkat positif palsu yang rendah dan dukungan multibahasa yang kuat; OmniTrace berbagi filosofi ini dengan model dasar multibahasa XLM-RoBERTa dan pemungutan suara ensemble multi-model, tetapi konten dokumen Anda tidak pernah diunggah ke server mana pun.';
 
   @override
   String get helpVsCopyleaks2 =>
-      'Copyleaks memiliki batas penggunaan API tergantung paket; TruthLens tidak memiliki batas penggunaan.';
+      'Copyleaks memiliki batas penggunaan API tergantung paket; OmniTrace tidak memiliki batas penggunaan.';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'OCR gambar Winston AI mengunggah foto ke awan; OCR TruthLens mengutamakan server OCR lokal yang Anda siapkan, dan hanya beralih ke awan bila Anda sendiri memberikan kunci API Gemini — apakah awan terlibat sama sekali tetap keputusan Anda.';
+      'OCR gambar Winston AI mengunggah foto ke awan; OCR OmniTrace mengutamakan server OCR lokal yang Anda siapkan, dan hanya beralih ke awan bila Anda sendiri memberikan kunci API Gemini — apakah awan terlibat sama sekali tetap keputusan Anda.';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI dikenal karena laporan yang rapi dan dapat dicetak; TruthLens secara dinamis membuat tata letak laporan melalui AI (kembali ke templat jika tidak ada LLM terpasang), dapat diekspor sebagai PDF/CSV/JSON/PNG.';
+      'Winston AI dikenal karena laporan yang rapi dan dapat dicetak; OmniTrace secara dinamis membuat tata letak laporan melalui AI (kembali ke templat jika tidak ada LLM terpasang), dapat diekspor sebagai PDF/CSV/JSON/PNG.';
 
   @override
-  String get helpAdvantagesTitle => 'Keunggulan eksklusif TruthLens';
+  String get helpAdvantagesTitle => 'Keunggulan eksklusif OmniTrace';
 
   @override
   String get helpAdvantage1 =>
@@ -2407,7 +2407,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
+      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. OmniTrace therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => 'Peluncuran pertama';
@@ -2547,7 +2547,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens berjalan sepenuhnya sebagai aplikasi web di tab browser Anda. Tidak ada yang perlu diinstal; teks dokumen dan hasil analisis tidak pernah meninggalkan perangkat Anda, dan model deteksi yang diunduh disimpan dalam cache hanya di penyimpanan sandbox browser Anda sendiri (OPFS), bukan di server mana pun.';
+      'OmniTrace berjalan sepenuhnya sebagai aplikasi web di tab browser Anda. Tidak ada yang perlu diinstal; teks dokumen dan hasil analisis tidak pernah meninggalkan perangkat Anda, dan model deteksi yang diunduh disimpan dalam cache hanya di penyimpanan sandbox browser Anda sendiri (OPFS), bukan di server mana pun.';
 
   @override
   String get privacyWebOverview2 =>
@@ -2562,7 +2562,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens tidak mengumpulkan data apa pun yang terkait dengan identitas Anda, dan tidak menggunakan data apa pun untuk pelacakan, sehingga tidak memerlukan izin App Tracking Transparency (ATT).';
+      'OmniTrace tidak mengumpulkan data apa pun yang terkait dengan identitas Anda, dan tidak menggunakan data apa pun untuk pelacakan, sehingga tidak memerlukan izin App Tracking Transparency (ATT).';
 
   @override
   String get privacyIosOverview2 =>
@@ -2570,7 +2570,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyAndroidOverview1 =>
-      'TruthLens tidak mengumpulkan data pribadi, dan tidak membagikan data pengguna dengan pihak ketiga mana pun.';
+      'OmniTrace tidak mengumpulkan data pribadi, dan tidak membagikan data pengguna dengan pihak ketiga mana pun.';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -2578,7 +2578,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens berjalan di bawah App Sandbox macOS dan hanya dapat mengakses berkas yang Anda pilih secara aktif melalui dialog berkas sistem (files.user-selected.read-write) — tidak dapat menjelajahi atau mengakses berkas atau folder lain dengan sendirinya.';
+      'OmniTrace berjalan di bawah App Sandbox macOS dan hanya dapat mengakses berkas yang Anda pilih secara aktif melalui dialog berkas sistem (files.user-selected.read-write) — tidak dapat menjelajahi atau mengakses berkas atau folder lain dengan sendirinya.';
 
   @override
   String get privacyMacosOverview2 =>
@@ -2586,7 +2586,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens adalah aplikasi desktop mandiri; data disimpan di folder pengguna lokal Anda (mis. AppData/Documents) dan tidak pernah disinkronkan ke cloud.';
+      'OmniTrace adalah aplikasi desktop mandiri; data disimpan di folder pengguna lokal Anda (mis. AppData/Documents) dan tidak pernah disinkronkan ke cloud.';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -2594,15 +2594,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens tidak memiliki akun pengguna, tidak memerlukan login, dan tidak mengandung SDK iklan atau pelacakan pihak ketiga dalam bentuk apa pun.';
+      'OmniTrace tidak memiliki akun pengguna, tidak memerlukan login, dan tidak mengandung SDK iklan atau pelacakan pihak ketiga dalam bentuk apa pun.';
 
   @override
   String get privacyDataHandling2 =>
-      'Konten dokumen apa pun yang Anda ketik, tempel, atau impor dianalisis sepenuhnya oleh model AI di perangkat Anda sendiri — tidak pernah diunggah ke TruthLens atau server pihak ketiga mana pun.';
+      'Konten dokumen apa pun yang Anda ketik, tempel, atau impor dianalisis sepenuhnya oleh model AI di perangkat Anda sendiri — tidak pernah diunggah ke OmniTrace atau server pihak ketiga mana pun.';
 
   @override
   String get privacyDataHandling3 =>
-      'Hasil analisis dan riwayat hanya disimpan dalam basis data lokal di perangkat Anda; menghapus aplikasi atau membersihkan riwayat menghapusnya sepenuhnya — TruthLens tidak menyimpan salinan apa pun di mana pun.';
+      'Hasil analisis dan riwayat hanya disimpan dalam basis data lokal di perangkat Anda; menghapus aplikasi atau membersihkan riwayat menghapusnya sepenuhnya — OmniTrace tidak menyimpan salinan apa pun di mana pun.';
 
   @override
   String get privacyNetworkIntro =>
@@ -2642,7 +2642,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyDisclaimer =>
-      'Halaman ini adalah penjelasan privasi yang ditulis oleh TruthLens untuk mencerminkan perilaku fungsional aktual, bukan dokumen hukum formal yang ditinjau pengacara; untuk tinjauan kepatuhan formal berdasarkan hukum wilayah Anda, silakan konsultasikan pengacara independen.';
+      'Halaman ini adalah penjelasan privasi yang ditulis oleh OmniTrace untuk mencerminkan perilaku fungsional aktual, bukan dokumen hukum formal yang ditinjau pengacara; untuk tinjauan kepatuhan formal berdasarkan hukum wilayah Anda, silakan konsultasikan pengacara independen.';
 
   @override
   String get privacySectionOverviewIos =>
@@ -3414,7 +3414,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get firstRunModelManualBody =>
-      'Anda dapat mengunduhnya kapan saja: buka Pengaturan (ikon roda gigi di bilah atas) lalu pilih «Manajemen Model AI». Sementara itu TruthLens tetap bekerja dengan mesin statistik dan stilistiknya.';
+      'Anda dapat mengunduhnya kapan saja: buka Pengaturan (ikon roda gigi di bilah atas) lalu pilih «Manajemen Model AI». Sementara itu OmniTrace tetap bekerja dengan mesin statistik dan stilistiknya.';
 
   @override
   String get commonGotIt => 'Mengerti';

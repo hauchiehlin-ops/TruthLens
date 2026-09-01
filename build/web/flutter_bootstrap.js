@@ -39,15 +39,15 @@ if (!window._flutter) {
 _flutter.buildConfig = {"engineRevision":"a10d8ac38de835021c8d2f920dbf50a920ccc030","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
 
-const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
-const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
-const truthLensWorkerScript = "truthlens_sw.js";
-const truthLensShellCache = "truthlens-shell-v1";
-const truthLensPublicLanguageKey = "truthlens-public-lang";
+const truthLensWorkerCleanupKey = "omnitrace-worker-cleanup-v2";
+const truthLensWorkerMigrationKey = "omnitrace-worker-migration-v2";
+const truthLensWorkerScript = "omnitrace_sw.js";
+const truthLensShellCache = "omnitrace-shell-v1";
+const truthLensPublicLanguageKey = "omnitrace-public-lang";
 const truthLensFlutterLocaleKey = "flutter.app_locale";
 
-function normalizeTruthLensLocale(value) {
-  if (value == null || value === "") return "zh-Hant";
+function normalizeOmniTraceLocale(value) {
+  if (value == null || value === "") return "en";
   const lower = String(value).replace("_", "-").toLowerCase();
   if (lower === "zh-hant" || lower === "zh-tw" || lower === "zh-hk" || lower === "zh-mo") {
     return "zh-Hant";
@@ -70,33 +70,33 @@ function normalizeTruthLensLocale(value) {
     "pt",
   ].includes(base)
     ? base
-    : "zh-Hant";
+    : "en";
 }
 
-function currentTruthLensPublicLocale() {
+function currentOmniTracePublicLocale() {
   const params = new URLSearchParams(window.location.search || "");
-  return normalizeTruthLensLocale(
+  return normalizeOmniTraceLocale(
     params.get("lang") ||
-      readTruthLensStorage(window.localStorage, truthLensPublicLanguageKey) ||
+      readOmniTraceStorage(window.localStorage, truthLensPublicLanguageKey) ||
       navigator.language ||
       document.documentElement.lang,
   );
 }
 
-function encodeTruthLensFlutterLocale(lang) {
-  const normalized = normalizeTruthLensLocale(lang);
+function encodeOmniTraceFlutterLocale(lang) {
+  const normalized = normalizeOmniTraceLocale(lang);
   if (normalized === "zh-Hant") return "zh_Hant";
   if (normalized === "zh-Hans") return "zh_Hans";
   return normalized;
 }
 
-function persistTruthLensLocale(lang) {
-  const normalized = normalizeTruthLensLocale(lang);
-  writeTruthLensStorage(window.localStorage, truthLensPublicLanguageKey, normalized);
-  writeTruthLensStorage(
+function persistOmniTraceLocale(lang) {
+  const normalized = normalizeOmniTraceLocale(lang);
+  writeOmniTraceStorage(window.localStorage, truthLensPublicLanguageKey, normalized);
+  writeOmniTraceStorage(
     window.localStorage,
     truthLensFlutterLocaleKey,
-    JSON.stringify(encodeTruthLensFlutterLocale(normalized)),
+    JSON.stringify(encodeOmniTraceFlutterLocale(normalized)),
   );
   return normalized;
 }
@@ -106,7 +106,7 @@ function truthLensWorkspaceUrl(lang) {
   url.pathname = "/";
   url.search = "";
   url.searchParams.set("workspace", "1");
-  url.searchParams.set("lang", normalizeTruthLensLocale(lang));
+  url.searchParams.set("lang", normalizeOmniTraceLocale(lang));
   return url.pathname + url.search;
 }
 
@@ -218,11 +218,11 @@ function truthLensStartupCopy(key) {
       pt: "Abrindo o workspace de detecção...",
     },
   };
-  const lang = currentTruthLensPublicLocale();
+  const lang = currentOmniTracePublicLocale();
   return copy[key]?.[lang] || copy[key]?.en || "";
 }
 
-function getTruthLensCompatibilityPlatform() {
+function getOmniTraceCompatibilityPlatform() {
   const userAgent = navigator.userAgent || "";
   const userAgentPlatform = navigator.userAgentData?.platform || "";
   const legacyPlatform = navigator.platform || "";
@@ -243,7 +243,7 @@ function getTruthLensCompatibilityPlatform() {
   return isMacOS ? "macOS" : null;
 }
 
-function createTruthLensFlutterConfig(compatibilityPlatform) {
+function createOmniTraceFlutterConfig(compatibilityPlatform) {
   const config = {
     canvasKitBaseUrl: "canvaskit/",
     useLocalCanvasKit: true,
@@ -260,14 +260,14 @@ function createTruthLensFlutterConfig(compatibilityPlatform) {
   return config;
 }
 
-function updateTruthLensStartupStatus(message) {
+function updateOmniTraceStartupStatus(message) {
   const status = document
     .getElementById("seo-shell")
     ?.querySelector(".seo-shell__status");
   if (status) status.textContent = message;
 }
 
-function readTruthLensStorage(storage, key) {
+function readOmniTraceStorage(storage, key) {
   try {
     return storage.getItem(key);
   } catch (_) {
@@ -275,7 +275,7 @@ function readTruthLensStorage(storage, key) {
   }
 }
 
-function writeTruthLensStorage(storage, key, value) {
+function writeOmniTraceStorage(storage, key, value) {
   try {
     if (value == null) {
       storage.removeItem(key);
@@ -287,8 +287,8 @@ function writeTruthLensStorage(storage, key, value) {
   }
 }
 
-function showTruthLensStartupFailure(error) {
-  console.error("TruthLens Web startup failed:", error);
+function showOmniTraceStartupFailure(error) {
+  console.error("OmniTrace Web startup failed:", error);
   const shell = document.getElementById("seo-shell");
   const status = shell?.querySelector(".seo-shell__status");
   if (!shell || !status) return;
@@ -309,7 +309,7 @@ async function removeLegacyFlutterWorker() {
 
   if (
     navigator.serviceWorker.controller == null &&
-    readTruthLensStorage(
+    readOmniTraceStorage(
       window.localStorage,
       truthLensWorkerMigrationKey,
     ) === "complete"
@@ -318,7 +318,7 @@ async function removeLegacyFlutterWorker() {
   }
 
   const registrations = await navigator.serviceWorker.getRegistrations();
-  // TruthLens 自有的 worker 不算「舊」——它是安裝為應用程式的前提。
+  // OmniTrace 自有的 worker 不算「舊」——它是安裝為應用程式的前提。
   // 少了這個判斷，每次載入都會把它反註冊掉，安裝提示永遠不會出現。
   const isOwnWorker = (registration) => {
     const worker =
@@ -347,7 +347,7 @@ async function removeLegacyFlutterWorker() {
     );
   }
   if (!hadLegacyWorker) {
-    writeTruthLensStorage(
+    writeOmniTraceStorage(
       window.localStorage,
       truthLensWorkerMigrationKey,
       "complete",
@@ -359,15 +359,15 @@ async function removeLegacyFlutterWorker() {
 // Chromium 只有在網站具備帶 fetch handler 的 service worker 時才會派送
 // beforeinstallprompt，而安裝是 storage.persist() 獲准的最有效途徑。
 // 刻意等應用程式跑起來才註冊：註冊失敗或延遲都不該影響啟動。
-function registerTruthLensWorker() {
+function registerOmniTraceWorker() {
   if (!("serviceWorker" in navigator)) return;
   navigator.serviceWorker.register(truthLensWorkerScript).catch((error) => {
-    console.warn("TruthLens service worker registration failed:", error);
+    console.warn("OmniTrace service worker registration failed:", error);
   });
 }
 
-async function bootTruthLens() {
-  persistTruthLensLocale(currentTruthLensPublicLocale());
+async function bootOmniTrace() {
+  persistOmniTraceLocale(currentOmniTracePublicLocale());
   let hadLegacyWorker = false;
   try {
     hadLegacyWorker = await removeLegacyFlutterWorker();
@@ -379,13 +379,13 @@ async function bootTruthLens() {
 
   if (
     hadLegacyWorker &&
-    readTruthLensStorage(window.sessionStorage, truthLensWorkerCleanupKey) !==
+    readOmniTraceStorage(window.sessionStorage, truthLensWorkerCleanupKey) !==
       "reloaded"
   ) {
     // An unregistered worker can continue controlling the current document
     // until the next navigation. Reload exactly once so main.dart.js is fetched
     // without the stale worker; the session marker prevents a reload loop.
-    writeTruthLensStorage(
+    writeOmniTraceStorage(
       window.sessionStorage,
       truthLensWorkerCleanupKey,
       "reloaded",
@@ -393,26 +393,26 @@ async function bootTruthLens() {
     window.location.reload();
     return;
   }
-  writeTruthLensStorage(window.sessionStorage, truthLensWorkerCleanupKey, null);
+  writeOmniTraceStorage(window.sessionStorage, truthLensWorkerCleanupKey, null);
 
   let appStarted = false;
   const slowStartupNotice = window.setTimeout(() => {
     if (!appStarted) {
-      updateTruthLensStartupStatus(
+      updateOmniTraceStartupStatus(
         truthLensStartupCopy("slow"),
       );
     }
   }, 15000);
   const startupWatchdog = window.setTimeout(() => {
     if (!appStarted) {
-      showTruthLensStartupFailure(new Error("Flutter startup timed out"));
+      showOmniTraceStartupFailure(new Error("Flutter startup timed out"));
     }
   }, 120000);
-  const compatibilityPlatform = getTruthLensCompatibilityPlatform();
-  const flutterConfig = createTruthLensFlutterConfig(compatibilityPlatform);
+  const compatibilityPlatform = getOmniTraceCompatibilityPlatform();
+  const flutterConfig = createOmniTraceFlutterConfig(compatibilityPlatform);
 
   try {
-    updateTruthLensStartupStatus(
+    updateOmniTraceStartupStatus(
       compatibilityPlatform != null
         ? truthLensStartupCopy("loadingCompat").replace("{platform}", compatibilityPlatform)
         : truthLensStartupCopy("loading"),
@@ -424,7 +424,7 @@ async function bootTruthLens() {
       config: flutterConfig,
       onEntrypointLoaded: async function(engineInitializer) {
         try {
-          updateTruthLensStartupStatus(truthLensStartupCopy("initializing"));
+          updateOmniTraceStartupStatus(truthLensStartupCopy("initializing"));
           // Loader settings choose the CanvasKit asset. Passing the same
           // settings into initializeEngine is required for engine options such
           // as canvasKitForceCpuOnly to take effect.
@@ -436,22 +436,22 @@ async function bootTruthLens() {
           window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);
           document.getElementById("seo-shell")?.remove();
-          registerTruthLensWorker();
+          registerOmniTraceWorker();
         } catch (error) {
           window.clearTimeout(slowStartupNotice);
           window.clearTimeout(startupWatchdog);
-          showTruthLensStartupFailure(error);
+          showOmniTraceStartupFailure(error);
         }
       },
     });
   } catch (error) {
     window.clearTimeout(slowStartupNotice);
     window.clearTimeout(startupWatchdog);
-    showTruthLensStartupFailure(error);
+    showOmniTraceStartupFailure(error);
   }
 }
 
-function shouldAutoBootTruthLens() {
+function shouldAutoBootOmniTrace() {
   try {
     const params = new URLSearchParams(window.location.search || "");
     return (
@@ -463,25 +463,25 @@ function shouldAutoBootTruthLens() {
   }
 }
 
-function wireTruthLensStartButton() {
+function wireOmniTraceStartButton() {
   const start = document.getElementById("seo-shell-start");
   if (!start) return;
   start.addEventListener("click", (event) => {
     event.preventDefault();
-    const lang = persistTruthLensLocale(currentTruthLensPublicLocale());
+    const lang = persistOmniTraceLocale(currentOmniTracePublicLocale());
     if (window.history && window.history.replaceState) {
       window.history.replaceState(null, "", truthLensWorkspaceUrl(lang));
     }
     start.setAttribute("aria-disabled", "true");
     start.textContent = truthLensStartupCopy("opening");
-    bootTruthLens();
+    bootOmniTrace();
   });
 }
 
-window.startTruthLensWorkspace = bootTruthLens;
+window.startOmniTraceWorkspace = bootOmniTrace;
 
-if (shouldAutoBootTruthLens()) {
-  bootTruthLens();
+if (shouldAutoBootOmniTrace()) {
+  bootOmniTrace();
 } else {
-  wireTruthLensStartButton();
+  wireOmniTraceStartButton();
 }

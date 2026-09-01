@@ -1,4 +1,4 @@
-// TruthLens Web 儲存橋接：包裝瀏覽器 OPFS（Origin Private File System），
+// OmniTrace Web 儲存橋接：包裝瀏覽器 OPFS（Origin Private File System），
 // 供 Dart (dart:js_interop) 存取已下載的模型檔案與設定清單。
 // 全部內容留在瀏覽器沙盒儲存內，不經任何伺服器——對應原生版的 App 內
 // models/ 目錄（見 lib/core/detection/model_manager.dart 的原生實作）。
@@ -91,7 +91,7 @@
     await writeBytes(fileName, new TextEncoder().encode(text));
   }
 
-  window.truthlensFs = {
+  window.omnitraceFs = {
     readBytes,
     writeBytes,
     exists,

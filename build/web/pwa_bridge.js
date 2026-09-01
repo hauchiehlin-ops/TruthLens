@@ -1,4 +1,4 @@
-// TruthLens PWA 安裝橋接。
+// OmniTrace PWA 安裝橋接。
 //
 // 存在的理由：已下載的模型放在 OPFS，預設是「盡力而為」等級，瀏覽器在磁碟壓力下
 // 可以直接回收，使用者下次開啟就得重載數百 MB。navigator.storage.persist() 是唯一
@@ -24,7 +24,7 @@
     deferredPrompt = null;
   });
 
-  window.truthlensPwa = {
+  window.omnitracePwa = {
     canInstall: function () {
       return deferredPrompt !== null && !installed;
     },

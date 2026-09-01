@@ -23,12 +23,12 @@ void main() async {
       'id': 'pdf-student-essay-detector',
       'lang': 'en',
       'title': 'PDF Student Essay AI Detector',
-      'desc': 'Analyze PDF student essays for AI content locally without uploading to the cloud. Protect student privacy with TruthLens.',
+      'desc': 'Analyze PDF student essays for AI content locally without uploading to the cloud. Protect student privacy with OmniTrace.',
       'h1': 'PDF Student Essay AI Detector',
       'lead': 'Protect student privacy by scanning PDF essays for AI content completely on your device. No cloud uploads.',
       'faq': [
-        {'q': 'Does TruthLens upload student essays?', 'a': 'No. TruthLens is a local-first AI detector. All analysis happens on your device.'},
-        {'q': 'Can it detect AI in PDF files?', 'a': 'Yes, TruthLens extracts text from PDFs and analyzes it using multi-engine signals.'}
+        {'q': 'Does OmniTrace upload student essays?', 'a': 'No. OmniTrace is a local-first AI detector. All analysis happens on your device.'},
+        {'q': 'Can it detect AI in PDF files?', 'a': 'Yes, OmniTrace extracts text from PDFs and analyzes it using multi-engine signals.'}
       ]
     },
     {
@@ -51,8 +51,8 @@ void main() async {
       'h1': 'PDF 學生論文 AI 檢測器',
       'lead': '完全在您的裝置上掃描 PDF 論文的 AI 內容，保護學生隱私，不上傳任何資料。',
       'faq': [
-        {'q': 'TruthLens 會上傳學生的論文嗎？', 'a': '不會。TruthLens 是本地優先的 AI 檢測器，所有分析都在您的裝置上進行。'},
-        {'q': '支援 PDF 檔案嗎？', 'a': '是的，TruthLens 支援擷取 PDF 文字並進行多引擎交叉分析。'}
+        {'q': 'OmniTrace 會上傳學生的論文嗎？', 'a': '不會。OmniTrace 是本地優先的 AI 檢測器，所有分析都在您的裝置上進行。'},
+        {'q': '支援 PDF 檔案嗎？', 'a': '是的，OmniTrace 支援擷取 PDF 文字並進行多引擎交叉分析。'}
       ]
     }
   ];
@@ -64,7 +64,7 @@ void main() async {
     
     // Replace title
     pageHtml = pageHtml.replaceFirst(
-        RegExp(r'<title>.*?</title>'), '<title>${page['title']} | TruthLens</title>');
+        RegExp(r'<title>.*?</title>'), '<title>${page['title']} | OmniTrace</title>');
     
     // Replace description
     pageHtml = pageHtml.replaceFirst(
@@ -109,7 +109,7 @@ void main() async {
     File(filePath).writeAsStringSync(pageHtml);
     print('Generated: $filePath');
     
-    generatedUrls.add('https://truth-lens-roan-three.vercel.app/use-cases/${page['id']}');
+    generatedUrls.add('https://omni-trace-roan-three.vercel.app/use-cases/${page['id']}');
   }
 
   final sitemapFile = File('web/sitemap.xml');
@@ -142,7 +142,7 @@ void main() async {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sitemap Directory | TruthLens</title>
+  <title>Sitemap Directory | OmniTrace</title>
   <meta name="robots" content="noindex, follow">
   <style>
     body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; line-height: 1.6; }
@@ -153,7 +153,7 @@ void main() async {
   </style>
 </head>
 <body>
-  <h1>TruthLens Directory</h1>
+  <h1>OmniTrace Directory</h1>
   <ul>
 ''';
   for (final page in pages) {

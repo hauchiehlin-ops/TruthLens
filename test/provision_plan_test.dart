@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
-import 'package:truthlens/core/detection/model_provisioner.dart';
+import 'package:omnitrace/core/detection/model_catalog.dart';
+import 'package:omnitrace/core/detection/model_provisioner.dart';
 
 ModelVariant _v(String id, int minRamMb, {String? url}) => ModelVariant(
   id: id,

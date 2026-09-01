@@ -178,7 +178,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get modelNecessityText =>
-      '신경망 감지 모델을 다운로드하지 않아도 TruthLens는 작동하지만, 통계 및 문체 분석만 사용하여 정확도와 다국어 지원이 제한됩니다. 모델을 다운로드하면 다국어 Transformer 분류기가 앙상블 투표에 추가되어 판정 정확도와 신뢰도가 크게 향상됩니다. 모델은 기기 내에서 실행되며, 다운로드 후에는 어떤 콘텐츠도 업로드하지 않습니다.';
+      '신경망 감지 모델을 다운로드하지 않아도 OmniTrace는 작동하지만, 통계 및 문체 분석만 사용하여 정확도와 다국어 지원이 제한됩니다. 모델을 다운로드하면 다국어 Transformer 분류기가 앙상블 투표에 추가되어 판정 정확도와 신뢰도가 크게 향상됩니다. 모델은 기기 내에서 실행되며, 다운로드 후에는 어떤 콘텐츠도 업로드하지 않습니다.';
 
   @override
   String get modelPromptTitle => '완전한 분석을 위해 감지 모델 다운로드를 권장합니다';
@@ -197,7 +197,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens는 지금도 작동합니다. 통계 엔진과 문체 엔진은 이미 사용할 수 있습니다. 기기 내에서 실행되는 신경망 모델을 추가하면 다국어 분류기가 앙상블 투표에 참여하여 정확도와 언어 범위가 뚜렷하게 향상됩니다. 모델은 전적으로 브라우저 안에서 실행되며 문서를 업로드하지 않습니다. \"설정 → AI 모델 관리\"에서 나중에 결정할 수도 있습니다.';
+      'OmniTrace는 지금도 작동합니다. 통계 엔진과 문체 엔진은 이미 사용할 수 있습니다. 기기 내에서 실행되는 신경망 모델을 추가하면 다국어 분류기가 앙상블 투표에 참여하여 정확도와 언어 범위가 뚜렷하게 향상됩니다. 모델은 전적으로 브라우저 안에서 실행되며 문서를 업로드하지 않습니다. \"설정 → AI 모델 관리\"에서 나중에 결정할 수도 있습니다.';
 
   @override
   String get firstRunModelPromptLater => '지금은 안 함';
@@ -213,7 +213,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '이 중국어 문서에는 현재 현대 중국어 탐지기(약 98MB)가 없습니다. 기존 다국어 모델은 초기 세대 텍스트로 보정되어 있어 DeepSeek·Gemini·GPT 계열의 최신 중국어 문체를 놓칠 수 있습니다. 더 잘 보정된 결과를 얻으려면 전용 기기 내 모델을 내려받으시고, 원하시면 성능이 떨어지는 교차 언어 대체 모델로 계속 진행할 수도 있습니다.';
 
   @override
-  String get onboardingWelcomeTitle => 'TruthLens에 오신 것을 환영합니다';
+  String get onboardingWelcomeTitle => 'OmniTrace에 오신 것을 환영합니다';
 
   @override
   String get onboardingHeadline => '기기 내 AI 콘텐츠 감지';
@@ -243,7 +243,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboardingStorageNotPersisted =>
-      '내려받은 모델은 아직 자동 정리로부터 보호되지 않습니다. 디스크 공간이 부족해지면 브라우저가 회수할 수 있고, 그러면 다시 내려받아야 합니다. TruthLens를 앱으로 설치하면 브라우저가 이를 유지할 가능성이 크게 높아집니다.';
+      '내려받은 모델은 아직 자동 정리로부터 보호되지 않습니다. 디스크 공간이 부족해지면 브라우저가 회수할 수 있고, 그러면 다시 내려받아야 합니다. OmniTrace를 앱으로 설치하면 브라우저가 이를 유지할 가능성이 크게 높아집니다.';
 
   @override
   String get onboardingInstallAppButton => '앱으로 설치';
@@ -739,7 +739,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens 제로 클라우드 개인정보 보호 인증: 100% 기기 내에서 연산되며 클라우드 데이터베이스에 저장되지 않습니다.';
+      'OmniTrace 제로 클라우드 개인정보 보호 인증: 100% 기기 내에서 연산되며 클라우드 데이터베이스에 저장되지 않습니다.';
 
   @override
   String get reportModelCalibrationTitle => '모델 벤치마크 자동 보정';
@@ -980,7 +980,7 @@ class AppLocalizationsKo extends AppLocalizations {
     String runInstruction,
     String testButton,
   ) {
-    return '$osName을(를) 감지했고 로컬 엔드포인트를 자동으로 입력했습니다:\n$endpoint\n\n브라우저가 $fileName 내려받기를 시작했습니다. 브라우저 보안 제한으로 TruthLens Web이 설치 파일을 실행하거나 시작 설정을 변경할 수는 없습니다.\n\n다음 단계:\n1. 내려받은 설치 파일 실행: $runInstruction\n2. 터미널이나 창에 OCR 서비스 준비 완료가 표시될 때까지 기다립니다.\n3. 여기로 돌아와 \"$testButton\"을 선택합니다.\n\n테스트가 성공하면 이미지 OCR은 이 로컬 서비스를 우선 사용합니다. Gemini API 키를 따로 설정하지 않는 한 이미지는 Gemini로 전송되지 않습니다.';
+    return '$osName을(를) 감지했고 로컬 엔드포인트를 자동으로 입력했습니다:\n$endpoint\n\n브라우저가 $fileName 내려받기를 시작했습니다. 브라우저 보안 제한으로 OmniTrace Web이 설치 파일을 실행하거나 시작 설정을 변경할 수는 없습니다.\n\n다음 단계:\n1. 내려받은 설치 파일 실행: $runInstruction\n2. 터미널이나 창에 OCR 서비스 준비 완료가 표시될 때까지 기다립니다.\n3. 여기로 돌아와 \"$testButton\"을 선택합니다.\n\n테스트가 성공하면 이미지 OCR은 이 로컬 서비스를 우선 사용합니다. Gemini API 키를 따로 설정하지 않는 한 이미지는 Gemini로 전송되지 않습니다.';
   }
 
   @override
@@ -1136,7 +1136,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpShiftBody =>
-      '시중의 거의 모든 탐지기는 같은 질문에 답합니다. \"이 글은 AI가 쓴 것처럼 보이는가?\"\n\n이것은 이길 수 없는 군비 경쟁입니다. 모델이 강해질수록 생성물의 통계적 특징은 사람의 글에 가까워지고, 바꿔쓰기 도구의 발전 속도는 탐지기보다 훨씬 빠릅니다. 이 길에서는 서버의 대형 모델도 그저 더 천천히 질 뿐입니다.\n\nTruthLens는 다른 질문을 던집니다. \"이 문서가 어떻게 만들어졌는지에 대해 우리 손에 어떤 증거가 있으며, 각각 얼마나 강한가?\"\n\n문체 추측에서 벗어나 출처 증거와 통계적으로 정직한 결론으로 무게중심을 옮기는 것입니다. 이 도구가 단일 점수 정확도 순위를 일부러 좇지 않고, 증거를 하나씩 따로 펼쳐 보이며 근거가 부족할 때는 모른다고 분명히 말하는 이유가 여기 있습니다. 브라우저 실행의 진짜 장점은 추론 속도가 아니라 서버가 결코 볼 수 없는 것—완전한 파일, 그리고 사용자가 직접 모은 기준—을 본다는 점입니다.';
+      '시중의 거의 모든 탐지기는 같은 질문에 답합니다. \"이 글은 AI가 쓴 것처럼 보이는가?\"\n\n이것은 이길 수 없는 군비 경쟁입니다. 모델이 강해질수록 생성물의 통계적 특징은 사람의 글에 가까워지고, 바꿔쓰기 도구의 발전 속도는 탐지기보다 훨씬 빠릅니다. 이 길에서는 서버의 대형 모델도 그저 더 천천히 질 뿐입니다.\n\nOmniTrace는 다른 질문을 던집니다. \"이 문서가 어떻게 만들어졌는지에 대해 우리 손에 어떤 증거가 있으며, 각각 얼마나 강한가?\"\n\n문체 추측에서 벗어나 출처 증거와 통계적으로 정직한 결론으로 무게중심을 옮기는 것입니다. 이 도구가 단일 점수 정확도 순위를 일부러 좇지 않고, 증거를 하나씩 따로 펼쳐 보이며 근거가 부족할 때는 모른다고 분명히 말하는 이유가 여기 있습니다. 브라우저 실행의 진짜 장점은 추론 속도가 아니라 서버가 결코 볼 수 없는 것—완전한 파일, 그리고 사용자가 직접 모은 기준—을 본다는 점입니다.';
 
   @override
   String get helpPillarsTitle => '2. 다섯 개의 기둥';
@@ -1684,7 +1684,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base: 검증 소스가 신뢰할 수 있는 응답을 반환하지 않았거나 항목 정보가 부족합니다. TruthLens는 이 인용을 검증된 것으로 간주하지 않습니다.';
+    return '$base: 검증 소스가 신뢰할 수 있는 응답을 반환하지 않았거나 항목 정보가 부족합니다. OmniTrace는 이 인용을 검증된 것으로 간주하지 않습니다.';
   }
 
   @override
@@ -1709,11 +1709,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get summaryCardFooter => '핵심 AI 추론은 모두 기기 내에서 실행됩니다';
 
   @override
-  String get exportReportTitle => 'TruthLens 감지 리포트';
+  String get exportReportTitle => 'OmniTrace 감지 리포트';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · $total페이지 중 $page페이지';
+    return 'OmniTrace · $total페이지 중 $page페이지';
   }
 
   @override
@@ -1949,7 +1949,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get modelNameMbertMultilingual => '다국어 탐지기 (영+중 · INT8)';
 
   @override
-  String get modelNameTruthlensZh => 'TruthLens 중국어 탐지기 (2026 세대 · INT8)';
+  String get modelNameTruthlensZh => 'OmniTrace 중국어 탐지기 (2026 세대 · INT8)';
 
   @override
   String get modelNameAigcZhv3 => '현대 중국어 탐지기 (DeepSeek/GPT-4 · INT8)';
@@ -2151,11 +2151,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get helpAppBarTitle => '사용 안내';
 
   @override
-  String get helpAboutTitle => 'TruthLens 소개';
+  String get helpAboutTitle => 'OmniTrace 소개';
 
   @override
   String get helpAboutBody =>
-      'TruthLens는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI 확률로 제시하며 다섯 개의 고정 구간(20% 미만, 20–40%, 40–60%, 60–80%, 80% 이상)으로 분류합니다. 여기에 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 구간 경계는 조정할 수 없으므로 같은 문서는 누구에게나 같은 구간에 들어갑니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 \'판정하지 않습니다\'라고 분명히 밝힙니다.';
+      'OmniTrace는 **전적으로 브라우저 안에서 동작하는** AI 콘텐츠 탐지 도구입니다. Transformer 신경망 분류기, 통계 특징 분석, 문체 분석, 적대적 재작성 탐지라는 네 개의 독립 엔진이 가중 투표로 판정하며, 문서는 어디로도 전송되지 않습니다.\n\n보고서는 판정을 AI 확률로 제시하며 다섯 개의 고정 구간(20% 미만, 20–40%, 40–60%, 60–80%, 80% 이상)으로 분류합니다. 여기에 문장별 근거, 각 엔진의 기여, 문서 출처 증거, 가져온 파일명을 함께 보여 줍니다. 구간 경계는 조정할 수 없으므로 같은 문서는 누구에게나 같은 구간에 들어갑니다. 근거가 부족하면(문장 수나 단어 수가 적거나 엔진 간 차이가 큼) 억지로 점수를 내지 않고 \'판정하지 않습니다\'라고 분명히 밝힙니다.';
 
   @override
   String get helpComparisonTitle => '주요 도구와의 비교';
@@ -2169,66 +2169,66 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero는 연산 대부분을 클라우드에서 하고 문서 업로드가 필요하지만, TruthLens는 네 엔진 모두 사용자의 브라우저 안에서 실행되며 내용은 어디로도 전송되지 않습니다.';
+      'GPTZero는 연산 대부분을 클라우드에서 하고 문서 업로드가 필요하지만, OmniTrace는 네 엔진 모두 사용자의 브라우저 안에서 실행되며 내용은 어디로도 전송되지 않습니다.';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero가 선구적으로 도입한 Perplexity／Burstiness 지표와 문장 단위 하이라이트를 TruthLens도 채택했으며, 여기에 Transformer 분류기, 문체 특징 분석, 적대적 방어를 더해 단일 지표가 아닌 4개 모델의 앙상블 투표를 구성합니다.';
+      'GPTZero가 선구적으로 도입한 Perplexity／Burstiness 지표와 문장 단위 하이라이트를 OmniTrace도 채택했으며, 여기에 Transformer 분류기, 문체 특징 분석, 적대적 방어를 더해 단일 지표가 아닌 4개 모델의 앙상블 투표를 구성합니다.';
 
   @override
   String get helpVsGptZero3 =>
-      'GPTZero는 구독제입니다. TruthLens는 구독이 필요 없고 사용 횟수 제한도 없습니다.';
+      'GPTZero는 구독제입니다. OmniTrace는 구독이 필요 없고 사용 횟수 제한도 없습니다.';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin은 기관 구매만 가능하여 개인이 직접 구매할 수 없습니다. TruthLens는 누구나 설치하여 사용할 수 있습니다.';
+      'Turnitin은 기관 구매만 가능하여 개인이 직접 구매할 수 없습니다. OmniTrace는 누구나 설치하여 사용할 수 있습니다.';
 
   @override
   String get helpVsTurnitin2 =>
-      'Turnitin의 판정 과정은 블랙박스에 가깝습니다. TruthLens는 문장별 AI 확률, 일치하는 문체 패턴, 4개 엔진 각각의 점수와 근거를 상세히 제공합니다.';
+      'Turnitin의 판정 과정은 블랙박스에 가깝습니다. OmniTrace는 문장별 AI 확률, 일치하는 문체 패턴, 4개 엔진 각각의 점수와 근거를 상세히 제공합니다.';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin은 주로 \"AI 여부\"에 대한 이진 판정입니다. TruthLens는 단락/문장 단위로 사람／AI／혼합 표시를 지원합니다.';
+      'Turnitin은 주로 \"AI 여부\"에 대한 이진 판정입니다. OmniTrace는 단락/문장 단위로 사람／AI／혼합 표시를 지원합니다.';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai는 건당 과금 구독제이며 클라우드 업로드가 필요하지만, TruthLens는 핵심 연산을 브라우저에서 끝내고 구독도 사용 횟수 제한도 없습니다.';
+      'Originality.ai는 건당 과금 구독제이며 클라우드 업로드가 필요하지만, OmniTrace는 핵심 연산을 브라우저에서 끝내고 구독도 사용 횟수 제한도 없습니다.';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai에는 팩트체크와 가독성 분석 개념이 있습니다. TruthLens는 기기 내 문체 특징 모듈로 이에 대응하며 오프라인에서도 기본 분석이 가능합니다.';
+      'Originality.ai에는 팩트체크와 가독성 분석 개념이 있습니다. OmniTrace는 기기 내 문체 특징 모듈로 이에 대응하며 오프라인에서도 기본 분석이 가능합니다.';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks는 주로 클라우드 API이며 낮은 오탐률과 강력한 다국어 지원이 강점입니다. TruthLens는 동일한 철학의 XLM-RoBERTa 다국어 기반 모델과 다중 모델 앙상블 투표를 채택하지만, 문서 내용은 어떤 서버에도 업로드되지 않습니다.';
+      'Copyleaks는 주로 클라우드 API이며 낮은 오탐률과 강력한 다국어 지원이 강점입니다. OmniTrace는 동일한 철학의 XLM-RoBERTa 다국어 기반 모델과 다중 모델 앙상블 투표를 채택하지만, 문서 내용은 어떤 서버에도 업로드되지 않습니다.';
 
   @override
   String get helpVsCopyleaks2 =>
-      'Copyleaks는 요금제에 따라 API 사용량 제한이 있습니다. TruthLens는 사용량 제한이 없습니다.';
+      'Copyleaks는 요금제에 따라 API 사용량 제한이 있습니다. OmniTrace는 사용량 제한이 없습니다.';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'Winston AI의 이미지 OCR은 사진을 클라우드로 올립니다. TruthLens의 OCR은 사용자가 설정한 로컬 OCR 서버를 우선 사용하며, 직접 Gemini API 키를 제공한 경우에만 클라우드로 대체합니다. 클라우드를 쓸지 여부는 사용자의 결정입니다.';
+      'Winston AI의 이미지 OCR은 사진을 클라우드로 올립니다. OmniTrace의 OCR은 사용자가 설정한 로컬 OCR 서버를 우선 사용하며, 직접 Gemini API 키를 제공한 경우에만 클라우드로 대체합니다. 클라우드를 쓸지 여부는 사용자의 결정입니다.';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI는 세련된 리포트 레이아웃으로 유명합니다. TruthLens는 AI가 동적으로 생성하는 리포트 레이아웃을 제공하며（LLM 미설치 시 템플릿으로 자동 대체）, PDF／CSV／JSON／PNG 4가지 형식으로 내보낼 수 있습니다.';
+      'Winston AI는 세련된 리포트 레이아웃으로 유명합니다. OmniTrace는 AI가 동적으로 생성하는 리포트 레이아웃을 제공하며（LLM 미설치 시 템플릿으로 자동 대체）, PDF／CSV／JSON／PNG 4가지 형식으로 내보낼 수 있습니다.';
 
   @override
-  String get helpAdvantagesTitle => 'TruthLens만의 강점';
+  String get helpAdvantagesTitle => 'OmniTrace만의 강점';
 
   @override
   String get helpAdvantage1 =>
@@ -2339,7 +2339,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
+      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. OmniTrace therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '첫 실행 안내';
@@ -2475,7 +2475,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens는 브라우저 탭에서 완전히 웹 앱으로 실행됩니다. 설치할 필요가 없으며, 문서 텍스트와 분석 결과는 기기를 벗어나지 않고, 다운로드된 감지 모델은 서버가 아닌 브라우저 자체의 샌드박스 저장소（OPFS）에만 캐시됩니다.';
+      'OmniTrace는 브라우저 탭에서 완전히 웹 앱으로 실행됩니다. 설치할 필요가 없으며, 문서 텍스트와 분석 결과는 기기를 벗어나지 않고, 다운로드된 감지 모델은 서버가 아닌 브라우저 자체의 샌드박스 저장소（OPFS）에만 캐시됩니다.';
 
   @override
   String get privacyWebOverview2 =>
@@ -2490,7 +2490,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens는 사용자의 신원과 연결된 데이터를 전혀 수집하지 않으며 추적 목적으로 어떤 데이터도 사용하지 않으므로 앱 추적 투명성（ATT） 권한이 필요하지 않습니다.';
+      'OmniTrace는 사용자의 신원과 연결된 데이터를 전혀 수집하지 않으며 추적 목적으로 어떤 데이터도 사용하지 않으므로 앱 추적 투명성（ATT） 권한이 필요하지 않습니다.';
 
   @override
   String get privacyIosOverview2 =>
@@ -2498,7 +2498,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyAndroidOverview1 =>
-      'TruthLens는 개인 데이터를 수집하지 않으며 어떤 제3자와도 사용자 데이터를 공유하지 않습니다.';
+      'OmniTrace는 개인 데이터를 수집하지 않으며 어떤 제3자와도 사용자 데이터를 공유하지 않습니다.';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -2506,7 +2506,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens는 macOS 앱 샌드박스 하에서 실행되며, 시스템 파일 대화 상자를 통해 사용자가 능동적으로 선택한 파일（files.user-selected.read-write）에만 접근할 수 있고, 다른 파일이나 폴더를 자유롭게 탐색하거나 접근할 수 없습니다.';
+      'OmniTrace는 macOS 앱 샌드박스 하에서 실행되며, 시스템 파일 대화 상자를 통해 사용자가 능동적으로 선택한 파일（files.user-selected.read-write）에만 접근할 수 있고, 다른 파일이나 폴더를 자유롭게 탐색하거나 접근할 수 없습니다.';
 
   @override
   String get privacyMacosOverview2 =>
@@ -2514,7 +2514,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens는 독립 실행형 데스크톱 애플리케이션으로, 데이터는 로컬 사용자 폴더（AppData／Documents 등）에 저장되며 클라우드에 동기화되지 않습니다.';
+      'OmniTrace는 독립 실행형 데스크톱 애플리케이션으로, 데이터는 로컬 사용자 폴더（AppData／Documents 등）에 저장되며 클라우드에 동기화되지 않습니다.';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -2522,15 +2522,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens에는 사용자 계정이 없으며 로그인이 필요하지 않고, 어떤 형태의 광고나 제3자 추적 SDK도 포함되어 있지 않습니다.';
+      'OmniTrace에는 사용자 계정이 없으며 로그인이 필요하지 않고, 어떤 형태의 광고나 제3자 추적 SDK도 포함되어 있지 않습니다.';
 
   @override
   String get privacyDataHandling2 =>
-      '사용자가 입력, 붙여넣기 또는 가져온 문서 내용은 모두 사용자의 기기에서 로컬 AI 모델에 의해 분석되며, TruthLens나 어떤 제3자 서버에도 업로드되지 않습니다.';
+      '사용자가 입력, 붙여넣기 또는 가져온 문서 내용은 모두 사용자의 기기에서 로컬 AI 모델에 의해 분석되며, OmniTrace나 어떤 제3자 서버에도 업로드되지 않습니다.';
 
   @override
   String get privacyDataHandling3 =>
-      '분석 결과와 기록은 사용자 기기의 로컬 데이터베이스에만 저장됩니다. 앱을 삭제하거나 기록을 지우면 함께 제거되며, TruthLens는 어떤 사본도 보관하지 않습니다.';
+      '분석 결과와 기록은 사용자 기기의 로컬 데이터베이스에만 저장됩니다. 앱을 삭제하거나 기록을 지우면 함께 제거되며, OmniTrace는 어떤 사본도 보관하지 않습니다.';
 
   @override
   String get privacyNetworkIntro =>
@@ -2570,7 +2570,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyDisclaimer =>
-      '이 페이지의 내용은 TruthLens가 실제 기능 동작에 따라 작성한 개인정보 설명이며, 변호사의 검토를 거친 공식 법률 문서가 아닙니다. 거주 지역의 법규에 따른 공식 준수 검토가 필요한 경우 별도로 전문 법률 자문을 받으시기 바랍니다.';
+      '이 페이지의 내용은 OmniTrace가 실제 기능 동작에 따라 작성한 개인정보 설명이며, 변호사의 검토를 거친 공식 법률 문서가 아닙니다. 거주 지역의 법규에 따른 공식 준수 검토가 필요한 경우 별도로 전문 법률 자문을 받으시기 바랍니다.';
 
   @override
   String get privacySectionOverviewIos => '개요（App Store 개인정보 \"영양성분표\"에 해당）';
@@ -3326,7 +3326,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get firstRunModelManualBody =>
-      '언제든지 직접 다운로드할 수 있습니다. 상단 도구 모음의 톱니바퀴 아이콘에서 «설정»을 열고 «AI 모델 관리»를 선택하세요. 그전에도 TruthLens는 통계 및 문체 엔진으로 작동합니다.';
+      '언제든지 직접 다운로드할 수 있습니다. 상단 도구 모음의 톱니바퀴 아이콘에서 «설정»을 열고 «AI 모델 관리»를 선택하세요. 그전에도 OmniTrace는 통계 및 문체 엔진으로 작동합니다.';
 
   @override
   String get commonGotIt => '확인';

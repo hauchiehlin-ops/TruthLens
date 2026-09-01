@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:truthlens/core/services/ocr_config_notifier.dart';
-import 'package:truthlens/features/settings/web_ocr_settings.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/services/ocr_config_notifier.dart';
+import 'package:omnitrace/features/settings/web_ocr_settings.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   testWidgets('local OCR assistant detects unsupported mobile platforms', (

@@ -3,7 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
-/// 隱私權政策頁：TruthLens 為 Web-only 應用程式（Phase 6 起原生平台已完全
+/// 隱私權政策頁：OmniTrace 為 Web-only 應用程式（Phase 6 起原生平台已完全
 /// 移除），因此政策內容不再依作業系統分支，統一描述瀏覽器端執行的實際行為。
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});

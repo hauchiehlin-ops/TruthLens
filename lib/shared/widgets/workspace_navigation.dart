@@ -27,7 +27,7 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
   (Locale('pt'), 'Português'),
 ];
 
-const _publicPageOrigin = 'https://truth-lens-roan-three.vercel.app';
+const _publicPageOrigin = 'https://omni-trace-roan-three.vercel.app';
 
 enum PublicSeoEntryPoint {
   freeDetector('/free-ai-detector'),
@@ -64,7 +64,7 @@ class AppIdentityTitle extends StatelessWidget {
       children: [
         const Flexible(
           child: Text(
-            'TruthLens',
+            'OmniTrace',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

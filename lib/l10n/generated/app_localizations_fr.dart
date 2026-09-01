@@ -183,7 +183,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get modelNecessityText =>
-      'Sans télécharger le modèle de détection par réseau de neurones, TruthLens continue de fonctionner, mais n\'utilise que l\'analyse statistique et stylistique, avec une précision et un support multilingue limités. Après le téléchargement du modèle, le classificateur Transformer multilingue rejoindra le vote d\'ensemble, améliorant considérablement la précision et la fiabilité. Le modèle s\'exécute sur l\'appareil ; une fois téléchargé, il ne télécharge aucun contenu.';
+      'Sans télécharger le modèle de détection par réseau de neurones, OmniTrace continue de fonctionner, mais n\'utilise que l\'analyse statistique et stylistique, avec une précision et un support multilingue limités. Après le téléchargement du modèle, le classificateur Transformer multilingue rejoindra le vote d\'ensemble, améliorant considérablement la précision et la fiabilité. Le modèle s\'exécute sur l\'appareil ; une fois téléchargé, il ne télécharge aucun contenu.';
 
   @override
   String get modelPromptTitle =>
@@ -203,7 +203,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens fonctionne déjà : les moteurs statistique et stylistique sont prêts. L\'ajout d\'un modèle neuronal local fait entrer le classificateur multilingue dans le vote d\'ensemble, ce qui améliore nettement la précision et la couverture linguistique. Le modèle s\'exécute entièrement dans votre navigateur et n\'envoie jamais vos documents. Vous pouvez aussi décider plus tard depuis « Paramètres → Gestion des modèles d\'IA ».';
+      'OmniTrace fonctionne déjà : les moteurs statistique et stylistique sont prêts. L\'ajout d\'un modèle neuronal local fait entrer le classificateur multilingue dans le vote d\'ensemble, ce qui améliore nettement la précision et la couverture linguistique. Le modèle s\'exécute entièrement dans votre navigateur et n\'envoie jamais vos documents. Vous pouvez aussi décider plus tard depuis « Paramètres → Gestion des modèles d\'IA ».';
 
   @override
   String get firstRunModelPromptLater => 'Pas maintenant';
@@ -220,7 +220,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Il manque actuellement à ce document chinois le détecteur chinois moderne (environ 98 Mo). L\'ancien modèle multilingue a été calibré sur des textes de première génération et peut passer à côté de l\'écriture chinoise actuelle de type DeepSeek, Gemini ou GPT. Téléchargez le modèle local spécialisé pour un résultat mieux calibré, ou continuez avec la solution de repli interlingue, plus faible.';
 
   @override
-  String get onboardingWelcomeTitle => 'Bienvenue sur TruthLens';
+  String get onboardingWelcomeTitle => 'Bienvenue sur OmniTrace';
 
   @override
   String get onboardingHeadline => 'Détection de contenu IA sur l\'appareil';
@@ -250,7 +250,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingStorageNotPersisted =>
-      'Les modèles téléchargés ne sont pas encore protégés contre le nettoyage automatique. Si l\'espace disque vient à manquer, le navigateur peut les supprimer et vous devriez les retélécharger. Installer TruthLens en tant qu\'application augmente fortement les chances que le navigateur les conserve.';
+      'Les modèles téléchargés ne sont pas encore protégés contre le nettoyage automatique. Si l\'espace disque vient à manquer, le navigateur peut les supprimer et vous devriez les retélécharger. Installer OmniTrace en tant qu\'application augmente fortement les chances que le navigateur les conserve.';
 
   @override
   String get onboardingInstallAppButton => 'Installer comme application';
@@ -772,7 +772,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacySealNoticeText =>
-      'Sceau de confidentialité TruthLens Zero-Cloud : Traité 100% sur l\'appareil sans stockage cloud.';
+      'Sceau de confidentialité OmniTrace Zero-Cloud : Traité 100% sur l\'appareil sans stockage cloud.';
 
   @override
   String get reportModelCalibrationTitle =>
@@ -1025,7 +1025,7 @@ class AppLocalizationsFr extends AppLocalizations {
     String runInstruction,
     String testButton,
   ) {
-    return '$osName a été détecté et le point de terminaison local a été renseigné automatiquement :\n$endpoint\n\nVotre navigateur a commencé à télécharger $fileName. Pour des raisons de sécurité, TruthLens Web ne peut pas exécuter l\'installateur ni modifier les réglages de démarrage.\n\nÉtapes suivantes :\n1. Exécutez l\'installateur téléchargé : $runInstruction\n2. Attendez que le terminal ou la fenêtre indique que le service OCR est prêt.\n3. Revenez ici et sélectionnez « $testButton ».\n\nUne fois le test réussi, l\'OCR d\'images utilisera d\'abord ce service local. Les images ne seront pas envoyées à Gemini, sauf si vous configurez également une clé d\'API Gemini en secours.';
+    return '$osName a été détecté et le point de terminaison local a été renseigné automatiquement :\n$endpoint\n\nVotre navigateur a commencé à télécharger $fileName. Pour des raisons de sécurité, OmniTrace Web ne peut pas exécuter l\'installateur ni modifier les réglages de démarrage.\n\nÉtapes suivantes :\n1. Exécutez l\'installateur téléchargé : $runInstruction\n2. Attendez que le terminal ou la fenêtre indique que le service OCR est prêt.\n3. Revenez ici et sélectionnez « $testButton ».\n\nUne fois le test réussi, l\'OCR d\'images utilisera d\'abord ce service local. Les images ne seront pas envoyées à Gemini, sauf si vous configurez également une clé d\'API Gemini en secours.';
   }
 
   @override
@@ -1188,7 +1188,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpShiftBody =>
-      'Presque tous les détecteurs du marché répondent à la même question : ce texte a-t-il l\'air écrit par une IA ?\n\nC\'est une course aux armements perdue d\'avance. Plus le modèle est puissant, plus sa production se rapproche statistiquement de l\'écriture humaine — et les outils de reformulation progressent bien plus vite que les détecteurs. Sur cette voie, un gros modèle côté serveur perd simplement moins vite.\n\nTruthLens pose une autre question : de quels éléments disposons-nous réellement sur la façon dont ce document a vu le jour, et quelle est la solidité de chacun ?\n\nC\'est passer de la conjecture stylistique à la pesée d\'indices d\'origine, assortie de conclusions statistiquement honnêtes. D\'où le choix assumé de ne pas viser une place dans les classements de précision au score unique, mais d\'exposer chaque indice séparément et de dire clairement quand on ne sait pas. Le vrai avantage de l\'exécution dans votre navigateur n\'est pas la vitesse : c\'est de voir ce qu\'un serveur ne voit jamais — le fichier complet, et la référence que vous avez constituée vous-même.';
+      'Presque tous les détecteurs du marché répondent à la même question : ce texte a-t-il l\'air écrit par une IA ?\n\nC\'est une course aux armements perdue d\'avance. Plus le modèle est puissant, plus sa production se rapproche statistiquement de l\'écriture humaine — et les outils de reformulation progressent bien plus vite que les détecteurs. Sur cette voie, un gros modèle côté serveur perd simplement moins vite.\n\nOmniTrace pose une autre question : de quels éléments disposons-nous réellement sur la façon dont ce document a vu le jour, et quelle est la solidité de chacun ?\n\nC\'est passer de la conjecture stylistique à la pesée d\'indices d\'origine, assortie de conclusions statistiquement honnêtes. D\'où le choix assumé de ne pas viser une place dans les classements de précision au score unique, mais d\'exposer chaque indice séparément et de dire clairement quand on ne sait pas. Le vrai avantage de l\'exécution dans votre navigateur n\'est pas la vitesse : c\'est de voir ce qu\'un serveur ne voit jamais — le fichier complet, et la référence que vous avez constituée vous-même.';
 
   @override
   String get helpPillarsTitle => '2. Les cinq piliers';
@@ -1750,7 +1750,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base : les sources de vérification n\'ont renvoyé aucune réponse fiable ou l\'entrée manque d\'informations suffisantes ; TruthLens ne considère pas cette citation comme vérifiée.';
+    return '$base : les sources de vérification n\'ont renvoyé aucune réponse fiable ou l\'entrée manque d\'informations suffisantes ; OmniTrace ne considère pas cette citation comme vérifiée.';
   }
 
   @override
@@ -1776,11 +1776,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'L\'inférence IA principale s\'exécute entièrement sur l\'appareil';
 
   @override
-  String get exportReportTitle => 'Rapport de détection TruthLens';
+  String get exportReportTitle => 'Rapport de détection OmniTrace';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · Page $page / $total';
+    return 'OmniTrace · Page $page / $total';
   }
 
   @override
@@ -2025,7 +2025,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get modelNameTruthlensZh =>
-      'Détecteur chinois TruthLens (générateurs 2026 · INT8)';
+      'Détecteur chinois OmniTrace (générateurs 2026 · INT8)';
 
   @override
   String get modelNameAigcZhv3 =>
@@ -2235,11 +2235,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get helpAppBarTitle => 'Guide de l\'utilisateur';
 
   @override
-  String get helpAboutTitle => 'À propos de TruthLens';
+  String get helpAboutTitle => 'À propos de OmniTrace';
 
   @override
   String get helpAboutBody =>
-      'TruthLens est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l\'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme de probabilité IA classée en cinq paliers fixes (moins de 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % et plus), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d\'origine du document et du nom de fichier à l\'import. Les seuils ne sont pas réglables : un même document tombe donc toujours dans le même palier. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.';
+      'OmniTrace est un détecteur de contenu IA qui fonctionne **entièrement dans votre navigateur**. Quatre moteurs indépendants — un classifieur neuronal Transformer, l\'analyse statistique, la stylométrie et la détection de réécriture adverse — votent avec des poids pour déterminer si un texte a été généré par une IA, et votre document ne quitte jamais la machine.\n\nLe rapport exprime son verdict sous forme de probabilité IA classée en cinq paliers fixes (moins de 20 %, 20–40 %, 40–60 %, 60–80 %, 80 % et plus), accompagné des preuves phrase par phrase, de la contribution de chaque moteur, des indices d\'origine du document et du nom de fichier à l\'import. Les seuils ne sont pas réglables : un même document tombe donc toujours dans le même palier. Quand les éléments sont trop minces — trop peu de phrases ou de mots, ou des moteurs trop divergents — il le dit franchement au lieu de forcer un score.';
 
   @override
   String get helpComparisonTitle => 'Comparaison avec les outils leaders';
@@ -2253,66 +2253,66 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZero effectue l\'essentiel du travail dans le cloud et exige l\'envoi du document ; les quatre moteurs de TruthLens s\'exécutent dans votre propre navigateur et le contenu n\'est envoyé nulle part.';
+      'GPTZero effectue l\'essentiel du travail dans le cloud et exige l\'envoi du document ; les quatre moteurs de OmniTrace s\'exécutent dans votre propre navigateur et le contenu n\'est envoyé nulle part.';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZero a été pionnier des métriques Perplexity/Burstiness et de la mise en surbrillance des phrases — TruthLens les combine et ajoute un classificateur Transformer, une analyse stylométrique et une défense adversariale, formant un vote d\'ensemble à quatre modèles plutôt qu\'une seule métrique.';
+      'GPTZero a été pionnier des métriques Perplexity/Burstiness et de la mise en surbrillance des phrases — OmniTrace les combine et ajoute un classificateur Transformer, une analyse stylométrique et une défense adversariale, formant un vote d\'ensemble à quatre modèles plutôt qu\'une seule métrique.';
 
   @override
   String get helpVsGptZero3 =>
-      'GPTZero fonctionne par abonnement ; TruthLens ne nécessite aucun abonnement et n\'a aucune limite d\'utilisation.';
+      'GPTZero fonctionne par abonnement ; OmniTrace ne nécessite aucun abonnement et n\'a aucune limite d\'utilisation.';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitin est vendu uniquement aux institutions ; les particuliers ne peuvent pas l\'acheter directement. N\'importe qui peut installer et utiliser TruthLens.';
+      'Turnitin est vendu uniquement aux institutions ; les particuliers ne peuvent pas l\'acheter directement. N\'importe qui peut installer et utiliser OmniTrace.';
 
   @override
   String get helpVsTurnitin2 =>
-      'Le processus de décision de Turnitin est presque une boîte noire ; TruthLens fournit la probabilité IA de chaque phrase, les motifs d\'écriture correspondants, ainsi que la répartition des scores et des raisons de chaque moteur.';
+      'Le processus de décision de Turnitin est presque une boîte noire ; OmniTrace fournit la probabilité IA de chaque phrase, les motifs d\'écriture correspondants, ainsi que la répartition des scores et des raisons de chaque moteur.';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitin fournit principalement un résultat binaire \"est-ce de l\'IA\" ; TruthLens prend en charge l\'étiquetage humain/IA/mixte au niveau du paragraphe/de la phrase.';
+      'Turnitin fournit principalement un résultat binaire \"est-ce de l\'IA\" ; OmniTrace prend en charge l\'étiquetage humain/IA/mixte au niveau du paragraphe/de la phrase.';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.ai facture à la pièce sur abonnement et exige un envoi vers le cloud ; TruthLens réalise l\'essentiel dans le navigateur, sans abonnement ni limite d\'usage.';
+      'Originality.ai facture à la pièce sur abonnement et exige un envoi vers le cloud ; OmniTrace réalise l\'essentiel dans le navigateur, sans abonnement ni limite d\'usage.';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.ai propose des concepts de vérification des faits et d\'analyse de lisibilité ; TruthLens y répond avec un module de caractéristiques stylistiques sur l\'appareil, et peut effectuer une analyse de base même hors ligne.';
+      'Originality.ai propose des concepts de vérification des faits et d\'analyse de lisibilité ; OmniTrace y répond avec un module de caractéristiques stylistiques sur l\'appareil, et peut effectuer une analyse de base même hors ligne.';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaks est principalement une API cloud connue pour son faible taux de faux positifs et son solide support multilingue ; TruthLens partage cette philosophie avec un modèle de base multilingue XLM-RoBERTa et un vote d\'ensemble multi-modèles, mais le contenu de votre document n\'est jamais téléchargé sur un serveur quelconque.';
+      'Copyleaks est principalement une API cloud connue pour son faible taux de faux positifs et son solide support multilingue ; OmniTrace partage cette philosophie avec un modèle de base multilingue XLM-RoBERTa et un vote d\'ensemble multi-modèles, mais le contenu de votre document n\'est jamais téléchargé sur un serveur quelconque.';
 
   @override
   String get helpVsCopyleaks2 =>
-      'Copyleaks a des limites d\'utilisation d\'API selon le plan ; TruthLens n\'a aucune limite d\'utilisation.';
+      'Copyleaks a des limites d\'utilisation d\'API selon le plan ; OmniTrace n\'a aucune limite d\'utilisation.';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'L\'OCR d\'images de Winston AI envoie la photo dans le cloud ; l\'OCR de TruthLens privilégie un serveur local que vous configurez et ne bascule vers le cloud que si vous fournissez vous-même une clé d\'API Gemini — recourir ou non au cloud reste votre décision.';
+      'L\'OCR d\'images de Winston AI envoie la photo dans le cloud ; l\'OCR de OmniTrace privilégie un serveur local que vous configurez et ne bascule vers le cloud que si vous fournissez vous-même une clé d\'API Gemini — recourir ou non au cloud reste votre décision.';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AI est connu pour ses rapports soignés et imprimables ; TruthLens génère dynamiquement la mise en page du rapport via IA (revenant à un modèle si aucun LLM n\'est installé), exportable en PDF/CSV/JSON/PNG.';
+      'Winston AI est connu pour ses rapports soignés et imprimables ; OmniTrace génère dynamiquement la mise en page du rapport via IA (revenant à un modèle si aucun LLM n\'est installé), exportable en PDF/CSV/JSON/PNG.';
 
   @override
-  String get helpAdvantagesTitle => 'Avantages exclusifs de TruthLens';
+  String get helpAdvantagesTitle => 'Avantages exclusifs de OmniTrace';
 
   @override
   String get helpAdvantage1 =>
@@ -2425,7 +2425,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
+      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. OmniTrace therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => 'Premier lancement';
@@ -2570,7 +2570,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLens fonctionne entièrement comme une application web dans l\'onglet de votre navigateur. Rien à installer ; le texte du document et les résultats d\'analyse ne quittent jamais votre appareil, et les modèles de détection téléchargés sont mis en cache uniquement dans le stockage isolé propre à votre navigateur (OPFS), pas sur un serveur.';
+      'OmniTrace fonctionne entièrement comme une application web dans l\'onglet de votre navigateur. Rien à installer ; le texte du document et les résultats d\'analyse ne quittent jamais votre appareil, et les modèles de détection téléchargés sont mis en cache uniquement dans le stockage isolé propre à votre navigateur (OPFS), pas sur un serveur.';
 
   @override
   String get privacyWebOverview2 =>
@@ -2585,7 +2585,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLens ne collecte aucune donnée associée à votre identité et n\'utilise aucune donnée à des fins de suivi, ce qui ne nécessite donc pas d\'autorisation de transparence du suivi des applications (ATT).';
+      'OmniTrace ne collecte aucune donnée associée à votre identité et n\'utilise aucune donnée à des fins de suivi, ce qui ne nécessite donc pas d\'autorisation de transparence du suivi des applications (ATT).';
 
   @override
   String get privacyIosOverview2 =>
@@ -2593,7 +2593,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyAndroidOverview1 =>
-      'TruthLens ne collecte aucune donnée personnelle et ne partage aucune donnée utilisateur avec des tiers.';
+      'OmniTrace ne collecte aucune donnée personnelle et ne partage aucune donnée utilisateur avec des tiers.';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -2601,7 +2601,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLens s\'exécute sous le bac à sable des applications macOS et ne peut accéder qu\'aux fichiers que vous sélectionnez activement via la boîte de dialogue de fichiers du système (files.user-selected.read-write) — elle ne peut pas parcourir ni accéder à d\'autres fichiers ou dossiers par elle-même.';
+      'OmniTrace s\'exécute sous le bac à sable des applications macOS et ne peut accéder qu\'aux fichiers que vous sélectionnez activement via la boîte de dialogue de fichiers du système (files.user-selected.read-write) — elle ne peut pas parcourir ni accéder à d\'autres fichiers ou dossiers par elle-même.';
 
   @override
   String get privacyMacosOverview2 =>
@@ -2609,7 +2609,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLens est une application de bureau autonome ; les données sont stockées dans votre dossier utilisateur local (par ex. AppData/Documents) et ne sont jamais synchronisées avec le cloud.';
+      'OmniTrace est une application de bureau autonome ; les données sont stockées dans votre dossier utilisateur local (par ex. AppData/Documents) et ne sont jamais synchronisées avec le cloud.';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -2617,15 +2617,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLens n\'a pas de comptes utilisateur, ne nécessite pas de connexion et ne contient aucun SDK publicitaire ou de suivi tiers sous quelque forme que ce soit.';
+      'OmniTrace n\'a pas de comptes utilisateur, ne nécessite pas de connexion et ne contient aucun SDK publicitaire ou de suivi tiers sous quelque forme que ce soit.';
 
   @override
   String get privacyDataHandling2 =>
-      'Tout contenu de document que vous saisissez, collez ou importez est entièrement analysé par des modèles IA sur votre propre appareil ; il n\'est jamais téléchargé vers TruthLens ou tout serveur tiers.';
+      'Tout contenu de document que vous saisissez, collez ou importez est entièrement analysé par des modèles IA sur votre propre appareil ; il n\'est jamais téléchargé vers OmniTrace ou tout serveur tiers.';
 
   @override
   String get privacyDataHandling3 =>
-      'Les résultats d\'analyse et l\'historique ne sont stockés que dans une base de données locale sur votre appareil ; désinstaller l\'application ou effacer l\'historique les supprime complètement — TruthLens ne conserve aucune copie où que ce soit.';
+      'Les résultats d\'analyse et l\'historique ne sont stockés que dans une base de données locale sur votre appareil ; désinstaller l\'application ou effacer l\'historique les supprime complètement — OmniTrace ne conserve aucune copie où que ce soit.';
 
   @override
   String get privacyNetworkIntro =>
@@ -2665,7 +2665,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyDisclaimer =>
-      'Cette page est une explication de confidentialité rédigée par TruthLens pour refléter le comportement fonctionnel réel, et non un document juridique formel révisé par un avocat ; pour un examen de conformité formel selon les lois de votre région, veuillez consulter un avocat indépendant.';
+      'Cette page est une explication de confidentialité rédigée par OmniTrace pour refléter le comportement fonctionnel réel, et non un document juridique formel révisé par un avocat ; pour un examen de conformité formel selon les lois de votre région, veuillez consulter un avocat indépendant.';
 
   @override
   String get privacySectionOverviewIos =>
@@ -3442,7 +3442,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get firstRunModelManualBody =>
-      'Vous pouvez les télécharger à tout moment : ouvrez les Réglages (icône d’engrenage dans la barre supérieure) et choisissez « Gestion des modèles IA ». D’ici là, TruthLens continue de fonctionner avec ses moteurs statistique et stylistique.';
+      'Vous pouvez les télécharger à tout moment : ouvrez les Réglages (icône d’engrenage dans la barre supérieure) et choisissez « Gestion des modèles IA ». D’ici là, OmniTrace continue de fonctionner avec ses moteurs statistique et stylistique.';
 
   @override
   String get commonGotIt => 'J’ai compris';

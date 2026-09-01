@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Truthlens</string>
+	<string>OmniTrace</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>truthlens</string>
+	<string>OmniTrace</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -67,13 +67,13 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>TruthLens 需要相簿存取權限以載入包含文字的圖片進行離線 OCR 辨識。</string>
+	<string>OmniTrace 需要相簿存取權限以載入包含文字的圖片進行離線 OCR 辨識。</string>
 	<key>NSCameraUsageDescription</key>
-	<string>TruthLens 需要相機存取權限拍攝包含文字的文件照片進行離線 OCR 辨識。</string>
+	<string>OmniTrace 需要相機存取權限拍攝包含文字的文件照片進行離線 OCR 辨識。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>TruthLens 不需要存取您的地理位置。此宣告僅為符合 iOS 系統權限與元件靜態審查要求。</string>
+	<string>OmniTrace 不需要存取您的地理位置。此宣告僅為符合 iOS 系統權限與元件靜態審查要求。</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>TruthLens 不需要存取您的地理位置。此宣告僅為符合 iOS 系統權限與元件靜態審查要求。</string>
+	<string>OmniTrace 不需要存取您的地理位置。此宣告僅為符合 iOS 系統權限與元件靜態審查要求。</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

@@ -480,7 +480,7 @@ class ModelManager extends ChangeNotifier {
     final proxyPath = '/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
     final sameOriginProxy = Uri.base.resolve(proxyPath).toString();
     final prodVercelProxy =
-        'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
+        'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(originalUrl)}';
 
     if (originalUrl.contains('huggingface.co')) {
       urlsToTry.add(originalUrl);

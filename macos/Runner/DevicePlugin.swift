@@ -5,7 +5,7 @@ import FlutterMacOS
 enum DevicePlugin {
   static func register(with registrar: FlutterViewController) {
     let channel = FlutterMethodChannel(
-      name: "com.truthlens/device",
+      name: "com.omnitrace/device",
       binaryMessenger: registrar.engine.binaryMessenger)
     channel.setMethodCallHandler { call, result in
       switch call.method {

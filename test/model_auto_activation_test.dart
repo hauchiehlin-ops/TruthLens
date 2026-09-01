@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_auto_activation.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/detection/model_auto_activation.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
 
 void main() {
   group('ModelAutoActivationManager', () {

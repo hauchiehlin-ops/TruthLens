@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/shared/widgets/verdict_palette.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/shared/widgets/verdict_palette.dart';
 
 /// WCAG 相對亮度
 double _luminance(Color c) {

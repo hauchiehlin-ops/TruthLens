@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/remote_llm_provider.dart';
+import 'package:omnitrace/core/detection/remote_llm_provider.dart';
 
 void main() {
   group('RemoteLlmProvider Tests', () {

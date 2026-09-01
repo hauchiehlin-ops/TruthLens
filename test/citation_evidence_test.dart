@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/bibliography_verifier.dart';
-import 'package:truthlens/core/services/citation_evidence.dart';
+import 'package:omnitrace/core/services/bibliography_verifier.dart';
+import 'package:omnitrace/core/services/citation_evidence.dart';
 
 /// 捏造引用是 LLM 的行為特徵，而且是**可查證的事實**——
 /// 一篇文獻存不存在，模型再強也不會改變。這是它不隨世代衰減的原因。

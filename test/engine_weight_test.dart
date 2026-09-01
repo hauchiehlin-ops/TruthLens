@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:truthlens/core/detection/detection_engine.dart';
-import 'package:truthlens/core/detection/engines/stylometry_engine.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/core/services/preferences_service.dart';
-import 'package:truthlens/core/utils/text_stats.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/detection_engine.dart';
+import 'package:omnitrace/core/detection/engines/stylometry_engine.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/core/services/preferences_service.dart';
+import 'package:omnitrace/core/utils/text_stats.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

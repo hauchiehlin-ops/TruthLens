@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/orchestrator.dart';
+import 'package:omnitrace/core/detection/orchestrator.dart';
 
 void main() {
   group('Dynamic Ensemble Weighted Routing (Option B)', () {

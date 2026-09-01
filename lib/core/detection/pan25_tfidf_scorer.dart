@@ -27,7 +27,7 @@ class Pan25TfidfScorer {
   static Future<Pan25TfidfScorer> _load() async {
     final decoded = jsonDecode(await rootBundle.loadString(assetPath));
     if (decoded is! Map<String, dynamic> ||
-        decoded['format'] != 'truthlens-pan25-tfidf-svm-v1') {
+        decoded['format'] != 'omnitrace-pan25-tfidf-svm-v1') {
       throw const FormatException('Unsupported PAN 2025 model asset');
     }
     final vocabulary = (decoded['vocabulary'] as Map<String, dynamic>).map(

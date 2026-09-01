@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
+import 'package:omnitrace/core/detection/model_catalog.dart';
 
 /// 對隨 App 打包的 assets/model_catalog.json 做健全性檢查。
 /// 曾發生過的問題（regression guard）：把「多語言 AI 偵測器」的下載網址誤填成

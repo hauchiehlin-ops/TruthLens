@@ -1,4 +1,4 @@
-package com.truthlens.truthlens
+package com.omnitrace.omnitrace
 
 import android.app.ActivityManager
 import android.content.Context
@@ -18,7 +18,7 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         // OCR Channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.truthlens/ocr").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.omnitrace/ocr").setMethodCallHandler { call, result ->
             when (call.method) {
                 "ping" -> result.success(true)
                 "recognize" -> {
@@ -35,7 +35,7 @@ class MainActivity : FlutterActivity() {
         }
 
         // Device Channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.truthlens/device").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.omnitrace/device").setMethodCallHandler { call, result ->
             when (call.method) {
                 "physicalMemoryMb" -> {
                     val actManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager

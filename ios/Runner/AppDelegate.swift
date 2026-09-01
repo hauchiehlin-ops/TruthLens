@@ -20,7 +20,7 @@ import Vision
 class OcrPlugin: NSObject, FlutterPlugin {
   static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "com.truthlens/ocr",
+      name: "com.omnitrace/ocr",
       binaryMessenger: registrar.messenger()
     )
     let instance = OcrPlugin()
@@ -117,7 +117,7 @@ class OcrPlugin: NSObject, FlutterPlugin {
 class DevicePlugin: NSObject, FlutterPlugin {
   static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "com.truthlens/device",
+      name: "com.omnitrace/device",
       binaryMessenger: registrar.messenger()
     )
     let instance = DevicePlugin()

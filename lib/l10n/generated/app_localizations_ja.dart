@@ -178,7 +178,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get modelNecessityText =>
-      'ニューラルネットワーク検出モデルをダウンロードしていない場合でも、TruthLensは動作しますが、統計分析とスタイル分析のみとなり、精度と多言語対応が限定されます。モデルをダウンロードすると、多言語Transformer分類器がアンサンブル投票に加わり、判定精度と信頼性が大幅に向上します。モデルはデバイス上で実行され、ダウンロード後は一切のコンテンツをアップロードしません。';
+      'ニューラルネットワーク検出モデルをダウンロードしていない場合でも、OmniTraceは動作しますが、統計分析とスタイル分析のみとなり、精度と多言語対応が限定されます。モデルをダウンロードすると、多言語Transformer分類器がアンサンブル投票に加わり、判定精度と信頼性が大幅に向上します。モデルはデバイス上で実行され、ダウンロード後は一切のコンテンツをアップロードしません。';
 
   @override
   String get modelPromptTitle => '完全な分析のために検出モデルのダウンロードをお勧めします';
@@ -197,7 +197,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get firstRunModelPromptBody =>
-      'TruthLens はこのままでも動作します。統計エンジンと文体エンジンはすでに利用可能です。端末内で動くニューラルモデルを追加すると、多言語分類器がアンサンブル投票に加わり、精度と対応言語が大きく向上します。モデルはすべてブラウザー内で実行され、文書がアップロードされることはありません。「設定 → AI モデル管理」から後で決めることもできます。';
+      'OmniTrace はこのままでも動作します。統計エンジンと文体エンジンはすでに利用可能です。端末内で動くニューラルモデルを追加すると、多言語分類器がアンサンブル投票に加わり、精度と対応言語が大きく向上します。モデルはすべてブラウザー内で実行され、文書がアップロードされることはありません。「設定 → AI モデル管理」から後で決めることもできます。';
 
   @override
   String get firstRunModelPromptLater => '今はしない';
@@ -213,7 +213,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'この中国語文書には現在、現代中国語検出器（約 98 MB）がありません。従来の多言語モデルは初期世代のテキストで較正されており、DeepSeek・Gemini・GPT 系の現在の中国語表現を見逃すことがあります。より適切に較正された結果を得るには専用の端末内モデルをダウンロードしてください。弱い言語横断のフォールバックのまま続けることもできます。';
 
   @override
-  String get onboardingWelcomeTitle => 'TruthLensへようこそ';
+  String get onboardingWelcomeTitle => 'OmniTraceへようこそ';
 
   @override
   String get onboardingHeadline => 'デバイス上でのAIコンテンツ検出';
@@ -243,7 +243,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingStorageNotPersisted =>
-      'ダウンロード済みのモデルは、まだ自動削除から保護されていません。ディスク容量が不足するとブラウザーが回収することがあり、その場合は再ダウンロードが必要になります。TruthLens をアプリとしてインストールすると、ブラウザーが保持する可能性が大きく高まります。';
+      'ダウンロード済みのモデルは、まだ自動削除から保護されていません。ディスク容量が不足するとブラウザーが回収することがあり、その場合は再ダウンロードが必要になります。OmniTrace をアプリとしてインストールすると、ブラウザーが保持する可能性が大きく高まります。';
 
   @override
   String get onboardingInstallAppButton => 'アプリとしてインストール';
@@ -738,7 +738,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacySealNoticeText =>
-      'TruthLens ゼロクラウドプライバシー認証：すべての推論処理はデバイス上で完了し、クラウド保存はありません。';
+      'OmniTrace ゼロクラウドプライバシー認証：すべての推論処理はデバイス上で完了し、クラウド保存はありません。';
 
   @override
   String get reportModelCalibrationTitle => 'モデルベンチマーク自動キャリブレーション';
@@ -976,7 +976,7 @@ class AppLocalizationsJa extends AppLocalizations {
     String runInstruction,
     String testButton,
   ) {
-    return '$osName を検出し、ローカルエンドポイントを自動入力しました：\n$endpoint\n\nブラウザーが $fileName のダウンロードを開始しました。ブラウザーのセキュリティ制限により、TruthLens Web がインストーラーを実行したり起動設定を変更したりすることはできません。\n\n次の手順：\n1. ダウンロードしたインストーラーを実行：$runInstruction\n2. ターミナルまたはウィンドウに OCR サービスの準備完了が表示されるまで待つ。\n3. ここに戻って「$testButton」を選ぶ。\n\nテスト成功後、画像 OCR はこのローカルサービスを優先します。Gemini API キーを別途設定しない限り、画像が Gemini に送られることはありません。';
+    return '$osName を検出し、ローカルエンドポイントを自動入力しました：\n$endpoint\n\nブラウザーが $fileName のダウンロードを開始しました。ブラウザーのセキュリティ制限により、OmniTrace Web がインストーラーを実行したり起動設定を変更したりすることはできません。\n\n次の手順：\n1. ダウンロードしたインストーラーを実行：$runInstruction\n2. ターミナルまたはウィンドウに OCR サービスの準備完了が表示されるまで待つ。\n3. ここに戻って「$testButton」を選ぶ。\n\nテスト成功後、画像 OCR はこのローカルサービスを優先します。Gemini API キーを別途設定しない限り、画像が Gemini に送られることはありません。';
   }
 
   @override
@@ -1133,7 +1133,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpShiftBody =>
-      '市場のほとんどの検出器は同じ問いに答えています。「この文章はAIが書いたように見えるか？」\n\nこれは負けが決まった軍拡競争です。モデルが強くなるほど生成文の統計的特徴は人間に近づき、書き換えツールの進歩は検出器よりはるかに速い。この道ではサーバー側の大規模モデルも負け方が遅いだけです。\n\nTruthLensは別の問いを立てます。「この文書がどのように作られたかについて、手元にどんな証拠があり、それぞれどれほど強いのか？」\n\nつまり文体からの推測ではなく、来歴の証拠と統計的に誠実な結論へ軸足を移します。本ツールが単一スコアの精度競争を意図的に追わず、証拠を個別に並べ、根拠が足りないときは分からないと明言するのはこのためです。ブラウザ実行の本当の利点は推論速度ではなく、サーバーには見えないもの——完全なファイルと、利用者自身が集めた基準——が見えることです。';
+      '市場のほとんどの検出器は同じ問いに答えています。「この文章はAIが書いたように見えるか？」\n\nこれは負けが決まった軍拡競争です。モデルが強くなるほど生成文の統計的特徴は人間に近づき、書き換えツールの進歩は検出器よりはるかに速い。この道ではサーバー側の大規模モデルも負け方が遅いだけです。\n\nOmniTraceは別の問いを立てます。「この文書がどのように作られたかについて、手元にどんな証拠があり、それぞれどれほど強いのか？」\n\nつまり文体からの推測ではなく、来歴の証拠と統計的に誠実な結論へ軸足を移します。本ツールが単一スコアの精度競争を意図的に追わず、証拠を個別に並べ、根拠が足りないときは分からないと明言するのはこのためです。ブラウザ実行の本当の利点は推論速度ではなく、サーバーには見えないもの——完全なファイルと、利用者自身が集めた基準——が見えることです。';
 
   @override
   String get helpPillarsTitle => '2. 五つの柱';
@@ -1679,7 +1679,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String reportBibUncertainNoReliableResponse(String base) {
-    return '$base：検証ソースから信頼できる応答がないか、項目情報が不十分なため、TruthLensはこの引用を検証済みとは扱いません。';
+    return '$base：検証ソースから信頼できる応答がないか、項目情報が不十分なため、OmniTraceはこの引用を検証済みとは扱いません。';
   }
 
   @override
@@ -1704,11 +1704,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get summaryCardFooter => 'コアAI推論はすべてデバイス上で実行されます';
 
   @override
-  String get exportReportTitle => 'TruthLens 検出レポート';
+  String get exportReportTitle => 'OmniTrace 検出レポート';
 
   @override
   String pdfPageFooter(int page, int total) {
-    return 'TruthLens · $total ページ中 $page ページ目';
+    return 'OmniTrace · $total ページ中 $page ページ目';
   }
 
   @override
@@ -1944,7 +1944,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get modelNameMbertMultilingual => '多言語検出器（英+中・INT8）';
 
   @override
-  String get modelNameTruthlensZh => 'TruthLens 中国語検出器（2026 世代・INT8）';
+  String get modelNameTruthlensZh => 'OmniTrace 中国語検出器（2026 世代・INT8）';
 
   @override
   String get modelNameAigcZhv3 => '現代中国語検出器（DeepSeek／GPT-4・INT8）';
@@ -2146,11 +2146,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get helpAppBarTitle => '使い方ガイド';
 
   @override
-  String get helpAboutTitle => 'TruthLensについて';
+  String get helpAboutTitle => 'OmniTraceについて';
 
   @override
   String get helpAboutBody =>
-      'TruthLensは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI確率として示し、5つの固定区分（20%未満、20–40%、40–60%、60–80%、80%以上）に振り分けます。あわせて文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。区分の境界は調整できないため、同じ文書は誰の手元でも同じ区分になります。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。';
+      'OmniTraceは**すべてブラウザ内で動作する**AIコンテンツ検出ツールです。Transformerニューラル分類器、統計的特徴分析、文体分析、敵対的書き換え検出という4つの独立したエンジンが重み付き投票を行い、文書が外部へ送信されることはありません。\n\nレポートは判定をAI確率として示し、5つの固定区分（20%未満、20–40%、40–60%、60–80%、80%以上）に振り分けます。あわせて文単位の根拠、各エンジンの寄与、文書の来歴証拠、読み込み時の元ファイル名を併記します。区分の境界は調整できないため、同じ文書は誰の手元でも同じ区分になります。根拠が乏しい場合（文数や語数が少ない、エンジン間の食い違いが大きい）は、無理にスコアを出さず「判定しません」と明示します。';
 
   @override
   String get helpComparisonTitle => '主要ツールとの比較';
@@ -2164,66 +2164,66 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpVsGptZero1 =>
-      'GPTZeroは処理の大半をクラウドで行い文書のアップロードが必要ですが、TruthLensは4つのエンジンすべてをご自身のブラウザ内で実行し、内容はどこにも送信しません。';
+      'GPTZeroは処理の大半をクラウドで行い文書のアップロードが必要ですが、OmniTraceは4つのエンジンすべてをご自身のブラウザ内で実行し、内容はどこにも送信しません。';
 
   @override
   String get helpVsGptZero2 =>
-      'GPTZeroが先駆けたPerplexity／Burstiness指標と文単位のハイライトはTruthLensにも取り入れられており、さらにTransformer分類器、文体分析、敵対的防御を重ね、単一指標ではなく4モデルのアンサンブル投票を形成しています。';
+      'GPTZeroが先駆けたPerplexity／Burstiness指標と文単位のハイライトはOmniTraceにも取り入れられており、さらにTransformer分類器、文体分析、敵対的防御を重ね、単一指標ではなく4モデルのアンサンブル投票を形成しています。';
 
   @override
   String get helpVsGptZero3 =>
-      'GPTZeroはサブスクリプション制です。TruthLensはサブスクリプション不要で、使用回数の制限もありません。';
+      'GPTZeroはサブスクリプション制です。OmniTraceはサブスクリプション不要で、使用回数の制限もありません。';
 
   @override
   String get helpVsTurnitinTitle => 'vs Turnitin';
 
   @override
   String get helpVsTurnitin1 =>
-      'Turnitinは機関向けの購入のみで、個人が直接購入することはできません。TruthLensは誰でもインストールして使用できます。';
+      'Turnitinは機関向けの購入のみで、個人が直接購入することはできません。OmniTraceは誰でもインストールして使用できます。';
 
   @override
   String get helpVsTurnitin2 =>
-      'Turnitinの判定プロセスはブラックボックスに近いです。TruthLensは文単位のAI確率、一致した文体パターン、4つのエンジンそれぞれのスコアと理由の内訳を提供します。';
+      'Turnitinの判定プロセスはブラックボックスに近いです。OmniTraceは文単位のAI確率、一致した文体パターン、4つのエンジンそれぞれのスコアと理由の内訳を提供します。';
 
   @override
   String get helpVsTurnitin3 =>
-      'Turnitinは主に「AIかどうか」の二値判定です。TruthLensは段落・文単位で人間／AI／混合のラベル付けに対応しています。';
+      'Turnitinは主に「AIかどうか」の二値判定です。OmniTraceは段落・文単位で人間／AI／混合のラベル付けに対応しています。';
 
   @override
   String get helpVsOriginalityTitle => 'vs Originality.ai';
 
   @override
   String get helpVsOriginality1 =>
-      'Originality.aiは従量課金のサブスクリプションでクラウドへのアップロードが必要ですが、TruthLensは中核処理をブラウザ内で完結し、サブスクリプションも利用回数制限もありません。';
+      'Originality.aiは従量課金のサブスクリプションでクラウドへのアップロードが必要ですが、OmniTraceは中核処理をブラウザ内で完結し、サブスクリプションも利用回数制限もありません。';
 
   @override
   String get helpVsOriginality2 =>
-      'Originality.aiにはファクトチェックと読みやすさ分析の概念があります。TruthLensはオンデバイスの文体特徴モジュールでこれに応え、オフラインでも基本的な分析が可能です。';
+      'Originality.aiにはファクトチェックと読みやすさ分析の概念があります。OmniTraceはオンデバイスの文体特徴モジュールでこれに応え、オフラインでも基本的な分析が可能です。';
 
   @override
   String get helpVsCopyleaksTitle => 'vs Copyleaks';
 
   @override
   String get helpVsCopyleaks1 =>
-      'Copyleaksは主にクラウドAPIで、低い誤検知率と強力な多言語対応が強みです。TruthLensは同じ理念のXLM-RoBERTa多言語ベースモデルとマルチモデルのアンサンブル投票を採用していますが、文書内容はいかなるサーバーにもアップロードされません。';
+      'Copyleaksは主にクラウドAPIで、低い誤検知率と強力な多言語対応が強みです。OmniTraceは同じ理念のXLM-RoBERTa多言語ベースモデルとマルチモデルのアンサンブル投票を採用していますが、文書内容はいかなるサーバーにもアップロードされません。';
 
   @override
   String get helpVsCopyleaks2 =>
-      'CopyleaksはプランによってAPI使用量の制限があります。TruthLensには使用量の制限はありません。';
+      'CopyleaksはプランによってAPI使用量の制限があります。OmniTraceには使用量の制限はありません。';
 
   @override
   String get helpVsWinstonTitle => 'vs Winston AI';
 
   @override
   String get helpVsWinston1 =>
-      'Winston AIの画像OCRは画像をクラウドへ送信します。TruthLensのOCRはご自身で設定したローカルOCRサーバーを優先し、ご自身でGemini APIキーを提供した場合にのみクラウドへフォールバックします。クラウドを使うかどうかは利用者の判断に委ねられます。';
+      'Winston AIの画像OCRは画像をクラウドへ送信します。OmniTraceのOCRはご自身で設定したローカルOCRサーバーを優先し、ご自身でGemini APIキーを提供した場合にのみクラウドへフォールバックします。クラウドを使うかどうかは利用者の判断に委ねられます。';
 
   @override
   String get helpVsWinston2 =>
-      'Winston AIは洗練されたレポートレイアウトで知られています。TruthLensはAIによる動的なレポートレイアウト生成を提供し（LLM未インストール時はテンプレートに自動フォールバック）、PDF／CSV／JSON／PNGの4形式でエクスポートできます。';
+      'Winston AIは洗練されたレポートレイアウトで知られています。OmniTraceはAIによる動的なレポートレイアウト生成を提供し（LLM未インストール時はテンプレートに自動フォールバック）、PDF／CSV／JSON／PNGの4形式でエクスポートできます。';
 
   @override
-  String get helpAdvantagesTitle => 'TruthLens独自の強み';
+  String get helpAdvantagesTitle => 'OmniTrace独自の強み';
 
   @override
   String get helpAdvantage1 =>
@@ -2334,7 +2334,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get helpWorkspaceIosWebBody =>
-      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. TruthLens therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
+      'On iPhone and iPad browsers, every browser uses WebKit and each tab has a tighter memory budget than desktop macOS. Large ONNX models can make the tab reload during analysis. OmniTrace therefore runs engines sequentially on iOS Web, releases each model after use, and skips oversized perplexity submodels such as the 488 MB Qwen PPL model while keeping the statistical engine active through local statistical features. This prevents mid-analysis reloads, but macOS can still include the full PPL submodel while iOS may report that it was skipped.';
 
   @override
   String get helpWorkflowStep1ChipOnboarding => '初回起動ガイド';
@@ -2468,7 +2468,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyWebOverview1 =>
-      'TruthLensはブラウザタブ内で完全にWebアプリとして動作します。インストールは不要で、文書テキストと分析結果はお使いの端末から外部に出ることはなく、ダウンロードした検出モデルもサーバーではなくブラウザ自体のサンドボックスストレージ（OPFS）にキャッシュされます。';
+      'OmniTraceはブラウザタブ内で完全にWebアプリとして動作します。インストールは不要で、文書テキストと分析結果はお使いの端末から外部に出ることはなく、ダウンロードした検出モデルもサーバーではなくブラウザ自体のサンドボックスストレージ（OPFS）にキャッシュされます。';
 
   @override
   String get privacyWebOverview2 =>
@@ -2483,7 +2483,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyIosOverview1 =>
-      'TruthLensは、あなたの身元に紐づくデータを一切収集せず、追跡目的でデータを使用することもないため、App追跡透明性（ATT）の許可は必要ありません。';
+      'OmniTraceは、あなたの身元に紐づくデータを一切収集せず、追跡目的でデータを使用することもないため、App追跡透明性（ATT）の許可は必要ありません。';
 
   @override
   String get privacyIosOverview2 =>
@@ -2491,7 +2491,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyAndroidOverview1 =>
-      'TruthLensは個人データを収集せず、いかなる第三者ともユーザーデータを共有しません。';
+      'OmniTraceは個人データを収集せず、いかなる第三者ともユーザーデータを共有しません。';
 
   @override
   String get privacyAndroidOverview2 =>
@@ -2499,7 +2499,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyMacosOverview1 =>
-      'TruthLensはmacOS App Sandbox下で実行され、システムのファイルダイアログを通じてあなたが能動的に選択したファイル（files.user-selected.read-write）にのみアクセスでき、他のファイルやフォルダを自由に閲覧・アクセスすることはできません。';
+      'OmniTraceはmacOS App Sandbox下で実行され、システムのファイルダイアログを通じてあなたが能動的に選択したファイル（files.user-selected.read-write）にのみアクセスでき、他のファイルやフォルダを自由に閲覧・アクセスすることはできません。';
 
   @override
   String get privacyMacosOverview2 =>
@@ -2507,7 +2507,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyWindowsOverview1 =>
-      'TruthLensはスタンドアロンのデスクトップアプリケーションで、データはお使いのローカルユーザーフォルダ（AppData／Documentsなど）に保存され、クラウドに同期されることはありません。';
+      'OmniTraceはスタンドアロンのデスクトップアプリケーションで、データはお使いのローカルユーザーフォルダ（AppData／Documentsなど）に保存され、クラウドに同期されることはありません。';
 
   @override
   String get privacyWindowsOverview2 =>
@@ -2515,15 +2515,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyDataHandling1 =>
-      'TruthLensにはユーザーアカウントがなく、サインインも不要で、いかなる広告や第三者トラッキングSDKも含まれていません。';
+      'OmniTraceにはユーザーアカウントがなく、サインインも不要で、いかなる広告や第三者トラッキングSDKも含まれていません。';
 
   @override
   String get privacyDataHandling2 =>
-      'あなたが入力、貼り付け、またはインポートした文書内容は、すべてあなたのデバイス上でローカルAIモデルによって分析され、TruthLensやいかなる第三者サーバーにもアップロードされることはありません。';
+      'あなたが入力、貼り付け、またはインポートした文書内容は、すべてあなたのデバイス上でローカルAIモデルによって分析され、OmniTraceやいかなる第三者サーバーにもアップロードされることはありません。';
 
   @override
   String get privacyDataHandling3 =>
-      '分析結果と履歴は、あなたのデバイス上のローカルデータベースにのみ保存されます。アプリをアンインストールするか履歴をクリアすると完全に削除され、TruthLensはいかなるコピーも保持しません。';
+      '分析結果と履歴は、あなたのデバイス上のローカルデータベースにのみ保存されます。アプリをアンインストールするか履歴をクリアすると完全に削除され、OmniTraceはいかなるコピーも保持しません。';
 
   @override
   String get privacyNetworkIntro =>
@@ -2563,7 +2563,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacyDisclaimer =>
-      'このページの内容は、TruthLensが実際の機能動作に基づいて作成したプライバシーに関する説明であり、弁護士による審査を経た正式な法的文書ではありません。お住まいの地域の法規に基づく正式なコンプライアンス審査が必要な場合は、専門の法律相談をご利用ください。';
+      'このページの内容は、OmniTraceが実際の機能動作に基づいて作成したプライバシーに関する説明であり、弁護士による審査を経た正式な法的文書ではありません。お住まいの地域の法規に基づく正式なコンプライアンス審査が必要な場合は、専門の法律相談をご利用ください。';
 
   @override
   String get privacySectionOverviewIos => '概要（App Storeプライバシー「栄養成分表示」に相当）';
@@ -3315,7 +3315,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get firstRunModelManualBody =>
-      'いつでもご自身でダウンロードできます。「設定」（上部ツールバーの歯車アイコン）を開き、「AIモデル管理」を選んでください。それまでも TruthLens は統計エンジンと文体エンジンで動作します。';
+      'いつでもご自身でダウンロードできます。「設定」（上部ツールバーの歯車アイコン）を開き、「AIモデル管理」を選んでください。それまでも OmniTrace は統計エンジンと文体エンジンで動作します。';
 
   @override
   String get commonGotIt => '了解';

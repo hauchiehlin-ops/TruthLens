@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/calibration_service.dart';
-import 'package:truthlens/core/services/weight_learner.dart';
+import 'package:omnitrace/core/services/calibration_service.dart';
+import 'package:omnitrace/core/services/weight_learner.dart';
 
 const _engines = ['transformer', 'statistical', 'stylometry', 'adversarial'];
 

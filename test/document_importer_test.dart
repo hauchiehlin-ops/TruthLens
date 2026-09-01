@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:truthlens/core/services/document_importer.dart';
+import 'package:omnitrace/core/services/document_importer.dart';
 
 void main() {
   group(

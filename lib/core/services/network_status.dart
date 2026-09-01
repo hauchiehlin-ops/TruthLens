@@ -14,12 +14,12 @@ class NetworkStatus {
     // 使用不同端點，造成「探測離線、實際服務正常」的矛盾狀態。
     try {
       if (Uri.base.host == '127.0.0.1' || Uri.base.host == 'localhost') {
-        return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+        return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       }
       final proxyPath = '/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
       return Uri.base.resolve(proxyPath).toString();
     } catch (_) {
-      return 'https://truth-lens-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
+      return 'https://omni-trace-roan-three.vercel.app/api/proxy?url=${Uri.encodeComponent(targetUrl)}';
     }
   }
 
@@ -41,7 +41,7 @@ class NetworkStatus {
             uri,
             headers: {
               'User-Agent':
-                  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) TruthLens/1.0',
+                  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) OmniTrace/1.0',
             },
           )
           .timeout(timeout);

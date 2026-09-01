@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/llm_manager.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
-import 'package:truthlens/core/detection/remote_llm_provider.dart';
-import 'package:truthlens/core/detection/report_llm_service.dart';
-import 'package:truthlens/core/models/detection_result.dart';
-import 'package:truthlens/features/report/report_document.dart';
-import 'package:truthlens/l10n/generated/app_localizations.dart';
+import 'package:omnitrace/core/detection/llm_manager.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/remote_llm_provider.dart';
+import 'package:omnitrace/core/detection/report_llm_service.dart';
+import 'package:omnitrace/core/models/detection_result.dart';
+import 'package:omnitrace/features/report/report_document.dart';
+import 'package:omnitrace/l10n/generated/app_localizations.dart';
 
 class _FakeRemoteLlmProvider implements RemoteLlmProvider {
   final String response;

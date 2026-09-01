@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:truthlens/core/detection/model_catalog.dart';
-import 'package:truthlens/core/detection/model_catalog_service.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/model_catalog.dart';
+import 'package:omnitrace/core/detection/model_catalog_service.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
 
 ModelVariant _variant(
   String id, {

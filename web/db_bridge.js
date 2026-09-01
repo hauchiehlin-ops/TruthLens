@@ -1,10 +1,10 @@
-// TruthLens Web 歷史紀錄橋接：包裝瀏覽器 IndexedDB，供 Dart (dart:js_interop) 存取。
+// OmniTrace Web 歷史紀錄橋接：包裝瀏覽器 IndexedDB，供 Dart (dart:js_interop) 存取。
 // 對應原生版的 SQLite（見 lib/core/services/history_repository.dart）。內容全部
 // 留在瀏覽器本機儲存內，不經任何伺服器。刻意只用 JSON 字串跨越 JS 邊界（而非傳遞
 // 複雜物件），降低 interop 型別對應出錯的風險，過濾/排序留在 Dart 端做（與原生版
 // 呼叫端的資料量級一致，200 筆內，效能無虞）。
 (function () {
-  const DB_NAME = 'truthlens';
+  const DB_NAME = 'omnitrace';
   const STORE = 'history';
   let dbPromise = null;
 
@@ -65,5 +65,5 @@
     });
   }
 
-  window.truthlensDb = { put, getAllJson, deleteEntry, clear };
+  window.omnitraceDb = { put, getAllJson, deleteEntry, clear };
 })();

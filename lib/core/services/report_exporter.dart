@@ -937,7 +937,7 @@ class ReportExporter {
     ]);
     return _save(
       bytes: bytes,
-      fileName: 'truthlens_${_timestamp(r.analyzedAt)}.csv',
+      fileName: 'omnitrace_${_timestamp(r.analyzedAt)}.csv',
       extension: 'csv',
       l10n: l10n,
     );
@@ -966,7 +966,7 @@ class ReportExporter {
     ]);
     return _save(
       bytes: bytes,
-      fileName: 'truthlens_${_timestamp(r.analyzedAt)}.json',
+      fileName: 'omnitrace_${_timestamp(r.analyzedAt)}.json',
       extension: 'json',
       l10n: l10n,
     );
@@ -986,7 +986,7 @@ class ReportExporter {
     );
     return _save(
       bytes: bytes,
-      fileName: 'truthlens_${_timestamp(r.analyzedAt)}.png',
+      fileName: 'omnitrace_${_timestamp(r.analyzedAt)}.png',
       extension: 'png',
       l10n: l10n,
     );
@@ -1010,7 +1010,7 @@ class ReportExporter {
     );
     return _save(
       bytes: bytes,
-      fileName: 'truthlens_${_timestamp(r.analyzedAt)}.pdf',
+      fileName: 'omnitrace_${_timestamp(r.analyzedAt)}.pdf',
       extension: 'pdf',
       l10n: l10n,
     );

@@ -57,7 +57,7 @@ class SummaryCard {
 
     _text(
       canvas,
-      'TruthLens',
+      'OmniTrace',
       const Offset(36, 30),
       22,
       Colors.white,

@@ -237,7 +237,7 @@ class SettingsScreen extends StatelessWidget {
                                   }
                                   await FilePicker.saveFile(
                                     dialogTitle: l10n.settingsExportCorpusTitle,
-                                    fileName: 'truthlens_corpus.jsonl',
+                                    fileName: 'omnitrace_corpus.jsonl',
                                     bytes: payload.bytes,
                                   );
                                   messenger.showSnackBar(
@@ -463,7 +463,7 @@ class SettingsScreen extends StatelessWidget {
           if (kIsWeb) ...[const WebOcrSettingsCard(), const Divider()],
           ListTile(
             leading: Icon(LucideIcons.info),
-            title: const Text('TruthLens'),
+            title: const Text('OmniTrace'),
             subtitle: ValueListenableBuilder<AppVersionInfo>(
               valueListenable: AppVersion.listenable,
               builder: (context, info, _) => Text(

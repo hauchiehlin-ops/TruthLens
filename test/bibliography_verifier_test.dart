@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:truthlens/core/services/bibliography_verifier.dart';
+import 'package:omnitrace/core/services/bibliography_verifier.dart';
 
 // 逐字轉錄自使用者提供的截圖（Couette 流動研究論文的參考文獻頁）。
 const _sampleReferences = '''

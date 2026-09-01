@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/services/history_metadata.dart';
-import 'package:truthlens/core/services/history_repository.dart';
+import 'package:omnitrace/core/services/history_metadata.dart';
+import 'package:omnitrace/core/services/history_repository.dart';
 
 void main() {
   group('歷史紀錄文件標題', () {

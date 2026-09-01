@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/detectrl_zh_char_scorer.dart';
+import 'package:omnitrace/core/detection/detectrl_zh_char_scorer.dart';
 
 /// 說明式／條列式的機器中文——訓練集 GPT-4o、GLM-4-flash、Qwen-turbo 的典型語域。
 const _machineTraditional =

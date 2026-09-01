@@ -22,7 +22,7 @@
       source: 'Personal experience or source-material cues reduce confidence in text-only classification.',
       long: 'This preview is calibrated for samples under 220 words; use the full workspace for long documents.',
       none: 'No strong pattern was detected; use the full workspace for multi-engine sentence-level evidence.',
-      intro: 'This is a lightweight in-browser preview, not the full TruthLens multi-engine verdict.',
+      intro: 'This is a lightweight in-browser preview, not the full OmniTrace multi-engine verdict.',
     },
     zh: {
       count: (words) => `${words} / 220 字預覽`,
@@ -35,7 +35,7 @@
       source: '文字含有個人經驗或原始材料訊號，降低單靠文字判讀的把握。',
       long: '預覽工具建議 220 字以內；長文請改用完整工作台逐句分析。',
       none: '未偵測到明顯模式；請用完整工作台取得多引擎與逐句報告。',
-      intro: '這是瀏覽器內的輕量預覽，不是完整 TruthLens 多引擎結論。',
+      intro: '這是瀏覽器內的輕量預覽，不是完整 OmniTrace 多引擎結論。',
     },
     ja: {
       count: (words) => `${words} / 220 語`,
@@ -48,7 +48,7 @@
       source: '個人経験や一次資料の手がかりがあり、テキストだけの判定信頼度は下がります。',
       long: 'このプレビューは 220 語以内向けです。長文は完全なワークスペースを使用してください。',
       none: '強いパターンは見つかりません。完全版で複数エンジンの文単位証拠を確認してください。',
-      intro: 'これはブラウザ内の軽量プレビューであり、TruthLens の完全な複数エンジン判定ではありません。',
+      intro: 'これはブラウザ内の軽量プレビューであり、OmniTrace の完全な複数エンジン判定ではありません。',
     },
     ko: {
       count: (words) => `${words} / 220 단어`,
@@ -61,7 +61,7 @@
       source: '개인 경험 또는 원자료 단서가 있어 텍스트만으로 분류하는 신뢰도가 낮아집니다.',
       long: '이 미리보기는 220단어 이하에 맞춰져 있습니다. 긴 문서는 전체 작업 공간을 사용하세요.',
       none: '뚜렷한 패턴은 감지되지 않았습니다. 전체 작업 공간에서 문장별 증거를 확인하세요.',
-      intro: '브라우저 내 가벼운 미리보기이며 TruthLens 전체 다중 엔진 결론은 아닙니다.',
+      intro: '브라우저 내 가벼운 미리보기이며 OmniTrace 전체 다중 엔진 결론은 아닙니다.',
     },
     es: {
       count: (words) => `${words} / 220 palabras`,
@@ -74,7 +74,7 @@
       source: 'Las señales de experiencia personal o material fuente reducen la confianza de una clasificación solo textual.',
       long: 'La vista previa está calibrada para menos de 220 palabras; usa el área completa para documentos largos.',
       none: 'No se detectó un patrón fuerte; usa el área completa para evidencia por frase y varios motores.',
-      intro: 'Esta es una vista previa ligera en el navegador, no el veredicto multiengine completo de TruthLens.',
+      intro: 'Esta es una vista previa ligera en el navegador, no el veredicto multiengine completo de OmniTrace.',
     },
     de: {
       count: (words) => `${words} / 220 Wörter`,
@@ -87,7 +87,7 @@
       source: 'Persönliche Erfahrung oder Quellmaterial senken die Sicherheit einer rein textbasierten Einstufung.',
       long: 'Diese Vorschau ist für Proben unter 220 Wörtern kalibriert; nutzen Sie für lange Dokumente den Arbeitsbereich.',
       none: 'Es wurde kein starkes Muster erkannt; nutzen Sie den Arbeitsbereich für satzweise Mehr-Engine-Belege.',
-      intro: 'Dies ist eine leichte Browser-Vorschau, nicht das vollständige Mehr-Engine-Urteil von TruthLens.',
+      intro: 'Dies ist eine leichte Browser-Vorschau, nicht das vollständige Mehr-Engine-Urteil von OmniTrace.',
     },
     fr: {
       count: (words) => `${words} / 220 mots`,
@@ -100,7 +100,7 @@
       source: 'Des indices d’expérience personnelle ou de source réduisent la confiance d’une classification textuelle seule.',
       long: 'Cet aperçu est calibré pour moins de 220 mots ; utilisez l’espace complet pour les longs documents.',
       none: 'Aucun motif fort n’a été détecté ; utilisez l’espace complet pour des preuves par phrase.',
-      intro: 'Ceci est un aperçu léger dans le navigateur, pas le verdict multi-moteur complet de TruthLens.',
+      intro: 'Ceci est un aperçu léger dans le navigateur, pas le verdict multi-moteur complet de OmniTrace.',
     },
     pt: {
       count: (words) => `${words} / 220 palavras`,
@@ -113,7 +113,7 @@
       source: 'Sinais de experiência pessoal ou material-fonte reduzem a confiança em uma classificação só textual.',
       long: 'Esta prévia é calibrada para menos de 220 palavras; use o workspace completo para documentos longos.',
       none: 'Nenhum padrão forte foi detectado; use o workspace completo para evidências por frase.',
-      intro: 'Esta é uma prévia leve no navegador, não o veredito multi-motor completo do TruthLens.',
+      intro: 'Esta é uma prévia leve no navegador, não o veredito multi-motor completo do OmniTrace.',
     },
     ru: {
       count: (words) => `${words} / 220 слов`,
@@ -126,7 +126,7 @@
       source: 'Личный опыт или исходные материалы снижают уверенность текстовой классификации.',
       long: 'Предпросмотр рассчитан на образцы до 220 слов; для длинных документов используйте рабочую область.',
       none: 'Сильный шаблон не обнаружен; используйте рабочую область для посрочных доказательств.',
-      intro: 'Это легкий предпросмотр в браузере, а не полный многоуровневый вывод TruthLens.',
+      intro: 'Это легкий предпросмотр в браузере, а не полный многоуровневый вывод OmniTrace.',
     },
     th: {
       count: (words) => `${words} / 220 คำ`,
@@ -139,7 +139,7 @@
       source: 'สัญญาณประสบการณ์ส่วนตัวหรือแหล่งข้อมูลต้นทางลดความมั่นใจของการจำแนกจากข้อความล้วน',
       long: 'ตัวอย่างนี้ปรับไว้สำหรับไม่เกิน 220 คำ เอกสารยาวควรใช้พื้นที่ทำงานเต็ม',
       none: 'ไม่พบรูปแบบเด่นชัด โปรดใช้พื้นที่ทำงานเต็มเพื่อดูหลักฐานรายประโยคหลายเครื่องยนต์',
-      intro: 'นี่คือการแสดงตัวอย่างแบบเบาในเบราว์เซอร์ ไม่ใช่ข้อสรุปหลายเครื่องยนต์เต็มของ TruthLens',
+      intro: 'นี่คือการแสดงตัวอย่างแบบเบาในเบราว์เซอร์ ไม่ใช่ข้อสรุปหลายเครื่องยนต์เต็มของ OmniTrace',
     },
     ms: {
       count: (words) => `${words} / 220 perkataan`,
@@ -152,7 +152,7 @@
       source: 'Isyarat pengalaman peribadi atau bahan sumber mengurangkan keyakinan klasifikasi teks sahaja.',
       long: 'Pratonton ini ditala untuk kurang daripada 220 perkataan; gunakan ruang kerja penuh untuk dokumen panjang.',
       none: 'Tiada corak kuat dikesan; gunakan ruang kerja penuh untuk bukti per ayat berbilang enjin.',
-      intro: 'Ini pratonton ringan dalam pelayar, bukan keputusan penuh berbilang enjin TruthLens.',
+      intro: 'Ini pratonton ringan dalam pelayar, bukan keputusan penuh berbilang enjin OmniTrace.',
     },
     id: {
       count: (words) => `${words} / 220 kata`,
@@ -165,7 +165,7 @@
       source: 'Sinyal pengalaman pribadi atau bahan sumber menurunkan keyakinan klasifikasi berbasis teks saja.',
       long: 'Pratinjau ini dikalibrasi untuk kurang dari 220 kata; gunakan ruang kerja lengkap untuk dokumen panjang.',
       none: 'Tidak ada pola kuat yang terdeteksi; gunakan ruang kerja lengkap untuk bukti per kalimat.',
-      intro: 'Ini adalah pratinjau ringan di browser, bukan kesimpulan multi-mesin penuh TruthLens.',
+      intro: 'Ini adalah pratinjau ringan di browser, bukan kesimpulan multi-mesin penuh OmniTrace.',
     },
   };
   const t = text[locale] || text.en;

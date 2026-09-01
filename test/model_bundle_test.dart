@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:truthlens/core/detection/device_capabilities.dart';
-import 'package:truthlens/core/detection/model_catalog_service.dart';
-import 'package:truthlens/core/detection/model_manager.dart';
-import 'package:truthlens/core/detection/model_provisioner.dart';
+import 'package:omnitrace/core/detection/device_capabilities.dart';
+import 'package:omnitrace/core/detection/model_catalog_service.dart';
+import 'package:omnitrace/core/detection/model_manager.dart';
+import 'package:omnitrace/core/detection/model_provisioner.dart';
 
 const _mb = 1048576;
 
