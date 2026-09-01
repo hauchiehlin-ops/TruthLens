@@ -1,5 +1,31 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十六次更新）— 穩定公開頁與工作台語系連動
+
+使用者回報：公開首頁切換到韓文等非中英文語系後，語系選擇清單可能顯示空白；點擊公開子功能頁時，
+繁中與英文可正常切換，但其他語系常掉回英文；進入主工作台時又可能回到中文，造成公開頁、子頁與
+工作台語系狀態混亂。
+
+主要調整：
+
+1. 公開子頁 `page_i18n.js` 的語系選單改為可重入渲染：每次套用語系都更新既有選單內容與 selected value，
+   不再因舊 DOM 存在就跳過更新。
+2. 首頁語系選單補上 `name`、`aria-label` 與 selected value fallback，避免瀏覽器或舊狀態導致清單顯示空白。
+3. 公開子頁統一先計算 `selectedLang` 再取語系包，確保泰文、韓文、日文等子頁不會誤落到英文 fallback。
+4. Flutter web 啟動時會先保留本次 URL 明確指定的公開語系，偏好載入逾時或之後完成時都以本次 `?lang=`
+   為最高優先，避免舊 `app_locale` 把主工作台帶回中文。
+5. `flutter_bootstrap.js` 的慢啟動與失敗重載提示改為跟隨公開頁語系，避免 Flutter 接管前的啟動畫面固定顯示中文。
+6. 新增測試鎖住非中英文語系碼、公開頁 select 防呆、工作台 URL 語系優先，以及 pre-Flutter 啟動狀態本地化。
+7. 版本同步升級為 `4.13.8+1479`。
+
+**狀態**：✅ `node --check` 通過 `home_i18n.js` / `page_i18n.js` / `flutter_bootstrap.js`；
+✅ `dart format` 完成；✅
+`flutter test test/public_locale_codes_test.dart test/preferences_service_test.dart test/web_seo_test.dart`
+27 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web --release` 成功產出 `build/web`，確認 `build/web/version.json`
+為 `4.13.8/1479`。
+
 ## 2026-09-01（第一百九十五次更新）— 公開頁語系套用至主工作台
 
 使用者指出：首頁選定介面語系後，所有應用程式內頁都應一體適用該語系，包含按下「開啟檢測工作台」

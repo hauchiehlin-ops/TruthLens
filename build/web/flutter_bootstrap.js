@@ -43,6 +43,96 @@ const truthLensWorkerCleanupKey = "truthlens-worker-cleanup-v2";
 const truthLensWorkerMigrationKey = "truthlens-worker-migration-v2";
 const truthLensWorkerScript = "truthlens_sw.js";
 const truthLensShellCache = "truthlens-shell-v1";
+const truthLensPublicLanguageKey = "truthlens-public-lang";
+
+function normalizeTruthLensLocale(value) {
+  if (value == null || value === "") return "zh-Hant";
+  const lower = String(value).replace("_", "-").toLowerCase();
+  if (lower === "zh-hant" || lower === "zh-tw" || lower === "zh-hk" || lower === "zh-mo") {
+    return "zh-Hant";
+  }
+  if (lower === "zh-hans" || lower === "zh-cn" || lower === "zh-sg") {
+    return "zh-Hans";
+  }
+  const base = lower.split("-")[0];
+  return [
+    "en",
+    "ja",
+    "ko",
+    "th",
+    "ms",
+    "es",
+    "id",
+    "ru",
+    "de",
+    "fr",
+    "pt",
+  ].includes(base)
+    ? base
+    : "zh-Hant";
+}
+
+function currentTruthLensPublicLocale() {
+  const params = new URLSearchParams(window.location.search || "");
+  return normalizeTruthLensLocale(
+    params.get("lang") ||
+      readTruthLensStorage(window.localStorage, truthLensPublicLanguageKey) ||
+      navigator.language ||
+      document.documentElement.lang,
+  );
+}
+
+function truthLensStartupCopy(key) {
+  const copy = {
+    slow: {
+      en: "Restoring local analysis components and data. This device may need more time...",
+      "zh-Hant": "正在恢復本機分析元件與資料，此裝置可能需要較長時間...",
+      "zh-Hans": "正在恢复本机分析组件与数据，此设备可能需要较长时间...",
+      ja: "ローカル分析コンポーネントとデータを復元しています。この端末では少し時間がかかる場合があります...",
+      ko: "로컬 분석 구성 요소와 데이터를 복원하는 중입니다. 이 기기에서는 시간이 더 걸릴 수 있습니다...",
+      th: "กำลังกู้คืนส่วนประกอบและข้อมูลการวิเคราะห์ในเครื่อง อุปกรณ์นี้อาจต้องใช้เวลามากขึ้น...",
+      ms: "Sedang memulihkan komponen dan data analisis setempat. Peranti ini mungkin memerlukan lebih masa...",
+      es: "Restaurando componentes y datos de análisis local. Este dispositivo puede necesitar más tiempo...",
+      id: "Memulihkan komponen dan data analisis lokal. Perangkat ini mungkin memerlukan waktu lebih lama...",
+      ru: "Восстанавливаются локальные компоненты анализа и данные. Этому устройству может понадобиться больше времени...",
+      de: "Lokale Analysekomponenten und Daten werden wiederhergestellt. Dieses Gerät benötigt möglicherweise etwas mehr Zeit...",
+      fr: "Restauration des composants et données d’analyse locale. Cet appareil peut demander plus de temps...",
+      pt: "Restaurando componentes e dados de análise local. Este dispositivo pode precisar de mais tempo...",
+    },
+    failed: {
+      en: "Startup did not finish. Please reload the workspace.",
+      "zh-Hant": "啟動未完成，請重新載入工作台。",
+      "zh-Hans": "启动未完成，请重新载入工作台。",
+      ja: "起動が完了しませんでした。ワークスペースを再読み込みしてください。",
+      ko: "시작이 완료되지 않았습니다. 작업 공간을 다시 로드하세요.",
+      th: "การเริ่มต้นยังไม่เสร็จ โปรดโหลดพื้นที่ทำงานใหม่",
+      ms: "Permulaan belum selesai. Sila muat semula ruang kerja.",
+      es: "El inicio no terminó. Vuelve a cargar el área de trabajo.",
+      id: "Startup belum selesai. Muat ulang ruang kerja.",
+      ru: "Запуск не завершен. Перезагрузите рабочую область.",
+      de: "Der Start wurde nicht abgeschlossen. Bitte laden Sie den Arbeitsbereich neu.",
+      fr: "Le démarrage n’est pas terminé. Rechargez l’espace de travail.",
+      pt: "A inicialização não terminou. Recarregue o workspace.",
+    },
+    retry: {
+      en: "Reload",
+      "zh-Hant": "重新載入",
+      "zh-Hans": "重新载入",
+      ja: "再読み込み",
+      ko: "다시 로드",
+      th: "โหลดใหม่",
+      ms: "Muat semula",
+      es: "Recargar",
+      id: "Muat ulang",
+      ru: "Перезагрузить",
+      de: "Neu laden",
+      fr: "Recharger",
+      pt: "Recarregar",
+    },
+  };
+  const lang = currentTruthLensPublicLocale();
+  return copy[key]?.[lang] || copy[key]?.en || "";
+}
 
 function getTruthLensCompatibilityPlatform() {
   const userAgent = navigator.userAgent || "";
@@ -115,13 +205,13 @@ function showTruthLensStartupFailure(error) {
   const status = shell?.querySelector(".seo-shell__status");
   if (!shell || !status) return;
 
-  status.textContent = "啟動未完成，請重新載入工作台。";
+  status.textContent = truthLensStartupCopy("failed");
   if (document.getElementById("seo-shell-retry")) return;
 
   const retry = document.createElement("button");
   retry.id = "seo-shell-retry";
   retry.type = "button";
-  retry.textContent = "重新載入";
+  retry.textContent = truthLensStartupCopy("retry");
   retry.addEventListener("click", () => window.location.reload());
   status.insertAdjacentElement("afterend", retry);
 }
@@ -220,7 +310,7 @@ async function bootTruthLens() {
   const slowStartupNotice = window.setTimeout(() => {
     if (!appStarted) {
       updateTruthLensStartupStatus(
-        "正在恢復本機分析元件與資料，此裝置可能需要較長時間…",
+        truthLensStartupCopy("slow"),
       );
     }
   }, 15000);

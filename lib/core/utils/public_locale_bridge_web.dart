@@ -6,9 +6,10 @@ import 'public_locale_codes.dart';
 
 const _publicLocaleStorageKey = 'truthlens-public-lang';
 
-Locale? readPublicLocaleOverride() {
+Locale? readPublicLocaleOverride({bool explicitOnly = false}) {
   final queryLocale = publicLocaleFromCode(Uri.base.queryParameters['lang']);
   if (queryLocale != null) return queryLocale;
+  if (explicitOnly) return null;
   return publicLocaleFromCode(
     web.window.localStorage.getItem(_publicLocaleStorageKey),
   );

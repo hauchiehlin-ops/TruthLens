@@ -53,6 +53,9 @@ Future<void> main() async {
 
   var webPreferencesReady = true;
   Future<void>? deferredWebPreferenceLoad;
+  final launchPublicLocale = kIsWeb
+      ? readPublicLocaleOverride(explicitOnly: true)
+      : null;
   if (kIsWeb) {
     // Android Chrome may need a long time to reopen OPFS when large local
     // models are installed. Only the small preference payload is allowed to
@@ -65,7 +68,7 @@ Future<void> main() async {
       deferredWebPreferenceLoad = preferenceLoad;
       debugPrint('[Startup] Web preferences deferred: $error');
     }
-    await _applyPublicLocaleOverride(prefs);
+    await _applyPublicLocaleOverride(prefs, fallback: launchPublicLocale);
   } else {
     await Future.wait([AppVersion.init(), prefs.load(), calibration.load()]);
     await OcrService.hydrate();
@@ -102,7 +105,10 @@ Future<void> main() async {
         if (pendingPreferenceLoad != null)
           _runStartupTask('preferences', () async {
             await pendingPreferenceLoad;
-            await _applyPublicLocaleOverride(prefs);
+            await _applyPublicLocaleOverride(
+              prefs,
+              fallback: launchPublicLocale,
+            );
           }),
         _runStartupTask('app version', AppVersion.init),
         _runStartupTask('calibration', calibration.load),
@@ -119,8 +125,11 @@ Future<void> main() async {
   }
 }
 
-Future<void> _applyPublicLocaleOverride(PreferencesService prefs) async {
-  final publicLocale = readPublicLocaleOverride();
+Future<void> _applyPublicLocaleOverride(
+  PreferencesService prefs, {
+  Locale? fallback,
+}) async {
+  final publicLocale = readPublicLocaleOverride() ?? fallback;
   if (publicLocale == null || samePublicLocale(prefs.locale, publicLocale)) {
     return;
   }

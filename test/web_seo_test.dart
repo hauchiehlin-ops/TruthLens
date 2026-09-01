@@ -173,6 +173,14 @@ void main() {
     expect(homeI18n, contains("data-home-card-link"));
     expect(homeI18n, contains("workspace=1&lang="));
     expect(homeI18n, contains('select.value = lang'));
+    expect(
+      homeI18n,
+      contains("select.setAttribute('aria-label', pack.language)"),
+    );
+    expect(
+      homeI18n,
+      contains("if (select.value !== lang) select.value = 'zh-Hant'"),
+    );
     expect(homeI18n, contains('const nextLang = normalize(select.value)'));
     expect(homeI18n, isNot(contains("'Free short-text preview'")));
     expect(
@@ -192,7 +200,9 @@ void main() {
     expect(i18n, contains('開啟另一個免費入口'));
     expect(i18n, contains('別の無料入口を開く'));
     expect(i18n, contains('다른 무료 입구 열기'));
-    expect(i18n, contains('select.value = lang'));
+    expect(i18n, contains('select.value = selected'));
+    expect(i18n, contains('wrap.replaceChildren()'));
+    expect(i18n, contains('if (select.value !== selected) select.value ='));
     expect(i18n, contains('const nextLang = normalize(select.value)'));
     expect(i18n, contains('繁中 AI 文章檢測器'));
     expect(i18n, contains('免費通用短文檢測器'));
@@ -357,7 +367,15 @@ void main() {
       mainSource,
       contains("import 'core/utils/public_locale_bridge.dart'"),
     );
-    expect(mainSource, contains('_applyPublicLocaleOverride(prefs)'));
+    expect(
+      mainSource,
+      contains('_applyPublicLocaleOverride(prefs, fallback: launchPublicLocale)'),
+    );
+    expect(mainSource, contains('final launchPublicLocale = kIsWeb'));
+    expect(
+      mainSource,
+      contains('readPublicLocaleOverride(explicitOnly: true)'),
+    );
     expect(mainSource, contains('readPublicLocaleOverride()'));
     expect(mainSource, isNot(contains("Uri.base.queryParameters['lang']")));
     expect(mainSource, contains("_runStartupTask('preferences', () async {"));
@@ -367,6 +385,7 @@ void main() {
     );
     expect(preferenceSource, contains('await persistPublicLocale(value);'));
     expect(bridgeSource, contains("Uri.base.queryParameters['lang']"));
+    expect(bridgeSource, contains('if (explicitOnly) return null;'));
     expect(
       bridgeSource,
       contains("web.window.localStorage.getItem(_publicLocaleStorageKey)"),
@@ -377,5 +396,18 @@ void main() {
         "web.window.localStorage.setItem(_publicLocaleStorageKey, code)",
       ),
     );
+  });
+
+  test('web startup shell localizes pre-Flutter status copy', () {
+    final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+
+    expect(bootstrap, contains('function currentTruthLensPublicLocale()'));
+    expect(bootstrap, contains('truthLensPublicLanguageKey'));
+    expect(bootstrap, contains('function truthLensStartupCopy(key)'));
+    expect(bootstrap, contains('truthLensStartupCopy("slow")'));
+    expect(bootstrap, contains('truthLensStartupCopy("failed")'));
+    expect(bootstrap, contains('truthLensStartupCopy("retry")'));
+    expect(bootstrap, contains('ko: "로컬 분석 구성 요소와 데이터를 복원하는 중입니다.'));
+    expect(bootstrap, contains('th: "กำลังกู้คืนส่วนประกอบ'));
   });
 }

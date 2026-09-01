@@ -149,25 +149,30 @@
 
   function renderLanguagePicker(lang) {
     const nav = document.querySelector('.tl-nav');
-    if (!nav || document.querySelector('.tl-language')) return;
-
-    const wrap = document.createElement('div');
+    if (!nav) return;
+    const selected = normalize(lang);
+    const existing = document.querySelector('.tl-language');
+    const wrap = existing || document.createElement('div');
     wrap.className = 'tl-language';
+    wrap.replaceChildren();
 
     const label = document.createElement('label');
     label.setAttribute('for', 'tl-public-language');
-    label.textContent = languageLabels[lang] || languageLabels.en;
+    label.textContent = languageLabels[selected] || languageLabels.en;
 
     const select = document.createElement('select');
     select.id = 'tl-public-language';
+    select.name = 'language';
+    select.setAttribute('aria-label', languageLabels[selected] || languageLabels.en);
     languages.forEach(([code, name]) => {
       const option = document.createElement('option');
       option.value = code;
       option.textContent = name;
-      option.selected = code === lang;
+      option.selected = code === selected;
       select.appendChild(option);
     });
-    select.value = lang;
+    select.value = selected;
+    if (select.value !== selected) select.value = 'en';
     select.addEventListener('change', () => {
       const nextLang = normalize(select.value);
       select.value = nextLang;
@@ -178,8 +183,8 @@
     });
 
     wrap.append(label, select);
-    wrap.dataset.currentLang = lang;
-    nav.appendChild(wrap);
+    wrap.dataset.currentLang = selected;
+    if (!existing) nav.appendChild(wrap);
   }
 
   function detectorLandingCopy(lang) {
@@ -405,15 +410,13 @@
   }
 
   const params = new URLSearchParams(window.location.search || '');
-  const pack =
-    common[
-      normalize(
-        params.get('lang') ||
-          storedLanguage() ||
-          navigator.language ||
-          document.documentElement.lang,
-      )
-    ] || common.en;
+  const selectedLang = normalize(
+    params.get('lang') ||
+      storedLanguage() ||
+      navigator.language ||
+      document.documentElement.lang,
+  );
+  const pack = common[selectedLang] || common.en;
   const key = pageKey();
   const page = pack.pages[key] || common.en.pages[key];
   if (!page) return;

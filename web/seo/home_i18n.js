@@ -456,6 +456,8 @@
 
     const select = document.createElement('select');
     select.id = 'seo-language';
+    select.name = 'language';
+    select.setAttribute('aria-label', pack.language);
     languages.forEach(([code, name]) => {
       const option = document.createElement('option');
       option.value = code;
@@ -464,6 +466,7 @@
       select.appendChild(option);
     });
     select.value = lang;
+    if (select.value !== lang) select.value = 'zh-Hant';
     select.addEventListener('change', () => {
       const nextLang = normalize(select.value);
       select.value = nextLang;

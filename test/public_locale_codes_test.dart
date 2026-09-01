@@ -12,6 +12,8 @@ void main() {
     expect(publicLocaleCode(publicLocaleFromCode('zh_CN')), 'zh-Hans');
     expect(publicLocaleCode(publicLocaleFromCode('zh')), 'zh-Hans');
     expect(publicLocaleCode(publicLocaleFromCode('th-TH')), 'th');
+    expect(publicLocaleCode(publicLocaleFromCode('ko-KR')), 'ko');
+    expect(publicLocaleCode(publicLocaleFromCode('ja-JP')), 'ja');
     expect(publicLocaleCode(publicLocaleFromCode('en-US')), 'en');
     expect(publicLocaleCode(publicLocaleFromCode('unsupported')), isNull);
   });
