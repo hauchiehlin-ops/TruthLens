@@ -7628,3 +7628,16 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 
 **為什麼**
 - 由於 `web/seo/page_i18n.js` 是以陣列 index (0~4) 依序賦予導航列翻譯文字，舊版 HTML 各頁面中遺漏了部分連結（只有 4 個），導致翻譯字串錯位（例如「DOCX 證據」的翻譯被填到「開啟工作台」的連結上）。統一 HTML 結構能讓多語系腳本精準映射。
+
+## 2026-09-01 — [Branding] 專案大改名：OmniTrace 與全新 Logo 上線，並發布 v6.0.0
+
+**做了什麼**
+- **全面更名**：將專案名稱從 `TruthLens` 全面變更為 `OmniTrace`（包含 pubspec、Dart imports、C++ 橋接層、Native Bundle IDs `com.omnitrace.omnitrace` 等全域替換）。
+- **圖示升級**：採用具備發光數據流與多維度溯源概念的全新設計做為官方 App Icon。
+- **圖示部署**：使用 `flutter_launcher_icons` 工具產生所有平台（iOS, macOS, Android, Web）所需的各種解析度圖示並正確配置。
+- **版本號更新**：因應全新品牌識別與定位，將主要版本號 (Major version) 提升至 `v6.0.0+1483`。
+
+**為什麼**
+- 原有名稱過於普遍且缺乏鑑別度。
+- 新名稱 `OmniTrace` 更能突顯本產品「完全本地優先」與「多維度數位鑑識溯源」兩大護城河核心。
+- 大幅度的品牌更名與原生架構調整，值得作為 `v6.0.0` 的重大里程碑。
