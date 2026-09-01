@@ -7607,3 +7607,16 @@ Softmax → AI 機率 (0.0 ~ 1.0)
 - `flutter doctor`：Android toolchain 有警告（SDK 36.1.0，可能缺 licenses），iOS/macOS 正常
 - P1 待補：文件匯入（file_picker）、報告匯出（PDF/CSV）、歷史紀錄保存完整逐句結果
 - P2 起點：Transformer 分類器（A）與對抗模組（D）的模型訓練與原生橋接
+
+## 2026-09-01 — [SEO] 實作第一階段靜態拓展 (Programmatic SEO)
+
+**做了什麼**
+- 新增 `tool/generate_seo_pages.dart` 腳本，用於依據設定矩陣（語言 x 格式 x 場景）自動產生 `web/use-cases/*.html` 靜態頁面。
+- 在自動產生的頁面中注入 `FAQPage` 等 JSON-LD 結構化資料。
+- 更新 `web/index.html` 加上 `<section id="changelog">` 作為定期更新訊號（Freshness），與 `<footer>` 建立爬蟲通道連結到 `sitemap_directory.html`。
+- 修改 `web/seo/home_i18n.js` 增加上述新區塊的多國語系翻譯支援。
+- 自動化維護 `web/sitemap.xml`，寫入所有新產生的靜態 URL。
+
+**為什麼**
+- 為了突破 Flutter Web (CanvasKit) 對 Google 爬蟲不可見的問題。
+- 透過大量長尾關鍵字靜態頁面矩陣與爬蟲通道，誘導爬蟲頻繁訪問與有效索引。
