@@ -390,12 +390,12 @@
   ];
 
   function normalize(value) {
-    if (!value) return 'zh-Hant';
+    if (!value) return 'en';
     const lower = value.replace('_', '-').toLowerCase();
     if (lower === 'zh-hant' || lower === 'zh-tw' || lower === 'zh-hk') return 'zh-Hant';
     if (lower === 'zh-hans' || lower === 'zh-cn' || lower === 'zh-sg') return 'zh-Hans';
     const base = lower.split('-')[0];
-    return content[base] ? base : 'zh-Hant';
+    return content[base] ? base : 'en';
   }
 
   function selectedLanguage() {
@@ -483,7 +483,7 @@
       select.appendChild(option);
     });
     select.value = lang;
-    if (select.value !== lang) select.value = 'zh-Hant';
+    if (select.value !== lang) select.value = 'en';
     select.addEventListener('change', () => {
       const nextLang = normalize(select.value);
       select.value = nextLang;
@@ -500,8 +500,8 @@
   }
 
   function applyHome(lang) {
-    const pack = content[normalize(lang)] || content['zh-Hant'];
-    const normalized = pack === content['zh-Hant'] ? 'zh-Hant' : pack.lang;
+    const normalized = normalize(lang);
+    const pack = content[normalized] || content.en;
     document.documentElement.lang = normalized;
     document.title = pack.title + ' | TruthLens';
     const description = document.querySelector('meta[name="description"]');

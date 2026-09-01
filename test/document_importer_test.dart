@@ -210,6 +210,34 @@ for validating an imported academic document before content detection begins.
         expect(text, isNot(contains('Root Entry')));
       });
 
+      test('舊版 .doc 透過 Word Binary piece table 抽取 Unicode 主文', () {
+        const original =
+            '第一章 緒論\n本研究探討人工智慧內容檢測的可靠度，並比較不同分析方法在中文與英文文件上的判讀結果。'
+            '這段文字放在 WordDocument 的正文區，必須由 0Table 的 CLX piece table 指回來。';
+
+        final bytes = _minimalOleDocWithPieceTable(original);
+        final text = DocumentImporter.parseBytes(bytes, extension: 'doc');
+
+        expect(text, contains('第一章 緒論'));
+        expect(text, contains('必須由 0Table 的 CLX piece table 指回來'));
+      });
+
+      test('舊版 .doc 透過 Word Binary piece table 抽取壓縮英文主文', () {
+        const original =
+            'Chapter one introduces local document analysis and explains why '
+            'legacy Word files need a piece table parser instead of raw stream '
+            'scanning. This paragraph should be recovered as the main body.';
+
+        final bytes = _minimalOleDocWithPieceTable(original, compressed: true);
+        final text = DocumentImporter.parseBytes(bytes, extension: 'doc');
+
+        expect(
+          text,
+          contains('Chapter one introduces local document analysis'),
+        );
+        expect(text, contains('piece table parser instead of raw stream'));
+      });
+
       test('ODT（Google 文件匯出的 OpenDocument）可正確抽取分段文字', () {
         const contentXml = '''
 <?xml version="1.0" encoding="UTF-8"?>
@@ -290,12 +318,74 @@ for validating an imported academic document before content detection begins.
   );
 }
 
+List<int> _minimalOleDocWithPieceTable(String text, {bool compressed = false}) {
+  const textOffset = 768;
+  final textBytes = compressed ? text.codeUnits : _utf16Le(text);
+  final wordDocument = Uint8List(textOffset + textBytes.length);
+  final wordData = ByteData.sublistView(wordDocument);
+  wordData.setUint16(0, 0xA5EC, Endian.little);
+  wordData.setUint16(0x0A, 0, Endian.little); // 使用 0Table
+  wordData.setUint32(0x01A2, 0, Endian.little); // fcClx
+  final clx = _wordBinaryClx(
+    charCount: text.length,
+    fileOffset: textOffset,
+    compressed: compressed,
+  );
+  wordData.setUint32(0x01A6, clx.length, Endian.little); // lcbClx
+  wordDocument.setRange(textOffset, textOffset + textBytes.length, textBytes);
+
+  return _minimalOleDocWithStreams({
+    'WordDocument': wordDocument,
+    '0Table': clx,
+  });
+}
+
+Uint8List _wordBinaryClx({
+  required int charCount,
+  required int fileOffset,
+  required bool compressed,
+}) {
+  const pieceTableLength = 16;
+  final bytes = Uint8List(1 + 4 + pieceTableLength);
+  final data = ByteData.sublistView(bytes);
+  bytes[0] = 0x02;
+  data.setUint32(1, pieceTableLength, Endian.little);
+  data.setUint32(5, 0, Endian.little);
+  data.setUint32(9, charCount, Endian.little);
+  final rawFc = compressed ? 0x40000000 | (fileOffset * 2) : fileOffset;
+  data.setUint32(15, rawFc, Endian.little);
+  return bytes;
+}
+
+Uint8List _utf16Le(String text) {
+  final bytes = Uint8List(text.runes.length * 2);
+  final data = ByteData.sublistView(bytes);
+  var index = 0;
+  for (final rune in text.runes) {
+    data.setUint16(index, rune, Endian.little);
+    index += 2;
+  }
+  return bytes;
+}
+
 List<int> _minimalOleDocWithWordDocumentStream(List<int> streamBytes) {
+  return _minimalOleDocWithStreams({
+    'WordDocument': Uint8List.fromList(streamBytes),
+  });
+}
+
+List<int> _minimalOleDocWithStreams(Map<String, Uint8List> streams) {
   const sectorSize = 512;
   const fatSector = 0;
   const directorySector = 1;
-  const wordDocumentSector = 2;
-  final bytes = Uint8List((1 + 3) * sectorSize);
+  const firstStreamSector = 2;
+  final streamSectorCounts = streams.map(
+    (name, bytes) =>
+        MapEntry(name, (bytes.length + sectorSize - 1) ~/ sectorSize),
+  );
+  final sectorCount =
+      2 + streamSectorCounts.values.fold<int>(0, (sum, count) => sum + count);
+  final bytes = Uint8List((1 + sectorCount) * sectorSize);
   final data = ByteData.sublistView(bytes);
 
   const signature = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
@@ -317,7 +407,6 @@ List<int> _minimalOleDocWithWordDocumentStream(List<int> streamBytes) {
   }
   data.setUint32(fatOffset, 0xFFFFFFFD, Endian.little);
   data.setUint32(fatOffset + 4, 0xFFFFFFFE, Endian.little);
-  data.setUint32(fatOffset + 8, 0xFFFFFFFE, Endian.little);
 
   final directoryOffset = (1 + directorySector) * sectorSize;
   _writeOleDirectoryEntry(
@@ -329,18 +418,43 @@ List<int> _minimalOleDocWithWordDocumentStream(List<int> streamBytes) {
     startSector: 0xFFFFFFFE,
     size: 0,
   );
-  _writeOleDirectoryEntry(
-    bytes,
-    data,
-    directoryOffset + 128,
-    'WordDocument',
-    type: 2,
-    startSector: wordDocumentSector,
-    size: streamBytes.length,
-  );
-
-  final streamOffset = (1 + wordDocumentSector) * sectorSize;
-  bytes.setRange(streamOffset, streamOffset + streamBytes.length, streamBytes);
+  var index = 0;
+  var nextSector = firstStreamSector;
+  for (final entry in streams.entries) {
+    final sector = nextSector;
+    final streamBytes = entry.value;
+    final count = streamSectorCounts[entry.key] ?? 0;
+    for (var i = 0; i < count; i++) {
+      final current = sector + i;
+      final next = i == count - 1 ? 0xFFFFFFFE : current + 1;
+      data.setUint32(fatOffset + current * 4, next, Endian.little);
+    }
+    _writeOleDirectoryEntry(
+      bytes,
+      data,
+      directoryOffset + 128 * (index + 1),
+      entry.key,
+      type: 2,
+      startSector: sector,
+      size: streamBytes.length,
+    );
+    var sourceOffset = 0;
+    var remaining = streamBytes.length;
+    for (var i = 0; i < count; i++) {
+      final chunkLength = remaining < sectorSize ? remaining : sectorSize;
+      final streamOffset = (1 + sector + i) * sectorSize;
+      bytes.setRange(
+        streamOffset,
+        streamOffset + chunkLength,
+        streamBytes,
+        sourceOffset,
+      );
+      sourceOffset += chunkLength;
+      remaining -= chunkLength;
+    }
+    index += 1;
+    nextSector += count;
+  }
   return bytes;
 }
 

@@ -1,5 +1,31 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十八次更新）— 改善舊版 `.doc` 主文抽取
+
+使用者回報：舊版 Word `.doc` 匯入後辨識率很差，只抓到文獻參考附近的少量文字，主文幾乎沒有進入
+分析。追查後確認既有 `.doc` 路徑只做 OLE stream 的可讀字串掃描，沒有解析 Word Binary 的正文索引；
+許多 Word 97-2003 文件主文需由 `0Table` / `1Table` 的 CLX piece table 指回 `WordDocument`，
+單純掃 stream 容易漏掉主要內容。
+
+主要調整：
+
+1. `.doc` 匯入新增 Word Binary piece table 解析：先讀 `WordDocument` 的 FIB，判斷使用 `0Table` 或
+   `1Table`，再解析 CLX / PCD，把正文 piece 依 Unicode 或壓縮單位還原。
+2. piece table 成功抽出可用品質文字時優先採用；失敗才回退到既有 heuristic 掃描，保留對破損或非標準
+   `.doc` 的容錯。
+3. 新增測試覆蓋 Unicode 主文 piece、壓縮英文 piece，以及跨多個 FAT sector 的 OLE stream，避免再只讀到
+   第一個 sector 或零碎參考文字。
+4. 使用使用者提供的實際 `.doc` 做本機只讀探測：抽出 `88908` 字元、`75379` 個可見字元、
+   `13051` 個 tokens，文字品質分數 `1.000`。
+5. 版本同步升級為 `4.13.10+1481`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/document_importer_test.dart test/document_provenance_test.dart` 38 項全數通過；✅
+使用實際 `.doc` 的暫時性探測測試通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web --release` 成功產出 `build/web`，確認 `build/web/version.json`
+為 `4.13.10/1481`。
+
 ## 2026-09-01（第一百九十七次更新）— 統一公開頁與工作台語系狀態來源
 
 使用者回報：首頁選定韓文、泰文等非中英文語系後，公開子功能頁仍會掉回英文，而進入主工作台又

@@ -12,7 +12,7 @@ const truthLensPublicLanguageKey = "truthlens-public-lang";
 const truthLensFlutterLocaleKey = "flutter.app_locale";
 
 function normalizeTruthLensLocale(value) {
-  if (value == null || value === "") return "zh-Hant";
+  if (value == null || value === "") return "en";
   const lower = String(value).replace("_", "-").toLowerCase();
   if (lower === "zh-hant" || lower === "zh-tw" || lower === "zh-hk" || lower === "zh-mo") {
     return "zh-Hant";
@@ -35,7 +35,7 @@ function normalizeTruthLensLocale(value) {
     "pt",
   ].includes(base)
     ? base
-    : "zh-Hant";
+    : "en";
 }
 
 function currentTruthLensPublicLocale() {

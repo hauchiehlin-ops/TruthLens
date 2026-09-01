@@ -547,6 +547,9 @@ class DocumentImporter {
     final cfb = _CompoundBinaryFile.tryParse(bytes);
     final sources = <List<int>>[];
     if (cfb != null) {
+      final pieceTableText = _parseWordBinaryPieceTable(cfb);
+      if (_isUsableText(pieceTableText)) return pieceTableText;
+
       for (final name in const ['WordDocument', '0Table', '1Table']) {
         final stream = cfb.readStream(name);
         if (stream != null && stream.isNotEmpty) sources.add(stream);
@@ -576,6 +579,144 @@ class DocumentImporter {
     }
     return bestScore >= _minimumPdfTextQuality ? best : '';
   }
+
+  /// Word 97-2003 `.doc` 的正文通常不是連續純文字，而是由 WordDocument
+  /// FIB 指向 0Table/1Table 的 CLX piece table，再由 piece descriptors 指回
+  /// WordDocument 的實際字元區段。只掃二進位 stream 會漏掉主文或抓到尾端雜訊；
+  /// 這裡先走真正的 piece table，失敗時才回退到舊 heuristic。
+  static String _parseWordBinaryPieceTable(_CompoundBinaryFile cfb) {
+    final wordDocument = cfb.readStream('WordDocument');
+    if (wordDocument == null || wordDocument.length < 0x1aa) return '';
+    final wordData = ByteData.sublistView(wordDocument);
+    if (wordData.getUint16(0, Endian.little) != 0xa5ec) return '';
+
+    final flags = wordData.getUint16(0x0a, Endian.little);
+    final tableName = (flags & 0x0200) != 0 ? '1Table' : '0Table';
+    final table = cfb.readStream(tableName);
+    if (table == null || table.isEmpty) return '';
+
+    final fcClx = wordData.getUint32(0x01a2, Endian.little);
+    final lcbClx = wordData.getUint32(0x01a6, Endian.little);
+    if (lcbClx == 0 || fcClx + lcbClx > table.length) return '';
+
+    final clx = table.sublist(fcClx, fcClx + lcbClx);
+    final pieces = _readWordBinaryPieces(clx);
+    if (pieces.isEmpty) return '';
+
+    final buffer = StringBuffer();
+    for (final piece in pieces) {
+      final charCount = piece.endCp - piece.startCp;
+      if (charCount <= 0) continue;
+      final text = piece.compressed
+          ? _decodeWordBinaryCompressedPiece(
+              wordDocument,
+              piece.fileOffset,
+              charCount,
+            )
+          : _decodeWordBinaryUnicodePiece(
+              wordDocument,
+              piece.fileOffset,
+              charCount,
+            );
+      if (text.isEmpty) continue;
+      if (buffer.isNotEmpty && !_endsWithWhitespace(buffer.toString())) {
+        buffer.write('\n');
+      }
+      buffer.write(text);
+    }
+    return _cleanExtractedLegacyText(buffer.toString());
+  }
+
+  static List<_WordBinaryPiece> _readWordBinaryPieces(Uint8List clx) {
+    final data = ByteData.sublistView(clx);
+    var offset = 0;
+    while (offset < clx.length) {
+      final marker = clx[offset];
+      offset += 1;
+      if (marker == 0x01) {
+        if (offset + 2 > clx.length) return const [];
+        final skip = data.getUint16(offset, Endian.little);
+        offset += 2 + skip;
+        continue;
+      }
+      if (marker != 0x02 || offset + 4 > clx.length) return const [];
+
+      final tableLength = data.getUint32(offset, Endian.little);
+      offset += 4;
+      if (tableLength < 12 || offset + tableLength > clx.length) {
+        return const [];
+      }
+      final pieceCount = ((tableLength - 4) / 12).floor();
+      if (pieceCount <= 0 || pieceCount > 100000) return const [];
+
+      final cpOffset = offset;
+      final pcdOffset = cpOffset + (pieceCount + 1) * 4;
+      if (pcdOffset + pieceCount * 8 > offset + tableLength) return const [];
+
+      final pieces = <_WordBinaryPiece>[];
+      for (var i = 0; i < pieceCount; i++) {
+        final startCp = data.getUint32(cpOffset + i * 4, Endian.little);
+        final endCp = data.getUint32(cpOffset + (i + 1) * 4, Endian.little);
+        final rawFc = data.getUint32(pcdOffset + i * 8 + 2, Endian.little);
+        final compressed = (rawFc & 0x40000000) != 0;
+        final fileOffset = compressed ? (rawFc & 0x3fffffff) ~/ 2 : rawFc;
+        pieces.add(
+          _WordBinaryPiece(
+            startCp: startCp,
+            endCp: endCp,
+            fileOffset: fileOffset,
+            compressed: compressed,
+          ),
+        );
+      }
+      return pieces;
+    }
+    return const [];
+  }
+
+  static String _decodeWordBinaryUnicodePiece(
+    Uint8List bytes,
+    int offset,
+    int charCount,
+  ) {
+    final byteLength = charCount * 2;
+    if (offset < 0 || byteLength <= 0 || offset + byteLength > bytes.length) {
+      return '';
+    }
+    final codes = <int>[];
+    final data = ByteData.sublistView(bytes);
+    for (var i = 0; i < byteLength; i += 2) {
+      final codePoint = data.getUint16(offset + i, Endian.little);
+      codes.add(_normalizeWordBinaryControlChar(codePoint));
+    }
+    return String.fromCharCodes(codes);
+  }
+
+  static String _decodeWordBinaryCompressedPiece(
+    Uint8List bytes,
+    int offset,
+    int charCount,
+  ) {
+    if (offset < 0 || charCount <= 0 || offset + charCount > bytes.length) {
+      return '';
+    }
+    final codes = <int>[];
+    for (var i = 0; i < charCount; i++) {
+      codes.add(_normalizeWordBinaryControlChar(bytes[offset + i]));
+    }
+    return String.fromCharCodes(codes);
+  }
+
+  static int _normalizeWordBinaryControlChar(int codePoint) {
+    return switch (codePoint) {
+      0x0007 || 0x000d || 0x000b => 0x000a,
+      0x0009 => 0x0009,
+      _ => codePoint,
+    };
+  }
+
+  static bool _endsWithWhitespace(String text) =>
+      text.isNotEmpty && RegExp(r'\s$').hasMatch(text);
 
   static Iterable<String> _scanUtf16LeTextRuns(
     List<int> bytes, {
@@ -897,6 +1038,20 @@ class _CompoundBinaryStream {
   final int size;
 
   const _CompoundBinaryStream(this.start, this.size);
+}
+
+class _WordBinaryPiece {
+  final int startCp;
+  final int endCp;
+  final int fileOffset;
+  final bool compressed;
+
+  const _WordBinaryPiece({
+    required this.startCp,
+    required this.endCp,
+    required this.fileOffset,
+    required this.compressed,
+  });
 }
 
 class ImportedDocument {
