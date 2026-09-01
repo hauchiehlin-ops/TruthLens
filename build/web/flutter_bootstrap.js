@@ -272,4 +272,36 @@ async function bootTruthLens() {
   }
 }
 
-bootTruthLens();
+function shouldAutoBootTruthLens() {
+  try {
+    const params = new URLSearchParams(window.location.search || "");
+    return (
+      params.get("workspace") === "1" ||
+      window.location.hash === "#workspace"
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
+function wireTruthLensStartButton() {
+  const start = document.getElementById("seo-shell-start");
+  if (!start) return;
+  start.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, "", "/?workspace=1");
+    }
+    start.setAttribute("aria-disabled", "true");
+    start.textContent = "正在開啟檢測工作台…";
+    bootTruthLens();
+  });
+}
+
+window.startTruthLensWorkspace = bootTruthLens;
+
+if (shouldAutoBootTruthLens()) {
+  bootTruthLens();
+} else {
+  wireTruthLensStartButton();
+}

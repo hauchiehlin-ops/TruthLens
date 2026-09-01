@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十次更新）— 首頁公開資訊改為手動進入工作台
+
+使用者回報：從首頁網址進入時，初始公開資訊頁跳轉太快，內容尚未看清楚就進入檢測首頁。
+重新檢查後確認原因是 `web/flutter_bootstrap.js` 在首頁載入時會立即呼叫 `bootTruthLens()`，
+導致 `index.html` 的 SEO shell 和公開工具連結只短暫閃現，然後被 Flutter 工作台移除。
+
+主要調整：
+
+1. 首頁預設停留在公開資訊與指南入口，不再自動啟動 Flutter 工作台。
+2. 首頁新增明確「開啟檢測工作台」按鈕，只有使用者點擊後才啟動完整檢測首頁。
+3. 支援 `/?workspace=1` 與 `#workspace` 直接進入工作台，保留深連結與快速啟動能力。
+4. 首頁直接列出 7 個公開入口，讓使用者一進站即可看到 SEO/指南內容，而不是只藏在三點選單。
+5. 新增測試確認首頁含有公開工具與指南、啟動按鈕，以及 bootstrap 不再無條件自動呼叫
+   `bootTruthLens()`。
+6. 版本同步升級為 `4.13.2+1473`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/web_seo_test.dart test/workspace_screen_test.dart` 29 項全數通過；✅
+`flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.13.2/1473`。
+
 ## 2026-09-01（第一百八十九次更新）— 首頁工作台顯示公開工具入口
 
 使用者指出：雖然前一版已新增 `/free-ai-detector`、繁中入口與 5 個 SEO 內容頁，但在目前首頁

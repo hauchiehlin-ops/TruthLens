@@ -21,6 +21,9 @@ void main() {
     expect(html, contains('property="og:title"'));
     expect(html, contains('<main id="seo-shell">'));
     expect(html, contains('<h1 id="seo-title"'));
+    expect(html, contains('aria-label="公開工具與指南"'));
+    expect(html, contains('id="seo-shell-start"'));
+    expect(html, contains('href="/?workspace=1"'));
 
     final match = RegExp(
       r'<script type="application/ld\+json">\s*([\s\S]*?)\s*</script>',
@@ -63,6 +66,10 @@ void main() {
     expect(html, contains('href="/zh/ai-article-detector"'));
     expect(html, contains('href="/free-ai-detector"'));
     expect(html, contains('href="/privacy/local-ai-detector-vs-cloud-upload"'));
+    expect(html, contains('href="/formats/pdf-ai-detection-limitations"'));
+    expect(html, contains('href="/formats/docx-editing-history-ai-evidence"'));
+    expect(html, contains('href="/ai-writing-signs/low-burstiness"'));
+    expect(html, contains('href="/ai-writing-signs/fake-citations"'));
   });
 
   test('free detector pages are static, indexable, and privacy preserving', () {
@@ -201,6 +208,24 @@ void main() {
     expect(bootstrap, contains('window.location.reload()'));
     expect(bootstrap, contains('}, 120000)'));
     expect(bootstrap, contains('此裝置可能需要較長時間'));
+  });
+
+  test('root page waits for an explicit workspace launch action', () {
+    final bootstrap = File('web/flutter_bootstrap.js').readAsStringSync();
+
+    expect(bootstrap, contains('function shouldAutoBootTruthLens()'));
+    expect(bootstrap, contains('params.get("workspace") === "1"'));
+    expect(bootstrap, contains('window.location.hash === "#workspace"'));
+    expect(bootstrap, contains('function wireTruthLensStartButton()'));
+    expect(bootstrap, contains('event.preventDefault()'));
+    expect(
+      bootstrap,
+      contains('window.startTruthLensWorkspace = bootTruthLens'),
+    );
+    expect(bootstrap, contains('if (shouldAutoBootTruthLens())'));
+
+    final autoBootTail = RegExp(r'\nbootTruthLens\(\);\s*$');
+    expect(autoBootTail.hasMatch(bootstrap), isFalse);
   });
 
   test('Android and macOS web bypass incompatible GPU rendering', () {
