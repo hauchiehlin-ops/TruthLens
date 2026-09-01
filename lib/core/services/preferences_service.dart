@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/public_locale_bridge.dart';
+
 enum WorkspaceMode { original, commandGrid, missionTimeline, evidenceCanvas }
 
 /// 使用者偏好設定（閾值、主題、ESL 修正開關）
@@ -134,6 +136,7 @@ class PreferencesService extends ChangeNotifier {
     } else {
       await _prefs?.setString(_kLocale, _encodeLocale(value));
     }
+    await persistPublicLocale(value);
     notifyListeners();
   }
 

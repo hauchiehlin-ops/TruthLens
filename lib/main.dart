@@ -23,6 +23,8 @@ import 'core/services/ocr_service.dart';
 import 'core/services/calibration_service.dart';
 import 'core/services/preferences_service.dart';
 import 'core/utils/app_version.dart';
+import 'core/utils/public_locale_bridge.dart';
+import 'core/utils/public_locale_codes.dart';
 import 'l10n/generated/app_localizations.dart';
 
 import 'core/detection/llama_ffi.dart';
@@ -50,16 +52,20 @@ Future<void> main() async {
   );
 
   var webPreferencesReady = true;
+  Future<void>? deferredWebPreferenceLoad;
   if (kIsWeb) {
     // Android Chrome may need a long time to reopen OPFS when large local
     // models are installed. Only the small preference payload is allowed to
     // delay the first frame, and even that wait is bounded.
+    final preferenceLoad = prefs.load();
     try {
-      await prefs.load().timeout(_webPreferenceStartupTimeout);
+      await preferenceLoad.timeout(_webPreferenceStartupTimeout);
     } catch (error) {
       webPreferencesReady = false;
+      deferredWebPreferenceLoad = preferenceLoad;
       debugPrint('[Startup] Web preferences deferred: $error');
     }
+    await _applyPublicLocaleOverride(prefs);
   } else {
     await Future.wait([AppVersion.init(), prefs.load(), calibration.load()]);
     await OcrService.hydrate();
@@ -90,8 +96,14 @@ Future<void> main() async {
     // Restore non-essential browser state after runApp. Model health checks can
     // touch hundreds of megabytes in OPFS and must never hold the HTML startup
     // shell hostage during an Android refresh.
+    final pendingPreferenceLoad = deferredWebPreferenceLoad;
     unawaited(
       Future.wait([
+        if (pendingPreferenceLoad != null)
+          _runStartupTask('preferences', () async {
+            await pendingPreferenceLoad;
+            await _applyPublicLocaleOverride(prefs);
+          }),
         _runStartupTask('app version', AppVersion.init),
         _runStartupTask('calibration', calibration.load),
         _runStartupTask('OCR settings', OcrService.hydrate),
@@ -105,6 +117,14 @@ Future<void> main() async {
       ]),
     );
   }
+}
+
+Future<void> _applyPublicLocaleOverride(PreferencesService prefs) async {
+  final publicLocale = readPublicLocaleOverride();
+  if (publicLocale == null || samePublicLocale(prefs.locale, publicLocale)) {
+    return;
+  }
+  await prefs.setLocale(publicLocale);
 }
 
 Future<void> _runStartupTask(

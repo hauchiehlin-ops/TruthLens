@@ -1,5 +1,27 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十五次更新）— 公開頁語系套用至主工作台
+
+使用者指出：首頁選定介面語系後，所有應用程式內頁都應一體適用該語系，包含按下「開啟檢測工作台」
+進入 Flutter 主工作台後，也必須遵守前面選擇確認的介面語系。
+
+主要調整：
+
+1. 新增公開頁／工作台共用語系代碼工具，統一處理 `zh-Hant`、`zh-Hans`、泰文、日文、韓文等 13 種公開入口語系。
+2. 新增 web 語系橋接層，Flutter 啟動時會讀取 URL `?lang=` 與 `truthlens-public-lang`，並套用到 `PreferencesService.locale`。
+3. 即使 web 偏好載入因 OPFS 或瀏覽器狀態逾時延後，偏好載入完成後仍會再次套用公開頁語系，避免被舊 `app_locale` 覆蓋。
+4. `PreferencesService.setLocale()` 現在會同步回寫公開頁語系狀態，工作台內切換語言後，再開公開工具與指南也會沿用同一語系。
+5. App 內公開工具連結改用同一套語系碼轉換函式，避免公開頁與工作台各自維護 `zh` 變體規則。
+6. 新增測試覆蓋公開語系碼正規化、繁簡中文 script variant 保存、公開頁語系套用到 Flutter 工作台啟動流程。
+7. 版本同步升級為 `4.13.7+1478`。
+
+**狀態**：✅ `dart format` 完成；✅
+`flutter test test/public_locale_codes_test.dart test/preferences_service_test.dart test/web_seo_test.dart`
+26 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web --release` 成功產出 `build/web`，確認 `build/web/version.json`
+為 `4.13.7/1478`。
+
 ## 2026-09-01（第一百九十四次更新）— 修正公開頁語系狀態與免費入口混淆
 
 使用者回報：公開首頁切換英文後，文字已變英文但語系選單仍顯示繁體中文，且之後無法可靠切回繁中；

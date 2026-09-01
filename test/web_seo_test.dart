@@ -332,13 +332,49 @@ void main() {
 
     expect(mainSource, contains('if (kIsWeb)'));
     expect(mainSource, contains('_webPreferenceStartupTimeout'));
-    expect(mainSource, contains('prefs.load().timeout'));
+    expect(mainSource, contains('final preferenceLoad = prefs.load();'));
+    expect(mainSource, contains('preferenceLoad.timeout'));
     expect(mainSource, contains('runApp('));
     expect(mainSource, contains('unawaited('));
     expect(
       mainSource,
       contains(
         "_runStartupTask('model inventory', modelManager.refreshInstallStates)",
+      ),
+    );
+  });
+
+  test('public locale selection is applied to the Flutter workspace', () {
+    final mainSource = File('lib/main.dart').readAsStringSync();
+    final preferenceSource = File(
+      'lib/core/services/preferences_service.dart',
+    ).readAsStringSync();
+    final bridgeSource = File(
+      'lib/core/utils/public_locale_bridge_web.dart',
+    ).readAsStringSync();
+
+    expect(
+      mainSource,
+      contains("import 'core/utils/public_locale_bridge.dart'"),
+    );
+    expect(mainSource, contains('_applyPublicLocaleOverride(prefs)'));
+    expect(mainSource, contains('readPublicLocaleOverride()'));
+    expect(mainSource, isNot(contains("Uri.base.queryParameters['lang']")));
+    expect(mainSource, contains("_runStartupTask('preferences', () async {"));
+    expect(
+      preferenceSource,
+      contains("import '../utils/public_locale_bridge.dart'"),
+    );
+    expect(preferenceSource, contains('await persistPublicLocale(value);'));
+    expect(bridgeSource, contains("Uri.base.queryParameters['lang']"));
+    expect(
+      bridgeSource,
+      contains("web.window.localStorage.getItem(_publicLocaleStorageKey)"),
+    );
+    expect(
+      bridgeSource,
+      contains(
+        "web.window.localStorage.setItem(_publicLocaleStorageKey, code)",
       ),
     );
   });

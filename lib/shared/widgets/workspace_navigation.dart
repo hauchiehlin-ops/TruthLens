@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/preferences_service.dart';
 import '../../core/utils/app_version.dart';
+import '../../core/utils/public_locale_codes.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 const List<(Locale?, String)> kSupportedLanguageOptions = [
@@ -215,15 +216,8 @@ class AppOverflowMenu extends StatelessWidget {
     AppLocalizations l10n,
   ) async {
     final uri = Uri.parse('$_publicPageOrigin$path').replace(
-      queryParameters: {'lang': _publicPageLocaleCode(l10n.localeName)},
+      queryParameters: {'lang': publicLocaleCodeFromTag(l10n.localeName)},
     );
     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  static String _publicPageLocaleCode(String localeName) {
-    final normalized = localeName.replaceAll('_', '-');
-    if (normalized.toLowerCase() == 'zh-hant') return 'zh-Hant';
-    if (normalized.toLowerCase() == 'zh-hans') return 'zh-Hans';
-    return normalized.split('-').first;
   }
 }

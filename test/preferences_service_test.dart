@@ -138,4 +138,19 @@ void main() {
     expect(notifications, 1);
     await persistence;
   });
+
+  test('locale supports script variants and persists locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = PreferencesService();
+    await preferences.load();
+
+    await preferences.setLocale(
+      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    );
+
+    final reloaded = PreferencesService();
+    await reloaded.load();
+    expect(reloaded.locale?.languageCode, 'zh');
+    expect(reloaded.locale?.scriptCode, 'Hant');
+  });
 }
