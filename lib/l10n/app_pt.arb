@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Cancelar",
   "firstRunModelManualTitle": "Transferir os modelos mais tarde",
   "firstRunModelManualBody": "Pode transferi-los a qualquer momento: abra as Definições (o ícone de engrenagem na barra superior) e escolha «Gerenciamento de modelos de IA». Até lá, o TruthLens continua a funcionar com os seus motores estatístico e estilístico.",
-  "commonGotIt": "Entendido"
+  "commonGotIt": "Entendido",
+  "publicGuideMenuTitle": "Ferramentas e guias públicos",
+  "publicGuideFreeDetector": "Detector gratuito de textos curtos",
+  "publicGuideZhDetector": "Detector de chinês tradicional",
+  "publicGuideLocalVsCloud": "Detecção local de IA versus envio à nuvem",
+  "publicGuidePdfLimits": "Limites da detecção de IA em PDF",
+  "publicGuideDocxEvidence": "Histórico de edição DOCX como evidência",
+  "publicGuideLowBurstiness": "Baixa burstiness em escrita de IA",
+  "publicGuideFakeCitations": "Citações falsas e verificação de referências"
 }

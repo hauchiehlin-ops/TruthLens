@@ -28,30 +28,29 @@ const List<(Locale?, String)> kSupportedLanguageOptions = [
 
 const _publicPageOrigin = 'https://truth-lens-roan-three.vercel.app';
 
-const List<({String label, String path})> kPublicSeoEntryPoints = [
-  (label: 'Free AI Detector', path: '/free-ai-detector'),
-  (label: '免費 AI 文章檢測器', path: '/zh/ai-article-detector'),
-  (
-    label: 'Local AI detector vs cloud upload',
-    path: '/privacy/local-ai-detector-vs-cloud-upload',
-  ),
-  (
-    label: 'PDF AI detection limitations',
-    path: '/formats/pdf-ai-detection-limitations',
-  ),
-  (
-    label: 'DOCX editing history evidence',
-    path: '/formats/docx-editing-history-ai-evidence',
-  ),
-  (
-    label: 'Low burstiness in AI writing',
-    path: '/ai-writing-signs/low-burstiness',
-  ),
-  (
-    label: 'Fake citations as an AI writing signal',
-    path: '/ai-writing-signs/fake-citations',
-  ),
-];
+enum PublicSeoEntryPoint {
+  freeDetector('/free-ai-detector'),
+  zhDetector('/zh/ai-article-detector'),
+  localVsCloud('/privacy/local-ai-detector-vs-cloud-upload'),
+  pdfLimits('/formats/pdf-ai-detection-limitations'),
+  docxEvidence('/formats/docx-editing-history-ai-evidence'),
+  lowBurstiness('/ai-writing-signs/low-burstiness'),
+  fakeCitations('/ai-writing-signs/fake-citations');
+
+  final String path;
+
+  const PublicSeoEntryPoint(this.path);
+
+  String label(AppLocalizations l10n) => switch (this) {
+    PublicSeoEntryPoint.freeDetector => l10n.publicGuideFreeDetector,
+    PublicSeoEntryPoint.zhDetector => l10n.publicGuideZhDetector,
+    PublicSeoEntryPoint.localVsCloud => l10n.publicGuideLocalVsCloud,
+    PublicSeoEntryPoint.pdfLimits => l10n.publicGuidePdfLimits,
+    PublicSeoEntryPoint.docxEvidence => l10n.publicGuideDocxEvidence,
+    PublicSeoEntryPoint.lowBurstiness => l10n.publicGuideLowBurstiness,
+    PublicSeoEntryPoint.fakeCitations => l10n.publicGuideFakeCitations,
+  };
+}
 
 class AppIdentityTitle extends StatelessWidget {
   const AppIdentityTitle({super.key});
@@ -162,14 +161,14 @@ class AppOverflowMenu extends StatelessWidget {
         SubmenuButton(
           leadingIcon: Icon(LucideIcons.globe),
           menuChildren: [
-            for (final entry in kPublicSeoEntryPoints)
+            for (final entry in PublicSeoEntryPoint.values)
               MenuItemButton(
                 leadingIcon: Icon(LucideIcons.externalLink),
-                onPressed: () => unawaited(_openPublicPage(entry.path)),
-                child: Text(entry.label),
+                onPressed: () => unawaited(_openPublicPage(entry.path, l10n)),
+                child: Text(entry.label(l10n)),
               ),
           ],
-          child: const Text('公開工具與指南'),
+          child: Text(l10n.publicGuideMenuTitle),
         ),
         MenuItemButton(
           leadingIcon: Icon(LucideIcons.history),
@@ -211,8 +210,20 @@ class AppOverflowMenu extends StatelessWidget {
         WorkspaceMode.evidenceCanvas => l10n.workspaceModeEvidence,
       };
 
-  static Future<void> _openPublicPage(String path) async {
-    final uri = Uri.parse('$_publicPageOrigin$path');
+  static Future<void> _openPublicPage(
+    String path,
+    AppLocalizations l10n,
+  ) async {
+    final uri = Uri.parse('$_publicPageOrigin$path').replace(
+      queryParameters: {'lang': _publicPageLocaleCode(l10n.localeName)},
+    );
     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  static String _publicPageLocaleCode(String localeName) {
+    final normalized = localeName.replaceAll('_', '-');
+    if (normalized.toLowerCase() == 'zh-hant') return 'zh-Hant';
+    if (normalized.toLowerCase() == 'zh-hans') return 'zh-Hans';
+    return normalized.split('-').first;
   }
 }

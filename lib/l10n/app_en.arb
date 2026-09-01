@@ -2913,5 +2913,13 @@
   "firstRunModelCancel": "Cancel",
   "firstRunModelManualTitle": "Downloading models later",
   "firstRunModelManualBody": "You can download models at any time: open Settings (the gear icon in the top bar) and choose “AI Model Management”. Until then TruthLens keeps working with its statistical and stylistic engines.",
-  "commonGotIt": "Got it"
+  "commonGotIt": "Got it",
+  "publicGuideMenuTitle": "Public tools and guides",
+  "publicGuideFreeDetector": "Free short-text detector",
+  "publicGuideZhDetector": "Traditional Chinese detector",
+  "publicGuideLocalVsCloud": "Local AI detection vs cloud upload",
+  "publicGuidePdfLimits": "PDF AI detection limits",
+  "publicGuideDocxEvidence": "DOCX editing history evidence",
+  "publicGuideLowBurstiness": "Low burstiness in AI writing",
+  "publicGuideFakeCitations": "Fake citations and reference checks"
 }

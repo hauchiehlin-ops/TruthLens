@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Abbrechen",
   "firstRunModelManualTitle": "Modelle später herunterladen",
   "firstRunModelManualBody": "Sie können die Modelle jederzeit selbst herunterladen: Öffnen Sie die Einstellungen (Zahnradsymbol in der oberen Leiste) und wählen Sie „KI-Modellverwaltung“. Bis dahin arbeitet TruthLens mit seinen statistischen und stilistischen Engines weiter.",
-  "commonGotIt": "Verstanden"
+  "commonGotIt": "Verstanden",
+  "publicGuideMenuTitle": "Öffentliche Tools und Leitfäden",
+  "publicGuideFreeDetector": "Kostenloser Kurztext-Detektor",
+  "publicGuideZhDetector": "Detektor für traditionelles Chinesisch",
+  "publicGuideLocalVsCloud": "Lokale KI-Erkennung statt Cloud-Upload",
+  "publicGuidePdfLimits": "Grenzen der KI-Erkennung bei PDF",
+  "publicGuideDocxEvidence": "DOCX-Bearbeitungshistorie als Nachweis",
+  "publicGuideLowBurstiness": "Niedrige Burstiness in KI-Texten",
+  "publicGuideFakeCitations": "Falsche Zitate und Quellenprüfung"
 }

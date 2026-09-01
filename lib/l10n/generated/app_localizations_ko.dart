@@ -3330,4 +3330,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get commonGotIt => '확인';
+
+  @override
+  String get publicGuideMenuTitle => '공개 도구 및 가이드';
+
+  @override
+  String get publicGuideFreeDetector => '무료 짧은 글 감지기';
+
+  @override
+  String get publicGuideZhDetector => '번체 중국어 감지기';
+
+  @override
+  String get publicGuideLocalVsCloud => '로컬 AI 감지와 클라우드 업로드 비교';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF AI 감지의 한계';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX 편집 기록 증거';
+
+  @override
+  String get publicGuideLowBurstiness => 'AI 글쓰기의 낮은 버스티니스';
+
+  @override
+  String get publicGuideFakeCitations => '가짜 인용 및 참고문헌 확인';
 }

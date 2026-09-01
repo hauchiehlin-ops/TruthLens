@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Отмена",
   "firstRunModelManualTitle": "Загрузить модели позже",
   "firstRunModelManualBody": "Вы можете загрузить их в любой момент: откройте «Настройки» (значок шестерёнки на верхней панели) и выберите «Управление моделями ИИ». До этого TruthLens продолжит работать со статистическим и стилистическим движками.",
-  "commonGotIt": "Понятно"
+  "commonGotIt": "Понятно",
+  "publicGuideMenuTitle": "Открытые инструменты и руководства",
+  "publicGuideFreeDetector": "Бесплатный детектор коротких текстов",
+  "publicGuideZhDetector": "Детектор традиционного китайского",
+  "publicGuideLocalVsCloud": "Локальная AI-проверка и облачная загрузка",
+  "publicGuidePdfLimits": "Ограничения AI-проверки PDF",
+  "publicGuideDocxEvidence": "Доказательства из истории редактирования DOCX",
+  "publicGuideLowBurstiness": "Низкая burstiness в AI-тексте",
+  "publicGuideFakeCitations": "Фальшивые цитаты и проверка источников"
 }

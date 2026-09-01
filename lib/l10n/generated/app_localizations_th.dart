@@ -3405,4 +3405,29 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get commonGotIt => 'เข้าใจแล้ว';
+
+  @override
+  String get publicGuideMenuTitle => 'เครื่องมือและคู่มือสาธารณะ';
+
+  @override
+  String get publicGuideFreeDetector => 'ตัวตรวจข้อความสั้นฟรี';
+
+  @override
+  String get publicGuideZhDetector => 'ตัวตรวจภาษาจีนตัวเต็ม';
+
+  @override
+  String get publicGuideLocalVsCloud =>
+      'การตรวจ AI ในเครื่องเทียบกับการอัปโหลดคลาวด์';
+
+  @override
+  String get publicGuidePdfLimits => 'ข้อจำกัดของการตรวจ AI ใน PDF';
+
+  @override
+  String get publicGuideDocxEvidence => 'หลักฐานประวัติการแก้ไข DOCX';
+
+  @override
+  String get publicGuideLowBurstiness => 'Burstiness ต่ำในงานเขียน AI';
+
+  @override
+  String get publicGuideFakeCitations => 'การตรวจสอบการอ้างอิงปลอม';
 }

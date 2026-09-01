@@ -3280,6 +3280,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get commonGotIt => '了解';
+
+  @override
+  String get publicGuideMenuTitle => '公開工具與指南';
+
+  @override
+  String get publicGuideFreeDetector => '免費短文檢測器';
+
+  @override
+  String get publicGuideZhDetector => '繁體中文檢測器';
+
+  @override
+  String get publicGuideLocalVsCloud => '本地 AI 檢測與雲端上傳比較';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF AI 檢測限制';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX 編輯紀錄證據';
+
+  @override
+  String get publicGuideLowBurstiness => 'AI 寫作的低突發性';
+
+  @override
+  String get publicGuideFakeCitations => '假文獻與引用核實';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6558,6 +6582,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get commonGotIt => '了解';
+
+  @override
+  String get publicGuideMenuTitle => '公开工具与指南';
+
+  @override
+  String get publicGuideFreeDetector => '免费短文检测器';
+
+  @override
+  String get publicGuideZhDetector => '繁体中文检测器';
+
+  @override
+  String get publicGuideLocalVsCloud => '本地 AI 检测与云端上传比较';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF AI 检测限制';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX 编辑记录证据';
+
+  @override
+  String get publicGuideLowBurstiness => 'AI 写作的低突发性';
+
+  @override
+  String get publicGuideFakeCitations => '虚假文献与引用核实';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9836,4 +9884,28 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get commonGotIt => '了解';
+
+  @override
+  String get publicGuideMenuTitle => '公開工具與指南';
+
+  @override
+  String get publicGuideFreeDetector => '免費短文檢測器';
+
+  @override
+  String get publicGuideZhDetector => '繁體中文檢測器';
+
+  @override
+  String get publicGuideLocalVsCloud => '本地 AI 檢測與雲端上傳比較';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF AI 檢測限制';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX 編輯紀錄證據';
+
+  @override
+  String get publicGuideLowBurstiness => 'AI 寫作的低突發性';
+
+  @override
+  String get publicGuideFakeCitations => '假文獻與引用核實';
 }

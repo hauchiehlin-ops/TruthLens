@@ -1449,5 +1449,13 @@
   "firstRunModelCancel": "取消",
   "firstRunModelManualTitle": "之後自行下載模型",
   "firstRunModelManualBody": "您隨時可以自行下載：開啟「設定」（頂部工具列的齒輪圖示），選擇「AI 模型管理」。在此之前 TruthLens 仍可使用統計與風格引擎正常運作。",
-  "commonGotIt": "了解"
+  "commonGotIt": "了解",
+  "publicGuideMenuTitle": "公開工具與指南",
+  "publicGuideFreeDetector": "免費短文檢測器",
+  "publicGuideZhDetector": "繁體中文檢測器",
+  "publicGuideLocalVsCloud": "本地 AI 檢測與雲端上傳比較",
+  "publicGuidePdfLimits": "PDF AI 檢測限制",
+  "publicGuideDocxEvidence": "DOCX 編輯紀錄證據",
+  "publicGuideLowBurstiness": "AI 寫作的低突發性",
+  "publicGuideFakeCitations": "假文獻與引用核實"
 }

@@ -3319,4 +3319,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get commonGotIt => '了解';
+
+  @override
+  String get publicGuideMenuTitle => '公開ツールとガイド';
+
+  @override
+  String get publicGuideFreeDetector => '無料の短文検出ツール';
+
+  @override
+  String get publicGuideZhDetector => '繁体字中国語検出ツール';
+
+  @override
+  String get publicGuideLocalVsCloud => 'ローカル AI 検出とクラウドアップロードの比較';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF の AI 検出の限界';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX 編集履歴の証拠';
+
+  @override
+  String get publicGuideLowBurstiness => 'AI 文章における低バースト性';
+
+  @override
+  String get publicGuideFakeCitations => '偽引用と参考文献チェック';
 }

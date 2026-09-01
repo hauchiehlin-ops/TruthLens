@@ -5379,6 +5379,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got it'**
   String get commonGotIt;
+
+  /// No description provided for @publicGuideMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public tools and guides'**
+  String get publicGuideMenuTitle;
+
+  /// No description provided for @publicGuideFreeDetector.
+  ///
+  /// In en, this message translates to:
+  /// **'Free short-text detector'**
+  String get publicGuideFreeDetector;
+
+  /// No description provided for @publicGuideZhDetector.
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional Chinese detector'**
+  String get publicGuideZhDetector;
+
+  /// No description provided for @publicGuideLocalVsCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Local AI detection vs cloud upload'**
+  String get publicGuideLocalVsCloud;
+
+  /// No description provided for @publicGuidePdfLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF AI detection limits'**
+  String get publicGuidePdfLimits;
+
+  /// No description provided for @publicGuideDocxEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'DOCX editing history evidence'**
+  String get publicGuideDocxEvidence;
+
+  /// No description provided for @publicGuideLowBurstiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Low burstiness in AI writing'**
+  String get publicGuideLowBurstiness;
+
+  /// No description provided for @publicGuideFakeCitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake citations and reference checks'**
+  String get publicGuideFakeCitations;
 }
 
 class _AppLocalizationsDelegate

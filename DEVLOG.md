@@ -1,5 +1,29 @@
 # TruthLens 開發日誌（DEVLOG）
 
+## 2026-09-01（第一百九十一次更新）— 公開工具與指南補齊多國語系
+
+使用者回報：右上角「公開工具與指南」子選單雖然出現在繁中介面，但子選單標題、各項連結與開啟後的
+公開頁內容仍混用英文，沒有跟隨目前介面語系。此次深入修正 app 內選單與靜態公開頁兩層語系來源，
+避免 SEO 入口和產品介面割裂。
+
+主要調整：
+
+1. `AppOverflowMenu` 不再硬寫「公開工具與指南」與各連結標題，改用 `AppLocalizations` getter。
+2. 14 個 ARB 語系檔補齊 8 個公開工具與指南相關鍵，避免 gen-l10n 靜默回退英文。
+3. 新增 `web/seo/page_i18n.js`，公開靜態頁會讀取 `?lang=` 並切換頁面標題、摘要、導覽、短文檢測器
+   操作文字與文章主要內容。
+4. App 內點擊公開頁時會把目前介面語系附加為 `?lang=...`，例如繁中介面開啟
+   `/privacy/local-ai-detector-vs-cloud-upload?lang=zh-Hant`。
+5. 7 個公開頁都加入 `data-page` 與 `page_i18n.js`，讓同一套 SEO URL 仍可依使用者語系顯示內容。
+6. 新增測試確認公開靜態頁支援 13 種語系代碼、各公開頁載入 i18n 腳本，並維持原本 SEO/隱私保護。
+7. 版本同步升級為 `4.13.3+1474`。
+
+**狀態**：✅ `flutter gen-l10n` 完成；✅ `dart format` 完成；✅
+`flutter test test/l10n_coverage_test.dart test/workspace_screen_test.dart test/web_seo_test.dart`
+34 項全數通過；✅ `flutter analyze --no-fatal-infos` 通過（仍列出既有 8 條
+`detectrl_zh_char_scorer.dart` 的 `prefer_initializing_formals` info）；✅
+`flutter build web` 成功產出 `build/web`，確認 `build/web/version.json` 為 `4.13.3/1474`。
+
 ## 2026-09-01（第一百九十次更新）— 首頁公開資訊改為手動進入工作台
 
 使用者回報：從首頁網址進入時，初始公開資訊頁跳轉太快，內容尚未看清楚就進入檢測首頁。

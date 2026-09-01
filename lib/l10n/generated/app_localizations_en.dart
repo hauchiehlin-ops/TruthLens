@@ -3402,4 +3402,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonGotIt => 'Got it';
+
+  @override
+  String get publicGuideMenuTitle => 'Public tools and guides';
+
+  @override
+  String get publicGuideFreeDetector => 'Free short-text detector';
+
+  @override
+  String get publicGuideZhDetector => 'Traditional Chinese detector';
+
+  @override
+  String get publicGuideLocalVsCloud => 'Local AI detection vs cloud upload';
+
+  @override
+  String get publicGuidePdfLimits => 'PDF AI detection limits';
+
+  @override
+  String get publicGuideDocxEvidence => 'DOCX editing history evidence';
+
+  @override
+  String get publicGuideLowBurstiness => 'Low burstiness in AI writing';
+
+  @override
+  String get publicGuideFakeCitations => 'Fake citations and reference checks';
 }

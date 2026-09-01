@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "ยกเลิก",
   "firstRunModelManualTitle": "ดาวน์โหลดโมเดลภายหลัง",
   "firstRunModelManualBody": "คุณดาวน์โหลดเองได้ทุกเมื่อ เปิด «การตั้งค่า» (ไอคอนรูปเฟืองบนแถบด้านบน) แล้วเลือก «การจัดการโมเดล AI» ในระหว่างนี้ TruthLens ยังทำงานได้ด้วยเครื่องมือเชิงสถิติและเชิงรูปแบบการเขียน",
-  "commonGotIt": "เข้าใจแล้ว"
+  "commonGotIt": "เข้าใจแล้ว",
+  "publicGuideMenuTitle": "เครื่องมือและคู่มือสาธารณะ",
+  "publicGuideFreeDetector": "ตัวตรวจข้อความสั้นฟรี",
+  "publicGuideZhDetector": "ตัวตรวจภาษาจีนตัวเต็ม",
+  "publicGuideLocalVsCloud": "การตรวจ AI ในเครื่องเทียบกับการอัปโหลดคลาวด์",
+  "publicGuidePdfLimits": "ข้อจำกัดของการตรวจ AI ใน PDF",
+  "publicGuideDocxEvidence": "หลักฐานประวัติการแก้ไข DOCX",
+  "publicGuideLowBurstiness": "Burstiness ต่ำในงานเขียน AI",
+  "publicGuideFakeCitations": "การตรวจสอบการอ้างอิงปลอม"
 }

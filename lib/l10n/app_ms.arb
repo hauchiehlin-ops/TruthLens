@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Batal",
   "firstRunModelManualTitle": "Muat turun model kemudian",
   "firstRunModelManualBody": "Anda boleh memuat turunnya bila-bila masa: buka Tetapan (ikon gear pada bar atas) dan pilih «Pengurusan Model AI». Sementara itu TruthLens terus berfungsi dengan enjin statistik dan gayanya.",
-  "commonGotIt": "Faham"
+  "commonGotIt": "Faham",
+  "publicGuideMenuTitle": "Alat dan panduan awam",
+  "publicGuideFreeDetector": "Pengesan teks pendek percuma",
+  "publicGuideZhDetector": "Pengesan Cina Tradisional",
+  "publicGuideLocalVsCloud": "Pengesanan AI setempat berbanding muat naik awan",
+  "publicGuidePdfLimits": "Had pengesanan AI untuk PDF",
+  "publicGuideDocxEvidence": "Bukti sejarah suntingan DOCX",
+  "publicGuideLowBurstiness": "Burstiness rendah dalam penulisan AI",
+  "publicGuideFakeCitations": "Semakan petikan palsu dan rujukan"
 }

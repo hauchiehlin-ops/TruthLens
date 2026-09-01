@@ -117,18 +117,18 @@ void main() {
 
     await tester.tap(find.byTooltip('More options'));
     await tester.pumpAndSettle();
-    expect(find.text('公開工具與指南'), findsOneWidget);
+    expect(find.text('Public tools and guides'), findsOneWidget);
 
-    await tester.tap(find.text('公開工具與指南'));
+    await tester.tap(find.text('Public tools and guides'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Free AI Detector'), findsOneWidget);
-    expect(find.text('免費 AI 文章檢測器'), findsOneWidget);
-    expect(find.text('Local AI detector vs cloud upload'), findsOneWidget);
-    expect(find.text('PDF AI detection limitations'), findsOneWidget);
+    expect(find.text('Free short-text detector'), findsOneWidget);
+    expect(find.text('Traditional Chinese detector'), findsOneWidget);
+    expect(find.text('Local AI detection vs cloud upload'), findsOneWidget);
+    expect(find.text('PDF AI detection limits'), findsOneWidget);
     expect(find.text('DOCX editing history evidence'), findsOneWidget);
     expect(find.text('Low burstiness in AI writing'), findsOneWidget);
-    expect(find.text('Fake citations as an AI writing signal'), findsOneWidget);
+    expect(find.text('Fake citations and reference checks'), findsOneWidget);
   });
 
   testWidgets('mobile default mode uses the responsive single-column flow', (

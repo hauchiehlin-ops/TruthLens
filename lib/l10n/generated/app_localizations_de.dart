@@ -3439,4 +3439,30 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonGotIt => 'Verstanden';
+
+  @override
+  String get publicGuideMenuTitle => 'Öffentliche Tools und Leitfäden';
+
+  @override
+  String get publicGuideFreeDetector => 'Kostenloser Kurztext-Detektor';
+
+  @override
+  String get publicGuideZhDetector => 'Detektor für traditionelles Chinesisch';
+
+  @override
+  String get publicGuideLocalVsCloud =>
+      'Lokale KI-Erkennung statt Cloud-Upload';
+
+  @override
+  String get publicGuidePdfLimits => 'Grenzen der KI-Erkennung bei PDF';
+
+  @override
+  String get publicGuideDocxEvidence =>
+      'DOCX-Bearbeitungshistorie als Nachweis';
+
+  @override
+  String get publicGuideLowBurstiness => 'Niedrige Burstiness in KI-Texten';
+
+  @override
+  String get publicGuideFakeCitations => 'Falsche Zitate und Quellenprüfung';
 }

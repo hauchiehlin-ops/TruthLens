@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Cancelar",
   "firstRunModelManualTitle": "Descargar los modelos más tarde",
   "firstRunModelManualBody": "Puedes descargarlos cuando quieras: abre Ajustes (el icono de engranaje de la barra superior) y elige «Gestión de modelos de IA». Mientras tanto, TruthLens sigue funcionando con sus motores estadístico y estilístico.",
-  "commonGotIt": "Entendido"
+  "commonGotIt": "Entendido",
+  "publicGuideMenuTitle": "Herramientas y guías públicas",
+  "publicGuideFreeDetector": "Detector gratuito de textos breves",
+  "publicGuideZhDetector": "Detector de chino tradicional",
+  "publicGuideLocalVsCloud": "Detección local de IA frente a subida a la nube",
+  "publicGuidePdfLimits": "Límites de la detección de IA en PDF",
+  "publicGuideDocxEvidence": "Evidencia del historial de edición DOCX",
+  "publicGuideLowBurstiness": "Baja burstiness en escritura de IA",
+  "publicGuideFakeCitations": "Citas falsas y verificación de referencias"
 }

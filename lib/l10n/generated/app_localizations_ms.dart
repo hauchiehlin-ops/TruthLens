@@ -3425,4 +3425,29 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get commonGotIt => 'Faham';
+
+  @override
+  String get publicGuideMenuTitle => 'Alat dan panduan awam';
+
+  @override
+  String get publicGuideFreeDetector => 'Pengesan teks pendek percuma';
+
+  @override
+  String get publicGuideZhDetector => 'Pengesan Cina Tradisional';
+
+  @override
+  String get publicGuideLocalVsCloud =>
+      'Pengesanan AI setempat berbanding muat naik awan';
+
+  @override
+  String get publicGuidePdfLimits => 'Had pengesanan AI untuk PDF';
+
+  @override
+  String get publicGuideDocxEvidence => 'Bukti sejarah suntingan DOCX';
+
+  @override
+  String get publicGuideLowBurstiness => 'Burstiness rendah dalam penulisan AI';
+
+  @override
+  String get publicGuideFakeCitations => 'Semakan petikan palsu dan rujukan';
 }

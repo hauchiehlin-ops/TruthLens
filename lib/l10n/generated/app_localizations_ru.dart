@@ -3425,4 +3425,31 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commonGotIt => 'Понятно';
+
+  @override
+  String get publicGuideMenuTitle => 'Открытые инструменты и руководства';
+
+  @override
+  String get publicGuideFreeDetector => 'Бесплатный детектор коротких текстов';
+
+  @override
+  String get publicGuideZhDetector => 'Детектор традиционного китайского';
+
+  @override
+  String get publicGuideLocalVsCloud =>
+      'Локальная AI-проверка и облачная загрузка';
+
+  @override
+  String get publicGuidePdfLimits => 'Ограничения AI-проверки PDF';
+
+  @override
+  String get publicGuideDocxEvidence =>
+      'Доказательства из истории редактирования DOCX';
+
+  @override
+  String get publicGuideLowBurstiness => 'Низкая burstiness в AI-тексте';
+
+  @override
+  String get publicGuideFakeCitations =>
+      'Фальшивые цитаты и проверка источников';
 }

@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "Batal",
   "firstRunModelManualTitle": "Mengunduh model nanti",
   "firstRunModelManualBody": "Anda dapat mengunduhnya kapan saja: buka Pengaturan (ikon roda gigi di bilah atas) lalu pilih «Manajemen Model AI». Sementara itu TruthLens tetap bekerja dengan mesin statistik dan stilistiknya.",
-  "commonGotIt": "Mengerti"
+  "commonGotIt": "Mengerti",
+  "publicGuideMenuTitle": "Alat dan panduan publik",
+  "publicGuideFreeDetector": "Detektor teks pendek gratis",
+  "publicGuideZhDetector": "Detektor Tionghoa Tradisional",
+  "publicGuideLocalVsCloud": "Deteksi AI lokal vs unggahan cloud",
+  "publicGuidePdfLimits": "Batas deteksi AI pada PDF",
+  "publicGuideDocxEvidence": "Bukti riwayat penyuntingan DOCX",
+  "publicGuideLowBurstiness": "Burstiness rendah dalam tulisan AI",
+  "publicGuideFakeCitations": "Kutipan palsu dan pemeriksaan referensi"
 }

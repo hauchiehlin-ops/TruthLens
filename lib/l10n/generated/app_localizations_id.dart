@@ -3418,4 +3418,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get commonGotIt => 'Mengerti';
+
+  @override
+  String get publicGuideMenuTitle => 'Alat dan panduan publik';
+
+  @override
+  String get publicGuideFreeDetector => 'Detektor teks pendek gratis';
+
+  @override
+  String get publicGuideZhDetector => 'Detektor Tionghoa Tradisional';
+
+  @override
+  String get publicGuideLocalVsCloud => 'Deteksi AI lokal vs unggahan cloud';
+
+  @override
+  String get publicGuidePdfLimits => 'Batas deteksi AI pada PDF';
+
+  @override
+  String get publicGuideDocxEvidence => 'Bukti riwayat penyuntingan DOCX';
+
+  @override
+  String get publicGuideLowBurstiness => 'Burstiness rendah dalam tulisan AI';
+
+  @override
+  String get publicGuideFakeCitations =>
+      'Kutipan palsu dan pemeriksaan referensi';
 }

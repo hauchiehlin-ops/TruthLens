@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "취소",
   "firstRunModelManualTitle": "나중에 직접 다운로드하기",
   "firstRunModelManualBody": "언제든지 직접 다운로드할 수 있습니다. 상단 도구 모음의 톱니바퀴 아이콘에서 «설정»을 열고 «AI 모델 관리»를 선택하세요. 그전에도 TruthLens는 통계 및 문체 엔진으로 작동합니다.",
-  "commonGotIt": "확인"
+  "commonGotIt": "확인",
+  "publicGuideMenuTitle": "공개 도구 및 가이드",
+  "publicGuideFreeDetector": "무료 짧은 글 감지기",
+  "publicGuideZhDetector": "번체 중국어 감지기",
+  "publicGuideLocalVsCloud": "로컬 AI 감지와 클라우드 업로드 비교",
+  "publicGuidePdfLimits": "PDF AI 감지의 한계",
+  "publicGuideDocxEvidence": "DOCX 편집 기록 증거",
+  "publicGuideLowBurstiness": "AI 글쓰기의 낮은 버스티니스",
+  "publicGuideFakeCitations": "가짜 인용 및 참고문헌 확인"
 }

@@ -89,6 +89,7 @@ void main() {
       expect(html, contains('data-detector-input'));
       expect(html, contains('data-detector-run'));
       expect(html, contains('data-word-count'));
+      expect(html, contains('/seo/page_i18n.js'));
       expect(html, contains('/seo/free_detector.js'));
       expect(html, isNot(contains('flutter_bootstrap.js')));
     }
@@ -116,10 +117,37 @@ void main() {
       expect(html, contains('<link rel="canonical"'));
       expect(html, contains('<script type="application/ld+json">'));
       expect(html, contains('"@type": "Article"'));
+      expect(html, contains('/seo/page_i18n.js'));
       expect(html, contains('href="/free-ai-detector"'));
       expect(html, contains('href="/"'));
       expect(html, isNot(contains('flutter_bootstrap.js')));
     }
+  });
+
+  test('public static pages can render in the app-selected locale', () {
+    final i18n = File('web/seo/page_i18n.js').readAsStringSync();
+
+    for (final locale in [
+      'zh-Hant',
+      'zh-Hans',
+      'en',
+      'ja',
+      'ko',
+      'th',
+      'ms',
+      'es',
+      'id',
+      'ru',
+      'de',
+      'fr',
+      'pt',
+    ]) {
+      expect(i18n, contains("lang: '$locale'"));
+    }
+    expect(i18n, contains("new URLSearchParams(window.location.search"));
+    expect(i18n, contains("params.get('lang')"));
+    expect(i18n, contains('document.documentElement.lang = pack.lang'));
+    expect(i18n, contains('document.title = page[0]'));
   });
 
   test('Vercel serves static SEO files before the Flutter fallback', () {

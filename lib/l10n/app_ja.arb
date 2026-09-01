@@ -1418,5 +1418,13 @@
   "firstRunModelCancel": "キャンセル",
   "firstRunModelManualTitle": "あとで自分でダウンロードする",
   "firstRunModelManualBody": "いつでもご自身でダウンロードできます。「設定」（上部ツールバーの歯車アイコン）を開き、「AIモデル管理」を選んでください。それまでも TruthLens は統計エンジンと文体エンジンで動作します。",
-  "commonGotIt": "了解"
+  "commonGotIt": "了解",
+  "publicGuideMenuTitle": "公開ツールとガイド",
+  "publicGuideFreeDetector": "無料の短文検出ツール",
+  "publicGuideZhDetector": "繁体字中国語検出ツール",
+  "publicGuideLocalVsCloud": "ローカル AI 検出とクラウドアップロードの比較",
+  "publicGuidePdfLimits": "PDF の AI 検出の限界",
+  "publicGuideDocxEvidence": "DOCX 編集履歴の証拠",
+  "publicGuideLowBurstiness": "AI 文章における低バースト性",
+  "publicGuideFakeCitations": "偽引用と参考文献チェック"
 }
