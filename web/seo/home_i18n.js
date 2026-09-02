@@ -18,8 +18,8 @@
   const content = {
     en: {
       changelogTitle: "Latest Updates",
-      changelog1: "v6.3.1 - Fixed legacy DOCX and PDF import gibberish filter and responsive title.",
-      changelog2: "v6.2.0 - Enhanced legacy DOCX and PDF text extraction and import coverage.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Fixed legacy DOCX and PDF import gibberish filter and responsive title.",
       footerText: "Local-first AI content detection and document forensics.",
       title: 'OmniTrace AI Content Detection and Document Forensics',
       lead:
@@ -55,8 +55,8 @@
     },
     'zh-Hant': {
       changelogTitle: "近期更新",
-      changelog1: "v6.3.1 - 修復舊版 DOCX 與 PDF 匯入亂碼過濾與響應式標題。",
-      changelog2: "v6.2.0 - 強化舊版 DOCX 與 PDF 匯入與文字擷取覆蓋率。",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - 修復舊版 DOCX 與 PDF 匯入亂碼過濾與響應式標題。",
       footerText: "本地優先 AI 內容檢測與文件鑑識。",
       title: 'OmniTrace AI 內容檢測與文件鑑識',
       lead:
@@ -90,8 +90,8 @@
     },
     'zh-Hans': {
       changelogTitle: "近期更新",
-      changelog1: "v6.3.1 - 修复旧版 DOCX 与 PDF 导入乱码过滤与响应式标题。",
-      changelog2: "v6.2.0 - 强化旧版 DOCX 与 PDF 导入与文本提取覆盖率。",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - 修复旧版 DOCX 与 PDF 导入乱码过滤与响应式标题。",
       footerText: "本地优先 AI 内容检测与文件鉴识。",
       title: 'OmniTrace AI 内容检测与文件鉴识',
       lead:
@@ -121,8 +121,8 @@
     },
     ja: {
       changelogTitle: "最新のアップデート",
-      changelog1: "v6.3.1 - 古い DOCX および PDF インポートの文字化けフィルターとレスポンシブ タイトルを修正しました。",
-      changelog2: "v6.2.0 - 以前のDOCXおよびPDFのインポートとテキスト抽出のカバレッジを強化しました。",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - 古い DOCX および PDF インポートの文字化けフィルターとレスポンシブ タイトルを修正しました。",
       footerText: "ローカル優先の AI コンテンツ検出と文書フォレンジック。",
       title: 'OmniTrace AI コンテンツ検出と文書フォレンジック',
       lead:
@@ -152,8 +152,8 @@
     },
     ko: {
       changelogTitle: "최근 업데이트",
-      changelog1: "v6.3.1 - 기존 DOCX 및 PDF 가져오기 깨짐 필터 및 반응형 제목 수정.",
-      changelog2: "v6.2.0 - 기존 DOCX 및 PDF 가져오기 및 텍스트 추출 커버리지를 강화했습니다.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - 기존 DOCX 및 PDF 가져오기 깨짐 필터 및 반응형 제목 수정.",
       footerText: "로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.",
       title: 'OmniTrace AI 콘텐츠 감지 및 문서 포렌식',
       lead:
@@ -183,8 +183,8 @@
     },
     th: {
       changelogTitle: "อัปเดตล่าสุด",
-      changelog1: "v6.3.1 - แก้ไขตัวกรองการนำเข้า DOCX และ PDF แบบเก่าและชื่อที่ตอบสนอง",
-      changelog2: "v6.2.0 - ปรับปรุงการนำเข้า DOCX และ PDF แบบเก่าและการครอบคลุมการดึงข้อความ",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - แก้ไขตัวกรองการนำเข้า DOCX และ PDF แบบเก่าและชื่อที่ตอบสนอง",
       footerText: "การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง",
       title: 'OmniTrace การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
       lead:
@@ -214,8 +214,8 @@
     },
     ms: {
       changelogTitle: "Kemas Kini Terkini",
-      changelog1: "v6.3.1 - Membetulkan penapis import DOCX dan PDF warisan serta tajuk responsif.",
-      changelog2: "v6.2.0 - Mempertingkat liputan import dan pengekstrakan teks DOCX dan PDF warisan.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Membetulkan penapis import DOCX dan PDF warisan serta tajuk responsif.",
       footerText: "Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.",
       title: 'OmniTrace Pengesanan Kandungan AI dan Forensik Dokumen',
       lead:
@@ -245,8 +245,8 @@
     },
     es: {
       changelogTitle: "Últimas actualizaciones",
-      changelog1: "v6.3.1 - Se solucionó el filtro de caracteres basura de importación de DOCX y PDF heredados y el título responsivo.",
-      changelog2: "v6.2.0 - Se mejoró la importación de DOCX y PDF heredados y la cobertura de extracción de texto.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Se solucionó el filtro de caracteres basura de importación de DOCX y PDF heredados y el título responsivo.",
       footerText: "Detección de contenido IA y análisis documental local primero.",
       title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
@@ -276,8 +276,8 @@
     },
     id: {
       changelogTitle: "Pembaruan Terbaru",
-      changelog1: "v6.3.1 - Memperbaiki filter teks acak impor DOCX dan PDF versi lama dan judul responsif.",
-      changelog2: "v6.2.0 - Meningkatkan cakupan impor dan ekstraksi teks DOCX dan PDF versi lama.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Memperbaiki filter teks acak impor DOCX dan PDF versi lama dan judul responsif.",
       footerText: "Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.",
       title: 'OmniTrace Deteksi Konten AI dan Forensik Dokumen',
       lead:
@@ -307,8 +307,8 @@
     },
     ru: {
       changelogTitle: "Последние обновления",
-      changelog1: "v6.3.1 - Исправлен фильтр мусора при импорте старых DOCX и PDF и адаптивный заголовок.",
-      changelog2: "v6.2.0 - Улучшен импорт старых DOCX и PDF, а также полнота извлечения текста.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Исправлен фильтр мусора при импорте старых DOCX и PDF и адаптивный заголовок.",
       footerText: "Локальная AI-проверка контента и экспертиза документов.",
       title: 'OmniTrace: AI-проверка контента и экспертиза документов',
       lead:
@@ -338,8 +338,8 @@
     },
     de: {
       changelogTitle: "Neueste Updates",
-      changelog1: "v6.3.1 - Filter für den Import von alten DOCX- und PDF-Dateien sowie responsive Titel behoben.",
-      changelog2: "v6.2.0 - Verbesserter Import von alten DOCX- und PDF-Dateien sowie höhere Textextraktionsabdeckung.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Filter für den Import von alten DOCX- und PDF-Dateien sowie responsive Titel behoben.",
       footerText: "Lokale KI-Inhaltserkennung und Dokumentforensik.",
       title: 'OmniTrace KI-Inhaltserkennung und Dokumentforensik',
       lead:
@@ -369,8 +369,8 @@
     },
     fr: {
       changelogTitle: "Dernières mises à jour",
-      changelog1: "v6.3.1 - Correction du filtre de caractères indésirables lors de l'importation des anciens DOCX et PDF et du titre réactif.",
-      changelog2: "v6.2.0 - Amélioration de l'importation des anciens DOCX et PDF et de la couverture de l'extraction de texte.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Correction du filtre de caractères indésirables lors de l'importation des anciens DOCX et PDF et du titre réactif.",
       footerText: "Détection de contenu IA et analyse documentaire locale.",
       title: 'OmniTrace Détection de Contenu IA et Analyse Documentaire',
       lead:
@@ -400,8 +400,8 @@
     },
     pt: {
       changelogTitle: "Últimas Atualizações",
-      changelog1: "v6.3.1 - Correção do filtro de lixo de importação de DOCX e PDF antigos e título responsivo.",
-      changelog2: "v6.2.0 - Melhoria na importação de DOCX e PDF antigos e na cobertura de extração de texto.",
+      changelog1: "v6.3.2 - 自動發布修正與優化",
+      changelog2: "v6.3.1 - Correção do filtro de lixo de importação de DOCX e PDF antigos e título responsivo.",
       footerText: "Detecção de conteúdo IA e forense documental local-first.",
       title: 'OmniTrace Detecção de Conteúdo IA e Forense Documental',
       lead:
