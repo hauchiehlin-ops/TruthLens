@@ -644,8 +644,8 @@ class DocumentImporter {
       r'[\u3400-\u9fff\uac00-\ud7af\u3040-\u30ff]',
       unicode: true,
     ).allMatches(trimmed).length;
-    final cjkPunctuationAndSpace = RegExp(
-      r'[。，、；：？！（）「」『』《》〈〉【】\s]',
+    final cjkPunctuation = RegExp(
+      r'[。，、；：？！（）「」『』《》〈〉【】]',
       unicode: true,
     ).allMatches(trimmed).length;
 
@@ -662,7 +662,7 @@ class DocumentImporter {
       score -= 0.30;
     }
     if (_looksLikeRepeatedBinaryNoise(trimmed)) score -= 0.50;
-    if (cjkChars > 100 && cjkPunctuationAndSpace / cjkChars < 0.02) score -= 0.60;
+    if (cjkChars > 100 && cjkPunctuation / cjkChars < 0.02) score -= 0.60;
     if (trimmed.length >= 200 && languageAnchors == 0) score -= 0.18;
     return score.clamp(0.0, 1.0);
   }
