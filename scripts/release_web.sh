@@ -42,11 +42,17 @@ echo ""
 
 perl -0pi -e "s/^version: .*/version: $new_version/m" pubspec.yaml
 
+echo "Syncing SEO changelog..."
+if [ -f "scripts/sync_seo_changelog.py" ]; then
+  python3 scripts/sync_seo_changelog.py "$new_version" "$commit_msg"
+  dart tool/generate_seo_pages.dart
+fi
+
 echo "Building web bundle..."
 flutter build web
 
-echo "Staging version and web build artifacts..."
-git add pubspec.yaml build/web
+echo "Staging version, SEO pages, and web build artifacts..."
+git add pubspec.yaml build/web web/seo/home_i18n.js web/index.html web/use-cases/ web/sitemap.xml web/sitemap_directory.html
 
 if git diff --cached --quiet; then
   echo "No staged changes to commit."
