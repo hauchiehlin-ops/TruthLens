@@ -67,3 +67,7 @@ app.*.map.json
 /training_tools/model.onnx.data
 /training_tools/adversarial_paraphrase_quantized.onnx
 .claude/
+.vercel
+.env*
+# macOS 外接硬碟 AppleDouble 隱藏檔
+._*
