@@ -1,9 +1,8 @@
 name: Deploy Flutter Web to Vercel
 
+# 正式部署由 Vercel Git 整合（band-b/truth-lens）在 push 時自動完成；
+# 此 workflow 僅保留手動觸發，避免 Vercel personal token「User not found」問題造成每次 push 都失敗。
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 concurrency:

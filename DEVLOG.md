@@ -1,5 +1,18 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-16 — GitHub Actions Vercel 部署改為僅手動觸發
+
+`Deploy Flutter Web to Vercel` workflow 自 9 月起每次 push 都失敗。早期是缺少 `VERCEL_ORG_ID` /
+`VERCEL_PROJECT_ID`；補齊後改卡在 `vercel whoami` 回傳 `User not found (404)`。即使在 band-b 範圍反覆
+重建 personal token、並在本機直接測試，結果仍相同（Vercel 社群已有同樣的 token 回報），但本機 CLI
+登入（device flow）正常。
+
+確認正式站其實不受影響：`band-b/truth-lens`（`prj_R1euBUJn3uYLh5jW4om0z5AwMbiB`）已連結 GitHub repo，
+Vercel Git 整合在 push 時自動部署，Production 部署皆為 Ready。因此 `.github/workflows/deploy_vercel.yml`
+移除 `push` 觸發，只保留 `workflow_dispatch`，避免重複部署與持續的失敗通知。
+
+**狀態**：✅ workflow 已改為手動觸發；Vercel token 問題待 Vercel 修正後再評估是否恢復。
+
 ## 2026-09-02（第二百零二次更新）— 修正舊式雙欄 PDF 文字層誤判完整
 
 使用者回報：研討會 PDF 匯入後沒有完全截取所有文字內容，實際看起來只剩前、後段落。以
