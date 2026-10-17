@@ -1854,7 +1854,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '문장 길이에 뚜렷한 변화가 있으며（burstiness $value）사람의 자연스러운 문장 리듬 변화와 일치합니다';
+    return '문장 길이에 뚜렷한 변화가 있습니다（burstiness $value）. 최신 AI 출력과 문서 레이아웃도 비슷한 값을 만들기 때문에 사람이 썼다는 증거로 보지 않습니다';
   }
 
   @override

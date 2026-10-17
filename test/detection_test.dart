@@ -256,6 +256,35 @@ The impact of stereoscopic 3D advertising: The role of presence.
       );
     });
 
+    test('正文 burstiness 排除標題、關鍵詞列與參考文獻', () {
+      const proposal =
+          '數位行銷前瞻研究計畫\n\n'
+          '關鍵詞：數位行銷、生成式人工智慧\n\n'
+          '當前數位行銷領域正處於技術驅動與消費者認知演變的關鍵交匯點。'
+          '本研究以兩年為期，提出五大研究主題與跨領域因果分析方案。'
+          '研究採用混合方法，結合田野實驗與行為資料分析。'
+          '預期在兩年內產出三篇國際期刊論文並提供策略建議。\n\n'
+          '參考文獻\n\n'
+          'Kumar, V., & Reinartz, W. (2016). Creating enduring customer value. '
+          'Journal of Marketing, 80(6), 36–68.';
+      final t = PreprocessedText.from(proposal);
+      final prose = [
+        for (var i = 0; i < t.sentences.length; i++)
+          if (t.proseSentenceMask[i]) t.sentences[i],
+      ];
+
+      expect(prose, hasLength(4));
+      expect(prose.any((s) => s.contains('關鍵詞')), isFalse);
+      expect(prose.any((s) => s.contains('customer value')), isFalse);
+      expect(t.proseBurstiness, isNotNull);
+      expect(t.proseBurstiness!, lessThan(t.burstiness));
+    });
+
+    test('正文散文句不足 4 句時 proseBurstiness 棄權', () {
+      final t = PreprocessedText.from('第一句很短。第二句也短。標題沒有句號');
+      expect(t.proseBurstiness, isNull);
+    });
+
     test('burstiness：均勻句長低於起伏句長', () {
       final uniform = PreprocessedText.from(
         'One two three four five. Six seven eight nine ten. '

@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "Perplejidad del modelo de lenguaje alta ({ppl}), acorde con la naturaleza impredecible de la escritura humana",
   "engineReasonPplMid": "Perplejidad del modelo de lenguaje moderada ({ppl})",
   "engineReasonBurstinessLow": "Longitud de oraciones muy uniforme (burstiness {value}); un ritmo homogéneo es un rastro estadístico común del texto generado por IA",
-  "engineReasonBurstinessHigh": "Variación notable en la longitud de las oraciones (burstiness {value}), acorde con el ritmo natural de la escritura humana",
+  "engineReasonBurstinessHigh": "Variación notable en la longitud de las oraciones (burstiness {value}); no se cuenta como evidencia humana, porque los textos de IA actuales y el formato del documento producen valores similares",
   "engineReasonBurstinessMid": "La variación de longitud de frase (burstiness {value}) se mantuvo en la banda neutra 0,30–0,55",
   "engineReasonTtrLow": "Diversidad de vocabulario baja (TTR {value}); alta repetición de palabras",
   "engineReasonTtrHigh": "Diversidad de vocabulario alta (TTR {value})",

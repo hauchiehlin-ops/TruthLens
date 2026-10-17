@@ -1890,7 +1890,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Noticeable variation in sentence length (burstiness $value) [Human-leaning], dynamic rhythm';
+    return 'Noticeable variation in sentence length (burstiness $value); not counted as human evidence, because current AI output and document layout produce similar values';
   }
 
   @override

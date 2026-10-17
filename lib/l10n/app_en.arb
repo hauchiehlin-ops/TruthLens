@@ -1782,7 +1782,7 @@
       }
     }
   },
-  "engineReasonBurstinessHigh": "Noticeable variation in sentence length (burstiness {value}) [Human-leaning], dynamic rhythm",
+  "engineReasonBurstinessHigh": "Noticeable variation in sentence length (burstiness {value}); not counted as human evidence, because current AI output and document layout produce similar values",
   "@engineReasonBurstinessHigh": {
     "placeholders": {
       "value": {

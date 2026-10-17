@@ -88,6 +88,71 @@ class StylometryEngine implements DetectionEngine {
     RegExp(r'\*\*[^*\n]{2,40}[：:]\*\*'),
   ];
 
+  /// 長篇代理式生成文件的結構特徵，**只記錄、不投票**。
+  ///
+  /// 動機是 2026-10 的 Antigravity 研究計畫：章節以「主題一……主題五」平行
+  /// 展開、各節篇幅相近。但先前的版面密度特徵實測後被否決（人類技術文件的
+  /// 標題、粗體比例反而更高），所以這組特徵在有人類對照組驗證區分度之前，
+  /// 不得影響分數或 hasEvidence。量測工具：tool/measure_domain_reliability_test.dart。
+  ///
+  /// - `structure_parallel_headings`：最長一串同模板序號標題的長度
+  ///   （主題一、主題二…；一、二、…；第一章、第二章…）
+  /// - `structure_section_length_cv`：標題之間正文篇幅的變異係數，
+  ///   至少 3 節才計算
+  static Map<String, double> documentStructureFeatures(String raw) {
+    const numerals = '一二三四五六七八九十';
+    final heading = RegExp(
+      r'^\s*(?:#+\s*)?(?:(主題|研究主題|議題|面向|階段|目標|策略|子計畫)'
+      '([$numerals]+)'
+      r'|(第)'
+      '([$numerals]+)'
+      r'[章節]|()'
+      '([$numerals]+)'
+      r'[、．.])',
+    );
+    var longestRun = 0;
+    var run = 0;
+    String? runTemplate;
+    var expected = 0;
+    final sectionLengths = <int>[];
+    var current = -1;
+    for (final line in raw.split('\n')) {
+      final match = heading.firstMatch(line);
+      if (match == null) {
+        if (current >= 0) current += line.trim().length;
+        continue;
+      }
+      if (current >= 0) sectionLengths.add(current);
+      current = 0;
+      final template = match.group(1) ?? match.group(3) ?? '';
+      final numeral = match.group(2) ?? match.group(4) ?? match.group(6) ?? '';
+      final value = numeral.length == 1 ? numerals.indexOf(numeral) + 1 : 0;
+      if (template == runTemplate && value == expected) {
+        run++;
+      } else {
+        run = value == 1 ? 1 : 0;
+        runTemplate = template;
+      }
+      expected = value + 1;
+      if (run > longestRun) longestRun = run;
+    }
+    if (current >= 0) sectionLengths.add(current);
+    final features = <String, double>{
+      'structure_parallel_headings': longestRun.toDouble(),
+    };
+    final bodies = sectionLengths.where((length) => length > 0).toList();
+    if (bodies.length >= 3) {
+      final mean = bodies.reduce((a, b) => a + b) / bodies.length;
+      final variance =
+          bodies
+              .map((length) => math.pow(length - mean, 2))
+              .reduce((a, b) => a + b) /
+          bodies.length;
+      features['structure_section_length_cv'] = math.sqrt(variance) / mean;
+    }
+    return features;
+  }
+
   @override
   Future<EngineScore> analyze(
     PreprocessedText text,
@@ -148,6 +213,7 @@ class StylometryEngine implements DetectionEngine {
         .where((pattern) => pattern.hasMatch(text.raw))
         .length;
     features['assistant_response_artifacts'] = assistantArtifactHits.toDouble();
+    features.addAll(documentStructureFeatures(text.raw));
     if (assistantArtifactHits > 0) {
       score += assistantArtifactHits >= 2 ? 0.95 : 0.75;
       reasons.add(

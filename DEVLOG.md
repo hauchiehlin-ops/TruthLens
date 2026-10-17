@@ -1,5 +1,49 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-17（續）— 停用 burstiness 人類側、正文切句，並建好研究計畫語域管線
+
+接續同日 Transformer 修正，處理同一份 Antigravity 研究計畫暴露的其餘缺口。
+
+**1. burstiness 人類側停用（根因二）**
+
+以 19 句研究計畫樣本實測：整體 burstiness 0.552（越過舊人類側門檻 0.55），只計正文
+散文句為 0.449。差距全來自版面：標題列 33 字、關鍵詞列 23 字、書目篇名 4／6 詞，以及
+「主題一：…」標題被 PDF 硬換行修復接進下一句。
+
+- `statistical_engine.dart`：burstiness > 0.55 不再產生 0.18–0.40 的人類訊號，只列說明。
+  理由與 2026-08-19 停用困惑度、MATTR 人類側相同；14 種語系的說明文字同步改寫
+- `PreprocessedText.proseBurstiness` / `proseSentenceMask`：只計以句末標點結束、位於參考
+  文獻標題之前的句子，不足 4 句棄權；AI 側（< 0.30）改用此值
+- `_looksLikeStructuralHeading`：新增 40 字以內的中文短標題（「一、」「主題一：」
+  「關鍵詞：」等），不再被接進正文第一句；Transformer 逐句輸入也因此更乾淨
+
+**2. 研究計畫語域管線（尚無資料）**
+
+- `generate_ai_corpus.py --register zh-proposal`：中文研究計畫書提示詞與四種語域
+  （standard／agentic／humanized／light_edit），要求完整成品含標題、時程表、參考文獻
+- `proposal_register/topics_zh.txt`：40 個跨學科題目，避免模型學到「行銷題材」而非語域
+- `build_proposal_register.py`：字元切塊（`prepare_corpus.py` 以空白計詞，中文會被整份
+  丟棄）、依題目分組切分、併入 zh_combined3，輸出獨立測試集與 Binoculars 評分格式
+- 順帶修正：`--topics-file` 的所有題目共用 src `topics-file`，導致輸出檔名互相碰撞而被
+  當成已完成跳過，且全部落入同一個 group。改為每題 `topicNNN`
+
+**3. 量測工具與結構特徵（只記錄、不投票）**
+
+- `tool/measure_domain_reliability_test.dart`：以標註語料量各家族在各領域的誤報率／召回率，
+  每類 ≥ 30 份才給建議值，用來取代學術領域 0.55／0.68／0.72 固定折扣。放在 tool/，預設
+  `flutter test` 不執行
+- 風格引擎新增 `structure_parallel_headings`、`structure_section_length_cv`。先前版面密度
+  特徵經實測否決，因此這組在有人類對照組前不得影響分數或 hasEvidence（有測試鎖定）
+
+**未完成與原因**：本環境網路政策拒絕 huggingface.co，無法下載 DetectRL-X／HC3；生成語料需
+各家 API 金鑰，人類研究計畫需另行取得與確認授權。Binoculars 尚未實測，刻意不接入 App；
+學術折扣維持原值直到有量測結果。
+
+**版本與狀態**：版本號未遞增。✅ `flutter test` 677 項中 16 項失敗，與 base 完全相同（無新增）；
+新增 Dart 測試 4 條、Python 測試 3 條全數通過。`perf_benchmark_test` 的模板報告 50 ms 門檻
+在本機 base 上即會間歇失敗（46.8–54.3 ms），本次 49.1–55.2 ms，分布重疊。
+`flutter analyze` 無新增問題。
+
 ## 2026-10-17 — 修正：Transformer 找到 AI 區塊卻被記成人類證據
 
 使用者以一份 Google Antigravity 全自動生成的 22,739 字中文研究計畫 PDF 測試 v6.3.2，報告為

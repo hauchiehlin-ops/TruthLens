@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "Kekeliruan model bahasa tinggi ({ppl}), selaras dengan sifat tidak boleh diramal penulisan manusia",
   "engineReasonPplMid": "Kekeliruan model bahasa sederhana ({ppl})",
   "engineReasonBurstinessLow": "Panjang ayat sangat seragam (burstiness {value}) — rentak yang sekata adalah tanda statistik biasa teks yang dijana AI",
-  "engineReasonBurstinessHigh": "Variasi ketara dalam panjang ayat (burstiness {value}), selaras dengan rentak semula jadi penulisan manusia",
+  "engineReasonBurstinessHigh": "Variasi ketara dalam panjang ayat (burstiness {value}); tidak dikira sebagai bukti penulisan manusia, kerana output AI semasa dan susun atur dokumen menghasilkan nilai yang serupa",
   "engineReasonBurstinessMid": "Variasi panjang ayat (burstiness {value}) kekal dalam jalur neutral 0,30–0,55",
   "engineReasonTtrLow": "Kepelbagaian perbendaharaan kata rendah (TTR {value}) — pengulangan perkataan tinggi",
   "engineReasonTtrHigh": "Kepelbagaian perbendaharaan kata tinggi (TTR {value})",

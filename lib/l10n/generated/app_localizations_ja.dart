@@ -1849,7 +1849,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '文の長さに明らかな変化があり（burstiness $value）、人間の自然な文章のリズムの変化と一致します';
+    return '文の長さに明らかな変化があります（burstiness $value）。現行の AI 出力や文書レイアウトでも同程度の値になるため、人間による執筆の証拠とはみなしません';
   }
 
   @override

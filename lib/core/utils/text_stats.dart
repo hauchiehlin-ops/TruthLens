@@ -16,6 +16,10 @@ class PreprocessedText {
   final List<int> sentenceChunkIndices;
   final List<List<int>> sentenceAnalysisChunkIndices;
 
+  /// 各句是否屬於正文散文：以句末標點結束、且位於參考文獻標題之前。
+  /// 標題、關鍵詞列、表格列與書目片段不是作者的句子節奏，只是版面。
+  final List<bool> proseSentenceMask;
+
   /// 文件語言，於預處理時辨識一次。四個引擎、校準查表與模型路由都需要它，
   /// 各自重算不但浪費，還可能因為傳入不同片段而得到不一致的結果。
   final DetectedLanguage language;
@@ -28,6 +32,7 @@ class PreprocessedText {
     this.analysisChunks,
     this.sentenceChunkIndices,
     this.sentenceAnalysisChunkIndices,
+    this.proseSentenceMask,
     this.language,
   );
 
@@ -39,8 +44,11 @@ class PreprocessedText {
     final analysisParagraphs = <String>[];
     final sentenceChunkIndices = <int>[];
     final sentenceAnalysisChunkIndices = <List<int>>[];
+    final proseSentenceMask = <bool>[];
+    var inBibliography = false;
 
     for (final paragraph in _reconstructParagraphs(normalized)) {
+      if (_isBibliographyHeading(paragraph)) inBibliography = true;
       final paragraphSentences = _splitSentences(
         paragraph,
       ).map(normalizeSentenceForAnalysis).where(isAnalyzableSentence).toList();
@@ -68,6 +76,9 @@ class PreprocessedText {
         final sentenceIndex = sentences.length;
         sentences.add(sentence);
         tokens.add(sentenceTokenList);
+        proseSentenceMask.add(
+          !inBibliography && _endsWithSentenceBoundary(sentence),
+        );
         sentenceAnalysisChunkIndices.add(<int>[]);
 
         final modelUnits = _splitLongAnalysisUnit(sentence);
@@ -114,8 +125,27 @@ class PreprocessedText {
       analysisChunks,
       sentenceChunkIndices,
       sentenceAnalysisChunkIndices,
+      proseSentenceMask,
       language,
     );
+  }
+
+  static bool _isBibliographyHeading(String paragraph) {
+    final normalized = paragraph
+        .replaceFirst(RegExp(r'^[\d.、．\s第一二三四五六七八九十章節]+'), '')
+        .replaceAll(RegExp(r'[\s　:：]+'), '')
+        .toLowerCase();
+    return const {
+      '參考文獻',
+      '参考文献',
+      '參考資料',
+      '参考资料',
+      '引用文獻',
+      'references',
+      'bibliography',
+      'workscited',
+      'literaturecited',
+    }.contains(normalized);
   }
 
   /// 將段落區塊的神經模型分數映射回原始句序，供逐句報告與熱區圖使用。
@@ -771,6 +801,19 @@ class PreprocessedText {
     ).hasMatch(normalized)) {
       return true;
     }
+    // 中文研究計畫、報告常見的短標題：「一、研究背景」「主題一：…」
+    // 「關鍵詞：…」。沒有句末標點，若被當成 PDF 硬換行接到下一段，標題會
+    // 黏進正文第一句，污染逐句分析與句長統計。限 40 字以內，避免把以序號
+    // 開頭、真正需要接續的長段落切斷。
+    if (withoutTrailingPage.length <= 40 &&
+        RegExp(
+          r'^(?:[一二三四五六七八九十]+[、．.]|'
+          r'(?:主題|研究主題|議題|面向|階段|目標|策略|子計畫)'
+          r'[一二三四五六七八九十\d]+[：:、．.\s]|'
+          r'(?:關鍵詞|關鍵字|关键词|关键字)[：:])',
+        ).hasMatch(normalized)) {
+      return true;
+    }
 
     const headingWords = {
       'abstract',
@@ -916,6 +959,27 @@ class PreprocessedText {
     if (lengths.length < 2) return 0;
     final mean = lengths.reduce((a, b) => a + b) / lengths.length;
     if (mean == 0) return 0;
+    final variance =
+        lengths.map((l) => math.pow(l - mean, 2)).reduce((a, b) => a + b) /
+        lengths.length;
+    return math.sqrt(variance) / mean;
+  }
+
+  /// 只以正文散文句計算的 burstiness（見 [proseSentenceMask]）。
+  ///
+  /// 研究計畫書這類文件的整體 burstiness 主要反映版面：一份 19 句的研究計畫
+  /// 樣本裡，標題列（33 字）、關鍵詞列（23 字）與書目篇名（4、6 詞）就足以
+  /// 把變異係數推到 0.549，緊貼舊人類側門檻 0.55。這些都與作者無關。
+  ///
+  /// 散文句不足 4 句時回傳 null，由呼叫端棄權。
+  double? get proseBurstiness {
+    final lengths = <int>[
+      for (var i = 0; i < sentenceTokens.length; i++)
+        if (proseSentenceMask[i] && sentenceTokens[i].isNotEmpty)
+          sentenceTokens[i].length,
+    ];
+    if (lengths.length < 4) return null;
+    final mean = lengths.reduce((a, b) => a + b) / lengths.length;
     final variance =
         lengths.map((l) => math.pow(l - mean, 2)).reduce((a, b) => a + b) /
         lengths.length;

@@ -1040,7 +1040,7 @@
   "engineReasonPplHigh": "语言模型困惑度偏高（{ppl}）[偏人类特征]，符合人类写作不可预测性",
   "engineReasonPplMid": "语言模型困惑度中等（{ppl}）[中性特征]",
   "engineReasonBurstinessLow": "句子长度高度一致（burstiness {value}）[偏 AI 特征]，节奏平稳均匀",
-  "engineReasonBurstinessHigh": "句长起伏显著（burstiness {value}）[偏人类特征]，节奏变化丰富",
+  "engineReasonBurstinessHigh": "句长起伏显著（burstiness {value}），但不列为真人证据：现代 AI 输出与文件版面同样会产生相近数值",
   "engineReasonBurstinessMid": "句长变化（burstiness {value}）落在 0.30–0.55 中性带，未形成方向性证据",
   "engineReasonTtrLow": "词汇重复度较高（TTR {value}）[偏 AI 模板/固定格式特征]",
   "engineReasonTtrHigh": "词汇多样性丰富（TTR {value}）[偏人类特征]",
