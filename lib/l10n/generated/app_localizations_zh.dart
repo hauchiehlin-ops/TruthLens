@@ -1834,7 +1834,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句長起伏顯著（burstiness $value）[偏人類特徵]，節奏變化豐富';
+    return '句長起伏顯著（burstiness $value），但不列為真人證據：現代 AI 輸出與文件版面同樣會產生相近數值';
   }
 
   @override
@@ -5136,7 +5136,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句长起伏显著（burstiness $value）[偏人类特征]，节奏变化丰富';
+    return '句长起伏显著（burstiness $value），但不列为真人证据：现代 AI 输出与文件版面同样会产生相近数值';
   }
 
   @override
@@ -8438,7 +8438,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return '句長起伏顯著（burstiness $value）[偏人類特徵]，節奏變化豐富';
+    return '句長起伏顯著（burstiness $value），但不列為真人證據：現代 AI 輸出與文件版面同樣會產生相近數值';
   }
 
   @override

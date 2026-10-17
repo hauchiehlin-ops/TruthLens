@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "言語モデルの困惑度が高く（{ppl}）、人間の文章の予測不可能性と一致します",
   "engineReasonPplMid": "言語モデルの困惑度は中程度です（{ppl}）",
   "engineReasonBurstinessLow": "文の長さが非常に均一で（burstiness {value}）、均一なリズムはAI生成文章の典型的な統計的特徴です",
-  "engineReasonBurstinessHigh": "文の長さに明らかな変化があり（burstiness {value}）、人間の自然な文章のリズムの変化と一致します",
+  "engineReasonBurstinessHigh": "文の長さに明らかな変化があります（burstiness {value}）。現行の AI 出力や文書レイアウトでも同程度の値になるため、人間による執筆の証拠とはみなしません",
   "engineReasonBurstinessMid": "文長のばらつき（バースト性 {value}）は中立帯 0.30〜0.55 の範囲内でした",
   "engineReasonTtrLow": "語彙の多様性が低く（TTR {value}）、単語の反復度が高いです",
   "engineReasonTtrHigh": "語彙の多様性が高いです（TTR {value}）",

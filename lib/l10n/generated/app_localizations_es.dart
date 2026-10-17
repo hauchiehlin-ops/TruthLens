@@ -1922,7 +1922,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Variación notable en la longitud de las oraciones (burstiness $value), acorde con el ritmo natural de la escritura humana';
+    return 'Variación notable en la longitud de las oraciones (burstiness $value); no se cuenta como evidencia humana, porque los textos de IA actuales y el formato del documento producen valores similares';
   }
 
   @override

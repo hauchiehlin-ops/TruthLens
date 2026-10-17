@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "Hohe Sprachmodell-Perplexität ({ppl}), im Einklang mit der unvorhersehbaren Natur menschlichen Schreibens",
   "engineReasonPplMid": "Moderate Sprachmodell-Perplexität ({ppl})",
   "engineReasonBurstinessLow": "Sehr einheitliche Satzlänge (Burstiness {value}) — ein gleichmäßiger Rhythmus ist ein häufiger statistischer Fingerabdruck von KI-generiertem Text",
-  "engineReasonBurstinessHigh": "Deutliche Variation der Satzlänge (Burstiness {value}), im Einklang mit dem natürlichen Rhythmus menschlichen Schreibens",
+  "engineReasonBurstinessHigh": "Deutliche Variation der Satzlänge (Burstiness {value}); wird nicht als Beleg für menschliches Schreiben gewertet, da aktuelle KI-Texte und Dokumentlayouts ähnliche Werte erzeugen",
   "engineReasonBurstinessMid": "Die Satzlängenvariation (Burstiness {value}) blieb im neutralen Bereich 0,30–0,55",
   "engineReasonTtrLow": "Geringe Wortschatzvielfalt (TTR {value}) — hohe Wortwiederholung",
   "engineReasonTtrHigh": "Hohe Wortschatzvielfalt (TTR {value})",

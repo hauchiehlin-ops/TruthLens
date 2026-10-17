@@ -283,6 +283,58 @@ curl -sLO "https://huggingface.co/hauchieh/truthlens-models/resolve/main/aigc_de
 **這仍不等於通過發布門檻**：合約同時要求英文涵蓋（尚未量測），且三份報告語料與訓練
 語料同源（雖然切分無重疊）。
 
+## 中文研究計畫書語域（2026-10 新增，尚待資料）
+
+觸發案例：一份 Antigravity 全自動生成的中文研究計畫被判為「較可能不是 AI」。
+現行三份訓練語料（DetectRL-X、NLPCC、HC3）都沒有研究計畫／學術提案語域。
+流程已就緒，**尚未產生任何資料或模型**，下列數字一律要實測後才能寫入 catalog。
+
+```bash
+cd training
+
+# 1. 生成 AI 樣本：40 個跨學科題目 × 3 種語域，至少兩家供應商（先 --dry-run 檢視提示詞）
+.venv/bin/python binoculars/generate_ai_corpus.py --register zh-proposal \
+    --topics-file proposal_register/topics_zh.txt \
+    --provider gemini --model <實際的 Gemini 模型 ID> \
+    --target-words 3000 --max-tokens 8000 \
+    --out-dir data/proposal_register/ai
+#    再換 --provider anthropic／openai 等各跑一次，輸出到同一資料夾
+
+# 2. 人類樣本：放入確定由人撰寫的中文研究計畫書（.pdf/.docx/.txt/.md），
+#    每份一個檔案 → data/proposal_register/human/（來源與授權需自行確認）
+
+# 3. 切塊、依題目分組切分，併入既有語料
+.venv/bin/python build_proposal_register.py \
+    --human-dir data/proposal_register/human --ai-dir data/proposal_register/ai \
+    --base-data-dir data/zh_combined3 --out-dir data/zh_combined4
+
+# 4. 重訓與報告：本語域測試集未參與訓練與校準
+.venv/bin/python train_zh_detector.py --data-dir data/zh_combined4
+.venv/bin/python evaluate_external_zh_transformer.py \
+    --corpus data/zh_combined4/proposal_register_test.json \
+    --corpus-id zh-proposal-register --model <新模型> --tokenizer <tokenizer>
+
+# 5. 零樣本對照（Binoculars 階段一）：同一語域、不需訓練
+.venv/bin/python binoculars/run_binoculars.py \
+    --corpus data/zh_combined4/proposal_register_binoculars.jsonl \
+    --observer Qwen/Qwen2.5-0.5B --performer Qwen/Qwen2.5-0.5B-Instruct \
+    --out binoculars/data/scores_zh_proposal.jsonl
+.venv/bin/python binoculars/evaluate.py --scores binoculars/data/scores_zh_proposal.jsonl
+```
+
+注意事項：
+
+- `prepare_corpus.py` 以空白計詞，中文文件會被整份丟棄，因此本語域改用
+  `build_proposal_register.py` 的字元切塊（對齊 App 的逐句推論與 192 token 上限）
+- 人類與 AI 題目不同會造成題材混淆。人類樣本越多、學科越分散越好；
+  也可把人類計畫書的題目整理成 `--topics-file`，讓兩邊題材對齊
+- 驗收門檻同既有合約：1% 誤報預算（Wilson 95% 上界），且 DetectRL-X、HC3、
+  SemEval 三份既有報告語料不得退步超出預算
+- Binoculars 需先在全尺寸或 0.5B 配對上贏過裸困惑度，才考慮做成瀏覽器端引擎
+- 學術領域可靠度：以**完整文件**語料（含標題與參考文獻）執行
+  `flutter test tool/measure_domain_reliability_test.dart --dart-define=CORPUS=...`，
+  每類至少 30 份才會給建議值
+
 ## 擴充到其他語言（現況：資料擋住了，不是流程擋住了）
 
 `export_detectrl_zh_char_svm.py` 本身與語言無關，加上 `--no-script-augment`

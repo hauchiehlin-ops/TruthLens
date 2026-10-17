@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "Perplexity model bahasa tinggi ({ppl}), sesuai dengan sifat tak terduga tulisan manusia",
   "engineReasonPplMid": "Perplexity model bahasa sedang ({ppl})",
   "engineReasonBurstinessLow": "Panjang kalimat sangat seragam (burstiness {value}) — ritme yang rata adalah jejak statistik umum teks yang dihasilkan AI",
-  "engineReasonBurstinessHigh": "Variasi mencolok dalam panjang kalimat (burstiness {value}), sesuai dengan ritme alami tulisan manusia",
+  "engineReasonBurstinessHigh": "Variasi mencolok dalam panjang kalimat (burstiness {value}); tidak dihitung sebagai bukti tulisan manusia, karena keluaran AI terkini dan tata letak dokumen menghasilkan nilai serupa",
   "engineReasonBurstinessMid": "Variasi panjang kalimat (burstiness {value}) tetap berada di pita netral 0,30–0,55",
   "engineReasonTtrLow": "Keragaman kosakata rendah (TTR {value}) — pengulangan kata tinggi",
   "engineReasonTtrHigh": "Keragaman kosakata tinggi (TTR {value})",

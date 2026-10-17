@@ -1912,7 +1912,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Variação notável no comprimento das frases (burstiness $value), consistente com o ritmo natural da escrita humana';
+    return 'Variação notável no comprimento das frases (burstiness $value); não é contada como evidência humana, pois textos de IA atuais e o layout do documento produzem valores semelhantes';
   }
 
   @override

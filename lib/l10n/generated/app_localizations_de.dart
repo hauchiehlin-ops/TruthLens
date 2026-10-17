@@ -1921,7 +1921,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Deutliche Variation der Satzlänge (Burstiness $value), im Einklang mit dem natürlichen Rhythmus menschlichen Schreibens';
+    return 'Deutliche Variation der Satzlänge (Burstiness $value); wird nicht als Beleg für menschliches Schreiben gewertet, da aktuelle KI-Texte und Dokumentlayouts ähnliche Werte erzeugen';
   }
 
   @override

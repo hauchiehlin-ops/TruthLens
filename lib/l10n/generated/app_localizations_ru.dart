@@ -1909,7 +1909,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Заметная вариация длины предложений (burstiness $value), что соответствует естественному ритму человеческого письма';
+    return 'Заметная вариация длины предложений (burstiness $value); не считается признаком человеческого авторства, так как современные ИИ-тексты и вёрстка документа дают похожие значения';
   }
 
   @override

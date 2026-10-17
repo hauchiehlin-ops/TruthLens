@@ -1026,7 +1026,7 @@
   "engineReasonPplHigh": "언어 모델 혼란도가 높아（{ppl}）사람의 글이 지닌 예측 불가능성과 일치합니다",
   "engineReasonPplMid": "언어 모델 혼란도가 중간 수준입니다（{ppl}）",
   "engineReasonBurstinessLow": "문장 길이가 매우 일정하며（burstiness {value}）일정한 리듬은 AI 생성 텍스트의 전형적인 통계적 특징입니다",
-  "engineReasonBurstinessHigh": "문장 길이에 뚜렷한 변화가 있으며（burstiness {value}）사람의 자연스러운 문장 리듬 변화와 일치합니다",
+  "engineReasonBurstinessHigh": "문장 길이에 뚜렷한 변화가 있습니다（burstiness {value}）. 최신 AI 출력과 문서 레이아웃도 비슷한 값을 만들기 때문에 사람이 썼다는 증거로 보지 않습니다",
   "engineReasonBurstinessMid": "문장 길이 변동(버스티니스 {value})이 중립 구간 0.30~0.55 안에 머물렀습니다",
   "engineReasonTtrLow": "어휘 다양성이 낮고（TTR {value}）단어 반복도가 높습니다",
   "engineReasonTtrHigh": "어휘 다양성이 높습니다（TTR {value}）",

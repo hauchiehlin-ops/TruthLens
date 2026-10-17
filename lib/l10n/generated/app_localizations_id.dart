@@ -1908,7 +1908,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Variasi mencolok dalam panjang kalimat (burstiness $value), sesuai dengan ritme alami tulisan manusia';
+    return 'Variasi mencolok dalam panjang kalimat (burstiness $value); tidak dihitung sebagai bukti tulisan manusia, karena keluaran AI terkini dan tata letak dokumen menghasilkan nilai serupa';
   }
 
   @override

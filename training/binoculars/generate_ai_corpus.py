@@ -89,6 +89,45 @@ Requirements:
   continue any text you may have been shown; do not reuse its phrasing."""
 
 
+# ── 中文研究計畫書語域（2026-10 新增）────────────────────────────────
+# 觸發原因：一份 Antigravity 全自動生成的中文研究計畫被判為「較可能不是 AI」。
+# 中文 Transformer 的三份訓練語料（DetectRL-X 改寫／續寫、NLPCC、HC3 問答）
+# 都沒有「研究計畫／學術提案」語域。這裡刻意要求完整成品（含章節標題、
+# 研究時程表、參考文獻），因為使用者實際交出的就是這種文件；剝掉版面會讓
+# 訓練語料與實際輸入又出現一次語域錯配。
+ZH_PROPOSAL_STYLES: dict[str, str] = {
+    "standard": "以研究生撰寫計畫書的標準學術語氣書寫，結構完整、用詞正式。",
+    "agentic": (
+        "像代理式寫作工具的成品：先自行規劃章節大綱，再逐章完成，包含研究背景、"
+        "文獻缺口、數個平行的研究主題、研究方法、兩年時程表（以表格呈現）、"
+        "預期成果與參考文獻。"
+    ),
+    "humanized": (
+        "刻意避開常見的 AI 寫作習慣：段落長短不一、少用「首先／其次／最後」與"
+        "「綜上所述」、加入具體案例與有保留的推論，但仍是正式計畫書。"
+    ),
+    "light_edit": (
+        "先產出完整計畫書，再模擬作者的輕度修改：刪短部分句子、合併或拆分段落、"
+        "保留少數個人化用詞，不刻意製造錯字。"
+    ),
+}
+
+ZH_PROPOSAL_PROMPT = """請撰寫一份原創的中文（繁體）研究計畫書。
+
+研究題目：{topic}
+
+要求：
+- 約 {words} 字。
+- {style}
+- 直接輸出計畫書全文，不要開場白、不要說明你做了什麼、不要在結尾詢問是否需要修改。
+- 參考文獻請列出真實存在、可查證的文獻；不確定時寧可少列。"""
+
+REGISTERS: dict[str, tuple[str, dict[str, str], str]] = {
+    "academic-en": (PROMPT_TEMPLATE, STYLES, "standard,nonnative"),
+    "zh-proposal": (ZH_PROPOSAL_PROMPT, ZH_PROPOSAL_STYLES, "standard,agentic,humanized"),
+}
+
+
 # ── 供應商 ────────────────────────────────────────────────────────────
 def call_anthropic(model: str, prompt: str, max_tokens: int, timeout: int) -> str:
     key = os.environ.get("ANTHROPIC_API_KEY")
@@ -231,7 +270,13 @@ def load_topics(args) -> list[dict]:
             for line in args.topics_file.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        return [{"topic": t, "words": args.target_words, "src": "topics-file"} for t in lines]
+        # 每題各自一個 src：它同時決定輸出檔名與 prepare_corpus.py 的 group_id。
+        # 全部共用 "topics-file" 會讓不同題目的檔名互相覆蓋／被當成已完成而跳過，
+        # 且所有題目落在同一組，切分 train/test 時無法依題目隔離。
+        return [
+            {"topic": t, "words": args.target_words, "src": f"topic{i:03d}"}
+            for i, t in enumerate(lines)
+        ]
 
     if not args.from_human:
         sys.exit("請指定 --from-human 或 --topics-file")
@@ -272,9 +317,16 @@ def main() -> None:
     parser.add_argument("--model", default="claude-sonnet-5")
     parser.add_argument("--out-dir", type=Path, default=Path("binoculars/data/ai_generated"))
     parser.add_argument(
+        "--register",
+        default="academic-en",
+        choices=sorted(REGISTERS),
+        help="academic-en：英文學術短文（預設）；zh-proposal：中文研究計畫書全文",
+    )
+    parser.add_argument(
         "--styles",
-        default="standard,nonnative",
-        help=f"逗號分隔，可選：{','.join(STYLES)}（預設同時含非母語語域以避免流暢度混淆）",
+        default=None,
+        help="逗號分隔；可選值依 --register 而定（academic-en 預設 standard,nonnative，"
+        "避免流暢度混淆；zh-proposal 預設 standard,agentic,humanized）",
     )
     parser.add_argument("--per-topic", type=int, default=1, help="每個題目每種語域生成幾份")
     parser.add_argument("--target-words", type=int, default=400)
@@ -286,10 +338,11 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="只印出提示詞，不呼叫 API")
     args = parser.parse_args()
 
-    styles = [s.strip() for s in args.styles.split(",") if s.strip()]
+    prompt_template, register_styles, default_styles = REGISTERS[args.register]
+    styles = [s.strip() for s in (args.styles or default_styles).split(",") if s.strip()]
     for style in styles:
-        if style not in STYLES:
-            sys.exit(f"未知語域 {style}；可選：{', '.join(STYLES)}")
+        if style not in register_styles:
+            sys.exit(f"未知語域 {style}；可選：{', '.join(register_styles)}")
 
     topics = load_topics(args)
 
@@ -340,8 +393,10 @@ def main() -> None:
                 skipped += 1
                 continue
 
-            prompt = PROMPT_TEMPLATE.format(
-                topic=topic["topic"], words=topic["words"], style=STYLES[task["style"]]
+            prompt = prompt_template.format(
+                topic=topic["topic"],
+                words=topic["words"],
+                style=register_styles[task["style"]],
             )
 
             if args.dry_run:
@@ -372,9 +427,11 @@ def main() -> None:
                         "file": name,
                         "provider": args.provider,
                         "model": args.model,
+                        "register": args.register,
                         "style": task["style"],
                         "topic_src": topic["src"],
                         "words": len(text.split()),
+                        "characters": len(text),
                     },
                     ensure_ascii=False,
                 )

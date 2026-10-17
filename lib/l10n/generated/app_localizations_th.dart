@@ -1896,7 +1896,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'ความยาวประโยคมีความผันแปรที่ชัดเจน（burstiness $value）สอดคล้องกับการเปลี่ยนแปลงจังหวะตามธรรมชาติของงานเขียนมนุษย์';
+    return 'ความยาวประโยคมีความผันแปรที่ชัดเจน（burstiness $value）ไม่นับเป็นหลักฐานว่ามนุษย์เขียน เพราะข้อความจาก AI รุ่นปัจจุบันและการจัดหน้าเอกสารให้ค่าใกล้เคียงกัน';
   }
 
   @override

@@ -1908,7 +1908,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Variasi ketara dalam panjang ayat (burstiness $value), selaras dengan rentak semula jadi penulisan manusia';
+    return 'Variasi ketara dalam panjang ayat (burstiness $value); tidak dikira sebagai bukti penulisan manusia, kerana output AI semasa dan susun atur dokumen menghasilkan nilai yang serupa';
   }
 
   @override

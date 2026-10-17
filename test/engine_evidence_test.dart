@@ -442,7 +442,7 @@ void main() {
       expect(score.hasEvidence, isFalse);
     });
 
-    test('統計分數依句長起伏離門檻的距離連續變化', () async {
+    test('統計分數依句長均勻程度連續變化，起伏大只沉默不投人類票', () async {
       const uniform =
           'Alpha beta gamma delta epsilon zeta eta theta. '
           'Iota kappa lambda mu nu xi omicron pi. '
@@ -479,9 +479,10 @@ void main() {
         greaterThan(moderateScore.aiProbability),
       );
       expect(moderateScore.aiProbability, greaterThan(0.60));
-      expect(variedScore.aiProbability, lessThan(0.40));
       expect(uniformScore.features['burstiness_probability'], isNotNull);
-      expect(variedScore.features['burstiness_probability'], isNotNull);
+      // 句長起伏大不再是人類證據：沒有 burstiness 訊號，也不得低於中性。
+      expect(variedScore.features['burstiness_probability'], isNull);
+      expect(variedScore.aiProbability, greaterThanOrEqualTo(0.5));
     });
 
     test('統計矩陣以有效權重線性累積且可由分量重算', () async {
@@ -489,10 +490,18 @@ void main() {
           'The result is in the report. '
           'The method is in the report. '
           'The evidence is in the report. '
-          'The result is in the report and the method is in the report '
-          'and the evidence is in the report and the result is in the report '
-          'and the method is in the report and the evidence is in the report '
-          'and the result is in the report and the method is in the report.';
+          'The result is in the paper. '
+          'The method is in the paper. '
+          'The evidence is in the paper. '
+          'The result is in the record. '
+          'The method is in the record. '
+          'The evidence is in the record. '
+          'The result is in the report. '
+          'The method is in the report. '
+          'The evidence is in the report. '
+          'The result is in the paper. '
+          'The method is in the paper. '
+          'The evidence is in the paper.';
 
       final score = await StatisticalEngine().analyze(
         PreprocessedText.from(mixedSignals),
@@ -504,7 +513,7 @@ void main() {
       final activeWeight = features['statistical_active_weight']!;
       final expectedSum = burstinessMass + mattrMass;
 
-      expect(features['burstiness_signed_contribution'], lessThan(0));
+      expect(features['burstiness_signed_contribution'], greaterThan(0));
       expect(features['mattr_signed_contribution'], greaterThan(0));
       expect(activeWeight, closeTo(0.50, 1e-9));
       expect(features['statistical_weighted_sum'], closeTo(expectedSum, 1e-9));
@@ -513,6 +522,47 @@ void main() {
         features['statistical_linear_ai_ratio'],
         closeTo(score.aiProbability, 1e-9),
       );
+    });
+
+    test('文件結構特徵只記錄、不影響風格引擎投票', () async {
+      const structured =
+          '第一章 研究背景\n本研究說明背景與動機，並界定研究範圍與限制。\n'
+          '主題一：品牌信任\n本主題探討內容揭露對品牌信任的影響與機制。\n'
+          '主題二：購買意圖\n本主題探討沉浸式體驗對購買意圖的影響與機制。\n'
+          '主題三：隱私權衡\n本主題探討隱私法規對個人化推薦的影響與機制。\n';
+      final features = StylometryEngine.documentStructureFeatures(structured);
+      expect(features['structure_parallel_headings'], 3);
+      expect(features['structure_section_length_cv'], isNotNull);
+
+      // 平行標題再明顯，單憑結構也不得產生 AI 票。
+      final score = await StylometryEngine().analyze(
+        PreprocessedText.from(structured),
+        l10n,
+      );
+      expect(score.features['structure_parallel_headings'], 3);
+      expect(score.hasEvidence, isFalse);
+      expect(score.aiProbability, 0);
+    });
+
+    test('句長起伏大不構成人類證據（2026-10 研究計畫回報）', () async {
+      const varied =
+          'The result is in the report. '
+          'The method is in the report. '
+          'The evidence is in the report. '
+          'The result is in the report and the method is in the report '
+          'and the evidence is in the report and the result is in the report '
+          'and the method is in the report and the evidence is in the report '
+          'and the result is in the report and the method is in the report.';
+
+      final score = await StatisticalEngine().analyze(
+        PreprocessedText.from(varied),
+        l10n,
+      );
+
+      expect(score.features['prose_burstiness'], greaterThan(0.55));
+      expect(score.features['burstiness_probability'], isNull);
+      expect(score.features['burstiness_signed_contribution'], isNull);
+      expect(score.aiProbability, greaterThanOrEqualTo(0.5));
     });
 
     test('統計引擎無合格訊號時報告層不得顯示成 50%', () {

@@ -157,23 +157,28 @@ class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
       }
     }
 
-    // Burstiness：人類句長起伏大；AI 節奏均勻
-    if (text.sentences.length >= 4) {
-      if (burstiness < 0.30) {
-        final distance = ((0.30 - burstiness) / 0.30).clamp(0.0, 1.0);
+    // Burstiness：只保留 AI 側（節奏過度均勻），且只量正文散文句。
+    //
+    // 人類側（句長起伏大＝人類）已停用，理由與困惑度、MATTR 相同：門檻 0.55
+    // 是英文時期的固定值，從未以現代 LLM 輸出校準。更直接的問題是它量到的
+    // 常是版面——研究計畫書的標題、表格列與書目片段就能把變異係數推過門檻。
+    // 2026-10 一份 Antigravity 生成的研究計畫因此可能從這裡拿到人類票。
+    final proseBurstiness = text.proseBurstiness;
+    if (proseBurstiness != null) {
+      features['prose_burstiness'] = proseBurstiness;
+      if (proseBurstiness < 0.30) {
+        final distance = ((0.30 - proseBurstiness) / 0.30).clamp(0.0, 1.0);
         addSignal('burstiness', 0.60 + distance * 0.24, 0.30);
         reasons.add(
-          l10n.engineReasonBurstinessLow(burstiness.toStringAsFixed(2)),
+          l10n.engineReasonBurstinessLow(proseBurstiness.toStringAsFixed(2)),
         );
-      } else if (burstiness > 0.55) {
-        final distance = ((burstiness - 0.55) / 0.55).clamp(0.0, 1.0);
-        addSignal('burstiness', 0.40 - distance * 0.22, 0.30);
+      } else if (proseBurstiness > 0.55) {
         reasons.add(
-          l10n.engineReasonBurstinessHigh(burstiness.toStringAsFixed(2)),
+          l10n.engineReasonBurstinessHigh(proseBurstiness.toStringAsFixed(2)),
         );
       } else {
         reasons.add(
-          l10n.engineReasonBurstinessMid(burstiness.toStringAsFixed(2)),
+          l10n.engineReasonBurstinessMid(proseBurstiness.toStringAsFixed(2)),
         );
       }
     }

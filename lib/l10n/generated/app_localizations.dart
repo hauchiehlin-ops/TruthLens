@@ -3041,7 +3041,7 @@ abstract class AppLocalizations {
   /// No description provided for @engineReasonBurstinessHigh.
   ///
   /// In en, this message translates to:
-  /// **'Noticeable variation in sentence length (burstiness {value}) [Human-leaning], dynamic rhythm'**
+  /// **'Noticeable variation in sentence length (burstiness {value}); not counted as human evidence, because current AI output and document layout produce similar values'**
   String engineReasonBurstinessHigh(String value);
 
   /// No description provided for @engineReasonBurstinessMid.

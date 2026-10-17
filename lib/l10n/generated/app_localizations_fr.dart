@@ -1921,7 +1921,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String engineReasonBurstinessHigh(String value) {
-    return 'Variation notable de la longueur des phrases (burstiness $value), conforme au rythme naturel de l\'écriture humaine';
+    return 'Variation notable de la longueur des phrases (burstiness $value) ; non comptée comme preuve humaine, car les textes d\'IA actuels et la mise en page produisent des valeurs similaires';
   }
 
   @override
