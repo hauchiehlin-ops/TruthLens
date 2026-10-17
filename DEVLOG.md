@@ -1,5 +1,13 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-17 — 發布 v6.3.3（Build 1489）
+
+將同日兩項偵測修正（Transformer 文件級分數、burstiness 人類側停用與正文切句）納入正式版。
+依 `release_web.sh` 步驟：版本號 6.3.2+1488 → 6.3.3+1489、同步 SEO 更新紀錄、重建 `build/web`
+（Vercel 直接部署已提交的 `build/web`，只合併原始碼不會更新網站）。
+
+**狀態**：✅ `flutter build web` 成功，`version.json` 為 6.3.3／1489，新說明文字已確認在 bundle 中。
+
 ## 2026-10-17（續）— 停用 burstiness 人類側、正文切句，並建好研究計畫語域管線
 
 接續同日 Transformer 修正，處理同一份 Antigravity 研究計畫暴露的其餘缺口。
