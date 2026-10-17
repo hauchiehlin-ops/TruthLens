@@ -114,6 +114,42 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
   @override
   Future<bool> isAvailable() async => (await _resolvePaths()) != null;
 
+  /// 由逐區塊分數換算文件級分數。
+  ///
+  /// 本引擎沒有人類側通道（見 [analyze] 的 hasEvidence 說明），因此：
+  /// - 沒有區塊跨過 [threshold]：只保留最多 10% 的弱訊號並由呼叫端標記為沉默，
+  ///   避免 Softmax 在 0.5 附近的浮動被誤解成 AI 證據。
+  /// - 有區塊跨過：分數一律落在 AI 側（> 0.5）。舊公式
+  ///   `比例 × 0.7 + 強區塊均值 × 0.3` 在長文件會低於 0.38——一份 2.2 萬字
+  ///   中文研究計畫有 21 句跨門檻，文件分數卻約 0.30，融合層把它讀成
+  ///   「監督式分類器支持人類」，報告因而翻成「較可能不是 AI 生成」。
+  ///   「AI 只出現在一部分區塊」是範圍問題，不是反向證據。
+  /// - 只有單一強區塊、且比例不到一成時，視為可能的偶發誤觸：保留方向但封頂
+  ///   於 0.60，不跨過融合層 0.62 的支持門檻。長文件逐塊比對本來就會累積
+  ///   零星誤觸的機會，兩個以上獨立區塊才算超出偶然。
+  @visibleForTesting
+  static double documentProbability(List<double> perChunk, double threshold) {
+    if (perChunk.isEmpty) return 0;
+    final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
+    final maxChunk = perChunk.reduce(math.max);
+    final strongChunks = perChunk.where((score) => score >= threshold).toList();
+    if (strongChunks.isEmpty) {
+      final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
+      final peakMargin = (maxChunk - 0.5).clamp(0.0, 0.1) / 0.1;
+      return ((averageMargin * 0.07) + (peakMargin * 0.03)).clamp(0.0, 1.0);
+    }
+    final strongRatio = strongChunks.length / perChunk.length;
+    final strongAverage =
+        strongChunks.reduce((a, b) => a + b) / strongChunks.length;
+    final extent = ((strongRatio * 0.7) + (strongAverage * 0.3)).clamp(
+      0.0,
+      1.0,
+    );
+    final probability = 0.5 + extent * 0.5;
+    final isolatedHit = strongChunks.length == 1 && strongRatio < 0.10;
+    return isolatedHit ? math.min(probability, 0.60) : probability;
+  }
+
   String? _loadError;
 
   Future<OnnxDetector?> _ensureLoaded(AppLocalizations l10n) async {
@@ -215,27 +251,15 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
         .toList();
     final strongChunkCount = strongChunks.length;
     final strongChunkRatio = strongChunkCount / perChunk.length;
-    final maxChunk = perChunk.reduce(math.max);
     final strongSentenceCount = perSentence
         .where((score) => score >= aiEvidenceThreshold)
         .length;
     final strongSentenceRatio = strongSentenceCount / perSentence.length;
 
-    // 置信度校準：避免隨機 Softmax 浮動（~0.50）在 0 個強 AI 區塊時
-    // 輸出 52% 的矛盾結果。
-    double calibratedProbability;
-    if (strongChunkCount == 0) {
-      final averageMargin = (avg - 0.5).clamp(0.0, 0.1) / 0.1;
-      final peakMargin = (maxChunk - 0.5).clamp(0.0, 0.1) / 0.1;
-      // 沒有任何區塊跨過強 AI 閾值時，只保留最多 10% 的弱訊號，
-      // 避免 Softmax 在 0.5 附近的浮動被誤解成肯定的 AI 證據。
-      calibratedProbability = (averageMargin * 0.07) + (peakMargin * 0.03);
-    } else {
-      final strongAverage =
-          strongChunks.reduce((a, b) => a + b) / strongChunkCount;
-      calibratedProbability = (strongChunkRatio * 0.7) + (strongAverage * 0.3);
-    }
-    calibratedProbability = calibratedProbability.clamp(0.0, 1.0);
+    final calibratedProbability = documentProbability(
+      perChunk,
+      aiEvidenceThreshold,
+    );
 
     // 沒有任何區塊跨過強 AI 閾值時，上面的校準把輸出壓進 [0, 0.10]，
     // 目的是抑制 Softmax 在 0.5 附近的浮動——那是消噪，不是機率估計。
