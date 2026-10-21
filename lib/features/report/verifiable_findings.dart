@@ -10,10 +10,12 @@
 /// 因此把事實抽出來獨立呈現，機率退為輔助。
 library;
 
+import '../../core/detection/evasion_scanner.dart';
 import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/publication_evidence.dart';
+import '../../core/services/document_provenance.dart';
 import '../../shared/widgets/provenance_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -66,7 +68,9 @@ List<VerifiableFinding> collectVerifiableFindings(
   if (result.evasion.indicatesDeliberateEvasion) {
     findings.add(
       VerifiableFinding(
-        statement: l10n.findingEvasionDetected(result.evasion.totalHits),
+        statement:
+            '${l10n.findingEvasionDetected(result.evasion.totalHits)}'
+            ' ${evasionTechniquesText(result.evasion, l10n)}',
         isConcern: true,
       ),
     );
@@ -132,7 +136,8 @@ List<VerifiableFinding> collectVerifiableFindings(
     findings.add(
       VerifiableFinding(
         statement: ProvenanceCard.describeSignal(signal, l10n),
-        isConcern: true,
+        // 資訊級訊號（例如內嵌圖片的 C2PA）只說明媒體來源，不是疑點
+        isConcern: signal.severity != ProvenanceSeverity.info,
       ),
     );
   }
@@ -150,3 +155,31 @@ List<VerifiableFinding> collectVerifiableFindings(
 
   return findings;
 }
+
+/// 逐一列出規避手法與次數，讓使用者能自己到原文對照，而不只是看到總數
+String evasionTechniquesText(EvasionScan scan, AppLocalizations l10n) {
+  final parts = [
+    for (final finding in scan.findings)
+      l10n.evasionTechniqueCount(
+        evasionKindLabel(finding.kind, l10n),
+        finding.count,
+      ),
+  ];
+  return l10n.findingEvasionTechniques(parts.join(l10n.listSeparator));
+}
+
+String evasionKindLabel(EvasionKind kind, AppLocalizations l10n) =>
+    switch (kind) {
+      EvasionKind.zeroWidth => l10n.evasionKindZeroWidth,
+      EvasionKind.homoglyph => l10n.evasionKindHomoglyph,
+      EvasionKind.unusualSpace => l10n.evasionKindUnusualSpace,
+      EvasionKind.bidiControl => l10n.evasionKindBidiControl,
+      EvasionKind.tagCharacter => l10n.evasionKindTagCharacter,
+      EvasionKind.variationSelector => l10n.evasionKindVariationSelector,
+      EvasionKind.softHyphen => l10n.evasionKindSoftHyphen,
+      EvasionKind.invisibleFiller => l10n.evasionKindInvisibleFiller,
+      EvasionKind.fullwidthLatin => l10n.evasionKindFullwidthLatin,
+      EvasionKind.mathAlphanumeric => l10n.evasionKindMathAlphanumeric,
+      EvasionKind.cjkRadical => l10n.evasionKindCjkRadical,
+      EvasionKind.combiningStack => l10n.evasionKindCombiningStack,
+    };

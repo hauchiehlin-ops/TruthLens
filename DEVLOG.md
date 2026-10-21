@@ -1,5 +1,79 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-21（續三）— 強化規避偵測：八種新手法、中文部首同形字，並修正既有規則對出版論文的誤報
+
+規避痕跡證明的是「有人動過手腳」而不是「AI 寫的」，但它是確定性證據、不隨模型進步失效。
+原掃描器只認零寬字元、西里爾／希臘同形字、非標準空白、雙向控制字元，報告也只給總數。
+
+新增手法（`evasion_scanner.dart`），每一項都以前後文排除正當用法：
+
+| 手法 | 判定條件 | 排除的正當用法 |
+|---|---|---|
+| Unicode Tag 字元 | 任何一個 | 🏴 旗幟 emoji 的標準 Tag 序列 |
+| 變體選擇符 | 連續出現或接在英數字後 | emoji 後的 FE0F、漢字後的單一異體選擇符 |
+| 軟連字號 | 夾在兩個字母之間，5 處以上（PDF 40） | PDF 排版斷字 |
+| 不可見填充字元 | 不可見運算子、韓文填充字等 3 處以上 | — |
+| 全形英文字母 | 被英文字母夾在中間 | 「ＡＩ」「Ａ型」 |
+| 數學字母符號 | 小寫數學字母且前後皆小寫英文 | 數學變數、PDF 吃掉空格造成的 `in𝑐Css` |
+| 中文部首同形字 | 康熙部首／相容字，且同一字的正常寫法也出現在文中 | PDF 字型對照錯誤（整份一致）、字典解說 |
+| 疊加組合符號 | 三層以上且至少三種不同符號 | 越南文分解形、數學式重複上劃線 |
+
+中文部首判定需要 NFKC，Dart 沒有內建，因此以 Python `unicodedata`（Unicode 16.0）產生
+676 組對照表 `cjk_lookalikes.dart`。報告的可查證事實改為逐一列出手法與次數，分隔符依語系。
+
+**既有規則的誤報修正**（以 `fen-data` 498 份真實檔案、pypdf 抽取文字實測）：
+- 修改前：**143 份（29%）已出版真人論文被判為刻意規避**，主因是零寬空格（130 份）與
+  不斷行空格（13 份）。
+- 零寬空格在這批論文中出現一萬四千多次，**沒有一次落在兩個字母之間**，全部是表格空白格或
+  DOI／網址的斷行提示 → 改為只計算緊鄰文字的位置。
+- 不斷行空格單篇可達數百個，但只佔空白的一小部分 → 改看佔所有空白的比例（直接輸入 15%、
+  PDF 30%）。
+- 修改後：PDF 模式 1 份、直接貼上模式 3 份，全部是文件中真實存在的西里爾 `а`（參考文獻作者名）
+  或希臘 `ν`，屬既有同形字規則；新增的八種手法零誤報。
+
+**限制**：App 實際使用 Syncfusion／pdfium 抽取 PDF，與 pypdf 對零寬空格的保留可能略有差異；
+參考文獻中真實存在的外文字母仍會被同形字規則列出。
+
+**狀態**：✅ `dart analyze` 無錯誤；✅ 全套 `flutter test` 與 HEAD 比對無新增失敗（733 通過）。
+
+## 2026-10-21（續二）— 檔案層鑑識：PDF 產生器、DOCX 封裝指紋、網頁貼上殘留、C2PA
+
+使用者提供一份「AI 隱藏資訊與殘留」整理，詢問能否做成偵測指標。逐項查證後的結論：
+- **統計型浮水印**：Claude（2026-08 起，SynthID-Text 變體）與 Gemini 確實加了，但偵測需要金鑰；
+  Anthropic 偵測 API 為私人預覽、僅限特定機構，開源工具（SynthID-Text、MarkLLM）只能偵測自己
+  加的浮水印。本機無法做，融合層已預留 `verified_watermark` 通道。
+- **隱形 Unicode**：已有 `evasion_scanner`。Anthropic 明言浮水印不插入隱藏字元，實際 Claude Docs
+  檔案也是 0 個，因此維持「刻意規避」定位，不當 AI 來源證據。
+- **RSID**：v6.3.4 已做；Google 文件匯出、另存新檔也會抹除，只能佐證。
+- **Markdown 結構過度完美**：編輯器自動格式化也會如此，且匯入時已清除 MD 標記，不做。
+
+實作（`file_forensics.dart` + `DocumentProvenance`）：
+
+1. **A. PDF 產生器**：讀資訊字典 Creator／Producer（含 UTF-16 十六進位與跳脫字元）與 XMP
+   CreatorTool；匯入流程另以 Syncfusion 補上壓縮物件串流中的值。AI 產品名稱沿用「產生器宣告」
+   強訊號，程式庫（reportlab、pdf-lib、wkhtmltopdf…）只作佐證。
+2. **B. DOCX 封裝指紋**：Word 存檔必寫 `settings.xml` 與 `fontTable.xml`。宣稱 Word 卻缺少 →
+   `generatorMismatch`；非 Word 且只有最少部件 → 程式產生（比 RSID 更難被另存抹除）；
+   `python-docx` 等寫在 creator 欄位 → 程式庫。
+3. **C. 網頁貼上殘留**：「Normal (Web)」／HTML 樣式三處以上、`altChunk`、CSS 字型堆疊
+   （ui-sans-serif、system-ui…）→ `webPasteResidue`；ChatGPT 的 Söhne、Gemini 的
+   Google Sans Text → `chatInterfaceFont`。兩者都只說明寫作過程，不推向 AI。
+4. **D. C2PA**：掃描 DOCX 內嵌媒體與 PDF 的 JUMBF／`c2pa` 方塊，讀出 `claim_generator`
+   （或 v2 的 `claim_generator_info.name`），不驗證簽章。說明的是圖片來源，列為資訊級、不計風險。
+5. 沒有任何中繼資料但封裝本身有訊號時，風險不再被藏成「未知」；資訊級訊號不列為疑點，也不阻擋
+   真人基準集自動納入。
+
+**實測**：
+- 以 `fen-data` 的 503 份檔案（約 500 篇已出版論文 PDF）驗證。初版把 iText／pdftk／OpenPDF
+  （出版社加下載浮水印）與 Acrobat「PDFMaker」誤標為程式庫，共 40 篇；移除後**已出版論文零訊號**。
+- 真 Word 檔無誤判；Claude Docs → 產生器宣告＋程式產生；reportlab、python-docx 正確辨識。
+- 以 `c2pa-python` 0.38 與自簽測試憑證產生真正的 C2PA PNG（ChatGPT／Adobe Photoshop），
+  單獨與內嵌於 DOCX 時都正確讀出產生工具。
+- ⏳ 網頁貼上殘留沒有真實「從 ChatGPT 貼進 Word」的樣本，目前只以結構化測試驗證；
+  需要蒐集真人與 AI 的貼上樣本校準。
+
+**狀態**：✅ `dart analyze` 無錯誤；✅ 全套 `flutter test` 與 HEAD 比對無新增失敗（710 通過，基準 691）。
+
 ## 2026-10-21（續）— 依語言、文體與實測自動選模型；分析前顯示「分析計畫」
 
 使用者提問：四大引擎各有多顆模型，使用者無從判斷哪顆適合手上的文件，只能在模型管理按
