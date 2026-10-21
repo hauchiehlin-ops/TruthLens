@@ -1348,7 +1348,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get provenanceRiskMedium => 'ประวัติการแก้ไขมีจุดน่าสงสัย';
 
   @override
-  String get provenanceRiskLow => 'ประวัติการแก้ไขดูปกติ';
+  String get provenanceRiskLow => 'ไม่พบความผิดปกติในประวัติการแก้ไข';
 
   @override
   String get provenanceRiskUnknown => 'ไม่มีประวัติการแก้ไขให้ใช้';
@@ -1505,6 +1505,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5 วินาที ปกติ';
+
+  @override
+  String get reportMetricElapsedSlow => 'เกินเป้าหมาย 5 วินาที';
 
   @override
   String get reportMetricReliability => 'ความน่าเชื่อถือ';
@@ -2937,6 +2940,16 @@ class AppLocalizationsTh extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs จาก $total ย่อหน้าอยู่ในชุดการแก้ไขเดียวกันและมีสัดส่วน $percent% ของคำทั้งหมด ซึ่งสอดคล้องกับการที่ส่วนนั้นถูกเขียนหรือวางในคราวเดียว แม้ไฟล์จะมีชุดการแก้ไขอื่นก็ตาม';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'ไฟล์ระบุว่าสร้างโดยเครื่องมือเขียนด้วย AI: “$name” นี่คือแหล่งที่มาที่ไฟล์ระบุเอง ไม่ใช่การเดาจากสำนวน';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return 'เนื้อหา $words คำ ไม่มีชุดการแก้ไข (RSID) และไม่มีเวลาแก้ไข: ไฟล์ถูกสร้างครั้งเดียวด้วยโปรแกรมหรือการส่งออก ไม่ได้พิมพ์ในโปรแกรมประมวลผลคำ เครื่องมือแปลงไฟล์ก็ทำเช่นนี้ได้ จึงเป็นเพียงหลักฐานประกอบ';
   }
 
   @override

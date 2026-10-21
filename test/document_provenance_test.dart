@@ -14,6 +14,7 @@ List<int> _docx({
   String? modified,
   List<String> rsids = const [],
   String bodyText = '',
+  String coreExtra = '',
 }) {
   final appXml = StringBuffer('<Properties>')
     ..write('<Application>$application</Application>');
@@ -31,7 +32,9 @@ List<int> _docx({
   if (modified != null) {
     coreXml.write('<dcterms:modified>$modified</dcterms:modified>');
   }
-  coreXml.write('</cp:coreProperties>');
+  coreXml
+    ..write(coreExtra)
+    ..write('</cp:coreProperties>');
 
   // 每個 rsid 產生一個帶該批次標記的段落
   final paragraphs = rsids
@@ -231,6 +234,88 @@ void main() {
 
       expect(provenance.signals, isEmpty);
       expect(provenance.risk, ProvenanceRisk.low);
+    });
+  });
+
+  group('AI 產生器宣告', () {
+    test('Claude Docs 產生的 docx：產生器強訊號 + 程式產生，綜合判為高', () {
+      // 實際案例：Application=Claude Docs、description 帶 node 簽章、
+      // 正文沒有任何 RSID、沒有 TotalTime，但 revision=61。
+      final provenance = DocumentProvenance.fromBytes(
+        _docx(
+          application: 'Claude Docs',
+          revision: 61,
+          coreExtra:
+              '<dc:description>Claude Docs node/c250b5e7@61 docx-w7'
+              '</dc:description>',
+        ),
+        extension: 'docx',
+        bodyText: _body(2000),
+      );
+
+      final kinds = provenance.signals.map((s) => s.kind).toList();
+      expect(kinds, contains(ProvenanceSignalKind.aiGeneratorDeclared));
+      expect(kinds, contains(ProvenanceSignalKind.programmaticallyGenerated));
+      expect(provenance.declaredAiGenerator, 'Claude Docs');
+      expect(provenance.risk, ProvenanceRisk.high);
+      expect(provenance.indicatesHumanAuthorship, isFalse);
+    });
+
+    test('產生器宣告不受字數門檻限制', () {
+      final provenance = DocumentProvenance.fromBytes(
+        _docx(application: 'ChatGPT', rsids: const ['00A1']),
+        extension: 'docx',
+        bodyText: _body(20),
+      );
+      expect(provenance.declaresAiGenerator, isTrue);
+    });
+
+    test('描述欄位只認開頭的工具簽章，內文提到 AI 產品不算', () {
+      final signature = DocumentProvenance.fromBytes(
+        _docx(
+          totalMinutes: 90,
+          rsids: const ['00A1', '00B2', '00C3'],
+          coreExtra: '<dc:description>ChatGPT export</dc:description>',
+        ),
+        extension: 'docx',
+        bodyText: _body(600),
+      );
+      expect(signature.declaredAiGenerator, 'ChatGPT');
+
+      final mention = DocumentProvenance.fromBytes(
+        _docx(
+          totalMinutes: 90,
+          rsids: const ['00A1', '00B2', '00C3'],
+          coreExtra:
+              '<dc:description>大學生使用 ChatGPT 的研究</dc:description>'
+              '<dc:creator>Claude Monet</dc:creator>',
+        ),
+        extension: 'docx',
+        bodyText: _body(600),
+      );
+      expect(mention.declaresAiGenerator, isFalse);
+      expect(mention.signals, isEmpty);
+    });
+
+    test('ODT generator 欄位與中文產品名稱也能比對', () {
+      final provenance = DocumentProvenance.fromBytes(
+        _odt(generator: '通義千問 文件匯出', editingDuration: 'PT2H', cycles: 9),
+        extension: 'odt',
+        bodyText: _body(600),
+      );
+      expect(provenance.declaresAiGenerator, isTrue);
+    });
+
+    test('宣稱是 Word 卻沒有 RSID 屬於紀錄被清除，不標為程式產生', () {
+      final provenance = DocumentProvenance.fromBytes(
+        _docx(revision: 8),
+        extension: 'docx',
+        bodyText: _body(800),
+      );
+      expect(
+        provenance.signals.map((s) => s.kind),
+        isNot(contains(ProvenanceSignalKind.programmaticallyGenerated)),
+      );
     });
   });
 

@@ -1367,7 +1367,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Am Bearbeitungsverlauf ist etwas merkwürdig';
 
   @override
-  String get provenanceRiskLow => 'Bearbeitungsverlauf wirkt normal';
+  String get provenanceRiskLow =>
+      'Keine Auffälligkeiten im Bearbeitungsverlauf';
 
   @override
   String get provenanceRiskUnknown => 'Kein Bearbeitungsverlauf verfügbar';
@@ -1524,6 +1525,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0,5-5s normal';
+
+  @override
+  String get reportMetricElapsedSlow => 'Über dem 5-s-Ziel';
 
   @override
   String get reportMetricReliability => 'Zuverlässigkeit';
@@ -2970,6 +2974,16 @@ class AppLocalizationsDe extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs von $total Absätzen gehören zu einem einzigen Bearbeitungsvorgang und enthalten $percent % der Wörter — passend dazu, dass dieser Block in einem Zug geschrieben oder eingefügt wurde, obwohl die Datei weitere Bearbeitungsvorgänge aufweist.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'Die Datei gibt an, von einem KI-Schreibwerkzeug erzeugt worden zu sein: „$name“. Das ist die eigene Herkunftsangabe der Datei, keine Stilvermutung.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words Wörter Inhalt ohne Bearbeitungsschritte (RSID) und ohne Bearbeitungszeit: Die Datei wurde in einem Durchgang von einem Programm oder Export erzeugt, nicht in einer Textverarbeitung getippt. Konverter tun das ebenfalls, daher nur ein unterstützendes Indiz.';
   }
 
   @override

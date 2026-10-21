@@ -1370,7 +1370,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get provenanceRiskMedium => 'Hay algo raro en el historial de edición';
 
   @override
-  String get provenanceRiskLow => 'El historial de edición parece normal';
+  String get provenanceRiskLow => 'Sin anomalías en el historial de edición';
 
   @override
   String get provenanceRiskUnknown => 'No hay historial de edición disponible';
@@ -1527,6 +1527,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0,5-5s normal';
+
+  @override
+  String get reportMetricElapsedSlow => 'Por encima del objetivo de 5 s';
 
   @override
   String get reportMetricReliability => 'Fiabilidad';
@@ -2974,6 +2977,16 @@ class AppLocalizationsEs extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs de $total párrafos pertenecen a un mismo lote de edición y contienen el $percent% de las palabras: compatible con que ese bloque se escribiera o pegara de una sola vez, aunque el archivo tenga otros lotes de edición.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'El archivo declara haber sido producido por una herramienta de escritura con IA: «$name». Es el propio archivo indicando su origen, no una suposición por el estilo.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words palabras sin lotes de edición (RSID) ni tiempo de edición: el archivo se generó de una vez por un programa o exportación, no se escribió en un procesador de textos. Los conversores también lo hacen, así que solo es evidencia de apoyo.';
   }
 
   @override

@@ -335,6 +335,28 @@ cd training
   `flutter test tool/measure_domain_reliability_test.dart --dart-define=CORPUS=...`，
   每類至少 30 份才會給建議值
 
+### Claude 探針與整份文件回歸測試（2026-10-21）
+
+另一份 Claude 產生、Claude Docs 匯出的繁中研究計畫書（約 2.5 萬字，夾英文引文與表格）
+在 App 裡四個文字引擎全部沉默。以 App 相同契約逐句重跑：379 句平均 0.054、最高 0.15，
+離 0.98 很遠；段落與 450 字窗口也都只有 3–4%。這不是門檻或切塊問題，而是訓練資料
+沒有 Claude、也沒有中文學術長文。紀錄見
+[validation/claude_zh_academic_probe.json](validation/claude_zh_academic_probe.json)。
+上面的 zh-proposal 管線生成時，供應商請務必包含 `--provider anthropic`。
+
+新模型上線前，以已知來源的整份文件回歸測試（逐句、192 token，與 App 相同）：
+
+```bash
+.venv/bin/python evaluate_known_documents.py \
+  --ai-dir /path/to/known_ai_docs --human-dir /path/to/known_human_docs \
+  --model <新模型> --tokenizer <tokenizer> \
+  --threshold 0.98 --domain academic_zh \
+  --predictions-out data/known_doc_predictions.jsonl
+```
+
+只輸出分數與檔名，不寫原文；逐句 JSONL 可直接交給 `evaluate_operating_point.py`
+重新選門檻。新模型必須讓上述探針跨過門檻，且真人學術文件誤報上界仍 ≤ 1%。
+
 ## 擴充到其他語言（現況：資料擋住了，不是流程擋住了）
 
 `export_detectrl_zh_char_svm.py` 本身與語言無關，加上 `--no-script-augment`

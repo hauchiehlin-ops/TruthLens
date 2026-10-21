@@ -1357,7 +1357,8 @@ class AppLocalizationsId extends AppLocalizations {
       'Ada yang janggal pada riwayat penyuntingan';
 
   @override
-  String get provenanceRiskLow => 'Riwayat penyuntingan tampak wajar';
+  String get provenanceRiskLow =>
+      'Tidak ada kejanggalan dalam riwayat penyuntingan';
 
   @override
   String get provenanceRiskUnknown => 'Tidak ada riwayat penyuntingan';
@@ -1514,6 +1515,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0,5-5 detik normal';
+
+  @override
+  String get reportMetricElapsedSlow => 'Melebihi target 5 dtk';
 
   @override
   String get reportMetricReliability => 'Keandalan';
@@ -2949,6 +2953,16 @@ class AppLocalizationsId extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs dari $total paragraf berada dalam satu batch penyuntingan dan memuat $percent% dari seluruh kata — sesuai dengan blok yang ditulis atau ditempel sekaligus, meskipun berkas ini memiliki batch penyuntingan lain.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'Berkas menyatakan dibuat oleh alat penulisan AI: “$name”. Ini asal-usul yang dinyatakan berkas itu sendiri, bukan tebakan dari gaya tulisan.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words kata tanpa batch penyuntingan (RSID) maupun waktu penyuntingan: berkas dibuat sekaligus oleh program atau ekspor, bukan diketik di pengolah kata. Alat konversi juga begitu, jadi hanya bukti pendukung.';
   }
 
   @override

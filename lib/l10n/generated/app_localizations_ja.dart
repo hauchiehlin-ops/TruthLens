@@ -1312,7 +1312,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get provenanceRiskMedium => '編集履歴に気になる点があります';
 
   @override
-  String get provenanceRiskLow => '編集履歴は自然に見えます';
+  String get provenanceRiskLow => '編集記録に異常は見つかりません';
 
   @override
   String get provenanceRiskUnknown => '利用できる編集履歴がありません';
@@ -1468,6 +1468,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5〜5秒が通常';
+
+  @override
+  String get reportMetricElapsedSlow => '5 秒の目標を超過';
 
   @override
   String get reportMetricReliability => '信頼性';
@@ -2863,6 +2866,16 @@ class AppLocalizationsJa extends AppLocalizations {
     int percent,
   ) {
     return '$total 段落のうち $paragraphs 段落が同一の編集バッチに属し、全体の $percent% の語数を占めています。ファイルに他の編集バッチがあっても、その部分は一度に書かれた（または貼り付けられた）形跡と整合します。';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'このファイルは AI 執筆ツールで作成されたと記録されています：「$name」。文体からの推測ではなく、ファイル自身が示す出所です。';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words 語の内容に編集バッチ（RSID）も編集時間もありません。ワープロで入力されたのではなく、プログラムやエクスポートで一度に生成されたファイルです。変換ツールでも同様になるため、補助的な証拠にとどまります。';
   }
 
   @override

@@ -34,6 +34,15 @@ enum ProvenanceSignalKind {
   /// 文件有多個編輯批次，但字數高度集中於其中一批
   /// → 該批對應的段落可能是一次貼上的
   concentratedEditingBatch,
+
+  /// 產生軟體或文件描述直接宣告為 AI 寫作工具（如 Claude Docs、ChatGPT 匯出）。
+  /// 這是**作者特異性**的來源證據：一般文書軟體不會把自己寫成 AI 產品。
+  aiGeneratorDeclared,
+
+  /// DOCX 正文完全沒有 RSID，也沒有編輯時長，且不是 Word 存的檔
+  /// → 檔案由程式一次產生（匯出、轉檔或生成工具），不是在文書軟體裡逐步打字。
+  /// 這不是 AI 特異性證據（pandoc、Google 文件匯出也會如此），只能佐證。
+  programmaticallyGenerated,
 }
 
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
@@ -69,10 +78,14 @@ class ProvenanceSignal {
   /// 供介面格式化訊息用的數值，鍵名對應各 l10n 佔位符
   final Map<String, int> values;
 
+  /// 需要原文呈現的字串值（例如宣告的產生軟體名稱）
+  final String? label;
+
   const ProvenanceSignal({
     required this.kind,
     required this.severity,
     this.values = const {},
+    this.label,
   });
 }
 
@@ -92,6 +105,10 @@ class DocumentProvenance {
 
   /// 中繼資料自己宣稱的字數（DOCX `<Words>`）
   final int? declaredWordCount;
+
+  /// 其餘可能帶有產生工具名稱的欄位（DOCX `dc:creator`、
+  /// `cp:lastModifiedBy`、`dc:description`）。只用來比對 AI 產生器，不呈現。
+  final List<String> generatorHints;
 
   /// 段落級的編輯批次分佈（僅 DOCX）。比 [distinctBodyRsids] 的單一數字
   /// 更能指認**哪幾段**屬於同一批——一份逐步寫成的文件會有許多小批次散在
@@ -119,6 +136,7 @@ class DocumentProvenance {
     this.modifiedAt,
     this.application,
     this.declaredWordCount,
+    this.generatorHints = const [],
     this.distinctBodyRsids,
     this.rsidMap = RsidMap.empty,
     this.bodyWordCount = 0,
@@ -157,6 +175,56 @@ class DocumentProvenance {
   /// 會讓分布在低分端被人為壓緊、門檻偏低，反而標記更多真人作業。
   ///
   /// 條件刻意訂得保守：寧可少收，也不要把來歷不明的樣本放進虛無分布。
+  /// 產生軟體自己宣告為 AI 寫作工具時回傳該名稱。
+  ///
+  /// 這與編輯時長、RSID 等「寫作過程異常」不同：那些只說明內容不是當場
+  /// 打出來的，這裡則是檔案直接說明誰產生了它。紀錄可被清除，但很少被
+  /// 偽造成 AI 產品名稱，因此可作為 AI 方向的來源證據。
+  String? get declaredAiGenerator {
+    for (final signal in signals) {
+      if (signal.kind == ProvenanceSignalKind.aiGeneratorDeclared) {
+        return signal.label;
+      }
+    }
+    return null;
+  }
+
+  bool get declaresAiGenerator => declaredAiGenerator != null;
+
+  /// 已知 AI 寫作工具在中繼資料留下的名稱。刻意不收單獨的「Claude」或
+  /// Jasper、Kimi 這類同時是人名的字樣，避免把作者名字誤判成產生器。
+  static const String _aiGeneratorNames =
+      r'(?:claude\s*(?:docs|code|\.ai|ai|desktop)\b|anthropic\b|'
+      r'chat\s*gpt\b|openai\b|gpt-[0-9o]|gemini\b|copilot\b|'
+      r'notion\s+ai\b|perplexity\b|deepseek\b|qwen\b|通義|豆包|doubao\b|'
+      r'grok\b|文心一言|ernie\s*bot\b)';
+
+  /// 產生軟體欄位（DOCX `Application`、ODT `generator`）本身就是軟體名稱，
+  /// 名稱出現在任何位置都算。不用 `\b`：它對中文字元不成立，會漏掉「通義」。
+  static final RegExp aiGeneratorPattern = RegExp(
+    '(?<![A-Za-z0-9])$_aiGeneratorNames',
+    caseSensitive: false,
+  );
+
+  /// 作者、描述等自由文字欄位只認開頭的工具簽章（例如
+  /// `Claude Docs node/…`）；描述裡「研究 ChatGPT 的使用」不能算數。
+  static final RegExp aiGeneratorSignaturePattern = RegExp(
+    '^\\s*$_aiGeneratorNames',
+    caseSensitive: false,
+  );
+
+  /// 從產生軟體與其他欄位找出 AI 產生器名稱，找不到回傳 null
+  static String? matchAiGenerator(String? application, List<String> hints) {
+    if (application != null && aiGeneratorPattern.hasMatch(application)) {
+      return application.trim();
+    }
+    for (final hint in hints) {
+      final match = aiGeneratorSignaturePattern.firstMatch(hint);
+      if (match != null) return match.group(0)!.trim();
+    }
+    return null;
+  }
+
   bool get indicatesHumanAuthorship {
     if (!hasMetadata || signals.isNotEmpty) return false;
     if ((editingDuration?.inMinutes ?? 0) < minAutoAdmitMinutes) return false;
@@ -263,6 +331,14 @@ class DocumentProvenance {
     final revision = int.tryParse(_tag(core, 'cp:revision') ?? '');
     final created = DateTime.tryParse(_tag(core, 'dcterms:created') ?? '');
     final modified = DateTime.tryParse(_tag(core, 'dcterms:modified') ?? '');
+    final hints = [
+      for (final tag in const [
+        'dc:creator',
+        'cp:lastModifiedBy',
+        'dc:description',
+      ])
+        ?_tag(core, tag),
+    ].where((value) => value.isNotEmpty).toList();
 
     // 正文裡所有 w:rsid* 屬性值的相異數量
     final rsids = <String>{};
@@ -285,6 +361,7 @@ class DocumentProvenance {
             ? null
             : application,
         declaredWordCount: declaredWords,
+        generatorHints: hints,
         distinctBodyRsids: rsids.isEmpty ? null : rsids.length,
         rsidMap: buildRsidMap(document, countWords),
         bodyWordCount: countWords(bodyText),
@@ -372,6 +449,18 @@ class DocumentProvenance {
     final words = base.bodyWordCount;
     final minutes = base.editingDuration?.inMinutes;
 
+    // 產生器宣告與字數無關：再短的檔案，寫著 Claude Docs 就是 Claude Docs
+    final aiGenerator = matchAiGenerator(base.application, base.generatorHints);
+    if (aiGenerator != null) {
+      signals.add(
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.aiGeneratorDeclared,
+          severity: ProvenanceSeverity.strong,
+          label: aiGenerator,
+        ),
+      );
+    }
+
     // 內容量太少時所有推論都不可靠，直接不產生訊號
     const minimumWordsForInference = 150;
 
@@ -426,6 +515,22 @@ class DocumentProvenance {
         );
       }
 
+      // Word 每次存檔都寫 RSID 與 TotalTime；兩者皆無代表檔案不是在文書軟體
+      // 裡編出來的。宣稱是 Word 卻沒有紀錄的情況屬於「被清除」，不在此列。
+      final application = base.application?.toLowerCase() ?? '';
+      if (base.sourceFormat == 'docx' &&
+          rsids == null &&
+          base.editingDuration == null &&
+          !application.contains('microsoft')) {
+        signals.add(
+          ProvenanceSignal(
+            kind: ProvenanceSignalKind.programmaticallyGenerated,
+            severity: ProvenanceSeverity.notable,
+            values: {'words': words},
+          ),
+        );
+      }
+
       final revisions = base.revisionCount;
       if (revisions != null && revisions <= 1) {
         signals.add(
@@ -445,6 +550,7 @@ class DocumentProvenance {
       modifiedAt: base.modifiedAt,
       application: base.application,
       declaredWordCount: base.declaredWordCount,
+      generatorHints: base.generatorHints,
       distinctBodyRsids: base.distinctBodyRsids,
       bodyWordCount: base.bodyWordCount,
       sourceFormat: base.sourceFormat,

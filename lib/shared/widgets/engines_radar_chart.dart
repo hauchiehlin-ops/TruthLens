@@ -80,9 +80,14 @@ class _EnginesRadarChartState extends State<EnginesRadarChart> {
             ),
             const SizedBox(height: 12),
             Text(
-              score.available
-                  ? l10n.reportReliabilityHighTrust
-                  : l10n.reportEngineNotInstalled,
+              // 「已執行」不等於「可信」：沒有證據的引擎只能說它跑過了
+              !score.available
+                  ? l10n.reportEngineNotInstalled
+                  : score.votes
+                  ? l10n.reportEngineSignalLabel(
+                      (score.aiProbability * 100).round(),
+                    )
+                  : l10n.reportEngineExecutedNoStrongSignal,
               style: Theme.of(ctx).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),

@@ -38,6 +38,10 @@ class ProvenanceCard extends StatelessWidget {
           v['total'] ?? 0,
           v['percent'] ?? 0,
         ),
+      ProvenanceSignalKind.aiGeneratorDeclared =>
+        l10n.provenanceSignalAiGenerator(signal.label ?? '—'),
+      ProvenanceSignalKind.programmaticallyGenerated =>
+        l10n.provenanceSignalProgrammatic(v['words'] ?? 0),
     };
   }
 

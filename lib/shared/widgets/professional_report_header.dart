@@ -191,7 +191,11 @@ class ProfessionalReportHeader extends StatelessWidget {
           // 5. 三列指標卡
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: _MetricsRow(result: result, l10n: l10n),
+            child: _MetricsRow(
+              result: result,
+              assessment: assessment,
+              l10n: l10n,
+            ),
           ),
 
           // 6. 文件來源證據卡（與 AI 機率分開的另一類證據；沒有可用紀錄時
@@ -974,9 +978,22 @@ bool _hasIncompleteCoreTextStack(
 /// 三列指標卡
 class _MetricsRow extends StatelessWidget {
   final DetectionResult result;
+  final IntegratedAssessment assessment;
   final AppLocalizations l10n;
 
-  const _MetricsRow({required this.result, required this.l10n});
+  const _MetricsRow({
+    required this.result,
+    required this.assessment,
+    required this.l10n,
+  });
+
+  /// 與標題區的「判讀信心」同源。過去這張卡只看「可用引擎是否 ≥ 2」，
+  /// 於是四個引擎全部沉默時仍顯示「高度可信」，與「判讀信心：低」並列。
+  String get _confidenceValue => switch (assessment.confidence) {
+    IntegratedConfidence.low => l10n.integratedConfidenceLow,
+    IntegratedConfidence.moderate => l10n.integratedConfidenceModerate,
+    IntegratedConfidence.high => l10n.integratedConfidenceHigh,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -1000,18 +1017,16 @@ class _MetricsRow extends StatelessWidget {
         iconColor: const Color(0xFF1E3A5F),
         title: l10n.reportMetricElapsed,
         value: '${(result.elapsed.inMilliseconds / 1000).toStringAsFixed(2)}s',
-        subtitle: l10n.reportMetricElapsedNormal,
+        subtitle: result.elapsed.inMilliseconds <= 5000
+            ? l10n.reportMetricElapsedNormal
+            : l10n.reportMetricElapsedSlow,
       ),
       _MetricCard(
         icon: LucideIcons.shieldCheck,
         iconColor: const Color(0xFFD4AF37),
         title: l10n.reportMetricReliability,
-        value: result.isLowConfidence
-            ? l10n.reportReliabilityLow
-            : l10n.reportReliabilityHigh,
-        subtitle: result.isLowConfidence
-            ? l10n.reportReliabilityNeedsReview
-            : l10n.reportReliabilityHighTrust,
+        value: _confidenceValue,
+        subtitle: integratedEvidenceTierLabel(assessment, l10n),
       ),
     ];
     return LayoutBuilder(

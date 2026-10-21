@@ -5,7 +5,9 @@
 /// 並以 [pointEstimateAvailable] 告知呈現層不得輸出數字判定。
 ///
 /// 這裡刻意採不對稱證據規則：缺少引用、整段貼上或檔案中繼資料異常，
-/// 都不是 AI 特異性證據，不能把文件推向 AI。它們仍會在
+/// 都不是 AI 特異性證據，不能把文件推向 AI。唯一的例外是產生軟體直接宣告
+/// 為 AI 寫作工具（[DocumentProvenance.declaresAiGenerator]）：那不是「過程
+/// 異常」，而是檔案自己說明了作者身分。它們仍會在
 /// [ForensicEvidenceMatrix] 中列為待核查事項。AI 方向必須由文字引擎的直接訊號
 /// 提供方向；最低共識門檻另外標示該方向是否已有足夠獨立證據。真人寫作過程與
 /// 完整來源紀錄則可以提供反向佐證。
@@ -165,7 +167,9 @@ class IntegratedAssessment {
     );
     final calibratedAiOutlier = result.calibration.isFlagged;
     final passesAiEvidenceGate =
-        fusion.passesAiEvidenceGate || calibratedAiOutlier;
+        fusion.passesAiEvidenceGate ||
+        calibratedAiOutlier ||
+        result.provenance.declaresAiGenerator;
     final hasAssistantArtifact = fusion.hasDirectTrace;
     final textReliability = hasAssistantArtifact
         ? 0.95
@@ -206,8 +210,14 @@ class IntegratedAssessment {
     }
 
     final provenance = result.provenance;
+    final provenanceSupportsAi = provenance.declaresAiGenerator;
     if (provenance.indicatesHumanAuthorship) {
       add(EvidenceAxisKind.documentOrigin, -1.35, information: 1.0);
+    }
+    if (provenanceSupportsAi) {
+      // 與出版紀錄同等級的身分證據，但方向相反。文字引擎沉默時，它仍足以
+      // 單獨形成方向；文字引擎若強烈指向人類，兩者會以衝突呈現。
+      add(EvidenceAxisKind.documentOrigin, 2.20, information: 2.0);
     }
     if (publication.supportsHumanAuthorship) {
       // DOI、篇名與出版年代共同吻合，表示這份出版品早於現代生成式 AI。
@@ -271,9 +281,10 @@ class IntegratedAssessment {
         publication.supportsHumanAuthorship;
     final weakAiScreeningOnly =
         aiLikelihood > 0.5 && !passesAiEvidenceGate && !provenanceSupportsHuman;
+    final identityEvidence = provenanceSupportsHuman || provenanceSupportsAi;
     final evidenceConfidenceCeiling = weakAiScreeningOnly
         ? 0.37
-        : hasAssistantArtifact || provenanceSupportsHuman
+        : hasAssistantArtifact || identityEvidence
         ? 1.0
         : result.calibration.isApplicable
         ? 0.90
@@ -281,7 +292,7 @@ class IntegratedAssessment {
     final confidenceCeiling = math.min(
       result.inputQuality.confidenceCeiling,
       math.min(
-        !fusion.stabilityAvailable && !provenanceSupportsHuman
+        !fusion.stabilityAvailable && !identityEvidence
             ? passesAiEvidenceGate && fusion.aiSupportingFamilies >= 2
                   ? 0.72
                   : 0.45
@@ -295,11 +306,12 @@ class IntegratedAssessment {
         : confidenceScore >= 0.38
         ? IntegratedConfidence.moderate
         : IntegratedConfidence.low;
-    var confidence = result.evidenceEngineCount == 0 && !provenanceSupportsHuman
+    var confidence = result.evidenceEngineCount == 0 && !identityEvidence
         ? IntegratedConfidence.low
         : rawConfidence == IntegratedConfidence.high &&
               fusion.aiSupportingFamilies < 2 &&
               !provenance.indicatesHumanAuthorship &&
+              !provenanceSupportsAi &&
               !writing.consistentWithLiveWriting
         ? IntegratedConfidence.moderate
         : rawConfidence;
@@ -359,6 +371,7 @@ class IntegratedAssessment {
           calibratedAiOutlier ||
           writing.consistentWithLiveWriting ||
           provenance.indicatesHumanAuthorship ||
+          provenanceSupportsAi ||
           publication.supportsHumanAuthorship,
       stabilityScore: fusion.stabilityScore,
       lowerBound: fusion.lowerBound,

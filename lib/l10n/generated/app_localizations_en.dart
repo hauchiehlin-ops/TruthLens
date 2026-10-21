@@ -1342,7 +1342,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Editing history has something odd about it';
 
   @override
-  String get provenanceRiskLow => 'Editing history looks normal';
+  String get provenanceRiskLow => 'No anomalies in the editing record';
 
   @override
   String get provenanceRiskUnknown => 'No editing history available';
@@ -1498,6 +1498,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5s normal';
+
+  @override
+  String get reportMetricElapsedSlow => 'Above the 5 s target';
 
   @override
   String get reportMetricReliability => 'Reliability';
@@ -2935,6 +2938,16 @@ class AppLocalizationsEn extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs of $total paragraphs share a single editing batch and carry $percent% of the words — consistent with that block being written or pasted in one sitting, even though the file has other editing batches.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'The file declares it was produced by an AI writing tool: “$name”. This is the file stating its own origin, not a guess from writing style.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words words of content with no editing batches (RSID) and no editing time: the file was generated in one pass by a program or export, not typed in a word processor. Exports and converters do this too, so it is only supporting evidence.';
   }
 
   @override

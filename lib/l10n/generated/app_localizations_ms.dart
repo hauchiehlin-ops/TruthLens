@@ -1357,7 +1357,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Ada yang ganjil pada sejarah penyuntingan';
 
   @override
-  String get provenanceRiskLow => 'Sejarah penyuntingan kelihatan biasa';
+  String get provenanceRiskLow => 'Tiada keganjilan dalam rekod suntingan';
 
   @override
   String get provenanceRiskUnknown => 'Tiada sejarah penyuntingan tersedia';
@@ -1514,6 +1514,9 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5s normal';
+
+  @override
+  String get reportMetricElapsedSlow => 'Melebihi sasaran 5 saat';
 
   @override
   String get reportMetricReliability => 'Kebolehpercayaan';
@@ -2953,6 +2956,16 @@ class AppLocalizationsMs extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs daripada $total perenggan berada dalam satu kelompok suntingan dan mengandungi $percent% daripada jumlah perkataan — sepadan dengan blok yang ditulis atau ditampal sekali gus, walaupun fail ini mempunyai kelompok suntingan lain.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'Fail menyatakan ia dihasilkan oleh alat penulisan AI: “$name”. Ini asal usul yang dinyatakan oleh fail sendiri, bukan tekaan daripada gaya penulisan.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words perkataan tanpa kelompok suntingan (RSID) dan tanpa masa suntingan: fail dijana sekali gus oleh program atau eksport, bukan ditaip dalam pemproses kata. Penukar juga berbuat begitu, jadi ia hanya bukti sokongan.';
   }
 
   @override

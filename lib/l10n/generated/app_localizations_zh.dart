@@ -1300,7 +1300,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get provenanceRiskMedium => '編輯紀錄有可疑之處';
 
   @override
-  String get provenanceRiskLow => '編輯紀錄看起來正常';
+  String get provenanceRiskLow => '未發現編輯紀錄異常';
 
   @override
   String get provenanceRiskUnknown => '沒有可用的編輯紀錄';
@@ -1454,6 +1454,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricElapsedSlow => '超出 5 秒效能目標';
 
   @override
   String get reportMetricReliability => '可信度';
@@ -2829,6 +2832,16 @@ class AppLocalizationsZh extends AppLocalizations {
     int percent,
   ) {
     return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return '檔案宣告由 AI 寫作工具產生：「$name」。這是檔案自己說明的來源，不是從文風推測。';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words 字的內容沒有任何編輯批次（RSID）也沒有編輯時長：檔案是由程式或匯出一次產生，不是在文書軟體裡打出來的。轉檔與匯出工具也會如此，因此只能作為佐證。';
   }
 
   @override
@@ -4602,7 +4615,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get provenanceRiskMedium => '编辑记录有可疑之处';
 
   @override
-  String get provenanceRiskLow => '编辑记录看起来正常';
+  String get provenanceRiskLow => '未发现编辑记录异常';
 
   @override
   String get provenanceRiskUnknown => '没有可用的编辑记录';
@@ -4756,6 +4769,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricElapsedSlow => '超出 5 秒性能目标';
 
   @override
   String get reportMetricReliability => '可信度';
@@ -6131,6 +6147,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     int percent,
   ) {
     return '$total 段中有 $paragraphs 段属于同一个编辑批次，占全文 $percent% 的字数——这与「该区块是一次写入或粘贴的」相符，即使档案本身另有其他编辑批次。';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return '文件声明由 AI 写作工具生成：“$name”。这是文件自己说明的来源，不是从文风推测。';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words 字的内容没有任何编辑批次（RSID）也没有编辑时长：文件是由程序或导出一次生成，不是在文字处理软件里打出来的。转档与导出工具也会如此，因此只能作为佐证。';
   }
 
   @override
@@ -7904,7 +7930,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get provenanceRiskMedium => '編輯紀錄有可疑之處';
 
   @override
-  String get provenanceRiskLow => '編輯紀錄看起來正常';
+  String get provenanceRiskLow => '未發現編輯紀錄異常';
 
   @override
   String get provenanceRiskUnknown => '沒有可用的編輯紀錄';
@@ -8058,6 +8084,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5s 正常';
+
+  @override
+  String get reportMetricElapsedSlow => '超出 5 秒效能目標';
 
   @override
   String get reportMetricReliability => '可信度';
@@ -9433,6 +9462,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     int percent,
   ) {
     return '$total 段中有 $paragraphs 段屬於同一個編輯批次，佔全文 $percent% 的字數——這與「該區塊是一次寫入或貼上的」相符，即使檔案本身另有其他編輯批次。';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return '檔案宣告由 AI 寫作工具產生：「$name」。這是檔案自己說明的來源，不是從文風推測。';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words 字的內容沒有任何編輯批次（RSID）也沒有編輯時長：檔案是由程式或匯出一次產生，不是在文書軟體裡打出來的。轉檔與匯出工具也會如此，因此只能作為佐證。';
   }
 
   @override

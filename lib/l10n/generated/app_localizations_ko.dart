@@ -1315,7 +1315,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get provenanceRiskMedium => '편집 기록에 의심스러운 점이 있습니다';
 
   @override
-  String get provenanceRiskLow => '편집 기록은 정상으로 보입니다';
+  String get provenanceRiskLow => '편집 기록에서 이상이 발견되지 않음';
 
   @override
   String get provenanceRiskUnknown => '사용할 수 있는 편집 기록이 없습니다';
@@ -1471,6 +1471,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0.5-5초 정상';
+
+  @override
+  String get reportMetricElapsedSlow => '5초 목표 초과';
 
   @override
   String get reportMetricReliability => '신뢰도';
@@ -2872,6 +2875,16 @@ class AppLocalizationsKo extends AppLocalizations {
     int percent,
   ) {
     return '$total개 단락 중 $paragraphs개가 같은 편집 배치에 속하며 전체 단어의 $percent%를 차지합니다. 파일에 다른 편집 배치가 있더라도, 해당 부분은 한 번에 작성되었거나 붙여넣어진 형태와 일치합니다.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return '파일에 AI 작성 도구로 생성되었다고 기록되어 있습니다: “$name”. 문체 추정이 아니라 파일 자체가 밝힌 출처입니다.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words단어 분량인데 편집 배치(RSID)와 편집 시간이 전혀 없습니다. 워드프로세서에서 입력한 것이 아니라 프로그램이나 내보내기로 한 번에 생성된 파일입니다. 변환 도구도 이렇게 만들 수 있으므로 보조 증거일 뿐입니다.';
   }
 
   @override

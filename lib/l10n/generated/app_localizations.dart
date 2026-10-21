@@ -2261,7 +2261,7 @@ abstract class AppLocalizations {
   /// No description provided for @provenanceRiskLow.
   ///
   /// In en, this message translates to:
-  /// **'Editing history looks normal'**
+  /// **'No anomalies in the editing record'**
   String get provenanceRiskLow;
 
   /// No description provided for @provenanceRiskUnknown.
@@ -2465,6 +2465,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'0.5-5s normal'**
   String get reportMetricElapsedNormal;
+
+  /// No description provided for @reportMetricElapsedSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Above the 5 s target'**
+  String get reportMetricElapsedSlow;
 
   /// No description provided for @reportMetricReliability.
   ///
@@ -4682,6 +4688,18 @@ abstract class AppLocalizations {
     int total,
     int percent,
   );
+
+  /// No description provided for @provenanceSignalAiGenerator.
+  ///
+  /// In en, this message translates to:
+  /// **'The file declares it was produced by an AI writing tool: “{name}”. This is the file stating its own origin, not a guess from writing style.'**
+  String provenanceSignalAiGenerator(String name);
+
+  /// No description provided for @provenanceSignalProgrammatic.
+  ///
+  /// In en, this message translates to:
+  /// **'{words} words of content with no editing batches (RSID) and no editing time: the file was generated in one pass by a program or export, not typed in a word processor. Exports and converters do this too, so it is only supporting evidence.'**
+  String provenanceSignalProgrammatic(int words);
 
   /// Verifiable finding: evasion marks
   ///

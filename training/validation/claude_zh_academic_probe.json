@@ -1,0 +1,20 @@
+{
+  "purpose": "Regression probe: a Claude-generated Traditional Chinese research proposal that every text engine missed in production (2026-10-21).",
+  "document": {
+    "label": "ai",
+    "generator": "Claude (exported by Claude Docs; app.xml Application=Claude Docs)",
+    "language": "zh-Hant",
+    "domain": "academic_zh (two-year research proposal, ~25k chars, English (Author, Year) citations, tables)",
+    "content_committed": false
+  },
+  "model": "omnitrace-zh-detector-int8 (truthlens_zh_detector_int8.onnx, sha256 cc9448f3…2b713c)",
+  "threshold": 0.98,
+  "contract": "per-sentence, max_len=192, evidence = any sentence >= threshold (scored with evaluate_known_documents.py)",
+  "per_sentence": {"sentences": 379, "mean": 0.0543, "median": 0.0421, "max": 0.1499, "strong_ratio": 0.0},
+  "other_granularities_max_len_512": {
+    "paragraph": {"n": 191, "mean": 0.030, "share_ge_0.6": 0.0},
+    "window_450_chars": {"n": 54, "mean": 0.037, "share_ge_0.6": 0.0}
+  },
+  "conclusion": "Not a threshold or chunking problem: the classifier confidently scores this register as human at every granularity. Training data covers DeepSeek-V3, Gemini-2.5-Flash, GPT-4o and Qwen-Max on news/QA/assistant registers only; no Claude and no long-form Chinese academic writing. A weak-direction channel for silent engines would have pushed this document toward human, so silence-as-no-vote is kept.",
+  "next_step": "Generate zh_proposal / zh_review / zh_light_edit samples with binoculars/generate_ai_corpus.py (Claude plus at least one other provider), pair them with topic-matched human Chinese academic writing as hard negatives, retrain, and require this probe plus a held-out academic set to clear the threshold without raising human FPR above 1%."
+}

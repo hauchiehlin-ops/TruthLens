@@ -1,5 +1,45 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-21 — Claude 產生的繁中計畫書全面漏判：來源證據補洞、報告矛盾修正、訓練缺口量化
+
+使用者回報：一份 100% 由 Claude 撰寫、經 Claude Docs 匯出的《兩年期研究計畫書》（約 2.5 萬字，
+夾英文引文與表格），報告只給出「未取得可量化的作者訊號」，同時顯示「可信度：高」與
+「判讀信心：低」，來源卡還寫「編輯紀錄看起來正常」。
+
+根因（逐項查證）：
+
+1. **來源證據沒被讀**：`app.xml` 寫明 `Application=Claude Docs`、`core.xml` 描述帶
+   `Claude Docs node/…` 簽章、正文 0 個 RSID、沒有 `TotalTime`。`_withSignals` 只看編輯時長、
+   RSID、修訂次數；RSID 為空時設為 null（不判斷），`revision=61` 又像正常，於是零訊號。
+2. **分類器真的看不到**：下載出貨的 `truthlens_zh_detector_int8.onnx`，依 App 契約逐句重跑：
+   379 句平均 0.054、最高 0.15（門檻 0.98）；段落、450 字窗口也只有 3–4%。訓練生成器只有
+   DeepSeek-V3／Gemini／GPT-4o／Qwen，語域是新聞、問答、助理回覆，沒有 Claude 也沒有中文學術長文。
+3. 其餘引擎（統計、風格）未形成方向，改寫防禦未載入，融合退回固定 50%。
+
+主要調整：
+
+1. `DocumentProvenance` 新增 `aiGeneratorDeclared`（strong）：比對 Application／ODT generator
+   中的 AI 寫作工具名稱，作者與描述等自由文字欄位只認開頭簽章，避免「研究 ChatGPT」或作者名
+   Claude Monet 誤判；不受 150 字門檻限制。新增 `programmaticallyGenerated`（notable）：docx
+   無 RSID、無編輯時長且不是 Word 存檔，只作佐證，不推向 AI。
+2. `IntegratedAssessment` 對不對稱規則開唯一例外：產生器宣告是作者身分證據，於
+   `documentOrigin` 軸加 +2.20 對數勝算，視同通過 AI 證據門檻並解除「僅弱篩查」信心上限。
+   只有程式產生訊號時仍維持中性（已加測試鎖住）。實際檔案端到端：結論改為「較可能為 AI」、
+   指數 90、信心中、證據門檻通過。
+3. 報告矛盾：「可信度」卡改用整合判讀信心與證據層級（過去只看可用引擎 ≥ 2）；分析耗時超過
+   5 秒不再標「0.5-5s 正常」；雷達圖引擎對話框不再對沒有證據的引擎寫「高度可信」；
+   `provenanceRiskLow` 改為「未發現編輯紀錄異常」。14 個語系同步。
+4. 訓練：語料生成沿用 10-17 建好的 `--register zh-proposal` 管線（原本另加的 `zh_*` 語域與其重複，
+   rebase 時捨棄）；新增 `evaluate_known_documents.py`（整份文件、逐句、與 App 同契約，只寫分數不寫原文），
+   探針結果存於 `training/validation/claude_zh_academic_probe.json`。
+
+**刻意不做**：原先考慮讓「沉默引擎」保留弱方向。實測顯示分類器在這份文件上是「很有把握地錯」
+（約 4%），弱方向通道會把它推向人類；維持「沉默＝不投票」。
+
+**狀態**：✅ `dart analyze` 無錯誤；✅ 全套 `flutter test` 與 HEAD 比對無新增失敗（16 項既有失敗
+不變）；✅ 新增 9 項 Dart 測試與 4 項 Python 測試通過。⏳ 補 Claude／中文學術語料並重訓分類器
+尚未執行（需 API 生成與同題真人學術語料）。`flutter analyze`／`flutter test` 在此 exFAT 外接碟會因
+`ios/Flutter/ephemeral` 的 `._` 檔無法刪除而中止，本次改在 APFS 複本執行。
 ## 2026-10-17 — 發布 v6.3.3（Build 1489）
 
 將同日兩項偵測修正（Transformer 文件級分數、burstiness 人類側停用與正文切句）納入正式版。

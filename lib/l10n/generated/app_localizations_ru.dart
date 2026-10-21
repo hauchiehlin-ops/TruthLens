@@ -1357,7 +1357,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get provenanceRiskMedium => 'В истории правок есть странности';
 
   @override
-  String get provenanceRiskLow => 'История правок выглядит обычной';
+  String get provenanceRiskLow => 'В истории правок аномалий не найдено';
 
   @override
   String get provenanceRiskUnknown => 'История правок недоступна';
@@ -1514,6 +1514,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reportMetricElapsedNormal => '0,5-5 с — норма';
+
+  @override
+  String get reportMetricElapsedSlow => 'Выше цели в 5 с';
 
   @override
   String get reportMetricReliability => 'Надёжность';
@@ -2956,6 +2959,16 @@ class AppLocalizationsRu extends AppLocalizations {
     int percent,
   ) {
     return '$paragraphs из $total абзацев относятся к одному сеансу правки и содержат $percent % слов — это согласуется с тем, что данный блок написан или вставлен за один раз, даже если в файле есть другие сеансы правки.';
+  }
+
+  @override
+  String provenanceSignalAiGenerator(String name) {
+    return 'Файл указывает, что создан инструментом ИИ-письма: «$name». Это происхождение, заявленное самим файлом, а не догадка по стилю.';
+  }
+
+  @override
+  String provenanceSignalProgrammatic(int words) {
+    return '$words слов без пакетов правок (RSID) и без времени редактирования: файл создан за один проход программой или экспортом, а не набран в текстовом редакторе. Конвертеры делают так же, поэтому это лишь косвенное свидетельство.';
   }
 
   @override

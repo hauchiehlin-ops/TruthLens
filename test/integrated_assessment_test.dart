@@ -267,6 +267,58 @@ void main() {
     expect(assessment.confidence, IntegratedConfidence.low);
   });
 
+  test('文字引擎全部沉默時，AI 產生器宣告仍可單獨形成 AI 方向', () {
+    // 實際案例：Claude Docs 產生的繁中研究計畫書，四個文字引擎都沒有證據，
+    // 舊版只能報「未取得可量化的作者訊號」並在來源卡顯示「看起來正常」。
+    const provenance = DocumentProvenance(
+      sourceFormat: 'docx',
+      revisionCount: 61,
+      application: 'Claude Docs',
+      bodyWordCount: 2000,
+      signals: [
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.aiGeneratorDeclared,
+          severity: ProvenanceSeverity.strong,
+          label: 'Claude Docs',
+        ),
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.programmaticallyGenerated,
+          severity: ProvenanceSeverity.notable,
+        ),
+      ],
+    );
+    final assessment = IntegratedAssessment.assess(
+      _result(provenance: provenance),
+    );
+
+    expect(assessment.pointEstimateAvailable, isTrue);
+    expect(assessment.direction, IntegratedDirection.likelyAi);
+    expect(assessment.conclusion, IntegratedConclusion.likelyAi);
+    expect(assessment.passesAiEvidenceGate, isTrue);
+    expect(assessment.aiLikelihood, greaterThan(0.85));
+    expect(assessment.confidence, isNot(IntegratedConfidence.low));
+  });
+
+  test('只有程式產生訊號（無產生器宣告）時仍不得推向 AI', () {
+    const provenance = DocumentProvenance(
+      sourceFormat: 'docx',
+      revisionCount: 3,
+      application: 'pandoc',
+      bodyWordCount: 2000,
+      signals: [
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.programmaticallyGenerated,
+          severity: ProvenanceSeverity.notable,
+        ),
+      ],
+    );
+    final assessment = IntegratedAssessment.assess(
+      _result(provenance: provenance),
+    );
+    expect(assessment.pointEstimateAvailable, isFalse);
+    expect(assessment.direction, IntegratedDirection.balanced);
+  });
+
   test('學術文獻缺同句引註只進品質稽核，不得重現 13% 被推成 51%', () {
     final claims = ClaimAudit(
       claims: [

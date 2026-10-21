@@ -1096,7 +1096,7 @@
   "provenanceTitle": "Document origin evidence",
   "provenanceRiskHigh": "Editing history is clearly unusual",
   "provenanceRiskMedium": "Editing history has something odd about it",
-  "provenanceRiskLow": "Editing history looks normal",
+  "provenanceRiskLow": "No anomalies in the editing record",
   "provenanceRiskUnknown": "No editing history available",
   "provenanceNoMetadata": "This input carries no editing history — pasted text, a PDF, or a file whose record was stripped. There is nothing to judge from origin here, only the text analysis itself.",
   "provenanceEditingDuration": "Editing time recorded in the file: {minutes} minutes",
@@ -1346,6 +1346,7 @@
   },
   "reportMetricElapsed": "Analysis time",
   "reportMetricElapsedNormal": "0.5-5s normal",
+  "reportMetricElapsedSlow": "Above the 5 s target",
   "reportMetricReliability": "Reliability",
   "reportReliabilityLow": "Low",
   "reportReliabilityHigh": "High",
@@ -2409,6 +2410,22 @@
         "type": "int"
       },
       "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalAiGenerator": "The file declares it was produced by an AI writing tool: “{name}”. This is the file stating its own origin, not a guess from writing style.",
+  "@provenanceSignalAiGenerator": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalProgrammatic": "{words} words of content with no editing batches (RSID) and no editing time: the file was generated in one pass by a program or export, not typed in a word processor. Exports and converters do this too, so it is only supporting evidence.",
+  "@provenanceSignalProgrammatic": {
+    "placeholders": {
+      "words": {
         "type": "int"
       }
     }
