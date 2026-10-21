@@ -1486,5 +1486,13 @@
   "evasionKindCombiningStack": "diacritiques empilés",
   "evasionTechniqueCount": "{technique} : {count}",
   "findingEvasionTechniques": "Techniques détectées : {techniques}.",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "Les moteurs de texte distinguent mal ce type de document",
+  "gapDomainKnownMiss": "Sur les sondes mesurées de textes « {domain} », le classifieur actuel a manqué {missed}/{total} documents IA",
+  "gapDomainUnmeasured": "Pas de mesures suffisantes pour les textes « {domain} » ; les performances du classifieur y sont inconnues",
+  "gapLanguageUnvalidated": "Le classifieur n’est pas validé pour cette langue",
+  "gapPerplexityOutdated": "Les seuils de perplexité ont été calibrés sur des textes IA anciens (2022) et discriminent mal les sorties des modèles récents",
+  "gapEnginesUnavailable": "{count} moteur(s) de texte ne prennent pas en charge cette langue ou ne sont pas installés",
+  "textDiscriminabilityClosing": "« Exécuté, aucun signal fort » signifie donc que les outils ne savent pas trancher, pas que le texte semble humain. Privilégiez les preuves d’origine et de processus d’écriture.",
+  "textDiscriminabilityProvenance": "Cette conclusion repose surtout sur des preuves d’origine du document, pas sur les moteurs de texte."
 }

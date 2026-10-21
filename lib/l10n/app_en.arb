@@ -3125,5 +3125,40 @@
       }
     }
   },
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "The text engines cannot reliably tell on this kind of document",
+  "gapDomainKnownMiss": "In measured probes of {domain} text, the current classifier missed {missed}/{total} AI documents",
+  "@gapDomainKnownMiss": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      },
+      "missed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "gapDomainUnmeasured": "There are no sufficient measurements for {domain} text; the classifier’s performance here is unknown",
+  "@gapDomainUnmeasured": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  "gapLanguageUnvalidated": "The classifier has not been validated for this language",
+  "gapPerplexityOutdated": "Perplexity thresholds were calibrated on early (2022) AI text and discriminate poorly on modern model output",
+  "gapEnginesUnavailable": "{count} text engine(s) do not support this language or are not installed",
+  "@gapEnginesUnavailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "textDiscriminabilityClosing": "So “ran, no strong signal” means the tools cannot tell, not that the text reads as human. Rely on document origin and writing-process evidence instead.",
+  "textDiscriminabilityProvenance": "This conclusion rests mainly on document-origin evidence, not on the text engines."
 }

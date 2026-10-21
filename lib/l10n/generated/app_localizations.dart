@@ -5787,6 +5787,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **', '**
   String get listSeparator;
+
+  /// No description provided for @textDiscriminabilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The text engines cannot reliably tell on this kind of document'**
+  String get textDiscriminabilityTitle;
+
+  /// No description provided for @gapDomainKnownMiss.
+  ///
+  /// In en, this message translates to:
+  /// **'In measured probes of {domain} text, the current classifier missed {missed}/{total} AI documents'**
+  String gapDomainKnownMiss(String domain, int missed, int total);
+
+  /// No description provided for @gapDomainUnmeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no sufficient measurements for {domain} text; the classifier’s performance here is unknown'**
+  String gapDomainUnmeasured(String domain);
+
+  /// No description provided for @gapLanguageUnvalidated.
+  ///
+  /// In en, this message translates to:
+  /// **'The classifier has not been validated for this language'**
+  String get gapLanguageUnvalidated;
+
+  /// No description provided for @gapPerplexityOutdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Perplexity thresholds were calibrated on early (2022) AI text and discriminate poorly on modern model output'**
+  String get gapPerplexityOutdated;
+
+  /// No description provided for @gapEnginesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} text engine(s) do not support this language or are not installed'**
+  String gapEnginesUnavailable(int count);
+
+  /// No description provided for @textDiscriminabilityClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'So “ran, no strong signal” means the tools cannot tell, not that the text reads as human. Rely on document origin and writing-process evidence instead.'**
+  String get textDiscriminabilityClosing;
+
+  /// No description provided for @textDiscriminabilityProvenance.
+  ///
+  /// In en, this message translates to:
+  /// **'This conclusion rests mainly on document-origin evidence, not on the text engines.'**
+  String get textDiscriminabilityProvenance;
 }
 
 class _AppLocalizationsDelegate

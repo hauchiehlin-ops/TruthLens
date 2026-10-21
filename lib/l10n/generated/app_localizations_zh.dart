@@ -3521,6 +3521,38 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get listSeparator => '、';
+
+  @override
+  String get textDiscriminabilityTitle => '文字引擎對這類文件判別力不足';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return '「$domain」文體的實測探針中，目前的分類器漏判 $missed/$total 份 AI 文件';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return '「$domain」文體沒有足量實測，分類器在這類文件上的表現未知';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => '分類器未在這個語言上驗證';
+
+  @override
+  String get gapPerplexityOutdated =>
+      '困惑度門檻以 2022 年的早期 AI 語料校準，對現代模型輸出的判別力已明顯下降';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count 個文字引擎不適用此語言或未安裝';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '因此「已執行，無強訊號」代表工具分辨不了，不代表文字像人寫的。請以文件來源、寫作過程等證據為主。';
+
+  @override
+  String get textDiscriminabilityProvenance => '本次結論主要依據文件來源證據，而不是文字引擎。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7040,6 +7072,38 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get listSeparator => '、';
+
+  @override
+  String get textDiscriminabilityTitle => '文字引擎对这类文件判别力不足';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return '“$domain”文体的实测探针中，目前的分类器漏判 $missed/$total 份 AI 文件';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return '“$domain”文体没有足量实测，分类器在这类文件上的表现未知';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => '分类器未在这个语言上验证';
+
+  @override
+  String get gapPerplexityOutdated =>
+      '困惑度门槛以 2022 年的早期 AI 语料校准，对现代模型输出的判别力已明显下降';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count 个文字引擎不适用此语言或未安装';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '因此“已执行，无强信号”代表工具分辨不了，不代表文字像人写的。请以文件来源、写作过程等证据为主。';
+
+  @override
+  String get textDiscriminabilityProvenance => '本次结论主要依据文件来源证据，而不是文字引擎。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10559,4 +10623,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get listSeparator => '、';
+
+  @override
+  String get textDiscriminabilityTitle => '文字引擎對這類文件判別力不足';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return '「$domain」文體的實測探針中，目前的分類器漏判 $missed/$total 份 AI 文件';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return '「$domain」文體沒有足量實測，分類器在這類文件上的表現未知';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => '分類器未在這個語言上驗證';
+
+  @override
+  String get gapPerplexityOutdated =>
+      '困惑度門檻以 2022 年的早期 AI 語料校準，對現代模型輸出的判別力已明顯下降';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count 個文字引擎不適用此語言或未安裝';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '因此「已執行，無強訊號」代表工具分辨不了，不代表文字像人寫的。請以文件來源、寫作過程等證據為主。';
+
+  @override
+  String get textDiscriminabilityProvenance => '本次結論主要依據文件來源證據，而不是文字引擎。';
 }

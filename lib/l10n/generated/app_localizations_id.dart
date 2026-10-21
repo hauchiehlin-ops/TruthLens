@@ -3670,4 +3670,39 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Mesin teks tidak mampu membedakan jenis dokumen ini dengan andal';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'Pada dokumen uji teks “$domain”, pengklasifikasi saat ini melewatkan $missed/$total dokumen AI';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Belum ada pengukuran memadai untuk teks “$domain”; kinerja pengklasifikasi di sini tidak diketahui';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'Pengklasifikasi belum divalidasi untuk bahasa ini';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Ambang perplexity dikalibrasi dengan teks AI awal (2022) dan kurang mampu membedakan keluaran model modern';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count mesin teks tidak mendukung bahasa ini atau belum terpasang';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'Jadi “dijalankan, tanpa sinyal kuat” berarti alat tidak dapat membedakan, bukan berarti teks tampak ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Kesimpulan ini terutama didasarkan pada bukti asal dokumen, bukan mesin teks.';
 }

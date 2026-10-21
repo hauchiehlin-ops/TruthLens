@@ -1486,5 +1486,13 @@
   "evasionKindCombiningStack": "เครื่องหมายผสมซ้อนกัน",
   "evasionTechniqueCount": "{technique} {count} จุด",
   "findingEvasionTechniques": "วิธีที่พบ: {techniques}",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "เอนจินข้อความแยกแยะเอกสารประเภทนี้ได้ไม่ดีพอ",
+  "gapDomainKnownMiss": "ในเอกสารทดสอบประเภท “{domain}” ตัวจำแนกปัจจุบันพลาดเอกสาร AI {missed}/{total} ฉบับ",
+  "gapDomainUnmeasured": "ประเภท “{domain}” ยังไม่มีผลวัดเพียงพอ จึงไม่ทราบประสิทธิภาพของตัวจำแนกกับเอกสารประเภทนี้",
+  "gapLanguageUnvalidated": "ตัวจำแนกยังไม่ได้ตรวจสอบกับภาษานี้",
+  "gapPerplexityOutdated": "เกณฑ์ perplexity ปรับเทียบด้วยข้อความ AI ยุคแรก (2022) จึงแยกผลลัพธ์ของโมเดลสมัยใหม่ได้ไม่ดี",
+  "gapEnginesUnavailable": "เอนจินข้อความ {count} ตัวไม่รองรับภาษานี้หรือยังไม่ได้ติดตั้ง",
+  "textDiscriminabilityClosing": "ดังนั้น “ทำงานแล้ว ไม่มีสัญญาณชัด” หมายถึงเครื่องมือแยกไม่ได้ ไม่ได้หมายความว่าข้อความดูเหมือนคนเขียน โปรดยึดหลักฐานแหล่งที่มาและกระบวนการเขียนเป็นหลัก",
+  "textDiscriminabilityProvenance": "ข้อสรุปครั้งนี้อาศัยหลักฐานแหล่งที่มาของเอกสารเป็นหลัก ไม่ใช่เอนจินข้อความ"
 }

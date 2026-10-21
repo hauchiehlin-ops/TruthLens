@@ -306,6 +306,7 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
         'ai_evidence_threshold': aiEvidenceThreshold,
+        ..._choice.routingFeatures,
       },
       // 路由每次分析都可能換變體，使用者只看「Transformer 分類器」無從得知
       // 這次是哪一顆在發言。

@@ -3703,4 +3703,39 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Les moteurs de texte distinguent mal ce type de document';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'Sur les sondes mesurées de textes « $domain », le classifieur actuel a manqué $missed/$total documents IA';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Pas de mesures suffisantes pour les textes « $domain » ; les performances du classifieur y sont inconnues';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'Le classifieur n’est pas validé pour cette langue';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Les seuils de perplexité ont été calibrés sur des textes IA anciens (2022) et discriminent mal les sorties des modèles récents';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count moteur(s) de texte ne prennent pas en charge cette langue ou ne sont pas installés';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '« Exécuté, aucun signal fort » signifie donc que les outils ne savent pas trancher, pas que le texte semble humain. Privilégiez les preuves d’origine et de processus d’écriture.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Cette conclusion repose surtout sur des preuves d’origine du document, pas sur les moteurs de texte.';
 }

@@ -3692,4 +3692,39 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Os motores de texto não distinguem bem este tipo de documento';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'Nas sondas medidas de textos “$domain”, o classificador atual deixou passar $missed/$total documentos de IA';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Não há medições suficientes para textos “$domain”; o desempenho do classificador aqui é desconhecido';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'O classificador não foi validado para este idioma';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Os limiares de perplexidade foram calibrados com texto de IA antigo (2022) e discriminam mal a saída de modelos modernos';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count motor(es) de texto não suportam este idioma ou não estão instalados';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'Assim, “executado, sem sinal forte” significa que as ferramentas não conseguem distinguir, não que o texto pareça humano. Priorize evidências de origem e de processo de escrita.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Esta conclusão baseia-se sobretudo em evidências da origem do documento, não nos motores de texto.';
 }

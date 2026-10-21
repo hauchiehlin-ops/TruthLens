@@ -3677,4 +3677,39 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Enjin teks tidak dapat membezakan jenis dokumen ini dengan boleh dipercayai';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'Dalam dokumen ujian teks “$domain”, pengelas semasa terlepas $missed/$total dokumen AI';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Tiada ukuran mencukupi untuk teks “$domain”; prestasi pengelas di sini tidak diketahui';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'Pengelas belum disahkan untuk bahasa ini';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Ambang perplexity ditentukur dengan teks AI awal (2022) dan kurang mampu membezakan output model moden';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count enjin teks tidak menyokong bahasa ini atau belum dipasang';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'Jadi “dijalankan, tiada isyarat kuat” bermaksud alat tidak dapat membezakan, bukan teks kelihatan ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Kesimpulan ini terutamanya berdasarkan bukti asal dokumen, bukan enjin teks.';
 }

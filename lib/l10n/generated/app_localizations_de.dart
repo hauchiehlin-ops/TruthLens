@@ -3693,4 +3693,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Die Text-Engines können diese Art Dokument nicht zuverlässig unterscheiden';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'Bei Messproben für Texte der Sorte „$domain“ übersah der aktuelle Klassifikator $missed/$total KI-Dokumente';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Für Texte der Sorte „$domain“ gibt es keine ausreichenden Messungen; die Leistung des Klassifikators ist hier unbekannt';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'Der Klassifikator ist für diese Sprache nicht validiert';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Die Perplexitätsschwellen wurden an frühen KI-Texten (2022) kalibriert und unterscheiden moderne Modellausgaben kaum noch';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count Text-Engine(s) unterstützen diese Sprache nicht oder sind nicht installiert';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '„Ausgeführt, kein starkes Signal“ heißt daher: Die Werkzeuge können es nicht unterscheiden – nicht, dass der Text menschlich wirkt. Stützen Sie sich auf Herkunfts- und Schreibprozess-Belege.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Dieses Ergebnis stützt sich vor allem auf Belege zur Dokumentherkunft, nicht auf die Text-Engines.';
 }

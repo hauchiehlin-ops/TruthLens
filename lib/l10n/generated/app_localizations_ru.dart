@@ -3678,4 +3678,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'Текстовые движки плохо различают документы такого типа';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'На проверочных документах жанра «$domain» текущий классификатор пропустил $missed/$total ИИ-документов';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'Для жанра «$domain» нет достаточных замеров; эффективность классификатора здесь неизвестна';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'Классификатор не проверен для этого языка';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Пороги перплексии откалиброваны на ранних ИИ-текстах (2022) и плохо различают вывод современных моделей';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count текстовых движков не поддерживают этот язык или не установлены';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'Поэтому «выполнено, сильного сигнала нет» означает, что инструменты не могут различить, а не что текст похож на человеческий. Опирайтесь на данные о происхождении и процессе написания.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'Этот вывод основан главным образом на данных о происхождении документа, а не на текстовых движках.';
 }

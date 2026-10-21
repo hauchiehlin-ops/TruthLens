@@ -1486,5 +1486,13 @@
   "evasionKindCombiningStack": "gestapelte Kombinationszeichen",
   "evasionTechniqueCount": "{technique}: {count}",
   "findingEvasionTechniques": "Gefundene Techniken: {techniques}.",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "Die Text-Engines können diese Art Dokument nicht zuverlässig unterscheiden",
+  "gapDomainKnownMiss": "Bei Messproben für Texte der Sorte „{domain}“ übersah der aktuelle Klassifikator {missed}/{total} KI-Dokumente",
+  "gapDomainUnmeasured": "Für Texte der Sorte „{domain}“ gibt es keine ausreichenden Messungen; die Leistung des Klassifikators ist hier unbekannt",
+  "gapLanguageUnvalidated": "Der Klassifikator ist für diese Sprache nicht validiert",
+  "gapPerplexityOutdated": "Die Perplexitätsschwellen wurden an frühen KI-Texten (2022) kalibriert und unterscheiden moderne Modellausgaben kaum noch",
+  "gapEnginesUnavailable": "{count} Text-Engine(s) unterstützen diese Sprache nicht oder sind nicht installiert",
+  "textDiscriminabilityClosing": "„Ausgeführt, kein starkes Signal“ heißt daher: Die Werkzeuge können es nicht unterscheiden – nicht, dass der Text menschlich wirkt. Stützen Sie sich auf Herkunfts- und Schreibprozess-Belege.",
+  "textDiscriminabilityProvenance": "Dieses Ergebnis stützt sich vor allem auf Belege zur Dokumentherkunft, nicht auf die Text-Engines."
 }

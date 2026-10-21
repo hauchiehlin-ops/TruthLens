@@ -3561,4 +3561,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get listSeparator => '、';
+
+  @override
+  String get textDiscriminabilityTitle => 'この種の文書ではテキストエンジンの判別力が不足しています';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return '「$domain」文体の実測プローブで、現在の分類器は AI 文書 $missed/$total 件を見逃しました';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return '「$domain」文体は実測が不足しており、この種の文書での性能は不明です';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => '分類器はこの言語で検証されていません';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'パープレキシティの閾値は 2022 年の初期 AI 文で校正されており、現代モデルの出力では判別力が大きく低下しています';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count 個のテキストエンジンがこの言語に未対応か未インストールです';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'したがって「実行済み・強いシグナルなし」はツールが判別できないことを意味し、人が書いたように見えるという意味ではありません。文書の出所や執筆過程の証拠を優先してください。';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      '今回の結論は主に文書の出所の証拠に基づいており、テキストエンジンによるものではありません。';
 }

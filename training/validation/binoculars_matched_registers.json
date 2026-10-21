@@ -1,0 +1,149 @@
+{
+  "purpose": "Zero-shot Binoculars vs raw log-perplexity on topic- and register-matched human/AI academic abstracts, plus the Claude-written zh-Hant research proposal against human abstracts.",
+  "date": "2026-10-21",
+  "scoring": "training/binoculars/run_binoculars.py score_text (observer log-PPL / observer-performer cross-entropy), max 512 tokens, Apple MPS",
+  "corpus": "training/binoculars/eval_matched/ (see README); proposal = 30 chunks (>=300 chars) of the Claude Docs proposal, not committed",
+  "metrics": "AUROC with lower score = AI; recall_at_0fp = share of AI samples scoring below the lowest human sample",
+  "results": {
+    "Qwen/Qwen2.5-0.5B|Qwen/Qwen2.5-0.5B-Instruct": {
+      "binoculars": {
+        "zh_matched": {
+          "auroc": 0.719,
+          "recall_at_0fp": 0.167,
+          "human_median": 0.954,
+          "ai_median": 0.916,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "zh_proposal_vs_csl": {
+          "auroc": 0.199,
+          "recall_at_0fp": 0.0,
+          "human_median": 0.954,
+          "ai_median": 1.026,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "en_matched": {
+          "auroc": 0.827,
+          "recall_at_0fp": 0.471,
+          "human_median": 1.014,
+          "ai_median": 0.937,
+          "n": [
+            17,
+            17
+          ]
+        }
+      },
+      "log_perplexity": {
+        "zh_matched": {
+          "auroc": 0.55,
+          "recall_at_0fp": 0.033,
+          "human_median": 3.012,
+          "ai_median": 2.882,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "zh_proposal_vs_csl": {
+          "auroc": 0.29,
+          "recall_at_0fp": 0.1,
+          "human_median": 3.012,
+          "ai_median": 3.622,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "en_matched": {
+          "auroc": 0.709,
+          "recall_at_0fp": 0.0,
+          "human_median": 3.019,
+          "ai_median": 2.822,
+          "n": [
+            17,
+            17
+          ]
+        }
+      },
+      "seconds": 32.0
+    },
+    "Qwen/Qwen2.5-1.5B|Qwen/Qwen2.5-1.5B-Instruct": {
+      "binoculars": {
+        "zh_matched": {
+          "auroc": 0.829,
+          "recall_at_0fp": 0.433,
+          "human_median": 0.989,
+          "ai_median": 0.916,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "zh_proposal_vs_csl": {
+          "auroc": 0.282,
+          "recall_at_0fp": 0.0,
+          "human_median": 0.989,
+          "ai_median": 1.05,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "en_matched": {
+          "auroc": 0.965,
+          "recall_at_0fp": 0.647,
+          "human_median": 1.048,
+          "ai_median": 0.94,
+          "n": [
+            17,
+            17
+          ]
+        }
+      },
+      "log_perplexity": {
+        "zh_matched": {
+          "auroc": 0.631,
+          "recall_at_0fp": 0.033,
+          "human_median": 2.652,
+          "ai_median": 2.378,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "zh_proposal_vs_csl": {
+          "auroc": 0.239,
+          "recall_at_0fp": 0.0,
+          "human_median": 2.652,
+          "ai_median": 3.234,
+          "n": [
+            30,
+            30
+          ]
+        },
+        "en_matched": {
+          "auroc": 0.792,
+          "recall_at_0fp": 0.059,
+          "human_median": 2.65,
+          "ai_median": 2.379,
+          "n": [
+            17,
+            17
+          ]
+        }
+      },
+      "seconds": 62.2
+    }
+  },
+  "conclusions": [
+    "On register-matched text Binoculars clearly beats raw perplexity: zh AUROC 0.63 -> 0.83 and recall at 0 FP 3% -> 43% with the 1.5B pair; en 0.79 -> 0.97.",
+    "The larger pair helps: 0.5B gives zh 0.72 / en 0.83, 1.5B gives 0.83 / 0.97.",
+    "Across registers the score inverts (Claude proposal vs CSL abstracts AUROC 0.20-0.28): the proposal mixes English citations, tables and Taiwanese usage, which raises both perplexity and the Binoculars ratio. Absolute thresholds must be calibrated per register (local baseline), never reused globally.",
+    "Sample sizes are small (17-30 per group); treat AUROC differences below ~0.1 as noise."
+  ]
+}

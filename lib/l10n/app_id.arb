@@ -1486,5 +1486,13 @@
   "evasionKindCombiningStack": "tanda gabung bertumpuk",
   "evasionTechniqueCount": "{technique}: {count}",
   "findingEvasionTechniques": "Teknik yang ditemukan: {techniques}.",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "Mesin teks tidak mampu membedakan jenis dokumen ini dengan andal",
+  "gapDomainKnownMiss": "Pada dokumen uji teks “{domain}”, pengklasifikasi saat ini melewatkan {missed}/{total} dokumen AI",
+  "gapDomainUnmeasured": "Belum ada pengukuran memadai untuk teks “{domain}”; kinerja pengklasifikasi di sini tidak diketahui",
+  "gapLanguageUnvalidated": "Pengklasifikasi belum divalidasi untuk bahasa ini",
+  "gapPerplexityOutdated": "Ambang perplexity dikalibrasi dengan teks AI awal (2022) dan kurang mampu membedakan keluaran model modern",
+  "gapEnginesUnavailable": "{count} mesin teks tidak mendukung bahasa ini atau belum terpasang",
+  "textDiscriminabilityClosing": "Jadi “dijalankan, tanpa sinyal kuat” berarti alat tidak dapat membedakan, bukan berarti teks tampak ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.",
+  "textDiscriminabilityProvenance": "Kesimpulan ini terutama didasarkan pada bukti asal dokumen, bukan mesin teks."
 }

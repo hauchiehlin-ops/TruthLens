@@ -3653,4 +3653,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'The text engines cannot reliably tell on this kind of document';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'In measured probes of $domain text, the current classifier missed $missed/$total AI documents';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'There are no sufficient measurements for $domain text; the classifier’s performance here is unknown';
+  }
+
+  @override
+  String get gapLanguageUnvalidated =>
+      'The classifier has not been validated for this language';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'Perplexity thresholds were calibrated on early (2022) AI text and discriminate poorly on modern model output';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '$count text engine(s) do not support this language or are not installed';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'So “ran, no strong signal” means the tools cannot tell, not that the text reads as human. Rely on document origin and writing-process evidence instead.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'This conclusion rests mainly on document-origin evidence, not on the text engines.';
 }

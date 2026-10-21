@@ -1486,5 +1486,13 @@
   "evasionKindCombiningStack": "tanda gabung bertindih",
   "evasionTechniqueCount": "{technique}: {count}",
   "findingEvasionTechniques": "Teknik yang ditemui: {techniques}.",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "textDiscriminabilityTitle": "Enjin teks tidak dapat membezakan jenis dokumen ini dengan boleh dipercayai",
+  "gapDomainKnownMiss": "Dalam dokumen ujian teks “{domain}”, pengelas semasa terlepas {missed}/{total} dokumen AI",
+  "gapDomainUnmeasured": "Tiada ukuran mencukupi untuk teks “{domain}”; prestasi pengelas di sini tidak diketahui",
+  "gapLanguageUnvalidated": "Pengelas belum disahkan untuk bahasa ini",
+  "gapPerplexityOutdated": "Ambang perplexity ditentukur dengan teks AI awal (2022) dan kurang mampu membezakan output model moden",
+  "gapEnginesUnavailable": "{count} enjin teks tidak menyokong bahasa ini atau belum dipasang",
+  "textDiscriminabilityClosing": "Jadi “dijalankan, tiada isyarat kuat” bermaksud alat tidak dapat membezakan, bukan teks kelihatan ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.",
+  "textDiscriminabilityProvenance": "Kesimpulan ini terutamanya berdasarkan bukti asal dokumen, bukan enjin teks."
 }

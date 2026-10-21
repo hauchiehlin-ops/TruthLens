@@ -1517,5 +1517,13 @@
   "evasionKindCombiningStack": "疊加組合符號",
   "evasionTechniqueCount": "{technique} {count} 處",
   "findingEvasionTechniques": "使用的手法：{techniques}。",
-  "listSeparator": "、"
+  "listSeparator": "、",
+  "textDiscriminabilityTitle": "文字引擎對這類文件判別力不足",
+  "gapDomainKnownMiss": "「{domain}」文體的實測探針中，目前的分類器漏判 {missed}/{total} 份 AI 文件",
+  "gapDomainUnmeasured": "「{domain}」文體沒有足量實測，分類器在這類文件上的表現未知",
+  "gapLanguageUnvalidated": "分類器未在這個語言上驗證",
+  "gapPerplexityOutdated": "困惑度門檻以 2022 年的早期 AI 語料校準，對現代模型輸出的判別力已明顯下降",
+  "gapEnginesUnavailable": "{count} 個文字引擎不適用此語言或未安裝",
+  "textDiscriminabilityClosing": "因此「已執行，無強訊號」代表工具分辨不了，不代表文字像人寫的。請以文件來源、寫作過程等證據為主。",
+  "textDiscriminabilityProvenance": "本次結論主要依據文件來源證據，而不是文字引擎。"
 }

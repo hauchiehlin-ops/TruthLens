@@ -312,6 +312,7 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
         'analysis_chunk_count': perChunk.length.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
+        ..._choice.routingFeatures,
       },
       reasons: [
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。

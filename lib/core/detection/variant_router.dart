@@ -90,6 +90,27 @@ class VariantChoice {
     fit: LanguageFit.unsupported,
   );
 
+  /// 寫入引擎結果的路由紀錄。報告可能在之後從歷史紀錄打開，那時已安裝的
+  /// 模型可能不同，因此判別力評估必須依賴分析當下記下的值。
+  Map<String, double> get routingFeatures {
+    final probes = [
+      for (final e in domainFit.observed)
+        if (!e.hasEnoughSamples) e,
+    ];
+    return {
+      'routing_basis': basis.index.toDouble(),
+      'routing_domain_matches': domainFit.matchesDomain ? 1 : 0,
+      'routing_ranked_recall': domainFit.meanRecall,
+      'routing_probe_documents': probes
+          .fold<int>(0, (sum, e) => sum + e.aiDocuments)
+          .toDouble(),
+      'routing_probe_detected': probes.fold<double>(
+        0,
+        (sum, e) => sum + e.recall * e.aiDocuments,
+      ),
+    };
+  }
+
   /// 這次的判定是否建立在已驗證的語言涵蓋之上。
   /// 為 false 時分數仍可呈現，但不該被當成同等強度的證據。
   bool get isValidated => fit == LanguageFit.validated;

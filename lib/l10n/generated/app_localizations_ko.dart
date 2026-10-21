@@ -3572,4 +3572,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle => '이 유형의 문서에서는 텍스트 엔진의 판별력이 부족합니다';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return '“$domain” 문체 실측 탐침에서 현재 분류기는 AI 문서 $missed/$total건을 놓쳤습니다';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return '“$domain” 문체는 실측이 부족해 이 유형의 문서에서의 성능을 알 수 없습니다';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => '분류기가 이 언어에서 검증되지 않았습니다';
+
+  @override
+  String get gapPerplexityOutdated =>
+      '퍼플렉서티 임계값은 2022년 초기 AI 문장으로 보정되어 현대 모델 출력에서는 판별력이 크게 떨어집니다';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return '텍스트 엔진 $count개가 이 언어를 지원하지 않거나 설치되지 않았습니다';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      '따라서 “실행됨, 강한 신호 없음”은 도구가 구분하지 못한다는 뜻이지 사람이 쓴 것처럼 보인다는 뜻이 아닙니다. 문서 출처와 작성 과정 증거를 우선하세요.';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      '이번 결론은 텍스트 엔진이 아니라 주로 문서 출처 증거에 근거합니다.';
 }

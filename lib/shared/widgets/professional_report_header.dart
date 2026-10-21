@@ -7,7 +7,9 @@ import '../../core/models/detection_result.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/forensic_evidence.dart';
+import '../../core/detection/model_display_names.dart';
 import '../../core/services/integrated_assessment.dart';
+import '../../core/services/text_discriminability.dart';
 import '../../core/services/publication_evidence.dart';
 import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
@@ -625,10 +627,12 @@ class _VerdictSummaryCard extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final compact = constraints.maxWidth < 480;
-                  final incompleteCoreStack = _hasIncompleteCoreTextStack(
-                    result,
-                    assessment,
-                  );
+                  // 引擎都跑了、只是分辨不了時，「請補齊模型、檢查 tokenizer」
+                  // 會把問題歸錯地方；改用判別力警示說明真正的原因
+                  final discriminability = TextDiscriminability.assess(result);
+                  final incompleteCoreStack =
+                      !discriminability.isLimited &&
+                      _hasIncompleteCoreTextStack(result, assessment);
                   final iconBadge = Container(
                     width: compact ? 56 : 80,
                     height: compact ? 56 : 80,
@@ -725,6 +729,15 @@ class _VerdictSummaryCard extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                           ),
+                        ),
+                      ],
+                      if (discriminability.isLimited) ...[
+                        const SizedBox(height: 8),
+                        _DiscriminabilityNotice(
+                          discriminability: discriminability,
+                          provenanceDriven:
+                              result.provenance.declaresAiGenerator,
+                          l10n: l10n,
                         ),
                       ],
                       if (integratedBoundaryExplanation(assessment, l10n)
@@ -973,6 +986,93 @@ bool _hasIncompleteCoreTextStack(
       assessment.independentEvidenceFamilies <= 1 ||
       assessment.applicabilityCoverage < 0.35;
   return lowCoverage || !roleVotes('transformer') || !roleVotes('statistical');
+}
+
+/// 文字引擎判別力不足的警示：逐條列出已知原因，避免「無強訊號」被讀成
+/// 「文字像人寫的」
+class _DiscriminabilityNotice extends StatelessWidget {
+  final TextDiscriminability discriminability;
+  final bool provenanceDriven;
+  final AppLocalizations l10n;
+
+  const _DiscriminabilityNotice({
+    required this.discriminability,
+    required this.provenanceDriven,
+    required this.l10n,
+  });
+
+  String _gapText(DiscriminabilityGap gap) {
+    final domain = localizedDomainName(discriminability.domain, l10n);
+    return switch (gap) {
+      DiscriminabilityGap.domainKnownMiss => l10n.gapDomainKnownMiss(
+        domain,
+        discriminability.probeDocuments - discriminability.probeDetected,
+        discriminability.probeDocuments,
+      ),
+      DiscriminabilityGap.domainUnmeasured => l10n.gapDomainUnmeasured(domain),
+      DiscriminabilityGap.languageUnvalidated => l10n.gapLanguageUnvalidated,
+      DiscriminabilityGap.perplexityOutdated => l10n.gapPerplexityOutdated,
+      DiscriminabilityGap.enginesUnavailable => l10n.gapEnginesUnavailable(
+        discriminability.unavailableEngines,
+      ),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final color = scheme.onTertiaryContainer;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: scheme.tertiary.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(LucideIcons.eyeOff, size: 16, color: color),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.textDiscriminabilityTitle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          for (final gap in discriminability.gaps)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: Text(
+                '• ${_gapText(gap)}',
+                style: textTheme.bodySmall?.copyWith(color: color, height: 1.4),
+              ),
+            ),
+          const SizedBox(height: 4),
+          Text(
+            provenanceDriven
+                ? '${l10n.textDiscriminabilityProvenance}${l10n.textDiscriminabilityClosing}'
+                : l10n.textDiscriminabilityClosing,
+            style: textTheme.bodySmall?.copyWith(
+              color: color,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// 三列指標卡

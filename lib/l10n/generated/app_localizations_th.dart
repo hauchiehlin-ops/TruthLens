@@ -3652,4 +3652,38 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get listSeparator => ', ';
+
+  @override
+  String get textDiscriminabilityTitle =>
+      'เอนจินข้อความแยกแยะเอกสารประเภทนี้ได้ไม่ดีพอ';
+
+  @override
+  String gapDomainKnownMiss(String domain, int missed, int total) {
+    return 'ในเอกสารทดสอบประเภท “$domain” ตัวจำแนกปัจจุบันพลาดเอกสาร AI $missed/$total ฉบับ';
+  }
+
+  @override
+  String gapDomainUnmeasured(String domain) {
+    return 'ประเภท “$domain” ยังไม่มีผลวัดเพียงพอ จึงไม่ทราบประสิทธิภาพของตัวจำแนกกับเอกสารประเภทนี้';
+  }
+
+  @override
+  String get gapLanguageUnvalidated => 'ตัวจำแนกยังไม่ได้ตรวจสอบกับภาษานี้';
+
+  @override
+  String get gapPerplexityOutdated =>
+      'เกณฑ์ perplexity ปรับเทียบด้วยข้อความ AI ยุคแรก (2022) จึงแยกผลลัพธ์ของโมเดลสมัยใหม่ได้ไม่ดี';
+
+  @override
+  String gapEnginesUnavailable(int count) {
+    return 'เอนจินข้อความ $count ตัวไม่รองรับภาษานี้หรือยังไม่ได้ติดตั้ง';
+  }
+
+  @override
+  String get textDiscriminabilityClosing =>
+      'ดังนั้น “ทำงานแล้ว ไม่มีสัญญาณชัด” หมายถึงเครื่องมือแยกไม่ได้ ไม่ได้หมายความว่าข้อความดูเหมือนคนเขียน โปรดยึดหลักฐานแหล่งที่มาและกระบวนการเขียนเป็นหลัก';
+
+  @override
+  String get textDiscriminabilityProvenance =>
+      'ข้อสรุปครั้งนี้อาศัยหลักฐานแหล่งที่มาของเอกสารเป็นหลัก ไม่ใช่เอนจินข้อความ';
 }
