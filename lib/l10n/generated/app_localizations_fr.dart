@@ -3622,4 +3622,85 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'Par défaut';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'Le champ générateur indique que le fichier a été écrit par la bibliothèque « $tool » : en général une chaîne automatisée ou l’export d’un service d’IA, pas une édition dans un traitement de texte. Les systèmes de reporting et convertisseurs font de même ; ce n’est qu’un indice d’appui.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'Le fichier se dit issu de « $app », mais il lui manque les paramètres et la table des polices que ce logiciel écrit toujours : les métadonnées ont pu être modifiées ou un autre outil a repris le nom.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count paragraphe(s) ou bloc(s) portent une mise en forme de collage web (style « Normal (Web) », blocs HTML ou polices web) : le contenu a été collé directement depuis une page ou une interface de chat. Ce n’est pas une preuve d’IA, mais le texte n’a pas été saisi dans ce document.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'Le texte déclare la police « $font », utilisée par les interfaces web de chat IA ; cela provient généralement d’une copie directe depuis une fenêtre de chat.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'Le contenu intégré porte un identifiant de contenu C2PA indiquant « $generator » comme générateur (signature non vérifiée localement). Il décrit l’origine de l’image ou du média, pas l’auteur du texte.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'Le contenu intégré porte un identifiant de contenu C2PA, mais le générateur est illisible (signature non vérifiée localement). Il décrit l’origine de l’image ou du média, pas l’auteur du texte.';
+
+  @override
+  String get evasionKindZeroWidth => 'caractères de largeur nulle';
+
+  @override
+  String get evasionKindHomoglyph => 'lettres cyrilliques/grecques identiques';
+
+  @override
+  String get evasionKindUnusualSpace => 'espaces non standard';
+
+  @override
+  String get evasionKindBidiControl => 'contrôles bidirectionnels';
+
+  @override
+  String get evasionKindTagCharacter => 'caractères Tag cachés';
+
+  @override
+  String get evasionKindVariationSelector => 'sélecteurs de variante';
+
+  @override
+  String get evasionKindSoftHyphen =>
+      'traits d’union conditionnels dans les mots';
+
+  @override
+  String get evasionKindInvisibleFiller =>
+      'caractères de remplissage invisibles';
+
+  @override
+  String get evasionKindFullwidthLatin => 'lettres latines pleine chasse';
+
+  @override
+  String get evasionKindMathAlphanumeric =>
+      'symboles alphanumériques mathématiques';
+
+  @override
+  String get evasionKindCjkRadical => 'radicaux Kangxi identiques';
+
+  @override
+  String get evasionKindCombiningStack => 'diacritiques empilés';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique : $count';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'Techniques détectées : $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

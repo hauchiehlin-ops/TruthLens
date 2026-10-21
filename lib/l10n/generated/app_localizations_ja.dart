@@ -3483,4 +3483,82 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => '既定';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return '生成元フィールドから、このファイルはライブラリ「$tool」で書き出されています。多くは自動処理や AI サービスのエクスポートで、ワープロでの編集ではありません。帳票システムや変換サービスでも同様のため、補助的な証拠にとどまります。';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return '「$app」で作成したとされていますが、そのソフトが保存時に必ず書き込む設定とフォント表がありません。メタデータが書き換えられたか、別のツールが名前を流用した可能性があります。';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count 箇所の段落・ブロックに Web 貼り付けの書式（「Normal (Web)」スタイル、HTML ブロック、Web フォント）があります。Web ページや対話画面から直接貼り付けた内容です。AI を意味しませんが、この文書内で入力された文章ではありません。';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return '本文にフォント「$font」の指定があります。AI 対話画面の Web フォントで、対話ウィンドウからの直接コピーでよく見られます。';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return '埋め込みコンテンツに C2PA コンテンツクレデンシャルがあり、生成ツールは「$generator」と記録されています（署名はローカルで未検証）。画像やメディアの出所を示すもので、本文の作者を示すものではありません。';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      '埋め込みコンテンツに C2PA コンテンツクレデンシャルがありますが、生成ツールを読み取れません（署名はローカルで未検証）。画像やメディアの出所を示すもので、本文の作者を示すものではありません。';
+
+  @override
+  String get evasionKindZeroWidth => 'ゼロ幅文字';
+
+  @override
+  String get evasionKindHomoglyph => 'キリル／ギリシャの同形文字';
+
+  @override
+  String get evasionKindUnusualSpace => '非標準スペース';
+
+  @override
+  String get evasionKindBidiControl => '双方向制御文字';
+
+  @override
+  String get evasionKindTagCharacter => '隠し Tag 文字';
+
+  @override
+  String get evasionKindVariationSelector => '異体字セレクタ';
+
+  @override
+  String get evasionKindSoftHyphen => '語中のソフトハイフン';
+
+  @override
+  String get evasionKindInvisibleFiller => '不可視の埋め草文字';
+
+  @override
+  String get evasionKindFullwidthLatin => '全角英字';
+
+  @override
+  String get evasionKindMathAlphanumeric => '数学用英数字記号';
+
+  @override
+  String get evasionKindCjkRadical => '康熙部首の同形字';
+
+  @override
+  String get evasionKindCombiningStack => '重ねた結合文字';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count 箇所';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return '使われた手口：$techniques。';
+  }
+
+  @override
+  String get listSeparator => '、';
 }

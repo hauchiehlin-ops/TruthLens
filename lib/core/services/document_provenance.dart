@@ -15,6 +15,7 @@ import 'dart:convert';
 
 import 'package:archive/archive.dart';
 
+import 'file_forensics.dart';
 import 'ole_summary_information.dart';
 
 /// 單一來源訊號的種類
@@ -43,6 +44,25 @@ enum ProvenanceSignalKind {
   /// → 檔案由程式一次產生（匯出、轉檔或生成工具），不是在文書軟體裡逐步打字。
   /// 這不是 AI 特異性證據（pandoc、Google 文件匯出也會如此），只能佐證。
   programmaticallyGenerated,
+
+  /// 產生器欄位是程式庫（python-docx、reportlab、pdf-lib…）
+  /// → 檔案由自動化流程寫出；AI 服務的匯出多半如此，但報表系統也是，只能佐證。
+  programmaticLibrary,
+
+  /// 宣稱由 Word 產生，卻缺少 Word 存檔必定寫入的設定與字型表
+  /// → 中繼資料被改寫，或其他工具冒用了名稱
+  generatorMismatch,
+
+  /// 「Normal (Web)」樣式、HTML 區塊或網頁字型堆疊
+  /// → 內容是從網頁或對話介面直接貼上，沒有選「只保留文字」
+  webPasteResidue,
+
+  /// 內文帶有 AI 對話介面專用的網頁字型（如 ChatGPT 的 Söhne）
+  chatInterfaceFont,
+
+  /// 檔案或內嵌圖片帶有 C2PA 內容憑證。說明的是媒體來源，
+  /// 不是內文作者，因此只列出、不計入風險。
+  embeddedC2pa,
 }
 
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
@@ -106,6 +126,13 @@ class DocumentProvenance {
   /// 中繼資料自己宣稱的字數（DOCX `<Words>`）
   final int? declaredWordCount;
 
+  /// 由檔案結構直接判定的訊號（封裝、貼上殘留、C2PA、程式庫），
+  /// 不依賴字數門檻，由 [_withSignals] 併入 [signals]
+  final List<ProvenanceSignal> fileSignals;
+
+  /// DOCX 只有最少必要部件（沒有設定與字型表）：程式一次性封裝
+  final bool minimalPackage;
+
   /// 其餘可能帶有產生工具名稱的欄位（DOCX `dc:creator`、
   /// `cp:lastModifiedBy`、`dc:description`）。只用來比對 AI 產生器，不呈現。
   final List<String> generatorHints;
@@ -137,6 +164,8 @@ class DocumentProvenance {
     this.application,
     this.declaredWordCount,
     this.generatorHints = const [],
+    this.fileSignals = const [],
+    this.minimalPackage = false,
     this.distinctBodyRsids,
     this.rsidMap = RsidMap.empty,
     this.bodyWordCount = 0,
@@ -226,7 +255,10 @@ class DocumentProvenance {
   }
 
   bool get indicatesHumanAuthorship {
-    if (!hasMetadata || signals.isNotEmpty) return false;
+    if (!hasMetadata ||
+        signals.any((s) => s.severity != ProvenanceSeverity.info)) {
+      return false;
+    }
     if ((editingDuration?.inMinutes ?? 0) < minAutoAdmitMinutes) return false;
     if ((revisionCount ?? 0) < minAutoAdmitRevisions) return false;
     // ODT 沒有 RSID 欄位，該欄為 null 時不作為否決條件
@@ -241,7 +273,9 @@ class DocumentProvenance {
   static const int minAutoAdmitRsids = 5;
 
   ProvenanceRisk get risk {
-    if (!hasMetadata) return ProvenanceRisk.unknown;
+    // 沒有中繼資料但封裝結構本身就有訊號時（例如完全不寫屬性的程式產生檔），
+    // 不能因為缺欄位就把訊號藏成「未知」
+    if (!hasMetadata && signals.isEmpty) return ProvenanceRisk.unknown;
     if (signals.isEmpty) return ProvenanceRisk.low;
     final strong = signals
         .where((s) => s.severity == ProvenanceSeverity.strong)
@@ -262,8 +296,10 @@ class DocumentProvenance {
     List<int> bytes, {
     required String extension,
     required String bodyText,
+    PdfMetadata pdfMetadata = PdfMetadata.empty,
   }) {
     final ext = extension.toLowerCase();
+    if (ext == 'pdf') return _fromPdf(bytes, bodyText, ext, pdfMetadata);
     if (!formatsWithEditingRecord.contains(ext)) {
       // 非容器格式：直接標明來源，讓介面能說出「此格式不帶編輯紀錄」
       return DocumentProvenance(sourceFormat: ext);
@@ -349,6 +385,43 @@ class DocumentProvenance {
       if (value != null && value.isNotEmpty) rsids.add(value.toUpperCase());
     }
 
+    final package = DocxPackage({for (final f in archive.files) f.name});
+    final claimsWord = (application ?? '').toLowerCase().contains('microsoft');
+    final paste = WebPasteResidue.scan(
+      document: document,
+      styles: _read(archive, 'word/styles.xml') ?? '',
+    );
+    final fileSignals = <ProvenanceSignal>[
+      ..._libraryAndC2pa(
+        [?application, ...hints],
+        [
+          for (final f in archive.files)
+            if (f.isFile && f.name.startsWith('word/media/'))
+              f.content as List<int>,
+        ],
+      ),
+      // Word 一定寫入設定與字型表；宣稱 Word 卻沒有，代表名稱被冒用或改寫
+      if (claimsWord && !package.hasWordCoreParts)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.generatorMismatch,
+          severity: ProvenanceSeverity.notable,
+          label: application,
+        ),
+      if (paste.indicatesWebPaste)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.webPasteResidue,
+          severity: ProvenanceSeverity.notable,
+          values: {'count': paste.affectedBlocks},
+          label: paste.webFontStack,
+        ),
+      if (paste.chatInterfaceFont != null)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.chatInterfaceFont,
+          severity: ProvenanceSeverity.notable,
+          label: paste.chatInterfaceFont,
+        ),
+    ];
+
     return _withSignals(
       DocumentProvenance(
         editingDuration: totalMinutes == null
@@ -362,12 +435,77 @@ class DocumentProvenance {
             : application,
         declaredWordCount: declaredWords,
         generatorHints: hints,
+        fileSignals: fileSignals,
+        minimalPackage: package.isMinimal,
         distinctBodyRsids: rsids.isEmpty ? null : rsids.length,
         rsidMap: buildRsidMap(document, countWords),
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
       ),
     );
+  }
+
+  /// PDF 沒有編輯歷程，但產生器欄位（資訊字典的 Creator／Producer、XMP 的
+  /// CreatorTool）會說明是哪個軟體或程式庫做出這份檔案。[supplied] 是 PDF
+  /// 函式庫讀到的值（可讀壓縮物件串流），優先於原始位元組解析。
+  static DocumentProvenance _fromPdf(
+    List<int> bytes,
+    String bodyText,
+    String ext,
+    PdfMetadata supplied,
+  ) {
+    final metadata = supplied.mergedWith(PdfMetadata.parse(bytes));
+    final values = metadata.values;
+    String? aiValue;
+    for (final value in values) {
+      if (aiGeneratorPattern.hasMatch(value)) {
+        aiValue = value;
+        break;
+      }
+    }
+    final application = aiValue ?? metadata.primary;
+    return _withSignals(
+      DocumentProvenance(
+        application: application,
+        generatorHints: [
+          for (final value in values)
+            if (value != application) value,
+        ],
+        fileSignals: _libraryAndC2pa(values, [bytes]),
+        bodyWordCount: countWords(bodyText),
+        sourceFormat: ext,
+      ),
+    );
+  }
+
+  /// 程式庫產生與 C2PA 內容憑證，DOCX 與 PDF 共用
+  static List<ProvenanceSignal> _libraryAndC2pa(
+    List<String> generatorValues,
+    List<List<int>> media,
+  ) {
+    final library = matchProgrammaticLibrary(generatorValues);
+    String? c2pa;
+    var c2paFound = false;
+    for (final bytes in media) {
+      final finding = C2paFinding.scan(bytes);
+      if (finding == null) continue;
+      c2paFound = true;
+      c2pa ??= finding.generator;
+    }
+    return [
+      if (library != null)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.programmaticLibrary,
+          severity: ProvenanceSeverity.notable,
+          label: library,
+        ),
+      if (c2paFound)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.embeddedC2pa,
+          severity: ProvenanceSeverity.info,
+          label: c2pa,
+        ),
+    ];
   }
 
   static DocumentProvenance _fromOdt(
@@ -445,7 +583,7 @@ class DocumentProvenance {
 
   /// 依已填入的中繼資料推導訊號
   static DocumentProvenance _withSignals(DocumentProvenance base) {
-    final signals = <ProvenanceSignal>[];
+    final signals = <ProvenanceSignal>[...base.fileSignals];
     final words = base.bodyWordCount;
     final minutes = base.editingDuration?.inMinutes;
 
@@ -518,10 +656,12 @@ class DocumentProvenance {
       // Word 每次存檔都寫 RSID 與 TotalTime；兩者皆無代表檔案不是在文書軟體
       // 裡編出來的。宣稱是 Word 卻沒有紀錄的情況屬於「被清除」，不在此列。
       final application = base.application?.toLowerCase() ?? '';
+      // 只有最少必要部件的封裝（沒有設定與字型表）也是同一回事，
+      // 而且比 RSID 更難被「另存新檔」抹掉
       if (base.sourceFormat == 'docx' &&
-          rsids == null &&
-          base.editingDuration == null &&
-          !application.contains('microsoft')) {
+          !application.contains('microsoft') &&
+          (base.minimalPackage ||
+              (rsids == null && base.editingDuration == null))) {
         signals.add(
           ProvenanceSignal(
             kind: ProvenanceSignalKind.programmaticallyGenerated,
@@ -551,6 +691,8 @@ class DocumentProvenance {
       application: base.application,
       declaredWordCount: base.declaredWordCount,
       generatorHints: base.generatorHints,
+      fileSignals: base.fileSignals,
+      minimalPackage: base.minimalPackage,
       distinctBodyRsids: base.distinctBodyRsids,
       bodyWordCount: base.bodyWordCount,
       sourceFormat: base.sourceFormat,

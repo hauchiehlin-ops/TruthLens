@@ -3592,4 +3592,82 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'Bawaan';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'Kolom generator menunjukkan berkas ditulis oleh pustaka “$tool”: biasanya alur otomatis atau ekspor layanan AI, bukan penyuntingan di pengolah kata. Sistem laporan dan konverter juga begitu, jadi hanya bukti pendukung.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'Berkas mengaku berasal dari “$app”, tetapi tidak memiliki pengaturan dan tabel fon yang selalu ditulis program itu: metadata mungkin diubah, atau alat lain memakai nama tersebut.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count paragraf atau blok memiliki format tempel dari web (gaya “Normal (Web)”, blok HTML, atau fon web): konten ditempel langsung dari halaman web atau antarmuka obrolan. Ini bukan tanda AI, tetapi teks tidak diketik di dokumen ini.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'Teks mendeklarasikan fon “$font”, yang dipakai antarmuka web obrolan AI; biasanya berasal dari penyalinan langsung dari jendela obrolan.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'Konten tersemat membawa Content Credential C2PA yang menyebut “$generator” sebagai pembuat (tanda tangan tidak diverifikasi secara lokal). Ini menjelaskan asal gambar atau media, bukan penulis teks.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'Konten tersemat membawa Content Credential C2PA, tetapi pembuatnya tidak terbaca (tanda tangan tidak diverifikasi secara lokal). Ini menjelaskan asal gambar atau media, bukan penulis teks.';
+
+  @override
+  String get evasionKindZeroWidth => 'karakter lebar nol';
+
+  @override
+  String get evasionKindHomoglyph => 'huruf kembar Sirilik/Yunani';
+
+  @override
+  String get evasionKindUnusualSpace => 'spasi tidak standar';
+
+  @override
+  String get evasionKindBidiControl => 'kontrol dua arah';
+
+  @override
+  String get evasionKindTagCharacter => 'karakter Tag tersembunyi';
+
+  @override
+  String get evasionKindVariationSelector => 'pemilih variasi';
+
+  @override
+  String get evasionKindSoftHyphen => 'tanda hubung lunak di dalam kata';
+
+  @override
+  String get evasionKindInvisibleFiller => 'karakter pengisi tak terlihat';
+
+  @override
+  String get evasionKindFullwidthLatin => 'huruf Latin lebar penuh';
+
+  @override
+  String get evasionKindMathAlphanumeric => 'simbol huruf matematika';
+
+  @override
+  String get evasionKindCjkRadical => 'kembaran radikal Kangxi';
+
+  @override
+  String get evasionKindCombiningStack => 'tanda gabung bertumpuk';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique: $count';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'Teknik yang ditemukan: $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

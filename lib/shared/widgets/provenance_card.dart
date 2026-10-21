@@ -42,6 +42,20 @@ class ProvenanceCard extends StatelessWidget {
         l10n.provenanceSignalAiGenerator(signal.label ?? '—'),
       ProvenanceSignalKind.programmaticallyGenerated =>
         l10n.provenanceSignalProgrammatic(v['words'] ?? 0),
+      ProvenanceSignalKind.programmaticLibrary =>
+        l10n.provenanceSignalProgrammaticLibrary(signal.label ?? '—'),
+      ProvenanceSignalKind.generatorMismatch =>
+        l10n.provenanceSignalGeneratorMismatch(signal.label ?? '—'),
+      ProvenanceSignalKind.webPasteResidue => l10n.provenanceSignalWebPaste(
+        v['count'] ?? 0,
+      ),
+      ProvenanceSignalKind.chatInterfaceFont => l10n.provenanceSignalChatFont(
+        signal.label ?? '—',
+      ),
+      ProvenanceSignalKind.embeddedC2pa =>
+        signal.label == null
+            ? l10n.provenanceSignalC2paUnknown
+            : l10n.provenanceSignalC2pa(signal.label!),
     };
   }
 
@@ -125,7 +139,7 @@ class ProvenanceCard extends StatelessWidget {
             ],
           ),
 
-          if (!provenance.hasMetadata) ...[
+          if (!provenance.hasMetadata && provenance.signals.isEmpty) ...[
             const SizedBox(height: 8),
             Text(
               l10n.provenanceNoMetadata,

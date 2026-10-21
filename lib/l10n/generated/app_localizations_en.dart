@@ -3575,4 +3575,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'Default';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'The generator field shows the file was written by the library “$tool”: usually an automated pipeline or an AI service export, not editing in a word processor. Reporting systems and converters do this too, so it is supporting evidence only.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'The file claims to come from “$app” but lacks the settings and font table that program always writes: the metadata may have been altered, or another tool borrowed the name.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count paragraph(s) or block(s) carry web-paste formatting (such as the “Normal (Web)” style, HTML blocks or web fonts): the content was pasted straight from a web page or chat interface. This does not mean AI, but the text was not typed in this document.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'The text declares the font “$font”, used by AI chat web interfaces; this usually comes from copying straight out of a chat window.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'Embedded content carries a C2PA Content Credential naming “$generator” as the generator (signature not verified locally). It describes where the image or media came from, not who wrote the text.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'Embedded content carries a C2PA Content Credential, but no generator could be read (signature not verified locally). It describes where the image or media came from, not who wrote the text.';
+
+  @override
+  String get evasionKindZeroWidth => 'zero-width characters';
+
+  @override
+  String get evasionKindHomoglyph => 'Cyrillic/Greek look-alike letters';
+
+  @override
+  String get evasionKindUnusualSpace => 'non-standard spaces';
+
+  @override
+  String get evasionKindBidiControl => 'bidirectional controls';
+
+  @override
+  String get evasionKindTagCharacter => 'hidden Tag characters';
+
+  @override
+  String get evasionKindVariationSelector => 'variation selectors';
+
+  @override
+  String get evasionKindSoftHyphen => 'in-word soft hyphens';
+
+  @override
+  String get evasionKindInvisibleFiller => 'invisible filler characters';
+
+  @override
+  String get evasionKindFullwidthLatin => 'full-width Latin letters';
+
+  @override
+  String get evasionKindMathAlphanumeric => 'mathematical letter symbols';
+
+  @override
+  String get evasionKindCjkRadical => 'Kangxi radical look-alikes';
+
+  @override
+  String get evasionKindCombiningStack => 'stacked combining marks';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique: $count';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'Techniques found: $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

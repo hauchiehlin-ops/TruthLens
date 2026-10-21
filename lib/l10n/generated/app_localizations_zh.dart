@@ -3443,6 +3443,84 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => '預設';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return '產生器欄位顯示檔案由程式庫「$tool」寫出：通常是自動化流程或 AI 服務的匯出，不是在文書軟體裡編輯。報表系統與轉檔服務也會如此，只能作為佐證。';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return '檔案宣稱由「$app」產生，卻缺少該軟體存檔必定寫入的設定與字型表：中繼資料可能被改寫，或由其他工具冒用名稱產生。';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count 處段落或區塊帶有網頁貼上的格式（如「Normal (Web)」樣式、HTML 區塊或網頁字型）：內容是從網頁或對話介面直接貼入。這不代表 AI，但表示內容不是在這份文件裡打出來的。';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return '內文帶有「$font」字型宣告，這是 AI 對話介面網頁使用的字型，常見於直接從對話視窗複製貼上。';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return '檔案內嵌的內容帶有 C2PA 內容憑證，記載的產生工具為「$generator」（本機未驗證數位簽章）。這說明的是圖片或媒體的來源，不代表內文由 AI 撰寫。';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      '檔案內嵌的內容帶有 C2PA 內容憑證，但讀不出產生工具（本機未驗證數位簽章）。這說明的是圖片或媒體的來源，不代表內文由 AI 撰寫。';
+
+  @override
+  String get evasionKindZeroWidth => '零寬字元';
+
+  @override
+  String get evasionKindHomoglyph => '西里爾／希臘同形字母';
+
+  @override
+  String get evasionKindUnusualSpace => '非標準空白';
+
+  @override
+  String get evasionKindBidiControl => '雙向控制字元';
+
+  @override
+  String get evasionKindTagCharacter => '隱藏 Tag 字元';
+
+  @override
+  String get evasionKindVariationSelector => '變體選擇符';
+
+  @override
+  String get evasionKindSoftHyphen => '字中軟連字號';
+
+  @override
+  String get evasionKindInvisibleFiller => '不可見填充字元';
+
+  @override
+  String get evasionKindFullwidthLatin => '全形英文字母';
+
+  @override
+  String get evasionKindMathAlphanumeric => '數學字母符號';
+
+  @override
+  String get evasionKindCjkRadical => '康熙部首同形字';
+
+  @override
+  String get evasionKindCombiningStack => '疊加組合符號';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count 處';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return '使用的手法：$techniques。';
+  }
+
+  @override
+  String get listSeparator => '、';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6884,6 +6962,84 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get modelListDefaultChip => '默认';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return '生成器字段显示文件由程序库“$tool”写出：通常是自动化流程或 AI 服务的导出，不是在文字处理软件里编辑。报表系统与转档服务也会如此，只能作为佐证。';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return '文件声称由“$app”生成，却缺少该软件存档必定写入的设置与字体表：元数据可能被改写，或由其他工具冒用名称生成。';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count 处段落或区块带有网页粘贴的格式（如“Normal (Web)”样式、HTML 区块或网页字体）：内容是从网页或对话界面直接粘贴。这不代表 AI，但表示内容不是在这份文件里打出来的。';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return '正文带有“$font”字体声明，这是 AI 对话界面网页使用的字体，常见于直接从对话窗口复制粘贴。';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return '文件内嵌的内容带有 C2PA 内容凭证，记载的生成工具为“$generator”（本机未验证数字签名）。这说明的是图片或媒体的来源，不代表正文由 AI 撰写。';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      '文件内嵌的内容带有 C2PA 内容凭证，但读不出生成工具（本机未验证数字签名）。这说明的是图片或媒体的来源，不代表正文由 AI 撰写。';
+
+  @override
+  String get evasionKindZeroWidth => '零宽字符';
+
+  @override
+  String get evasionKindHomoglyph => '西里尔／希腊同形字母';
+
+  @override
+  String get evasionKindUnusualSpace => '非标准空白';
+
+  @override
+  String get evasionKindBidiControl => '双向控制字符';
+
+  @override
+  String get evasionKindTagCharacter => '隐藏 Tag 字符';
+
+  @override
+  String get evasionKindVariationSelector => '变体选择符';
+
+  @override
+  String get evasionKindSoftHyphen => '词中软连字符';
+
+  @override
+  String get evasionKindInvisibleFiller => '不可见填充字符';
+
+  @override
+  String get evasionKindFullwidthLatin => '全角英文字母';
+
+  @override
+  String get evasionKindMathAlphanumeric => '数学字母符号';
+
+  @override
+  String get evasionKindCjkRadical => '康熙部首同形字';
+
+  @override
+  String get evasionKindCombiningStack => '叠加组合符号';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count 处';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return '使用的手法：$techniques。';
+  }
+
+  @override
+  String get listSeparator => '、';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10325,4 +10481,82 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get modelListDefaultChip => '預設';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return '產生器欄位顯示檔案由程式庫「$tool」寫出：通常是自動化流程或 AI 服務的匯出，不是在文書軟體裡編輯。報表系統與轉檔服務也會如此，只能作為佐證。';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return '檔案宣稱由「$app」產生，卻缺少該軟體存檔必定寫入的設定與字型表：中繼資料可能被改寫，或由其他工具冒用名稱產生。';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count 處段落或區塊帶有網頁貼上的格式（如「Normal (Web)」樣式、HTML 區塊或網頁字型）：內容是從網頁或對話介面直接貼入。這不代表 AI，但表示內容不是在這份文件裡打出來的。';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return '內文帶有「$font」字型宣告，這是 AI 對話介面網頁使用的字型，常見於直接從對話視窗複製貼上。';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return '檔案內嵌的內容帶有 C2PA 內容憑證，記載的產生工具為「$generator」（本機未驗證數位簽章）。這說明的是圖片或媒體的來源，不代表內文由 AI 撰寫。';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      '檔案內嵌的內容帶有 C2PA 內容憑證，但讀不出產生工具（本機未驗證數位簽章）。這說明的是圖片或媒體的來源，不代表內文由 AI 撰寫。';
+
+  @override
+  String get evasionKindZeroWidth => '零寬字元';
+
+  @override
+  String get evasionKindHomoglyph => '西里爾／希臘同形字母';
+
+  @override
+  String get evasionKindUnusualSpace => '非標準空白';
+
+  @override
+  String get evasionKindBidiControl => '雙向控制字元';
+
+  @override
+  String get evasionKindTagCharacter => '隱藏 Tag 字元';
+
+  @override
+  String get evasionKindVariationSelector => '變體選擇符';
+
+  @override
+  String get evasionKindSoftHyphen => '字中軟連字號';
+
+  @override
+  String get evasionKindInvisibleFiller => '不可見填充字元';
+
+  @override
+  String get evasionKindFullwidthLatin => '全形英文字母';
+
+  @override
+  String get evasionKindMathAlphanumeric => '數學字母符號';
+
+  @override
+  String get evasionKindCjkRadical => '康熙部首同形字';
+
+  @override
+  String get evasionKindCombiningStack => '疊加組合符號';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count 處';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return '使用的手法：$techniques。';
+  }
+
+  @override
+  String get listSeparator => '、';
 }

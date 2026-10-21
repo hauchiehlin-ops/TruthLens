@@ -5661,6 +5661,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default'**
   String get modelListDefaultChip;
+
+  /// No description provided for @provenanceSignalProgrammaticLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'The generator field shows the file was written by the library “{tool}”: usually an automated pipeline or an AI service export, not editing in a word processor. Reporting systems and converters do this too, so it is supporting evidence only.'**
+  String provenanceSignalProgrammaticLibrary(String tool);
+
+  /// No description provided for @provenanceSignalGeneratorMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The file claims to come from “{app}” but lacks the settings and font table that program always writes: the metadata may have been altered, or another tool borrowed the name.'**
+  String provenanceSignalGeneratorMismatch(String app);
+
+  /// No description provided for @provenanceSignalWebPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} paragraph(s) or block(s) carry web-paste formatting (such as the “Normal (Web)” style, HTML blocks or web fonts): the content was pasted straight from a web page or chat interface. This does not mean AI, but the text was not typed in this document.'**
+  String provenanceSignalWebPaste(int count);
+
+  /// No description provided for @provenanceSignalChatFont.
+  ///
+  /// In en, this message translates to:
+  /// **'The text declares the font “{font}”, used by AI chat web interfaces; this usually comes from copying straight out of a chat window.'**
+  String provenanceSignalChatFont(String font);
+
+  /// No description provided for @provenanceSignalC2pa.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedded content carries a C2PA Content Credential naming “{generator}” as the generator (signature not verified locally). It describes where the image or media came from, not who wrote the text.'**
+  String provenanceSignalC2pa(String generator);
+
+  /// No description provided for @provenanceSignalC2paUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedded content carries a C2PA Content Credential, but no generator could be read (signature not verified locally). It describes where the image or media came from, not who wrote the text.'**
+  String get provenanceSignalC2paUnknown;
+
+  /// No description provided for @evasionKindZeroWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'zero-width characters'**
+  String get evasionKindZeroWidth;
+
+  /// No description provided for @evasionKindHomoglyph.
+  ///
+  /// In en, this message translates to:
+  /// **'Cyrillic/Greek look-alike letters'**
+  String get evasionKindHomoglyph;
+
+  /// No description provided for @evasionKindUnusualSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'non-standard spaces'**
+  String get evasionKindUnusualSpace;
+
+  /// No description provided for @evasionKindBidiControl.
+  ///
+  /// In en, this message translates to:
+  /// **'bidirectional controls'**
+  String get evasionKindBidiControl;
+
+  /// No description provided for @evasionKindTagCharacter.
+  ///
+  /// In en, this message translates to:
+  /// **'hidden Tag characters'**
+  String get evasionKindTagCharacter;
+
+  /// No description provided for @evasionKindVariationSelector.
+  ///
+  /// In en, this message translates to:
+  /// **'variation selectors'**
+  String get evasionKindVariationSelector;
+
+  /// No description provided for @evasionKindSoftHyphen.
+  ///
+  /// In en, this message translates to:
+  /// **'in-word soft hyphens'**
+  String get evasionKindSoftHyphen;
+
+  /// No description provided for @evasionKindInvisibleFiller.
+  ///
+  /// In en, this message translates to:
+  /// **'invisible filler characters'**
+  String get evasionKindInvisibleFiller;
+
+  /// No description provided for @evasionKindFullwidthLatin.
+  ///
+  /// In en, this message translates to:
+  /// **'full-width Latin letters'**
+  String get evasionKindFullwidthLatin;
+
+  /// No description provided for @evasionKindMathAlphanumeric.
+  ///
+  /// In en, this message translates to:
+  /// **'mathematical letter symbols'**
+  String get evasionKindMathAlphanumeric;
+
+  /// No description provided for @evasionKindCjkRadical.
+  ///
+  /// In en, this message translates to:
+  /// **'Kangxi radical look-alikes'**
+  String get evasionKindCjkRadical;
+
+  /// No description provided for @evasionKindCombiningStack.
+  ///
+  /// In en, this message translates to:
+  /// **'stacked combining marks'**
+  String get evasionKindCombiningStack;
+
+  /// No description provided for @evasionTechniqueCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{technique}: {count}'**
+  String evasionTechniqueCount(String technique, int count);
+
+  /// No description provided for @findingEvasionTechniques.
+  ///
+  /// In en, this message translates to:
+  /// **'Techniques found: {techniques}.'**
+  String findingEvasionTechniques(String techniques);
+
+  /// No description provided for @listSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **', '**
+  String get listSeparator;
 }
 
 class _AppLocalizationsDelegate

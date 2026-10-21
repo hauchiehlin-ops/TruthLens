@@ -15,6 +15,10 @@ List<int> _docx({
   List<String> rsids = const [],
   String bodyText = '',
   String coreExtra = '',
+  // 真實 Word 存檔一定帶設定與字型表；設 false 模擬程式一次性封裝
+  bool wordParts = true,
+  Map<String, List<int>> extraFiles = const {},
+  String documentExtra = '',
 }) {
   final appXml = StringBuffer('<Properties>')
     ..write('<Application>$application</Application>');
@@ -41,13 +45,21 @@ List<int> _docx({
       .map((r) => '<w:p w:rsidR="$r" w:rsidRDefault="$r"><w:t>x</w:t></w:p>')
       .join();
   final documentXml =
-      '<w:document><w:body>$paragraphs<w:p><w:t>$bodyText</w:t></w:p>'
-      '</w:body></w:document>';
+      '<w:document><w:body>$paragraphs$documentExtra'
+      '<w:p><w:t>$bodyText</w:t></w:p></w:body></w:document>';
 
   final archive = Archive()
     ..addFile(_entry('docProps/app.xml', appXml.toString()))
     ..addFile(_entry('docProps/core.xml', coreXml.toString()))
     ..addFile(_entry('word/document.xml', documentXml));
+  if (wordParts) {
+    archive
+      ..addFile(_entry('word/settings.xml', '<w:settings/>'))
+      ..addFile(_entry('word/fontTable.xml', '<w:fonts/>'));
+  }
+  for (final e in extraFiles.entries) {
+    archive.addFile(ArchiveFile(e.key, e.value.length, e.value));
+  }
   return ZipEncoder().encode(archive);
 }
 
@@ -245,6 +257,7 @@ void main() {
         _docx(
           application: 'Claude Docs',
           revision: 61,
+          wordParts: false,
           coreExtra:
               '<dc:description>Claude Docs node/c250b5e7@61 docx-w7'
               '</dc:description>',

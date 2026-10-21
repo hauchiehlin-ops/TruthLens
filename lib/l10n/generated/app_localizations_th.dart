@@ -3574,4 +3574,82 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'เริ่มต้น';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'ช่องผู้สร้างระบุว่าไฟล์ถูกเขียนโดยไลบรารี “$tool” ซึ่งมักเป็นกระบวนการอัตโนมัติหรือการส่งออกจากบริการ AI ไม่ใช่การแก้ไขในโปรแกรมประมวลผลคำ ระบบรายงานและบริการแปลงไฟล์ก็ทำเช่นนี้ จึงเป็นเพียงหลักฐานประกอบ';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'ไฟล์อ้างว่ามาจาก “$app” แต่ไม่มีการตั้งค่าและตารางฟอนต์ที่โปรแกรมนั้นบันทึกเสมอ: ข้อมูลเมตาอาจถูกแก้ไข หรือมีเครื่องมืออื่นยืมชื่อไปใช้';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return 'มี $count ย่อหน้าหรือบล็อกที่มีรูปแบบการวางจากเว็บ (สไตล์ “Normal (Web)” บล็อก HTML หรือฟอนต์เว็บ): เนื้อหาถูกวางมาจากหน้าเว็บหรือหน้าแชตโดยตรง ไม่ได้หมายความว่าเป็น AI แต่ข้อความไม่ได้พิมพ์ในเอกสารนี้';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'ข้อความประกาศฟอนต์ “$font” ซึ่งเป็นฟอนต์ของหน้าเว็บแชต AI มักเกิดจากการคัดลอกจากหน้าต่างแชตโดยตรง';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'เนื้อหาที่ฝังอยู่มีข้อมูลรับรองเนื้อหา C2PA ระบุผู้สร้างเป็น “$generator” (ยังไม่ได้ตรวจลายเซ็นในเครื่อง) ซึ่งบอกแหล่งที่มาของภาพหรือสื่อ ไม่ใช่ผู้เขียนข้อความ';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'เนื้อหาที่ฝังอยู่มีข้อมูลรับรองเนื้อหา C2PA แต่อ่านชื่อผู้สร้างไม่ได้ (ยังไม่ได้ตรวจลายเซ็นในเครื่อง) ซึ่งบอกแหล่งที่มาของภาพหรือสื่อ ไม่ใช่ผู้เขียนข้อความ';
+
+  @override
+  String get evasionKindZeroWidth => 'อักขระความกว้างศูนย์';
+
+  @override
+  String get evasionKindHomoglyph => 'ตัวอักษรซีริลลิก/กรีกที่หน้าตาเหมือน';
+
+  @override
+  String get evasionKindUnusualSpace => 'ช่องว่างที่ไม่มาตรฐาน';
+
+  @override
+  String get evasionKindBidiControl => 'อักขระควบคุมทิศทาง';
+
+  @override
+  String get evasionKindTagCharacter => 'อักขระ Tag ที่ซ่อนอยู่';
+
+  @override
+  String get evasionKindVariationSelector => 'ตัวเลือกรูปแบบ';
+
+  @override
+  String get evasionKindSoftHyphen => 'ยัติภังค์แบบซ่อนกลางคำ';
+
+  @override
+  String get evasionKindInvisibleFiller => 'อักขระเติมที่มองไม่เห็น';
+
+  @override
+  String get evasionKindFullwidthLatin => 'อักษรละตินเต็มความกว้าง';
+
+  @override
+  String get evasionKindMathAlphanumeric => 'สัญลักษณ์ตัวอักษรคณิตศาสตร์';
+
+  @override
+  String get evasionKindCjkRadical => 'รากคำคังซีที่หน้าตาเหมือน';
+
+  @override
+  String get evasionKindCombiningStack => 'เครื่องหมายผสมซ้อนกัน';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count จุด';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'วิธีที่พบ: $techniques';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

@@ -3052,5 +3052,78 @@
   "modelListAutoChip": "Auto",
   "modelListPinnedChip": "Pinned",
   "modelListPinButton": "Pin this model",
-  "modelListDefaultChip": "Default"
+  "modelListDefaultChip": "Default",
+  "provenanceSignalProgrammaticLibrary": "The generator field shows the file was written by the library “{tool}”: usually an automated pipeline or an AI service export, not editing in a word processor. Reporting systems and converters do this too, so it is supporting evidence only.",
+  "@provenanceSignalProgrammaticLibrary": {
+    "placeholders": {
+      "tool": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalGeneratorMismatch": "The file claims to come from “{app}” but lacks the settings and font table that program always writes: the metadata may have been altered, or another tool borrowed the name.",
+  "@provenanceSignalGeneratorMismatch": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalWebPaste": "{count} paragraph(s) or block(s) carry web-paste formatting (such as the “Normal (Web)” style, HTML blocks or web fonts): the content was pasted straight from a web page or chat interface. This does not mean AI, but the text was not typed in this document.",
+  "@provenanceSignalWebPaste": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalChatFont": "The text declares the font “{font}”, used by AI chat web interfaces; this usually comes from copying straight out of a chat window.",
+  "@provenanceSignalChatFont": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalC2pa": "Embedded content carries a C2PA Content Credential naming “{generator}” as the generator (signature not verified locally). It describes where the image or media came from, not who wrote the text.",
+  "@provenanceSignalC2pa": {
+    "placeholders": {
+      "generator": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalC2paUnknown": "Embedded content carries a C2PA Content Credential, but no generator could be read (signature not verified locally). It describes where the image or media came from, not who wrote the text.",
+  "evasionKindZeroWidth": "zero-width characters",
+  "evasionKindHomoglyph": "Cyrillic/Greek look-alike letters",
+  "evasionKindUnusualSpace": "non-standard spaces",
+  "evasionKindBidiControl": "bidirectional controls",
+  "evasionKindTagCharacter": "hidden Tag characters",
+  "evasionKindVariationSelector": "variation selectors",
+  "evasionKindSoftHyphen": "in-word soft hyphens",
+  "evasionKindInvisibleFiller": "invisible filler characters",
+  "evasionKindFullwidthLatin": "full-width Latin letters",
+  "evasionKindMathAlphanumeric": "mathematical letter symbols",
+  "evasionKindCjkRadical": "Kangxi radical look-alikes",
+  "evasionKindCombiningStack": "stacked combining marks",
+  "evasionTechniqueCount": "{technique}: {count}",
+  "@evasionTechniqueCount": {
+    "placeholders": {
+      "technique": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "findingEvasionTechniques": "Techniques found: {techniques}.",
+  "@findingEvasionTechniques": {
+    "placeholders": {
+      "techniques": {
+        "type": "String"
+      }
+    }
+  },
+  "listSeparator": ", "
 }

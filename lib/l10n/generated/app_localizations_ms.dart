@@ -3599,4 +3599,82 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'Lalai';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'Medan penjana menunjukkan fail ditulis oleh pustaka “$tool”: biasanya aliran automatik atau eksport perkhidmatan AI, bukan suntingan dalam pemproses kata. Sistem laporan dan penukar juga begitu, jadi ia hanya bukti sokongan.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'Fail mendakwa berasal daripada “$app”, tetapi tiada tetapan dan jadual fon yang sentiasa ditulis oleh perisian itu: metadata mungkin diubah, atau alat lain meminjam nama itu.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count perenggan atau blok mempunyai format tampal web (gaya “Normal (Web)”, blok HTML atau fon web): kandungan ditampal terus dari laman web atau antara muka sembang. Ini bukan tanda AI, tetapi teks tidak ditaip dalam dokumen ini.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'Teks mengisytiharkan fon “$font”, yang digunakan oleh antara muka web sembang AI; biasanya hasil salinan terus dari tetingkap sembang.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'Kandungan terbenam membawa Kelayakan Kandungan C2PA yang menamakan “$generator” sebagai penjana (tandatangan tidak disahkan secara setempat). Ia menerangkan asal imej atau media, bukan penulis teks.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'Kandungan terbenam membawa Kelayakan Kandungan C2PA, tetapi penjana tidak dapat dibaca (tandatangan tidak disahkan secara setempat). Ia menerangkan asal imej atau media, bukan penulis teks.';
+
+  @override
+  String get evasionKindZeroWidth => 'aksara lebar sifar';
+
+  @override
+  String get evasionKindHomoglyph => 'huruf kembar Cyril/Greek';
+
+  @override
+  String get evasionKindUnusualSpace => 'ruang tidak standard';
+
+  @override
+  String get evasionKindBidiControl => 'kawalan dua hala';
+
+  @override
+  String get evasionKindTagCharacter => 'aksara Tag tersembunyi';
+
+  @override
+  String get evasionKindVariationSelector => 'pemilih variasi';
+
+  @override
+  String get evasionKindSoftHyphen => 'tanda sempang lembut dalam perkataan';
+
+  @override
+  String get evasionKindInvisibleFiller => 'aksara pengisi tidak kelihatan';
+
+  @override
+  String get evasionKindFullwidthLatin => 'huruf Latin lebar penuh';
+
+  @override
+  String get evasionKindMathAlphanumeric => 'simbol huruf matematik';
+
+  @override
+  String get evasionKindCjkRadical => 'kembar radikal Kangxi';
+
+  @override
+  String get evasionKindCombiningStack => 'tanda gabung bertindih';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique: $count';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'Teknik yang ditemui: $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

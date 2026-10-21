@@ -3600,4 +3600,82 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => 'По умолчанию';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return 'Поле генератора показывает, что файл записан библиотекой «$tool»: обычно это автоматизированный конвейер или экспорт ИИ-сервиса, а не правка в текстовом редакторе. Так делают и системы отчётов, и конвертеры, поэтому это лишь косвенное свидетельство.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return 'Файл указывает источником «$app», но в нём нет настроек и таблицы шрифтов, которые эта программа записывает всегда: метаданные могли изменить, или другой инструмент присвоил это имя.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count абзац(ев) или блок(ов) несут форматирование вставки из веба (стиль «Normal (Web)», HTML-блоки или веб-шрифты): содержимое вставлено прямо со страницы или из чат-интерфейса. Это не означает ИИ, но текст набран не в этом документе.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return 'В тексте объявлен шрифт «$font», используемый веб-интерфейсами ИИ-чатов; обычно это результат прямого копирования из окна чата.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return 'Встроенное содержимое несёт учётные данные контента C2PA с генератором «$generator» (подпись локально не проверена). Это говорит о происхождении изображения или медиа, а не об авторе текста.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      'Встроенное содержимое несёт учётные данные контента C2PA, но генератор прочитать не удалось (подпись локально не проверена). Это говорит о происхождении изображения или медиа, а не об авторе текста.';
+
+  @override
+  String get evasionKindZeroWidth => 'символы нулевой ширины';
+
+  @override
+  String get evasionKindHomoglyph => 'кириллические/греческие двойники';
+
+  @override
+  String get evasionKindUnusualSpace => 'нестандартные пробелы';
+
+  @override
+  String get evasionKindBidiControl => 'символы управления направлением';
+
+  @override
+  String get evasionKindTagCharacter => 'скрытые символы Tag';
+
+  @override
+  String get evasionKindVariationSelector => 'селекторы вариантов';
+
+  @override
+  String get evasionKindSoftHyphen => 'мягкие переносы внутри слов';
+
+  @override
+  String get evasionKindInvisibleFiller => 'невидимые символы-заполнители';
+
+  @override
+  String get evasionKindFullwidthLatin => 'полноширинные латинские буквы';
+
+  @override
+  String get evasionKindMathAlphanumeric => 'математические буквенные символы';
+
+  @override
+  String get evasionKindCjkRadical => 'двойники ключей Канси';
+
+  @override
+  String get evasionKindCombiningStack => 'нагромождённые комбинируемые знаки';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique: $count';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return 'Найденные приёмы: $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }

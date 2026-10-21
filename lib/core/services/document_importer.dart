@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 
 import 'document_provenance.dart';
+import 'file_forensics.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image/image.dart' as image_lib;
 import 'package:pdfrx/pdfrx.dart' as pdfrx;
@@ -102,11 +103,14 @@ class DocumentImporter {
             'low_extraction_quality',
         ],
       ),
-      // 來源證據只有 zip 容器格式（docx/odt）帶得出來；其餘格式回傳 none
+      // 來源證據：docx/odt/doc 的編輯紀錄，以及 PDF 的產生器欄位
       provenance: DocumentProvenance.fromBytes(
         bytes,
         extension: extension,
         bodyText: text,
+        pdfMetadata: extension.toLowerCase() == 'pdf'
+            ? _syncfusionPdfMetadata(bytes)
+            : PdfMetadata.empty,
       ),
     );
   }
@@ -168,6 +172,27 @@ class DocumentImporter {
       return const _PdfParseResult(issue: PdfImportIssue.legacyDocUnreadable);
     }
     return _PdfParseResult(text: text, quality: pdfTextQuality(text));
+  }
+
+  /// PDF 1.5 以後的資訊字典常放在壓縮物件串流裡，原始位元組比對讀不到；
+  /// 由 PDF 函式庫補上 Creator／Producer。讀不到就交給原始解析，不中斷匯入。
+  static PdfMetadata _syncfusionPdfMetadata(List<int> bytes) {
+    try {
+      final document = PdfDocument(inputBytes: bytes);
+      try {
+        final info = document.documentInformation;
+        String? nonEmpty(String value) =>
+            value.trim().isEmpty ? null : value.trim();
+        return PdfMetadata(
+          creator: nonEmpty(info.creator),
+          producer: nonEmpty(info.producer),
+        );
+      } finally {
+        document.dispose();
+      }
+    } catch (_) {
+      return PdfMetadata.empty;
+    }
   }
 
   static String _extractSyncfusionPdfText(List<int> bytes) {

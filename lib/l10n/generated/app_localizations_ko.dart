@@ -3494,4 +3494,82 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get modelListDefaultChip => '기본';
+
+  @override
+  String provenanceSignalProgrammaticLibrary(String tool) {
+    return '생성기 필드상 이 파일은 라이브러리 “$tool”로 작성되었습니다. 대개 자동화 파이프라인이나 AI 서비스의 내보내기이며 워드프로세서 편집이 아닙니다. 보고서 시스템과 변환 서비스도 그렇기 때문에 보조 증거일 뿐입니다.';
+  }
+
+  @override
+  String provenanceSignalGeneratorMismatch(String app) {
+    return '“$app”에서 만들었다고 하지만 그 프로그램이 저장 시 반드시 쓰는 설정과 글꼴 표가 없습니다. 메타데이터가 변경되었거나 다른 도구가 이름을 빌렸을 수 있습니다.';
+  }
+
+  @override
+  String provenanceSignalWebPaste(int count) {
+    return '$count개 단락·블록에 웹 붙여넣기 서식(“Normal (Web)” 스타일, HTML 블록, 웹 글꼴)이 있습니다. 웹 페이지나 채팅 화면에서 바로 붙여넣은 내용입니다. AI를 뜻하지는 않지만 이 문서에서 직접 입력한 글은 아닙니다.';
+  }
+
+  @override
+  String provenanceSignalChatFont(String font) {
+    return '본문에 “$font” 글꼴 지정이 있습니다. AI 채팅 웹 화면의 글꼴로, 채팅 창에서 바로 복사해 붙여넣을 때 흔히 나타납니다.';
+  }
+
+  @override
+  String provenanceSignalC2pa(String generator) {
+    return '내장 콘텐츠에 C2PA 콘텐츠 자격 증명이 있으며 생성 도구는 “$generator”로 기록되어 있습니다(서명은 로컬에서 미검증). 이미지·미디어의 출처를 뜻하며 본문 작성자를 뜻하지 않습니다.';
+  }
+
+  @override
+  String get provenanceSignalC2paUnknown =>
+      '내장 콘텐츠에 C2PA 콘텐츠 자격 증명이 있지만 생성 도구를 읽을 수 없습니다(서명은 로컬에서 미검증). 이미지·미디어의 출처를 뜻하며 본문 작성자를 뜻하지 않습니다.';
+
+  @override
+  String get evasionKindZeroWidth => '폭 없는 문자';
+
+  @override
+  String get evasionKindHomoglyph => '키릴/그리스 동형 문자';
+
+  @override
+  String get evasionKindUnusualSpace => '비표준 공백';
+
+  @override
+  String get evasionKindBidiControl => '양방향 제어 문자';
+
+  @override
+  String get evasionKindTagCharacter => '숨은 Tag 문자';
+
+  @override
+  String get evasionKindVariationSelector => '변형 선택자';
+
+  @override
+  String get evasionKindSoftHyphen => '단어 내 소프트 하이픈';
+
+  @override
+  String get evasionKindInvisibleFiller => '보이지 않는 채움 문자';
+
+  @override
+  String get evasionKindFullwidthLatin => '전각 영문자';
+
+  @override
+  String get evasionKindMathAlphanumeric => '수학용 문자 기호';
+
+  @override
+  String get evasionKindCjkRadical => '강희 부수 동형자';
+
+  @override
+  String get evasionKindCombiningStack => '겹친 결합 문자';
+
+  @override
+  String evasionTechniqueCount(String technique, int count) {
+    return '$technique $count곳';
+  }
+
+  @override
+  String findingEvasionTechniques(String techniques) {
+    return '사용된 수법: $techniques.';
+  }
+
+  @override
+  String get listSeparator => ', ';
 }
