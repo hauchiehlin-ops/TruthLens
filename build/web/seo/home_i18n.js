@@ -18,8 +18,8 @@
   const content = {
     en: {
       changelogTitle: "Latest Updates",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Local-first AI content detection and document forensics.",
       title: 'OmniTrace AI Content Detection and Document Forensics',
       lead:
@@ -55,8 +55,8 @@
     },
     'zh-Hant': {
       changelogTitle: "近期更新",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "本地優先 AI 內容檢測與文件鑑識。",
       title: 'OmniTrace AI 內容檢測與文件鑑識',
       lead:
@@ -90,8 +90,8 @@
     },
     'zh-Hans': {
       changelogTitle: "近期更新",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "本地优先 AI 内容检测与文件鉴识。",
       title: 'OmniTrace AI 内容检测与文件鉴识',
       lead:
@@ -121,8 +121,8 @@
     },
     ja: {
       changelogTitle: "最新のアップデート",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "ローカル優先の AI コンテンツ検出と文書フォレンジック。",
       title: 'OmniTrace AI コンテンツ検出と文書フォレンジック',
       lead:
@@ -152,8 +152,8 @@
     },
     ko: {
       changelogTitle: "최근 업데이트",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "로컬 우선 AI 콘텐츠 감지 및 문서 포렌식.",
       title: 'OmniTrace AI 콘텐츠 감지 및 문서 포렌식',
       lead:
@@ -183,8 +183,8 @@
     },
     th: {
       changelogTitle: "อัปเดตล่าสุด",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสารแบบเน้นในเครื่อง",
       title: 'OmniTrace การตรวจเนื้อหา AI และนิติวิทยาศาสตร์เอกสาร',
       lead:
@@ -214,8 +214,8 @@
     },
     ms: {
       changelogTitle: "Kemas Kini Terkini",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Pengesanan kandungan AI dan forensik dokumen yang mengutamakan setempat.",
       title: 'OmniTrace Pengesanan Kandungan AI dan Forensik Dokumen',
       lead:
@@ -245,8 +245,8 @@
     },
     es: {
       changelogTitle: "Últimas actualizaciones",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Detección de contenido IA y análisis documental local primero.",
       title: 'OmniTrace Detección de Contenido IA y Forense Documental',
       lead:
@@ -276,8 +276,8 @@
     },
     id: {
       changelogTitle: "Pembaruan Terbaru",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Deteksi konten AI dan forensik dokumen yang mengutamakan lokal.",
       title: 'OmniTrace Deteksi Konten AI dan Forensik Dokumen',
       lead:
@@ -307,8 +307,8 @@
     },
     ru: {
       changelogTitle: "Последние обновления",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Локальная AI-проверка контента и экспертиза документов.",
       title: 'OmniTrace: AI-проверка контента и экспертиза документов',
       lead:
@@ -338,8 +338,8 @@
     },
     de: {
       changelogTitle: "Neueste Updates",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Lokale KI-Inhaltserkennung und Dokumentforensik.",
       title: 'OmniTrace KI-Inhaltserkennung und Dokumentforensik',
       lead:
@@ -369,8 +369,8 @@
     },
     fr: {
       changelogTitle: "Dernières mises à jour",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Détection de contenu IA et analyse documentaire locale.",
       title: 'OmniTrace Détection de Contenu IA et Analyse Documentaire',
       lead:
@@ -400,8 +400,8 @@
     },
     pt: {
       changelogTitle: "Últimas Atualizações",
-      changelog1: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
-      changelog2: "v6.3.3 - 修正研究計畫等長文件的 AI 誤判",
+      changelog1: "v6.3.5 - 依語言與文體自動選用最適合的偵測模型，分析前顯示分析計畫",
+      changelog2: "v6.3.4 - 辨識 AI 寫作工具產生的文件來源，修正報告信心標示",
       footerText: "Detecção de conteúdo IA e forense documental local-first.",
       title: 'OmniTrace Detecção de Conteúdo IA e Forense Documental',
       lead:
