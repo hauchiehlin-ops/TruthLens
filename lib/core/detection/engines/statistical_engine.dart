@@ -85,11 +85,15 @@ class StatisticalEngine implements DetectionEngine, ReleasableDetectionEngine {
         v.variantId,
     ];
     final activeId = modelManager?.activeVariant('statistical')?.variantId;
+    final pinnedId = (modelManager?.isManualSelection('statistical') ?? false)
+        ? activeId
+        : null;
     final routedModelId = language.isUndetermined
         ? null
         : PerplexityCalibration.bestModelFor(language.code, [
-            // 使用者的選擇優先——它適用時就不換，尊重手動設定。
-            ?activeId,
+            // 只有使用者鎖定時才優先——它適用時就不換，尊重手動設定。
+            // 自動模式取第一個對此語言有可用門檻的已安裝變體。
+            ?pinnedId,
             ...installedIds,
             defaultPerplexityModelId,
           ]);

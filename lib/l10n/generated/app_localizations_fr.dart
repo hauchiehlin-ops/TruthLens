@@ -3485,4 +3485,141 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get publicGuideFakeCitations =>
       'Fausses citations et vérification des références';
+
+  @override
+  String get analysisPlanTitle => 'Plan d’analyse';
+
+  @override
+  String get analysisPlanSubtitle =>
+      'Choisit pour chaque moteur le modèle le plus adapté à la langue et au genre détectés';
+
+  @override
+  String get analysisPlanAttention =>
+      'Certains points demandent votre attention';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return 'Langue : $language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => 'Indéterminée';
+
+  @override
+  String get languageNameZh => 'Chinois';
+
+  @override
+  String get languageNameEn => 'Anglais';
+
+  @override
+  String get analysisPlanMixedScripts => 'Mélange chinois/anglais';
+
+  @override
+  String get analysisDomainAcademic => 'Académique';
+
+  @override
+  String get analysisDomainNews => 'Actualités';
+
+  @override
+  String get analysisDomainCreative => 'Créatif';
+
+  @override
+  String get analysisDomainGeneral => 'Général';
+
+  @override
+  String get analysisDomainCode => 'Code';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return 'Genre : $domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return 'Format : $format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => 'Texte collé ou saisi';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count mots';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return 'Qualité d’extraction $percent %';
+  }
+
+  @override
+  String get routingBasisPinned => 'Modèle que vous avez épinglé';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return 'Choisi d’après des mesures sur des textes « $domain » (rappel moyen $recall %, borne supérieure des faux positifs ≤ 1 %)';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return 'Mesures insuffisantes pour « $domain » ; choisi d’après des corpus généraux (rappel moyen $recall %)';
+  }
+
+  @override
+  String get routingBasisLanguageOnly =>
+      'Aucune mesure comparable ; choisi selon la couverture linguistique seule';
+
+  @override
+  String get routingBasisLanguageUnknown =>
+      'Langue indéterminée ; modèle par défaut utilisé';
+
+  @override
+  String get routingBasisMixedScripts =>
+      'Document mixte chinois/anglais ; modèle multilingue utilisé';
+
+  @override
+  String get routingFitPlausible =>
+      'Non validé pour cette langue ; preuve plus faible';
+
+  @override
+  String get routingFitUnsupported =>
+      'Aucun modèle installé ne prend en charge cette langue ; ce moteur n’apportera rien';
+
+  @override
+  String get routingNoModel =>
+      'Aucun modèle installé ; ce moteur ne participera pas';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return 'Seulement $count document(s) test pour « $domain » (rappel $recall %) ; insuffisant pour comparer les modèles';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return 'Téléchargez « $name » ($size) : mieux adapté à la langue et au genre de ce document';
+  }
+
+  @override
+  String get routingSeeModelManager =>
+      'Des modèles plus adaptés sont disponibles dans la gestion des modèles';
+
+  @override
+  String get modelListAutoSelectTitle =>
+      'Choisir les modèles automatiquement (recommandé)';
+
+  @override
+  String get modelListAutoSelectSubtitle =>
+      'Chaque document utilise le modèle adapté à sa langue, son genre et ses performances mesurées ; en manuel, vous pouvez en épingler un';
+
+  @override
+  String get modelListAutoChip => 'Auto';
+
+  @override
+  String get modelListPinnedChip => 'Épinglé';
+
+  @override
+  String get modelListPinButton => 'Épingler ce modèle';
+
+  @override
+  String get modelListDefaultChip => 'Par défaut';
 }

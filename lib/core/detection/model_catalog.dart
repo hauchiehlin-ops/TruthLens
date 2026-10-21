@@ -5,6 +5,8 @@
 /// 失敗時回退至隨 App 打包的 assets/model_catalog.json。
 library;
 
+import 'domain_evidence.dart';
+
 /// 裝置效能分層
 enum PerformanceTier { low, mid, high }
 
@@ -70,6 +72,9 @@ class ModelVariant {
   /// 此模型需要的 KV cache 輸入規格；null 表示模型不宣告 KV cache
   final KvCacheSpec? kvCache;
 
+  /// 各「文體 × 語言」的實測紀錄，供依文體路由；沒量過的模型為空清單
+  final List<DomainEvidence> domains;
+
   const ModelVariant({
     required this.id,
     required this.name,
@@ -91,6 +96,7 @@ class ModelVariant {
     this.aiLabelIndex = 1,
     this.aiEvidenceThreshold = 0.60,
     this.kvCache,
+    this.domains = const [],
   });
 
   /// 傳給推論橋接的 runtime 規格；不需要額外輸入時為 null
@@ -131,6 +137,7 @@ class ModelVariant {
       (j['runtime'] as Map<String, dynamic>?)?['kv_cache']
           as Map<String, dynamic>?,
     ),
+    domains: DomainEvidence.listFromJson(j['domains']),
   );
 }
 

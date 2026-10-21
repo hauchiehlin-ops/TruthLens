@@ -30,6 +30,7 @@ Future<ModelManager> _manager(
   Directory dir,
   Map<String, Map<String, dynamic>> installed, {
   required String active,
+  bool manual = false,
 }) async {
   for (final id in installed.keys) {
     File('${dir.path}/$id.onnx').writeAsBytesSync([1, 2, 3]);
@@ -37,7 +38,11 @@ Future<ModelManager> _manager(
   }
   File('${dir.path}/installed.json').writeAsStringSync(
     jsonEncode({
-      'transformer': {'active': active, 'installed': installed},
+      'transformer': {
+        'active': active,
+        'manual': manual,
+        'installed': installed,
+      },
     }),
   );
   final mm = ModelManager(modelsDir: dir);
@@ -65,14 +70,19 @@ void main() {
 
   /// 同時安裝「純英文」與「多語」兩個變體，使用者手動選了純英文那顆——
   /// 這正是實際遇到的狀態：中文文件被純英文模型判為 0%。
-  Future<ModelManager> bothVariants() => _manager(tmp, {
-    'roberta-en': _variant('roberta-en', 'roberta-bpe', ['en']),
-    'mbert-multi': _variant('mbert-multi', 'bert-wordpiece', [
-      'en',
-      'zh',
-      'multi',
-    ]),
-  }, active: 'roberta-en');
+  Future<ModelManager> bothVariants() => _manager(
+    tmp,
+    {
+      'roberta-en': _variant('roberta-en', 'roberta-bpe', ['en']),
+      'mbert-multi': _variant('mbert-multi', 'bert-wordpiece', [
+        'en',
+        'zh',
+        'multi',
+      ]),
+    },
+    active: 'roberta-en',
+    manual: true,
+  );
 
   test('中文文件避開使用者選的純英文模型，改用已驗證中文的變體', () async {
     final mm = await bothVariants();
@@ -83,6 +93,24 @@ void main() {
     expect(choice.variant?.variantId, 'mbert-multi');
     expect(choice.fit, LanguageFit.validated);
     expect(choice.overrodeUserChoice, isTrue);
+  });
+
+  test('自動模式（預設）直接選已驗證中文的變體，不算推翻使用者', () async {
+    final mm = await _manager(tmp, {
+      'roberta-en': _variant('roberta-en', 'roberta-bpe', ['en']),
+      'mbert-multi': _variant('mbert-multi', 'bert-wordpiece', [
+        'en',
+        'zh',
+        'multi',
+      ]),
+    }, active: 'roberta-en');
+    final engine = TransformerEngine(modelManager: mm);
+
+    final choice = engine.routeFor(PreprocessedText.from(_zh).language.code);
+
+    expect(mm.isManualSelection('transformer'), isFalse);
+    expect(choice.variant?.variantId, 'mbert-multi');
+    expect(choice.overrodeUserChoice, isFalse);
   });
 
   test('英文文件維持使用者的選擇，不無謂更換', () async {

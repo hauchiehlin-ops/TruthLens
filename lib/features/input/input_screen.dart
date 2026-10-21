@@ -19,6 +19,7 @@ import '../../core/utils/app_version.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/language_id.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/analysis_plan_card.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/workspace_navigation.dart';
 import '../onboarding/model_prompt.dart';
@@ -510,6 +511,14 @@ class _InputScreenState extends State<InputScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
+                            if (_controller.text.trim().isNotEmpty) ...[
+                              AnalysisPlanCard(
+                                text: _controller.text,
+                                sourceFormat: _sourceProvenance.sourceFormat,
+                                inputQuality: _inputQuality,
+                              ),
+                              const SizedBox(height: 12),
+                            ],
                             FilledButton.icon(
                               onPressed: _controller.text.trim().isEmpty
                                   ? null
@@ -697,6 +706,16 @@ class _InputScreenState extends State<InputScreen> {
                           ),
                         ),
                       ),
+                      // 窄螢幕放在按鈕下方並預設收合，不把「開始檢測」擠出畫面
+                      if (_controller.text.trim().isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        AnalysisPlanCard(
+                          text: _controller.text,
+                          sourceFormat: _sourceProvenance.sourceFormat,
+                          inputQuality: _inputQuality,
+                          autoExpand: false,
+                        ),
+                      ],
                       const AppCopyrightFooter(),
                     ],
                   ),

@@ -1,4 +1,4 @@
-/// 依文件語言在**已安裝的**模型變體之間選出最適用的一個。
+/// 依文件語言與文體在**已安裝的**模型變體之間選出最適用的一個。
 ///
 /// 為什麼需要這層：同一個角色可以同時裝多個變體，而它們的語言適用性差很多。
 /// 純英文的 `chatgpt-detector-roberta` 對中文輸入從未跨過強訊號閾值——
@@ -9,10 +9,15 @@
 /// 1. **只在已安裝的變體之間選。** 語言要解析完文件才知道，那時候不可能
 ///    臨時去下載幾百 MB。缺適用模型時要誠實回報，不是假裝有。
 /// 2. **不修改使用者的手動選擇。** 路由只決定「這次分析用哪顆」，
-///    不會去動儲存的 activeVariantId。使用者選的變體若適用就優先使用；
+///    不會去動儲存的 activeVariantId。使用者鎖定的變體若適用就優先使用；
 ///    不適用而另有適用者時改用後者，並在理由中說明——設定不該被靜默改寫。
+///
+/// 排序依序為：語言適用度 → 目標文體的實測召回（必須守住 1% 誤報預算且樣本
+/// 足夠）→ 一般語料的實測召回 → 安裝順序。沒有實測的文體不會被猜成「適用」，
+/// 而是明說「此文體未驗證，依一般語料選用」。
 library;
 
+import 'domain_evidence.dart';
 import 'model_manager_types.dart';
 
 /// 變體對某語言的適用程度。順序即優先序。
@@ -30,6 +35,27 @@ enum LanguageFit {
   unsupported,
 }
 
+/// 這次為什麼選這顆，供報告與分析前預覽說明
+enum RoutingBasis {
+  /// 使用者鎖定且適用
+  userPinned,
+
+  /// 依目標文體的實測選出
+  measuredDomain,
+
+  /// 目標文體沒有可用實測，依一般語料的實測選出
+  measuredGeneral,
+
+  /// 沒有任何可用實測，只依語言涵蓋選出
+  languageOnly,
+
+  /// 文件語言無法判定，使用預設
+  languageUnknown,
+
+  /// 中英混合，改用多語變體
+  mixedScripts,
+}
+
 /// 路由結果
 class VariantChoice {
   /// 本次分析實際要用的變體；沒有任何已安裝變體時為 null
@@ -42,10 +68,21 @@ class VariantChoice {
   /// 否則使用者會看到「使用中」的模型與報告所用的不一致。
   final bool overrodeUserChoice;
 
+  final RoutingBasis basis;
+
+  /// 路由時採用的文體名稱（`AnalysisDomain.name`）
+  final String domain;
+
+  /// [variant] 在此文體 × 語言上的實測摘要
+  final DomainFit domainFit;
+
   const VariantChoice({
     required this.variant,
     required this.fit,
     this.overrodeUserChoice = false,
+    this.basis = RoutingBasis.languageOnly,
+    this.domain = 'general',
+    this.domainFit = const DomainFit(),
   });
 
   static const none = VariantChoice(
@@ -75,17 +112,37 @@ LanguageFit fitFor(InstalledModel model, String language) {
   return LanguageFit.unsupported;
 }
 
-/// 在 [installed] 之中挑出最適合 [language] 的變體。
+/// [a] 是否比 [b] 更適合（語言 → 文體實測 → 一般實測）；相同時回傳 false
+bool _ranksAbove(
+  ({LanguageFit fit, DomainFit domain}) a,
+  ({LanguageFit fit, DomainFit domain}) b,
+) {
+  if (a.fit.index != b.fit.index) return a.fit.index < b.fit.index;
+  if (a.domain.matchesDomain != b.domain.matchesDomain) {
+    return a.domain.matchesDomain;
+  }
+  return a.domain.meanRecall > b.domain.meanRecall;
+}
+
+RoutingBasis _basisFor(DomainFit fit) => fit.matchesDomain
+    ? RoutingBasis.measuredDomain
+    : fit.hasRankingEvidence
+    ? RoutingBasis.measuredGeneral
+    : RoutingBasis.languageOnly;
+
+/// 在 [installed] 之中挑出最適合 [language] × [domain] 的變體。
 ///
-/// [userActiveVariantId] 為使用者手動指定的變體；適用程度相同時優先採用它，
-/// 尊重使用者的選擇而不是每次分析都可能換一顆模型。
+/// [userActiveVariantId] 為使用者**鎖定**的變體（自動模式傳 null）；適用程度
+/// 不低於最佳者時優先採用它，尊重使用者的選擇。
 ///
-/// 語言為 null 或無法判定時直接回傳使用者的選擇——語言不明就沒有路由的依據，
-/// 硬挑一顆等於用猜測取代使用者的決定。
+/// [defaultVariantId] 只在語言不明時使用：語言不明就沒有路由依據，
+/// 硬挑一顆等於用猜測取代預設。
 VariantChoice chooseVariant({
   required List<InstalledModel> installed,
   required String? language,
+  String domain = 'general',
   String? userActiveVariantId,
+  String? defaultVariantId,
   bool mixedScripts = false,
 }) {
   if (installed.isEmpty) return VariantChoice.none;
@@ -101,48 +158,68 @@ VariantChoice chooseVariant({
           fit: fitFor(m, language ?? ''),
           overrodeUserChoice:
               userActiveVariantId != null && m.variantId != userActiveVariantId,
+          basis: RoutingBasis.mixedScripts,
+          domain: domain,
+          domainFit: DomainFit.of(m.domains, domain, language ?? ''),
         );
       }
     }
   }
 
   InstalledModel? userChoice;
+  InstalledModel? defaultChoice;
   for (final m in installed) {
     if (m.variantId == userActiveVariantId) userChoice = m;
+    if (m.variantId == defaultVariantId) defaultChoice = m;
   }
-  final fallback = userChoice ?? installed.first;
 
   if (language == null || language.isEmpty) {
-    return VariantChoice(variant: fallback, fit: LanguageFit.unknown);
+    return VariantChoice(
+      variant: userChoice ?? defaultChoice ?? installed.first,
+      fit: LanguageFit.unknown,
+      basis: userChoice != null
+          ? RoutingBasis.userPinned
+          : RoutingBasis.languageUnknown,
+      domain: domain,
+    );
   }
 
-  final userFit = userChoice == null
-      ? LanguageFit.unsupported
-      : fitFor(userChoice, language);
-
-  // 使用者選的已經是最好的等級，不必換
-  if (userChoice != null && userFit == LanguageFit.validated) {
-    return VariantChoice(variant: userChoice, fit: userFit);
-  }
+  ({LanguageFit fit, DomainFit domain}) rate(InstalledModel m) => (
+    fit: fitFor(m, language),
+    domain: DomainFit.of(m.domains, domain, language),
+  );
 
   InstalledModel? best;
-  var bestFit = LanguageFit.unsupported;
+  ({LanguageFit fit, DomainFit domain})? bestRating;
   for (final m in installed) {
-    final fit = fitFor(m, language);
-    if (best == null || fit.index < bestFit.index) {
+    final rating = rate(m);
+    if (bestRating == null || _ranksAbove(rating, bestRating)) {
       best = m;
-      bestFit = fit;
+      bestRating = rating;
     }
   }
 
-  // 找不到比使用者選擇更好的，就維持使用者的選擇
-  if (userChoice != null && bestFit.index >= userFit.index) {
-    return VariantChoice(variant: userChoice, fit: userFit);
+  // 鎖定的變體只要語言適用度不輸最佳者就保留——實測差異屬於建議，
+  // 不足以推翻使用者明確的選擇；語言不適用才改選並說明。
+  if (userChoice != null) {
+    final userRating = rate(userChoice);
+    if (userRating.fit.index <= bestRating!.fit.index) {
+      return VariantChoice(
+        variant: userChoice,
+        fit: userRating.fit,
+        basis: RoutingBasis.userPinned,
+        domain: domain,
+        domainFit: userRating.domain,
+      );
+    }
   }
 
   return VariantChoice(
     variant: best,
-    fit: bestFit,
+    fit: bestRating!.fit,
     overrodeUserChoice: userChoice != null && best != userChoice,
+    basis: _basisFor(bestRating.domain),
+    domain: domain,
+    domainFit: bestRating.domain,
   );
 }

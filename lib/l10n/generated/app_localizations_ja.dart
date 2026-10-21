@@ -3356,4 +3356,131 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get publicGuideFakeCitations => '偽引用と参考文献チェック';
+
+  @override
+  String get analysisPlanTitle => '分析プラン';
+
+  @override
+  String get analysisPlanSubtitle => '検出した言語と文体から、各エンジンに最適なモデルを自動で選びます';
+
+  @override
+  String get analysisPlanAttention => '確認が必要な項目があります';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return '言語：$language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => '判定不能';
+
+  @override
+  String get languageNameZh => '中国語';
+
+  @override
+  String get languageNameEn => '英語';
+
+  @override
+  String get analysisPlanMixedScripts => '中英混在';
+
+  @override
+  String get analysisDomainAcademic => '学術';
+
+  @override
+  String get analysisDomainNews => 'ニュース';
+
+  @override
+  String get analysisDomainCreative => '創作';
+
+  @override
+  String get analysisDomainGeneral => '一般';
+
+  @override
+  String get analysisDomainCode => 'コード';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return '文体：$domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return '形式：$format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => '貼り付け・入力したテキスト';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count 語';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return '抽出品質 $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => '固定したモデル';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return '「$domain」文体の実測に基づき選択（平均再現率 $recall%、誤検出上限 ≤ 1%）';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return '「$domain」文体の実測が不足のため、一般コーパスの実測で選択（平均再現率 $recall%）';
+  }
+
+  @override
+  String get routingBasisLanguageOnly => '比較できる実測がなく、言語対応のみで選択';
+
+  @override
+  String get routingBasisLanguageUnknown => '言語を判定できないため既定モデルを使用';
+
+  @override
+  String get routingBasisMixedScripts => '中英混在のため多言語モデルを使用';
+
+  @override
+  String get routingFitPlausible => 'この言語では未検証のため証拠として弱めです';
+
+  @override
+  String get routingFitUnsupported => 'インストール済みのモデルはこの言語に未対応で、このエンジンは機能しません';
+
+  @override
+  String get routingNoModel => 'モデル未インストールのため、このエンジンは参加しません';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return '「$domain」文体はプローブ $count 件のみ（再現率 $recall%）で、モデル比較には不十分です';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return '「$name」（$size）のダウンロードを推奨：この文書の言語と文体により適しています';
+  }
+
+  @override
+  String get routingSeeModelManager => 'モデル管理でより適したモデルを入手できます';
+
+  @override
+  String get modelListAutoSelectTitle => 'モデルを自動選択（推奨）';
+
+  @override
+  String get modelListAutoSelectSubtitle =>
+      '文書ごとに言語・文体・実測性能で選びます。手動にすると 1 つを固定できます';
+
+  @override
+  String get modelListAutoChip => '自動';
+
+  @override
+  String get modelListPinnedChip => '固定中';
+
+  @override
+  String get modelListPinButton => 'このモデルに固定';
+
+  @override
+  String get modelListDefaultChip => '既定';
 }

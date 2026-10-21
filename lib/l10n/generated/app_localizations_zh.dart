@@ -3317,6 +3317,132 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get publicGuideFakeCitations => '假文獻與引用核實';
+
+  @override
+  String get analysisPlanTitle => '分析計畫';
+
+  @override
+  String get analysisPlanSubtitle => '依偵測到的語言與文體，自動為每個引擎選用最適合的模型';
+
+  @override
+  String get analysisPlanAttention => '有需要留意的項目';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return '語言：$language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => '無法判定';
+
+  @override
+  String get languageNameZh => '中文';
+
+  @override
+  String get languageNameEn => '英文';
+
+  @override
+  String get analysisPlanMixedScripts => '中英混合';
+
+  @override
+  String get analysisDomainAcademic => '學術';
+
+  @override
+  String get analysisDomainNews => '新聞';
+
+  @override
+  String get analysisDomainCreative => '創作';
+
+  @override
+  String get analysisDomainGeneral => '一般';
+
+  @override
+  String get analysisDomainCode => '程式碼';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return '文體：$domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return '格式：$format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => '貼上或輸入的文字';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count 字';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return '抽取品質 $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => '你鎖定的模型';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return '依「$domain」文體實測選用（平均召回 $recall%，誤報上界 ≤ 1%）';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return '「$domain」文體尚無足量實測，依一般語料實測選用（平均召回 $recall%）';
+  }
+
+  @override
+  String get routingBasisLanguageOnly => '沒有可比較的實測，只依語言涵蓋選用';
+
+  @override
+  String get routingBasisLanguageUnknown => '語言無法判定，使用預設模型';
+
+  @override
+  String get routingBasisMixedScripts => '中英混合文件，改用多語言模型';
+
+  @override
+  String get routingFitPlausible => '此語言未經驗證，證據強度較低';
+
+  @override
+  String get routingFitUnsupported => '已安裝的模型都不支援此語言，這個引擎會空轉';
+
+  @override
+  String get routingNoModel => '尚未安裝模型，這個引擎不會參與';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return '「$domain」文體只有 $count 份探針（召回 $recall%），不足以比較模型';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return '建議下載「$name」（$size）：更適合這份文件的語言與文體';
+  }
+
+  @override
+  String get routingSeeModelManager => '可到模型管理下載更適合的模型';
+
+  @override
+  String get modelListAutoSelectTitle => '自動選擇模型（建議）';
+
+  @override
+  String get modelListAutoSelectSubtitle => '每份文件依語言、文體與實測表現選用；改為手動後可鎖定其中一顆';
+
+  @override
+  String get modelListAutoChip => '自動';
+
+  @override
+  String get modelListPinnedChip => '已鎖定';
+
+  @override
+  String get modelListPinButton => '鎖定使用';
+
+  @override
+  String get modelListDefaultChip => '預設';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6632,6 +6758,132 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get publicGuideFakeCitations => '虚假文献与引用核实';
+
+  @override
+  String get analysisPlanTitle => '分析计划';
+
+  @override
+  String get analysisPlanSubtitle => '依检测到的语言与文体，自动为每个引擎选用最合适的模型';
+
+  @override
+  String get analysisPlanAttention => '有需要留意的项目';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return '语言：$language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => '无法判定';
+
+  @override
+  String get languageNameZh => '中文';
+
+  @override
+  String get languageNameEn => '英文';
+
+  @override
+  String get analysisPlanMixedScripts => '中英混合';
+
+  @override
+  String get analysisDomainAcademic => '学术';
+
+  @override
+  String get analysisDomainNews => '新闻';
+
+  @override
+  String get analysisDomainCreative => '创作';
+
+  @override
+  String get analysisDomainGeneral => '一般';
+
+  @override
+  String get analysisDomainCode => '代码';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return '文体：$domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return '格式：$format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => '粘贴或输入的文字';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count 字';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return '提取质量 $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => '你锁定的模型';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return '依“$domain”文体实测选用（平均召回 $recall%，误报上界 ≤ 1%）';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return '“$domain”文体尚无足量实测，依一般语料实测选用（平均召回 $recall%）';
+  }
+
+  @override
+  String get routingBasisLanguageOnly => '没有可比较的实测，只依语言覆盖选用';
+
+  @override
+  String get routingBasisLanguageUnknown => '语言无法判定，使用默认模型';
+
+  @override
+  String get routingBasisMixedScripts => '中英混合文件，改用多语言模型';
+
+  @override
+  String get routingFitPlausible => '此语言未经验证，证据强度较低';
+
+  @override
+  String get routingFitUnsupported => '已安装的模型都不支持此语言，这个引擎会空转';
+
+  @override
+  String get routingNoModel => '尚未安装模型，这个引擎不会参与';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return '“$domain”文体只有 $count 份探针（召回 $recall%），不足以比较模型';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return '建议下载“$name”（$size）：更适合这份文件的语言与文体';
+  }
+
+  @override
+  String get routingSeeModelManager => '可到模型管理下载更合适的模型';
+
+  @override
+  String get modelListAutoSelectTitle => '自动选择模型（建议）';
+
+  @override
+  String get modelListAutoSelectSubtitle => '每份文件依语言、文体与实测表现选用；改为手动后可锁定其中一个';
+
+  @override
+  String get modelListAutoChip => '自动';
+
+  @override
+  String get modelListPinnedChip => '已锁定';
+
+  @override
+  String get modelListPinButton => '锁定使用';
+
+  @override
+  String get modelListDefaultChip => '默认';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9947,4 +10199,130 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get publicGuideFakeCitations => '假文獻與引用核實';
+
+  @override
+  String get analysisPlanTitle => '分析計畫';
+
+  @override
+  String get analysisPlanSubtitle => '依偵測到的語言與文體，自動為每個引擎選用最適合的模型';
+
+  @override
+  String get analysisPlanAttention => '有需要留意的項目';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return '語言：$language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => '無法判定';
+
+  @override
+  String get languageNameZh => '中文';
+
+  @override
+  String get languageNameEn => '英文';
+
+  @override
+  String get analysisPlanMixedScripts => '中英混合';
+
+  @override
+  String get analysisDomainAcademic => '學術';
+
+  @override
+  String get analysisDomainNews => '新聞';
+
+  @override
+  String get analysisDomainCreative => '創作';
+
+  @override
+  String get analysisDomainGeneral => '一般';
+
+  @override
+  String get analysisDomainCode => '程式碼';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return '文體：$domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return '格式：$format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => '貼上或輸入的文字';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count 字';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return '抽取品質 $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => '你鎖定的模型';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return '依「$domain」文體實測選用（平均召回 $recall%，誤報上界 ≤ 1%）';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return '「$domain」文體尚無足量實測，依一般語料實測選用（平均召回 $recall%）';
+  }
+
+  @override
+  String get routingBasisLanguageOnly => '沒有可比較的實測，只依語言涵蓋選用';
+
+  @override
+  String get routingBasisLanguageUnknown => '語言無法判定，使用預設模型';
+
+  @override
+  String get routingBasisMixedScripts => '中英混合文件，改用多語言模型';
+
+  @override
+  String get routingFitPlausible => '此語言未經驗證，證據強度較低';
+
+  @override
+  String get routingFitUnsupported => '已安裝的模型都不支援此語言，這個引擎會空轉';
+
+  @override
+  String get routingNoModel => '尚未安裝模型，這個引擎不會參與';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return '「$domain」文體只有 $count 份探針（召回 $recall%），不足以比較模型';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return '建議下載「$name」（$size）：更適合這份文件的語言與文體';
+  }
+
+  @override
+  String get routingSeeModelManager => '可到模型管理下載更適合的模型';
+
+  @override
+  String get modelListAutoSelectTitle => '自動選擇模型（建議）';
+
+  @override
+  String get modelListAutoSelectSubtitle => '每份文件依語言、文體與實測表現選用；改為手動後可鎖定其中一顆';
+
+  @override
+  String get modelListAutoChip => '自動';
+
+  @override
+  String get modelListPinnedChip => '已鎖定';
+
+  @override
+  String get modelListPinButton => '鎖定使用';
+
+  @override
+  String get modelListDefaultChip => '預設';
 }

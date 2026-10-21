@@ -66,6 +66,9 @@ class AnalysisProfile {
     _ => 1.0,
   };
 
+  /// 只判斷文體，供模型路由與分析前預覽使用（不需要完整前處理）
+  static AnalysisDomain domainOf(String raw) => _detectDomain(raw);
+
   static AnalysisDomain _detectDomain(String raw) {
     if (raw.trim().isEmpty) return AnalysisDomain.general;
     final lower = raw.toLowerCase();
@@ -80,8 +83,10 @@ class AnalysisProfile {
       r'參考文獻|文獻探討|研究方法|研究結果|摘要|關鍵詞|圖\s*\d+|表\s*\d+)',
       caseSensitive: false,
     ).allMatches(lower).length;
+    // 中文論文常用全形括號與 &：「（Wedel & Kannan, 2016）」「（Luarn et al., 2024；…）」
     final citationMarks = RegExp(
-      r'(?:\([A-Z][A-Za-z-]+(?: et al\.)?,?\s*\d{4}\)|\[\d+(?:\s*[-,]\s*\d+)*\])',
+      r'(?:[（(][A-Z][A-Za-z-]+(?:\s*(?:&|and)\s*[A-Z][A-Za-z-]+| et al\.)?,?'
+      r'\s*\d{4}[a-z]?[)）;；,，]|\[\d+(?:\s*[-,]\s*\d+)*\])',
     ).allMatches(raw).length;
     if (academicMarks >= 3 || citationMarks >= 3) {
       return AnalysisDomain.academic;

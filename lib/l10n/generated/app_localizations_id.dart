@@ -3457,4 +3457,139 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get publicGuideFakeCitations =>
       'Kutipan palsu dan pemeriksaan referensi';
+
+  @override
+  String get analysisPlanTitle => 'Rencana analisis';
+
+  @override
+  String get analysisPlanSubtitle =>
+      'Memilih model paling sesuai untuk setiap mesin berdasarkan bahasa dan genre yang terdeteksi';
+
+  @override
+  String get analysisPlanAttention => 'Ada hal yang perlu diperhatikan';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return 'Bahasa: $language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => 'Tidak dapat ditentukan';
+
+  @override
+  String get languageNameZh => 'Tionghoa';
+
+  @override
+  String get languageNameEn => 'Inggris';
+
+  @override
+  String get analysisPlanMixedScripts => 'Campuran Tionghoa/Inggris';
+
+  @override
+  String get analysisDomainAcademic => 'Akademik';
+
+  @override
+  String get analysisDomainNews => 'Berita';
+
+  @override
+  String get analysisDomainCreative => 'Kreatif';
+
+  @override
+  String get analysisDomainGeneral => 'Umum';
+
+  @override
+  String get analysisDomainCode => 'Kode';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return 'Genre: $domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return 'Format: $format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => 'Teks yang ditempel atau diketik';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count kata';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return 'Kualitas ekstraksi $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => 'Model yang Anda kunci';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return 'Dipilih dari pengukuran pada teks “$domain” (recall rata-rata $recall%, batas atas positif palsu ≤ 1%)';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return 'Pengukuran untuk “$domain” belum cukup; dipilih dari korpus umum (recall rata-rata $recall%)';
+  }
+
+  @override
+  String get routingBasisLanguageOnly =>
+      'Tidak ada pengukuran pembanding; dipilih hanya dari cakupan bahasa';
+
+  @override
+  String get routingBasisLanguageUnknown =>
+      'Bahasa tidak dapat ditentukan; memakai model bawaan';
+
+  @override
+  String get routingBasisMixedScripts =>
+      'Dokumen campuran Tionghoa/Inggris; memakai model multibahasa';
+
+  @override
+  String get routingFitPlausible =>
+      'Belum divalidasi untuk bahasa ini; bukti lebih lemah';
+
+  @override
+  String get routingFitUnsupported =>
+      'Tidak ada model terpasang yang mendukung bahasa ini; mesin ini tidak akan berkontribusi';
+
+  @override
+  String get routingNoModel =>
+      'Belum ada model terpasang; mesin ini tidak ikut serta';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return 'Hanya $count dokumen uji untuk “$domain” (recall $recall%); belum cukup untuk membandingkan model';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return 'Unduh “$name” ($size): lebih cocok untuk bahasa dan genre dokumen ini';
+  }
+
+  @override
+  String get routingSeeModelManager =>
+      'Model yang lebih cocok tersedia di Kelola model';
+
+  @override
+  String get modelListAutoSelectTitle => 'Pilih model otomatis (disarankan)';
+
+  @override
+  String get modelListAutoSelectSubtitle =>
+      'Setiap dokumen memakai model yang sesuai bahasa, genre, dan kinerja terukurnya; mode manual memungkinkan mengunci satu';
+
+  @override
+  String get modelListAutoChip => 'Otomatis';
+
+  @override
+  String get modelListPinnedChip => 'Dikunci';
+
+  @override
+  String get modelListPinButton => 'Kunci model ini';
+
+  @override
+  String get modelListDefaultChip => 'Bawaan';
 }

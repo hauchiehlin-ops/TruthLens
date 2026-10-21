@@ -3479,4 +3479,140 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get publicGuideFakeCitations => 'Falsche Zitate und Quellenprüfung';
+
+  @override
+  String get analysisPlanTitle => 'Analyseplan';
+
+  @override
+  String get analysisPlanSubtitle =>
+      'Wählt für jede Engine anhand von Sprache und Textsorte das passendste Modell';
+
+  @override
+  String get analysisPlanAttention => 'Einige Punkte erfordern Aufmerksamkeit';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return 'Sprache: $language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => 'Nicht bestimmbar';
+
+  @override
+  String get languageNameZh => 'Chinesisch';
+
+  @override
+  String get languageNameEn => 'Englisch';
+
+  @override
+  String get analysisPlanMixedScripts => 'Gemischt Chinesisch/Englisch';
+
+  @override
+  String get analysisDomainAcademic => 'Wissenschaftlich';
+
+  @override
+  String get analysisDomainNews => 'Nachrichten';
+
+  @override
+  String get analysisDomainCreative => 'Kreativ';
+
+  @override
+  String get analysisDomainGeneral => 'Allgemein';
+
+  @override
+  String get analysisDomainCode => 'Code';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return 'Textsorte: $domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return 'Format: $format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => 'Eingefügter oder getippter Text';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count Wörter';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return 'Extraktionsqualität $percent %';
+  }
+
+  @override
+  String get routingBasisPinned => 'Von dir festgelegtes Modell';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return 'Gewählt nach Messungen an Texten der Sorte „$domain“ (mittlerer Recall $recall %, Fehlalarm-Obergrenze ≤ 1 %)';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return 'Für „$domain“ zu wenige Messungen; gewählt nach allgemeinen Korpora (mittlerer Recall $recall %)';
+  }
+
+  @override
+  String get routingBasisLanguageOnly =>
+      'Keine vergleichbaren Messungen; nur nach Sprachabdeckung gewählt';
+
+  @override
+  String get routingBasisLanguageUnknown =>
+      'Sprache nicht bestimmbar; Standardmodell wird verwendet';
+
+  @override
+  String get routingBasisMixedScripts =>
+      'Gemischtes Chinesisch/Englisch; mehrsprachiges Modell wird verwendet';
+
+  @override
+  String get routingFitPlausible =>
+      'Für diese Sprache nicht validiert; schwächere Evidenz';
+
+  @override
+  String get routingFitUnsupported =>
+      'Kein installiertes Modell unterstützt diese Sprache; diese Engine trägt nichts bei';
+
+  @override
+  String get routingNoModel =>
+      'Kein Modell installiert; diese Engine nimmt nicht teil';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return 'Für „$domain“ nur $count Probedokument(e) (Recall $recall %); zu wenig für einen Modellvergleich';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return '„$name“ ($size) herunterladen: passt besser zu Sprache und Textsorte dieses Dokuments';
+  }
+
+  @override
+  String get routingSeeModelManager =>
+      'Besser geeignete Modelle gibt es in der Modellverwaltung';
+
+  @override
+  String get modelListAutoSelectTitle =>
+      'Modelle automatisch wählen (empfohlen)';
+
+  @override
+  String get modelListAutoSelectSubtitle =>
+      'Jedes Dokument nutzt das Modell, das zu Sprache, Textsorte und gemessener Leistung passt; manuell lässt sich eines festlegen';
+
+  @override
+  String get modelListAutoChip => 'Auto';
+
+  @override
+  String get modelListPinnedChip => 'Festgelegt';
+
+  @override
+  String get modelListPinButton => 'Dieses Modell festlegen';
+
+  @override
+  String get modelListDefaultChip => 'Standard';
 }

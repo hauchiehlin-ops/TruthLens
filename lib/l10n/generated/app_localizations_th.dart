@@ -3443,4 +3443,135 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get publicGuideFakeCitations => 'การตรวจสอบการอ้างอิงปลอม';
+
+  @override
+  String get analysisPlanTitle => 'แผนการวิเคราะห์';
+
+  @override
+  String get analysisPlanSubtitle =>
+      'เลือกโมเดลที่เหมาะสมที่สุดให้แต่ละเอนจินตามภาษาและประเภทข้อความที่ตรวจพบ';
+
+  @override
+  String get analysisPlanAttention => 'มีรายการที่ควรตรวจสอบ';
+
+  @override
+  String analysisPlanLanguageLabel(String language) {
+    return 'ภาษา: $language';
+  }
+
+  @override
+  String get analysisPlanLanguageUnknown => 'ระบุไม่ได้';
+
+  @override
+  String get languageNameZh => 'จีน';
+
+  @override
+  String get languageNameEn => 'อังกฤษ';
+
+  @override
+  String get analysisPlanMixedScripts => 'จีนปนอังกฤษ';
+
+  @override
+  String get analysisDomainAcademic => 'วิชาการ';
+
+  @override
+  String get analysisDomainNews => 'ข่าว';
+
+  @override
+  String get analysisDomainCreative => 'สร้างสรรค์';
+
+  @override
+  String get analysisDomainGeneral => 'ทั่วไป';
+
+  @override
+  String get analysisDomainCode => 'โค้ด';
+
+  @override
+  String analysisPlanDomainLabel(String domain) {
+    return 'ประเภท: $domain';
+  }
+
+  @override
+  String analysisPlanFormatLabel(String format) {
+    return 'รูปแบบ: $format';
+  }
+
+  @override
+  String get analysisPlanFormatPasted => 'ข้อความที่วางหรือพิมพ์';
+
+  @override
+  String analysisPlanWords(int count) {
+    return '$count คำ';
+  }
+
+  @override
+  String analysisPlanExtraction(int percent) {
+    return 'คุณภาพการดึงข้อความ $percent%';
+  }
+
+  @override
+  String get routingBasisPinned => 'โมเดลที่คุณล็อกไว้';
+
+  @override
+  String routingBasisMeasuredDomain(String domain, int recall) {
+    return 'เลือกจากผลวัดบนข้อความประเภท “$domain” (recall เฉลี่ย $recall%, ขอบบนผลบวกลวง ≤ 1%)';
+  }
+
+  @override
+  String routingBasisMeasuredGeneral(String domain, int recall) {
+    return 'ประเภท “$domain” ยังมีผลวัดไม่พอ จึงเลือกจากคลังข้อความทั่วไป (recall เฉลี่ย $recall%)';
+  }
+
+  @override
+  String get routingBasisLanguageOnly =>
+      'ไม่มีผลวัดให้เปรียบเทียบ เลือกตามการรองรับภาษาเท่านั้น';
+
+  @override
+  String get routingBasisLanguageUnknown => 'ระบุภาษาไม่ได้ ใช้โมเดลเริ่มต้น';
+
+  @override
+  String get routingBasisMixedScripts => 'เอกสารจีนปนอังกฤษ ใช้โมเดลหลายภาษา';
+
+  @override
+  String get routingFitPlausible =>
+      'ยังไม่ได้ตรวจสอบกับภาษานี้ หลักฐานจึงอ่อนกว่า';
+
+  @override
+  String get routingFitUnsupported =>
+      'ไม่มีโมเดลที่ติดตั้งรองรับภาษานี้ เอนจินนี้จะไม่มีส่วนช่วย';
+
+  @override
+  String get routingNoModel => 'ยังไม่ได้ติดตั้งโมเดล เอนจินนี้จะไม่เข้าร่วม';
+
+  @override
+  String routingDomainProbe(String domain, int count, int recall) {
+    return 'ประเภท “$domain” มีเอกสารทดสอบเพียง $count ฉบับ (recall $recall%) ไม่พอสำหรับเปรียบเทียบโมเดล';
+  }
+
+  @override
+  String routingSuggestion(String name, String size) {
+    return 'แนะนำให้ดาวน์โหลด “$name” ($size): เหมาะกับภาษาและประเภทของเอกสารนี้มากกว่า';
+  }
+
+  @override
+  String get routingSeeModelManager => 'มีโมเดลที่เหมาะกว่าในหน้าจัดการโมเดล';
+
+  @override
+  String get modelListAutoSelectTitle => 'เลือกโมเดลอัตโนมัติ (แนะนำ)';
+
+  @override
+  String get modelListAutoSelectSubtitle =>
+      'แต่ละเอกสารใช้โมเดลที่เหมาะกับภาษา ประเภท และผลวัดจริง; โหมดกำหนดเองให้ล็อกไว้หนึ่งตัวได้';
+
+  @override
+  String get modelListAutoChip => 'อัตโนมัติ';
+
+  @override
+  String get modelListPinnedChip => 'ล็อกแล้ว';
+
+  @override
+  String get modelListPinButton => 'ล็อกโมเดลนี้';
+
+  @override
+  String get modelListDefaultChip => 'เริ่มต้น';
 }

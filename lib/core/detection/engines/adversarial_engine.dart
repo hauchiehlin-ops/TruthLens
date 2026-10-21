@@ -7,6 +7,7 @@ import '../detection_engine.dart';
 import '../model_file_exists.dart';
 import '../model_manager.dart';
 import '../model_display_names.dart';
+import '../analysis_profile.dart';
 import '../variant_router.dart';
 import '../onnx_detector.dart';
 
@@ -43,11 +44,18 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
 
   VariantChoice get choice => _choice;
 
-  /// 依文件語言在已安裝變體之間路由。
+  /// 依文件語言與文體在已安裝變體之間路由。
+  ///
+  /// 自動模式（預設）不把「使用中」當成偏好，只在語言不明時作為預設；
+  /// 使用者在模型管理鎖定變體後，才優先採用它。
   ///
   /// [variantId] 明確指定時直接鎖定該變體（測試與特定流程用），
   /// 不參與路由——呼叫端已經表達了確切意圖。
-  VariantChoice routeFor(String? language, {bool mixedScripts = false}) {
+  VariantChoice routeFor(
+    String? language, {
+    bool mixedScripts = false,
+    String domain = 'general',
+  }) {
     final installed = modelManager.installedVariants('adversarial');
     if (variantId != null) {
       for (final m in installed) {
@@ -60,11 +68,16 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
       }
       return VariantChoice.none;
     }
+    final active = modelManager.activeVariant('adversarial')?.variantId;
     return chooseVariant(
       installed: installed,
       language: language,
+      domain: domain,
       mixedScripts: mixedScripts,
-      userActiveVariantId: modelManager.activeVariant('adversarial')?.variantId,
+      userActiveVariantId: modelManager.isManualSelection('adversarial')
+          ? active
+          : null,
+      defaultVariantId: active,
     );
   }
 
@@ -139,12 +152,15 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
     return null;
   }
 
-  /// 模型選用的說明。只在有話說的時候才產生：使用者選的變體已驗證且沒被
-  /// 覆寫時不必贅述，介面已經顯示「使用中」。
+  /// 模型選用的說明：這次用哪顆、依據什麼選的、語言是否驗證過。
+  /// 預設改為自動選擇後，使用者沒有親手選模型，報告必須交代選擇的理由。
   List<String> _routingNotes(AppLocalizations l10n, PreprocessedText text) {
     final variant = _choice.variant;
     if (variant == null) return const [];
-    final notes = <String>[];
+    final notes = <String>[
+      routingBasisText(_choice, l10n),
+      ...routingProbeNotes(_choice, l10n),
+    ];
     if (_choice.overrodeUserChoice) {
       notes.add(
         l10n.engineRoutedToBetterVariant(
@@ -171,6 +187,11 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
       case LanguageFit.validated:
       case LanguageFit.unknown:
         break;
+    }
+    if (_choice.fit == LanguageFit.plausible ||
+        _choice.fit == LanguageFit.unsupported ||
+        _choice.basis == RoutingBasis.languageOnly) {
+      notes.add(l10n.routingSeeModelManager);
     }
     return notes;
   }
@@ -202,6 +223,7 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
     _choice = routeFor(
       text.language.isUndetermined ? null : text.language.code,
       mixedScripts: text.language.mixedScripts,
+      domain: AnalysisProfile.domainOf(text.raw).name,
     );
 
     OnnxDetector? detector;

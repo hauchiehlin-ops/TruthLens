@@ -13,7 +13,7 @@ InstalledModel _m(String id, List<String> languages) => InstalledModel(
 
 final _enOnly = _m('roberta-en', ['en']);
 final _multi = _m('mbert-multi', ['en', 'zh', 'multi']);
-final _obsoleteZh = _m('truthlens-mbert-multilingual-int8', [
+final _obsoleteZh = _m('omnitrace-mbert-multilingual-int8', [
   'en',
   'zh',
   'multi',

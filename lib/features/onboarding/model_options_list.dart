@@ -10,7 +10,11 @@ import '../../core/detection/model_display_names.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// 共用的模型選項清單：每個 role 列出所有變體，標示硬體推薦、安裝與使用中狀態，
-/// 提供下載 / 刪除 / 更新 / 設為使用中 / 查看模型頁面。
+/// 提供下載 / 刪除 / 更新 / 鎖定使用 / 查看模型頁面。
+///
+/// 預設為「自動選擇」：每份文件依語言、文體與實測表現挑模型，使用者不必知道
+/// 哪顆適合哪種文件。手動鎖定是進階選項——按下「鎖定使用」或關掉自動開關才會
+/// 進入，並且隨時可以切回自動。
 /// 供首次啟動引導與設定的模型管理頁共用。
 class ModelOptionsList extends StatelessWidget {
   final List<ProvisionPlan> plans;
@@ -96,11 +100,52 @@ class ModelOptionsList extends StatelessWidget {
                 ),
               ],
             ),
+            if (_routesAutomatically(plan.role))
+              _AutoSelectSwitch(role: plan.role),
             const SizedBox(height: 10),
             for (final v in plan.variants) _VariantTile(plan: plan, variant: v),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// 會依文件逐份挑選變體的角色；LLM 只負責報告文字，不參與路由
+bool _routesAutomatically(String role) =>
+    role == 'transformer' || role == 'statistical' || role == 'adversarial';
+
+class _AutoSelectSwitch extends StatelessWidget {
+  final String role;
+  const _AutoSelectSwitch({required this.role});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Consumer<ModelManager>(
+      builder: (context, manager, _) {
+        final installed = manager.installedVariants(role);
+        final manual = manager.isManualSelection(role);
+        return SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+          value: !manual,
+          title: Text(l10n.modelListAutoSelectTitle),
+          subtitle: Text(l10n.modelListAutoSelectSubtitle),
+          // 關掉自動＝鎖定目前的預設；沒有已安裝模型時沒有東西可鎖
+          onChanged: installed.isEmpty
+              ? null
+              : (auto) {
+                  if (auto) {
+                    manager.setAutoSelect(role);
+                  } else {
+                    final active =
+                        manager.activeVariant(role) ?? installed.first;
+                    manager.setActive(role, active.variantId);
+                  }
+                },
+        );
+      },
     );
   }
 }
@@ -125,6 +170,8 @@ class _VariantTile extends StatelessWidget {
         final rs = manager.roleState(plan.role);
         final installed = manager.isVariantInstalled(plan.role, variant.id);
         final isActive = rs?.activeVariantId == variant.id;
+        final manual = rs?.manualSelection ?? false;
+        final routed = _routesAutomatically(plan.role);
         final downloadingThis =
             rs?.transientState == InstallState.downloading &&
             rs?.downloadingVariantId == variant.id;
@@ -165,8 +212,21 @@ class _VariantTile extends StatelessWidget {
                   ),
                   if (isActive)
                     Chip(
-                      avatar: Icon(LucideIcons.checkCircle, size: 16),
-                      label: Text(l10n.modelListActiveChip),
+                      avatar: Icon(
+                        routed && manual
+                            ? LucideIcons.pin
+                            : LucideIcons.checkCircle,
+                        size: 16,
+                      ),
+                      // 自動模式下「使用中」只是語言不明時的預設，不是每份文件
+                      // 都用它；照實標成「預設」，避免使用者以為已被鎖定
+                      label: Text(
+                        !routed
+                            ? l10n.modelListActiveChip
+                            : manual
+                            ? l10n.modelListPinnedChip
+                            : l10n.modelListDefaultChip,
+                      ),
                       visualDensity: VisualDensity.compact,
                     )
                   else if (recommended)
@@ -225,6 +285,7 @@ class _VariantTile extends StatelessWidget {
                   l10n,
                   installed: installed,
                   isActive: isActive,
+                  pinned: isActive && (manual || !routed),
                   hasUpdate: hasUpdate,
                   failed: failedThis,
                   error: rs?.error,
@@ -242,6 +303,7 @@ class _VariantTile extends StatelessWidget {
     AppLocalizations l10n, {
     required bool installed,
     required bool isActive,
+    required bool pinned,
     required bool hasUpdate,
     required bool failed,
     String? error,
@@ -256,7 +318,8 @@ class _VariantTile extends StatelessWidget {
       children: [
         if (!installed && variant.isDownloadable)
           FilledButton.tonalIcon(
-            onPressed: () => provisioner.downloadVariant(plan.role, variant, l10n: l10n),
+            onPressed: () =>
+                provisioner.downloadVariant(plan.role, variant, l10n: l10n),
             icon: Icon(LucideIcons.download, size: 18),
             label: Text(
               l10n.modelListDownloadButton(
@@ -266,15 +329,25 @@ class _VariantTile extends StatelessWidget {
           ),
         if (!installed && !variant.isDownloadable)
           Chip(label: Text(l10n.modelListComingSoonChip)),
-        if (installed && !isActive)
+        if (installed && !pinned)
           OutlinedButton.icon(
             onPressed: () => manager.setActive(plan.role, variant.id),
-            icon: Icon(LucideIcons.arrowLeftRight, size: 18),
-            label: Text(l10n.modelListSetActiveButton),
+            icon: Icon(
+              _routesAutomatically(plan.role)
+                  ? LucideIcons.pin
+                  : LucideIcons.arrowLeftRight,
+              size: 18,
+            ),
+            label: Text(
+              _routesAutomatically(plan.role)
+                  ? l10n.modelListPinButton
+                  : l10n.modelListSetActiveButton,
+            ),
           ),
         if (hasUpdate)
           FilledButton.tonalIcon(
-            onPressed: () => provisioner.downloadVariant(plan.role, variant, l10n: l10n),
+            onPressed: () =>
+                provisioner.downloadVariant(plan.role, variant, l10n: l10n),
             icon: Icon(LucideIcons.download, size: 18),
             label: Text(l10n.modelListUpdateButton),
           ),

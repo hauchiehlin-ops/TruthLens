@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-08-30",
+  "catalog_version": "2026-10-21",
   "_comment": "隨 App 打包的預設 catalog；App 首次啟動會嘗試抓遠端最新版覆蓋。variants 依品質由高至低排序。page_url 連到模型最新頁面。",
   "models": [
     {
@@ -27,7 +27,23 @@
           "source": "training/ HC3 英+中微調 distilbert-base-multilingual-cased",
           "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.2-models-detector",
           "license": "資料源 HC3（研究用途）",
-          "note": "HC3 驗證集英文 AUC 1.000（命中 100%／誤傷 3.3%）。模型雖可分詞中文，但只學過較早期 HC3 分布；在 2026 現代中文 AI 壓力集 18 篇中沒有任何一篇跨過門檻，因此中文只作未驗證備援，不再宣稱已校準。評測見 training/evaluate_detector.py。"
+          "note": "HC3 驗證集英文 AUC 1.000（命中 100%／誤傷 3.3%）。模型雖可分詞中文，但只學過較早期 HC3 分布；在 2026 現代中文 AI 壓力集 18 篇中沒有任何一篇跨過門檻，因此中文只作未驗證備援，不再宣稱已校準。評測見 training/evaluate_detector.py。",
+          "domains": [
+            {
+              "domain": "academic",
+              "language": "zh",
+              "corpus": "Claude 繁中研究計畫書探針",
+              "register": "research_proposal",
+              "ai_documents": 1,
+              "human_documents": 0,
+              "recall": 0.0,
+              "fpr": null,
+              "fpr_upper_95": null,
+              "independent": true,
+              "source": "training/validation/claude_zh_academic_probe.json",
+              "note": "單篇探針：逐句平均 0.077、最高 0.42，未跨過門檻。樣本數不足以作為排序依據，只供呈現。"
+            }
+          ]
         },
         {
           "id": "omnitrace-zh-detector-int8",
@@ -50,7 +66,62 @@
           "source": "OmniTrace 以 hfl/chinese-roberta-wwm-ext 於 DetectRL-X + NLPCC-2025 + HC3-Chinese 微調",
           "page_url": "https://github.com/hauchiehlin-ops/TruthLens/releases/tag/v0.4-models-zh-transformer",
           "license": "Apache-2.0（基礎模型）；訓練語料 MIT／各自授權",
-          "note": "針對 DeepSeek-V3、Gemini-2.5-Flash、GPT-4o、Qwen-Max 與助理回覆語域訓練。投票門檻 0.98 由合併開發集選出（取誤報 Wilson 95% 上界 ≤ 1% 中最低者），再於三份未參與訓練的語料各報告一次：DetectRL-X 誤報上界 0.13%／召回 73.1%；HC3 助理語域 0.17%／89.8%；SemEval 中文 0.15%／54.4%。相同校準流程下的 aigc-detector-zhv3 為 DetectRL-X 1.09%（超出誤報預算）／76.7%、HC3 僅 31.4%。主要進步在助理回覆語域。低於門檻只表示未取得 AI 證據，不反向投真人票。"
+          "note": "針對 DeepSeek-V3、Gemini-2.5-Flash、GPT-4o、Qwen-Max 與助理回覆語域訓練。投票門檻 0.98 由合併開發集選出（取誤報 Wilson 95% 上界 ≤ 1% 中最低者），再於三份未參與訓練的語料各報告一次：DetectRL-X 誤報上界 0.13%／召回 73.1%；HC3 助理語域 0.17%／89.8%；SemEval 中文 0.15%／54.4%。相同校準流程下的 aigc-detector-zhv3 為 DetectRL-X 1.09%（超出誤報預算）／76.7%、HC3 僅 31.4%。主要進步在助理回覆語域。低於門檻只表示未取得 AI 證據，不反向投真人票。",
+          "domains": [
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "DetectRL-X 中文測試集",
+              "register": "document_rewrite",
+              "ai_documents": 6000,
+              "human_documents": 6000,
+              "recall": 0.731,
+              "fpr": 0.0005,
+              "fpr_upper_95": 0.00125,
+              "independent": false,
+              "source": "training/validation/zh_transformer_detectrlx.json"
+            },
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "HC3 中文",
+              "register": "assistant_qa",
+              "ai_documents": 2450,
+              "human_documents": 2636,
+              "recall": 0.8984,
+              "fpr": 0.00038,
+              "fpr_upper_95": 0.0017,
+              "independent": false,
+              "source": "training/validation/zhtx_新模型_hc3.json"
+            },
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "SemEval-2024 Task 8 中文",
+              "register": "mixed_web",
+              "ai_documents": 5934,
+              "human_documents": 6000,
+              "recall": 0.5435,
+              "fpr": 0.00067,
+              "fpr_upper_95": 0.00148,
+              "independent": false,
+              "source": "training/validation/zhtx_新模型_semeval.json"
+            },
+            {
+              "domain": "academic",
+              "language": "zh",
+              "corpus": "Claude 繁中研究計畫書探針",
+              "register": "research_proposal",
+              "ai_documents": 1,
+              "human_documents": 0,
+              "recall": 0.0,
+              "fpr": null,
+              "fpr_upper_95": null,
+              "independent": true,
+              "source": "training/validation/claude_zh_academic_probe.json",
+              "note": "單篇探針：逐句平均 0.054、最高 0.15，未跨過門檻。樣本數不足以作為排序依據，只供呈現。"
+            }
+          ]
         },
         {
           "id": "aigc-detector-zhv3-int8",
@@ -73,7 +144,62 @@
           "source": "YuchuanTian/AIGC_detector_zhv3（OmniTrace ONNX INT8 轉換與獨立固定誤報率校準）",
           "page_url": "https://huggingface.co/yuchuantian/AIGC_detector_zhv3",
           "license": "Apache-2.0",
-          "note": "針對 DeepSeek-V3、GPT-4 與現代中文生成文訓練。OmniTrace 不沿用原始 0.5 門檻。投票門檻 0.97 由 NLPCC-2025 DetectRL-ZH 的 dev 分割（shared task 指定的校準集）選出，取誤報 Wilson 95% 上界 ≤ 1% 之中最低者；隨後在完全不同的 SemEval-2024 Task 8 中文語料上只報告一次，得真人誤報 0.12%（上界 0.22%）、AI 召回 27.4%。召回仍低於發布門檻要求的 50%，因此中文尚未通過外部驗證；此門檻的意義是在誤報預算內盡量少漏，不是宣稱已可靠。前一版標示的 0.99／48.7% 召回是語料內數字，同一顆模型在外部語料上實測只有 9.0%。低於門檻只表示未取得 AI 證據，不反向投真人票。"
+          "note": "針對 DeepSeek-V3、GPT-4 與現代中文生成文訓練。OmniTrace 不沿用原始 0.5 門檻。投票門檻 0.97 由 NLPCC-2025 DetectRL-ZH 的 dev 分割（shared task 指定的校準集）選出，取誤報 Wilson 95% 上界 ≤ 1% 之中最低者；隨後在完全不同的 SemEval-2024 Task 8 中文語料上只報告一次，得真人誤報 0.12%（上界 0.22%）、AI 召回 27.4%。召回仍低於發布門檻要求的 50%，因此中文尚未通過外部驗證；此門檻的意義是在誤報預算內盡量少漏，不是宣稱已可靠。前一版標示的 0.99／48.7% 召回是語料內數字，同一顆模型在外部語料上實測只有 9.0%。低於門檻只表示未取得 AI 證據，不反向投真人票。",
+          "domains": [
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "DetectRL-X 中文測試集",
+              "register": "document_rewrite",
+              "ai_documents": 6000,
+              "human_documents": 6000,
+              "recall": 0.7672,
+              "fpr": 0.00867,
+              "fpr_upper_95": 0.01087,
+              "independent": false,
+              "source": "training/validation/zhtx_zhv3_detectrlx.json"
+            },
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "HC3 中文",
+              "register": "assistant_qa",
+              "ai_documents": 2450,
+              "human_documents": 2636,
+              "recall": 0.3135,
+              "fpr": 0.00152,
+              "fpr_upper_95": 0.00338,
+              "independent": true,
+              "source": "training/validation/zhtx_zhv3_hc3.json"
+            },
+            {
+              "domain": "general",
+              "language": "zh",
+              "corpus": "SemEval-2024 Task 8 中文",
+              "register": "mixed_web",
+              "ai_documents": 5934,
+              "human_documents": 6000,
+              "recall": 0.2735,
+              "fpr": 0.00117,
+              "fpr_upper_95": 0.00215,
+              "independent": true,
+              "source": "training/validation/external_zh_semeval_transformer_calibrated.json"
+            },
+            {
+              "domain": "academic",
+              "language": "zh",
+              "corpus": "Claude 繁中研究計畫書探針",
+              "register": "research_proposal",
+              "ai_documents": 1,
+              "human_documents": 0,
+              "recall": 0.0,
+              "fpr": null,
+              "fpr_upper_95": null,
+              "independent": true,
+              "source": "training/validation/claude_zh_academic_probe.json",
+              "note": "單篇探針：逐句平均 0.41、最高 0.94，未跨過門檻。樣本數不足以作為排序依據，只供呈現。"
+            }
+          ]
         },
         {
           "id": "chatgpt-detector-roberta-onnx-int8",

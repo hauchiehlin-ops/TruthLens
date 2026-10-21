@@ -4,6 +4,8 @@ library;
 
 import 'package:flutter/foundation.dart';
 
+import 'domain_evidence.dart';
+
 enum InstallState { notInstalled, downloading, installed, failed }
 
 /// 已安裝變體紀錄（多個變體可同時安裝於同一 role）
@@ -35,6 +37,10 @@ class InstalledModel {
   /// 離線也要能正確推論。不需要額外輸入的模型為 null。
   final String? runtimeJson;
 
+  /// 各「文體 × 語言」的實測紀錄（取自 catalog 的 domains）。安裝當下記下，
+  /// 並隨 [withCalibration] 同步——離線也要能依文體路由。
+  final List<DomainEvidence> domains;
+
   const InstalledModel({
     required this.role,
     required this.variantId,
@@ -50,6 +56,7 @@ class InstalledModel {
     this.sha256,
     this.runtimeJson,
     this.languages = const [],
+    this.domains = const [],
   });
 
   /// 是否**經驗證**涵蓋此語言
@@ -76,6 +83,7 @@ class InstalledModel {
     'sha256': sha256,
     'runtime_json': runtimeJson,
     'languages': languages,
+    'domains': [for (final d in domains) d.toJson()],
   };
 
   factory InstalledModel.fromJson(Map<String, dynamic> j) {
@@ -126,6 +134,7 @@ class InstalledModel {
         sha256: sha256,
         runtimeJson: runtimeJson,
         languages: languages ?? const [],
+        domains: DomainEvidence.listFromJson(j['domains']),
       );
     } catch (e) {
       debugPrint('[InstalledModel] ❌ 解析失敗: $e');
@@ -142,6 +151,7 @@ class InstalledModel {
   InstalledModel withCalibration({
     required double aiEvidenceThreshold,
     required List<String> languages,
+    List<DomainEvidence>? domains,
   }) => InstalledModel(
     role: role,
     variantId: variantId,
@@ -157,6 +167,7 @@ class InstalledModel {
     sha256: sha256,
     runtimeJson: runtimeJson,
     languages: languages,
+    domains: domains ?? this.domains,
   );
 }
 
@@ -165,6 +176,11 @@ class RoleState {
   final String role;
   final Map<String, InstalledModel> installed; // variantId -> 紀錄
   final String? activeVariantId;
+
+  /// 使用者是否鎖定 [activeVariantId]。預設 false：每份文件依語言與文體自動
+  /// 選模型，[activeVariantId] 只作為語言不明時的預設。使用者在模型管理按
+  /// 「設為使用中」才轉為手動；過去版本的紀錄沒有此欄位，一律視為自動。
+  final bool manualSelection;
   final InstallState transientState; // 目前下載活動（idle 以 installed/notInstalled 表示）
   final String? downloadingVariantId;
   final double progress;
@@ -174,6 +190,7 @@ class RoleState {
     required this.role,
     this.installed = const {},
     this.activeVariantId,
+    this.manualSelection = false,
     this.transientState = InstallState.notInstalled,
     this.downloadingVariantId,
     this.progress = 0,
@@ -187,6 +204,7 @@ class RoleState {
   RoleState copyWith({
     Map<String, InstalledModel>? installed,
     String? activeVariantId,
+    bool? manualSelection,
     InstallState? transientState,
     String? downloadingVariantId,
     double? progress,
@@ -195,6 +213,7 @@ class RoleState {
     role: role,
     installed: installed ?? this.installed,
     activeVariantId: activeVariantId ?? this.activeVariantId,
+    manualSelection: manualSelection ?? this.manualSelection,
     transientState: transientState ?? this.transientState,
     downloadingVariantId: downloadingVariantId,
     progress: progress ?? this.progress,

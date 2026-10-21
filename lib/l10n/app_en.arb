@@ -2938,5 +2938,119 @@
   "publicGuidePdfLimits": "PDF AI detection limits",
   "publicGuideDocxEvidence": "DOCX editing history evidence",
   "publicGuideLowBurstiness": "Low burstiness in AI writing",
-  "publicGuideFakeCitations": "Fake citations and reference checks"
+  "publicGuideFakeCitations": "Fake citations and reference checks",
+  "analysisPlanTitle": "Analysis plan",
+  "analysisPlanSubtitle": "Picks the best-suited model for each engine from the detected language and genre",
+  "analysisPlanAttention": "Items need attention",
+  "analysisPlanLanguageLabel": "Language: {language}",
+  "@analysisPlanLanguageLabel": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisPlanLanguageUnknown": "Undetermined",
+  "languageNameZh": "Chinese",
+  "languageNameEn": "English",
+  "analysisPlanMixedScripts": "Mixed Chinese/English",
+  "analysisDomainAcademic": "Academic",
+  "analysisDomainNews": "News",
+  "analysisDomainCreative": "Creative",
+  "analysisDomainGeneral": "General",
+  "analysisDomainCode": "Code",
+  "analysisPlanDomainLabel": "Genre: {domain}",
+  "@analysisPlanDomainLabel": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisPlanFormatLabel": "Format: {format}",
+  "@analysisPlanFormatLabel": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisPlanFormatPasted": "Pasted or typed text",
+  "analysisPlanWords": "{count} words",
+  "@analysisPlanWords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "analysisPlanExtraction": "Extraction quality {percent}%",
+  "@analysisPlanExtraction": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "routingBasisPinned": "Model you pinned",
+  "routingBasisMeasuredDomain": "Chosen from measurements on {domain} text (mean recall {recall}%, false-positive upper bound ≤ 1%)",
+  "@routingBasisMeasuredDomain": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      },
+      "recall": {
+        "type": "int"
+      }
+    }
+  },
+  "routingBasisMeasuredGeneral": "No sufficient measurements for {domain} text; chosen from general-corpus measurements (mean recall {recall}%)",
+  "@routingBasisMeasuredGeneral": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      },
+      "recall": {
+        "type": "int"
+      }
+    }
+  },
+  "routingBasisLanguageOnly": "No comparable measurements; chosen by language coverage only",
+  "routingBasisLanguageUnknown": "Language undetermined; using the default model",
+  "routingBasisMixedScripts": "Mixed Chinese/English document; using a multilingual model",
+  "routingFitPlausible": "Not validated for this language; weaker evidence",
+  "routingFitUnsupported": "No installed model supports this language; this engine will contribute nothing",
+  "routingNoModel": "No model installed; this engine will not take part",
+  "routingDomainProbe": "Only {count} probe document(s) for {domain} text (recall {recall}%); not enough to compare models",
+  "@routingDomainProbe": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "recall": {
+        "type": "int"
+      }
+    }
+  },
+  "routingSuggestion": "Download “{name}” ({size}): a better fit for this document’s language and genre",
+  "@routingSuggestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "routingSeeModelManager": "Better-suited models are available in Model management",
+  "modelListAutoSelectTitle": "Choose models automatically (recommended)",
+  "modelListAutoSelectSubtitle": "Each document uses the model that fits its language, genre and measured performance; switch to manual to pin one",
+  "modelListAutoChip": "Auto",
+  "modelListPinnedChip": "Pinned",
+  "modelListPinButton": "Pin this model",
+  "modelListDefaultChip": "Default"
 }

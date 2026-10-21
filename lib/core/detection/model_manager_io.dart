@@ -56,7 +56,8 @@ class ModelManager extends ChangeNotifier {
       var changed = false;
       for (final role in _roles.keys.toList()) {
         final state = _roles[role]!;
-        final variants = catalog.forRole(role)?.variants ?? const <ModelVariant>[];
+        final variants =
+            catalog.forRole(role)?.variants ?? const <ModelVariant>[];
         final updated = <String, InstalledModel>{};
         for (final entry in state.installed.entries) {
           final installed = entry.value;
@@ -74,10 +75,12 @@ class ModelManager extends ChangeNotifier {
               match.sha256!.toLowerCase() == installed.sha256!.toLowerCase();
           if (sameFile &&
               (match.aiEvidenceThreshold != installed.aiEvidenceThreshold ||
-                  !_sameLanguages(match.languages, installed.languages))) {
+                  !_sameLanguages(match.languages, installed.languages) ||
+                  !listEquals(match.domains, installed.domains))) {
             updated[entry.key] = installed.withCalibration(
               aiEvidenceThreshold: match.aiEvidenceThreshold,
               languages: match.languages,
+              domains: match.domains,
             );
             changed = true;
           } else {
@@ -156,6 +159,7 @@ class ModelManager extends ChangeNotifier {
       if (r.installed.isEmpty) continue;
       map[r.role] = {
         'active': r.activeVariantId,
+        'manual': r.manualSelection,
         'installed': r.installed.map((k, v) => MapEntry(k, v.toJson())),
       };
     }
@@ -291,13 +295,17 @@ class ModelManager extends ChangeNotifier {
         }
       } catch (_) {}
       var active = entry?['active'] as String?;
+      // 鎖定的變體已不存在時回到自動，否則會鎖在一顆隨機補上的模型
+      var manual = entry?['manual'] == true;
       if (active == null || !installed.containsKey(active)) {
         active = installed.keys.isNotEmpty ? installed.keys.first : null;
+        manual = false;
       }
       _roles[role] = RoleState(
         role: role,
         installed: installed,
         activeVariantId: active,
+        manualSelection: manual,
         transientState: installed.isNotEmpty
             ? InstallState.installed
             : InstallState.notInstalled,
@@ -339,6 +347,7 @@ class ModelManager extends ChangeNotifier {
                 sha256: hash,
                 runtimeJson: m.runtimeJson,
                 languages: m.languages,
+                domains: m.domains,
               );
               changed = true;
               continue;
@@ -396,13 +405,29 @@ class ModelManager extends ChangeNotifier {
   }
 
   /// 切換使用中變體（應用程式運行前可自由更換模型）
+  /// 鎖定 [variantId]：此後該角色優先使用它，路由只在它不適用時才改選
   Future<void> setActive(String role, String variantId) async {
     final r = _roles[role];
     if (r == null || !r.installed.containsKey(variantId)) return;
-    _roles[role] = r.copyWith(activeVariantId: variantId);
+    _roles[role] = r.copyWith(
+      activeVariantId: variantId,
+      manualSelection: true,
+    );
     await _persist();
     notifyListeners();
   }
+
+  /// 回到自動：每份文件依語言、文體與實測表現選模型
+  Future<void> setAutoSelect(String role) async {
+    final r = _roles[role];
+    if (r == null || !r.manualSelection) return;
+    _roles[role] = r.copyWith(manualSelection: false);
+    await _persist();
+    notifyListeners();
+  }
+
+  /// 該角色是否由使用者鎖定變體
+  bool isManualSelection(String role) => _roles[role]?.manualSelection ?? false;
 
   Future<String> repairActiveVariant(String role, AppLocalizations l10n) async {
     final active = activeVariant(role);
@@ -458,7 +483,11 @@ class ModelManager extends ChangeNotifier {
     AppLocalizations? l10n,
   }) async {
     if (!variant.isDownloadable) {
-      _mark(role, InstallState.failed, error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源');
+      _mark(
+        role,
+        InstallState.failed,
+        error: l10n?.modelErrorNoSource ?? '此變體尚未提供下載來源',
+      );
       return false;
     }
     _mark(
@@ -534,6 +563,7 @@ class ModelManager extends ChangeNotifier {
         // 執行期不必再抓 catalog——離線也要能正確路由
         runtimeJson: variant.runtimeJson,
         languages: variant.languages,
+        domains: variant.domains,
       );
       _roles[role] = r.copyWith(
         installed: installed,
@@ -572,13 +602,16 @@ class ModelManager extends ChangeNotifier {
     final installed = Map<String, InstalledModel>.from(r.installed)
       ..remove(variantId);
     var active = r.activeVariantId;
+    var manual = r.manualSelection;
     if (active == variantId) {
       active = installed.keys.isNotEmpty ? installed.keys.first : null;
+      manual = false;
     }
     _roles[role] = RoleState(
       role: role,
       installed: installed,
       activeVariantId: active,
+      manualSelection: manual,
       transientState: installed.isNotEmpty
           ? InstallState.installed
           : InstallState.notInstalled,

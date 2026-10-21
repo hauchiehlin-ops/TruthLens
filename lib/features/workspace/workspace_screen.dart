@@ -30,6 +30,7 @@ import '../../core/services/publication_evidence.dart';
 import '../../core/utils/ocr_post_processor.dart';
 import '../../core/utils/text_stats.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/analysis_plan_card.dart';
 import '../../shared/widgets/app_copyright_footer.dart';
 import '../../shared/widgets/professional_report_header.dart' show EngineGroup;
 import '../../shared/widgets/workspace_navigation.dart';
@@ -822,6 +823,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               _isAnalyzing ? l10n.workspaceStopAnalysis : l10n.inputStartButton,
             ),
           ),
+          // 手機版放在按鈕下方並預設收合，不把「開始檢測」擠出畫面
+          if (_showAnalysisPlan) ...[
+            const SizedBox(height: 8),
+            _analysisPlanCard(autoExpand: false),
+          ],
         ],
       ),
     );
@@ -1649,7 +1655,16 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
           const SizedBox(height: 8),
           _analysisReadinessLine(),
-          const Spacer(),
+          const SizedBox(height: 8),
+          // 分析計畫可展開，放進可捲動區塊，避免側欄高度不足時溢位
+          Expanded(
+            child: SingleChildScrollView(
+              child: _showAnalysisPlan
+                  ? _analysisPlanCard()
+                  : const SizedBox.shrink(),
+            ),
+          ),
+          const SizedBox(height: 8),
           if (_isAnalyzing)
             FilledButton.tonalIcon(
               onPressed: _confirmStopAnalysis,
@@ -1818,6 +1833,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       ),
     );
   }
+
+  /// 分析前才需要計畫；分析中或已有結果時，報告本身已說明所用模型
+  bool get _showAnalysisPlan =>
+      !_isAnalyzing && _result == null && _controller.text.trim().isNotEmpty;
+
+  Widget _analysisPlanCard({bool autoExpand = true}) => AnalysisPlanCard(
+    text: _controller.text,
+    sourceFormat: _sourceProvenance.sourceFormat,
+    inputQuality: _inputQuality,
+    autoExpand: autoExpand,
+  );
 
   Widget _analysisReadinessLine() {
     final l10n = AppLocalizations.of(context);

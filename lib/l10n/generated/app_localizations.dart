@@ -5445,6 +5445,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fake citations and reference checks'**
   String get publicGuideFakeCitations;
+
+  /// No description provided for @analysisPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis plan'**
+  String get analysisPlanTitle;
+
+  /// No description provided for @analysisPlanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks the best-suited model for each engine from the detected language and genre'**
+  String get analysisPlanSubtitle;
+
+  /// No description provided for @analysisPlanAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Items need attention'**
+  String get analysisPlanAttention;
+
+  /// No description provided for @analysisPlanLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language: {language}'**
+  String analysisPlanLanguageLabel(String language);
+
+  /// No description provided for @analysisPlanLanguageUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Undetermined'**
+  String get analysisPlanLanguageUnknown;
+
+  /// No description provided for @languageNameZh.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get languageNameZh;
+
+  /// No description provided for @languageNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageNameEn;
+
+  /// No description provided for @analysisPlanMixedScripts.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed Chinese/English'**
+  String get analysisPlanMixedScripts;
+
+  /// No description provided for @analysisDomainAcademic.
+  ///
+  /// In en, this message translates to:
+  /// **'Academic'**
+  String get analysisDomainAcademic;
+
+  /// No description provided for @analysisDomainNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get analysisDomainNews;
+
+  /// No description provided for @analysisDomainCreative.
+  ///
+  /// In en, this message translates to:
+  /// **'Creative'**
+  String get analysisDomainCreative;
+
+  /// No description provided for @analysisDomainGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get analysisDomainGeneral;
+
+  /// No description provided for @analysisDomainCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get analysisDomainCode;
+
+  /// No description provided for @analysisPlanDomainLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Genre: {domain}'**
+  String analysisPlanDomainLabel(String domain);
+
+  /// No description provided for @analysisPlanFormatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Format: {format}'**
+  String analysisPlanFormatLabel(String format);
+
+  /// No description provided for @analysisPlanFormatPasted.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted or typed text'**
+  String get analysisPlanFormatPasted;
+
+  /// No description provided for @analysisPlanWords.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} words'**
+  String analysisPlanWords(int count);
+
+  /// No description provided for @analysisPlanExtraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Extraction quality {percent}%'**
+  String analysisPlanExtraction(int percent);
+
+  /// No description provided for @routingBasisPinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Model you pinned'**
+  String get routingBasisPinned;
+
+  /// No description provided for @routingBasisMeasuredDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen from measurements on {domain} text (mean recall {recall}%, false-positive upper bound ≤ 1%)'**
+  String routingBasisMeasuredDomain(String domain, int recall);
+
+  /// No description provided for @routingBasisMeasuredGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'No sufficient measurements for {domain} text; chosen from general-corpus measurements (mean recall {recall}%)'**
+  String routingBasisMeasuredGeneral(String domain, int recall);
+
+  /// No description provided for @routingBasisLanguageOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'No comparable measurements; chosen by language coverage only'**
+  String get routingBasisLanguageOnly;
+
+  /// No description provided for @routingBasisLanguageUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Language undetermined; using the default model'**
+  String get routingBasisLanguageUnknown;
+
+  /// No description provided for @routingBasisMixedScripts.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed Chinese/English document; using a multilingual model'**
+  String get routingBasisMixedScripts;
+
+  /// No description provided for @routingFitPlausible.
+  ///
+  /// In en, this message translates to:
+  /// **'Not validated for this language; weaker evidence'**
+  String get routingFitPlausible;
+
+  /// No description provided for @routingFitUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'No installed model supports this language; this engine will contribute nothing'**
+  String get routingFitUnsupported;
+
+  /// No description provided for @routingNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'No model installed; this engine will not take part'**
+  String get routingNoModel;
+
+  /// No description provided for @routingDomainProbe.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} probe document(s) for {domain} text (recall {recall}%); not enough to compare models'**
+  String routingDomainProbe(String domain, int count, int recall);
+
+  /// No description provided for @routingSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Download “{name}” ({size}): a better fit for this document’s language and genre'**
+  String routingSuggestion(String name, String size);
+
+  /// No description provided for @routingSeeModelManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Better-suited models are available in Model management'**
+  String get routingSeeModelManager;
+
+  /// No description provided for @modelListAutoSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose models automatically (recommended)'**
+  String get modelListAutoSelectTitle;
+
+  /// No description provided for @modelListAutoSelectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Each document uses the model that fits its language, genre and measured performance; switch to manual to pin one'**
+  String get modelListAutoSelectSubtitle;
+
+  /// No description provided for @modelListAutoChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get modelListAutoChip;
+
+  /// No description provided for @modelListPinnedChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get modelListPinnedChip;
+
+  /// No description provided for @modelListPinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin this model'**
+  String get modelListPinButton;
+
+  /// No description provided for @modelListDefaultChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get modelListDefaultChip;
 }
 
 class _AppLocalizationsDelegate
