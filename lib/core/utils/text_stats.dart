@@ -13,6 +13,12 @@ class PreprocessedText {
   final List<String> sentences;
   final List<List<String>> sentenceTokens;
   final List<String> analysisChunks;
+
+  /// 各分析區塊所屬的段落序號（與 [analysisChunks] 等長），供長文件分段篩檢
+  /// 以段落為單位抽樣與擴充。
+  final List<int> analysisChunkParagraphIndices;
+
+  /// 各句第一個分析區塊的序號；未送神經模型的句子（參考文獻）為 -1。
   final List<int> sentenceChunkIndices;
   final List<List<int>> sentenceAnalysisChunkIndices;
 
@@ -30,6 +36,7 @@ class PreprocessedText {
     this.sentences,
     this.sentenceTokens,
     this.analysisChunks,
+    this.analysisChunkParagraphIndices,
     this.sentenceChunkIndices,
     this.sentenceAnalysisChunkIndices,
     this.proseSentenceMask,
@@ -41,13 +48,16 @@ class PreprocessedText {
     final sentences = <String>[];
     final tokens = <List<String>>[];
     final analysisChunks = <String>[];
+    final analysisChunkParagraphIndices = <int>[];
     final analysisParagraphs = <String>[];
     final sentenceChunkIndices = <int>[];
     final sentenceAnalysisChunkIndices = <List<int>>[];
     final proseSentenceMask = <bool>[];
     var inBibliography = false;
+    var paragraphIndex = -1;
 
     for (final paragraph in _reconstructParagraphs(normalized)) {
+      paragraphIndex++;
       if (_isBibliographyHeading(paragraph)) inBibliography = true;
       final paragraphSentences = _splitSentences(
         paragraph,
@@ -63,6 +73,7 @@ class PreprocessedText {
         if (pendingSentences.isEmpty) return;
         final chunkIndex = analysisChunks.length;
         analysisChunks.add(pendingSentences.join(' '));
+        analysisChunkParagraphIndices.add(paragraphIndex);
         for (final sentenceIndex in pendingSentenceIndices) {
           sentenceAnalysisChunkIndices[sentenceIndex].add(chunkIndex);
         }
@@ -81,12 +92,18 @@ class PreprocessedText {
         );
         sentenceAnalysisChunkIndices.add(<int>[]);
 
+        // 參考文獻條目是書目格式而非作者散文，送進神經模型只會拖慢長文件
+        // 分析並產生無意義的分數。文獻核實（BibliographyVerifier）讀的是
+        // 原文，不受這裡影響。
+        if (inBibliography) continue;
+
         final modelUnits = _splitLongAnalysisUnit(sentence);
         if (modelUnits.length > 1) {
           flushChunk();
           for (final unit in modelUnits) {
             final chunkIndex = analysisChunks.length;
             analysisChunks.add(unit);
+            analysisChunkParagraphIndices.add(paragraphIndex);
             sentenceAnalysisChunkIndices[sentenceIndex].add(chunkIndex);
           }
           continue;
@@ -110,7 +127,9 @@ class PreprocessedText {
     }
 
     sentenceChunkIndices.addAll(
-      sentenceAnalysisChunkIndices.map((indices) => indices.first),
+      sentenceAnalysisChunkIndices.map(
+        (indices) => indices.isEmpty ? -1 : indices.first,
+      ),
     );
     final analysisText = analysisParagraphs.join('\n\n');
     final language = detectLanguage(
@@ -123,6 +142,7 @@ class PreprocessedText {
       sentences,
       tokens,
       analysisChunks,
+      analysisChunkParagraphIndices,
       sentenceChunkIndices,
       sentenceAnalysisChunkIndices,
       proseSentenceMask,
@@ -149,6 +169,10 @@ class PreprocessedText {
   }
 
   /// 將段落區塊的神經模型分數映射回原始句序，供逐句報告與熱區圖使用。
+  ///
+  /// 沒有任何區塊分數的句子回傳 `double.nan`（見 [isScoredSentence]）：參考
+  /// 文獻不送模型，長文件篩檢時未抽到的區塊也以 NaN 傳入。NaN 表示「本引擎
+  /// 未對此句表態」，消費端須略過，不可當成 0 或 0.5。
   List<double> expandChunkScoresToSentences(List<double> chunkScores) {
     if (chunkScores.length != analysisChunks.length) {
       throw ArgumentError.value(
@@ -158,12 +182,17 @@ class PreprocessedText {
       );
     }
     return sentenceAnalysisChunkIndices.map((indices) {
-      final sum = indices.fold<double>(0, (value, index) {
-        return value + chunkScores[index];
-      });
-      return sum / indices.length;
+      final scored = [
+        for (final index in indices)
+          if (!chunkScores[index].isNaN) chunkScores[index],
+      ];
+      if (scored.isEmpty) return double.nan;
+      return scored.reduce((a, b) => a + b) / scored.length;
     }).toList();
   }
+
+  /// 引擎逐句分數是否有表態（非 NaN）。
+  static bool isScoredSentence(double score) => !score.isNaN;
 
   /// 以文件段落為第一層邊界，重接 PDF/OCR 因版面寬度產生的硬換行。
   ///

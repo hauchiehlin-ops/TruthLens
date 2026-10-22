@@ -396,7 +396,8 @@ class TextEvidenceFusion {
     for (var i = 0; i < length; i++) {
       final values = <double>[];
       for (final score in perEngine) {
-        if (i < score.sentenceScores!.length) {
+        if (i < score.sentenceScores!.length &&
+            !score.sentenceScores![i].isNaN) {
           values.add(score.sentenceScores![i]);
         }
       }

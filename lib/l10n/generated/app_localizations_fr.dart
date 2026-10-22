@@ -3738,4 +3738,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'Cette conclusion repose surtout sur des preuves d’origine du document, pas sur les moteurs de texte.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Tri rapide des longs documents : $measured unités d’analyse sur $total ont été soumises au modèle. Les paragraphes dont l’échantillon ne montrait aucun signal suspect ont été estimés à partir de cet échantillon et ne sont pas marqués phrase par phrase. Désactivez le tri rapide dans les Réglages pour une analyse complète.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => 'Tri rapide des longs documents';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'Pour les documents comportant beaucoup de phrases, chaque paragraphe est d’abord échantillonné ; seuls les paragraphes suspects et leurs voisins sont analysés phrase par phrase. Beaucoup plus rapide ; le rapport indique le nombre de phrases analysées. Désactivez pour analyser chaque phrase.';
 }

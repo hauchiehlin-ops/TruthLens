@@ -3686,4 +3686,16 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'ข้อสรุปครั้งนี้อาศัยหลักฐานแหล่งที่มาของเอกสารเป็นหลัก ไม่ใช่เอนจินข้อความ';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'การคัดกรองเร็วสำหรับเอกสารยาว: ส่งหน่วยวิเคราะห์ $measured จาก $total หน่วยเข้าโมเดล ย่อหน้าที่ตัวอย่างไม่พบสัญญาณน่าสงสัยจะประมาณจากตัวอย่างและไม่ทำเครื่องหมายรายประโยค ปิดการคัดกรองเร็วในการตั้งค่าเพื่อวิเคราะห์ครบทุกประโยค';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => 'การคัดกรองเร็วสำหรับเอกสารยาว';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'เอกสารที่มีประโยคจำนวนมากจะสุ่มตัวอย่างจากแต่ละย่อหน้าก่อน แล้ววิเคราะห์รายประโยคเฉพาะย่อหน้าที่น่าสงสัยและย่อหน้าข้างเคียง เร็วขึ้นมาก และรายงานจะระบุจำนวนประโยคที่วิเคราะห์จริง ปิดเพื่อวิเคราะห์ทุกประโยค';
 }

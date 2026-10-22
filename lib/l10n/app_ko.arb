@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "퍼플렉서티 임계값은 2022년 초기 AI 문장으로 보정되어 현대 모델 출력에서는 판별력이 크게 떨어집니다",
   "gapEnginesUnavailable": "텍스트 엔진 {count}개가 이 언어를 지원하지 않거나 설치되지 않았습니다",
   "textDiscriminabilityClosing": "따라서 “실행됨, 강한 신호 없음”은 도구가 구분하지 못한다는 뜻이지 사람이 쓴 것처럼 보인다는 뜻이 아닙니다. 문서 출처와 작성 과정 증거를 우선하세요.",
-  "textDiscriminabilityProvenance": "이번 결론은 텍스트 엔진이 아니라 주로 문서 출처 증거에 근거합니다."
+  "textDiscriminabilityProvenance": "이번 결론은 텍스트 엔진이 아니라 주로 문서 출처 증거에 근거합니다.",
+  "engineReasonFastScreening": "긴 문서 빠른 선별: 분석 단위 {total}개 중 {measured}개를 모델로 분석했습니다. 표본에서 의심 신호가 없던 단락은 표본으로 추정했으며 문장별로 표시하지 않습니다. 전체 분석이 필요하면 설정에서 빠른 선별을 끄세요.",
+  "settingsFastScreeningTitle": "긴 문서 빠른 선별",
+  "settingsFastScreeningSubtitle": "문장이 많은 문서는 먼저 단락마다 표본을 뽑고, 의심스러운 단락과 그 앞뒤 단락만 문장별로 분석합니다. 훨씬 빠르며, 보고서에 실제로 분석한 문장 수가 표시됩니다. 끄면 모든 문장을 분석합니다."
 }

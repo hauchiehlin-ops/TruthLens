@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Ambang perplexity ditentukur dengan teks AI awal (2022) dan kurang mampu membezakan output model moden",
   "gapEnginesUnavailable": "{count} enjin teks tidak menyokong bahasa ini atau belum dipasang",
   "textDiscriminabilityClosing": "Jadi “dijalankan, tiada isyarat kuat” bermaksud alat tidak dapat membezakan, bukan teks kelihatan ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.",
-  "textDiscriminabilityProvenance": "Kesimpulan ini terutamanya berdasarkan bukti asal dokumen, bukan enjin teks."
+  "textDiscriminabilityProvenance": "Kesimpulan ini terutamanya berdasarkan bukti asal dokumen, bukan enjin teks.",
+  "engineReasonFastScreening": "Saringan pantas dokumen panjang: {measured} daripada {total} unit analisis diproses oleh model. Perenggan yang sampelnya tidak menunjukkan isyarat mencurigakan dianggarkan daripada sampel itu dan tidak ditanda ayat demi ayat. Matikan saringan pantas dalam Tetapan untuk analisis penuh.",
+  "settingsFastScreeningTitle": "Saringan pantas dokumen panjang",
+  "settingsFastScreeningSubtitle": "Bagi dokumen yang mempunyai banyak ayat, setiap perenggan disampel dahulu dan hanya perenggan yang mencurigakan serta perenggan bersebelahan dianalisis ayat demi ayat. Jauh lebih pantas; laporan menyatakan bilangan ayat yang dianalisis. Matikan untuk menganalisis setiap ayat."
 }

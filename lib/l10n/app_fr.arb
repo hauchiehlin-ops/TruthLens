@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Les seuils de perplexité ont été calibrés sur des textes IA anciens (2022) et discriminent mal les sorties des modèles récents",
   "gapEnginesUnavailable": "{count} moteur(s) de texte ne prennent pas en charge cette langue ou ne sont pas installés",
   "textDiscriminabilityClosing": "« Exécuté, aucun signal fort » signifie donc que les outils ne savent pas trancher, pas que le texte semble humain. Privilégiez les preuves d’origine et de processus d’écriture.",
-  "textDiscriminabilityProvenance": "Cette conclusion repose surtout sur des preuves d’origine du document, pas sur les moteurs de texte."
+  "textDiscriminabilityProvenance": "Cette conclusion repose surtout sur des preuves d’origine du document, pas sur les moteurs de texte.",
+  "engineReasonFastScreening": "Tri rapide des longs documents : {measured} unités d’analyse sur {total} ont été soumises au modèle. Les paragraphes dont l’échantillon ne montrait aucun signal suspect ont été estimés à partir de cet échantillon et ne sont pas marqués phrase par phrase. Désactivez le tri rapide dans les Réglages pour une analyse complète.",
+  "settingsFastScreeningTitle": "Tri rapide des longs documents",
+  "settingsFastScreeningSubtitle": "Pour les documents comportant beaucoup de phrases, chaque paragraphe est d’abord échantillonné ; seuls les paragraphes suspects et leurs voisins sont analysés phrase par phrase. Beaucoup plus rapide ; le rapport indique le nombre de phrases analysées. Désactivez pour analyser chaque phrase."
 }

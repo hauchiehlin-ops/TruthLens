@@ -404,6 +404,12 @@ class SettingsScreen extends StatelessWidget {
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
           ),
+          SwitchListTile(
+            title: Text(l10n.settingsFastScreeningTitle),
+            subtitle: Text(l10n.settingsFastScreeningSubtitle),
+            value: prefs.fastScreeningEnabled,
+            onChanged: (v) => prefs.setFastScreeningEnabled(v),
+          ),
           const Divider(),
           ListTile(
             title: Text(l10n.settingsThemeTitle),

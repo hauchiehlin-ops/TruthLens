@@ -3728,4 +3728,16 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'Dieses Ergebnis stützt sich vor allem auf Belege zur Dokumentherkunft, nicht auf die Text-Engines.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Schnellprüfung für lange Dokumente: $measured von $total Analyseeinheiten wurden vom Modell geprüft. Absätze, deren Stichprobe kein verdächtiges Signal zeigte, wurden aus der Stichprobe geschätzt und nicht satzweise markiert. Für eine vollständige Analyse die Schnellprüfung in den Einstellungen ausschalten.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => 'Schnellprüfung für lange Dokumente';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'Bei Dokumenten mit vielen Sätzen wird zuerst jeder Absatz stichprobenartig geprüft; nur verdächtige Absätze und ihre Nachbarn werden Satz für Satz analysiert. Deutlich schneller; der Bericht nennt die Zahl der analysierten Sätze. Ausschalten, um jeden Satz zu analysieren.';
 }

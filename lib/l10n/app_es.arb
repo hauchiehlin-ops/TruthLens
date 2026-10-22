@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Los umbrales de perplejidad se calibraron con texto de IA temprano (2022) y discriminan mal la salida de modelos modernos",
   "gapEnginesUnavailable": "{count} motor(es) de texto no admiten este idioma o no están instalados",
   "textDiscriminabilityClosing": "Por eso «ejecutado, sin señal fuerte» significa que las herramientas no pueden distinguir, no que el texto parezca humano. Priorice la evidencia de origen y del proceso de escritura.",
-  "textDiscriminabilityProvenance": "Esta conclusión se basa sobre todo en evidencia del origen del documento, no en los motores de texto."
+  "textDiscriminabilityProvenance": "Esta conclusión se basa sobre todo en evidencia del origen del documento, no en los motores de texto.",
+  "engineReasonFastScreening": "Cribado rápido de documentos largos: {measured} de {total} unidades de análisis pasaron por el modelo. Los párrafos cuya muestra no mostró señales sospechosas se estimaron a partir de esa muestra y no se marcan frase por frase. Desactiva el cribado rápido en Ajustes para un análisis completo.",
+  "settingsFastScreeningTitle": "Cribado rápido de documentos largos",
+  "settingsFastScreeningSubtitle": "En documentos con muchas frases, primero se muestrea cada párrafo y solo se analizan frase por frase los párrafos sospechosos y sus vecinos. Mucho más rápido; el informe indica cuántas frases se analizaron. Desactívalo para analizar todas las frases."
 }

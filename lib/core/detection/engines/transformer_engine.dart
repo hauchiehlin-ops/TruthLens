@@ -12,6 +12,7 @@ import '../model_manager.dart';
 import '../model_display_names.dart';
 import '../analysis_profile.dart';
 import '../variant_router.dart';
+import '../chunk_screening.dart';
 import '../onnx_detector.dart';
 
 /// 子模型 A：多語言 Transformer 分類器（ONNX Runtime 端上推論）。
@@ -19,7 +20,9 @@ import '../onnx_detector.dart';
 /// 受控區塊推論，並將區塊分數映射回逐句報告。
 /// 支援 WordPiece（BERT 系）與 byte-level BPE（RoBERTa 系）tokenizer。
 /// 分類器一定需要 tokenizer；若使用中模型缺 tokenizer 或檔案不存在，回報 unavailable。
-class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
+class TransformerEngine
+    with ChunkScreeningOption
+    implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager modelManager;
   final String? variantId;
 
@@ -239,13 +242,21 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
     }
 
     List<double> perChunk;
+    ChunkScreeningResult screening;
     try {
       debugPrint('[TransformerEngine] 推論 ${text.analysisChunks.length} 個分析區塊');
-      perChunk = await detector.classifySentences(
-        text.analysisChunks,
+      screening = await ChunkScreening.classify(
+        chunks: text.analysisChunks,
+        paragraphIndices: text.analysisChunkParagraphIndices,
+        classifier: detector.classifySentences,
+        suspicionThreshold: ChunkScreening.suspicionThresholdFor(
+          _resolveVariant()?.aiEvidenceThreshold ?? 0.60,
+        ),
+        enabled: fastScreeningEnabled,
         onProgress: (progress) =>
             onProgress?.call(0.12 + progress.clamp(0.0, 1.0) * 0.86),
       );
+      perChunk = screening.chunkScores;
       onProgress?.call(0.98);
     } catch (e) {
       debugPrint('[TransformerEngine] 模型推論失敗，啟動自動修復: $e');
@@ -256,7 +267,13 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
-    final perSentence = text.expandChunkScoresToSentences(perChunk);
+    // 逐句分數只採實測值；篩檢時未推論的句子為 NaN（未表態），參考文獻亦同。
+    final perSentence = text.expandChunkScoresToSentences(
+      screening.measuredChunkScores,
+    );
+    final scoredSentenceCount = perSentence
+        .where(PreprocessedText.isScoredSentence)
+        .length;
     final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
     final variant = _resolveVariant();
     final aiEvidenceThreshold = variant?.aiEvidenceThreshold ?? 0.60;
@@ -268,7 +285,9 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
     final strongSentenceCount = perSentence
         .where((score) => score >= aiEvidenceThreshold)
         .length;
-    final strongSentenceRatio = strongSentenceCount / perSentence.length;
+    final strongSentenceRatio = scoredSentenceCount == 0
+        ? 0.0
+        : strongSentenceCount / scoredSentenceCount;
 
     final calibratedProbability = documentProbability(
       perChunk,
@@ -303,6 +322,7 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
         'ai_sentence_ratio': strongSentenceRatio,
         'ai_analysis_chunk_ratio': strongChunkRatio,
         'analysis_chunk_count': perChunk.length.toDouble(),
+        'measured_analysis_chunk_count': screening.measuredCount.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
         'ai_evidence_threshold': aiEvidenceThreshold,
@@ -320,17 +340,22 @@ class TransformerEngine implements DetectionEngine, ReleasableDetectionEngine {
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。
         // 一份中文文件被純英文模型判為 0%，使用者有權知道原因出在模型選用。
         ..._routingNotes(l10n, text),
+        if (screening.screened)
+          l10n.engineReasonFastScreening(
+            screening.measuredCount,
+            screening.totalCount,
+          ),
         if (strongChunkCount == 0)
           l10n.engineReasonTransformerNoStrongSentence(
             variant?.variantId ?? name(l10n),
-            perSentence.length,
+            scoredSentenceCount,
             (calibratedProbability * 100).round(),
           )
         else
           l10n.engineReasonTransformerResult(
             variant?.variantId ?? name(l10n),
             strongSentenceCount,
-            perSentence.length,
+            scoredSentenceCount,
           ),
       ],
       sentenceScores: perSentence,

@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Die Perplexitätsschwellen wurden an frühen KI-Texten (2022) kalibriert und unterscheiden moderne Modellausgaben kaum noch",
   "gapEnginesUnavailable": "{count} Text-Engine(s) unterstützen diese Sprache nicht oder sind nicht installiert",
   "textDiscriminabilityClosing": "„Ausgeführt, kein starkes Signal“ heißt daher: Die Werkzeuge können es nicht unterscheiden – nicht, dass der Text menschlich wirkt. Stützen Sie sich auf Herkunfts- und Schreibprozess-Belege.",
-  "textDiscriminabilityProvenance": "Dieses Ergebnis stützt sich vor allem auf Belege zur Dokumentherkunft, nicht auf die Text-Engines."
+  "textDiscriminabilityProvenance": "Dieses Ergebnis stützt sich vor allem auf Belege zur Dokumentherkunft, nicht auf die Text-Engines.",
+  "engineReasonFastScreening": "Schnellprüfung für lange Dokumente: {measured} von {total} Analyseeinheiten wurden vom Modell geprüft. Absätze, deren Stichprobe kein verdächtiges Signal zeigte, wurden aus der Stichprobe geschätzt und nicht satzweise markiert. Für eine vollständige Analyse die Schnellprüfung in den Einstellungen ausschalten.",
+  "settingsFastScreeningTitle": "Schnellprüfung für lange Dokumente",
+  "settingsFastScreeningSubtitle": "Bei Dokumenten mit vielen Sätzen wird zuerst jeder Absatz stichprobenartig geprüft; nur verdächtige Absätze und ihre Nachbarn werden Satz für Satz analysiert. Deutlich schneller; der Bericht nennt die Zahl der analysierten Sätze. Ausschalten, um jeden Satz zu analysieren."
 }

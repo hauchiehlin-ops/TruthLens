@@ -3736,4 +3736,17 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'Esta conclusión se basa sobre todo en evidencia del origen del documento, no en los motores de texto.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Cribado rápido de documentos largos: $measured de $total unidades de análisis pasaron por el modelo. Los párrafos cuya muestra no mostró señales sospechosas se estimaron a partir de esa muestra y no se marcan frase por frase. Desactiva el cribado rápido en Ajustes para un análisis completo.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle =>
+      'Cribado rápido de documentos largos';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'En documentos con muchas frases, primero se muestrea cada párrafo y solo se analizan frase por frase los párrafos sospechosos y sus vecinos. Mucho más rápido; el informe indica cuántas frases se analizaron. Desactívalo para analizar todas las frases.';
 }

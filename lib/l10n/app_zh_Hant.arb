@@ -1525,5 +1525,8 @@
   "gapPerplexityOutdated": "困惑度門檻以 2022 年的早期 AI 語料校準，對現代模型輸出的判別力已明顯下降",
   "gapEnginesUnavailable": "{count} 個文字引擎不適用此語言或未安裝",
   "textDiscriminabilityClosing": "因此「已執行，無強訊號」代表工具分辨不了，不代表文字像人寫的。請以文件來源、寫作過程等證據為主。",
-  "textDiscriminabilityProvenance": "本次結論主要依據文件來源證據，而不是文字引擎。"
+  "textDiscriminabilityProvenance": "本次結論主要依據文件來源證據，而不是文字引擎。",
+  "engineReasonFastScreening": "長文件快速篩檢：{total} 個分析區塊中有 {measured} 個送進模型。抽樣未見可疑訊號的段落以抽樣結果估計，不逐句標示。如需完整分析，可在設定關閉快速篩檢。",
+  "settingsFastScreeningTitle": "長文件快速篩檢",
+  "settingsFastScreeningSubtitle": "句子很多的文件先在每段抽樣，只對可疑段落及其前後段逐句分析。速度大幅提升，報告會註明實際分析了多少句。關閉則逐句完整分析。"
 }

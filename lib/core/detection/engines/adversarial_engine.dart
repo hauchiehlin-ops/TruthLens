@@ -9,6 +9,7 @@ import '../model_manager.dart';
 import '../model_display_names.dart';
 import '../analysis_profile.dart';
 import '../variant_router.dart';
+import '../chunk_screening.dart';
 import '../onnx_detector.dart';
 
 /// 子模型 D：對抗式防禦模組（改寫偵測），ONNX Runtime 端上推論。
@@ -16,7 +17,9 @@ import '../onnx_detector.dart';
 /// 對 QuillBot / Undetectable.ai 等改寫規避具韌性；推論使用保留段落上下文的
 /// 受控區塊，再映射回逐句分數供報告使用。
 /// 使用中模型與 tokenizer 檔皆需存在才可用；否則回報 unavailable（優雅降級）。
-class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
+class AdversarialEngine
+    with ChunkScreeningOption
+    implements DetectionEngine, ReleasableDetectionEngine {
   final ModelManager modelManager;
   final String? variantId;
 
@@ -238,13 +241,19 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
     }
 
     List<double> perChunk;
+    ChunkScreeningResult screening;
     try {
       debugPrint('[AdversarialEngine] 推論 ${text.analysisChunks.length} 個分析區塊');
-      perChunk = await detector.classifySentences(
-        text.analysisChunks,
+      screening = await ChunkScreening.classify(
+        chunks: text.analysisChunks,
+        paragraphIndices: text.analysisChunkParagraphIndices,
+        classifier: detector.classifySentences,
+        suspicionThreshold: ChunkScreening.suspicionThresholdFor(0.6),
+        enabled: fastScreeningEnabled,
         onProgress: (progress) =>
             onProgress?.call(0.12 + progress.clamp(0.0, 1.0) * 0.86),
       );
+      perChunk = screening.chunkScores;
       onProgress?.call(0.98);
     } catch (e) {
       debugPrint('[AdversarialEngine] 模型推論失敗，啟動自動修復: $e');
@@ -255,7 +264,13 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
       _loadError = _repairMessage;
       return _unavailable(l10n);
     }
-    final perSentence = text.expandChunkScoresToSentences(perChunk);
+    // 逐句分數只採實測值；篩檢時未推論的句子為 NaN（未表態），參考文獻亦同。
+    final perSentence = text.expandChunkScoresToSentences(
+      screening.measuredChunkScores,
+    );
+    final scoredSentenceCount = perSentence
+        .where(PreprocessedText.isScoredSentence)
+        .length;
     final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
     final strongChunks = perChunk.where((score) => score >= 0.6).toList();
     final strongChunkCount = strongChunks.length;
@@ -263,7 +278,9 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
     final strongSentenceCount = perSentence
         .where((score) => score >= 0.6)
         .length;
-    final strongSentenceRatio = strongSentenceCount / perSentence.length;
+    final strongSentenceRatio = scoredSentenceCount == 0
+        ? 0.0
+        : strongSentenceCount / scoredSentenceCount;
     double calibratedProbability;
     if (strongChunkCount == 0) {
       final peak = perChunk.reduce((a, b) => a > b ? a : b);
@@ -310,6 +327,7 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
         'strong_sentence_ratio': strongSentenceRatio,
         'strong_analysis_chunk_ratio': strongChunkRatio,
         'analysis_chunk_count': perChunk.length.toDouble(),
+        'measured_analysis_chunk_count': screening.measuredCount.toDouble(),
         'raw_avg_prob': avg,
         'calibrated_prob': calibratedProbability,
         ..._choice.routingFeatures,
@@ -318,15 +336,20 @@ class AdversarialEngine implements DetectionEngine, ReleasableDetectionEngine {
         // 先講清楚這次用了哪顆模型、對這個語言驗證過沒有。
         // 一份中文文件被純英文模型判為 0%，使用者有權知道原因出在模型選用。
         ..._routingNotes(l10n, text),
+        if (screening.screened)
+          l10n.engineReasonFastScreening(
+            screening.measuredCount,
+            screening.totalCount,
+          ),
         if (strongChunkCount == 0)
           l10n.engineReasonAdversarialNoStrongSentence(
-            perSentence.length,
+            scoredSentenceCount,
             (calibratedProbability * 100).round(),
           )
         else
           l10n.engineReasonAdversarialStrongSentences(
             strongSentenceCount,
-            perSentence.length,
+            scoredSentenceCount,
             (calibratedProbability * 100).round(),
           ),
       ],

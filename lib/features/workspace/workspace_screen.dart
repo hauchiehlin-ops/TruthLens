@@ -2251,7 +2251,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     var totalWeight = 0.0;
     for (final score in _scores.values.where((score) => score.available)) {
       final sentenceScores = score.sentenceScores;
-      if (sentenceScores == null || index >= sentenceScores.length) continue;
+      if (sentenceScores == null ||
+          index >= sentenceScores.length ||
+          sentenceScores[index].isNaN) {
+        continue;
+      }
       weighted += sentenceScores[index] * score.weight;
       totalWeight += score.weight;
     }

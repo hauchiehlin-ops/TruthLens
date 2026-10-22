@@ -12,6 +12,7 @@ import '../services/preferences_service.dart';
 import '../utils/text_stats.dart';
 import 'detection_engine.dart';
 import 'analysis_profile.dart';
+import 'chunk_screening.dart';
 import 'evasion_scanner.dart';
 import 'evidence_fusion.dart';
 import 'lexical_calibration.dart';
@@ -97,6 +98,12 @@ class EnsembleOrchestrator extends ChangeNotifier {
     final started = DateTime.now();
     final text = PreprocessedText.from(input);
     final profile = AnalysisProfile.fromText(input);
+    for (final engine in engines) {
+      if (engine is ChunkScreeningOption) {
+        (engine as ChunkScreeningOption).fastScreeningEnabled =
+            prefs?.fastScreeningEnabled ?? true;
+      }
+    }
 
     Future<EngineScore> runEngine(DetectionEngine engine) async {
       final role = _roleOf(engine.id);
@@ -296,16 +303,21 @@ class EnsembleOrchestrator extends ChangeNotifier {
       // 基準：有神經模型時依設定權重合併逐句結果，否則以整體分數為基準，
       // 並結合單句長度變化度（如與平均句長之偏差）產生自然的句級差異。
       var p = overall;
-      if (neuralScores.isNotEmpty) {
-        var sum = 0.0;
-        var totalWeight = 0.0;
-        for (final neural in neuralScores) {
-          if (i < neural.values.length && neural.weight > 0) {
-            sum += neural.values[i] * neural.weight;
-            totalWeight += neural.weight;
-          }
+      // NaN 表示該引擎未對此句表態（參考文獻、長文件篩檢未抽到的句子），
+      // 不納入加權；所有神經模型都未表態時退回整體分數與句長啟發式。
+      var sum = 0.0;
+      var totalWeight = 0.0;
+      for (final neural in neuralScores) {
+        if (i < neural.values.length &&
+            neural.weight > 0 &&
+            PreprocessedText.isScoredSentence(neural.values[i])) {
+          sum += neural.values[i] * neural.weight;
+          totalWeight += neural.weight;
         }
-        if (totalWeight > 0) p = sum / totalWeight;
+      }
+      final modelBacked = totalWeight > 0;
+      if (modelBacked) {
+        p = sum / totalWeight;
       } else if (text.sentenceTokens.isNotEmpty) {
         final avgLen = text.allTokens.length / text.sentenceTokens.length;
         final curLen = text.sentenceTokens[i].length;
@@ -336,7 +348,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
           text: s,
           aiProbability: p.clamp(0.0, 1.0),
           patterns: patterns,
-          modelBacked: neuralScores.isNotEmpty,
+          modelBacked: modelBacked,
         ),
       );
     }
