@@ -18,14 +18,22 @@ class OnnxDetector {
   final int maxLen;
   final int aiLabelIndex;
   // Dynamic INT8 activation scales can vary when unrelated sentences share a
-  // batch. Use the same deterministic one-sentence semantics as native so the
-  // same model stack produces comparable sentence scores across platforms.
-  final AdaptiveSentenceBatcher _batcher = AdaptiveSentenceBatcher(
-    initialBatchSize: kDeterministicOnnxSentenceBatchSize,
-    interBatchDelay: isConstrainedMobileWebRuntime
-        ? const Duration(milliseconds: 12)
-        : Duration.zero,
+  // batch, so such models run one sentence per call. Models without dynamic
+  // quantization are switched to batched inference by [_enableBatchingIfSafe].
+  AdaptiveSentenceBatcher _batcher = _newBatcher(
+    kDeterministicOnnxSentenceBatchSize,
   );
+
+  static AdaptiveSentenceBatcher _newBatcher(int batchSize) =>
+      AdaptiveSentenceBatcher(
+        initialBatchSize: batchSize,
+        interBatchDelay: isConstrainedMobileWebRuntime
+            ? const Duration(milliseconds: 12)
+            : Duration.zero,
+      );
+
+  /// 本次載入實際使用的每批句數（1 = 逐句）。
+  int get sentenceBatchSize => _batcher.preferredBatchSize;
 
   OnnxDetector._(
     this._session,
@@ -52,9 +60,54 @@ class OnnxDetector {
 
     final session = WebOrtSession(modelPath);
     final ep = await session.load(bytes);
+    final detector = OnnxDetector._(session, tokenizer, maxLen, aiLabelIndex);
+    await detector._enableBatchingIfSafe();
     // ignore: avoid_print
-    print('[OnnxDetector.web] 已載入 $modelPath（execution provider: $ep）');
-    return OnnxDetector._(session, tokenizer, maxLen, aiLabelIndex);
+    print(
+      '[OnnxDetector.web] 已載入 $modelPath（execution provider: $ep，'
+      '每批 ${detector.sentenceBatchSize} 句）',
+    );
+    return detector;
+  }
+
+  /// 長短、語言各異的探針句：長度差異讓批次內出現 padding，最能暴露
+  /// 「同批句子互相影響」的問題。
+  static const _batchProbeSentences = [
+    'Short probe.',
+    'The committee reviewed the proposal and asked for a revised budget before the next meeting.',
+    '研究團隊在三個城市進行了為期兩年的田野調查，並比較不同年齡層的消費行為。',
+    'Results were mixed.',
+  ];
+
+  /// 模型圖中沒有動態量化時，再以探針實測單句與批次分數是否一致；
+  /// 兩項都通過才啟用批次推論，否則維持逐句。
+  Future<void> _enableBatchingIfSafe() async {
+    if (!_session.isBatchInvariant) return;
+    try {
+      final single = [
+        for (final sentence in _batchProbeSentences)
+          (await _classifyBatch([sentence])).first,
+      ];
+      final batched = await _classifyBatch(_batchProbeSentences);
+      var maxDiff = 0.0;
+      for (var i = 0; i < single.length; i++) {
+        maxDiff = math.max(maxDiff, (single[i] - batched[i]).abs());
+      }
+      if (maxDiff > kBatchInvarianceTolerance) {
+        // ignore: avoid_print
+        print('[OnnxDetector.web] 批次探針差異 $maxDiff 超過容許值，維持逐句推論');
+        return;
+      }
+      _batcher = _newBatcher(
+        isConstrainedMobileWebRuntime
+            ? kConstrainedBatchInvariantOnnxSentenceBatchSize
+            : kBatchInvariantOnnxSentenceBatchSize,
+      );
+    } catch (e) {
+      // 固定 batch 維度的模型會在批次探針失敗；逐句仍可正常使用。
+      // ignore: avoid_print
+      print('[OnnxDetector.web] 批次探針失敗，維持逐句推論：$e');
+    }
   }
 
   Future<double> classify(String text) async {

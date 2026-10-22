@@ -38,6 +38,21 @@ python3.14 -m venv .venv
 .venv/bin/python verify_onnx.py
 ```
 
+### 可批次推論的靜態量化（App 推論加速）
+
+預設的動態量化會讓同批句子互相影響分數，App 因此只能逐句推論。改用靜態量化後，
+App 偵測到模型沒有動態量化 op，會自動改為每批 8 句：
+
+```bash
+.venv/bin/python export_onnx.py --quant static            # 以 val.jsonl 前 512 句校準
+.venv/bin/python export_hf_sequence_classifier.py MODEL_DIR out/model_int8.onnx \
+    --quant static --calibration-jsonl data/val.jsonl     # 其他 HF 分類器
+```
+
+輸出最後一行會印出「單句 vs 批次最大差異」，需 ≤ 1e-4。**分數會與動態量化版不同**：
+發布前必須用 `evaluate_operating_point.py` 重新選定 catalog 的 `ai_evidence_threshold`，
+並更新 `sha256`、`size_bytes` 與驗證紀錄。
+
 ## 現代 AI／人類化輸出更新流程
 
 HC3 的 ChatGPT 樣本來自 2022 年，不可再單獨代表現代模型。新一輪模型更新先用

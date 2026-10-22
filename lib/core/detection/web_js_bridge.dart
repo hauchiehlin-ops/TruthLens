@@ -111,6 +111,9 @@ external JSPromise<_OrtRunResult> _ortRunBatch(
 @JS('omnitraceOrt.releaseModel')
 external void _ortReleaseModel(JSString modelId);
 
+@JS('omnitraceOrt.isBatchInvariant')
+external JSBoolean _ortIsBatchInvariant(JSString modelId);
+
 @JS('omnitraceOrt.epKind')
 external JSString? _ortEpKind();
 
@@ -123,6 +126,11 @@ class WebOrtSession {
   WebOrtSession(this.modelId);
 
   bool get isLoaded => _loaded;
+
+  /// 模型圖中沒有動態量化 op（見 web/ort_core.js），批次推論不會讓同批
+  /// 句子互相影響分數。
+  bool get isBatchInvariant =>
+      _loaded && _ortIsBatchInvariant(modelId.toJS).toDart;
 
   /// 載入模型（bytes 來自 [WebFs.readBytes]）。回傳實際採用的 execution provider。
   Future<String> load(Uint8List modelBytes) async {

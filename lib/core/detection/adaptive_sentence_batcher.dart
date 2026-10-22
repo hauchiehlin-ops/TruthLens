@@ -9,6 +9,19 @@ typedef SentenceBatchClassifier =
 /// unrelated sentences that happen to share the same batch.
 const int kDeterministicOnnxSentenceBatchSize = 1;
 
+/// Models without dynamic quantization (FP32 / FP16 / static QDQ) compute the
+/// same score for a sentence regardless of its batch neighbours, so they can
+/// be batched. Similar-length sentences are grouped to keep padding small.
+const int kBatchInvariantOnnxSentenceBatchSize = 8;
+
+/// Constrained mobile browsers keep batches smaller to limit peak memory.
+const int kConstrainedBatchInvariantOnnxSentenceBatchSize = 4;
+
+/// Largest score difference tolerated between single and batched inference
+/// in the load-time probe. FP32 drift is ~1e-7; dynamic INT8 drift reaches
+/// ~1e-3, so this separates the two with margin on both sides.
+const double kBatchInvarianceTolerance = 1e-4;
+
 /// Runs sentence inference in small batches while preserving sentence order.
 ///
 /// Exact duplicates are evaluated once. Models exported with a fixed batch
