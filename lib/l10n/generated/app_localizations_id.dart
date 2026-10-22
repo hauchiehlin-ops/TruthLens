@@ -3705,4 +3705,16 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'Kesimpulan ini terutama didasarkan pada bukti asal dokumen, bukan mesin teks.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Penyaringan cepat dokumen panjang: $measured dari $total unit analisis diproses model. Paragraf yang sampelnya tidak menunjukkan sinyal mencurigakan diperkirakan dari sampel tersebut dan tidak ditandai per kalimat. Matikan penyaringan cepat di Pengaturan untuk analisis lengkap.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => 'Penyaringan cepat dokumen panjang';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'Untuk dokumen dengan banyak kalimat, setiap paragraf disampel terlebih dahulu dan hanya paragraf mencurigakan beserta paragraf di sekitarnya yang dianalisis per kalimat. Jauh lebih cepat; laporan mencantumkan jumlah kalimat yang dianalisis. Matikan untuk menganalisis setiap kalimat.';
 }

@@ -3160,5 +3160,18 @@
     }
   },
   "textDiscriminabilityClosing": "So “ran, no strong signal” means the tools cannot tell, not that the text reads as human. Rely on document origin and writing-process evidence instead.",
-  "textDiscriminabilityProvenance": "This conclusion rests mainly on document-origin evidence, not on the text engines."
+  "textDiscriminabilityProvenance": "This conclusion rests mainly on document-origin evidence, not on the text engines.",
+  "engineReasonFastScreening": "Long-document fast screening: {measured} of {total} analysis units went through the model. Paragraphs whose sample showed no suspicious signal were estimated from that sample and are not marked sentence by sentence. Turn off fast screening in Settings for a full analysis.",
+  "@engineReasonFastScreening": {
+    "placeholders": {
+      "measured": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsFastScreeningTitle": "Fast screening for long documents",
+  "settingsFastScreeningSubtitle": "For documents with many sentences, sample each paragraph first and run every sentence only in suspicious paragraphs and their neighbors. Much faster; the report states how many sentences were analyzed. Turn off to analyze every sentence."
 }

@@ -3553,6 +3553,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get textDiscriminabilityProvenance => '本次結論主要依據文件來源證據，而不是文字引擎。';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return '長文件快速篩檢：$total 個分析區塊中有 $measured 個送進模型。抽樣未見可疑訊號的段落以抽樣結果估計，不逐句標示。如需完整分析，可在設定關閉快速篩檢。';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => '長文件快速篩檢';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      '句子很多的文件先在每段抽樣，只對可疑段落及其前後段逐句分析。速度大幅提升，報告會註明實際分析了多少句。關閉則逐句完整分析。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7104,6 +7116,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get textDiscriminabilityProvenance => '本次结论主要依据文件来源证据，而不是文字引擎。';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return '长文档快速筛查：$total 个分析区块中有 $measured 个送入模型。抽样未见可疑信号的段落以抽样结果估计，不逐句标示。如需完整分析，可在设置中关闭快速筛查。';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => '长文档快速筛查';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      '句子很多的文档先在每段抽样，只对可疑段落及其前后段逐句分析。速度大幅提升，报告会注明实际分析了多少句。关闭则逐句完整分析。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10655,4 +10679,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get textDiscriminabilityProvenance => '本次結論主要依據文件來源證據，而不是文字引擎。';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return '長文件快速篩檢：$total 個分析區塊中有 $measured 個送進模型。抽樣未見可疑訊號的段落以抽樣結果估計，不逐句標示。如需完整分析，可在設定關閉快速篩檢。';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => '長文件快速篩檢';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      '句子很多的文件先在每段抽樣，只對可疑段落及其前後段逐句分析。速度大幅提升，報告會註明實際分析了多少句。關閉則逐句完整分析。';
 }

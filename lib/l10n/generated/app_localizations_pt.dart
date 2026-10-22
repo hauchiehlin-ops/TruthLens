@@ -3727,4 +3727,17 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'Esta conclusão baseia-se sobretudo em evidências da origem do documento, não nos motores de texto.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Triagem rápida de documentos longos: $measured de $total unidades de análise passaram pelo modelo. Parágrafos cuja amostra não mostrou sinal suspeito foram estimados a partir dessa amostra e não são marcados frase a frase. Desative a triagem rápida nas Configurações para uma análise completa.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle =>
+      'Triagem rápida de documentos longos';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'Em documentos com muitas frases, cada parágrafo é amostrado primeiro e só os parágrafos suspeitos e os vizinhos são analisados frase a frase. Muito mais rápido; o relatório informa quantas frases foram analisadas. Desative para analisar todas as frases.';
 }

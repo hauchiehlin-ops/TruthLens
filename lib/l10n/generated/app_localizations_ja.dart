@@ -3594,4 +3594,16 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       '今回の結論は主に文書の出所の証拠に基づいており、テキストエンジンによるものではありません。';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return '長文の高速スクリーニング：$total 個の分析単位のうち $measured 個をモデルで分析しました。サンプルに疑わしい兆候がなかった段落はサンプルから推定し、文ごとには表示しません。完全な分析が必要な場合は設定で高速スクリーニングをオフにしてください。';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => '長文の高速スクリーニング';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      '文の多い文書では各段落を先にサンプリングし、疑わしい段落とその前後の段落だけを文ごとに分析します。大幅に高速化され、レポートには実際に分析した文の数が記載されます。オフにするとすべての文を分析します。';
 }

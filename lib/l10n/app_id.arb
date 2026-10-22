@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Ambang perplexity dikalibrasi dengan teks AI awal (2022) dan kurang mampu membedakan keluaran model modern",
   "gapEnginesUnavailable": "{count} mesin teks tidak mendukung bahasa ini atau belum terpasang",
   "textDiscriminabilityClosing": "Jadi “dijalankan, tanpa sinyal kuat” berarti alat tidak dapat membedakan, bukan berarti teks tampak ditulis manusia. Utamakan bukti asal dokumen dan proses penulisan.",
-  "textDiscriminabilityProvenance": "Kesimpulan ini terutama didasarkan pada bukti asal dokumen, bukan mesin teks."
+  "textDiscriminabilityProvenance": "Kesimpulan ini terutama didasarkan pada bukti asal dokumen, bukan mesin teks.",
+  "engineReasonFastScreening": "Penyaringan cepat dokumen panjang: {measured} dari {total} unit analisis diproses model. Paragraf yang sampelnya tidak menunjukkan sinyal mencurigakan diperkirakan dari sampel tersebut dan tidak ditandai per kalimat. Matikan penyaringan cepat di Pengaturan untuk analisis lengkap.",
+  "settingsFastScreeningTitle": "Penyaringan cepat dokumen panjang",
+  "settingsFastScreeningSubtitle": "Untuk dokumen dengan banyak kalimat, setiap paragraf disampel terlebih dahulu dan hanya paragraf mencurigakan beserta paragraf di sekitarnya yang dianalisis per kalimat. Jauh lebih cepat; laporan mencantumkan jumlah kalimat yang dianalisis. Matikan untuk menganalisis setiap kalimat."
 }

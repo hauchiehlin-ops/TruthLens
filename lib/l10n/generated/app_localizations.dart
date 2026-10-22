@@ -5835,6 +5835,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This conclusion rests mainly on document-origin evidence, not on the text engines.'**
   String get textDiscriminabilityProvenance;
+
+  /// No description provided for @engineReasonFastScreening.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-document fast screening: {measured} of {total} analysis units went through the model. Paragraphs whose sample showed no suspicious signal were estimated from that sample and are not marked sentence by sentence. Turn off fast screening in Settings for a full analysis.'**
+  String engineReasonFastScreening(int measured, int total);
+
+  /// No description provided for @settingsFastScreeningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast screening for long documents'**
+  String get settingsFastScreeningTitle;
+
+  /// No description provided for @settingsFastScreeningSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For documents with many sentences, sample each paragraph first and run every sentence only in suspicious paragraphs and their neighbors. Much faster; the report states how many sentences were analyzed. Turn off to analyze every sentence.'**
+  String get settingsFastScreeningSubtitle;
 }
 
 class _AppLocalizationsDelegate

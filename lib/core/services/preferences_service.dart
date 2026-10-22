@@ -25,6 +25,7 @@ class PreferencesService extends ChangeNotifier {
   static const _kModelPromptSuppressed = 'model_prompt_suppressed';
   static const _kDisabledEngines = 'disabled_engines';
   static const _kLinkVerificationEnabled = 'link_verification_enabled';
+  static const _kFastScreeningEnabled = 'fast_screening_enabled';
   static const _kLocale = 'app_locale';
   static const _kWorkspaceMode = 'workspace_mode';
   static const _kEngineWeightPrefix = 'engine_weight_';
@@ -40,6 +41,8 @@ class PreferencesService extends ChangeNotifier {
   // 是否允許連線驗證文件中的超連結／期刊引用是否真實存在；核心 AI 推論仍完全
   // 在裝置端執行，但此為主動分析所需的必要連線功能，預設開啟，使用者可在設定關閉。
   bool linkVerificationEnabled = true;
+  // 長文件先抽樣、只對可疑段落逐句推論；報告會揭露實際推論比例。
+  bool fastScreeningEnabled = true;
   // null＝使用專案預設英文；非 null＝使用者於設定手動選擇的語系。
   Locale? locale;
   WorkspaceMode workspaceMode = WorkspaceMode.commandGrid;
@@ -62,6 +65,7 @@ class PreferencesService extends ChangeNotifier {
     modelPromptSuppressed = _prefs!.getBool(_kModelPromptSuppressed) ?? false;
     linkVerificationEnabled =
         _prefs!.getBool(_kLinkVerificationEnabled) ?? true;
+    fastScreeningEnabled = _prefs!.getBool(_kFastScreeningEnabled) ?? true;
     await Future.wait([
       _prefs!.remove('web_of_science_api_key'),
       _prefs!.remove('engineering_village_api_key'),
@@ -150,6 +154,12 @@ class PreferencesService extends ChangeNotifier {
   Future<void> setLinkVerificationEnabled(bool value) async {
     linkVerificationEnabled = value;
     await _prefs?.setBool(_kLinkVerificationEnabled, value);
+    notifyListeners();
+  }
+
+  Future<void> setFastScreeningEnabled(bool value) async {
+    fastScreeningEnabled = value;
+    await _prefs?.setBool(_kFastScreeningEnabled, value);
     notifyListeners();
   }
 

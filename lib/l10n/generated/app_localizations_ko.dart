@@ -3605,4 +3605,16 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       '이번 결론은 텍스트 엔진이 아니라 주로 문서 출처 증거에 근거합니다.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return '긴 문서 빠른 선별: 분석 단위 $total개 중 $measured개를 모델로 분석했습니다. 표본에서 의심 신호가 없던 단락은 표본으로 추정했으며 문장별로 표시하지 않습니다. 전체 분석이 필요하면 설정에서 빠른 선별을 끄세요.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => '긴 문서 빠른 선별';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      '문장이 많은 문서는 먼저 단락마다 표본을 뽑고, 의심스러운 단락과 그 앞뒤 단락만 문장별로 분석합니다. 훨씬 빠르며, 보고서에 실제로 분석한 문장 수가 표시됩니다. 끄면 모든 문장을 분석합니다.';
 }

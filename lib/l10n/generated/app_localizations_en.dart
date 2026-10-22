@@ -3688,4 +3688,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get textDiscriminabilityProvenance =>
       'This conclusion rests mainly on document-origin evidence, not on the text engines.';
+
+  @override
+  String engineReasonFastScreening(int measured, int total) {
+    return 'Long-document fast screening: $measured of $total analysis units went through the model. Paragraphs whose sample showed no suspicious signal were estimated from that sample and are not marked sentence by sentence. Turn off fast screening in Settings for a full analysis.';
+  }
+
+  @override
+  String get settingsFastScreeningTitle => 'Fast screening for long documents';
+
+  @override
+  String get settingsFastScreeningSubtitle =>
+      'For documents with many sentences, sample each paragraph first and run every sentence only in suspicious paragraphs and their neighbors. Much faster; the report states how many sentences were analyzed. Turn off to analyze every sentence.';
 }

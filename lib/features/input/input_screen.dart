@@ -878,6 +878,19 @@ class _SettingsPanelInlineState extends State<_SettingsPanelInline> {
             value: prefs.linkVerificationEnabled,
             onChanged: (v) => prefs.setLinkVerificationEnabled(v),
           ),
+          SwitchListTile(
+            dense: true,
+            title: Text(
+              l10n.settingsFastScreeningTitle,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            subtitle: Text(
+              l10n.settingsFastScreeningSubtitle,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            value: prefs.fastScreeningEnabled,
+            onChanged: (v) => prefs.setFastScreeningEnabled(v),
+          ),
           const Divider(),
 
           // 主題
@@ -1164,6 +1177,12 @@ class _InputSettingsDrawerState extends State<InputSettingsDrawer> {
               subtitle: Text(l10n.settingsLinkVerificationSubtitle),
               value: prefs.linkVerificationEnabled,
               onChanged: (v) => prefs.setLinkVerificationEnabled(v),
+            ),
+            SwitchListTile(
+              title: Text(l10n.settingsFastScreeningTitle),
+              subtitle: Text(l10n.settingsFastScreeningSubtitle),
+              value: prefs.fastScreeningEnabled,
+              onChanged: (v) => prefs.setFastScreeningEnabled(v),
             ),
             const Divider(),
             ListTile(

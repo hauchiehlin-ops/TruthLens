@@ -1494,5 +1494,8 @@
   "gapPerplexityOutdated": "Os limiares de perplexidade foram calibrados com texto de IA antigo (2022) e discriminam mal a saída de modelos modernos",
   "gapEnginesUnavailable": "{count} motor(es) de texto não suportam este idioma ou não estão instalados",
   "textDiscriminabilityClosing": "Assim, “executado, sem sinal forte” significa que as ferramentas não conseguem distinguir, não que o texto pareça humano. Priorize evidências de origem e de processo de escrita.",
-  "textDiscriminabilityProvenance": "Esta conclusão baseia-se sobretudo em evidências da origem do documento, não nos motores de texto."
+  "textDiscriminabilityProvenance": "Esta conclusão baseia-se sobretudo em evidências da origem do documento, não nos motores de texto.",
+  "engineReasonFastScreening": "Triagem rápida de documentos longos: {measured} de {total} unidades de análise passaram pelo modelo. Parágrafos cuja amostra não mostrou sinal suspeito foram estimados a partir dessa amostra e não são marcados frase a frase. Desative a triagem rápida nas Configurações para uma análise completa.",
+  "settingsFastScreeningTitle": "Triagem rápida de documentos longos",
+  "settingsFastScreeningSubtitle": "Em documentos com muitas frases, cada parágrafo é amostrado primeiro e só os parágrafos suspeitos e os vizinhos são analisados frase a frase. Muito mais rápido; o relatório informa quantas frases foram analisadas. Desative para analisar todas as frases."
 }
