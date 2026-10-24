@@ -34,6 +34,8 @@ from transformers import (
     set_seed,
 )
 
+from config import warmup_steps
+
 ROOT = Path(__file__).resolve().parent
 
 
@@ -132,7 +134,9 @@ def main() -> None:
             per_device_train_batch_size=args.batch_size,
             per_device_eval_batch_size=args.batch_size * 2,
             learning_rate=args.learning_rate,
-            warmup_ratio=0.1,
+            warmup_steps=warmup_steps(
+                len(train_rows), args.batch_size, args.epochs, 0.1
+            ),
             weight_decay=0.01,
             logging_steps=100,
             eval_strategy="no",

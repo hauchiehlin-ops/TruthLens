@@ -19,7 +19,7 @@ from transformers import (
     set_seed,
 )
 
-from config import DATA_DIR, TrainConfig, adversarial, modern, quick_smoke
+from config import DATA_DIR, TrainConfig, adversarial, modern, quick_smoke, warmup_steps
 
 
 def _device() -> str:
@@ -81,7 +81,9 @@ def train(cfg: TrainConfig) -> None:
         per_device_train_batch_size=cfg.batch_size,
         per_device_eval_batch_size=cfg.batch_size,
         learning_rate=cfg.learning_rate,
-        warmup_ratio=cfg.warmup_ratio,
+        warmup_steps=warmup_steps(
+            len(data["train"]), cfg.batch_size, cfg.epochs, cfg.warmup_ratio
+        ),
         weight_decay=cfg.weight_decay,
         eval_strategy="epoch",
         save_strategy="epoch",

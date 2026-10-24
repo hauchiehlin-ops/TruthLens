@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import math
 import os
 from dataclasses import dataclass, field
 
@@ -106,3 +107,14 @@ def quick_smoke() -> "TrainConfig":
         max_per_class=200,
         use_chinese=False,
     )
+
+
+def warmup_steps(examples: int, batch_size: int, epochs: float, ratio: float) -> int:
+    """學習率暖身的步數（整數）。
+
+    transformers 5 移除了 TrainingArguments 的 warmup_ratio；warmup_steps 新舊版都接受
+    整數，因此自行換算，兩個主版本都能跑。以單一裝置計：每輪步數 = ceil(樣本數 / 批次)。
+    """
+    total = math.ceil(math.ceil(examples / batch_size) * epochs)
+    return int(total * ratio)
+
