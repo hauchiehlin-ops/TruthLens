@@ -3651,6 +3651,40 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Fail mendakwa disimpan oleh “$app”, tetapi tetapan dan jadual fonnya hanyalah cangkerang kosong (tiada tetapan keserasian, tiada fon), tidak seperti yang ditulis Word: bahagian itu ditambah untuk melepasi pemeriksaan.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Fail mengisytiharkan $declared perkataan, tetapi kandungan sebenarnya $actual. Word mengira semula setiap kali menyimpan; kandungan ditulis semula di luar Word (contohnya oleh alat penulisan semula automatik).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count daripada $runs larian teks (run) dipecah atau ditanda dengan cara yang tidak pernah disimpan Word (larian bersebelahan yang serupa, atau ID semakan yang diulang pada setiap larian): teks dicincang oleh program untuk meniru semakan aksara demi aksara.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Semakan terdahulu yang tersimpan dalam PDF ini menunjukkan producer lain: $history. Producer semasa hanya menulis fail penuh, jadi ia ditulis kemudian melalui kemas kini tokokan.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Maklumat dokumen mendakwa output sistem atau Word, tetapi metadata XMP mencatat “$producer” sebagai producer: salah satu daripadanya telah ditulis semula.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF mendakwa sebagai output sistem macOS/iOS tetapi menggunakan struktur objek termampat yang tidak pernah ditulis sistem: fail disimpan semula oleh alat lain selepas producer ditetapkan.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Helaian gaya mentakrifkan $count gaya tampal web (seperti “Normal (Web)”) yang tidak lagi digunakan kandungan: kandungan pernah ditampal daripada halaman web lalu diformat semula.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Kesan pencucian dikesan: medan-medan fail bercanggah antara satu sama lain dengan cara yang tidak pernah dihasilkan oleh simpanan biasa. Seseorang cuba memadam kesan AI atau memalsukan sejarah suntingan, jadi rekod suntingan fail ini tidak lagi dikira sebagai bukti tulisan manusia.';
 

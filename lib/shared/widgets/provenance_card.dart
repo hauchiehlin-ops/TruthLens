@@ -79,6 +79,23 @@ class ProvenanceCard extends StatelessWidget {
         ),
       ProvenanceSignalKind.forgedPdfProducer =>
         l10n.provenanceSignalForgedProducer(signal.label ?? '—'),
+      ProvenanceSignalKind.hollowWordComponents =>
+        l10n.provenanceSignalHollowWordParts(signal.label ?? '—'),
+      ProvenanceSignalKind.declaredStatsMismatch =>
+        l10n.provenanceSignalStatsMismatch(
+          v['declared'] ?? 0,
+          v['actual'] ?? 0,
+        ),
+      ProvenanceSignalKind.syntheticRunFragmentation =>
+        l10n.provenanceSignalRunFragmentation(v['count'] ?? 0, v['runs'] ?? 0),
+      ProvenanceSignalKind.pdfProducerRewritten =>
+        l10n.provenanceSignalProducerRewritten(signal.label ?? '—'),
+      ProvenanceSignalKind.pdfInfoXmpConflict =>
+        l10n.provenanceSignalInfoXmpConflict(signal.label ?? '—'),
+      ProvenanceSignalKind.pdfStructureMismatch =>
+        l10n.provenanceSignalPdfStructureMismatch,
+      ProvenanceSignalKind.webStyleResidue =>
+        l10n.provenanceSignalWebStyleResidue(v['count'] ?? 0),
     };
   }
 

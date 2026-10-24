@@ -8,8 +8,9 @@
 /// - **未洗滌**：對話服務的產物會原樣留在檔案裡（AI 產生器宣告、對話引用標記、
 ///   對話介面字型、AI 搜尋導流連結）→ [ArtifactTraceFamily.aiNative]
 /// - **已洗滌**：抹除這些產物、偽造編輯歷程的工具是一欄一欄獨立改寫，欄位之間
-///   的因果關係對不上（RSID 未登記、編輯時長超過檔案存在時間、Producer 格式錯誤）
-///   → [ArtifactTraceFamily.concealment]
+///   的因果關係對不上（RSID 未登記、編輯時長超過檔案存在時間、Producer 格式錯誤、
+///   Word 組件空殼、統計欄位與正文不符、文字被切碎、PDF 增量更新改寫產生器、
+///   資訊字典與 XMP 矛盾、結構與宣稱的產生器不符）→ [ArtifactTraceFamily.concealment]
 ///
 /// 證據力分級（與 [IntegratedAssessment] 的不對稱規則一致）：
 /// - 作者特異性的原生痕跡（[ArtifactTraceReport.hasIdentityTrace]）足以單獨形成
@@ -74,28 +75,36 @@ class ArtifactTraceReport {
   static const double concealmentCap = 1.20;
 
   /// 依訊號種類歸族。新增 [ProvenanceSignalKind] 時編譯器會強制在此表態。
-  static ArtifactTraceFamily familyOf(
-    ProvenanceSignalKind kind,
-  ) => switch (kind) {
-    ProvenanceSignalKind.aiGeneratorDeclared ||
-    ProvenanceSignalKind.chatCitationArtifact ||
-    ProvenanceSignalKind.chatInterfaceFont ||
-    ProvenanceSignalKind.aiReferralLink => ArtifactTraceFamily.aiNative,
-    ProvenanceSignalKind.generatorMismatch ||
-    ProvenanceSignalKind.unregisteredRsids ||
-    ProvenanceSignalKind.editingTimeExceedsLifetime ||
-    ProvenanceSignalKind.sessionsExceedRevisions ||
-    ProvenanceSignalKind.forgedPdfProducer => ArtifactTraceFamily.concealment,
-    ProvenanceSignalKind.singleEditingSession ||
-    ProvenanceSignalKind.implausibleTypingSpeed ||
-    ProvenanceSignalKind.negligibleEditingTime ||
-    ProvenanceSignalKind.fewRevisions ||
-    ProvenanceSignalKind.concentratedEditingBatch ||
-    ProvenanceSignalKind.programmaticallyGenerated ||
-    ProvenanceSignalKind.programmaticLibrary ||
-    ProvenanceSignalKind.webPasteResidue => ArtifactTraceFamily.processAnomaly,
-    ProvenanceSignalKind.embeddedC2pa => ArtifactTraceFamily.informational,
-  };
+  static ArtifactTraceFamily familyOf(ProvenanceSignalKind kind) =>
+      switch (kind) {
+        ProvenanceSignalKind.aiGeneratorDeclared ||
+        ProvenanceSignalKind.chatCitationArtifact ||
+        ProvenanceSignalKind.chatInterfaceFont ||
+        ProvenanceSignalKind.aiReferralLink => ArtifactTraceFamily.aiNative,
+        ProvenanceSignalKind.generatorMismatch ||
+        ProvenanceSignalKind.unregisteredRsids ||
+        ProvenanceSignalKind.editingTimeExceedsLifetime ||
+        ProvenanceSignalKind.sessionsExceedRevisions ||
+        ProvenanceSignalKind.forgedPdfProducer ||
+        ProvenanceSignalKind.hollowWordComponents ||
+        ProvenanceSignalKind.declaredStatsMismatch ||
+        ProvenanceSignalKind.syntheticRunFragmentation ||
+        ProvenanceSignalKind.pdfProducerRewritten ||
+        ProvenanceSignalKind.pdfInfoXmpConflict ||
+        ProvenanceSignalKind.pdfStructureMismatch =>
+          ArtifactTraceFamily.concealment,
+        ProvenanceSignalKind.singleEditingSession ||
+        ProvenanceSignalKind.implausibleTypingSpeed ||
+        ProvenanceSignalKind.negligibleEditingTime ||
+        ProvenanceSignalKind.fewRevisions ||
+        ProvenanceSignalKind.concentratedEditingBatch ||
+        ProvenanceSignalKind.programmaticallyGenerated ||
+        ProvenanceSignalKind.programmaticLibrary ||
+        ProvenanceSignalKind.webPasteResidue ||
+        ProvenanceSignalKind.webStyleResidue =>
+          ArtifactTraceFamily.processAnomaly,
+        ProvenanceSignalKind.embeddedC2pa => ArtifactTraceFamily.informational,
+      };
 
   /// 只有 AI 服務會產生的痕跡：檔案自己宣告 AI 產生器，或帶有對話引用標記
   static bool isIdentity(ProvenanceSignalKind kind) =>

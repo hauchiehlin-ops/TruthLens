@@ -71,12 +71,18 @@ List<int> _docx({
       ArchiveFile.bytes(
         'word/settings.xml',
         _b(
-          '<w:settings><w:rsids><w:rsidRoot w:val="${rsids.first}"/>'
+          '<w:settings><w:compat><w:compatSetting w:name="compatibilityMode" '
+          'w:val="15"/></w:compat><w:rsids><w:rsidRoot w:val="${rsids.first}"/>'
           '$registry</w:rsids></w:settings>',
         ),
       ),
     )
-    ..addFile(ArchiveFile.bytes('word/fontTable.xml', _b('<w:fonts/>')))
+    ..addFile(
+      ArchiveFile.bytes(
+        'word/fontTable.xml',
+        _b('<w:fonts><w:font w:name="Calibri"/></w:fonts>'),
+      ),
+    )
     ..addFile(
       ArchiveFile.bytes(
         'word/_rels/document.xml.rels',
@@ -311,6 +317,17 @@ void main() {
       );
     });
 
+    test('字面字串內成對的括號完整讀出（Quartz 的組建號）', () {
+      final m = PdfMetadata.parse(
+        latin1.encode(
+          '<< /Producer (macOS Version 12.6 (Build 21G115) Quartz PDFContext) '
+          r'/Creator (a \) b) >>',
+        ),
+      );
+      expect(m.producer, 'macOS Version 12.6 (Build 21G115) Quartz PDFContext');
+      expect(m.creator, 'a ) b');
+    });
+
     test('偽裝的 Producer 成為洗滌痕跡', () {
       final p = DocumentProvenance.fromBytes(
         _b('%PDF-1.4\n%%EOF'),
@@ -381,4 +398,269 @@ void main() {
       expect(assessment.contributions.every((c) => c.logOdds >= 0), isTrue);
     });
   });
+
+  group('第②階段：組件內容、統計欄位、樣式殘留（DOCX）', () {
+    List<int> docx({
+      String application = 'Microsoft Office Word',
+      String settings = _realSettings,
+      String fonts = _realFonts,
+      String styles = '',
+      String document = '<w:p><w:r><w:t>x</w:t></w:r></w:p>',
+      int? declaredWords,
+    }) {
+      final archive = Archive()
+        ..addFile(
+          ArchiveFile.bytes(
+            'docProps/app.xml',
+            _b(
+              '<Properties><Application>$application</Application>'
+              '${declaredWords == null ? '' : '<Words>$declaredWords</Words>'}'
+              '</Properties>',
+            ),
+          ),
+        )
+        ..addFile(
+          ArchiveFile.bytes(
+            'word/document.xml',
+            _b('<w:document><w:body>$document</w:body></w:document>'),
+          ),
+        )
+        ..addFile(ArchiveFile.bytes('word/settings.xml', _b(settings)))
+        ..addFile(ArchiveFile.bytes('word/fontTable.xml', _b(fonts)))
+        ..addFile(ArchiveFile.bytes('word/styles.xml', _b(styles)));
+      return ZipEncoder().encode(archive);
+    }
+
+    DocumentProvenance parse(List<int> bytes, {int words = 10}) =>
+        DocumentProvenance.fromBytes(
+          bytes,
+          extension: 'docx',
+          bodyText: List.filled(words, 'word').join(' '),
+        );
+
+    test('宣稱 Word 但設定與字型表是空殼 → 洗滌痕跡', () {
+      final p = parse(docx(settings: '<w:settings/>', fonts: '<w:fonts/>'));
+      expect(_kinds(p), contains(ProvenanceSignalKind.hollowWordComponents));
+      expect(ArtifactTraceReport.evaluate(p).concealmentDetected, isTrue);
+    });
+
+    test('非 Word 產生器的精簡部件不算空殼偽裝', () {
+      final p = parse(
+        docx(
+          application: 'LibreOffice/7.6',
+          settings: '<w:settings/>',
+          fonts: '<w:fonts/>',
+        ),
+      );
+      expect(
+        _kinds(p),
+        isNot(contains(ProvenanceSignalKind.hollowWordComponents)),
+      );
+    });
+
+    test('宣告字數與正文差距數倍 → 正文在 Word 之外被改寫', () {
+      final p = parse(docx(declaredWords: 120), words: 1000);
+      final signal = p.signals.singleWhere(
+        (s) => s.kind == ProvenanceSignalKind.declaredStatsMismatch,
+      );
+      expect(signal.values, {'declared': 120, 'actual': 1000});
+    });
+
+    test('計字規則的一般差異不觸發', () {
+      final p = parse(docx(declaredWords: 930), words: 1000);
+      expect(
+        _kinds(p),
+        isNot(contains(ProvenanceSignalKind.declaredStatsMismatch)),
+      );
+    });
+
+    test('網頁樣式定義還在、正文已不再使用 → 歷程異常（不推向 AI）', () {
+      final p = parse(
+        docx(
+          styles:
+              '<w:styles><w:style w:type="paragraph" w:styleId="NormalWeb">'
+              '<w:name w:val="Normal (Web)"/></w:style></w:styles>',
+        ),
+      );
+      expect(_kinds(p), {ProvenanceSignalKind.webStyleResidue});
+      final report = ArtifactTraceReport.evaluate(p);
+      expect(report.traces.single.family, ArtifactTraceFamily.processAnomaly);
+      expect(report.aiLogOdds, 0);
+      expect(p.indicatesHumanAuthorship, isFalse);
+    });
+
+    test('網頁樣式仍在使用時由既有的貼上殘留訊號處理，不重複', () {
+      final used = List.filled(
+        3,
+        '<w:p><w:pPr><w:pStyle w:val="NormalWeb"/></w:pPr>'
+        '<w:r><w:t>x</w:t></w:r></w:p>',
+      ).join();
+      final p = parse(
+        docx(
+          document: used,
+          styles: '<w:styles><w:style w:styleId="NormalWeb"/></w:styles>',
+        ),
+      );
+      expect(_kinds(p), {ProvenanceSignalKind.webPasteResidue});
+    });
+  });
+
+  group('第③階段：文字執行區碎形切分（DOCX）', () {
+    List<int> docx(
+      String runs, {
+      String application = 'Microsoft Office Word',
+    }) {
+      final archive = Archive()
+        ..addFile(
+          ArchiveFile.bytes(
+            'docProps/app.xml',
+            _b(
+              '<Properties><Application>$application</Application></Properties>',
+            ),
+          ),
+        )
+        ..addFile(
+          ArchiveFile.bytes(
+            'word/document.xml',
+            _b(
+              '<w:document><w:body><w:p w:rsidR="00A1" w:rsidRDefault="00A1">'
+              '$runs</w:p></w:body></w:document>',
+            ),
+          ),
+        )
+        ..addFile(ArchiveFile.bytes('word/settings.xml', _b(_realSettings)))
+        ..addFile(ArchiveFile.bytes('word/fontTable.xml', _b(_realFonts)));
+      return ZipEncoder().encode(archive);
+    }
+
+    DocumentProvenance parse(List<int> bytes) =>
+        DocumentProvenance.fromBytes(bytes, extension: 'docx', bodyText: 'x');
+
+    const rPr = '<w:rPr><w:rFonts w:ascii="Calibri"/></w:rPr>';
+    final chopped = List.filled(40, '<w:r>$rPr<w:t>ab</w:t></w:r>').join();
+
+    test('相鄰且完全相同的執行區大量出現 → 洗滌痕跡', () {
+      final p = parse(docx(chopped));
+      final signal = p.signals.singleWhere(
+        (s) => s.kind == ProvenanceSignalKind.syntheticRunFragmentation,
+      );
+      expect(signal.values, {'count': 39, 'runs': 40});
+    });
+
+    test('每個執行區都硬寫與段落預設相同的 RSID → 洗滌痕跡', () {
+      final tagged = [
+        for (var i = 0; i < 40; i++)
+          '<w:r w:rsidR="00A1"><w:rPr><w:sz w:val="${20 + i % 2}"/></w:rPr>'
+              '<w:t>ab</w:t></w:r>',
+      ].join();
+      expect(
+        _kinds(parse(docx(tagged))),
+        contains(ProvenanceSignalKind.syntheticRunFragmentation),
+      );
+    });
+
+    test('真實修訂形態（批次與格式交錯）不觸發', () {
+      final natural = [
+        for (var i = 0; i < 40; i++)
+          i.isEven
+              ? '<w:r><w:t>ab</w:t></w:r>'
+              : '<w:r w:rsidR="00B${i % 7}">$rPr<w:t>cd</w:t></w:r>',
+      ].join();
+      expect(parse(docx(natural)).signals, isEmpty);
+    });
+
+    test('非 Word 產生器（如 Google 文件匯出）不比對', () {
+      expect(parse(docx(chopped, application: 'Google Docs')).signals, isEmpty);
+    });
+
+    test('自閉合的空段落不會吞掉下一段', () {
+      final f = RunFragmentation.scan(
+        '<w:p/><w:p w:rsidRDefault="00A1"><w:r w:rsidR="00A1"><w:t>a</w:t></w:r></w:p>',
+      );
+      expect(f.runs, 1);
+      expect(f.redundantRsidRuns, 1);
+    });
+  });
+
+  group('第②③階段：PDF 修訂歷程與結構', () {
+    List<int> pdf(List<String> sections) =>
+        latin1.encode('%PDF-1.4\n${sections.map((s) => '$s\n%%EOF\n').join()}');
+
+    DocumentProvenance parse(List<int> bytes) =>
+        DocumentProvenance.fromBytes(bytes, extension: 'pdf', bodyText: 'body');
+
+    const quartz = 'macOS Version 15.3.1 (Build 24D70) Quartz PDFContext';
+
+    test('增量更新把 Chrome 列印改寫成系統輸出 → 強洗滌痕跡，舊值可讀', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Producer (Skia/PDF m120) >> endobj',
+          '9 0 obj << /Producer ($quartz) /Creator (Pages) >> endobj',
+        ]),
+      );
+      final signal = p.signals.singleWhere(
+        (s) => s.kind == ProvenanceSignalKind.pdfProducerRewritten,
+      );
+      expect(signal.severity, ProvenanceSeverity.strong);
+      expect(signal.label, 'Skia/PDF m120 → $quartz');
+    });
+
+    test('編輯器的合法增量更新（如 Acrobat 加註）不觸發', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Producer ($quartz) >> endobj',
+          '9 0 obj << /Producer (Adobe Acrobat Pro 24.1) >> endobj',
+        ]),
+      );
+      expect(p.signals, isEmpty);
+    });
+
+    test('線性化或重複同一產生器的多段檔案不觸發', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Linearized 1 >> endobj',
+          '2 0 obj << /Producer ($quartz) >> endobj',
+        ]),
+      );
+      expect(p.signals, isEmpty);
+    });
+
+    test('資訊字典自稱 Word 輸出、XMP 卻記著別的產生器 → 洗滌痕跡', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Producer (Microsoft® Word for Microsoft 365) >> endobj '
+              '<pdf:Producer>pikepdf 8.15.1</pdf:Producer>',
+        ]),
+      );
+      final signal = p.signals.singleWhere(
+        (s) => s.kind == ProvenanceSignalKind.pdfInfoXmpConflict,
+      );
+      expect(signal.label, 'pikepdf 8.15.1');
+    });
+
+    test('資訊字典與 XMP 一致不觸發', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Producer (Microsoft® Word for Microsoft 365) >> endobj '
+              '<pdf:Producer>Microsoft® Word for Microsoft 365</pdf:Producer>',
+        ]),
+      );
+      expect(p.signals, isEmpty);
+    });
+
+    test('自稱系統輸出卻有物件串流 → 結構不符', () {
+      final p = parse(
+        pdf([
+          '1 0 obj << /Producer ($quartz) >> endobj '
+              '2 0 obj << /Type /ObjStm /N 3 >> endobj',
+        ]),
+      );
+      expect(_kinds(p), {ProvenanceSignalKind.pdfStructureMismatch});
+    });
+  });
 }
+
+const _realSettings =
+    '<w:settings><w:compat><w:compatSetting w:name="compatibilityMode" '
+    'w:val="15"/></w:compat></w:settings>';
+const _realFonts = '<w:fonts><w:font w:name="Calibri"/></w:fonts>';

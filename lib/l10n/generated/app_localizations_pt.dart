@@ -3664,6 +3664,40 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'O arquivo diz ter sido salvo por “$app”, mas suas configurações e tabela de fontes são cascas vazias (sem configurações de compatibilidade nem fontes), diferente do que o Word grava: as partes foram adicionadas para passar na inspeção.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'O arquivo declara $declared palavras, mas o corpo tem na verdade $actual. O Word recontabiliza a cada salvamento; o corpo foi reescrito fora do Word (por exemplo, por uma ferramenta de reescrita automática).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count de $runs trechos de texto (runs) estão divididos ou marcados de formas que o Word nunca salva (trechos vizinhos idênticos ou um ID de revisão repetido em cada um): um programa picotou o texto para imitar revisões caractere a caractere.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Uma revisão anterior preservada neste PDF mostra outro produtor: $history. O produtor atual só grava arquivos inteiros, então ele foi gravado depois por uma atualização incremental.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'As informações do documento dizem ser saída do sistema ou do Word, mas os metadados XMP registram “$producer” como produtor: um dos dois foi reescrito.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'O PDF diz ser saída do sistema macOS/iOS, mas usa estruturas de objetos comprimidas que o sistema nunca grava: outra ferramenta salvou o arquivo de novo depois que o produtor foi definido.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'A folha de estilos define $count estilo(s) de colagem da web (como “Normal (Web)”) que o corpo não usa mais: conteúdo foi colado de uma página web e depois reformatado.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Rastros de lavagem detectados: os campos do arquivo se contradizem de formas que um salvamento normal nunca produz. Alguém tentou apagar rastros de IA ou falsificar um histórico de edição, por isso o registro de edição deste arquivo não conta mais como evidência de escrita humana.';
 

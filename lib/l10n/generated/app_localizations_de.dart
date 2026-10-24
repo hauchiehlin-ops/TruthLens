@@ -3667,6 +3667,40 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Die Datei gibt an, von „$app“ gespeichert worden zu sein, doch Einstellungen und Schrifttabelle sind leere Hüllen (keine Kompatibilitätseinstellungen, keine Schriften), anders als alles, was Word schreibt: die Teile wurden ergänzt, um Prüfungen zu bestehen.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Die Datei deklariert $declared Wörter, der Text hat tatsächlich $actual. Word zählt bei jedem Speichern neu; der Text wurde außerhalb von Word umgeschrieben (etwa durch ein automatisches Umschreibwerkzeug).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count von $runs Textabschnitten (Runs) sind so geteilt oder markiert, wie Word nie speichert (identische Nachbarn oder eine auf jedem Run wiederholte Revisions-ID): der Text wurde programmatisch zerstückelt, um zeichenweise Überarbeitung vorzutäuschen.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Eine frühere, in diesem PDF erhaltene Revision nennt einen anderen Producer: $history. Der aktuelle Producer schreibt nur ganze Dateien; er wurde also nachträglich per inkrementeller Aktualisierung eingetragen.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Die Dokumentinfo gibt System- oder Word-Ausgabe an, die XMP-Metadaten nennen aber „$producer“ als Producer: einer der beiden Werte wurde umgeschrieben.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'Das PDF gibt sich als macOS-/iOS-Systemausgabe aus, nutzt aber komprimierte Objektstrukturen, die das System nie schreibt: die Datei wurde nach dem Setzen des Producers von einem anderen Werkzeug neu gespeichert.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Das Stylesheet definiert $count Web-Einfügeformat(e) (etwa „Standard (Web)“), die der Text nicht mehr verwendet: Inhalt wurde von einer Webseite eingefügt und später umformatiert.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Spuren einer Bereinigung erkannt: Die Felder der Datei widersprechen sich auf eine Weise, die normales Speichern nie erzeugt. Jemand hat versucht, KI-Spuren zu entfernen oder einen Bearbeitungsverlauf vorzutäuschen; der Bearbeitungsverlauf dieser Datei gilt daher nicht mehr als Beleg für menschliches Schreiben.';
 

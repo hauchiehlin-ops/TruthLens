@@ -3626,6 +3626,40 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'ไฟล์อ้างว่าบันทึกด้วย “$app” แต่การตั้งค่าและตารางฟอนต์เป็นเพียงเปลือกว่าง (ไม่มีการตั้งค่าความเข้ากันได้ ไม่มีฟอนต์) ต่างจากที่ Word เขียนจริง ส่วนประกอบเหล่านี้ถูกเติมเข้าไปเพื่อให้ผ่านการตรวจ';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'ไฟล์ประกาศว่ามี $declared คำ แต่เนื้อหาจริงมี $actual คำ Word นับใหม่ทุกครั้งที่บันทึก แสดงว่าเนื้อหาถูกเขียนใหม่นอก Word (เช่น โดยเครื่องมือเขียนใหม่อัตโนมัติ)';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return 'ข้อความ $count จาก $runs ช่วง (run) ถูกแบ่งหรือทำเครื่องหมายในแบบที่ Word ไม่เคยบันทึก (ช่วงติดกันที่เหมือนกันทุกประการ หรือรหัสการแก้ไขซ้ำในทุกช่วง): โปรแกรมหั่นข้อความเพื่อเลียนแบบการแก้ไขทีละตัวอักษร';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'เวอร์ชันก่อนหน้าที่ยังอยู่ใน PDF นี้ระบุผู้สร้างคนละตัว: $history ผู้สร้างปัจจุบันเขียนไฟล์ทั้งไฟล์เท่านั้น จึงถูกเขียนภายหลังด้วยการอัปเดตแบบเพิ่มส่วน';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'ข้อมูลเอกสารอ้างว่าเป็นผลลัพธ์จากระบบหรือ Word แต่เมทาดาทา XMP บันทึกผู้สร้างเป็น “$producer”: หนึ่งในสองค่านี้ถูกเขียนทับ';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF อ้างว่าเป็นผลลัพธ์จากระบบ macOS/iOS แต่ใช้โครงสร้างออบเจ็กต์แบบบีบอัดที่ระบบไม่เคยเขียน: ไฟล์ถูกบันทึกใหม่ด้วยเครื่องมืออื่นหลังจากตั้งค่าผู้สร้างแล้ว';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'สไตล์ชีตกำหนดสไตล์สำหรับวางจากเว็บ $count รายการ (เช่น “Normal (Web)”) ที่เนื้อหาไม่ได้ใช้แล้ว: เนื้อหาเคยถูกวางจากหน้าเว็บแล้วจัดรูปแบบใหม่ภายหลัง';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'ตรวจพบร่องรอยการฟอก: ช่องข้อมูลในไฟล์ขัดแย้งกันในแบบที่การบันทึกตามปกติไม่มีทางเกิดขึ้น มีผู้พยายามลบร่องรอย AI หรือปลอมประวัติการแก้ไข บันทึกการแก้ไขของไฟล์นี้จึงไม่นับเป็นหลักฐานว่ามนุษย์เขียน';
 

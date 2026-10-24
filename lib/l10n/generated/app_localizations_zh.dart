@@ -3495,6 +3495,40 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '檔案宣稱由「$app」存檔，但設定與字型表只是空殼（沒有相容性設定、沒有任何字型），與 Word 實際寫出的不同：這些部件是為了通過檢查而補上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '檔案宣告 $declared 字，正文實際有 $actual 字。Word 每次存檔都會重算，代表正文是在 Word 之外被改寫的（例如自動改寫工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 個文字執行區中有 $count 個的切分或標記方式是 Word 存檔不會產生的（相鄰且完全相同，或每段都重複寫入修訂代碼）：文字被程式切碎，偽裝成逐字修訂。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '這份 PDF 內保留的較早版本顯示另一個產生器：$history。目前的產生器只會整份寫出檔案，因此它是事後以增量更新寫入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文件資訊宣稱是系統或 Word 輸出，XMP 中繼資料卻記載產生器為「$producer」：兩者之一已被改寫。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 宣稱是 macOS／iOS 系統輸出，卻使用了系統從不寫入的壓縮物件結構：產生器欄位設定之後，檔案又被其他工具重新存檔。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '樣式表定義了 $count 個網頁貼上樣式（如「Normal (Web)」），正文卻已不再使用：內容曾從網頁貼上，事後被改成一般格式。';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       '偵測到洗滌痕跡：檔案欄位之間出現正常存檔不會產生的矛盾，代表有人試圖抹除 AI 痕跡或偽造編輯歷程。這份檔案的編輯紀錄因此不再作為「由人撰寫」的證據。';
 
@@ -7092,6 +7126,40 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '文件声称由“$app”保存，但设置与字体表只是空壳（没有兼容性设置、没有任何字体），与 Word 实际写出的不同：这些部件是为了通过检查而补上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '文件声明 $declared 字，正文实际有 $actual 字。Word 每次保存都会重新统计，说明正文是在 Word 之外被改写的（例如自动改写工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 个文本运行中有 $count 个的切分或标记方式是 Word 保存不会产生的（相邻且完全相同，或每段都重复写入修订代码）：文本被程序切碎，伪装成逐字修订。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '这份 PDF 内保留的较早版本显示另一个生成器：$history。当前生成器只会整份写出文件，因此它是事后以增量更新写入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文档信息声称是系统或 Word 输出，XMP 元数据却记载生成器为“$producer”：两者之一已被改写。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 声称是 macOS／iOS 系统输出，却使用了系统从不写入的压缩对象结构：生成器字段设定之后，文件又被其他工具重新保存。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '样式表定义了 $count 个网页粘贴样式（如“Normal (Web)”），正文却已不再使用：内容曾从网页粘贴，事后被改成普通格式。';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       '检测到洗稿痕迹：文件字段之间出现正常保存不会产生的矛盾，表示有人试图抹除 AI 痕迹或伪造编辑历程。这份文件的编辑记录因此不再作为“由人撰写”的证据。';
 
@@ -10686,6 +10754,40 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String provenanceSignalForgedProducer(String producer) {
     return 'PDF 產生器「$producer」宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符（缺組建號，或組建號不屬於該版本）：產生器欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '檔案宣稱由「$app」存檔，但設定與字型表只是空殼（沒有相容性設定、沒有任何字型），與 Word 實際寫出的不同：這些部件是為了通過檢查而補上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '檔案宣告 $declared 字，正文實際有 $actual 字。Word 每次存檔都會重算，代表正文是在 Word 之外被改寫的（例如自動改寫工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 個文字執行區中有 $count 個的切分或標記方式是 Word 存檔不會產生的（相鄰且完全相同，或每段都重複寫入修訂代碼）：文字被程式切碎，偽裝成逐字修訂。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '這份 PDF 內保留的較早版本顯示另一個產生器：$history。目前的產生器只會整份寫出檔案，因此它是事後以增量更新寫入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文件資訊宣稱是系統或 Word 輸出，XMP 中繼資料卻記載產生器為「$producer」：兩者之一已被改寫。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 宣稱是 macOS／iOS 系統輸出，卻使用了系統從不寫入的壓縮物件結構：產生器欄位設定之後，檔案又被其他工具重新存檔。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '樣式表定義了 $count 個網頁貼上樣式（如「Normal (Web)」），正文卻已不再使用：內容曾從網頁貼上，事後被改成一般格式。';
   }
 
   @override

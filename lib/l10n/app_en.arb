@@ -3142,6 +3142,61 @@
       }
     }
   },
+  "provenanceSignalHollowWordParts": "The file claims to be saved by “{app}”, but its settings and font table are empty shells (no compatibility settings, no fonts), unlike anything Word writes: the parts were added to pass inspection.",
+  "@provenanceSignalHollowWordParts": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalStatsMismatch": "The file declares {declared} words, but the body actually has {actual}. Word recounts on every save, so the body was rewritten outside Word (for example by an automatic rewriting tool).",
+  "@provenanceSignalStatsMismatch": {
+    "placeholders": {
+      "declared": {
+        "type": "int"
+      },
+      "actual": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalRunFragmentation": "{count} of {runs} text runs are split or tagged in ways Word never saves (identical adjacent runs, or a revision ID repeated on every run): the text was chopped up by a program to imitate character-by-character revisions.",
+  "@provenanceSignalRunFragmentation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "runs": {
+        "type": "int"
+      }
+    }
+  },
+  "provenanceSignalProducerRewritten": "An earlier revision kept inside this PDF shows a different producer: {history}. The current producer only ever writes whole files, so it was written afterwards by an incremental update.",
+  "@provenanceSignalProducerRewritten": {
+    "placeholders": {
+      "history": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalInfoXmpConflict": "The document info claims system or Word output, but the XMP metadata names “{producer}” as the producer: one of the two was rewritten.",
+  "@provenanceSignalInfoXmpConflict": {
+    "placeholders": {
+      "producer": {
+        "type": "String"
+      }
+    }
+  },
+  "provenanceSignalPdfStructureMismatch": "The PDF claims to be macOS/iOS system output but uses compressed object structures the system never writes: the file was re-saved by another tool after the producer was set.",
+  "provenanceSignalWebStyleResidue": "The style sheet defines {count} web-paste style(s) (such as “Normal (Web)”) that the body no longer uses: content was pasted from a web page and later reformatted.",
+  "@provenanceSignalWebStyleResidue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "provenanceConcealmentDetected": "Signs of laundering detected: the file’s fields contradict each other in ways normal saving never produces. Someone tried to remove AI traces or fake an editing history, so this file’s editing record no longer counts as evidence of human writing.",
   "provenanceSignalC2pa": "Embedded content carries a C2PA Content Credential naming “{generator}” as the generator (signature not verified locally). It describes where the image or media came from, not who wrote the text.",
   "@provenanceSignalC2pa": {

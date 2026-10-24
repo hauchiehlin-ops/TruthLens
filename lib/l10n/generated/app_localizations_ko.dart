@@ -3546,6 +3546,40 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '파일은 “$app”로 저장되었다고 주장하지만, 설정과 글꼴 표가 빈 껍데기입니다(호환성 설정도, 글꼴도 없음). Word가 실제로 쓰는 것과 달리 검사를 통과하려고 덧붙인 부분입니다.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '파일은 $declared단어라고 선언하지만 본문은 실제로 $actual단어입니다. Word는 저장할 때마다 다시 세므로, 본문이 Word 밖에서 다시 쓰였습니다(예: 자동 재작성 도구).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '텍스트 런 $runs개 중 $count개가 Word가 저장하지 않는 방식으로 나뉘거나 표시되어 있습니다(인접한 동일 런, 또는 모든 런에 반복된 수정 ID): 글자 단위 수정처럼 보이도록 프로그램이 텍스트를 잘게 쪼갰습니다.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '이 PDF 안에 남아 있는 이전 판에는 다른 생성기가 기록되어 있습니다: $history. 현재 생성기는 파일 전체만 쓰므로, 나중에 증분 업데이트로 기록된 것입니다.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '문서 정보는 시스템 또는 Word 출력이라고 주장하지만, XMP 메타데이터에는 생성기가 “$producer”로 기록되어 있습니다: 둘 중 하나가 다시 쓰였습니다.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF는 macOS/iOS 시스템 출력이라고 주장하지만 시스템이 쓰지 않는 압축 객체 구조를 사용합니다: 생성기 항목이 정해진 뒤 다른 도구가 파일을 다시 저장했습니다.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '스타일 시트에 웹 붙여넣기 스타일(예: “표준 (웹)”)이 $count개 정의되어 있지만 본문에서는 더 이상 쓰이지 않습니다: 웹 페이지에서 붙여넣은 내용을 나중에 서식만 바꾼 것입니다.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       '세탁 흔적이 감지되었습니다: 파일 항목들이 정상적인 저장으로는 생기지 않는 방식으로 서로 모순됩니다. 누군가 AI 흔적을 지우거나 편집 이력을 위조하려 했으므로, 이 파일의 편집 기록은 더 이상 ‘사람이 썼다’는 증거로 쓰지 않습니다.';
 

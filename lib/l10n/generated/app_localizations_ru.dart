@@ -3652,6 +3652,40 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Файл утверждает, что сохранён в «$app», но его настройки и таблица шрифтов — пустые оболочки (нет параметров совместимости, нет шрифтов), в отличие от того, что пишет Word: эти части добавлены, чтобы пройти проверку.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Файл объявляет $declared слов, а в тексте фактически $actual. Word пересчитывает при каждом сохранении; текст переписан вне Word (например, инструментом автоматического переписывания).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count из $runs текстовых фрагментов (run) разбиты или помечены так, как Word никогда не сохраняет (одинаковые соседние фрагменты или идентификатор правки, повторённый на каждом): программа нарезала текст, имитируя посимвольную правку.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Более ранняя редакция, сохранившаяся в этом PDF, указывает другого производителя: $history. Текущий производитель записывает только целые файлы, значит, он вписан позже инкрементным обновлением.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Сведения о документе указывают на вывод системы или Word, а метаданные XMP называют производителем «$producer»: одно из двух было переписано.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF выдаёт себя за системный вывод macOS/iOS, но использует сжатые объектные структуры, которые система никогда не пишет: после указания производителя файл пересохранён другим инструментом.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Таблица стилей определяет $count стил(ей) веб-вставки (например, «Обычный (веб)»), которые текст больше не использует: содержимое было вставлено с веб-страницы и затем переформатировано.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Обнаружены следы «отмывания»: поля файла противоречат друг другу так, как при обычном сохранении не бывает. Кто-то пытался удалить следы ИИ или подделать историю правки, поэтому история правки этого файла больше не считается доказательством написания человеком.';
 

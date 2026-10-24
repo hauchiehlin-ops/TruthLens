@@ -91,6 +91,32 @@ enum ProvenanceSignalKind {
   /// PDF Producer 宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符
   /// （缺組建號，或組建號與版本對不上）→ 產生器欄位被改寫
   forgedPdfProducer,
+
+  /// 宣稱 Word 存檔，settings.xml 與 fontTable.xml 卻只是空殼
+  /// （沒有相容性設定、沒有任何字型）→ 部件是補上去應付檢查的
+  hollowWordComponents,
+
+  /// app.xml 宣告的字數與正文實際字數差距數倍
+  /// → 正文在 Word 之外被改寫（例如自動改寫工具），統計欄位沒跟上
+  declaredStatsMismatch,
+
+  /// 大量相鄰且完全相同的文字執行區，或每段都硬寫與段落預設相同的 RSID
+  /// → 文字被程式切碎，偽裝成逐字修訂
+  syntheticRunFragmentation,
+
+  /// PDF 較早的修訂版本寫著另一個產生器，最後生效的卻是只會整份寫出
+  /// 的工具（系統列印、Word 另存）→ 產生器是事後以增量更新改寫的
+  pdfProducerRewritten,
+
+  /// PDF 資訊字典自稱系統或 Word 輸出，XMP 卻記著另一個產生器
+  pdfInfoXmpConflict,
+
+  /// 自稱 macOS／iOS 系統輸出，卻用了系統從不寫入的壓縮物件結構
+  pdfStructureMismatch,
+
+  /// styles.xml 定義了網頁貼上樣式，正文卻一處都沒用到
+  /// → 內容曾從網頁貼上，事後被改成一般格式
+  webStyleResidue,
 }
 
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
@@ -421,10 +447,19 @@ class DocumentProvenance {
 
     final package = DocxPackage({for (final f in archive.files) f.name});
     final claimsWord = (application ?? '').toLowerCase().contains('microsoft');
-    final paste = WebPasteResidue.scan(
-      document: document,
-      styles: _read(archive, 'word/styles.xml') ?? '',
+    final styles = _read(archive, 'word/styles.xml') ?? '';
+    final paste = WebPasteResidue.scan(document: document, styles: styles);
+    final parts = WordPartFingerprint.scan(
+      settings: _read(archive, 'word/settings.xml') ?? '',
+      fontTable: _read(archive, 'word/fontTable.xml') ?? '',
     );
+    // Google 文件、LibreOffice 的寫法本來就不同，只對宣稱 Word 的檔案比對
+    final fragmentation = claimsWord
+        ? RunFragmentation.scan(document)
+        : const RunFragmentation();
+    final unusedWeb = paste.webStyledRuns == 0
+        ? unusedWebStyles(styles: styles, document: document)
+        : 0;
     final fileSignals = <ProvenanceSignal>[
       ..._libraryAndC2pa(
         [?application, ...hints],
@@ -458,6 +493,27 @@ class DocumentProvenance {
         document,
         _read(archive, 'word/_rels/document.xml.rels') ?? '',
       ]),
+      if (claimsWord && package.hasWordCoreParts && parts.isHollow)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.hollowWordComponents,
+          severity: ProvenanceSeverity.notable,
+          label: application,
+        ),
+      if (fragmentation.indicatesSyntheticSplitting)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.syntheticRunFragmentation,
+          severity: ProvenanceSeverity.notable,
+          values: {
+            'count': fragmentation.affectedRuns,
+            'runs': fragmentation.runs,
+          },
+        ),
+      if (unusedWeb > 0)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.webStyleResidue,
+          severity: ProvenanceSeverity.notable,
+          values: {'count': unusedWeb},
+        ),
       // 少量未登記可能來自從別份文件複製的段落；過半且達一定數量才算
       if (unregistered.length >= minUnregisteredRsids &&
           unregistered.length * 2 >= rsids.length)
@@ -523,6 +579,7 @@ class DocumentProvenance {
             latin1.decode(bytes, allowInvalid: true),
           ]),
           ?_quartzSignal(metadata.producer),
+          ..._pdfStructureSignals(PdfStructure.analyze(bytes)),
         ],
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
@@ -573,6 +630,31 @@ class DocumentProvenance {
         ),
         _ => null,
       };
+
+  /// PDF 修訂歷程與結構的洗滌痕跡
+  static List<ProvenanceSignal> _pdfStructureSignals(PdfStructure structure) {
+    final earlier = structure.rewrittenFrom;
+    return [
+      // 舊版本原封不動留在檔案裡，改寫前的值直接可讀：邏輯上的確證
+      if (earlier != null)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.pdfProducerRewritten,
+          severity: ProvenanceSeverity.strong,
+          label: '$earlier → ${structure.infoProducer}',
+        ),
+      if (structure.infoContradictsXmp)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.pdfInfoXmpConflict,
+          severity: ProvenanceSeverity.notable,
+          label: structure.xmpProducer,
+        ),
+      if (structure.quartzStructureMismatch)
+        const ProvenanceSignal(
+          kind: ProvenanceSignalKind.pdfStructureMismatch,
+          severity: ProvenanceSeverity.notable,
+        ),
+    ];
+  }
 
   /// 程式庫產生與 C2PA 內容憑證，DOCX 與 PDF 共用
   static List<ProvenanceSignal> _libraryAndC2pa(
@@ -688,6 +770,10 @@ class DocumentProvenance {
   /// 批次數少於此值時不比對存檔次數（[ProvenanceSignalKind.fewRevisions] 已涵蓋）
   static const int minSessionsForRevisionCheck = 10;
 
+  /// 宣告字數比對：正文至少這麼長，且差距達此倍數才判定
+  static const int minWordsForStatsCheck = 300;
+  static const int statsMismatchFactor = 3;
+
   /// 依已填入的中繼資料推導訊號
   static DocumentProvenance _withSignals(DocumentProvenance base) {
     final signals = <ProvenanceSignal>[...base.fileSignals];
@@ -738,6 +824,24 @@ class DocumentProvenance {
           kind: ProvenanceSignalKind.sessionsExceedRevisions,
           severity: ProvenanceSeverity.notable,
           values: {'sessions': sessions, 'revisions': saves},
+        ),
+      );
+    }
+
+    // 宣告字數與正文差距數倍：Word 存檔時重算統計，差距這麼大代表正文
+    // 在 Word 之外被改寫。計字規則差異（中日韓逐字、標點）遠小於三倍。
+    final declared = base.declaredWordCount;
+    if (base.sourceFormat == 'docx' &&
+        (base.application ?? '').toLowerCase().contains('microsoft') &&
+        declared != null &&
+        words >= minWordsForStatsCheck &&
+        (declared * statsMismatchFactor < words ||
+            declared > words * statsMismatchFactor)) {
+      signals.add(
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.declaredStatsMismatch,
+          severity: ProvenanceSeverity.notable,
+          values: {'declared': declared, 'actual': words},
         ),
       );
     }

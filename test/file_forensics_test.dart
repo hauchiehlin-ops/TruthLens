@@ -5,6 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:omnitrace/core/services/document_provenance.dart';
 import 'package:omnitrace/core/services/file_forensics.dart';
 
+/// Word 實際寫出的設定與字型表內容（相容性設定、至少一個字型），
+/// 空殼部件會被判為洗滌痕跡
+const _wordSettings =
+    '<w:settings><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>';
+const _wordFonts =
+    '<w:fonts><w:font w:name="Calibri"><w:panose1 w:val="020F0502020204030204"/></w:font></w:fonts>';
+
 String _body(int words) => List.filled(words, 'word').join(' ');
 
 /// 最小但結構合法的 PDF：資訊字典放在未壓縮物件中
@@ -71,8 +78,8 @@ List<int> _docx({
   }
   if (wordParts) {
     archive
-      ..addFile(ArchiveFile.bytes('word/settings.xml', b('<w:settings/>')))
-      ..addFile(ArchiveFile.bytes('word/fontTable.xml', b('<w:fonts/>')));
+      ..addFile(ArchiveFile.bytes('word/settings.xml', b(_wordSettings)))
+      ..addFile(ArchiveFile.bytes('word/fontTable.xml', b(_wordFonts)));
   }
   for (final e in media.entries) {
     archive.addFile(ArchiveFile.bytes('word/media/${e.key}', e.value));

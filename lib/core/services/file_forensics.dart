@@ -46,27 +46,47 @@ class PdfMetadata {
   /// （見 [mergedWith]）。
   static PdfMetadata parse(List<int> bytes) {
     final text = latin1.decode(bytes, allowInvalid: true);
-    String? info(String key) {
-      final match = RegExp(
-        '/$key\\s*(\\((?:\\\\.|[^\\\\)])*\\)|<[0-9A-Fa-f\\s]*>)',
-      ).firstMatch(text);
-      final raw = match?.group(1);
-      if (raw == null) return null;
-      return _clean(raw.startsWith('(') ? _literal(raw) : _hex(raw));
-    }
-
-    String? xmp(String tag) {
-      final element = RegExp('<$tag>([^<]*)</$tag>').firstMatch(text)?.group(1);
-      final attribute = RegExp('$tag="([^"]*)"').firstMatch(text)?.group(1);
-      final raw = element ?? attribute;
-      return raw == null ? null : _clean(_utf8(raw));
-    }
-
     return PdfMetadata(
-      creator: info('Creator'),
-      producer: info('Producer') ?? xmp('pdf:Producer'),
-      creatorTool: xmp('xmp:CreatorTool'),
+      creator: infoValue(text, 'Creator'),
+      producer: infoValue(text, 'Producer') ?? xmpValue(text, 'pdf:Producer'),
+      creatorTool: xmpValue(text, 'xmp:CreatorTool'),
     );
+  }
+
+  /// 資訊字典中第一個 `/key` 的字串值（字面或十六進位字串）
+  static String? infoValue(String text, String key) {
+    final match = RegExp('/$key\\s*(\\(|<[0-9A-Fa-f\\s]*>)').firstMatch(text);
+    final opening = match?.group(1);
+    if (opening == null) return null;
+    if (opening != '(') return _clean(_hex(opening));
+    final raw = _balancedLiteral(text, match!.end - 1);
+    return raw == null ? null : _clean(_literal(raw));
+  }
+
+  /// 從 [start] 的左括號讀到對應的右括號。字面字串可含成對、未跳脫的
+  /// 括號（ISO 32000-1 §7.3.4.2），例如 Quartz 的
+  /// `(macOS Version 12.6 (Build 21G115) Quartz PDFContext)`。
+  static String? _balancedLiteral(String text, int start) {
+    var depth = 0;
+    for (var i = start; i < text.length; i++) {
+      final ch = text.codeUnitAt(i);
+      if (ch == 0x5C) {
+        i++; // 跳脫字元連同下一字元一起略過
+      } else if (ch == 0x28) {
+        depth++;
+      } else if (ch == 0x29 && --depth == 0) {
+        return text.substring(start, i + 1);
+      }
+    }
+    return null;
+  }
+
+  /// XMP 封包中的欄位，元素與屬性兩種寫法皆可
+  static String? xmpValue(String text, String tag) {
+    final element = RegExp('<$tag>([^<]*)</$tag>').firstMatch(text)?.group(1);
+    final attribute = RegExp('$tag="([^"]*)"').firstMatch(text)?.group(1);
+    final raw = element ?? attribute;
+    return raw == null ? null : _clean(_utf8(raw));
   }
 
   static String? _clean(String value) {
@@ -439,4 +459,236 @@ class QuartzProducer {
         ? QuartzProducerCheck.consistent
         : QuartzProducerCheck.buildMismatch;
   }
+}
+
+/// 只會整份寫出 PDF、不會做增量更新的產生器：系統列印與文書軟體的
+/// 「另存 PDF」。這些名稱出現在增量更新段落裡，代表是別的工具冒用。
+final RegExp wholeFilePdfProducerPattern = RegExp(
+  r'(?:Quartz PDFContext|^\s*Microsoft® (?:Office )?Word|Microsoft: Print To PDF|'
+  r'^\s*Skia/PDF|^\s*LibreOffice)',
+);
+
+/// PDF 檔案結構：逐個修訂版本（以 `%%EOF` 分段）的產生器、資訊字典與 XMP
+/// 的一致性，以及是否用到 PDF 1.5 的壓縮交叉參照。
+///
+/// PDF 的增量更新把修改附加在檔尾，舊版本的內容原封不動留在前面
+/// （ISO 32000-1 §7.5.6）。因此事後改寫 Producer 時，舊值往往還讀得到。
+class PdfStructure {
+  /// 每個修訂版本資訊字典的 Producer（該段沒有時為 null），依檔案順序
+  final List<String?> revisionProducers;
+
+  /// 最後生效的資訊字典 Producer
+  final String? infoProducer;
+
+  /// XMP 封包的 pdf:Producer
+  final String? xmpProducer;
+
+  /// 用到物件串流或交叉參照串流（PDF 1.5 起才有）
+  final bool usesCompressedObjects;
+
+  const PdfStructure({
+    this.revisionProducers = const [],
+    this.infoProducer,
+    this.xmpProducer,
+    this.usesCompressedObjects = false,
+  });
+
+  static PdfStructure analyze(List<int> bytes) {
+    final text = latin1.decode(bytes, allowInvalid: true);
+    final producers = <String?>[];
+    var start = 0;
+    for (final eof in RegExp('%%EOF').allMatches(text)) {
+      final section = text.substring(start, eof.end);
+      start = eof.end;
+      // 線性化檔案的第一段只有首頁物件，沒有實際內容的段落不算版本
+      if (!section.contains(' obj')) continue;
+      producers.add(PdfMetadata.infoValue(section, 'Producer'));
+    }
+    String? last;
+    for (final producer in producers.reversed) {
+      if (producer != null) {
+        last = producer;
+        break;
+      }
+    }
+    return PdfStructure(
+      revisionProducers: producers,
+      infoProducer: last ?? PdfMetadata.infoValue(text, 'Producer'),
+      xmpProducer: PdfMetadata.xmpValue(text, 'pdf:Producer'),
+      usesCompressedObjects: RegExp(
+        r'/Type\s*/(?:ObjStm|XRef)\b',
+      ).hasMatch(text),
+    );
+  }
+
+  /// 最後生效的 Producer 自稱只會整份寫出 PDF 的工具
+  bool get claimsWholeFileProducer =>
+      infoProducer != null &&
+      wholeFilePdfProducerPattern.hasMatch(infoProducer!);
+
+  /// 增量更新改寫了產生器：較早的版本寫著別的 Producer，最後生效的
+  /// 卻是只會整份寫出的工具。回傳最早的不同值，沒有時為 null。
+  String? get rewrittenFrom {
+    if (!claimsWholeFileProducer || revisionProducers.length < 2) return null;
+    for (final producer in revisionProducers) {
+      if (producer != null && !_sameTool(producer, infoProducer!)) {
+        return producer;
+      }
+    }
+    return null;
+  }
+
+  /// 資訊字典自稱整份寫出的工具，XMP 卻記著另一個產生器
+  bool get infoContradictsXmp =>
+      claimsWholeFileProducer &&
+      xmpProducer != null &&
+      !_sameTool(xmpProducer!, infoProducer!);
+
+  /// 自稱 macOS／iOS 系統輸出，卻用了系統從不寫入的壓縮結構
+  bool get quartzStructureMismatch =>
+      usesCompressedObjects &&
+      infoProducer != null &&
+      infoProducer!.contains('Quartz PDFContext');
+
+  static bool _sameTool(String a, String b) {
+    String norm(String s) =>
+        s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    final x = norm(a), y = norm(b);
+    return x.contains(y) || y.contains(x);
+  }
+}
+
+/// Word 存檔時一定寫入的部件**內容**。只檢查部件是否存在（[DocxPackage]）
+/// 擋不住補上空殼檔的洗滌工具；Word 寫出的 settings.xml 一定帶相容性設定
+/// `<w:compat>`，fontTable.xml 一定列出至少一個 `<w:font>`。
+class WordPartFingerprint {
+  final bool settingsHasCompat;
+  final bool fontTableHasFonts;
+
+  const WordPartFingerprint({
+    required this.settingsHasCompat,
+    required this.fontTableHasFonts,
+  });
+
+  static WordPartFingerprint scan({
+    required String settings,
+    required String fontTable,
+  }) => WordPartFingerprint(
+    settingsHasCompat: settings.contains('<w:compat'),
+    fontTableHasFonts: RegExp(r'<w:font\b').hasMatch(fontTable),
+  );
+
+  /// 兩個部件都只是空殼
+  bool get isHollow => !settingsHasCompat && !fontTableHasFonts;
+}
+
+/// DOCX 文字執行區（run）的切分形態。
+///
+/// Word 只在格式或編輯批次（RSID）改變處切開文字執行區；相鄰兩段格式與
+/// 屬性完全相同時，存檔會把它們合併。洗滌工具為了偽裝「逐字修訂」而把
+/// 文字切碎，會留下大量相鄰且完全相同的執行區。
+///
+/// 另依 ECMA-376 §17.3.1.22，段落的 `w:rsidRDefault` 是段內未標
+/// `w:rsidR` 之執行區的預設批次；Word 不會在執行區重複寫出與段落預設
+/// 相同的值，對每個執行區都硬寫 RSID 的工具則會。
+///
+/// 兩者皆依 Word 存檔行為推論，門檻取得保守，尚待真人語料校準。
+class RunFragmentation {
+  final int runs;
+
+  /// 相鄰且屬性、格式、內容型態完全相同的執行區對數
+  final int identicalAdjacentPairs;
+
+  /// 帶 `w:rsidR` 的執行區數
+  final int runsWithRsid;
+
+  /// `w:rsidR` 與所在段落 `w:rsidRDefault` 相同的執行區數
+  final int redundantRsidRuns;
+
+  const RunFragmentation({
+    this.runs = 0,
+    this.identicalAdjacentPairs = 0,
+    this.runsWithRsid = 0,
+    this.redundantRsidRuns = 0,
+  });
+
+  static final _paragraph = RegExp(
+    // 排除自閉合的空段落 `<w:p/>`，否則會吞掉下一段
+    r'<w:p\b([^>]*?)(?<!/)>(.*?)</w:p>',
+    dotAll: true,
+  );
+  static final _run = RegExp(r'<w:r\b([^>]*?)(?<!/)>(.*?)</w:r>', dotAll: true);
+  static final _rPr = RegExp(r'<w:rPr>.*?</w:rPr>', dotAll: true);
+  static final _textOnly = RegExp(
+    r'^\s*<w:t(?:\s[^>]*)?>[^<]*</w:t>\s*$',
+    dotAll: true,
+  );
+
+  static String? _attr(String attrs, String name) =>
+      RegExp('$name="([0-9A-Fa-f]+)"').firstMatch(attrs)?.group(1);
+
+  static RunFragmentation scan(String document) {
+    var runs = 0, pairs = 0, withRsid = 0, redundant = 0;
+    for (final p in _paragraph.allMatches(document)) {
+      final defaultRsid = _attr(p.group(1)!, 'w:rsidRDefault');
+      final body = p.group(2)!;
+      int? previousEnd;
+      String? previousKey;
+      for (final r in _run.allMatches(body)) {
+        runs++;
+        final attrs = r.group(1)!.trim();
+        final content = r.group(2)!;
+        final rsid = _attr(attrs, 'w:rsidR');
+        if (rsid != null) {
+          withRsid++;
+          if (rsid == defaultRsid) redundant++;
+        }
+        final rPr = _rPr.firstMatch(content)?.group(0) ?? '';
+        final key = _textOnly.hasMatch(content.replaceFirst(rPr, ''))
+            ? '$attrs|$rPr'
+            : null;
+        final adjacent =
+            previousEnd != null &&
+            body.substring(previousEnd, r.start).trim().isEmpty;
+        if (adjacent && key != null && key == previousKey) pairs++;
+        previousEnd = r.end;
+        previousKey = key;
+      }
+    }
+    return RunFragmentation(
+      runs: runs,
+      identicalAdjacentPairs: pairs,
+      runsWithRsid: withRsid,
+      redundantRsidRuns: redundant,
+    );
+  }
+
+  static const int minPairs = 20;
+  static const double minPairShare = 0.15;
+  static const int minRedundant = 30;
+  static const double minRedundantShare = 0.50;
+
+  bool get indicatesSyntheticSplitting =>
+      (identicalAdjacentPairs >= minPairs &&
+          identicalAdjacentPairs >= runs * minPairShare) ||
+      (redundantRsidRuns >= minRedundant &&
+          redundantRsidRuns >= runsWithRsid * minRedundantShare);
+
+  /// 呈現用：兩種形態中較顯著者的數量
+  int get affectedRuns => identicalAdjacentPairs > redundantRsidRuns
+      ? identicalAdjacentPairs
+      : redundantRsidRuns;
+}
+
+/// styles.xml 定義了網頁貼上樣式（Normal (Web)、HTML 系列），正文卻一處
+/// 都沒用到：內容曾從網頁貼上，事後被改成一般格式。Word 的預設範本不定義
+/// 這些樣式，它們只在套用（通常是貼上）時被加入。
+int unusedWebStyles({required String styles, required String document}) {
+  final defined = {
+    for (final m in RegExp(
+      r'<w:style\b[^>]*w:styleId="(NormalWeb|HTML[A-Za-z]*)"',
+    ).allMatches(styles))
+      m.group(1)!,
+  };
+  return defined.where((id) => !document.contains('w:val="$id"')).length;
 }

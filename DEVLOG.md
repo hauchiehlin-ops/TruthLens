@@ -1,5 +1,34 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-24 — 文件載體 AI 訊號核實引擎（第②③階段）：組件內容、修訂歷程、結構指紋
+
+延續第①階段，新增七項檢查，全部歸入 `ArtifactTraceReport`：
+
+| 代號 | 訊號 | 族別／強度 | 判定 |
+|---|---|---|---|
+| D5 | `hollowWordComponents` | 洗滌／顯著 | 宣稱 Word，settings.xml 沒有 `<w:compat>` 且 fontTable.xml 沒有任何 `<w:font>`（針對「補上 3 項標準組件」） |
+| D6 | `declaredStatsMismatch` | 洗滌／顯著 | 宣稱 Word、正文 ≥ 300 字，`app.xml` `<Words>` 與正文差三倍以上（正文在 Word 外被改寫） |
+| D7 | `webStyleResidue` | 歷程異常／顯著 | styles.xml 定義 NormalWeb／HTML 樣式，正文一處都沒用（貼上網頁內容後改格式）；不推向 AI，但否決人類證據 |
+| P2 | `pdfProducerRewritten` | 洗滌／**強** | 依 `%%EOF` 分段讀各修訂版本 Producer；最後生效者是只會整份寫出的工具（Quartz、Word 另存、Skia、LibreOffice、Print To PDF），較早版本卻是別的值 → 舊值直接顯示給使用者 |
+| P3 | `pdfInfoXmpConflict` | 洗滌／顯著 | 資訊字典自稱上述整份寫出的工具，XMP `pdf:Producer` 卻是別的產生器 |
+| D4 | `syntheticRunFragmentation` | 洗滌／顯著 | 只對宣稱 Word 的檔案：相鄰完全相同的執行區 ≥ 20 對且 ≥ 15%，或執行區 `w:rsidR` 與段落 `w:rsidRDefault` 相同 ≥ 30 個且過半 |
+| P4 | `pdfStructureMismatch` | 洗滌／顯著 | 自稱 Quartz PDFContext，卻含 `/Type /ObjStm` 或 `/Type /XRef`（PDF 1.5 壓縮結構） |
+
+**誤報防護**：P2／P3 只在「最後生效的產生器自稱只會整份寫出」時觸發——Acrobat 加註、出版社
+iText 浮水印這類合法的增量編輯（第①階段前曾實測 iText 出現在 40 篇真人論文）不受影響；
+線性化檔案的首段沒有內容物件，不算一個版本。D4／D5 不比對 Google 文件、LibreOffice 匯出。
+
+**順帶修正**：`PdfMetadata` 讀字面字串時遇到第一個 `)` 就截斷，但 PDF 允許成對未跳脫的括號
+（ISO 32000-1 §7.3.4.2），Quartz 的 `(macOS Version 12.6 (Build 21G115) Quartz PDFContext)`
+會被截成 `macOS Version 12.6 (Build 21G115`。改以括號深度掃描。
+
+**測試夾具更新**：原 DOCX 夾具宣稱 Word 卻寫 `<w:settings/>`／`<w:fonts/>` 空殼，改為帶
+`<w:compat>` 與字型的真實內容，否則會被 D5 正確判為空殼。
+
+**待驗證**：D4 的兩條規則與 D5 的「Word 一定寫 `<w:compat>`」、D6 的「Word 存檔必重算字數」、
+P4 的「Quartz 不寫壓縮結構」皆依格式規格與 Word／macOS 存檔行為推論，門檻已取保守，仍需以
+真人 Word 檔與 macOS 列印 PDF 語料校準誤報率。
+
 ## 2026-10-24 — 文件載體 AI 訊號核實引擎（第①階段）：洗不洗都留痕
 
 **起因**：使用者提供某「AI 痕跡消除」工具（NonAI）的 PDF／DOCX 洗滌作業鏈截圖：注入 20–40 組隨機

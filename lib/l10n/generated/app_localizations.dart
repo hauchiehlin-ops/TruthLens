@@ -5722,6 +5722,48 @@ abstract class AppLocalizations {
   /// **'The PDF producer “{producer}” claims to be macOS/iOS system output, but its format does not match what the system writes (missing build number, or a build number that does not belong to that version): the producer field was rewritten.'**
   String provenanceSignalForgedProducer(String producer);
 
+  /// No description provided for @provenanceSignalHollowWordParts.
+  ///
+  /// In en, this message translates to:
+  /// **'The file claims to be saved by “{app}”, but its settings and font table are empty shells (no compatibility settings, no fonts), unlike anything Word writes: the parts were added to pass inspection.'**
+  String provenanceSignalHollowWordParts(String app);
+
+  /// No description provided for @provenanceSignalStatsMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The file declares {declared} words, but the body actually has {actual}. Word recounts on every save, so the body was rewritten outside Word (for example by an automatic rewriting tool).'**
+  String provenanceSignalStatsMismatch(int declared, int actual);
+
+  /// No description provided for @provenanceSignalRunFragmentation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {runs} text runs are split or tagged in ways Word never saves (identical adjacent runs, or a revision ID repeated on every run): the text was chopped up by a program to imitate character-by-character revisions.'**
+  String provenanceSignalRunFragmentation(int count, int runs);
+
+  /// No description provided for @provenanceSignalProducerRewritten.
+  ///
+  /// In en, this message translates to:
+  /// **'An earlier revision kept inside this PDF shows a different producer: {history}. The current producer only ever writes whole files, so it was written afterwards by an incremental update.'**
+  String provenanceSignalProducerRewritten(String history);
+
+  /// No description provided for @provenanceSignalInfoXmpConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'The document info claims system or Word output, but the XMP metadata names “{producer}” as the producer: one of the two was rewritten.'**
+  String provenanceSignalInfoXmpConflict(String producer);
+
+  /// No description provided for @provenanceSignalPdfStructureMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF claims to be macOS/iOS system output but uses compressed object structures the system never writes: the file was re-saved by another tool after the producer was set.'**
+  String get provenanceSignalPdfStructureMismatch;
+
+  /// No description provided for @provenanceSignalWebStyleResidue.
+  ///
+  /// In en, this message translates to:
+  /// **'The style sheet defines {count} web-paste style(s) (such as “Normal (Web)”) that the body no longer uses: content was pasted from a web page and later reformatted.'**
+  String provenanceSignalWebStyleResidue(int count);
+
   /// No description provided for @provenanceConcealmentDetected.
   ///
   /// In en, this message translates to:

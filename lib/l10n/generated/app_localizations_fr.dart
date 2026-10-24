@@ -3674,6 +3674,40 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Le fichier prétend avoir été enregistré par « $app », mais ses paramètres et sa table des polices sont des coquilles vides (aucun paramètre de compatibilité, aucune police), contrairement à ce qu’écrit Word : ces parties ont été ajoutées pour passer l’inspection.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Le fichier déclare $declared mots, mais le corps en compte réellement $actual. Word recompte à chaque enregistrement ; le corps a été réécrit hors de Word (par exemple par un outil de réécriture automatique).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count des $runs segments de texte (runs) sont découpés ou balisés d’une manière que Word n’enregistre jamais (segments contigus identiques, ou identifiant de révision répété sur chacun) : un programme a haché le texte pour imiter des révisions caractère par caractère.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Une révision antérieure conservée dans ce PDF indique un autre producteur : $history. Le producteur actuel n’écrit que des fichiers complets ; il a donc été inscrit après coup par une mise à jour incrémentielle.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Les informations du document se présentent comme une sortie système ou Word, mais les métadonnées XMP indiquent « $producer » comme producteur : l’une des deux valeurs a été réécrite.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'Le PDF se présente comme une sortie système macOS/iOS mais utilise des structures d’objets compressées que le système n’écrit jamais : un autre outil a réenregistré le fichier après la définition du producteur.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'La feuille de styles définit $count style(s) de collage web (comme « Normal (Web) ») que le corps n’utilise plus : du contenu a été collé depuis une page web puis remis en forme.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Traces de blanchiment détectées : les champs du fichier se contredisent d’une manière qu’un enregistrement normal ne produit jamais. Quelqu’un a tenté d’effacer des traces d’IA ou de falsifier un historique d’édition ; l’historique d’édition de ce fichier ne compte donc plus comme preuve d’écriture humaine.';
 

@@ -3627,6 +3627,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'The file claims to be saved by “$app”, but its settings and font table are empty shells (no compatibility settings, no fonts), unlike anything Word writes: the parts were added to pass inspection.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'The file declares $declared words, but the body actually has $actual. Word recounts on every save, so the body was rewritten outside Word (for example by an automatic rewriting tool).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count of $runs text runs are split or tagged in ways Word never saves (identical adjacent runs, or a revision ID repeated on every run): the text was chopped up by a program to imitate character-by-character revisions.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'An earlier revision kept inside this PDF shows a different producer: $history. The current producer only ever writes whole files, so it was written afterwards by an incremental update.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'The document info claims system or Word output, but the XMP metadata names “$producer” as the producer: one of the two was rewritten.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'The PDF claims to be macOS/iOS system output but uses compressed object structures the system never writes: the file was re-saved by another tool after the producer was set.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'The style sheet defines $count web-paste style(s) (such as “Normal (Web)”) that the body no longer uses: content was pasted from a web page and later reformatted.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Signs of laundering detected: the file’s fields contradict each other in ways normal saving never produces. Someone tried to remove AI traces or fake an editing history, so this file’s editing record no longer counts as evidence of human writing.';
 

@@ -3674,6 +3674,40 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'El archivo afirma haber sido guardado por «$app», pero su configuración y su tabla de fuentes son cascarones vacíos (sin ajustes de compatibilidad ni fuentes), a diferencia de lo que escribe Word: las partes se añadieron para superar la inspección.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'El archivo declara $declared palabras, pero el cuerpo tiene en realidad $actual. Word recuenta en cada guardado; el cuerpo se reescribió fuera de Word (por ejemplo, con una herramienta de reescritura automática).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count de $runs fragmentos de texto (runs) están divididos o marcados de formas que Word nunca guarda (fragmentos contiguos idénticos o un ID de revisión repetido en cada uno): un programa troceó el texto para imitar revisiones carácter a carácter.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Una revisión anterior conservada en este PDF muestra otro productor: $history. El productor actual solo escribe archivos completos, así que se escribió después mediante una actualización incremental.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'La información del documento afirma ser salida del sistema o de Word, pero los metadatos XMP indican «$producer» como productor: uno de los dos fue reescrito.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'El PDF afirma ser salida del sistema macOS/iOS, pero usa estructuras de objetos comprimidas que el sistema nunca escribe: otra herramienta volvió a guardar el archivo tras fijar el productor.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'La hoja de estilos define $count estilo(s) de pegado web (como «Normal (Web)») que el cuerpo ya no usa: se pegó contenido de una página web y luego se le cambió el formato.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Se detectaron rastros de lavado: los campos del archivo se contradicen de formas que un guardado normal nunca produce. Alguien intentó borrar rastros de IA o falsificar un historial de edición, por lo que el registro de edición de este archivo ya no cuenta como evidencia de escritura humana.';
 

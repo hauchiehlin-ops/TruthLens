@@ -3644,6 +3644,40 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Berkas mengaku disimpan oleh “$app”, tetapi pengaturan dan tabel fonnya hanya cangkang kosong (tanpa pengaturan kompatibilitas, tanpa fon), tidak seperti yang ditulis Word: bagian-bagian itu ditambahkan agar lolos pemeriksaan.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Berkas mendeklarasikan $declared kata, padahal isinya sebenarnya $actual kata. Word menghitung ulang setiap kali menyimpan; isi dokumen ditulis ulang di luar Word (misalnya oleh alat penulisan ulang otomatis).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count dari $runs potongan teks (run) dipecah atau ditandai dengan cara yang tidak pernah disimpan Word (potongan bersebelahan yang identik, atau ID revisi yang diulang di setiap potongan): teks dipotong-potong oleh program untuk meniru revisi per karakter.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Revisi lebih awal yang tersimpan di PDF ini menunjukkan producer lain: $history. Producer saat ini hanya menulis berkas utuh, jadi nilai itu ditulis belakangan melalui pembaruan inkremental.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Info dokumen mengaku sebagai keluaran sistem atau Word, tetapi metadata XMP mencatat “$producer” sebagai producer: salah satunya telah ditulis ulang.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF mengaku sebagai keluaran sistem macOS/iOS tetapi memakai struktur objek terkompresi yang tidak pernah ditulis sistem: berkas disimpan ulang oleh alat lain setelah producer ditetapkan.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Lembar gaya mendefinisikan $count gaya tempel web (seperti “Normal (Web)”) yang tidak lagi dipakai isi dokumen: konten pernah ditempel dari halaman web lalu diformat ulang.';
+  }
+
+  @override
   String get provenanceConcealmentDetected =>
       'Jejak pencucian terdeteksi: kolom-kolom berkas saling bertentangan dengan cara yang tidak pernah dihasilkan penyimpanan normal. Seseorang mencoba menghapus jejak AI atau memalsukan riwayat penyuntingan, sehingga catatan penyuntingan berkas ini tidak lagi dihitung sebagai bukti tulisan manusia.';
 
