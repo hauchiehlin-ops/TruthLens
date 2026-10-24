@@ -10,6 +10,11 @@
 另一半 test 計算，與 evaluate_operating_point.py 相同的紀律。輸出的 predictions
 JSONL 也可直接餵給 evaluate_operating_point.py 做發布前的正式操作點報告。
 
+外部驗證模式（發布閘門要求的獨立測試集）：--calibration-corpus 只用來選門檻，
+--external-corpus 只用來報告數字，兩者都不得出現在訓練資料中。專案慣例是 NLPCC-2025
+Task 1 的 dev 校準、test 報告（含現代生成器，見 README「中文 Transformer 的外部驗證」）。
+每篇外部文件另以 zh_laundering 洗一次（真人與 AI 都洗），量測洗滌後的召回與誤報。
+
 範例：
   .venv/bin/python evaluate_zh_adversarial.py \\
       --onnx artifacts/zh_adversarial_onnx/model_int8.onnx \\
@@ -118,6 +123,33 @@ def summarize(rows: list[dict], target_fpr: float) -> dict:
     }
 
 
+def load_external(path: Path, split: str, corpus_id: str, seed: int) -> list[dict]:
+    """外部語料（JSON 陣列，每筆 text 與 label，1 = AI）展開成原文＋洗滌版本。"""
+    import random
+
+    from zh_laundering import launder
+
+    rng = random.Random(seed)
+    rows: list[dict] = []
+    for index, record in enumerate(json.loads(path.read_text(encoding="utf-8"))):
+        text = (record.get("text") or "").strip()
+        if not text:
+            continue
+        label = int(record["label"])
+        group = f"{corpus_id}-{split}-{record.get('id', index)}"
+        rows.append(
+            {"doc_id": f"{group}-original", "group_id": group, "label": label,
+             "family": "original", "text": text, "split": split}
+        )
+        laundered, _ = launder(text, rng)
+        if laundered != text:
+            rows.append(
+                {"doc_id": f"{group}-laundered", "group_id": group, "label": label,
+                 "family": "rule_laundered", "text": laundered, "split": split}
+            )
+    return rows
+
+
 def _score_onnx(texts: list[str], onnx_path: Path, tokenizer_path: Path, max_length: int):
     import numpy as np
     import onnxruntime as ort
@@ -163,21 +195,38 @@ def _score_hf(texts: list[str], model_dir: Path, max_length: int):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--test", type=Path, required=True)
+    parser.add_argument("--test", type=Path, help="prepare_zh_adversarial.py 的 test.jsonl（同源）")
+    parser.add_argument("--calibration-corpus", type=Path, help="外部校準集（只選門檻）")
+    parser.add_argument("--external-corpus", type=Path, help="外部報告集（只報數字）")
+    parser.add_argument("--corpus-id", default="nlpcc-2025-task1")
     parser.add_argument("--onnx", type=Path, help="匯出的 ONNX（App 實際執行的版本）")
     parser.add_argument("--tokenizer", type=Path, help="預設為 ONNX 同目錄的 tokenizer.json")
     parser.add_argument("--model-dir", type=Path, help="或直接量測 Hugging Face 檢查點")
     parser.add_argument("--max-length", type=int, default=192)
     parser.add_argument("--target-fpr", type=float, default=0.01)
+    parser.add_argument("--seed", type=int, default=20261025)
     parser.add_argument("--predictions", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
 
-    rows = [
-        json.loads(line)
-        for line in args.test.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    if args.external_corpus or args.calibration_corpus:
+        if not (args.external_corpus and args.calibration_corpus):
+            raise SystemExit("外部模式需要同時提供 --calibration-corpus 與 --external-corpus")
+        if args.external_corpus.resolve() == args.calibration_corpus.resolve():
+            raise SystemExit("校準集與報告集不可相同：拿選門檻的資料報告成績是無效的")
+        rows = load_external(args.calibration_corpus, "calibration", args.corpus_id, args.seed)
+        rows += load_external(args.external_corpus, "test", args.corpus_id, args.seed + 1)
+    elif args.test:
+        rows = [
+            json.loads(line)
+            for line in args.test.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        for row in rows:
+            row["split"] = split_of(row["group_id"])
+    else:
+        raise SystemExit("請提供 --test，或 --calibration-corpus 與 --external-corpus")
+
     texts = [r["text"] for r in rows]
     if args.onnx:
         tokenizer = args.tokenizer or args.onnx.parent / "tokenizer.json"
@@ -190,7 +239,6 @@ def main() -> None:
     with args.predictions.open("w", encoding="utf-8") as handle:
         for row, score in zip(rows, scores):
             row["score"] = score
-            row["split"] = split_of(row["group_id"])
             handle.write(
                 json.dumps(
                     {
@@ -198,8 +246,10 @@ def main() -> None:
                         "label": "ai" if row["label"] else "human",
                         "score": score,
                         "split": row["split"],
-                        # evaluate_operating_point.py 以 domain 分組；這裡的「文體」就是洗滌家族
+                        # evaluate_operating_point.py 以 domain 分組計誤報、以 attack 分組計
+                        # AI 召回；這裡兩者都是洗滌家族（原文記為 none）
                         "domain": row["family"],
+                        "attack": "none" if row["family"] == "original" else row["family"],
                         "language": "zh",
                     },
                     ensure_ascii=False,

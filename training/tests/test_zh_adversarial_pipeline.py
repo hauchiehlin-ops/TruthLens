@@ -180,6 +180,38 @@ class EvaluateZhAdversarialTest(unittest.TestCase):
         self.assertAlmostEqual(summary["human_laundering_fpr_shift"], 0.0)
         self.assertEqual(summary["families"]["ai/original"]["rate"], 1.0)
 
+    def test_external_corpus_adds_laundered_copies_for_both_labels(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ext.json"
+            path.write_text(
+                json.dumps(
+                    [{"text": ANSWER.format(q="a"), "label": 1},
+                     {"text": HUMAN.format(q="b"), "label": 0}],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            rows = ev.load_external(path, "test", "corpus", seed=1)
+        self.assertEqual({r["split"] for r in rows}, {"test"})
+        self.assertEqual(
+            {(r["label"], r["family"]) for r in rows},
+            {(1, "original"), (1, "rule_laundered"), (0, "original"), (0, "rule_laundered")},
+        )
+        self.assertEqual(len({r["doc_id"] for r in rows}), len(rows))
+
+    def test_external_mode_refuses_identical_calibration_and_report_sets(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "same.json"
+            path.write_text("[]", encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "evaluate_zh_adversarial.py",
+                 "--calibration-corpus", str(path), "--external-corpus", str(path),
+                 "--predictions", str(Path(tmp) / "p.jsonl"), "--report", str(Path(tmp) / "r.json")],
+                cwd=ROOT, capture_output=True, text=True,
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("不可相同", result.stderr)
+
     def test_split_is_stable_per_group(self):
         self.assertEqual(ev.split_of("hc3-abc"), ev.split_of("hc3-abc"))
         sides = {ev.split_of(f"g{i}") for i in range(50)}

@@ -1,5 +1,7 @@
 #!/bin/bash
-# 中文改寫偵測模型（對抗模組 D 的中文變體）一鍵流程：資料 → 微調 → INT8 ONNX → 量測。
+# 中文改寫偵測模型（對抗模組 D 的中文變體）一鍵流程：資料 → 微調 → INT8 ONNX → 量測 → 外部驗證。
+#
+# 只想補跑外部驗證（模型已訓練好）：ONLY_EXTERNAL=1 ./run_zh_adv_pipeline.sh
 #
 # 需要：training/.venv（見 README）、HC3-Chinese all.jsonl，以及能下載基底模型
 # （hfl/chinese-roberta-wwm-ext；已訓練過中文偵測器的機器通常已有快取）。
@@ -19,7 +21,7 @@ DATA=data/zh_adversarial
 MODEL=artifacts/zh_adversarial
 ONNX=artifacts/zh_adversarial_onnx/model_int8.onnx
 
-echo "=== 0/5 環境檢查 ==="
+echo "=== 0/6 環境檢查 ==="
 if [ ! -x "${PY}" ]; then
   echo "找不到 ${PY}：請先依 README「環境」一節建立 training/.venv" >&2
   exit 1
@@ -49,26 +51,46 @@ print("已存到", sys.argv[1])
 FETCH
 fi
 
-echo "=== 1/5 準備資料 ==="
+if [ -z "${ONLY_EXTERNAL:-}" ]; then
+echo "=== 1/6 準備資料 ==="
 ${PY} prepare_zh_adversarial.py --hc3 "${HC3}" --out-dir "${DATA}" \
   ${HUMANIZED:+--llm-humanized "${HUMANIZED}"}
 
-echo "=== 2/5 微調（${BASE_MODEL}）==="
+echo "=== 2/6 微調（${BASE_MODEL}）==="
 ${PY} -u train_zh_detector.py --base-model "${BASE_MODEL}" --data-dir "${DATA}" \
   --out-dir "${MODEL}" --max-train "${MAX_TRAIN:-40000}" --epochs "${EPOCHS:-1}"
 
-echo "=== 3/5 匯出 INT8 ONNX（與 App 相同的推論合約）==="
+echo "=== 3/6 匯出 INT8 ONNX（與 App 相同的推論合約）==="
 mkdir -p "$(dirname "${ONNX}")"
 ${PY} export_hf_sequence_classifier.py "${MODEL}" "${ONNX}"
 
-echo "=== 4/5 依洗滌家族量測 ==="
+echo "=== 4/6 依洗滌家族量測 ==="
 ${PY} evaluate_zh_adversarial.py --onnx "${ONNX}" --test "${DATA}/test.jsonl" \
   --predictions "${DATA}/predictions.jsonl" --report "${DATA}/report.json"
 
-echo "=== 5/5 發布前操作點報告 ==="
+echo "=== 5/6 發布前操作點報告 ==="
 ${PY} evaluate_operating_point.py --predictions "${DATA}/predictions.jsonl" \
   --target-fpr 0.01 --report "${DATA}/operating_point.json" --required-language zh
 
-echo "=== 完成：${ONNX} ==="
-echo "發布前請確認 ${DATA}/report.json 的 human_laundering_fpr_shift 接近 0，"
-echo "再把 operating_point.json 的門檻填入 catalog 的 ai_evidence_threshold。"
+fi
+
+echo "=== 6/6 外部驗證（NLPCC-2025：dev 選門檻、test 報告；未參與訓練）==="
+NLPCC=data/nlpcc2025
+mkdir -p "${NLPCC}"
+for f in dev.json test_with_label.json; do
+  if [ ! -s "${NLPCC}/${f}" ]; then
+    curl -sSL -o "${NLPCC}/${f}" "https://raw.githubusercontent.com/NLP2CT/NLPCC-2025-Task1/main/data/${f}"
+  fi
+done
+SIGNATURE="sha256:$(shasum -a 256 "${ONNX}" | cut -d' ' -f1)"
+${PY} evaluate_zh_adversarial.py --onnx "${ONNX}" \
+  --calibration-corpus "${NLPCC}/dev.json" --external-corpus "${NLPCC}/test_with_label.json" \
+  --predictions "${DATA}/external_predictions.jsonl" --report "${DATA}/external_report.json"
+${PY} evaluate_operating_point.py --predictions "${DATA}/external_predictions.jsonl" \
+  --target-fpr 0.01 --report "${DATA}/external_operating_point.json" --required-language zh \
+  --independent-test --benchmark-id nlpcc-2025-task1 --detector-signature "${SIGNATURE}"
+
+echo "=== 完成：${ONNX}（${SIGNATURE}）==="
+echo "發布依據是外部驗證：${DATA}/external_operating_point.json 的 release_gate_passed，"
+echo "以及 ${DATA}/external_report.json 的 human_laundering_fpr_shift 接近 0。"
+echo "只有外部驗證通過，才把 external_operating_point.json 的門檻填入 catalog 的 ai_evidence_threshold。"
