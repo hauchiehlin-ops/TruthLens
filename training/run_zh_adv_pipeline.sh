@@ -19,6 +19,35 @@ DATA=data/zh_adversarial
 MODEL=artifacts/zh_adversarial
 ONNX=artifacts/zh_adversarial_onnx/model_int8.onnx
 
+echo "=== 0/5 環境檢查 ==="
+if [ ! -x "$PY" ]; then
+  echo "找不到 $PY：請先依 README「環境」一節建立 training/.venv" >&2
+  exit 1
+fi
+$PY - <<'CHECK'
+import importlib.util, sys
+missing = [m for m in ("torch", "transformers", "onnx", "onnxruntime", "tokenizers", "sklearn", "huggingface_hub")
+           if importlib.util.find_spec(m) is None]
+if missing:
+    sys.exit("缺少套件：" + " ".join(missing) + "\n請執行：.venv/bin/python -m pip install " + " ".join(
+        "scikit-learn" if m == "sklearn" else m for m in missing))
+import torch
+print("PyTorch", torch.__version__, "· MPS 可用" if torch.backends.mps.is_available() else "· 未偵測到 MPS，將以 CPU 訓練（會很慢）")
+if importlib.util.find_spec("opencc") is None:
+    print("提示：未安裝 opencc-python-reimplemented，不會做繁體轉換（建議安裝）")
+CHECK
+if [ ! -s "$HC3" ]; then
+  echo "找不到 $HC3，從 Hugging Face 下載 HC3-Chinese ..."
+  mkdir -p "$(dirname "$HC3")"
+  $PY - "$HC3" <<'FETCH'
+import shutil, sys
+from huggingface_hub import hf_hub_download
+path = hf_hub_download(repo_id="Hello-SimpleAI/HC3-Chinese", filename="all.jsonl", repo_type="dataset")
+shutil.copyfile(path, sys.argv[1])
+print("已存到", sys.argv[1])
+FETCH
+fi
+
 echo "=== 1/5 準備資料 ==="
 $PY prepare_zh_adversarial.py --hc3 "$HC3" --out-dir "$DATA" \
   ${HUMANIZED:+--llm-humanized "$HUMANIZED"}
