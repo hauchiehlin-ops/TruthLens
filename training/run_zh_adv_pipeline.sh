@@ -26,7 +26,8 @@ if [ ! -x "${PY}" ]; then
 fi
 ${PY} - <<'CHECK'
 import importlib.util, sys
-missing = [m for m in ("torch", "transformers", "onnx", "onnxruntime", "tokenizers", "sklearn", "huggingface_hub")
+# accelerate：transformers 的 Trainer 必須有它，缺了會到微調那一步才報錯
+missing = [m for m in ("torch", "transformers", "accelerate", "onnx", "onnxruntime", "tokenizers", "sklearn", "huggingface_hub")
            if importlib.util.find_spec(m) is None]
 if missing:
     sys.exit("缺少套件：" + " ".join(missing) + "\n請執行：.venv/bin/python -m pip install " + " ".join(
