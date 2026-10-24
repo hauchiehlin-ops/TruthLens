@@ -2889,6 +2889,117 @@ class AppLocalizationsZh extends AppLocalizations {
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 訊號清單';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析擷取到的每一項 AI 相關訊號，逐條列出類別、強度、在判讀中的作用與出處，可逐條回到原檔或原文核對。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未擷取到任何 AI 訊號。這不代表文件必然由人撰寫。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 項';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '類別';
+
+  @override
+  String get aiSignalColumnSignal => '訊號';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '在判讀中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出處';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '參考文獻';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 訊號 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神經模型逐句判定達 AI 門檻（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出現於 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '檔案原生 AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗滌／偽造痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '規避字元';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句寫作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '寫作歷程異常';
+
+  @override
+  String get aiSignalCategorySource => '來源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '資訊';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顯著';
+
+  @override
+  String get aiSignalStrengthInfo => '資訊';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身分證據：可單獨形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加強既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加強 AI 方向；編輯紀錄不再作為「由人撰寫」的證據';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編輯紀錄不再作為「由人撰寫」的證據；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字統計推論，經證據融合計入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意規避；僅在文字引擎已有 AI 訊號時作為弱佐證';
+
+  @override
+  String get aiSignalRoleSourceQuality => '來源品質問題，不計入作者判讀';
+
+  @override
+  String get aiSignalRoleInformational => '僅供參考，不計入';
+
+  @override
   String findingBulkPaste(int characters) {
     return '輸入過程中記錄到一次貼上 $characters 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。';
   }
@@ -6520,6 +6631,117 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 信号清单';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析捕获的每一项 AI 相关信号，逐条列出类别、强度、在判断中的作用与出处，可逐条回到原文件或原文核对。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未捕获任何 AI 信号。这并不表示文档必然由人撰写。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 项';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '类别';
+
+  @override
+  String get aiSignalColumnSignal => '信号';
+
+  @override
+  String get aiSignalColumnStrength => '强度';
+
+  @override
+  String get aiSignalColumnRole => '在判断中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出处';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '参考文献';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 信号 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神经模型逐句判定达到 AI 阈值（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出现于 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '文件原生 AI 痕迹';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗稿／伪造痕迹';
+
+  @override
+  String get aiSignalCategoryEvasion => '规避字符';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句写作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '写作历程异常';
+
+  @override
+  String get aiSignalCategorySource => '来源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '信息';
+
+  @override
+  String get aiSignalStrengthStrong => '强';
+
+  @override
+  String get aiSignalStrengthNotable => '显著';
+
+  @override
+  String get aiSignalStrengthInfo => '信息';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身份证据：可单独形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加强既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加强 AI 方向；编辑记录不再作为“由人撰写”的证据';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '编辑记录不再作为“由人撰写”的证据；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字统计推论，经证据融合计入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意规避；仅在文字引擎已有 AI 信号时作为弱佐证';
+
+  @override
+  String get aiSignalRoleSourceQuality => '来源质量问题，不计入作者判断';
+
+  @override
+  String get aiSignalRoleInformational => '仅供参考，不计入';
+
+  @override
   String findingBulkPaste(int characters) {
     return '输入过程中记录到一次粘贴 $characters 个字符。语言模型无法伪造文字如何出现在编辑器里——这一段不是在这里打出来的。';
   }
@@ -10149,6 +10371,117 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get reportVerifiableFindingsSubtitle =>
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
+
+  @override
+  String get aiSignalInventoryTitle => 'AI 訊號清單';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析擷取到的每一項 AI 相關訊號，逐條列出類別、強度、在判讀中的作用與出處，可逐條回到原檔或原文核對。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未擷取到任何 AI 訊號。這不代表文件必然由人撰寫。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 項';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '類別';
+
+  @override
+  String get aiSignalColumnSignal => '訊號';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '在判讀中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出處';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '參考文獻';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 訊號 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神經模型逐句判定達 AI 門檻（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出現於 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '檔案原生 AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗滌／偽造痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '規避字元';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句寫作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '寫作歷程異常';
+
+  @override
+  String get aiSignalCategorySource => '來源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '資訊';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顯著';
+
+  @override
+  String get aiSignalStrengthInfo => '資訊';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身分證據：可單獨形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加強既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加強 AI 方向；編輯紀錄不再作為「由人撰寫」的證據';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編輯紀錄不再作為「由人撰寫」的證據；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字統計推論，經證據融合計入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意規避；僅在文字引擎已有 AI 訊號時作為弱佐證';
+
+  @override
+  String get aiSignalRoleSourceQuality => '來源品質問題，不計入作者判讀';
+
+  @override
+  String get aiSignalRoleInformational => '僅供參考，不計入';
 
   @override
   String findingBulkPaste(int characters) {

@@ -2924,6 +2924,118 @@ class AppLocalizationsJa extends AppLocalizations {
       '以下の各項目は独立に確認できます。確率と違い、言語モデルが進歩しても弱まりません。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI シグナル一覧';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '今回の分析で取得した AI 関連シグナルをすべて、区分・強度・判定での役割・出所とともに 1 件ずつ列挙します。各項目は元のファイルや本文で照合できます。';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      '今回の分析では AI シグナルは取得されませんでした。文書が必ず人によって書かれたことを意味するものではありません。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count 件';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '区分';
+
+  @override
+  String get aiSignalColumnSignal => 'シグナル';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '判定での役割';
+
+  @override
+  String get aiSignalColumnLocation => '出所';
+
+  @override
+  String get aiSignalLocationBody => '本文';
+
+  @override
+  String get aiSignalLocationSentences => '文ごとの分析';
+
+  @override
+  String get aiSignalLocationReferences => '参考文献';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine の AI シグナルは $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'ニューラルモデルで AI しきい値（$threshold%）に達した文は $count 文：第 $sentences 文';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：$count 文に出現（第 $sentences 文）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'ファイル固有の AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => 'ロンダリング／偽装の痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '回避文字';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'テキストエンジン';
+
+  @override
+  String get aiSignalCategorySentence => '文ごとの文章パターン';
+
+  @override
+  String get aiSignalCategoryProcess => '執筆過程の異常';
+
+  @override
+  String get aiSignalCategorySource => '出典の完全性';
+
+  @override
+  String get aiSignalCategoryInformational => '情報';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顕著';
+
+  @override
+  String get aiSignalStrengthInfo => '情報';
+
+  @override
+  String get aiSignalRoleIdentity => '著者性の証拠：単独で AI 方向を形成し得る';
+
+  @override
+  String get aiSignalRoleStrengthens => '既存の AI 方向を補強する';
+
+  @override
+  String get aiSignalRoleConcealment => 'AI 方向を補強。編集記録は「人が書いた」証拠として扱わない';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編集記録は「人が書いた」証拠として扱わない。AI 方向には寄せない';
+
+  @override
+  String get aiSignalRoleTextInference => 'テキストの統計的推論。証拠統合を通じて反映';
+
+  @override
+  String get aiSignalRoleEvasion => '意図的な回避。テキストエンジンが既に AI シグナルを示す場合のみ弱い補強';
+
+  @override
+  String get aiSignalRoleSourceQuality => '出典の品質。著者判定には算入しない';
+
+  @override
+  String get aiSignalRoleInformational => '参考情報のみ。算入しない';
+
+  @override
   String findingBulkPaste(int characters) {
     return '入力中に $characters 文字の一括貼り付けが記録されました。テキストがエディタにどう現れるかを言語モデルは偽装できません。この部分はここで打たれたものではありません。';
   }

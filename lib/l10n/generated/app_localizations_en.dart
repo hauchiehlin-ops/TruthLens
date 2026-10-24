@@ -2996,6 +2996,124 @@ class AppLocalizationsEn extends AppLocalizations {
       'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.';
 
   @override
+  String get aiSignalInventoryTitle => 'AI signal inventory';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Every AI-related signal captured in this analysis, listed one by one with its category, strength, role in the verdict and where it was found, so each item can be checked against the original file or text.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'No AI signal was captured in this analysis. This does not mean the document was necessarily written by a person.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count signal(s)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Category';
+
+  @override
+  String get aiSignalColumnSignal => 'Signal';
+
+  @override
+  String get aiSignalColumnStrength => 'Strength';
+
+  @override
+  String get aiSignalColumnRole => 'Role in verdict';
+
+  @override
+  String get aiSignalColumnLocation => 'Location';
+
+  @override
+  String get aiSignalLocationBody => 'Body text';
+
+  @override
+  String get aiSignalLocationSentences => 'Sentence analysis';
+
+  @override
+  String get aiSignalLocationReferences => 'References';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine scores $percent% AI. Reasons: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count sentence(s) reach the $threshold% AI threshold in the neural models: sentence $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: in $count sentence(s) (sentence $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Native AI trace in the file';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Laundering / forgery trace';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Evasion characters';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Text engine';
+
+  @override
+  String get aiSignalCategorySentence => 'Sentence-level pattern';
+
+  @override
+  String get aiSignalCategoryProcess => 'Writing-process anomaly';
+
+  @override
+  String get aiSignalCategorySource => 'Source integrity';
+
+  @override
+  String get aiSignalCategoryInformational => 'Informational';
+
+  @override
+  String get aiSignalStrengthStrong => 'Strong';
+
+  @override
+  String get aiSignalStrengthNotable => 'Notable';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Authorship evidence: can establish the AI direction on its own';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Strengthens an existing AI direction';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Strengthens the AI direction; the editing record no longer counts as evidence of human writing';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'The editing record no longer counts as evidence of human writing; does not push toward AI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Statistical text inference, counted through evidence fusion';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Deliberate evasion; weak support only when the text engines already show AI signals';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Source quality; not counted in the authorship verdict';
+
+  @override
+  String get aiSignalRoleInformational => 'For reference only; not counted';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'A single paste of $characters characters was recorded while this text was being entered. A language model cannot fake how text arrives in an editor — this block was not typed here.';
   }

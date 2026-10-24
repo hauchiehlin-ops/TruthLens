@@ -3035,6 +3035,126 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s\'affaiblissent pas à mesure que les modèles progressent.';
 
   @override
+  String get aiSignalInventoryTitle => 'Inventaire des signaux d’IA';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Chaque signal lié à l’IA relevé dans cette analyse, listé un par un avec sa catégorie, sa force, son rôle dans le verdict et son emplacement, pour pouvoir vérifier chaque point dans le fichier ou le texte d’origine.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'Aucun signal d’IA n’a été relevé dans cette analyse. Cela ne signifie pas nécessairement que le document a été écrit par une personne.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count signal(aux)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Catégorie';
+
+  @override
+  String get aiSignalColumnSignal => 'Signal';
+
+  @override
+  String get aiSignalColumnStrength => 'Force';
+
+  @override
+  String get aiSignalColumnRole => 'Rôle dans le verdict';
+
+  @override
+  String get aiSignalColumnLocation => 'Emplacement';
+
+  @override
+  String get aiSignalLocationBody => 'Corps du texte';
+
+  @override
+  String get aiSignalLocationSentences => 'Analyse par phrase';
+
+  @override
+  String get aiSignalLocationReferences => 'Références';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine donne $percent % d’IA. Motifs : $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count phrase(s) atteignent le seuil d’IA de $threshold % dans les modèles neuronaux : phrase $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern : dans $count phrase(s) (phrase $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Trace d’IA native dans le fichier';
+
+  @override
+  String get aiSignalCategoryConcealment =>
+      'Trace de blanchiment / falsification';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Caractères d’évasion';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Moteur de texte';
+
+  @override
+  String get aiSignalCategorySentence => 'Motif par phrase';
+
+  @override
+  String get aiSignalCategoryProcess => 'Anomalie du processus d’écriture';
+
+  @override
+  String get aiSignalCategorySource => 'Intégrité des sources';
+
+  @override
+  String get aiSignalCategoryInformational => 'Information';
+
+  @override
+  String get aiSignalStrengthStrong => 'Fort';
+
+  @override
+  String get aiSignalStrengthNotable => 'Notable';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Preuve d’autorat : peut établir à elle seule la direction IA';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Renforce une direction IA existante';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Renforce la direction IA ; l’historique d’édition ne compte plus comme preuve d’écriture humaine';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'L’historique d’édition ne compte plus comme preuve d’écriture humaine ; ne pousse pas vers l’IA';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Inférence statistique sur le texte, intégrée par fusion des preuves';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Évasion délibérée ; simple appui faible lorsque les moteurs de texte montrent déjà des signaux d’IA';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Qualité des sources ; non prise en compte dans le verdict d’autorat';
+
+  @override
+  String get aiSignalRoleInformational =>
+      'À titre indicatif ; non pris en compte';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Un collage unique de $characters caractères a été enregistré pendant la saisie. Un modèle de langue ne peut pas falsifier la façon dont le texte apparaît dans un éditeur : ce bloc n\'a pas été tapé ici.';
   }

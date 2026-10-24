@@ -15,6 +15,8 @@ import '../../core/services/publication_evidence.dart';
 import '../../features/report/verifiable_findings.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../features/report/ai_signal_inventory.dart';
+import 'ai_signal_inventory_card.dart';
 import 'provenance_card.dart';
 import 'evidence_matrix_card.dart';
 import 'verdict_palette.dart';
@@ -175,6 +177,21 @@ class ProfessionalReportHeader extends StatelessWidget {
                 child: _VerifiableFindingsCard(findings: findings, l10n: l10n),
               );
             },
+          ),
+
+          // 3b. AI 訊號清單：本次擷取到的每一項 AI 訊號逐條表列，標明類別、
+          //     強度、在判讀中的作用與出處。沒有任何訊號時也顯示，明確告知
+          //     「未擷取到」而不是默默略過。
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: AiSignalInventoryCard(
+              entries: collectAiSignals(
+                result,
+                l10n,
+                citations: citations,
+                claims: claims,
+              ),
+            ),
           ),
 
           // 4. 四軸證據矩陣。覆蓋與證據方向分開呈現；只有作者特異性

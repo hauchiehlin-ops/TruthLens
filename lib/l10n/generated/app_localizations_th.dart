@@ -2998,6 +2998,124 @@ class AppLocalizationsTh extends AppLocalizations {
       'แต่ละรายการด้านล่างตรวจสอบได้อย่างอิสระ ต่างจากค่าความน่าจะเป็น ตรงที่สิ่งเหล่านี้ไม่อ่อนลงเมื่อโมเดลภาษาพัฒนาขึ้น';
 
   @override
+  String get aiSignalInventoryTitle => 'รายการสัญญาณ AI';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'สัญญาณที่เกี่ยวกับ AI ทุกรายการที่ตรวจพบในการวิเคราะห์นี้ แสดงทีละรายการพร้อมหมวดหมู่ ระดับความแรง บทบาทในการตัดสิน และตำแหน่งที่พบ เพื่อให้ตรวจทานกับไฟล์หรือข้อความต้นฉบับได้ทีละข้อ';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'การวิเคราะห์นี้ไม่พบสัญญาณ AI ใด ๆ แต่ไม่ได้หมายความว่าเอกสารเขียนโดยมนุษย์เสมอไป';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count รายการ';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'หมวดหมู่';
+
+  @override
+  String get aiSignalColumnSignal => 'สัญญาณ';
+
+  @override
+  String get aiSignalColumnStrength => 'ความแรง';
+
+  @override
+  String get aiSignalColumnRole => 'บทบาทในการตัดสิน';
+
+  @override
+  String get aiSignalColumnLocation => 'ตำแหน่ง';
+
+  @override
+  String get aiSignalLocationBody => 'เนื้อความ';
+
+  @override
+  String get aiSignalLocationSentences => 'การวิเคราะห์รายประโยค';
+
+  @override
+  String get aiSignalLocationReferences => 'รายการอ้างอิง';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine ให้สัญญาณ AI $percent% เหตุผล: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'ประโยคที่ถึงเกณฑ์ AI ($threshold%) ในโมเดลนิวรัลมี $count ประโยค: ประโยคที่ $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: พบใน $count ประโยค (ประโยคที่ $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'ร่องรอย AI ดั้งเดิมในไฟล์';
+
+  @override
+  String get aiSignalCategoryConcealment => 'ร่องรอยการฟอก/ปลอมแปลง';
+
+  @override
+  String get aiSignalCategoryEvasion => 'อักขระหลบเลี่ยง';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'เอนจินข้อความ';
+
+  @override
+  String get aiSignalCategorySentence => 'รูปแบบรายประโยค';
+
+  @override
+  String get aiSignalCategoryProcess => 'ความผิดปกติของกระบวนการเขียน';
+
+  @override
+  String get aiSignalCategorySource => 'ความถูกต้องของแหล่งอ้างอิง';
+
+  @override
+  String get aiSignalCategoryInformational => 'ข้อมูล';
+
+  @override
+  String get aiSignalStrengthStrong => 'แรง';
+
+  @override
+  String get aiSignalStrengthNotable => 'เด่นชัด';
+
+  @override
+  String get aiSignalStrengthInfo => 'ข้อมูล';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'หลักฐานผู้เขียน: สร้างทิศทาง AI ได้ด้วยตัวเอง';
+
+  @override
+  String get aiSignalRoleStrengthens => 'เสริมทิศทาง AI ที่มีอยู่';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'เสริมทิศทาง AI และบันทึกการแก้ไขไม่นับเป็นหลักฐานว่ามนุษย์เขียนอีกต่อไป';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'บันทึกการแก้ไขไม่นับเป็นหลักฐานว่ามนุษย์เขียนอีกต่อไป แต่ไม่ผลักไปทาง AI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'การอนุมานเชิงสถิติจากข้อความ นับผ่านการรวมหลักฐาน';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'การหลบเลี่ยงโดยเจตนา เป็นหลักฐานเสริมอ่อน ๆ เฉพาะเมื่อเอนจินข้อความพบสัญญาณ AI แล้ว';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'คุณภาพแหล่งอ้างอิง ไม่นับในการตัดสินผู้เขียน';
+
+  @override
+  String get aiSignalRoleInformational => 'ใช้อ้างอิงเท่านั้น ไม่นับ';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'ระหว่างการพิมพ์ มีการบันทึกการวางข้อความครั้งเดียวจำนวน $characters อักขระ โมเดลภาษาปลอมแปลงไม่ได้ว่าข้อความปรากฏในตัวแก้ไขอย่างไร ส่วนนี้ไม่ได้พิมพ์ขึ้นที่นี่';
   }

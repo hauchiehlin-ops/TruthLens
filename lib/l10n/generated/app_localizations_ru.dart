@@ -3017,6 +3017,125 @@ class AppLocalizationsRu extends AppLocalizations {
       'Каждый пункт ниже можно проверить независимо. В отличие от вероятности, они не слабеют по мере развития языковых моделей.';
 
   @override
+  String get aiSignalInventoryTitle => 'Перечень сигналов ИИ';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Каждый связанный с ИИ сигнал, обнаруженный в этом анализе, перечислен по отдельности с категорией, силой, ролью в заключении и местом обнаружения, чтобы каждый пункт можно было сверить с исходным файлом или текстом.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'В этом анализе не обнаружено ни одного сигнала ИИ. Это не обязательно означает, что документ написан человеком.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return 'Сигналов: $count';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Категория';
+
+  @override
+  String get aiSignalColumnSignal => 'Сигнал';
+
+  @override
+  String get aiSignalColumnStrength => 'Сила';
+
+  @override
+  String get aiSignalColumnRole => 'Роль в заключении';
+
+  @override
+  String get aiSignalColumnLocation => 'Где найдено';
+
+  @override
+  String get aiSignalLocationBody => 'Основной текст';
+
+  @override
+  String get aiSignalLocationSentences => 'Анализ по предложениям';
+
+  @override
+  String get aiSignalLocationReferences => 'Список литературы';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine: сигнал ИИ $percent%. Причины: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'Предложений, достигших порога ИИ $threshold% в нейросетевых моделях: $count — предложения $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: в $count предлож. (предложения $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Собственный след ИИ в файле';
+
+  @override
+  String get aiSignalCategoryConcealment => 'След «отмывания» / подделки';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Символы обхода';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Текстовый движок';
+
+  @override
+  String get aiSignalCategorySentence => 'Шаблон по предложениям';
+
+  @override
+  String get aiSignalCategoryProcess => 'Аномалия процесса написания';
+
+  @override
+  String get aiSignalCategorySource => 'Целостность источников';
+
+  @override
+  String get aiSignalCategoryInformational => 'Справочно';
+
+  @override
+  String get aiSignalStrengthStrong => 'Сильный';
+
+  @override
+  String get aiSignalStrengthNotable => 'Заметный';
+
+  @override
+  String get aiSignalStrengthInfo => 'Справочно';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Доказательство авторства: может само по себе задать направление «ИИ»';
+
+  @override
+  String get aiSignalRoleStrengthens =>
+      'Усиливает уже имеющееся направление «ИИ»';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Усиливает направление «ИИ»; история правки больше не считается доказательством написания человеком';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'История правки больше не считается доказательством написания человеком; не сдвигает к ИИ';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Статистический вывод по тексту, учитывается через объединение доказательств';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Намеренный обход; лишь слабая поддержка, если текстовые движки уже показывают сигналы ИИ';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Качество источников; не учитывается в заключении об авторстве';
+
+  @override
+  String get aiSignalRoleInformational => 'Только для справки; не учитывается';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Во время ввода зафиксирована одна вставка объёмом $characters символов. Языковая модель не может подделать то, как текст появляется в редакторе — этот блок здесь не набирали.';
   }

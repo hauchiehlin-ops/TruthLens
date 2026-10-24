@@ -4761,6 +4761,210 @@ abstract class AppLocalizations {
   /// **'Each item below can be checked independently. Unlike a probability, these do not weaken as language models improve.'**
   String get reportVerifiableFindingsSubtitle;
 
+  /// No description provided for @aiSignalInventoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI signal inventory'**
+  String get aiSignalInventoryTitle;
+
+  /// No description provided for @aiSignalInventorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every AI-related signal captured in this analysis, listed one by one with its category, strength, role in the verdict and where it was found, so each item can be checked against the original file or text.'**
+  String get aiSignalInventorySubtitle;
+
+  /// No description provided for @aiSignalInventoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No AI signal was captured in this analysis. This does not mean the document was necessarily written by a person.'**
+  String get aiSignalInventoryEmpty;
+
+  /// No description provided for @aiSignalInventoryCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} signal(s)'**
+  String aiSignalInventoryCount(int count);
+
+  /// No description provided for @aiSignalColumnCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get aiSignalColumnCategory;
+
+  /// No description provided for @aiSignalColumnSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal'**
+  String get aiSignalColumnSignal;
+
+  /// No description provided for @aiSignalColumnStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get aiSignalColumnStrength;
+
+  /// No description provided for @aiSignalColumnRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role in verdict'**
+  String get aiSignalColumnRole;
+
+  /// No description provided for @aiSignalColumnLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get aiSignalColumnLocation;
+
+  /// No description provided for @aiSignalLocationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Body text'**
+  String get aiSignalLocationBody;
+
+  /// No description provided for @aiSignalLocationSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence analysis'**
+  String get aiSignalLocationSentences;
+
+  /// No description provided for @aiSignalLocationReferences.
+  ///
+  /// In en, this message translates to:
+  /// **'References'**
+  String get aiSignalLocationReferences;
+
+  /// No description provided for @aiSignalEngineStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine} scores {percent}% AI. Reasons: {reasons}'**
+  String aiSignalEngineStatement(String engine, int percent, String reasons);
+
+  /// No description provided for @aiSignalSentencesFlagged.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sentence(s) reach the {threshold}% AI threshold in the neural models: sentence {sentences}'**
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences);
+
+  /// No description provided for @aiSignalPatternStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'{pattern}: in {count} sentence(s) (sentence {sentences})'**
+  String aiSignalPatternStatement(String pattern, int count, String sentences);
+
+  /// No description provided for @aiSignalCategoryFileNative.
+  ///
+  /// In en, this message translates to:
+  /// **'Native AI trace in the file'**
+  String get aiSignalCategoryFileNative;
+
+  /// No description provided for @aiSignalCategoryConcealment.
+  ///
+  /// In en, this message translates to:
+  /// **'Laundering / forgery trace'**
+  String get aiSignalCategoryConcealment;
+
+  /// No description provided for @aiSignalCategoryEvasion.
+  ///
+  /// In en, this message translates to:
+  /// **'Evasion characters'**
+  String get aiSignalCategoryEvasion;
+
+  /// No description provided for @aiSignalCategoryTextEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'Text engine'**
+  String get aiSignalCategoryTextEngine;
+
+  /// No description provided for @aiSignalCategorySentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence-level pattern'**
+  String get aiSignalCategorySentence;
+
+  /// No description provided for @aiSignalCategoryProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing-process anomaly'**
+  String get aiSignalCategoryProcess;
+
+  /// No description provided for @aiSignalCategorySource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source integrity'**
+  String get aiSignalCategorySource;
+
+  /// No description provided for @aiSignalCategoryInformational.
+  ///
+  /// In en, this message translates to:
+  /// **'Informational'**
+  String get aiSignalCategoryInformational;
+
+  /// No description provided for @aiSignalStrengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get aiSignalStrengthStrong;
+
+  /// No description provided for @aiSignalStrengthNotable.
+  ///
+  /// In en, this message translates to:
+  /// **'Notable'**
+  String get aiSignalStrengthNotable;
+
+  /// No description provided for @aiSignalStrengthInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get aiSignalStrengthInfo;
+
+  /// No description provided for @aiSignalRoleIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorship evidence: can establish the AI direction on its own'**
+  String get aiSignalRoleIdentity;
+
+  /// No description provided for @aiSignalRoleStrengthens.
+  ///
+  /// In en, this message translates to:
+  /// **'Strengthens an existing AI direction'**
+  String get aiSignalRoleStrengthens;
+
+  /// No description provided for @aiSignalRoleConcealment.
+  ///
+  /// In en, this message translates to:
+  /// **'Strengthens the AI direction; the editing record no longer counts as evidence of human writing'**
+  String get aiSignalRoleConcealment;
+
+  /// No description provided for @aiSignalRoleVetoesHuman.
+  ///
+  /// In en, this message translates to:
+  /// **'The editing record no longer counts as evidence of human writing; does not push toward AI'**
+  String get aiSignalRoleVetoesHuman;
+
+  /// No description provided for @aiSignalRoleTextInference.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistical text inference, counted through evidence fusion'**
+  String get aiSignalRoleTextInference;
+
+  /// No description provided for @aiSignalRoleEvasion.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliberate evasion; weak support only when the text engines already show AI signals'**
+  String get aiSignalRoleEvasion;
+
+  /// No description provided for @aiSignalRoleSourceQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Source quality; not counted in the authorship verdict'**
+  String get aiSignalRoleSourceQuality;
+
+  /// No description provided for @aiSignalRoleInformational.
+  ///
+  /// In en, this message translates to:
+  /// **'For reference only; not counted'**
+  String get aiSignalRoleInformational;
+
   /// Verifiable finding: a large paste was recorded
   ///
   /// In en, this message translates to:

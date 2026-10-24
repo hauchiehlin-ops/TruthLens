@@ -3011,6 +3011,125 @@ class AppLocalizationsId extends AppLocalizations {
       'Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa.';
 
   @override
+  String get aiSignalInventoryTitle => 'Inventaris sinyal AI';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Setiap sinyal terkait AI yang tertangkap dalam analisis ini, dicantumkan satu per satu beserta kategori, kekuatan, perannya dalam putusan, dan lokasinya, sehingga setiap butir dapat dicocokkan dengan berkas atau teks asli.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'Analisis ini tidak menangkap sinyal AI apa pun. Ini tidak berarti dokumen pasti ditulis manusia.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count sinyal';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Kategori';
+
+  @override
+  String get aiSignalColumnSignal => 'Sinyal';
+
+  @override
+  String get aiSignalColumnStrength => 'Kekuatan';
+
+  @override
+  String get aiSignalColumnRole => 'Peran dalam putusan';
+
+  @override
+  String get aiSignalColumnLocation => 'Lokasi';
+
+  @override
+  String get aiSignalLocationBody => 'Isi teks';
+
+  @override
+  String get aiSignalLocationSentences => 'Analisis per kalimat';
+
+  @override
+  String get aiSignalLocationReferences => 'Daftar pustaka';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine memberi skor AI $percent%. Alasan: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count kalimat mencapai ambang AI $threshold% pada model neural: kalimat $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: dalam $count kalimat (kalimat $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Jejak AI asli dalam berkas';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Jejak pencucian / pemalsuan';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Karakter pengelabuan';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Mesin teks';
+
+  @override
+  String get aiSignalCategorySentence => 'Pola per kalimat';
+
+  @override
+  String get aiSignalCategoryProcess => 'Anomali proses menulis';
+
+  @override
+  String get aiSignalCategorySource => 'Integritas sumber';
+
+  @override
+  String get aiSignalCategoryInformational => 'Informasi';
+
+  @override
+  String get aiSignalStrengthStrong => 'Kuat';
+
+  @override
+  String get aiSignalStrengthNotable => 'Menonjol';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Bukti kepengarangan: dapat membentuk arah AI dengan sendirinya';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Memperkuat arah AI yang sudah ada';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Memperkuat arah AI; catatan penyuntingan tidak lagi dihitung sebagai bukti tulisan manusia';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'Catatan penyuntingan tidak lagi dihitung sebagai bukti tulisan manusia; tidak mendorong ke arah AI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Inferensi statistik teks, dihitung melalui fusi bukti';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Pengelabuan disengaja; hanya pendukung lemah bila mesin teks sudah menunjukkan sinyal AI';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Kualitas sumber; tidak dihitung dalam putusan kepengarangan';
+
+  @override
+  String get aiSignalRoleInformational =>
+      'Hanya sebagai rujukan; tidak dihitung';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Saat teks diketik, tercatat satu kali tempel sebanyak $characters karakter. Model bahasa tidak dapat memalsukan cara teks muncul di editor — blok ini tidak diketik di sini.';
   }

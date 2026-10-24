@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../../features/report/ai_signal_inventory.dart';
 import '../../features/report/report_composer.dart';
 import '../../features/report/report_document.dart';
 import '../../features/report/bibliography_presentation.dart';
@@ -255,6 +256,25 @@ class ReportExporter {
             },
         ],
       },
+      // 與畫面報告同一份清單：每一項擷取到的 AI 訊號逐條列出
+      'ai_signal_inventory': [
+        for (final (i, entry) in collectAiSignals(
+          r,
+          l10n,
+          citations: citations,
+          claims: claims,
+        ).indexed)
+          {
+            'number': i + 1,
+            'category': entry.category.name,
+            'category_label': aiSignalCategoryLabel(entry.category, l10n),
+            'strength': entry.strength.name,
+            'role': entry.role.name,
+            'role_label': aiSignalRoleLabel(entry.role, l10n),
+            'statement': entry.statement,
+            'location': entry.location,
+          },
+      ],
       'claim_source_audit': {
         'total': claims.total,
         'sourced': claims.sourced,
@@ -378,7 +398,25 @@ class ReportExporter {
       ..writeln(
         '# source_publication_year,${publicationEvidence.publicationYear ?? ''}',
       )
-      ..writeln('index,sentence,ai_probability,patterns');
+      ..writeln('# ai_signal,number,category,strength,role,statement,location');
+    for (final (i, entry) in collectAiSignals(
+      r,
+      l10n,
+      claims: claims,
+    ).indexed) {
+      buf.writeln(
+        [
+          '# ai_signal',
+          '${i + 1}',
+          entry.category.name,
+          entry.strength.name,
+          entry.role.name,
+          _csvEscape(entry.statement),
+          _csvEscape(entry.location),
+        ].join(','),
+      );
+    }
+    buf.writeln('index,sentence,ai_probability,patterns');
     for (final s in _analyzableSentences(r)) {
       buf.writeln(
         [
@@ -440,6 +478,12 @@ class ReportExporter {
         PdfColor.fromInt(verdictColor(Verdict.fromProbability(p)).toARGB32());
 
     final analyzableSentences = _analyzableSentences(r);
+    final aiSignals = collectAiSignals(
+      r,
+      l10n,
+      citations: citations,
+      claims: claims,
+    );
     final privacySeal = _privacySealParts(l10n);
     final contributionPoints = r.roundedEngineContributionPoints;
 
@@ -634,6 +678,60 @@ class ReportExporter {
                 ),
             ],
           ),
+          pw.SizedBox(height: 12),
+
+          // AI 訊號清單：與畫面報告同一份清單，逐條表列
+          pw.Text(
+            l10n.aiSignalInventoryTitle,
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 3),
+          pw.Text(
+            '${l10n.aiSignalInventorySubtitle} ${l10n.aiSignalInventoryCount(aiSignals.length)}',
+            style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey700),
+          ),
+          pw.SizedBox(height: 6),
+          if (aiSignals.isEmpty)
+            pw.Text(
+              l10n.aiSignalInventoryEmpty,
+              style: const pw.TextStyle(fontSize: 10),
+            )
+          else
+            pw.Table(
+              border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+              columnWidths: const {
+                0: pw.FixedColumnWidth(22),
+                1: pw.FlexColumnWidth(1.4),
+                2: pw.FlexColumnWidth(3.4),
+                3: pw.FlexColumnWidth(1.0),
+                4: pw.FlexColumnWidth(1.8),
+                5: pw.FlexColumnWidth(1.6),
+              },
+              children: [
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                  children: [
+                    _cell('#', bold: true),
+                    _cell(l10n.aiSignalColumnCategory, bold: true),
+                    _cell(l10n.aiSignalColumnSignal, bold: true),
+                    _cell(l10n.aiSignalColumnStrength, bold: true),
+                    _cell(l10n.aiSignalColumnRole, bold: true),
+                    _cell(l10n.aiSignalColumnLocation, bold: true),
+                  ],
+                ),
+                for (final (i, entry) in aiSignals.indexed)
+                  pw.TableRow(
+                    children: [
+                      _cell('${i + 1}'),
+                      _cell(aiSignalCategoryLabel(entry.category, l10n)),
+                      _cell(_truncateForPdf(entry.statement)),
+                      _cell(aiSignalStrengthLabel(entry.strength, l10n)),
+                      _cell(aiSignalRoleLabel(entry.role, l10n)),
+                      _cell(entry.location),
+                    ],
+                  ),
+              ],
+            ),
           pw.SizedBox(height: 12),
 
           // 分析解讀（與 App 內報告同一份 ReportDocument，可能來自 LLM）

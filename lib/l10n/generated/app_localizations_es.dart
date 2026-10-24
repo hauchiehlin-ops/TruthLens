@@ -3035,6 +3035,124 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cada punto siguiente puede comprobarse de forma independiente. A diferencia de una probabilidad, no se debilitan a medida que mejoran los modelos.';
 
   @override
+  String get aiSignalInventoryTitle => 'Inventario de señales de IA';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Cada señal relacionada con IA capturada en este análisis, listada una por una con su categoría, fuerza, papel en el veredicto y ubicación, para poder cotejar cada punto con el archivo o texto original.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'Este análisis no capturó ninguna señal de IA. Esto no significa necesariamente que una persona escribiera el documento.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count señal(es)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Categoría';
+
+  @override
+  String get aiSignalColumnSignal => 'Señal';
+
+  @override
+  String get aiSignalColumnStrength => 'Fuerza';
+
+  @override
+  String get aiSignalColumnRole => 'Papel en el veredicto';
+
+  @override
+  String get aiSignalColumnLocation => 'Ubicación';
+
+  @override
+  String get aiSignalLocationBody => 'Cuerpo del texto';
+
+  @override
+  String get aiSignalLocationSentences => 'Análisis por oración';
+
+  @override
+  String get aiSignalLocationReferences => 'Referencias';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine puntúa $percent % de IA. Motivos: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count oración(es) alcanzan el umbral de IA del $threshold % en los modelos neuronales: oración $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: en $count oración(es) (oración $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Rastro nativo de IA en el archivo';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Rastro de lavado / falsificación';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Caracteres de evasión';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Motor de texto';
+
+  @override
+  String get aiSignalCategorySentence => 'Patrón por oración';
+
+  @override
+  String get aiSignalCategoryProcess => 'Anomalía del proceso de escritura';
+
+  @override
+  String get aiSignalCategorySource => 'Integridad de fuentes';
+
+  @override
+  String get aiSignalCategoryInformational => 'Informativo';
+
+  @override
+  String get aiSignalStrengthStrong => 'Fuerte';
+
+  @override
+  String get aiSignalStrengthNotable => 'Notable';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Evidencia de autoría: puede establecer por sí sola la dirección IA';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Refuerza una dirección IA existente';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Refuerza la dirección IA; el historial de edición deja de contar como evidencia de escritura humana';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'El historial de edición deja de contar como evidencia de escritura humana; no empuja hacia IA';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Inferencia estadística del texto, incluida mediante fusión de evidencias';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Evasión deliberada; solo apoyo débil cuando los motores de texto ya muestran señales de IA';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Calidad de fuentes; no cuenta en el veredicto de autoría';
+
+  @override
+  String get aiSignalRoleInformational => 'Solo de referencia; no cuenta';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Durante la escritura se registró un pegado único de $characters caracteres. Un modelo de lenguaje no puede falsificar cómo aparece el texto en un editor: este bloque no se escribió aquí.';
   }

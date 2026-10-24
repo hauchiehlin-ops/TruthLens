@@ -2501,6 +2501,86 @@
   "@reportVerifiableFindingsSubtitle": {
     "description": "Subtitle explaining that these facts do not decay"
   },
+  "aiSignalInventoryTitle": "AI signal inventory",
+  "aiSignalInventorySubtitle": "Every AI-related signal captured in this analysis, listed one by one with its category, strength, role in the verdict and where it was found, so each item can be checked against the original file or text.",
+  "aiSignalInventoryEmpty": "No AI signal was captured in this analysis. This does not mean the document was necessarily written by a person.",
+  "aiSignalInventoryCount": "{count} signal(s)",
+  "@aiSignalInventoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiSignalColumnCategory": "Category",
+  "aiSignalColumnSignal": "Signal",
+  "aiSignalColumnStrength": "Strength",
+  "aiSignalColumnRole": "Role in verdict",
+  "aiSignalColumnLocation": "Location",
+  "aiSignalLocationBody": "Body text",
+  "aiSignalLocationSentences": "Sentence analysis",
+  "aiSignalLocationReferences": "References",
+  "aiSignalEngineStatement": "{engine} scores {percent}% AI. Reasons: {reasons}",
+  "@aiSignalEngineStatement": {
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "reasons": {
+        "type": "String"
+      }
+    }
+  },
+  "aiSignalSentencesFlagged": "{count} sentence(s) reach the {threshold}% AI threshold in the neural models: sentence {sentences}",
+  "@aiSignalSentencesFlagged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "threshold": {
+        "type": "int"
+      },
+      "sentences": {
+        "type": "String"
+      }
+    }
+  },
+  "aiSignalPatternStatement": "{pattern}: in {count} sentence(s) (sentence {sentences})",
+  "@aiSignalPatternStatement": {
+    "placeholders": {
+      "pattern": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "sentences": {
+        "type": "String"
+      }
+    }
+  },
+  "aiSignalCategoryFileNative": "Native AI trace in the file",
+  "aiSignalCategoryConcealment": "Laundering / forgery trace",
+  "aiSignalCategoryEvasion": "Evasion characters",
+  "aiSignalCategoryTextEngine": "Text engine",
+  "aiSignalCategorySentence": "Sentence-level pattern",
+  "aiSignalCategoryProcess": "Writing-process anomaly",
+  "aiSignalCategorySource": "Source integrity",
+  "aiSignalCategoryInformational": "Informational",
+  "aiSignalStrengthStrong": "Strong",
+  "aiSignalStrengthNotable": "Notable",
+  "aiSignalStrengthInfo": "Info",
+  "aiSignalRoleIdentity": "Authorship evidence: can establish the AI direction on its own",
+  "aiSignalRoleStrengthens": "Strengthens an existing AI direction",
+  "aiSignalRoleConcealment": "Strengthens the AI direction; the editing record no longer counts as evidence of human writing",
+  "aiSignalRoleVetoesHuman": "The editing record no longer counts as evidence of human writing; does not push toward AI",
+  "aiSignalRoleTextInference": "Statistical text inference, counted through evidence fusion",
+  "aiSignalRoleEvasion": "Deliberate evasion; weak support only when the text engines already show AI signals",
+  "aiSignalRoleSourceQuality": "Source quality; not counted in the authorship verdict",
+  "aiSignalRoleInformational": "For reference only; not counted",
   "findingBulkPaste": "A single paste of {characters} characters was recorded while this text was being entered. A language model cannot fake how text arrives in an editor — this block was not typed here.",
   "@findingBulkPaste": {
     "description": "Verifiable finding: a large paste was recorded",

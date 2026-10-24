@@ -3032,6 +3032,124 @@ class AppLocalizationsDe extends AppLocalizations {
       'Jeder Punkt unten lässt sich unabhängig prüfen. Anders als eine Wahrscheinlichkeit verlieren diese nicht an Kraft, wenn Sprachmodelle besser werden.';
 
   @override
+  String get aiSignalInventoryTitle => 'KI-Signalverzeichnis';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Jedes in dieser Analyse erfasste KI-bezogene Signal, einzeln aufgeführt mit Kategorie, Stärke, Rolle im Urteil und Fundstelle, damit jeder Punkt an Originaldatei oder -text geprüft werden kann.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'In dieser Analyse wurde kein KI-Signal erfasst. Das bedeutet nicht zwingend, dass ein Mensch das Dokument verfasst hat.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count Signal(e)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Kategorie';
+
+  @override
+  String get aiSignalColumnSignal => 'Signal';
+
+  @override
+  String get aiSignalColumnStrength => 'Stärke';
+
+  @override
+  String get aiSignalColumnRole => 'Rolle im Urteil';
+
+  @override
+  String get aiSignalColumnLocation => 'Fundstelle';
+
+  @override
+  String get aiSignalLocationBody => 'Fließtext';
+
+  @override
+  String get aiSignalLocationSentences => 'Satzanalyse';
+
+  @override
+  String get aiSignalLocationReferences => 'Literaturverzeichnis';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine ergibt $percent % KI. Gründe: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count Satz/Sätze erreichen in den neuronalen Modellen die KI-Schwelle von $threshold %: Satz $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: in $count Satz/Sätzen (Satz $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Native KI-Spur in der Datei';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Bereinigungs-/Fälschungsspur';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Umgehungszeichen';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Text-Engine';
+
+  @override
+  String get aiSignalCategorySentence => 'Satzmuster';
+
+  @override
+  String get aiSignalCategoryProcess => 'Auffälligkeit im Schreibprozess';
+
+  @override
+  String get aiSignalCategorySource => 'Quellenintegrität';
+
+  @override
+  String get aiSignalCategoryInformational => 'Information';
+
+  @override
+  String get aiSignalStrengthStrong => 'Stark';
+
+  @override
+  String get aiSignalStrengthNotable => 'Auffällig';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Autorschaftsbeleg: kann die KI-Richtung allein begründen';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Verstärkt eine bestehende KI-Richtung';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Verstärkt die KI-Richtung; der Bearbeitungsverlauf gilt nicht mehr als Beleg für menschliches Schreiben';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'Der Bearbeitungsverlauf gilt nicht mehr als Beleg für menschliches Schreiben; keine Verschiebung Richtung KI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Statistische Textinferenz, über die Evidenzfusion einbezogen';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Bewusste Umgehung; nur schwache Stütze, wenn die Text-Engines bereits KI-Signale zeigen';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Quellenqualität; fließt nicht in das Autorschaftsurteil ein';
+
+  @override
+  String get aiSignalRoleInformational => 'Nur zur Information; nicht gewertet';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Beim Eingeben wurde ein einzelner Einfügevorgang von $characters Zeichen aufgezeichnet. Ein Sprachmodell kann nicht fälschen, wie Text in einem Editor entsteht — dieser Block wurde hier nicht getippt.';
   }
