@@ -2773,7 +2773,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'この割合はこの文自体のAI信号であり、文書全体の判定ではありません。数値が高いほど文体がAI生成らしく見え、低いほど一般的な人間の文章に近いことを示します。最終レポートは各文をエンジンの重みで統合します。';
+      'この割合は「この文」自身のモデルスコアで、文書全体の判定ではありません。高いほど言い回しが AI 生成に近いことを示します。低いスコアはモデルがこの文に AI の特徴を見なかったことを示すだけで、人が書いた証拠ではありません。「算入しない」と表示された数値は、今回証拠のしきい値に達しなかったエンジンのものです。最終レポートは各エンジンの重みに基づいて総合判定します。';
 
   @override
   String get workspaceSentenceSignalHeader => '文ごとのAI信号';
@@ -3766,6 +3766,102 @@ class AppLocalizationsJa extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count 個のテキストエンジンがこの言語に未対応か未インストールです';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'このエンジンのモデルは文書の言語に対応していません。再ダウンロードや更新では解決しません。';
+
+  @override
+  String get gapRemedyLabel => '対処法：';
+
+  @override
+  String get gapRemedyDomain =>
+      'この種の文書では、ファイルの来歴・参考文献の照合・執筆過程を主な根拠とし、テキストのスコアは参考程度にしてください。';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      '該当する言語で検証済みの分類器があれば、モデル管理で切り替えてください。なければテキストのスコアは参考程度にしてください。';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'これは手法そのものの限界です。現代の AI による長文の困惑度は人の文章と重なるため、モデルや設定を変えても改善しません。ファイルの来歴・参考文献の照合・執筆過程で判断してください。';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'これはモデルの対応範囲の限界です。モデル一覧にはこの言語に対応する同種のモデルがまだないため、再ダウンロードや更新では解決しません。';
+
+  @override
+  String get gapRemedyEngineInstall => 'モデル管理でモデルを再ダウンロードしてから、もう一度分析してください。';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine：モデルが$languageに対応していません';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine：未インストールまたは読み込みに失敗';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return 'モデルで評価済み $measured/$total 文 · $threshold% のしきい値以上 $flagged 文';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'スコア順';
+
+  @override
+  String get workspaceFindingsSortOrder => '原文の順';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => '評価済みのみ';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return '長文の高速スクリーニング：$total 文のうちモデルに送ったのは $measured 文のみです。残りは「未抽出」と表示します。';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'すべての文を分析';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'この文に対するモデル自身のスコアです。今回このエンジンは証拠のしきい値に達しなかったため、この数値は判定に算入しません。低いスコアはモデルがここで AI の特徴を見なかったことを示すだけで、人が書いた証拠ではありません。';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => '算入しない';
+
+  @override
+  String get sentenceStatusScreenedOut => '未抽出';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      '長文の高速スクリーニングでこの文は抽出されませんでした。「すべての文を分析」でスコアを取得できます。';
+
+  @override
+  String get sentenceStatusNotSent => '未送信';
+
+  @override
+  String get sentenceStatusNotSentHint => '参考文献や見出しなどはモデルに送りません。';
+
+  @override
+  String get sentenceStatusNoModel => 'モデルなし';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      '今回、この言語に対応するニューラルモデルが文ごとのスコアを出していません。';
+
+  @override
+  String get sentenceStatusNotAnalyzable => '対象外';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint => '短すぎるか完全な文ではないため分析しません。';
 
   @override
   String get textDiscriminabilityClosing =>

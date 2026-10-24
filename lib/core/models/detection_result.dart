@@ -238,13 +238,46 @@ class SentenceScore {
   /// 那是棄權，不是人類票。介面必須據此顯示棄權而非百分比。
   final bool modelBacked;
 
+  /// 神經模型對這一句的實測分數，即使該引擎本次因未達證據門檻而沒有投票。
+  ///
+  /// 與 [aiProbability] 的差別：引擎沉默時 [aiProbability] 是文件級估計，
+  /// 這裡則是模型真的看過這一句後給出的數值。它可以顯示，但必須標明「未達
+  /// 證據門檻、不計入投票」，而且低分只代表模型在此句未見 AI 特徵，不是
+  /// 人類證據。沒有任何模型看過這一句時為 null，原因見 [status]。
+  final double? measuredProbability;
+
+  final SentenceScoreStatus status;
+
   const SentenceScore({
     required this.index,
     required this.text,
     required this.aiProbability,
     this.patterns = const [],
     this.modelBacked = true,
+    this.measuredProbability,
+    this.status = SentenceScoreStatus.voted,
   });
+}
+
+/// 逐句分數的來歷。介面依此決定顯示百分比，或說明為什麼沒有數字。
+enum SentenceScoreStatus {
+  /// 由參與投票的神經模型支撐
+  voted,
+
+  /// 模型看過這一句，但引擎本次未達證據門檻、沒有投票
+  measuredBelowEvidence,
+
+  /// 長文件快速篩檢沒有抽到這一句
+  screenedOut,
+
+  /// 這一句不送模型（參考文獻、標題等）
+  notSentToModel,
+
+  /// 本次沒有任何適用此語言的神經模型產出逐句分數
+  noNeuralModel,
+
+  /// 太短或不是完整句子，不做分析
+  notAnalyzable,
 }
 
 /// 完整檢測結果

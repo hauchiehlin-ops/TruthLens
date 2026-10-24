@@ -2884,7 +2884,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'Ce pourcentage est le signal IA propre à cette phrase, pas le verdict global du document. Plus il est élevé, plus le style d\'écriture semble généré par IA ; plus il est bas, plus il ressemble à une écriture humaine typique. Le rapport final combine chaque phrase avec la pondération des moteurs.';
+      'Le pourcentage est le score propre du modèle pour cette phrase, pas le verdict du document. Plus il est élevé, plus la formulation semble générée par IA. Un score bas signifie seulement que le modèle n’a pas vu de traits d’IA dans cette phrase ; ce n’est pas une preuve d’écriture humaine. Les nombres marqués « non compté » viennent d’un moteur qui n’a pas atteint son seuil de preuve. Le rapport final combine les moteurs selon leurs poids.';
 
   @override
   String get workspaceSentenceSignalHeader => 'Signal IA par phrase';
@@ -3918,6 +3918,105 @@ class AppLocalizationsFr extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count moteur(s) de texte ne prennent pas en charge cette langue ou ne sont pas installés';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'Le modèle de ce moteur ne prend pas en charge la langue du document ; le retélécharger ou le mettre à jour ne changera rien.';
+
+  @override
+  String get gapRemedyLabel => 'Ce qui aide : ';
+
+  @override
+  String get gapRemedyDomain =>
+      'Pour ce type de document, appuyez-vous sur la provenance du fichier, la vérification des références et le processus d’écriture ; le score du texte n’est qu’indicatif.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Passez dans la Gestion des modèles à un classifieur validé pour cette langue s’il existe ; sinon, le score du texte n’est qu’indicatif.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'C’est une limite de la méthode elle-même : la perplexité des longs textes d’IA modernes recoupe celle de l’écriture humaine, et aucun changement de modèle ou de réglage n’y remédie. Appuyez-vous sur la provenance du fichier, la vérification des références et le processus d’écriture.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'C’est une limite de couverture des modèles : le catalogue n’a pas encore de modèle de ce type pour cette langue, donc retélécharger ou mettre à jour ne changera rien.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Retéléchargez le modèle dans la Gestion des modèles, puis relancez l’analyse.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine : son modèle ne prend pas en charge $language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine : non installé ou échec du chargement';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '$measured/$total phrases notées par un modèle · $flagged au-dessus du seuil de $threshold %';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'Par score';
+
+  @override
+  String get workspaceFindingsSortOrder => 'Ordre du document';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Notées seulement';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Tri rapide des longs documents : seules $measured des $total phrases ont été envoyées au modèle. Les autres sont marquées « non échantillonnée ».';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'Analyser chaque phrase';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'Score propre du modèle pour cette phrase. Le moteur n’a pas atteint son seuil de preuve dans cette analyse, donc ce nombre n’entre pas dans le verdict. Un score bas signifie seulement que le modèle n’a pas vu de traits d’IA ici ; ce n’est pas une preuve d’écriture humaine.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'non compté';
+
+  @override
+  String get sentenceStatusScreenedOut => 'non échantillonnée';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'Le tri rapide des longs documents n’a pas échantillonné cette phrase. Utilisez « Analyser chaque phrase » pour la noter.';
+
+  @override
+  String get sentenceStatusNotSent => 'non envoyée';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'Les références, titres et lignes similaires ne sont pas envoyés au modèle.';
+
+  @override
+  String get sentenceStatusNoModel => 'aucun modèle';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'Aucun modèle neuronal pour cette langue n’a produit de scores par phrase dans cette analyse.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'ignorée';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Trop courte ou pas une phrase complète, elle n’est donc pas analysée.';
 
   @override
   String get textDiscriminabilityClosing =>

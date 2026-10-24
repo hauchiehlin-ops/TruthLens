@@ -393,38 +393,49 @@ void main() {
     await tester.tap(find.text('Start Detection'));
     await _pumpCompletedAnalysis(tester);
 
+    // 分析完成後：左側報告、右側分頁審閱面板。三個分頁各自佔滿面板高度，
+    // 不再把遙測、逐句發現、原文疊成三張小卡片。
     expect(
       find.byKey(const ValueKey('workspace-report-panel')),
       findsOneWidget,
     );
-    expect(
-      find.byKey(const ValueKey('workspace-telemetry-panel')),
-      findsOneWidget,
-    );
+    final inspector = find.byKey(const ValueKey('workspace-review-inspector'));
+    expect(inspector, findsOneWidget);
+    expect(find.byTooltip('New analysis'), findsOneWidget);
+
+    // 預設打開逐句發現
     expect(
       find.byKey(const ValueKey('workspace-live-findings-panel')),
       findsOneWidget,
     );
-    expect(
-      find.byKey(const ValueKey('workspace-source-preview-panel')),
-      findsOneWidget,
-    );
-    expect(find.byTooltip('New analysis'), findsOneWidget);
+    expect(find.byKey(const ValueKey('findings-summary')), findsOneWidget);
 
     final reportSize = tester.getSize(
       find.byKey(const ValueKey('workspace-report-panel')),
     );
-    final telemetrySize = tester.getSize(
-      find.byKey(const ValueKey('workspace-telemetry-panel')),
+    final inspectorRect = tester.getRect(inspector);
+    expect(reportSize.width, greaterThan(inspectorRect.width));
+    // 審閱面板佔滿主區高度，而不是三分之一
+    expect(inspectorRect.height, greaterThan(reportSize.height * 0.9));
+
+    for (final (label, key) in [
+      ('Analysis telemetry', 'workspace-telemetry-panel'),
+      ('Document workspace', 'workspace-source-preview-panel'),
+    ]) {
+      await tester.tap(find.text(label));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      final page = tester.getRect(find.byKey(ValueKey(key)));
+      expect(page.height, greaterThan(inspectorRect.height * 0.85));
+    }
+
+    // 拖曳分隔線可加寬審閱面板
+    final handle = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_PanelDragHandle',
     );
-    final sourceSize = tester.getSize(
-      find.byKey(const ValueKey('workspace-source-preview-panel')),
-    );
-    expect(
-      reportSize.width * reportSize.height,
-      greaterThan(telemetrySize.width * telemetrySize.height),
-    );
-    expect(telemetrySize.height, greaterThan(sourceSize.height));
+    await tester.drag(handle.first, const Offset(-120, 0));
+    await tester.pump();
+    expect(tester.getRect(inspector).width, greaterThan(inspectorRect.width));
 
     await tester.tap(find.byTooltip('New analysis'));
     await tester.pump(const Duration(milliseconds: 350));
@@ -484,18 +495,18 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(const ValueKey('workspace-telemetry-panel')),
+        find.byKey(const ValueKey('workspace-review-inspector')),
         findsOneWidget,
       );
       expect(find.byTooltip('New analysis'), findsOneWidget);
       final reportRect = tester.getRect(
         find.byKey(const ValueKey('workspace-report-panel')),
       );
-      final telemetryRect = tester.getRect(
-        find.byKey(const ValueKey('workspace-telemetry-panel')),
+      final inspectorRect = tester.getRect(
+        find.byKey(const ValueKey('workspace-review-inspector')),
       );
       expect(reportRect.width, greaterThan(0));
-      expect(telemetryRect.width, greaterThan(0));
+      expect(inspectorRect.width, greaterThan(0));
       expect(tester.takeException(), isNull);
     }
   });

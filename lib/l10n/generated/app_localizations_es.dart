@@ -2884,7 +2884,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'Este porcentaje es la señal de IA propia de esta oración, no el veredicto general del documento. Un valor más alto significa que el patrón de redacción parece más generado por IA; un valor más bajo significa que se lee más como una escritura humana típica. El informe final combina todas las oraciones con la ponderación de los motores.';
+      'El porcentaje es la puntuación propia del modelo para esta oración, no el veredicto del documento. Más alto significa que la redacción parece más generada por IA. Una puntuación baja solo significa que el modelo no vio rasgos de IA en esta oración; no es evidencia de escritura humana. Los números marcados “no cuenta” provienen de un motor que no alcanzó su umbral de evidencia. El informe final combina los motores según sus pesos.';
 
   @override
   String get workspaceSentenceSignalHeader => 'Señal de IA por oración';
@@ -3914,6 +3914,105 @@ class AppLocalizationsEs extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count motor(es) de texto no admiten este idioma o no están instalados';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'El modelo de este motor no admite el idioma del documento; volver a descargarlo o actualizarlo no lo resolverá.';
+
+  @override
+  String get gapRemedyLabel => 'Qué ayuda: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'En este tipo de documento, apóyese en la procedencia del archivo, la verificación de referencias y el proceso de escritura; la puntuación del texto es solo orientativa.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Cambie en Gestión de modelos a un clasificador validado para este idioma si existe; si no, la puntuación del texto es solo orientativa.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'Es un límite del propio método: la perplejidad de los textos largos de IA moderna se solapa con la escritura humana, y ningún cambio de modelo o ajuste lo corrige. Apóyese en la procedencia del archivo, la verificación de referencias y el proceso de escritura.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'Es un límite de cobertura de modelos: el catálogo aún no tiene un modelo de este tipo para este idioma, así que volver a descargar o actualizar no lo resolverá.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Vuelva a descargar el modelo en Gestión de modelos y analice de nuevo.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: su modelo no admite $language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: no instalado o no se pudo cargar';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '$measured/$total oraciones puntuadas por un modelo · $flagged en o por encima del umbral del $threshold %';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'Por puntuación';
+
+  @override
+  String get workspaceFindingsSortOrder => 'Orden del documento';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Solo puntuadas';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Cribado rápido de documentos largos: solo $measured de $total oraciones se enviaron al modelo. Las demás aparecen como “no muestreada”.';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'Analizar cada oración';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'Puntuación propia del modelo para esta oración. El motor no alcanzó su umbral de evidencia en este análisis, así que el número no cuenta en el veredicto. Una puntuación baja solo significa que el modelo no vio rasgos de IA aquí; no es evidencia de escritura humana.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'no cuenta';
+
+  @override
+  String get sentenceStatusScreenedOut => 'no muestreada';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'El cribado rápido de documentos largos no muestreó esta oración. Use “Analizar cada oración” para puntuarla.';
+
+  @override
+  String get sentenceStatusNotSent => 'no enviada';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'Las referencias, títulos y líneas similares no se envían al modelo.';
+
+  @override
+  String get sentenceStatusNoModel => 'sin modelo';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'Ningún modelo neuronal para este idioma produjo puntuaciones por oración en este análisis.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'omitida';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Demasiado corta o no es una oración completa, por lo que no se analiza.';
 
   @override
   String get textDiscriminabilityClosing =>

@@ -37,6 +37,7 @@ import '../../shared/widgets/workspace_navigation.dart';
 import '../input/input_screen.dart' show InputSettingsDrawer;
 import '../onboarding/model_prompt.dart';
 import '../report/report_screen.dart';
+import 'sentence_findings_view.dart';
 import 'telemetry_summary.dart';
 
 enum _WorkspacePhase { idle, ready, analyzing, complete }
@@ -88,6 +89,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   double? _evidenceTelemetryWidth;
   double? _evidenceDocumentHeight;
   double? _compactEvidenceDocumentHeight;
+
+  /// 分析完成後右側審閱面板的寬度（使用者拖曳後的值；null 走預設比例）
+  double? _inspectorWidth;
 
   String _sourceFileName = '';
 
@@ -379,7 +383,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
-  Future<void> _startAnalysis() async {
+  /// [fullSentenceAnalysis] 只對這一次關閉長文件快速篩檢，讓每一句都送入
+  /// 模型；不改動設定中的預設值。
+  Future<void> _startAnalysis({bool fullSentenceAnalysis = false}) async {
     final l10n = AppLocalizations.of(context);
     final text = _controller.text.trim();
     if (text.length < 40) {
@@ -441,6 +447,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         calibration: calibration,
         eslCorrectionEnabled: prefs.eslCorrectionEnabled,
         prefs: prefs,
+        fastScreening: fullSentenceAnalysis ? false : null,
         l10n: l10n,
         onEngineStarted: (id) {
           if (mounted && run == _analysisRun) {
@@ -906,33 +913,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   Widget _mobileEvidencePanel() {
     final l10n = AppLocalizations.of(context);
-    final evidence = _evidenceRows();
     return _Panel(
       title: l10n.workspaceLiveFindings,
       icon: LucideIcons.target,
       expandBody: false,
       infoTooltip: l10n.workspaceSentenceSignalTooltip,
-      child: SelectionArea(
-        child: Column(
-          children: [
-            for (var i = 0; i < evidence.length; i++) ...[
-              if (i > 0)
-                Divider(height: 1, color: _workspaceDividerColor(context)),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: _EvidenceIndexBadge(
-                  index: i + 1,
-                  probability: evidence[i].$2,
-                ),
-                title: Text(evidence[i].$1),
-                trailing: Text(
-                  _sentenceSignalLabel(evidence[i].$2, evidence[i].$3),
-                ),
-              ),
-            ],
-          ],
-        ),
+      // 頁面本身可捲動，清單給固定高度並在內部捲動，排序與篩選才有意義
+      child: SizedBox(
+        height: math.max(420.0, MediaQuery.sizeOf(context).height * 0.7),
+        child: _liveFindingsBody(),
       ),
     );
   }
@@ -1282,7 +1271,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       return _completedWorkspace(
         modeKey: 'completed-evidence-canvas',
         includeTimeline: true,
-        evidenceReferenceRail: true,
       );
     }
     return Padding(
@@ -1392,7 +1380,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget _completedWorkspace({
     required String modeKey,
     required bool includeTimeline,
-    bool evidenceReferenceRail = false,
   }) {
     return KeyedSubtree(
       key: ValueKey(modeKey),
@@ -1415,18 +1402,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     _timelineStrip(),
                   ],
                   const SizedBox(height: 10),
-                  SizedBox(height: 380, child: _telemetryPanel()),
-                  const SizedBox(height: 10),
                   SizedBox(
                     height: math.max(700.0, constraints.maxHeight * 0.9),
                     child: _reportPanel(),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(height: 280, child: _liveFindingsPanel()),
-                  const SizedBox(height: 10),
+                  // 窄螢幕同樣用分頁審閱面板，取代原本三張固定高度的小卡片
                   SizedBox(
-                    height: 220,
-                    child: _sourcePreviewPanel(compact: true),
+                    height: math.max(560.0, constraints.maxHeight * 0.85),
+                    child: _reviewInspector(initialTab: 0),
                   ),
                 ],
               );
@@ -1444,9 +1428,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 ],
                 const SizedBox(height: 10),
                 Expanded(
-                  child: evidenceReferenceRail
-                      ? _completedEvidenceBody(constraints)
-                      : _completedReportTelemetryBody(constraints),
+                  // 預設打開逐句發現：報告本身已含引擎明細，使用者接著最需要的是逐句核對
+                  child: _completedReviewBody(constraints, initialTab: 0),
                 ),
               ],
             );
@@ -1456,57 +1439,126 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
   }
 
-  Widget _completedReportTelemetryBody(BoxConstraints constraints) {
-    final sidebarWidth = constraints.maxWidth >= 1500 ? 480.0 : 420.0;
+  /// 分析完成後的主版面：左側報告、右側審閱面板，中間可拖曳調整寬度。
+  ///
+  /// 原本右側把遙測、逐句發現、原文三張卡片疊在 480px 寬的欄位裡，各自只分到
+  /// 三分之一高度，內容多卻擠在小卡片中難以閱讀。改為單一審閱面板以分頁切換，
+  /// 每一頁都拿到整欄高度；寬度預設約四成並可拖曳，報告本身的閱讀寬度已限制
+  /// 在 900px，多出的空間交給審閱面板。
+  Widget _completedReviewBody(
+    BoxConstraints constraints, {
+    required int initialTab,
+  }) {
+    final defaultWidth = (constraints.maxWidth * 0.40).clamp(420.0, 760.0);
+    final maxWidth = math.max(380.0, constraints.maxWidth - 560.0);
+    final width = (_inspectorWidth ?? defaultWidth)
+        .clamp(380.0, maxWidth)
+        .toDouble();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(flex: 7, child: _reportPanel()),
-        const SizedBox(width: 10),
+        Expanded(child: _reportPanel()),
+        _PanelDragHandle(
+          onDrag: (dx) => setState(() {
+            _inspectorWidth = (width - dx).clamp(380.0, maxWidth).toDouble();
+          }),
+        ),
         SizedBox(
-          width: sidebarWidth
-              .clamp(360.0, constraints.maxWidth * 0.36)
-              .toDouble(),
-          child: Column(
-            children: [
-              Expanded(flex: 5, child: _telemetryPanel()),
-              const SizedBox(height: 10),
-              Expanded(flex: 3, child: _liveFindingsPanel()),
-              const SizedBox(height: 10),
-              SizedBox(height: 190, child: _sourcePreviewPanel(compact: true)),
-            ],
-          ),
+          width: width,
+          child: _reviewInspector(initialTab: initialTab),
         ),
       ],
     );
   }
 
-  Widget _completedEvidenceBody(BoxConstraints constraints) {
-    final railWidth = constraints.maxWidth >= 1500 ? 300.0 : 260.0;
-    final telemetryWidth = constraints.maxWidth >= 1500 ? 420.0 : 360.0;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(
-          width: railWidth.clamp(220.0, constraints.maxWidth * 0.24).toDouble(),
-          child: Column(
-            children: [
-              Expanded(child: _liveFindingsPanel()),
-              const SizedBox(height: 10),
-              SizedBox(height: 210, child: _sourcePreviewPanel(compact: true)),
-            ],
+  /// 審閱面板：即時發現、分析遙測、文件原文三個分頁，各自佔滿面板高度
+  Widget _reviewInspector({required int initialTab}) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final sentenceCount = _result?.sentences.length ?? 0;
+    Tab tab(IconData icon, String label) => Tab(
+      height: 44,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
+        ],
+      ),
+    );
+    return DefaultTabController(
+      key: const ValueKey('workspace-review-inspector'),
+      length: 3,
+      initialIndex: initialTab,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerLow,
+          border: Border.all(color: scheme.outlineVariant),
+          borderRadius: BorderRadius.circular(6),
         ),
-        const SizedBox(width: 10),
-        Expanded(flex: 6, child: _reportPanel()),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: telemetryWidth
-              .clamp(320.0, constraints.maxWidth * 0.3)
-              .toDouble(),
-          child: _telemetryPanel(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TabBar(
+                    dividerHeight: 0,
+                    labelStyle: Theme.of(context).textTheme.titleSmall,
+                    tabs: [
+                      tab(
+                        LucideIcons.target,
+                        sentenceCount == 0
+                            ? l10n.workspaceLiveFindings
+                            : '${l10n.workspaceLiveFindings} · $sentenceCount',
+                      ),
+                      tab(LucideIcons.activity, l10n.workspaceTelemetry),
+                      tab(LucideIcons.fileText, l10n.workspaceDocument),
+                    ],
+                  ),
+                ),
+                Tooltip(
+                  message: l10n.workspaceSentenceSignalTooltip,
+                  triggerMode: TooltipTriggerMode.tap,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Icon(
+                      LucideIcons.helpCircle,
+                      size: 15,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Divider(height: 1, color: scheme.outlineVariant),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  Padding(
+                    key: const ValueKey('workspace-live-findings-panel'),
+                    padding: const EdgeInsets.all(12),
+                    child: _liveFindingsBody(),
+                  ),
+                  Padding(
+                    key: const ValueKey('workspace-telemetry-panel'),
+                    padding: const EdgeInsets.all(12),
+                    child: _telemetryPanel(framed: false),
+                  ),
+                  Padding(
+                    key: const ValueKey('workspace-source-preview-panel'),
+                    padding: const EdgeInsets.all(12),
+                    child: _sourcePreviewBody(),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -1804,33 +1856,38 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 ),
               ),
             ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              readOnly: true,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              style: TextStyle(color: _workspacePrimaryText(context)),
-              decoration: InputDecoration(
-                hintText: l10n.inputHint,
-                hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
-                contentPadding: const EdgeInsets.all(12),
-              ),
+      child: _sourcePreviewBody(),
+    );
+  }
+
+  Widget _sourcePreviewBody() {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _controller,
+            readOnly: true,
+            maxLines: null,
+            expands: true,
+            textAlignVertical: TextAlignVertical.top,
+            style: TextStyle(color: _workspacePrimaryText(context)),
+            decoration: InputDecoration(
+              hintText: l10n.inputHint,
+              hintStyle: TextStyle(color: _workspaceTertiaryText(context)),
+              contentPadding: const EdgeInsets.all(12),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.inputCharCount(_controller.text.trim().length),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: _workspaceSecondaryText(context),
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.inputCharCount(_controller.text.trim().length),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: _workspaceSecondaryText(context),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1927,7 +1984,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return null;
   }
 
-  Widget _telemetryPanel({bool showTimeline = false}) {
+  Widget _telemetryPanel({bool showTimeline = false, bool framed = true}) {
     final l10n = AppLocalizations.of(context);
     final labels = _engineLabels(l10n);
     final completedAssessment = _result == null
@@ -1944,6 +2001,165 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         .whereType<String>()
         .toList();
     final waitingTooLong = _isAnalyzing && _secondsSinceProgress >= 20;
+    final body = LayoutBuilder(
+      builder: (context, constraints) {
+        // 分析完成後一律顯示完整詳細列表（可捲動），避免壓縮版看不到逐模組說明
+        final condensed = _result == null && constraints.maxHeight < 310;
+        return Column(
+          children: [
+            Row(
+              children: [
+                _ProbabilityGauge(
+                  probability: probability,
+                  progress: _overallProgress,
+                  analyzing: _isAnalyzing,
+                  compact: condensed,
+                  engineStates: [
+                    for (final role in PreferencesService.engineRoles)
+                      _done.contains(role)
+                          ? 2
+                          : _activeEngines.contains(role)
+                          ? 1
+                          : 0,
+                  ],
+                ),
+                SizedBox(width: condensed ? 10 : 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(switch (_phase) {
+                        _WorkspacePhase.idle => l10n.workspaceWaiting,
+                        _WorkspacePhase.ready => l10n.workspaceStageParse,
+                        _WorkspacePhase.analyzing => l10n.workspaceAnalyzing,
+                        _WorkspacePhase.complete =>
+                          l10n.workspaceAnalysisComplete,
+                      }, style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: _overallProgress,
+                        minHeight: 6,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (_isAnalyzing) ...[
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    waitingTooLong
+                        ? LucideIcons.hourglass
+                        : LucideIcons.activity,
+                    size: 16,
+                    color: waitingTooLong
+                        ? Theme.of(context).colorScheme.tertiary
+                        : Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      waitingTooLong
+                          ? l10n.workspaceAnalysisSlow(_secondsSinceProgress)
+                          : l10n.workspaceAnalysisActivity(
+                              _done.length,
+                              4,
+                              _elapsedSeconds,
+                              activeNames.join('、'),
+                            ),
+                      maxLines: condensed ? 2 : null,
+                      overflow: condensed ? TextOverflow.ellipsis : null,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: _workspaceSecondaryText(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            SizedBox(height: condensed ? 6 : 12),
+            Expanded(
+              child: condensed
+                  ? Row(
+                      children: [
+                        for (final entry in labels.entries)
+                          Expanded(
+                            child: _EngineTelemetryPulse(
+                              role: entry.key,
+                              label: entry.value,
+                              active: _activeEngines.contains(entry.key),
+                              done: _done.contains(entry.key),
+                              progress: _engineProgress[entry.key] ?? 0,
+                            ),
+                          ),
+                      ],
+                    )
+                  : ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        if (!_isAnalyzing)
+                          Builder(
+                            builder: (context) {
+                              final summary = buildTelemetrySummary(
+                                _result,
+                                l10n,
+                                publication: _publicationEvidence,
+                              );
+                              if (summary.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              return _TelemetrySummaryCard(
+                                title: l10n.telemetrySummaryTitle,
+                                lines: summary,
+                              );
+                            },
+                          ),
+                        for (final entry in labels.entries) ...[
+                          Divider(
+                            height: 1,
+                            color: _workspaceDividerColor(context),
+                          ),
+                          Builder(
+                            builder: (context) {
+                              final group = _engineGroupFor(entry.key, l10n);
+                              final liveScore = _scores[entry.key];
+                              final displayedScore = group != null
+                                  ? group.hasDirectionalSignal
+                                        ? group.probability
+                                        : null
+                                  : liveScore?.hasEvidence == true
+                                  ? liveScore?.aiProbability
+                                  : null;
+                              return _EngineTelemetryRow(
+                                role: entry.key,
+                                label: entry.value,
+                                active: _activeEngines.contains(entry.key),
+                                done: _done.contains(entry.key),
+                                score: displayedScore,
+                                progress: _engineProgress[entry.key] ?? 0,
+                                relationshipText: group?.relationshipText,
+                                reasons: group?.reasons,
+                                modules: group?.modules,
+                              );
+                            },
+                          ),
+                        ],
+                      ],
+                    ),
+            ),
+            if (showTimeline && !condensed) ...[
+              Divider(height: 14, color: _workspaceDividerColor(context)),
+              _timelineStrip(compact: true),
+            ],
+          ],
+        );
+      },
+    );
+    if (!framed) return body;
     return _Panel(
       key: const ValueKey('workspace-telemetry-panel'),
       title: l10n.workspaceTelemetry,
@@ -1953,164 +2169,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             ? '${_done.length}/4 · ${_elapsedSeconds}s'
             : '${(_overallProgress * 100).round()}%',
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // 分析完成後一律顯示完整詳細列表（可捲動），避免壓縮版看不到逐模組說明
-          final condensed = _result == null && constraints.maxHeight < 310;
-          return Column(
-            children: [
-              Row(
-                children: [
-                  _ProbabilityGauge(
-                    probability: probability,
-                    progress: _overallProgress,
-                    analyzing: _isAnalyzing,
-                    compact: condensed,
-                    engineStates: [
-                      for (final role in PreferencesService.engineRoles)
-                        _done.contains(role)
-                            ? 2
-                            : _activeEngines.contains(role)
-                            ? 1
-                            : 0,
-                    ],
-                  ),
-                  SizedBox(width: condensed ? 10 : 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(switch (_phase) {
-                          _WorkspacePhase.idle => l10n.workspaceWaiting,
-                          _WorkspacePhase.ready => l10n.workspaceStageParse,
-                          _WorkspacePhase.analyzing => l10n.workspaceAnalyzing,
-                          _WorkspacePhase.complete =>
-                            l10n.workspaceAnalysisComplete,
-                        }, style: Theme.of(context).textTheme.titleSmall),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: _overallProgress,
-                          minHeight: 6,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (_isAnalyzing) ...[
-                const SizedBox(height: 6),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      waitingTooLong
-                          ? LucideIcons.hourglass
-                          : LucideIcons.activity,
-                      size: 16,
-                      color: waitingTooLong
-                          ? Theme.of(context).colorScheme.tertiary
-                          : Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        waitingTooLong
-                            ? l10n.workspaceAnalysisSlow(_secondsSinceProgress)
-                            : l10n.workspaceAnalysisActivity(
-                                _done.length,
-                                4,
-                                _elapsedSeconds,
-                                activeNames.join('、'),
-                              ),
-                        maxLines: condensed ? 2 : null,
-                        overflow: condensed ? TextOverflow.ellipsis : null,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _workspaceSecondaryText(context),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-              SizedBox(height: condensed ? 6 : 12),
-              Expanded(
-                child: condensed
-                    ? Row(
-                        children: [
-                          for (final entry in labels.entries)
-                            Expanded(
-                              child: _EngineTelemetryPulse(
-                                role: entry.key,
-                                label: entry.value,
-                                active: _activeEngines.contains(entry.key),
-                                done: _done.contains(entry.key),
-                                progress: _engineProgress[entry.key] ?? 0,
-                              ),
-                            ),
-                        ],
-                      )
-                    : ListView(
-                        padding: EdgeInsets.zero,
-                        children: [
-                          if (!_isAnalyzing)
-                            Builder(
-                              builder: (context) {
-                                final summary = buildTelemetrySummary(
-                                  _result,
-                                  l10n,
-                                  publication: _publicationEvidence,
-                                );
-                                if (summary.isEmpty) {
-                                  return const SizedBox.shrink();
-                                }
-                                return _TelemetrySummaryCard(
-                                  title: l10n.telemetrySummaryTitle,
-                                  lines: summary,
-                                );
-                              },
-                            ),
-                          for (final entry in labels.entries) ...[
-                            Divider(
-                              height: 1,
-                              color: _workspaceDividerColor(context),
-                            ),
-                            Builder(
-                              builder: (context) {
-                                final group = _engineGroupFor(entry.key, l10n);
-                                final liveScore = _scores[entry.key];
-                                final displayedScore = group != null
-                                    ? group.hasDirectionalSignal
-                                          ? group.probability
-                                          : null
-                                    : liveScore?.hasEvidence == true
-                                    ? liveScore?.aiProbability
-                                    : null;
-                                return _EngineTelemetryRow(
-                                  role: entry.key,
-                                  label: entry.value,
-                                  active: _activeEngines.contains(entry.key),
-                                  done: _done.contains(entry.key),
-                                  score: displayedScore,
-                                  progress: _engineProgress[entry.key] ?? 0,
-                                  relationshipText: group?.relationshipText,
-                                  reasons: group?.reasons,
-                                  modules: group?.modules,
-                                );
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
-              ),
-              if (showTimeline && !condensed) ...[
-                Divider(height: 14, color: _workspaceDividerColor(context)),
-                _timelineStrip(compact: true),
-              ],
-            ],
-          );
-        },
-      ),
+      child: body,
     );
   }
 
@@ -2183,52 +2242,75 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   Widget _liveFindingsPanel() {
     final l10n = AppLocalizations.of(context);
-    final evidence = _evidenceRows();
     return _Panel(
       key: const ValueKey('workspace-live-findings-panel'),
       title: l10n.workspaceLiveFindings,
       icon: LucideIcons.target,
-      infoTooltip: evidence.isEmpty
-          ? null
-          : l10n.workspaceSentenceSignalTooltip,
-      child: evidence.isEmpty
-          ? Center(
-              child: Text(
-                l10n.workspaceNoEvidence,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            )
-          : ListView.separated(
-              key: const ValueKey('workspace-live-findings-list'),
-              itemCount: evidence.length,
-              separatorBuilder: (context, index) =>
-                  Divider(height: 1, color: _workspaceDividerColor(context)),
-              itemBuilder: (context, index) {
-                final item = evidence[index];
-                return ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  leading: _EvidenceIndexBadge(
-                    index: index + 1,
-                    probability: item.$2,
-                  ),
-                  title: Text(item.$1),
-                  trailing: Text(_sentenceSignalLabel(item.$2, item.$3)),
-                );
-              },
-            ),
+      infoTooltip: l10n.workspaceSentenceSignalTooltip,
+      child: _liveFindingsBody(),
     );
   }
 
-  /// 第三個欄位：這句的數值是否真的由神經模型支撐。為 false 時介面顯示棄權，
-  /// 不顯示百分比——沒有模型投票時的逐句數值只是文件級分數的估計，把它當成
-  /// 「模型判定這句 1% 像 AI」會直接誤導讀者。
-  List<(String, double, bool)> _evidenceRows() {
+  Widget _liveFindingsBody() {
+    final l10n = AppLocalizations.of(context);
+    final result = _result;
+    final rows = result != null
+        ? SentenceFindingRow.fromResult(result)
+        : [
+            for (final (i, row) in _evidenceRows().indexed)
+              SentenceFindingRow(
+                number: i + 1,
+                text: row.$1,
+                score: row.$4 ? row.$2 : null,
+                status: row.$4
+                    ? SentenceFindingStatus.voted
+                    : SentenceFindingStatus.pending,
+              ),
+          ];
+    if (rows.isEmpty) {
+      return Center(
+        child: Text(
+          l10n.workspaceNoEvidence,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    }
+    return SentenceFindingsView(
+      // 換一次分析就重建，排序與展開狀態不沿用上一份文件
+      key: ValueKey('findings-${result?.id ?? 'live'}'),
+      rows: rows,
+      sortByScoreInitially: result != null,
+      onFullAnalysis: result == null || _isAnalyzing
+          ? null
+          : () => _startAnalysis(fullSentenceAnalysis: true),
+    );
+  }
+
+  /// 每句的（原文、顯示分數、是否有實測分數、是否由投票引擎支撐）。
+  ///
+  /// 沒有任何模型看過的句子不顯示百分比——那時的逐句數值只是文件級分數的
+  /// 估計，把它當成「模型判定這句 1% 像 AI」會直接誤導讀者。引擎看過但
+  /// 未達證據門檻的句子則顯示實測分數，並以括號標示「不計入判讀」。
+  List<(String, double, bool, bool)> _evidenceRows() {
     if (_result != null) {
       return [
         for (final sentence in _result!.sentences)
-          (sentence.text, sentence.aiProbability, sentence.modelBacked),
+          switch (sentence.status) {
+            SentenceScoreStatus.voted => (
+              sentence.text,
+              sentence.aiProbability,
+              true,
+              true,
+            ),
+            SentenceScoreStatus.measuredBelowEvidence => (
+              sentence.text,
+              sentence.measuredProbability ?? sentence.aiProbability,
+              true,
+              false,
+            ),
+            _ => (sentence.text, sentence.aiProbability, false, false),
+          },
       ];
     }
     final text = PreprocessedText.from(_controller.text);
@@ -2238,13 +2320,21 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     );
     return [
       for (var i = 0; i < text.sentences.length; i++)
-        (text.sentences[i], _runningSentenceScore(i), hasNeural),
+        (text.sentences[i], _runningSentenceScore(i), hasNeural, hasNeural),
     ];
   }
 
-  /// 逐句訊號的顯示字串。棄權以破折號呈現，與報告其他地方的棄權標示一致。
-  static String _sentenceSignalLabel(double probability, bool modelBacked) =>
-      modelBacked ? '${(probability * 100).round()}%' : '—';
+  /// 逐句訊號的顯示字串。沒有實測分數以破折號呈現；實測但未達證據門檻者
+  /// 加括號，表示不計入判讀。
+  static String _sentenceSignalLabel(
+    double probability,
+    bool measured, {
+    bool voted = true,
+  }) {
+    if (!measured) return '—';
+    final percent = '${(probability * 100).round()}%';
+    return voted ? percent : '($percent)';
+  }
 
   double _runningSentenceScore(int index) {
     var weighted = 0.0;
@@ -2362,7 +2452,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                                 ),
                                 Expanded(child: Text(item.$1)),
                                 const SizedBox(width: 8),
-                                Text(_sentenceSignalLabel(item.$2, item.$3)),
+                                Text(
+                                  _sentenceSignalLabel(
+                                    item.$2,
+                                    item.$3,
+                                    voted: item.$4,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -2872,52 +2968,6 @@ class _TelemetrySummaryCard extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _EvidenceIndexBadge extends StatelessWidget {
-  final int index;
-  final double probability;
-
-  const _EvidenceIndexBadge({required this.index, required this.probability});
-
-  @override
-  Widget build(BuildContext context) {
-    final label = '$index';
-    final color = AppTheme.verdictColor(
-      probability,
-      brightness: Theme.of(context).brightness,
-    );
-    final width = evidenceIndexBadgeWidthFor(index);
-    return Semantics(
-      label: label,
-      child: SizedBox(
-        key: ValueKey('evidence-index-$index'),
-        width: width,
-        height: 26,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(13),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                label,
-                maxLines: 1,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0,
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

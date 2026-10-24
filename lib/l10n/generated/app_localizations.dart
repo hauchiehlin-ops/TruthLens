@@ -4562,7 +4562,7 @@ abstract class AppLocalizations {
   /// No description provided for @workspaceSentenceSignalTooltip.
   ///
   /// In en, this message translates to:
-  /// **'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.'**
+  /// **'The percentage is this sentence\'s own model score, not the document verdict. Higher means the wording looks more AI-generated. A low score only means the model saw no AI traits in this sentence; it is not evidence of human writing. Numbers marked “not counted” come from an engine that did not reach its evidence threshold. The final report combines the engines with their weights.'**
   String get workspaceSentenceSignalTooltip;
 
   /// No description provided for @workspaceSentenceSignalHeader.
@@ -6111,6 +6111,161 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} text engine(s) do not support this language or are not installed'**
   String gapEnginesUnavailable(int count);
+
+  /// No description provided for @reportEngineResolutionLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'This engine\'s model does not support the document\'s language; re-downloading or updating will not fix it.'**
+  String get reportEngineResolutionLanguage;
+
+  /// No description provided for @gapRemedyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What helps: '**
+  String get gapRemedyLabel;
+
+  /// No description provided for @gapRemedyDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'For this kind of document, rely on file provenance, reference checks and the writing process; treat the text score as reference only.'**
+  String get gapRemedyDomain;
+
+  /// No description provided for @gapRemedyLanguageUnvalidated.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to a classifier validated for this language in Model management if one is available; otherwise treat the text score as reference only.'**
+  String get gapRemedyLanguageUnvalidated;
+
+  /// No description provided for @gapRemedyPerplexity.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a limit of the method itself: the perplexity of modern AI long-form text overlaps with human writing, so no model or setting change will fix it. Rely on file provenance, reference checks and the writing process.'**
+  String get gapRemedyPerplexity;
+
+  /// No description provided for @gapRemedyEngineLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a limit of model coverage: the model catalog has no model of this kind for this language yet, so re-downloading or updating will not fix it.'**
+  String get gapRemedyEngineLanguage;
+
+  /// No description provided for @gapRemedyEngineInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-download the model in Model management, then analyse again.'**
+  String get gapRemedyEngineInstall;
+
+  /// No description provided for @gapEngineLanguageUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine}: its model does not support {language}'**
+  String gapEngineLanguageUnsupported(String engine, String language);
+
+  /// No description provided for @gapEngineNotInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'{engine}: not installed or failed to load'**
+  String gapEngineNotInstalled(String engine);
+
+  /// No description provided for @workspaceFindingsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{measured}/{total} sentences scored by a model · {flagged} at or above the {threshold}% threshold'**
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  );
+
+  /// No description provided for @workspaceFindingsSortScore.
+  ///
+  /// In en, this message translates to:
+  /// **'By score'**
+  String get workspaceFindingsSortScore;
+
+  /// No description provided for @workspaceFindingsSortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Document order'**
+  String get workspaceFindingsSortOrder;
+
+  /// No description provided for @workspaceFindingsMeasuredOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Scored only'**
+  String get workspaceFindingsMeasuredOnly;
+
+  /// No description provided for @workspaceFindingsScreenedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-document fast screening: only {measured} of {total} sentences were sent to the model. The rest show “not sampled”.'**
+  String workspaceFindingsScreenedBanner(int measured, int total);
+
+  /// No description provided for @workspaceFindingsFullAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyse every sentence'**
+  String get workspaceFindingsFullAnalysis;
+
+  /// No description provided for @sentenceScoreBelowEvidenceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The model\'s own score for this sentence. The engine did not reach its evidence threshold in this analysis, so this number is not counted in the verdict. A low score only means the model saw no AI traits here; it is not evidence of human writing.'**
+  String get sentenceScoreBelowEvidenceHint;
+
+  /// No description provided for @sentenceScoreBelowEvidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'not counted'**
+  String get sentenceScoreBelowEvidenceLabel;
+
+  /// No description provided for @sentenceStatusScreenedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'not sampled'**
+  String get sentenceStatusScreenedOut;
+
+  /// No description provided for @sentenceStatusScreenedOutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast screening of long documents did not sample this sentence. Use “Analyse every sentence” to score it.'**
+  String get sentenceStatusScreenedOutHint;
+
+  /// No description provided for @sentenceStatusNotSent.
+  ///
+  /// In en, this message translates to:
+  /// **'not sent'**
+  String get sentenceStatusNotSent;
+
+  /// No description provided for @sentenceStatusNotSentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'References, headings and similar lines are not sent to the model.'**
+  String get sentenceStatusNotSentHint;
+
+  /// No description provided for @sentenceStatusNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'no model'**
+  String get sentenceStatusNoModel;
+
+  /// No description provided for @sentenceStatusNoModelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No neural model for this language produced sentence scores in this analysis.'**
+  String get sentenceStatusNoModelHint;
+
+  /// No description provided for @sentenceStatusNotAnalyzable.
+  ///
+  /// In en, this message translates to:
+  /// **'skipped'**
+  String get sentenceStatusNotAnalyzable;
+
+  /// No description provided for @sentenceStatusNotAnalyzableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short or not a complete sentence, so it is not analysed.'**
+  String get sentenceStatusNotAnalyzableHint;
 
   /// No description provided for @textDiscriminabilityClosing.
   ///

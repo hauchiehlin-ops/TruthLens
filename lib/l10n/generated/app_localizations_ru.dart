@@ -2866,7 +2866,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'Этот процент — собственный сигнал ИИ данного предложения, а не общий вердикт по документу. Чем выше значение, тем больше формулировка похожа на сгенерированную ИИ; чем ниже — тем больше она напоминает типичное человеческое письмо. Итоговый отчёт объединяет все предложения с учётом весов движков.';
+      'Процент — это собственная оценка модели для этого предложения, а не заключение по документу. Чем выше, тем больше формулировка похожа на текст ИИ. Низкая оценка лишь означает, что модель не увидела в этом предложении признаков ИИ; это не доказательство написания человеком. Числа с пометкой «не учитывается» получены от движка, не достигшего порога доказательности. Итоговый отчёт объединяет движки с учётом их весов.';
 
   @override
   String get workspaceSentenceSignalHeader => 'Сигнал ИИ по предложению';
@@ -3892,6 +3892,106 @@ class AppLocalizationsRu extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count текстовых движков не поддерживают этот язык или не установлены';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'Модель этого движка не поддерживает язык документа; повторная загрузка или обновление не помогут.';
+
+  @override
+  String get gapRemedyLabel => 'Что поможет: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'Для такого документа опирайтесь на происхождение файла, проверку литературы и процесс написания; текстовую оценку используйте только как ориентир.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Переключитесь в «Управлении моделями» на классификатор, проверенный для этого языка, если он есть; иначе текстовая оценка — только ориентир.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'Это ограничение самого метода: перплексия длинных текстов современного ИИ пересекается с человеческим письмом, и смена модели или настроек этого не исправит. Опирайтесь на происхождение файла, проверку литературы и процесс написания.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'Это ограничение охвата моделей: в каталоге пока нет модели такого типа для этого языка, поэтому повторная загрузка или обновление не помогут.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Повторно загрузите модель в «Управлении моделями» и выполните анализ снова.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: модель не поддерживает $language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: не установлен или не загрузился';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return 'Модель оценила $measured/$total предложений · $flagged на пороге $threshold% или выше';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'По оценке';
+
+  @override
+  String get workspaceFindingsSortOrder => 'По порядку текста';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Только оценённые';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Быстрый отбор длинных документов: модели отправлено только $measured из $total предложений. Остальные помечены «не в выборке».';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis =>
+      'Проанализировать каждое предложение';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'Собственная оценка модели для этого предложения. В этом анализе движок не достиг своего порога доказательности, поэтому число не учитывается в заключении. Низкая оценка лишь означает, что модель не увидела здесь признаков ИИ; это не доказательство написания человеком.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'не учитывается';
+
+  @override
+  String get sentenceStatusScreenedOut => 'не в выборке';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'Быстрый отбор длинных документов не включил это предложение. Нажмите «Проанализировать каждое предложение», чтобы получить оценку.';
+
+  @override
+  String get sentenceStatusNotSent => 'не отправлено';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'Список литературы, заголовки и подобные строки не отправляются модели.';
+
+  @override
+  String get sentenceStatusNoModel => 'нет модели';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'В этом анализе ни одна нейросетевая модель для этого языка не выдала оценок по предложениям.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'пропущено';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Слишком короткое или неполное предложение, поэтому не анализируется.';
 
   @override
   String get textDiscriminabilityClosing =>

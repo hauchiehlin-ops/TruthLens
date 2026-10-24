@@ -1020,20 +1020,46 @@ class _DiscriminabilityNotice extends StatelessWidget {
     required this.l10n,
   });
 
-  String _gapText(DiscriminabilityGap gap) {
+  /// 每個缺口的說明與「可行做法」。可行做法刻意區分「換設定能改善」與
+  /// 「方法或模型涵蓋範圍本身的限制」——後者換設定、重新下載都沒用，
+  /// 使用者需要知道該轉而依靠哪些證據，而不是反覆重試。
+  List<(String, String)> _gapLines(DiscriminabilityGap gap) {
     final domain = localizedDomainName(discriminability.domain, l10n);
     return switch (gap) {
-      DiscriminabilityGap.domainKnownMiss => l10n.gapDomainKnownMiss(
-        domain,
-        discriminability.probeDocuments - discriminability.probeDetected,
-        discriminability.probeDocuments,
-      ),
-      DiscriminabilityGap.domainUnmeasured => l10n.gapDomainUnmeasured(domain),
-      DiscriminabilityGap.languageUnvalidated => l10n.gapLanguageUnvalidated,
-      DiscriminabilityGap.perplexityOutdated => l10n.gapPerplexityOutdated,
-      DiscriminabilityGap.enginesUnavailable => l10n.gapEnginesUnavailable(
-        discriminability.unavailableEngines,
-      ),
+      DiscriminabilityGap.domainKnownMiss => [
+        (
+          l10n.gapDomainKnownMiss(
+            domain,
+            discriminability.probeDocuments - discriminability.probeDetected,
+            discriminability.probeDocuments,
+          ),
+          l10n.gapRemedyDomain,
+        ),
+      ],
+      DiscriminabilityGap.domainUnmeasured => [
+        (l10n.gapDomainUnmeasured(domain), l10n.gapRemedyDomain),
+      ],
+      DiscriminabilityGap.languageUnvalidated => [
+        (l10n.gapLanguageUnvalidated, l10n.gapRemedyLanguageUnvalidated),
+      ],
+      DiscriminabilityGap.perplexityOutdated => [
+        (l10n.gapPerplexityOutdated, l10n.gapRemedyPerplexity),
+      ],
+      DiscriminabilityGap.enginesUnavailable => [
+        for (final role in discriminability.languageUnsupportedRoles)
+          (
+            l10n.gapEngineLanguageUnsupported(
+              EngineGroup._roleLabel(role, l10n),
+              localizedLanguageName(discriminability.language, l10n),
+            ),
+            l10n.gapRemedyEngineLanguage,
+          ),
+        for (final role in discriminability.notInstalledRoles)
+          (
+            l10n.gapEngineNotInstalled(EngineGroup._roleLabel(role, l10n)),
+            l10n.gapRemedyEngineInstall,
+          ),
+      ],
     };
   }
 
@@ -1070,13 +1096,33 @@ class _DiscriminabilityNotice extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           for (final gap in discriminability.gaps)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 3),
-              child: Text(
-                '• ${_gapText(gap)}',
-                style: textTheme.bodySmall?.copyWith(color: color, height: 1.4),
+            for (final (text, remedy) in _gapLines(gap))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '• $text',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: color,
+                        height: 1.4,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12, top: 1),
+                      child: Text(
+                        '${l10n.gapRemedyLabel}$remedy',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: color.withValues(alpha: 0.8),
+                          height: 1.4,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           const SizedBox(height: 4),
           Text(
             provenanceDriven
@@ -1942,6 +1988,10 @@ class EngineGroup {
   final List<String> reasons;
   final AppLocalizations l10n;
 
+  /// 不參與的原因是「模型不支援本文語言」，而不是載入或推論失敗。
+  /// 兩者解法完全不同：重新下載模型救不了語言不支援。
+  final bool languageUnsupported;
+
   const EngineGroup({
     required this.role,
     required this.label,
@@ -1957,6 +2007,7 @@ class EngineGroup {
     required this.modules,
     required this.reasons,
     required this.l10n,
+    this.languageUnsupported = false,
   });
 
   String get relationshipText {
@@ -1964,7 +2015,9 @@ class EngineGroup {
     if (!available) {
       return l10n.reportEngineRelationshipUnavailable(
         label,
-        _resolutionHint(role, l10n),
+        languageUnsupported
+            ? l10n.reportEngineResolutionLanguage
+            : _resolutionHint(role, l10n),
       );
     }
     if (!hasEvidence) {
@@ -2118,6 +2171,13 @@ class EngineGroup {
           ? [_fallbackReason(role, available, l10n)]
           : uniqueReasons,
       l10n: l10n,
+      languageUnsupported:
+          !available &&
+          scores.any(
+            (s) =>
+                s.available &&
+                s.applicability == EngineApplicability.unsupported,
+          ),
     );
   }
 

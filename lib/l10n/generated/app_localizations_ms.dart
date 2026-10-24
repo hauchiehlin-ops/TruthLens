@@ -2863,7 +2863,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'Peratusan ini ialah isyarat AI ayat ini sendiri, bukan keputusan keseluruhan dokumen. Lebih tinggi bermakna corak perkataan kelihatan lebih dijana AI; lebih rendah bermakna ia lebih menyerupai penulisan manusia biasa. Laporan akhir menggabungkan setiap ayat dengan pemberatan enjin.';
+      'Peratusan ialah skor model sendiri untuk ayat ini, bukan keputusan dokumen. Lebih tinggi bermakna susunan katanya lebih mirip hasil AI. Skor rendah hanya bermakna model tidak melihat ciri AI dalam ayat ini; ia bukan bukti tulisan manusia. Nombor bertanda “tidak dikira” datang daripada enjin yang tidak mencapai ambang buktinya. Laporan akhir menggabungkan enjin mengikut pemberatnya.';
 
   @override
   String get workspaceSentenceSignalHeader => 'Isyarat AI setiap ayat';
@@ -3890,6 +3890,105 @@ class AppLocalizationsMs extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count enjin teks tidak menyokong bahasa ini atau belum dipasang';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'Model enjin ini tidak menyokong bahasa dokumen; memuat turun semula atau mengemas kini tidak akan menyelesaikannya.';
+
+  @override
+  String get gapRemedyLabel => 'Yang membantu: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'Untuk jenis dokumen ini, bergantung pada asal fail, semakan rujukan dan proses penulisan; skor teks hanya sebagai rujukan.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Tukar dalam Pengurusan model kepada pengelas yang disahkan untuk bahasa ini jika ada; jika tiada, skor teks hanya sebagai rujukan.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'Ini had kaedah itu sendiri: kekeliruan (perplexity) teks panjang AI moden bertindih dengan tulisan manusia, jadi menukar model atau tetapan tidak akan membaikinya. Bergantung pada asal fail, semakan rujukan dan proses penulisan.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'Ini had liputan model: katalog model belum mempunyai model sejenis untuk bahasa ini, jadi memuat turun semula atau mengemas kini tidak akan menyelesaikannya.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Muat turun semula model dalam Pengurusan model, kemudian analisis sekali lagi.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: modelnya tidak menyokong $language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: tidak dipasang atau gagal dimuatkan';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '$measured/$total ayat diberi skor oleh model · $flagged pada atau melebihi ambang $threshold%';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'Mengikut skor';
+
+  @override
+  String get workspaceFindingsSortOrder => 'Susunan dokumen';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Yang berskor sahaja';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Saringan pantas dokumen panjang: hanya $measured daripada $total ayat dihantar ke model. Selebihnya ditanda “tidak disampel”.';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'Analisis setiap ayat';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'Skor model sendiri untuk ayat ini. Enjin tidak mencapai ambang buktinya dalam analisis ini, jadi nombor ini tidak dikira dalam keputusan. Skor rendah hanya bermakna model tidak melihat ciri AI di sini; ia bukan bukti tulisan manusia.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'tidak dikira';
+
+  @override
+  String get sentenceStatusScreenedOut => 'tidak disampel';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'Saringan pantas dokumen panjang tidak menyampel ayat ini. Gunakan “Analisis setiap ayat” untuk memberinya skor.';
+
+  @override
+  String get sentenceStatusNotSent => 'tidak dihantar';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'Rujukan, tajuk dan baris seumpamanya tidak dihantar ke model.';
+
+  @override
+  String get sentenceStatusNoModel => 'tiada model';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'Tiada model neural untuk bahasa ini menghasilkan skor setiap ayat dalam analisis ini.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'dilangkau';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Terlalu pendek atau bukan ayat lengkap, jadi tidak dianalisis.';
 
   @override
   String get textDiscriminabilityClosing =>

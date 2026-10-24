@@ -2847,7 +2847,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'เปอร์เซ็นต์นี้คือสัญญาณ AI ของประโยคนี้เอง ไม่ใช่คำตัดสินโดยรวมของเอกสาร ค่าที่สูงกว่าหมายถึงรูปแบบถ้อยคำดูเหมือนสร้างโดย AI มากกว่า ค่าที่ต่ำกว่าหมายถึงอ่านดูเหมือนการเขียนของมนุษย์ทั่วไปมากกว่า รายงานฉบับสุดท้ายจะรวมทุกประโยคเข้ากับการถ่วงน้ำหนักของเอนจิน';
+      'ร้อยละนี้คือคะแนนของโมเดลสำหรับ “ประโยคนี้” เอง ไม่ใช่การตัดสินทั้งเอกสาร ยิ่งสูงยิ่งแสดงว่าการใช้ถ้อยคำใกล้เคียงข้อความที่ AI สร้าง คะแนนต่ำแปลว่าโมเดลไม่พบลักษณะของ AI ในประโยคนี้เท่านั้น ไม่ใช่หลักฐานว่ามนุษย์เขียน ตัวเลขที่ระบุ “ไม่นับ” มาจากเอนจินที่ไม่ถึงเกณฑ์หลักฐานในครั้งนี้ รายงานฉบับสุดท้ายจะรวมผลตามน้ำหนักของแต่ละเอนจิน';
 
   @override
   String get workspaceSentenceSignalHeader => 'สัญญาณ AI ต่อประโยค';
@@ -3864,6 +3864,105 @@ class AppLocalizationsTh extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return 'เอนจินข้อความ $count ตัวไม่รองรับภาษานี้หรือยังไม่ได้ติดตั้ง';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'โมเดลของเอนจินนี้ไม่รองรับภาษาของเอกสาร การดาวน์โหลดใหม่หรืออัปเดตจะไม่ช่วยแก้ไข';
+
+  @override
+  String get gapRemedyLabel => 'สิ่งที่ช่วยได้: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'เอกสารประเภทนี้ควรอาศัยที่มาของไฟล์ การตรวจรายการอ้างอิง และกระบวนการเขียนเป็นหลัก คะแนนข้อความใช้อ้างอิงเท่านั้น';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'หากมีตัวจำแนกที่ผ่านการตรวจสอบสำหรับภาษานี้ ให้เปลี่ยนในการจัดการโมเดล หากไม่มี คะแนนข้อความใช้อ้างอิงเท่านั้น';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'นี่คือข้อจำกัดของวิธีการเอง: ค่าความงุนงงของข้อความยาวจาก AI รุ่นใหม่ทับซ้อนกับงานเขียนของมนุษย์ การเปลี่ยนโมเดลหรือการตั้งค่าไม่ช่วย ให้พิจารณาจากที่มาของไฟล์ การตรวจรายการอ้างอิง และกระบวนการเขียน';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'นี่คือข้อจำกัดด้านขอบเขตของโมเดล: ในแคตตาล็อกยังไม่มีโมเดลประเภทนี้สำหรับภาษานี้ การดาวน์โหลดใหม่หรืออัปเดตจึงไม่ช่วยแก้ไข';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'ดาวน์โหลดโมเดลใหม่ในการจัดการโมเดล แล้ววิเคราะห์อีกครั้ง';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: โมเดลไม่รองรับ$language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: ยังไม่ได้ติดตั้งหรือโหลดไม่สำเร็จ';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return 'โมเดลให้คะแนนแล้ว $measured/$total ประโยค · ถึงเกณฑ์ $threshold% ขึ้นไป $flagged ประโยค';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'ตามคะแนน';
+
+  @override
+  String get workspaceFindingsSortOrder => 'ตามลำดับต้นฉบับ';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'เฉพาะที่มีคะแนน';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'การคัดกรองเอกสารยาวแบบเร็ว: จาก $total ประโยค ส่งเข้าโมเดลเพียง $measured ประโยค ที่เหลือแสดงเป็น “ไม่ได้สุ่ม”';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'วิเคราะห์ทุกประโยค';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'นี่คือคะแนนของโมเดลสำหรับประโยคนี้เอง ในการวิเคราะห์ครั้งนี้เอนจินไม่ถึงเกณฑ์หลักฐาน ตัวเลขนี้จึงไม่นับในการตัดสิน คะแนนต่ำแปลว่าโมเดลไม่พบลักษณะของ AI ในประโยคนี้เท่านั้น ไม่ใช่หลักฐานว่ามนุษย์เขียน';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'ไม่นับ';
+
+  @override
+  String get sentenceStatusScreenedOut => 'ไม่ได้สุ่ม';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'การคัดกรองเอกสารยาวแบบเร็วไม่ได้สุ่มประโยคนี้ กด “วิเคราะห์ทุกประโยค” เพื่อรับคะแนน';
+
+  @override
+  String get sentenceStatusNotSent => 'ไม่ได้ส่ง';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'รายการอ้างอิง หัวข้อ และบรรทัดลักษณะเดียวกันจะไม่ถูกส่งเข้าโมเดล';
+
+  @override
+  String get sentenceStatusNoModel => 'ไม่มีโมเดล';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'ในการวิเคราะห์ครั้งนี้ไม่มีโมเดลนิวรัลสำหรับภาษานี้ที่ให้คะแนนรายประโยค';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'ข้าม';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'สั้นเกินไปหรือไม่ใช่ประโยคสมบูรณ์ จึงไม่วิเคราะห์';
 
   @override
   String get textDiscriminabilityClosing =>

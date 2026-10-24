@@ -2782,7 +2782,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      '이 백분율은 이 문장 자체의 AI 신호이며 문서 전체의 판정이 아닙니다. 값이 높을수록 문구 패턴이 AI가 생성한 것처럼 보이고, 낮을수록 일반적인 인간의 글쓰기처럼 읽힙니다. 최종 보고서는 모든 문장을 엔진 가중치와 결합합니다.';
+      '이 백분율은 ‘이 문장’ 자체의 모델 점수이며 문서 전체 판정이 아닙니다. 높을수록 표현이 AI 생성에 가깝습니다. 낮은 점수는 모델이 이 문장에서 AI 특징을 보지 못했다는 뜻일 뿐, 사람이 썼다는 증거가 아닙니다. ‘미반영’으로 표시된 숫자는 이번에 증거 임계값에 도달하지 못한 엔진에서 나온 것입니다. 최종 보고서는 엔진별 가중치로 종합 판정합니다.';
 
   @override
   String get workspaceSentenceSignalHeader => '문장별 AI 신호';
@@ -3779,6 +3779,103 @@ class AppLocalizationsKo extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '텍스트 엔진 $count개가 이 언어를 지원하지 않거나 설치되지 않았습니다';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      '이 엔진의 모델은 문서 언어를 지원하지 않습니다. 다시 다운로드하거나 업데이트해도 해결되지 않습니다.';
+
+  @override
+  String get gapRemedyLabel => '도움이 되는 방법: ';
+
+  @override
+  String get gapRemedyDomain =>
+      '이런 문서는 파일 출처, 참고문헌 확인, 작성 과정을 주된 근거로 삼고 텍스트 점수는 참고로만 보세요.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      '이 언어로 검증된 분류기가 있으면 모델 관리에서 바꾸세요. 없으면 텍스트 점수는 참고로만 보세요.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      '방법 자체의 한계입니다. 최신 AI 장문의 퍼플렉서티는 사람의 글과 겹치므로 모델이나 설정을 바꿔도 개선되지 않습니다. 파일 출처, 참고문헌 확인, 작성 과정으로 판단하세요.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      '모델 지원 범위의 한계입니다. 모델 목록에 아직 이 언어를 지원하는 같은 종류의 모델이 없으므로 다시 다운로드하거나 업데이트해도 해결되지 않습니다.';
+
+  @override
+  String get gapRemedyEngineInstall => '모델 관리에서 모델을 다시 다운로드한 뒤 다시 분석하세요.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: 모델이 $language을(를) 지원하지 않음';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: 설치되지 않았거나 불러오지 못함';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '모델이 점수를 매긴 문장 $measured/$total · $threshold% 임계값 이상 $flagged개';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => '점수순';
+
+  @override
+  String get workspaceFindingsSortOrder => '원문 순서';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => '점수 있는 것만';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return '긴 문서 빠른 선별: $total개 문장 중 $measured개만 모델에 보냈습니다. 나머지는 ‘미표본’으로 표시합니다.';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => '모든 문장 분석';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      '이 문장에 대한 모델 자체 점수입니다. 이번에 이 엔진은 증거 임계값에 도달하지 못해 이 숫자는 판정에 반영되지 않습니다. 낮은 점수는 모델이 여기서 AI 특징을 보지 못했다는 뜻일 뿐, 사람이 썼다는 증거가 아닙니다.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => '미반영';
+
+  @override
+  String get sentenceStatusScreenedOut => '미표본';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      '긴 문서 빠른 선별에서 이 문장은 표본으로 뽑히지 않았습니다. ‘모든 문장 분석’으로 점수를 받을 수 있습니다.';
+
+  @override
+  String get sentenceStatusNotSent => '미전송';
+
+  @override
+  String get sentenceStatusNotSentHint => '참고문헌, 제목 등은 모델에 보내지 않습니다.';
+
+  @override
+  String get sentenceStatusNoModel => '모델 없음';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      '이번 분석에서 이 언어에 맞는 신경망 모델이 문장별 점수를 내지 않았습니다.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => '제외';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      '너무 짧거나 완전한 문장이 아니어서 분석하지 않습니다.';
 
   @override
   String get textDiscriminabilityClosing =>
