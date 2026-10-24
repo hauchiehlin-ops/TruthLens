@@ -153,7 +153,8 @@ class _SentenceFindingsViewState extends State<SentenceFindingsView> {
         if (screenedOut > 0) ...[
           const SizedBox(height: 8),
           _ScreeningBanner(
-            measured: rows.length - screenedOut,
+            // 與上方摘要同一個數字：真的拿到模型分數的句子
+            measured: measured,
             total: rows.length,
             onFullAnalysis: widget.onFullAnalysis,
           ),
@@ -296,7 +297,7 @@ class _ScreeningBanner extends StatelessWidget {
             const SizedBox(height: 6),
             Align(
               alignment: Alignment.centerRight,
-              child: FilledButton.tonalIcon(
+              child: FilledButton.icon(
                 key: const ValueKey('findings-full-analysis'),
                 onPressed: onFullAnalysis,
                 icon: const Icon(LucideIcons.scanLine, size: 16),
