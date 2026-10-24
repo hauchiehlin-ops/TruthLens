@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/services/artifact_trace.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -56,6 +57,45 @@ class ProvenanceCard extends StatelessWidget {
         signal.label == null
             ? l10n.provenanceSignalC2paUnknown
             : l10n.provenanceSignalC2pa(signal.label!),
+      ProvenanceSignalKind.chatCitationArtifact =>
+        l10n.provenanceSignalChatCitation(v['count'] ?? 0),
+      ProvenanceSignalKind.aiReferralLink => l10n.provenanceSignalAiReferral(
+        v['count'] ?? 0,
+      ),
+      ProvenanceSignalKind.unregisteredRsids =>
+        l10n.provenanceSignalUnregisteredRsids(
+          v['count'] ?? 0,
+          v['total'] ?? 0,
+        ),
+      ProvenanceSignalKind.editingTimeExceedsLifetime =>
+        l10n.provenanceSignalTimeExceedsLifetime(
+          v['minutes'] ?? 0,
+          v['lifetime'] ?? 0,
+        ),
+      ProvenanceSignalKind.sessionsExceedRevisions =>
+        l10n.provenanceSignalSessionsExceedRevisions(
+          v['sessions'] ?? 0,
+          v['revisions'] ?? 0,
+        ),
+      ProvenanceSignalKind.forgedPdfProducer =>
+        l10n.provenanceSignalForgedProducer(signal.label ?? '—'),
+      ProvenanceSignalKind.hollowWordComponents =>
+        l10n.provenanceSignalHollowWordParts(signal.label ?? '—'),
+      ProvenanceSignalKind.declaredStatsMismatch =>
+        l10n.provenanceSignalStatsMismatch(
+          v['declared'] ?? 0,
+          v['actual'] ?? 0,
+        ),
+      ProvenanceSignalKind.syntheticRunFragmentation =>
+        l10n.provenanceSignalRunFragmentation(v['count'] ?? 0, v['runs'] ?? 0),
+      ProvenanceSignalKind.pdfProducerRewritten =>
+        l10n.provenanceSignalProducerRewritten(signal.label ?? '—'),
+      ProvenanceSignalKind.pdfInfoXmpConflict =>
+        l10n.provenanceSignalInfoXmpConflict(signal.label ?? '—'),
+      ProvenanceSignalKind.pdfStructureMismatch =>
+        l10n.provenanceSignalPdfStructureMismatch,
+      ProvenanceSignalKind.webStyleResidue =>
+        l10n.provenanceSignalWebStyleResidue(v['count'] ?? 0),
     };
   }
 
@@ -180,6 +220,21 @@ class ProvenanceCard extends StatelessWidget {
                     ),
                   ),
                 ),
+            ],
+            // 洗滌痕跡的意義與其他訊號不同：它說明有人動過手腳，且讓
+            // 編輯歷程失去作為「由人撰寫」證據的資格，因此單獨點出
+            if (ArtifactTraceReport.evaluate(
+              provenance,
+            ).concealmentDetected) ...[
+              const SizedBox(height: 10),
+              Text(
+                l10n.provenanceConcealmentDetected,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  height: 1.5,
+                  fontWeight: FontWeight.w600,
+                  color: accent,
+                ),
+              ),
             ],
             if (provenance.signals.isNotEmpty) ...[
               const SizedBox(height: 10),

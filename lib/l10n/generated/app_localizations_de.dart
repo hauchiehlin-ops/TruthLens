@@ -3032,6 +3032,124 @@ class AppLocalizationsDe extends AppLocalizations {
       'Jeder Punkt unten lässt sich unabhängig prüfen. Anders als eine Wahrscheinlichkeit verlieren diese nicht an Kraft, wenn Sprachmodelle besser werden.';
 
   @override
+  String get aiSignalInventoryTitle => 'KI-Signalverzeichnis';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Jedes in dieser Analyse erfasste KI-bezogene Signal, einzeln aufgeführt mit Kategorie, Stärke, Rolle im Urteil und Fundstelle, damit jeder Punkt an Originaldatei oder -text geprüft werden kann.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'In dieser Analyse wurde kein KI-Signal erfasst. Das bedeutet nicht zwingend, dass ein Mensch das Dokument verfasst hat.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count Signal(e)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Kategorie';
+
+  @override
+  String get aiSignalColumnSignal => 'Signal';
+
+  @override
+  String get aiSignalColumnStrength => 'Stärke';
+
+  @override
+  String get aiSignalColumnRole => 'Rolle im Urteil';
+
+  @override
+  String get aiSignalColumnLocation => 'Fundstelle';
+
+  @override
+  String get aiSignalLocationBody => 'Fließtext';
+
+  @override
+  String get aiSignalLocationSentences => 'Satzanalyse';
+
+  @override
+  String get aiSignalLocationReferences => 'Literaturverzeichnis';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine ergibt $percent % KI. Gründe: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count Satz/Sätze erreichen in den neuronalen Modellen die KI-Schwelle von $threshold %: Satz $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: in $count Satz/Sätzen (Satz $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Native KI-Spur in der Datei';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Bereinigungs-/Fälschungsspur';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Umgehungszeichen';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Text-Engine';
+
+  @override
+  String get aiSignalCategorySentence => 'Satzmuster';
+
+  @override
+  String get aiSignalCategoryProcess => 'Auffälligkeit im Schreibprozess';
+
+  @override
+  String get aiSignalCategorySource => 'Quellenintegrität';
+
+  @override
+  String get aiSignalCategoryInformational => 'Information';
+
+  @override
+  String get aiSignalStrengthStrong => 'Stark';
+
+  @override
+  String get aiSignalStrengthNotable => 'Auffällig';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Autorschaftsbeleg: kann die KI-Richtung allein begründen';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Verstärkt eine bestehende KI-Richtung';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Verstärkt die KI-Richtung; der Bearbeitungsverlauf gilt nicht mehr als Beleg für menschliches Schreiben';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'Der Bearbeitungsverlauf gilt nicht mehr als Beleg für menschliches Schreiben; keine Verschiebung Richtung KI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Statistische Textinferenz, über die Evidenzfusion einbezogen';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Bewusste Umgehung; nur schwache Stütze, wenn die Text-Engines bereits KI-Signale zeigen';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Quellenqualität; fließt nicht in das Autorschaftsurteil ein';
+
+  @override
+  String get aiSignalRoleInformational => 'Nur zur Information; nicht gewertet';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Beim Eingeben wurde ein einzelner Einfügevorgang von $characters Zeichen aufgezeichnet. Ein Sprachmodell kann nicht fälschen, wie Text in einem Editor entsteht — dieser Block wurde hier nicht getippt.';
   }
@@ -3635,6 +3753,74 @@ class AppLocalizationsDe extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return 'Der Text deklariert die Schrift „$font“, die KI-Chat-Weboberflächen verwenden; das stammt meist aus direktem Kopieren aus einem Chatfenster.';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Der Text enthält $count Zitiermarker von KI-Chatdiensten (etwa „【4†source】“, „citeturn0search3“ oder „[oaicite:2]“). Nur das Zitiersystem eines Chatdienstes erzeugt solche Marker; der Inhalt wurde aus einer KI-Unterhaltung kopiert.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count Link(s) tragen den KI-Such-Referral „utm_source=chatgpt.com“: Diese Quellen wurden über die ChatGPT-Suche gefunden. Das zeigt, wie Quellen beschafft wurden, nicht wer den Text verfasst hat.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count der $total im Text verwendeten Bearbeitungssitzungen (RSIDs) fehlen im Sitzungsregister, das Word in settings.xml führt: Bearbeitungssitzungen wurden offenbar nachträglich in den Text eingefügt.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Die Datei gibt $minutes Minute(n) Bearbeitungszeit an, zwischen Erstellung und letzter Speicherung lagen aber nur $lifetime Minute(n). Die Bearbeitungszeit kann die Lebensdauer der Datei nicht übersteigen; dieses Feld wurde umgeschrieben.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Der Text weist $sessions Bearbeitungssitzungen auf, die Datei wurde aber nur $revisions-mal gespeichert. Word beginnt bei jedem Speichern eine neue Sitzung; eine der beiden Zahlen ist gefälscht.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Der PDF-Producer „$producer“ gibt sich als macOS-/iOS-Systemausgabe aus, sein Format entspricht aber nicht dem, was das System schreibt (Build-Nummer fehlt oder gehört nicht zu dieser Version): das Producer-Feld wurde umgeschrieben.';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Die Datei gibt an, von „$app“ gespeichert worden zu sein, doch Einstellungen und Schrifttabelle sind leere Hüllen (keine Kompatibilitätseinstellungen, keine Schriften), anders als alles, was Word schreibt: die Teile wurden ergänzt, um Prüfungen zu bestehen.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Die Datei deklariert $declared Wörter, der Text hat tatsächlich $actual. Word zählt bei jedem Speichern neu; der Text wurde außerhalb von Word umgeschrieben (etwa durch ein automatisches Umschreibwerkzeug).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count von $runs Textabschnitten (Runs) sind so geteilt oder markiert, wie Word nie speichert (identische Nachbarn oder eine auf jedem Run wiederholte Revisions-ID): der Text wurde programmatisch zerstückelt, um zeichenweise Überarbeitung vorzutäuschen.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Eine frühere, in diesem PDF erhaltene Revision nennt einen anderen Producer: $history. Der aktuelle Producer schreibt nur ganze Dateien; er wurde also nachträglich per inkrementeller Aktualisierung eingetragen.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Die Dokumentinfo gibt System- oder Word-Ausgabe an, die XMP-Metadaten nennen aber „$producer“ als Producer: einer der beiden Werte wurde umgeschrieben.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'Das PDF gibt sich als macOS-/iOS-Systemausgabe aus, nutzt aber komprimierte Objektstrukturen, die das System nie schreibt: die Datei wurde nach dem Setzen des Producers von einem anderen Werkzeug neu gespeichert.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Das Stylesheet definiert $count Web-Einfügeformat(e) (etwa „Standard (Web)“), die der Text nicht mehr verwendet: Inhalt wurde von einer Webseite eingefügt und später umformatiert.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Spuren einer Bereinigung erkannt: Die Felder der Datei widersprechen sich auf eine Weise, die normales Speichern nie erzeugt. Jemand hat versucht, KI-Spuren zu entfernen oder einen Bearbeitungsverlauf vorzutäuschen; der Bearbeitungsverlauf dieser Datei gilt daher nicht mehr als Beleg für menschliches Schreiben.';
 
   @override
   String provenanceSignalC2pa(String generator) {

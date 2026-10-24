@@ -3017,6 +3017,125 @@ class AppLocalizationsRu extends AppLocalizations {
       'Каждый пункт ниже можно проверить независимо. В отличие от вероятности, они не слабеют по мере развития языковых моделей.';
 
   @override
+  String get aiSignalInventoryTitle => 'Перечень сигналов ИИ';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Каждый связанный с ИИ сигнал, обнаруженный в этом анализе, перечислен по отдельности с категорией, силой, ролью в заключении и местом обнаружения, чтобы каждый пункт можно было сверить с исходным файлом или текстом.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'В этом анализе не обнаружено ни одного сигнала ИИ. Это не обязательно означает, что документ написан человеком.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return 'Сигналов: $count';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Категория';
+
+  @override
+  String get aiSignalColumnSignal => 'Сигнал';
+
+  @override
+  String get aiSignalColumnStrength => 'Сила';
+
+  @override
+  String get aiSignalColumnRole => 'Роль в заключении';
+
+  @override
+  String get aiSignalColumnLocation => 'Где найдено';
+
+  @override
+  String get aiSignalLocationBody => 'Основной текст';
+
+  @override
+  String get aiSignalLocationSentences => 'Анализ по предложениям';
+
+  @override
+  String get aiSignalLocationReferences => 'Список литературы';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine: сигнал ИИ $percent%. Причины: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'Предложений, достигших порога ИИ $threshold% в нейросетевых моделях: $count — предложения $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: в $count предлож. (предложения $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Собственный след ИИ в файле';
+
+  @override
+  String get aiSignalCategoryConcealment => 'След «отмывания» / подделки';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Символы обхода';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Текстовый движок';
+
+  @override
+  String get aiSignalCategorySentence => 'Шаблон по предложениям';
+
+  @override
+  String get aiSignalCategoryProcess => 'Аномалия процесса написания';
+
+  @override
+  String get aiSignalCategorySource => 'Целостность источников';
+
+  @override
+  String get aiSignalCategoryInformational => 'Справочно';
+
+  @override
+  String get aiSignalStrengthStrong => 'Сильный';
+
+  @override
+  String get aiSignalStrengthNotable => 'Заметный';
+
+  @override
+  String get aiSignalStrengthInfo => 'Справочно';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Доказательство авторства: может само по себе задать направление «ИИ»';
+
+  @override
+  String get aiSignalRoleStrengthens =>
+      'Усиливает уже имеющееся направление «ИИ»';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Усиливает направление «ИИ»; история правки больше не считается доказательством написания человеком';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'История правки больше не считается доказательством написания человеком; не сдвигает к ИИ';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Статистический вывод по тексту, учитывается через объединение доказательств';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Намеренный обход; лишь слабая поддержка, если текстовые движки уже показывают сигналы ИИ';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Качество источников; не учитывается в заключении об авторстве';
+
+  @override
+  String get aiSignalRoleInformational => 'Только для справки; не учитывается';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Во время ввода зафиксирована одна вставка объёмом $characters символов. Языковая модель не может подделать то, как текст появляется в редакторе — этот блок здесь не набирали.';
   }
@@ -3620,6 +3739,74 @@ class AppLocalizationsRu extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return 'В тексте объявлен шрифт «$font», используемый веб-интерфейсами ИИ-чатов; обычно это результат прямого копирования из окна чата.';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return 'В тексте $count маркер(ов) цитирования, созданных ИИ-чатами (например, «【4†source】», «citeturn0search3» или «[oaicite:2]»). Такие маркеры создаёт только система цитирования чат-сервиса: содержимое скопировано из диалога с ИИ.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count ссылка(ок) содержат метку перехода из ИИ-поиска «utm_source=chatgpt.com»: эти источники найдены через поиск ChatGPT. Это говорит о том, как собраны источники, а не о том, кто написал текст.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count из $total сеансов правки (RSID), используемых в тексте, отсутствуют в реестре сеансов, который Word ведёт в settings.xml: сеансы правки, по-видимому, внедрены в текст задним числом.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Файл заявляет $minutes мин. правки, но между созданием и последним сохранением прошло лишь $lifetime мин. Время правки не может превышать срок существования файла; это поле было переписано.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'В тексте $sessions сеансов правки, но файл сохранялся лишь $revisions раз(а). Word начинает новый сеанс при каждом сохранении; одно из двух чисел подделано.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Производитель PDF «$producer» выдаёт себя за системный вывод macOS/iOS, но формат не совпадает с тем, что записывает система (нет номера сборки или он не относится к этой версии): поле производителя переписано.';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Файл утверждает, что сохранён в «$app», но его настройки и таблица шрифтов — пустые оболочки (нет параметров совместимости, нет шрифтов), в отличие от того, что пишет Word: эти части добавлены, чтобы пройти проверку.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Файл объявляет $declared слов, а в тексте фактически $actual. Word пересчитывает при каждом сохранении; текст переписан вне Word (например, инструментом автоматического переписывания).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count из $runs текстовых фрагментов (run) разбиты или помечены так, как Word никогда не сохраняет (одинаковые соседние фрагменты или идентификатор правки, повторённый на каждом): программа нарезала текст, имитируя посимвольную правку.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Более ранняя редакция, сохранившаяся в этом PDF, указывает другого производителя: $history. Текущий производитель записывает только целые файлы, значит, он вписан позже инкрементным обновлением.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Сведения о документе указывают на вывод системы или Word, а метаданные XMP называют производителем «$producer»: одно из двух было переписано.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF выдаёт себя за системный вывод macOS/iOS, но использует сжатые объектные структуры, которые система никогда не пишет: после указания производителя файл пересохранён другим инструментом.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Таблица стилей определяет $count стил(ей) веб-вставки (например, «Обычный (веб)»), которые текст больше не использует: содержимое было вставлено с веб-страницы и затем переформатировано.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Обнаружены следы «отмывания»: поля файла противоречат друг другу так, как при обычном сохранении не бывает. Кто-то пытался удалить следы ИИ или подделать историю правки, поэтому история правки этого файла больше не считается доказательством написания человеком.';
 
   @override
   String provenanceSignalC2pa(String generator) {

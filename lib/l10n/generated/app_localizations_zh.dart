@@ -2889,6 +2889,117 @@ class AppLocalizationsZh extends AppLocalizations {
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 訊號清單';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析擷取到的每一項 AI 相關訊號，逐條列出類別、強度、在判讀中的作用與出處，可逐條回到原檔或原文核對。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未擷取到任何 AI 訊號。這不代表文件必然由人撰寫。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 項';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '類別';
+
+  @override
+  String get aiSignalColumnSignal => '訊號';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '在判讀中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出處';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '參考文獻';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 訊號 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神經模型逐句判定達 AI 門檻（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出現於 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '檔案原生 AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗滌／偽造痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '規避字元';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句寫作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '寫作歷程異常';
+
+  @override
+  String get aiSignalCategorySource => '來源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '資訊';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顯著';
+
+  @override
+  String get aiSignalStrengthInfo => '資訊';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身分證據：可單獨形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加強既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加強 AI 方向；編輯紀錄不再作為「由人撰寫」的證據';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編輯紀錄不再作為「由人撰寫」的證據；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字統計推論，經證據融合計入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意規避；僅在文字引擎已有 AI 訊號時作為弱佐證';
+
+  @override
+  String get aiSignalRoleSourceQuality => '來源品質問題，不計入作者判讀';
+
+  @override
+  String get aiSignalRoleInformational => '僅供參考，不計入';
+
+  @override
   String findingBulkPaste(int characters) {
     return '輸入過程中記錄到一次貼上 $characters 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。';
   }
@@ -3463,6 +3574,74 @@ class AppLocalizationsZh extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return '內文帶有「$font」字型宣告，這是 AI 對話介面網頁使用的字型，常見於直接從對話視窗複製貼上。';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '內文帶有 $count 個 AI 對話服務的引用標記（如「【4†source】」、「citeturn0search3」、「[oaicite:2]」）。這類標記只由對話服務的引用系統產生，代表內容是從 AI 對話中複製出來的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 個連結帶有 AI 搜尋導流參數「utm_source=chatgpt.com」：這些參考資料是經 ChatGPT 搜尋取得。它說明資料怎麼找來，不說明正文由誰撰寫。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 個編輯批次（RSID）中，有 $count 個沒有登記在 Word 的 settings.xml 批次登記表：編輯批次疑似是事後注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '檔案宣稱編輯了 $minutes 分鐘，但從建立到最後存檔只經過 $lifetime 分鐘。編輯時長不可能超過檔案存在的時間，此欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 個編輯批次，檔案卻只存檔 $revisions 次。Word 每次存檔都會開新的批次，兩個數字其中之一是偽造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 產生器「$producer」宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符（缺組建號，或組建號不屬於該版本）：產生器欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '檔案宣稱由「$app」存檔，但設定與字型表只是空殼（沒有相容性設定、沒有任何字型），與 Word 實際寫出的不同：這些部件是為了通過檢查而補上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '檔案宣告 $declared 字，正文實際有 $actual 字。Word 每次存檔都會重算，代表正文是在 Word 之外被改寫的（例如自動改寫工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 個文字執行區中有 $count 個的切分或標記方式是 Word 存檔不會產生的（相鄰且完全相同，或每段都重複寫入修訂代碼）：文字被程式切碎，偽裝成逐字修訂。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '這份 PDF 內保留的較早版本顯示另一個產生器：$history。目前的產生器只會整份寫出檔案，因此它是事後以增量更新寫入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文件資訊宣稱是系統或 Word 輸出，XMP 中繼資料卻記載產生器為「$producer」：兩者之一已被改寫。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 宣稱是 macOS／iOS 系統輸出，卻使用了系統從不寫入的壓縮物件結構：產生器欄位設定之後，檔案又被其他工具重新存檔。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '樣式表定義了 $count 個網頁貼上樣式（如「Normal (Web)」），正文卻已不再使用：內容曾從網頁貼上，事後被改成一般格式。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '偵測到洗滌痕跡：檔案欄位之間出現正常存檔不會產生的矛盾，代表有人試圖抹除 AI 痕跡或偽造編輯歷程。這份檔案的編輯紀錄因此不再作為「由人撰寫」的證據。';
 
   @override
   String provenanceSignalC2pa(String generator) {
@@ -6452,6 +6631,117 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '以下每一项都可以独立查证。与概率不同，这些不会随语言模型进步而失效。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 信号清单';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析捕获的每一项 AI 相关信号，逐条列出类别、强度、在判断中的作用与出处，可逐条回到原文件或原文核对。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未捕获任何 AI 信号。这并不表示文档必然由人撰写。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 项';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '类别';
+
+  @override
+  String get aiSignalColumnSignal => '信号';
+
+  @override
+  String get aiSignalColumnStrength => '强度';
+
+  @override
+  String get aiSignalColumnRole => '在判断中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出处';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '参考文献';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 信号 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神经模型逐句判定达到 AI 阈值（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出现于 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '文件原生 AI 痕迹';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗稿／伪造痕迹';
+
+  @override
+  String get aiSignalCategoryEvasion => '规避字符';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句写作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '写作历程异常';
+
+  @override
+  String get aiSignalCategorySource => '来源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '信息';
+
+  @override
+  String get aiSignalStrengthStrong => '强';
+
+  @override
+  String get aiSignalStrengthNotable => '显著';
+
+  @override
+  String get aiSignalStrengthInfo => '信息';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身份证据：可单独形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加强既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加强 AI 方向；编辑记录不再作为“由人撰写”的证据';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '编辑记录不再作为“由人撰写”的证据；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字统计推论，经证据融合计入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意规避；仅在文字引擎已有 AI 信号时作为弱佐证';
+
+  @override
+  String get aiSignalRoleSourceQuality => '来源质量问题，不计入作者判断';
+
+  @override
+  String get aiSignalRoleInformational => '仅供参考，不计入';
+
+  @override
   String findingBulkPaste(int characters) {
     return '输入过程中记录到一次粘贴 $characters 个字符。语言模型无法伪造文字如何出现在编辑器里——这一段不是在这里打出来的。';
   }
@@ -7026,6 +7316,74 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String provenanceSignalChatFont(String font) {
     return '正文带有“$font”字体声明，这是 AI 对话界面网页使用的字体，常见于直接从对话窗口复制粘贴。';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '正文带有 $count 个 AI 对话服务的引用标记（如“【4†source】”“citeturn0search3”“[oaicite:2]”）。这类标记只由对话服务的引用系统产生，表示内容是从 AI 对话中复制出来的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 个链接带有 AI 搜索导流参数“utm_source=chatgpt.com”：这些参考资料是经 ChatGPT 搜索获得的。它说明资料怎么找来，不说明正文由谁撰写。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 个编辑批次（RSID）中，有 $count 个没有登记在 Word 的 settings.xml 批次登记表：编辑批次疑似是事后注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '文件声称编辑了 $minutes 分钟，但从创建到最后保存只经过 $lifetime 分钟。编辑时长不可能超过文件存在的时间，此字段已被改写。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 个编辑批次，文件却只保存了 $revisions 次。Word 每次保存都会开启新的批次，两个数字其中之一是伪造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 生成器“$producer”声称是 macOS／iOS 系统输出，格式却与系统实际写入的不符（缺少构建号，或构建号不属于该版本）：生成器字段已被改写。';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '文件声称由“$app”保存，但设置与字体表只是空壳（没有兼容性设置、没有任何字体），与 Word 实际写出的不同：这些部件是为了通过检查而补上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '文件声明 $declared 字，正文实际有 $actual 字。Word 每次保存都会重新统计，说明正文是在 Word 之外被改写的（例如自动改写工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 个文本运行中有 $count 个的切分或标记方式是 Word 保存不会产生的（相邻且完全相同，或每段都重复写入修订代码）：文本被程序切碎，伪装成逐字修订。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '这份 PDF 内保留的较早版本显示另一个生成器：$history。当前生成器只会整份写出文件，因此它是事后以增量更新写入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文档信息声称是系统或 Word 输出，XMP 元数据却记载生成器为“$producer”：两者之一已被改写。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 声称是 macOS／iOS 系统输出，却使用了系统从不写入的压缩对象结构：生成器字段设定之后，文件又被其他工具重新保存。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '样式表定义了 $count 个网页粘贴样式（如“Normal (Web)”），正文却已不再使用：内容曾从网页粘贴，事后被改成普通格式。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '检测到洗稿痕迹：文件字段之间出现正常保存不会产生的矛盾，表示有人试图抹除 AI 痕迹或伪造编辑历程。这份文件的编辑记录因此不再作为“由人撰写”的证据。';
 
   @override
   String provenanceSignalC2pa(String generator) {
@@ -10015,6 +10373,117 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '以下每一項都可以獨立查證。與機率不同，這些不會隨語言模型進步而失效。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 訊號清單';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '本次分析擷取到的每一項 AI 相關訊號，逐條列出類別、強度、在判讀中的作用與出處，可逐條回到原檔或原文核對。';
+
+  @override
+  String get aiSignalInventoryEmpty => '本次分析未擷取到任何 AI 訊號。這不代表文件必然由人撰寫。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '共 $count 項';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '類別';
+
+  @override
+  String get aiSignalColumnSignal => '訊號';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '在判讀中的作用';
+
+  @override
+  String get aiSignalColumnLocation => '出處';
+
+  @override
+  String get aiSignalLocationBody => '正文';
+
+  @override
+  String get aiSignalLocationSentences => '逐句分析';
+
+  @override
+  String get aiSignalLocationReferences => '參考文獻';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine 判定 AI 訊號 $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '神經模型逐句判定達 AI 門檻（$threshold%）的句子共 $count 句：第 $sentences 句';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：出現於 $count 句（第 $sentences 句）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '檔案原生 AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => '洗滌／偽造痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '規避字元';
+
+  @override
+  String get aiSignalCategoryTextEngine => '文字引擎';
+
+  @override
+  String get aiSignalCategorySentence => '逐句寫作模式';
+
+  @override
+  String get aiSignalCategoryProcess => '寫作歷程異常';
+
+  @override
+  String get aiSignalCategorySource => '來源完整性';
+
+  @override
+  String get aiSignalCategoryInformational => '資訊';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顯著';
+
+  @override
+  String get aiSignalStrengthInfo => '資訊';
+
+  @override
+  String get aiSignalRoleIdentity => '作者身分證據：可單獨形成 AI 方向';
+
+  @override
+  String get aiSignalRoleStrengthens => '加強既有的 AI 方向';
+
+  @override
+  String get aiSignalRoleConcealment => '加強 AI 方向；編輯紀錄不再作為「由人撰寫」的證據';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編輯紀錄不再作為「由人撰寫」的證據；不推向 AI';
+
+  @override
+  String get aiSignalRoleTextInference => '文字統計推論，經證據融合計入';
+
+  @override
+  String get aiSignalRoleEvasion => '刻意規避；僅在文字引擎已有 AI 訊號時作為弱佐證';
+
+  @override
+  String get aiSignalRoleSourceQuality => '來源品質問題，不計入作者判讀';
+
+  @override
+  String get aiSignalRoleInformational => '僅供參考，不計入';
+
+  @override
   String findingBulkPaste(int characters) {
     return '輸入過程中記錄到一次貼上 $characters 個字元。語言模型無法偽造文字如何出現在編輯器裡——這一段不是在這裡打出來的。';
   }
@@ -10589,6 +11058,74 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String provenanceSignalChatFont(String font) {
     return '內文帶有「$font」字型宣告，這是 AI 對話介面網頁使用的字型，常見於直接從對話視窗複製貼上。';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '內文帶有 $count 個 AI 對話服務的引用標記（如「【4†source】」、「citeturn0search3」、「[oaicite:2]」）。這類標記只由對話服務的引用系統產生，代表內容是從 AI 對話中複製出來的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 個連結帶有 AI 搜尋導流參數「utm_source=chatgpt.com」：這些參考資料是經 ChatGPT 搜尋取得。它說明資料怎麼找來，不說明正文由誰撰寫。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 個編輯批次（RSID）中，有 $count 個沒有登記在 Word 的 settings.xml 批次登記表：編輯批次疑似是事後注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '檔案宣稱編輯了 $minutes 分鐘，但從建立到最後存檔只經過 $lifetime 分鐘。編輯時長不可能超過檔案存在的時間，此欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 個編輯批次，檔案卻只存檔 $revisions 次。Word 每次存檔都會開新的批次，兩個數字其中之一是偽造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 產生器「$producer」宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符（缺組建號，或組建號不屬於該版本）：產生器欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '檔案宣稱由「$app」存檔，但設定與字型表只是空殼（沒有相容性設定、沒有任何字型），與 Word 實際寫出的不同：這些部件是為了通過檢查而補上的。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '檔案宣告 $declared 字，正文實際有 $actual 字。Word 每次存檔都會重算，代表正文是在 Word 之外被改寫的（例如自動改寫工具）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 個文字執行區中有 $count 個的切分或標記方式是 Word 存檔不會產生的（相鄰且完全相同，或每段都重複寫入修訂代碼）：文字被程式切碎，偽裝成逐字修訂。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '這份 PDF 內保留的較早版本顯示另一個產生器：$history。目前的產生器只會整份寫出檔案，因此它是事後以增量更新寫入的。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文件資訊宣稱是系統或 Word 輸出，XMP 中繼資料卻記載產生器為「$producer」：兩者之一已被改寫。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF 宣稱是 macOS／iOS 系統輸出，卻使用了系統從不寫入的壓縮物件結構：產生器欄位設定之後，檔案又被其他工具重新存檔。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '樣式表定義了 $count 個網頁貼上樣式（如「Normal (Web)」），正文卻已不再使用：內容曾從網頁貼上，事後被改成一般格式。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '偵測到洗滌痕跡：檔案欄位之間出現正常存檔不會產生的矛盾，代表有人試圖抹除 AI 痕跡或偽造編輯歷程。這份檔案的編輯紀錄因此不再作為「由人撰寫」的證據。';
 
   @override
   String provenanceSignalC2pa(String generator) {

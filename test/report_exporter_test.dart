@@ -86,7 +86,14 @@ void main() {
     test('含摘要註解與逐句資料列', () {
       final csv = ReportExporter.buildCsv(_sampleResult(), _l10n);
       final lines = csv.trim().split('\n');
-      expect(lines.where((l) => l.startsWith('#')).length, 29);
+      // 摘要註解列 29 列；AI 訊號清單另以 `# ai_signal,` 開頭逐條列出
+      expect(
+        lines
+            .where((l) => l.startsWith('#') && !l.startsWith('# ai_signal,'))
+            .length,
+        29,
+      );
+      expect(lines, contains(startsWith('# ai_signal,1,')));
       expect(lines, contains('index,sentence,ai_probability,patterns'));
       expect(lines.last, startsWith('1,'));
       expect(csv, contains('overall_ai_probability,0.5500'));

@@ -3011,6 +3011,125 @@ class AppLocalizationsId extends AppLocalizations {
       'Setiap butir di bawah dapat diperiksa secara independen. Tidak seperti probabilitas, hal-hal ini tidak melemah seiring membaiknya model bahasa.';
 
   @override
+  String get aiSignalInventoryTitle => 'Inventaris sinyal AI';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Setiap sinyal terkait AI yang tertangkap dalam analisis ini, dicantumkan satu per satu beserta kategori, kekuatan, perannya dalam putusan, dan lokasinya, sehingga setiap butir dapat dicocokkan dengan berkas atau teks asli.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'Analisis ini tidak menangkap sinyal AI apa pun. Ini tidak berarti dokumen pasti ditulis manusia.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count sinyal';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Kategori';
+
+  @override
+  String get aiSignalColumnSignal => 'Sinyal';
+
+  @override
+  String get aiSignalColumnStrength => 'Kekuatan';
+
+  @override
+  String get aiSignalColumnRole => 'Peran dalam putusan';
+
+  @override
+  String get aiSignalColumnLocation => 'Lokasi';
+
+  @override
+  String get aiSignalLocationBody => 'Isi teks';
+
+  @override
+  String get aiSignalLocationSentences => 'Analisis per kalimat';
+
+  @override
+  String get aiSignalLocationReferences => 'Daftar pustaka';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine memberi skor AI $percent%. Alasan: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count kalimat mencapai ambang AI $threshold% pada model neural: kalimat $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: dalam $count kalimat (kalimat $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Jejak AI asli dalam berkas';
+
+  @override
+  String get aiSignalCategoryConcealment => 'Jejak pencucian / pemalsuan';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Karakter pengelabuan';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Mesin teks';
+
+  @override
+  String get aiSignalCategorySentence => 'Pola per kalimat';
+
+  @override
+  String get aiSignalCategoryProcess => 'Anomali proses menulis';
+
+  @override
+  String get aiSignalCategorySource => 'Integritas sumber';
+
+  @override
+  String get aiSignalCategoryInformational => 'Informasi';
+
+  @override
+  String get aiSignalStrengthStrong => 'Kuat';
+
+  @override
+  String get aiSignalStrengthNotable => 'Menonjol';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Bukti kepengarangan: dapat membentuk arah AI dengan sendirinya';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Memperkuat arah AI yang sudah ada';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Memperkuat arah AI; catatan penyuntingan tidak lagi dihitung sebagai bukti tulisan manusia';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'Catatan penyuntingan tidak lagi dihitung sebagai bukti tulisan manusia; tidak mendorong ke arah AI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Inferensi statistik teks, dihitung melalui fusi bukti';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Pengelabuan disengaja; hanya pendukung lemah bila mesin teks sudah menunjukkan sinyal AI';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Kualitas sumber; tidak dihitung dalam putusan kepengarangan';
+
+  @override
+  String get aiSignalRoleInformational =>
+      'Hanya sebagai rujukan; tidak dihitung';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Saat teks diketik, tercatat satu kali tempel sebanyak $characters karakter. Model bahasa tidak dapat memalsukan cara teks muncul di editor — blok ini tidak diketik di sini.';
   }
@@ -3612,6 +3731,74 @@ class AppLocalizationsId extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return 'Teks mendeklarasikan fon “$font”, yang dipakai antarmuka web obrolan AI; biasanya berasal dari penyalinan langsung dari jendela obrolan.';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Teks memuat $count penanda kutipan yang dihasilkan layanan obrolan AI (seperti “【4†source】”, “citeturn0search3”, atau “[oaicite:2]”). Hanya sistem kutipan layanan obrolan yang membuat penanda ini; konten disalin dari percakapan AI.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count tautan membawa tag rujukan pencarian AI “utm_source=chatgpt.com”: sumber-sumber ini ditemukan lewat pencarian ChatGPT. Ini menunjukkan cara sumber dikumpulkan, bukan siapa penulis teks.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count dari $total sesi penyuntingan (RSID) di isi dokumen tidak tercatat dalam registri sesi yang disimpan Word di settings.xml: sesi penyuntingan tampaknya disisipkan ke isi dokumen belakangan.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Berkas mengklaim $minutes menit penyuntingan, padahal antara pembuatan dan penyimpanan terakhir hanya berlalu $lifetime menit. Waktu penyuntingan tidak mungkin melebihi umur berkas; kolom ini telah ditulis ulang.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Isi dokumen memiliki $sessions sesi penyuntingan, tetapi berkas hanya disimpan $revisions kali. Word memulai sesi baru setiap kali menyimpan; salah satu dari dua angka itu dipalsukan.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Producer PDF “$producer” mengaku sebagai keluaran sistem macOS/iOS, tetapi formatnya tidak sesuai dengan yang ditulis sistem (nomor build hilang, atau bukan milik versi tersebut): kolom producer telah ditulis ulang.';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Berkas mengaku disimpan oleh “$app”, tetapi pengaturan dan tabel fonnya hanya cangkang kosong (tanpa pengaturan kompatibilitas, tanpa fon), tidak seperti yang ditulis Word: bagian-bagian itu ditambahkan agar lolos pemeriksaan.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Berkas mendeklarasikan $declared kata, padahal isinya sebenarnya $actual kata. Word menghitung ulang setiap kali menyimpan; isi dokumen ditulis ulang di luar Word (misalnya oleh alat penulisan ulang otomatis).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count dari $runs potongan teks (run) dipecah atau ditandai dengan cara yang tidak pernah disimpan Word (potongan bersebelahan yang identik, atau ID revisi yang diulang di setiap potongan): teks dipotong-potong oleh program untuk meniru revisi per karakter.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Revisi lebih awal yang tersimpan di PDF ini menunjukkan producer lain: $history. Producer saat ini hanya menulis berkas utuh, jadi nilai itu ditulis belakangan melalui pembaruan inkremental.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Info dokumen mengaku sebagai keluaran sistem atau Word, tetapi metadata XMP mencatat “$producer” sebagai producer: salah satunya telah ditulis ulang.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF mengaku sebagai keluaran sistem macOS/iOS tetapi memakai struktur objek terkompresi yang tidak pernah ditulis sistem: berkas disimpan ulang oleh alat lain setelah producer ditetapkan.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'Lembar gaya mendefinisikan $count gaya tempel web (seperti “Normal (Web)”) yang tidak lagi dipakai isi dokumen: konten pernah ditempel dari halaman web lalu diformat ulang.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Jejak pencucian terdeteksi: kolom-kolom berkas saling bertentangan dengan cara yang tidak pernah dihasilkan penyimpanan normal. Seseorang mencoba menghapus jejak AI atau memalsukan riwayat penyuntingan, sehingga catatan penyuntingan berkas ini tidak lagi dihitung sebagai bukti tulisan manusia.';
 
   @override
   String provenanceSignalC2pa(String generator) {

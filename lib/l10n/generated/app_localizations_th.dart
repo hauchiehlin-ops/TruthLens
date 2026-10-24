@@ -2998,6 +2998,124 @@ class AppLocalizationsTh extends AppLocalizations {
       'แต่ละรายการด้านล่างตรวจสอบได้อย่างอิสระ ต่างจากค่าความน่าจะเป็น ตรงที่สิ่งเหล่านี้ไม่อ่อนลงเมื่อโมเดลภาษาพัฒนาขึ้น';
 
   @override
+  String get aiSignalInventoryTitle => 'รายการสัญญาณ AI';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'สัญญาณที่เกี่ยวกับ AI ทุกรายการที่ตรวจพบในการวิเคราะห์นี้ แสดงทีละรายการพร้อมหมวดหมู่ ระดับความแรง บทบาทในการตัดสิน และตำแหน่งที่พบ เพื่อให้ตรวจทานกับไฟล์หรือข้อความต้นฉบับได้ทีละข้อ';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'การวิเคราะห์นี้ไม่พบสัญญาณ AI ใด ๆ แต่ไม่ได้หมายความว่าเอกสารเขียนโดยมนุษย์เสมอไป';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count รายการ';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'หมวดหมู่';
+
+  @override
+  String get aiSignalColumnSignal => 'สัญญาณ';
+
+  @override
+  String get aiSignalColumnStrength => 'ความแรง';
+
+  @override
+  String get aiSignalColumnRole => 'บทบาทในการตัดสิน';
+
+  @override
+  String get aiSignalColumnLocation => 'ตำแหน่ง';
+
+  @override
+  String get aiSignalLocationBody => 'เนื้อความ';
+
+  @override
+  String get aiSignalLocationSentences => 'การวิเคราะห์รายประโยค';
+
+  @override
+  String get aiSignalLocationReferences => 'รายการอ้างอิง';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine ให้สัญญาณ AI $percent% เหตุผล: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'ประโยคที่ถึงเกณฑ์ AI ($threshold%) ในโมเดลนิวรัลมี $count ประโยค: ประโยคที่ $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: พบใน $count ประโยค (ประโยคที่ $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'ร่องรอย AI ดั้งเดิมในไฟล์';
+
+  @override
+  String get aiSignalCategoryConcealment => 'ร่องรอยการฟอก/ปลอมแปลง';
+
+  @override
+  String get aiSignalCategoryEvasion => 'อักขระหลบเลี่ยง';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'เอนจินข้อความ';
+
+  @override
+  String get aiSignalCategorySentence => 'รูปแบบรายประโยค';
+
+  @override
+  String get aiSignalCategoryProcess => 'ความผิดปกติของกระบวนการเขียน';
+
+  @override
+  String get aiSignalCategorySource => 'ความถูกต้องของแหล่งอ้างอิง';
+
+  @override
+  String get aiSignalCategoryInformational => 'ข้อมูล';
+
+  @override
+  String get aiSignalStrengthStrong => 'แรง';
+
+  @override
+  String get aiSignalStrengthNotable => 'เด่นชัด';
+
+  @override
+  String get aiSignalStrengthInfo => 'ข้อมูล';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'หลักฐานผู้เขียน: สร้างทิศทาง AI ได้ด้วยตัวเอง';
+
+  @override
+  String get aiSignalRoleStrengthens => 'เสริมทิศทาง AI ที่มีอยู่';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'เสริมทิศทาง AI และบันทึกการแก้ไขไม่นับเป็นหลักฐานว่ามนุษย์เขียนอีกต่อไป';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'บันทึกการแก้ไขไม่นับเป็นหลักฐานว่ามนุษย์เขียนอีกต่อไป แต่ไม่ผลักไปทาง AI';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'การอนุมานเชิงสถิติจากข้อความ นับผ่านการรวมหลักฐาน';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'การหลบเลี่ยงโดยเจตนา เป็นหลักฐานเสริมอ่อน ๆ เฉพาะเมื่อเอนจินข้อความพบสัญญาณ AI แล้ว';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'คุณภาพแหล่งอ้างอิง ไม่นับในการตัดสินผู้เขียน';
+
+  @override
+  String get aiSignalRoleInformational => 'ใช้อ้างอิงเท่านั้น ไม่นับ';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'ระหว่างการพิมพ์ มีการบันทึกการวางข้อความครั้งเดียวจำนวน $characters อักขระ โมเดลภาษาปลอมแปลงไม่ได้ว่าข้อความปรากฏในตัวแก้ไขอย่างไร ส่วนนี้ไม่ได้พิมพ์ขึ้นที่นี่';
   }
@@ -3594,6 +3712,74 @@ class AppLocalizationsTh extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return 'ข้อความประกาศฟอนต์ “$font” ซึ่งเป็นฟอนต์ของหน้าเว็บแชต AI มักเกิดจากการคัดลอกจากหน้าต่างแชตโดยตรง';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return 'ข้อความมีเครื่องหมายอ้างอิงจากบริการแชต AI จำนวน $count จุด (เช่น “【4†source】”, “citeturn0search3” หรือ “[oaicite:2]”) เครื่องหมายเหล่านี้สร้างโดยระบบอ้างอิงของบริการแชตเท่านั้น แสดงว่าเนื้อหาถูกคัดลอกมาจากบทสนทนากับ AI';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return 'มีลิงก์ $count รายการที่มีแท็กอ้างอิงการค้นหา AI “utm_source=chatgpt.com”: แหล่งข้อมูลเหล่านี้ได้มาจากการค้นหาของ ChatGPT ซึ่งบอกวิธีรวบรวมแหล่งข้อมูล ไม่ได้บอกว่าใครเขียนเนื้อความ';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return 'เซสชันการแก้ไข (RSID) $count จาก $total รายการที่ใช้ในเนื้อหา ไม่มีอยู่ในทะเบียนเซสชันที่ Word เก็บไว้ใน settings.xml: ดูเหมือนว่าเซสชันการแก้ไขถูกแทรกเข้าไปในเนื้อหาภายหลัง';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'ไฟล์อ้างว่าใช้เวลาแก้ไข $minutes นาที แต่ตั้งแต่สร้างจนถึงบันทึกครั้งสุดท้ายผ่านไปเพียง $lifetime นาที เวลาแก้ไขไม่อาจเกินอายุของไฟล์ ช่องข้อมูลนี้จึงถูกเขียนทับ';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'เนื้อหามีเซสชันการแก้ไข $sessions รายการ แต่ไฟล์ถูกบันทึกเพียง $revisions ครั้ง Word เริ่มเซสชันใหม่ทุกครั้งที่บันทึก ตัวเลขหนึ่งในสองตัวนี้จึงถูกปลอมแปลง';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'ผู้สร้าง PDF “$producer” อ้างว่าเป็นผลลัพธ์จากระบบ macOS/iOS แต่รูปแบบไม่ตรงกับที่ระบบเขียนจริง (ไม่มีหมายเลขบิลด์ หรือหมายเลขบิลด์ไม่ใช่ของเวอร์ชันนั้น): ช่องผู้สร้างถูกเขียนทับ';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'ไฟล์อ้างว่าบันทึกด้วย “$app” แต่การตั้งค่าและตารางฟอนต์เป็นเพียงเปลือกว่าง (ไม่มีการตั้งค่าความเข้ากันได้ ไม่มีฟอนต์) ต่างจากที่ Word เขียนจริง ส่วนประกอบเหล่านี้ถูกเติมเข้าไปเพื่อให้ผ่านการตรวจ';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'ไฟล์ประกาศว่ามี $declared คำ แต่เนื้อหาจริงมี $actual คำ Word นับใหม่ทุกครั้งที่บันทึก แสดงว่าเนื้อหาถูกเขียนใหม่นอก Word (เช่น โดยเครื่องมือเขียนใหม่อัตโนมัติ)';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return 'ข้อความ $count จาก $runs ช่วง (run) ถูกแบ่งหรือทำเครื่องหมายในแบบที่ Word ไม่เคยบันทึก (ช่วงติดกันที่เหมือนกันทุกประการ หรือรหัสการแก้ไขซ้ำในทุกช่วง): โปรแกรมหั่นข้อความเพื่อเลียนแบบการแก้ไขทีละตัวอักษร';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'เวอร์ชันก่อนหน้าที่ยังอยู่ใน PDF นี้ระบุผู้สร้างคนละตัว: $history ผู้สร้างปัจจุบันเขียนไฟล์ทั้งไฟล์เท่านั้น จึงถูกเขียนภายหลังด้วยการอัปเดตแบบเพิ่มส่วน';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'ข้อมูลเอกสารอ้างว่าเป็นผลลัพธ์จากระบบหรือ Word แต่เมทาดาทา XMP บันทึกผู้สร้างเป็น “$producer”: หนึ่งในสองค่านี้ถูกเขียนทับ';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF อ้างว่าเป็นผลลัพธ์จากระบบ macOS/iOS แต่ใช้โครงสร้างออบเจ็กต์แบบบีบอัดที่ระบบไม่เคยเขียน: ไฟล์ถูกบันทึกใหม่ด้วยเครื่องมืออื่นหลังจากตั้งค่าผู้สร้างแล้ว';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'สไตล์ชีตกำหนดสไตล์สำหรับวางจากเว็บ $count รายการ (เช่น “Normal (Web)”) ที่เนื้อหาไม่ได้ใช้แล้ว: เนื้อหาเคยถูกวางจากหน้าเว็บแล้วจัดรูปแบบใหม่ภายหลัง';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'ตรวจพบร่องรอยการฟอก: ช่องข้อมูลในไฟล์ขัดแย้งกันในแบบที่การบันทึกตามปกติไม่มีทางเกิดขึ้น มีผู้พยายามลบร่องรอย AI หรือปลอมประวัติการแก้ไข บันทึกการแก้ไขของไฟล์นี้จึงไม่นับเป็นหลักฐานว่ามนุษย์เขียน';
 
   @override
   String provenanceSignalC2pa(String generator) {

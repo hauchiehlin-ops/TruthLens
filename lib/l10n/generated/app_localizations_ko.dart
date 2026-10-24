@@ -2933,6 +2933,120 @@ class AppLocalizationsKo extends AppLocalizations {
       '아래 각 항목은 독립적으로 확인할 수 있습니다. 확률과 달리 언어 모델이 발전해도 약해지지 않습니다.';
 
   @override
+  String get aiSignalInventoryTitle => 'AI 신호 목록';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '이번 분석에서 포착한 AI 관련 신호를 모두 하나씩, 분류·강도·판정에서의 역할·출처와 함께 나열합니다. 각 항목을 원본 파일이나 본문과 대조할 수 있습니다.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      '이번 분석에서는 AI 신호가 포착되지 않았습니다. 그렇다고 문서를 반드시 사람이 썼다는 뜻은 아닙니다.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count개';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '분류';
+
+  @override
+  String get aiSignalColumnSignal => '신호';
+
+  @override
+  String get aiSignalColumnStrength => '강도';
+
+  @override
+  String get aiSignalColumnRole => '판정에서의 역할';
+
+  @override
+  String get aiSignalColumnLocation => '출처';
+
+  @override
+  String get aiSignalLocationBody => '본문';
+
+  @override
+  String get aiSignalLocationSentences => '문장별 분석';
+
+  @override
+  String get aiSignalLocationReferences => '참고문헌';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine의 AI 신호 $percent%. 근거: $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '신경망 모델에서 AI 임계값($threshold%)에 도달한 문장 $count개: $sentences번째 문장';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern: $count개 문장에서 나타남($sentences번째 문장)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => '파일 고유 AI 흔적';
+
+  @override
+  String get aiSignalCategoryConcealment => '세탁/위조 흔적';
+
+  @override
+  String get aiSignalCategoryEvasion => '회피 문자';
+
+  @override
+  String get aiSignalCategoryTextEngine => '텍스트 엔진';
+
+  @override
+  String get aiSignalCategorySentence => '문장별 작성 패턴';
+
+  @override
+  String get aiSignalCategoryProcess => '작성 과정 이상';
+
+  @override
+  String get aiSignalCategorySource => '출처 무결성';
+
+  @override
+  String get aiSignalCategoryInformational => '정보';
+
+  @override
+  String get aiSignalStrengthStrong => '강함';
+
+  @override
+  String get aiSignalStrengthNotable => '주목';
+
+  @override
+  String get aiSignalStrengthInfo => '정보';
+
+  @override
+  String get aiSignalRoleIdentity => '저자 증거: 단독으로 AI 방향을 형성할 수 있음';
+
+  @override
+  String get aiSignalRoleStrengthens => '기존 AI 방향을 강화함';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'AI 방향을 강화함. 편집 기록은 ‘사람이 썼다’는 증거로 쓰지 않음';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      '편집 기록은 ‘사람이 썼다’는 증거로 쓰지 않음. AI 쪽으로 밀지 않음';
+
+  @override
+  String get aiSignalRoleTextInference => '텍스트 통계 추론, 증거 융합을 통해 반영';
+
+  @override
+  String get aiSignalRoleEvasion => '의도적 회피. 텍스트 엔진이 이미 AI 신호를 보일 때만 약한 보강';
+
+  @override
+  String get aiSignalRoleSourceQuality => '출처 품질 문제. 저자 판정에는 반영하지 않음';
+
+  @override
+  String get aiSignalRoleInformational => '참고용. 반영하지 않음';
+
+  @override
   String findingBulkPaste(int characters) {
     return '입력 중 $characters자를 한 번에 붙여넣은 기록이 있습니다. 텍스트가 편집기에 어떻게 나타나는지는 언어 모델이 위조할 수 없습니다. 이 부분은 여기서 입력된 것이 아닙니다.';
   }
@@ -3514,6 +3628,74 @@ class AppLocalizationsKo extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return '본문에 “$font” 글꼴 지정이 있습니다. AI 채팅 웹 화면의 글꼴로, 채팅 창에서 바로 복사해 붙여넣을 때 흔히 나타납니다.';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '본문에 AI 채팅 서비스의 인용 표식이 $count개 있습니다(예: “【4†source】”, “citeturn0search3”, “[oaicite:2]”). 이런 표식은 채팅 서비스의 인용 시스템만 만들어 내므로, 내용이 AI 대화에서 복사되었음을 뜻합니다.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '링크 $count개에 AI 검색 유입 태그 “utm_source=chatgpt.com”가 붙어 있습니다: 이 참고 자료는 ChatGPT 검색으로 찾은 것입니다. 자료를 어떻게 모았는지를 보여 줄 뿐, 본문 작성자를 말해 주지는 않습니다.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '본문에 쓰인 편집 세션(RSID) $total개 중 $count개가 Word가 settings.xml에 유지하는 세션 등록표에 없습니다: 편집 세션이 나중에 본문에 주입된 것으로 보입니다.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '파일은 편집 시간이 $minutes분이라고 주장하지만, 생성부터 마지막 저장까지 $lifetime분밖에 지나지 않았습니다. 편집 시간은 파일의 존재 기간을 넘을 수 없으므로 이 항목은 다시 쓰였습니다.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '본문에는 편집 세션이 $sessions개 있지만 파일은 $revisions번만 저장되었습니다. Word는 저장할 때마다 새 세션을 시작하므로 두 숫자 중 하나는 위조된 것입니다.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 생성기 “$producer”는 macOS/iOS 시스템 출력이라고 주장하지만, 형식이 시스템이 실제로 기록하는 것과 다릅니다(빌드 번호가 없거나 해당 버전의 것이 아님): 생성기 항목이 다시 쓰였습니다.';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return '파일은 “$app”로 저장되었다고 주장하지만, 설정과 글꼴 표가 빈 껍데기입니다(호환성 설정도, 글꼴도 없음). Word가 실제로 쓰는 것과 달리 검사를 통과하려고 덧붙인 부분입니다.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return '파일은 $declared단어라고 선언하지만 본문은 실제로 $actual단어입니다. Word는 저장할 때마다 다시 세므로, 본문이 Word 밖에서 다시 쓰였습니다(예: 자동 재작성 도구).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '텍스트 런 $runs개 중 $count개가 Word가 저장하지 않는 방식으로 나뉘거나 표시되어 있습니다(인접한 동일 런, 또는 모든 런에 반복된 수정 ID): 글자 단위 수정처럼 보이도록 프로그램이 텍스트를 잘게 쪼갰습니다.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return '이 PDF 안에 남아 있는 이전 판에는 다른 생성기가 기록되어 있습니다: $history. 현재 생성기는 파일 전체만 쓰므로, 나중에 증분 업데이트로 기록된 것입니다.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '문서 정보는 시스템 또는 Word 출력이라고 주장하지만, XMP 메타데이터에는 생성기가 “$producer”로 기록되어 있습니다: 둘 중 하나가 다시 쓰였습니다.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF는 macOS/iOS 시스템 출력이라고 주장하지만 시스템이 쓰지 않는 압축 객체 구조를 사용합니다: 생성기 항목이 정해진 뒤 다른 도구가 파일을 다시 저장했습니다.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return '스타일 시트에 웹 붙여넣기 스타일(예: “표준 (웹)”)이 $count개 정의되어 있지만 본문에서는 더 이상 쓰이지 않습니다: 웹 페이지에서 붙여넣은 내용을 나중에 서식만 바꾼 것입니다.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '세탁 흔적이 감지되었습니다: 파일 항목들이 정상적인 저장으로는 생기지 않는 방식으로 서로 모순됩니다. 누군가 AI 흔적을 지우거나 편집 이력을 위조하려 했으므로, 이 파일의 편집 기록은 더 이상 ‘사람이 썼다’는 증거로 쓰지 않습니다.';
 
   @override
   String provenanceSignalC2pa(String generator) {

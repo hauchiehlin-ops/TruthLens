@@ -3035,6 +3035,126 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chaque élément ci-dessous peut être vérifié indépendamment. Contrairement à une probabilité, ils ne s\'affaiblissent pas à mesure que les modèles progressent.';
 
   @override
+  String get aiSignalInventoryTitle => 'Inventaire des signaux d’IA';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      'Chaque signal lié à l’IA relevé dans cette analyse, listé un par un avec sa catégorie, sa force, son rôle dans le verdict et son emplacement, pour pouvoir vérifier chaque point dans le fichier ou le texte d’origine.';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      'Aucun signal d’IA n’a été relevé dans cette analyse. Cela ne signifie pas nécessairement que le document a été écrit par une personne.';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count signal(aux)';
+  }
+
+  @override
+  String get aiSignalColumnCategory => 'Catégorie';
+
+  @override
+  String get aiSignalColumnSignal => 'Signal';
+
+  @override
+  String get aiSignalColumnStrength => 'Force';
+
+  @override
+  String get aiSignalColumnRole => 'Rôle dans le verdict';
+
+  @override
+  String get aiSignalColumnLocation => 'Emplacement';
+
+  @override
+  String get aiSignalLocationBody => 'Corps du texte';
+
+  @override
+  String get aiSignalLocationSentences => 'Analyse par phrase';
+
+  @override
+  String get aiSignalLocationReferences => 'Références';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine donne $percent % d’IA. Motifs : $reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return '$count phrase(s) atteignent le seuil d’IA de $threshold % dans les modèles neuronaux : phrase $sentences';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern : dans $count phrase(s) (phrase $sentences)';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'Trace d’IA native dans le fichier';
+
+  @override
+  String get aiSignalCategoryConcealment =>
+      'Trace de blanchiment / falsification';
+
+  @override
+  String get aiSignalCategoryEvasion => 'Caractères d’évasion';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'Moteur de texte';
+
+  @override
+  String get aiSignalCategorySentence => 'Motif par phrase';
+
+  @override
+  String get aiSignalCategoryProcess => 'Anomalie du processus d’écriture';
+
+  @override
+  String get aiSignalCategorySource => 'Intégrité des sources';
+
+  @override
+  String get aiSignalCategoryInformational => 'Information';
+
+  @override
+  String get aiSignalStrengthStrong => 'Fort';
+
+  @override
+  String get aiSignalStrengthNotable => 'Notable';
+
+  @override
+  String get aiSignalStrengthInfo => 'Info';
+
+  @override
+  String get aiSignalRoleIdentity =>
+      'Preuve d’autorat : peut établir à elle seule la direction IA';
+
+  @override
+  String get aiSignalRoleStrengthens => 'Renforce une direction IA existante';
+
+  @override
+  String get aiSignalRoleConcealment =>
+      'Renforce la direction IA ; l’historique d’édition ne compte plus comme preuve d’écriture humaine';
+
+  @override
+  String get aiSignalRoleVetoesHuman =>
+      'L’historique d’édition ne compte plus comme preuve d’écriture humaine ; ne pousse pas vers l’IA';
+
+  @override
+  String get aiSignalRoleTextInference =>
+      'Inférence statistique sur le texte, intégrée par fusion des preuves';
+
+  @override
+  String get aiSignalRoleEvasion =>
+      'Évasion délibérée ; simple appui faible lorsque les moteurs de texte montrent déjà des signaux d’IA';
+
+  @override
+  String get aiSignalRoleSourceQuality =>
+      'Qualité des sources ; non prise en compte dans le verdict d’autorat';
+
+  @override
+  String get aiSignalRoleInformational =>
+      'À titre indicatif ; non pris en compte';
+
+  @override
   String findingBulkPaste(int characters) {
     return 'Un collage unique de $characters caractères a été enregistré pendant la saisie. Un modèle de langue ne peut pas falsifier la façon dont le texte apparaît dans un éditeur : ce bloc n\'a pas été tapé ici.';
   }
@@ -3642,6 +3762,74 @@ class AppLocalizationsFr extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return 'Le texte déclare la police « $font », utilisée par les interfaces web de chat IA ; cela provient généralement d’une copie directe depuis une fenêtre de chat.';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Le texte contient $count marqueur(s) de citation produits par des services de chat IA (comme « 【4†source】 », « citeturn0search3 » ou « [oaicite:2] »). Seul le système de citation d’un service de chat émet ces marqueurs ; le contenu a été copié depuis une conversation IA.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count lien(s) portent l’étiquette de référence de recherche IA « utm_source=chatgpt.com » : ces sources ont été trouvées via la recherche ChatGPT. Cela montre comment les sources ont été réunies, pas qui a écrit le texte.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count des $total sessions d’édition (RSID) utilisées dans le corps sont absentes du registre de sessions que Word tient dans settings.xml : des sessions d’édition semblent avoir été injectées après coup dans le corps.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Le fichier déclare $minutes minute(s) d’édition, mais seules $lifetime minute(s) se sont écoulées entre sa création et son dernier enregistrement. Le temps d’édition ne peut dépasser la durée de vie du fichier ; ce champ a été réécrit.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Le corps compte $sessions sessions d’édition, mais le fichier n’a été enregistré que $revisions fois. Word ouvre une nouvelle session à chaque enregistrement ; l’un des deux chiffres a été falsifié.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Le producteur PDF « $producer » se présente comme une sortie système macOS/iOS, mais son format ne correspond pas à ce qu’écrit le système (numéro de build absent, ou qui n’appartient pas à cette version) : le champ producteur a été réécrit.';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'Le fichier prétend avoir été enregistré par « $app », mais ses paramètres et sa table des polices sont des coquilles vides (aucun paramètre de compatibilité, aucune police), contrairement à ce qu’écrit Word : ces parties ont été ajoutées pour passer l’inspection.';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'Le fichier déclare $declared mots, mais le corps en compte réellement $actual. Word recompte à chaque enregistrement ; le corps a été réécrit hors de Word (par exemple par un outil de réécriture automatique).';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$count des $runs segments de texte (runs) sont découpés ou balisés d’une manière que Word n’enregistre jamais (segments contigus identiques, ou identifiant de révision répété sur chacun) : un programme a haché le texte pour imiter des révisions caractère par caractère.';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'Une révision antérieure conservée dans ce PDF indique un autre producteur : $history. Le producteur actuel n’écrit que des fichiers complets ; il a donc été inscrit après coup par une mise à jour incrémentielle.';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return 'Les informations du document se présentent comme une sortie système ou Word, mais les métadonnées XMP indiquent « $producer » comme producteur : l’une des deux valeurs a été réécrite.';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'Le PDF se présente comme une sortie système macOS/iOS mais utilise des structures d’objets compressées que le système n’écrit jamais : un autre outil a réenregistré le fichier après la définition du producteur.';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'La feuille de styles définit $count style(s) de collage web (comme « Normal (Web) ») que le corps n’utilise plus : du contenu a été collé depuis une page web puis remis en forme.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Traces de blanchiment détectées : les champs du fichier se contredisent d’une manière qu’un enregistrement normal ne produit jamais. Quelqu’un a tenté d’effacer des traces d’IA ou de falsifier un historique d’édition ; l’historique d’édition de ce fichier ne compte donc plus comme preuve d’écriture humaine.';
 
   @override
   String provenanceSignalC2pa(String generator) {

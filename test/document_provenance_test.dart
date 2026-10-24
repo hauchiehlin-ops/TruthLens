@@ -4,6 +4,13 @@ import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:omnitrace/core/services/document_provenance.dart';
 
+/// Word 實際寫出的設定與字型表內容（相容性設定、至少一個字型），
+/// 空殼部件會被判為洗滌痕跡
+const _wordSettings =
+    '<w:settings><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>';
+const _wordFonts =
+    '<w:fonts><w:font w:name="Calibri"><w:panose1 w:val="020F0502020204030204"/></w:font></w:fonts>';
+
 /// 以真實的 zip 容器結構組出 DOCX，確保解析走的是與實際檔案相同的路徑
 List<int> _docx({
   int? totalMinutes,
@@ -54,8 +61,8 @@ List<int> _docx({
     ..addFile(_entry('word/document.xml', documentXml));
   if (wordParts) {
     archive
-      ..addFile(_entry('word/settings.xml', '<w:settings/>'))
-      ..addFile(_entry('word/fontTable.xml', '<w:fonts/>'));
+      ..addFile(_entry('word/settings.xml', _wordSettings))
+      ..addFile(_entry('word/fontTable.xml', _wordFonts));
   }
   for (final e in extraFiles.entries) {
     archive.addFile(ArchiveFile(e.key, e.value.length, e.value));

@@ -2924,6 +2924,118 @@ class AppLocalizationsJa extends AppLocalizations {
       '以下の各項目は独立に確認できます。確率と違い、言語モデルが進歩しても弱まりません。';
 
   @override
+  String get aiSignalInventoryTitle => 'AI シグナル一覧';
+
+  @override
+  String get aiSignalInventorySubtitle =>
+      '今回の分析で取得した AI 関連シグナルをすべて、区分・強度・判定での役割・出所とともに 1 件ずつ列挙します。各項目は元のファイルや本文で照合できます。';
+
+  @override
+  String get aiSignalInventoryEmpty =>
+      '今回の分析では AI シグナルは取得されませんでした。文書が必ず人によって書かれたことを意味するものではありません。';
+
+  @override
+  String aiSignalInventoryCount(int count) {
+    return '$count 件';
+  }
+
+  @override
+  String get aiSignalColumnCategory => '区分';
+
+  @override
+  String get aiSignalColumnSignal => 'シグナル';
+
+  @override
+  String get aiSignalColumnStrength => '強度';
+
+  @override
+  String get aiSignalColumnRole => '判定での役割';
+
+  @override
+  String get aiSignalColumnLocation => '出所';
+
+  @override
+  String get aiSignalLocationBody => '本文';
+
+  @override
+  String get aiSignalLocationSentences => '文ごとの分析';
+
+  @override
+  String get aiSignalLocationReferences => '参考文献';
+
+  @override
+  String aiSignalEngineStatement(String engine, int percent, String reasons) {
+    return '$engine の AI シグナルは $percent%。理由：$reasons';
+  }
+
+  @override
+  String aiSignalSentencesFlagged(int count, int threshold, String sentences) {
+    return 'ニューラルモデルで AI しきい値（$threshold%）に達した文は $count 文：第 $sentences 文';
+  }
+
+  @override
+  String aiSignalPatternStatement(String pattern, int count, String sentences) {
+    return '$pattern：$count 文に出現（第 $sentences 文）';
+  }
+
+  @override
+  String get aiSignalCategoryFileNative => 'ファイル固有の AI 痕跡';
+
+  @override
+  String get aiSignalCategoryConcealment => 'ロンダリング／偽装の痕跡';
+
+  @override
+  String get aiSignalCategoryEvasion => '回避文字';
+
+  @override
+  String get aiSignalCategoryTextEngine => 'テキストエンジン';
+
+  @override
+  String get aiSignalCategorySentence => '文ごとの文章パターン';
+
+  @override
+  String get aiSignalCategoryProcess => '執筆過程の異常';
+
+  @override
+  String get aiSignalCategorySource => '出典の完全性';
+
+  @override
+  String get aiSignalCategoryInformational => '情報';
+
+  @override
+  String get aiSignalStrengthStrong => '強';
+
+  @override
+  String get aiSignalStrengthNotable => '顕著';
+
+  @override
+  String get aiSignalStrengthInfo => '情報';
+
+  @override
+  String get aiSignalRoleIdentity => '著者性の証拠：単独で AI 方向を形成し得る';
+
+  @override
+  String get aiSignalRoleStrengthens => '既存の AI 方向を補強する';
+
+  @override
+  String get aiSignalRoleConcealment => 'AI 方向を補強。編集記録は「人が書いた」証拠として扱わない';
+
+  @override
+  String get aiSignalRoleVetoesHuman => '編集記録は「人が書いた」証拠として扱わない。AI 方向には寄せない';
+
+  @override
+  String get aiSignalRoleTextInference => 'テキストの統計的推論。証拠統合を通じて反映';
+
+  @override
+  String get aiSignalRoleEvasion => '意図的な回避。テキストエンジンが既に AI シグナルを示す場合のみ弱い補強';
+
+  @override
+  String get aiSignalRoleSourceQuality => '出典の品質。著者判定には算入しない';
+
+  @override
+  String get aiSignalRoleInformational => '参考情報のみ。算入しない';
+
+  @override
   String findingBulkPaste(int characters) {
     return '入力中に $characters 文字の一括貼り付けが記録されました。テキストがエディタにどう現れるかを言語モデルは偽装できません。この部分はここで打たれたものではありません。';
   }
@@ -3503,6 +3615,74 @@ class AppLocalizationsJa extends AppLocalizations {
   String provenanceSignalChatFont(String font) {
     return '本文にフォント「$font」の指定があります。AI 対話画面の Web フォントで、対話ウィンドウからの直接コピーでよく見られます。';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '本文に AI 対話サービスの引用マーカーが $count 個あります（「【4†source】」「citeturn0search3」「[oaicite:2]」など）。これらは対話サービスの引用システムだけが生成するもので、内容が AI との対話からコピーされたことを示します。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count 件のリンクに AI 検索の流入パラメータ「utm_source=chatgpt.com」が付いています：これらの参考資料は ChatGPT 検索で得られたものです。資料の集め方を示すもので、本文の書き手を示すものではありません。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '本文で使われている $total 個の編集セッション（RSID）のうち $count 個が、Word が settings.xml に保持するセッション登録表にありません：編集セッションが後から本文に注入されたとみられます。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'ファイルは $minutes 分の編集時間を申告していますが、作成から最終保存までは $lifetime 分しか経っていません。編集時間がファイルの存在期間を超えることはなく、この項目は書き換えられています。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '本文には $sessions 個の編集セッションがありますが、保存は $revisions 回だけです。Word は保存のたびに新しいセッションを開始するため、どちらかの数値が偽造されています。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF の作成ソフト「$producer」は macOS／iOS のシステム出力を名乗っていますが、形式がシステムの実際の書式と一致しません（ビルド番号がない、またはそのバージョンのものではない）：作成ソフト欄が書き換えられています。';
+  }
+
+  @override
+  String provenanceSignalHollowWordParts(String app) {
+    return 'ファイルは「$app」で保存されたと主張していますが、設定とフォント表は中身のない殻です（互換性設定もフォントもない）。Word が書き出すものとは異なり、検査を通すために追加された部品です。';
+  }
+
+  @override
+  String provenanceSignalStatsMismatch(int declared, int actual) {
+    return 'ファイルは $declared 語と申告していますが、本文は実際には $actual 語です。Word は保存のたびに再集計するため、本文は Word の外で書き換えられています（自動書き換えツールなど）。';
+  }
+
+  @override
+  String provenanceSignalRunFragmentation(int count, int runs) {
+    return '$runs 個のテキスト実行（run）のうち $count 個が、Word が保存しない形で分割・付記されています（隣り合う同一の実行、またはすべての実行に繰り返された改訂 ID）：一文字ずつの改訂を装うため、プログラムでテキストが細切れにされています。';
+  }
+
+  @override
+  String provenanceSignalProducerRewritten(String history) {
+    return 'この PDF 内に残る以前の版には別の作成ソフトが記録されています：$history。現在の作成ソフトはファイル全体しか書き出さないため、後から増分更新で書き込まれたものです。';
+  }
+
+  @override
+  String provenanceSignalInfoXmpConflict(String producer) {
+    return '文書情報はシステムまたは Word の出力を名乗っていますが、XMP メタデータには作成ソフトとして「$producer」が記録されています：どちらかが書き換えられています。';
+  }
+
+  @override
+  String get provenanceSignalPdfStructureMismatch =>
+      'PDF は macOS／iOS のシステム出力を名乗っていますが、システムが書き出さない圧縮オブジェクト構造を使っています：作成ソフト欄の設定後、別のツールで保存し直されています。';
+
+  @override
+  String provenanceSignalWebStyleResidue(int count) {
+    return 'スタイルシートに Web 貼り付け用スタイル（「標準 (Web)」など）が $count 個定義されていますが、本文ではもう使われていません：Web ページから貼り付けた内容を後で書式変更しています。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'ロンダリングの痕跡を検出しました：ファイルの各項目が、通常の保存では生じない形で互いに矛盾しています。AI の痕跡を消す、または編集履歴を偽装しようとした形跡があるため、このファイルの編集記録は「人が書いた」証拠として扱いません。';
 
   @override
   String provenanceSignalC2pa(String generator) {

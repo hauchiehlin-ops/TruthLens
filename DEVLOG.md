@@ -1,5 +1,100 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-24 — 報告新增「AI 訊號清單」：擷取到的 AI 訊號逐條表列
+
+**需求**：分析結果須把已擷取到的 AI 訊號詳盡、逐條表列於報告中。
+
+**做法**：新增 `collectAiSignals`（`lib/features/report/ai_signal_inventory.dart`），畫面報告、
+PDF、JSON、CSV 四處共用同一份清單，列出的項目一致。每條包含：編號、類別、訊號（白話陳述，
+含可核對的數量與值）、強度（強／顯著／資訊）、**在判讀中的作用**、**出處**（檔案部件如
+`word/settings.xml`、`PDF %%EOF revisions`，或正文／逐句分析／參考文獻）。
+
+收錄範圍與排序（類別優先，同類別強者在前）：
+1. 檔案原生 AI 痕跡（身分證據或加強）
+2. 洗滌／偽造痕跡
+3. 規避字元（每種手法一條，附次數；未達刻意規避門檻時標為資訊）
+4. 文字引擎：只列實際投票且分數達 AI 門檻的引擎，附該引擎**全部**理由。偏人類或中性的引擎
+   理由不是 AI 訊號，不列入
+5. 逐句：神經模型判定達門檻的句子（句號以 1 起算，最多列 40 個，其餘以「…」表示）；每一種
+   制式寫作模式出現在哪幾句。沒有神經模型支撐的逐句值是棄權，不列入
+6. 寫作歷程異常（否決人類證據，不推向 AI）
+7. 來源完整性（查無此文的引用、缺來源的主張；不計入作者判讀）
+8. 資訊（如 C2PA，不計入）
+
+「作用」一欄逐條說明該訊號實際如何影響判讀，避免讀者把「列出」誤讀成「已計入 AI 機率」。
+
+**呈現**：畫面上在「可查證的事實」之後新增 `AiSignalInventoryCard`，窄螢幕每條一個區塊；
+PDF 在證據矩陣之後以六欄表格呈現；JSON 新增 `ai_signal_inventory` 陣列；CSV 以
+`# ai_signal,` 開頭的註解列逐條列出。沒有任何訊號時明確顯示「未擷取到」，並註明這不代表
+文件必然由人撰寫。新增 34 個 l10n 鍵 × 14 語系。
+
+**順帶發現**：原本 PDF 與 JSON 匯出完全沒有列出檔案來源訊號，只有畫面上的卡片有；現在四處一致。
+
+## 2026-10-24 — 文件載體 AI 訊號核實引擎（第②③階段）：組件內容、修訂歷程、結構指紋
+
+延續第①階段，新增七項檢查，全部歸入 `ArtifactTraceReport`：
+
+| 代號 | 訊號 | 族別／強度 | 判定 |
+|---|---|---|---|
+| D5 | `hollowWordComponents` | 洗滌／顯著 | 宣稱 Word，settings.xml 沒有 `<w:compat>` 且 fontTable.xml 沒有任何 `<w:font>`（針對「補上 3 項標準組件」） |
+| D6 | `declaredStatsMismatch` | 洗滌／顯著 | 宣稱 Word、正文 ≥ 300 字，`app.xml` `<Words>` 與正文差三倍以上（正文在 Word 外被改寫） |
+| D7 | `webStyleResidue` | 歷程異常／顯著 | styles.xml 定義 NormalWeb／HTML 樣式，正文一處都沒用（貼上網頁內容後改格式）；不推向 AI，但否決人類證據 |
+| P2 | `pdfProducerRewritten` | 洗滌／**強** | 依 `%%EOF` 分段讀各修訂版本 Producer；最後生效者是只會整份寫出的工具（Quartz、Word 另存、Skia、LibreOffice、Print To PDF），較早版本卻是別的值 → 舊值直接顯示給使用者 |
+| P3 | `pdfInfoXmpConflict` | 洗滌／顯著 | 資訊字典自稱上述整份寫出的工具，XMP `pdf:Producer` 卻是別的產生器 |
+| D4 | `syntheticRunFragmentation` | 洗滌／顯著 | 只對宣稱 Word 的檔案：相鄰完全相同的執行區 ≥ 20 對且 ≥ 15%，或執行區 `w:rsidR` 與段落 `w:rsidRDefault` 相同 ≥ 30 個且過半 |
+| P4 | `pdfStructureMismatch` | 洗滌／顯著 | 自稱 Quartz PDFContext，卻含 `/Type /ObjStm` 或 `/Type /XRef`（PDF 1.5 壓縮結構） |
+
+**誤報防護**：P2／P3 只在「最後生效的產生器自稱只會整份寫出」時觸發——Acrobat 加註、出版社
+iText 浮水印這類合法的增量編輯（第①階段前曾實測 iText 出現在 40 篇真人論文）不受影響；
+線性化檔案的首段沒有內容物件，不算一個版本。D4／D5 不比對 Google 文件、LibreOffice 匯出。
+
+**順帶修正**：`PdfMetadata` 讀字面字串時遇到第一個 `)` 就截斷，但 PDF 允許成對未跳脫的括號
+（ISO 32000-1 §7.3.4.2），Quartz 的 `(macOS Version 12.6 (Build 21G115) Quartz PDFContext)`
+會被截成 `macOS Version 12.6 (Build 21G115`。改以括號深度掃描。
+
+**測試夾具更新**：原 DOCX 夾具宣稱 Word 卻寫 `<w:settings/>`／`<w:fonts/>` 空殼，改為帶
+`<w:compat>` 與字型的真實內容，否則會被 D5 正確判為空殼。
+
+**待驗證**：D4 的兩條規則與 D5 的「Word 一定寫 `<w:compat>`」、D6 的「Word 存檔必重算字數」、
+P4 的「Quartz 不寫壓縮結構」皆依格式規格與 Word／macOS 存檔行為推論，門檻已取保守，仍需以
+真人 Word 檔與 macOS 列印 PDF 語料校準誤報率。
+
+## 2026-10-24 — 文件載體 AI 訊號核實引擎（第①階段）：洗不洗都留痕
+
+**起因**：使用者提供某「AI 痕跡消除」工具（NonAI）的 PDF／DOCX 洗滌作業鏈截圖：注入 20–40 組隨機
+RSID、偽造編輯時長（截圖 218 分鐘）、補上 Word「3 項標準組件」、改寫 PDF Producer
+（`macOS Version 15.3.1 Quartz PDFContext`）、清除 XMP。比對程式碼後確認這些手法**正好越過**
+`indicatesHumanAuthorship` 的自動納入門檻（RSID ≥ 5、時長 ≥ 20 分、存檔 ≥ 3）與
+`generatorMismatch`（只檢查 settings.xml／fontTable.xml 是否存在）。後果不只是漏報：洗滌過的
+AI 文件會拿到 −1.35 的「由人撰寫」證據，還可能被自動收進校準基準集，污染人類分布。
+
+**設計**：新增 `ArtifactTraceReport`（`lib/core/services/artifact_trace.dart`），與四個文字子模型
+獨立，只讀檔案本身，把所有來源訊號歸為四族：
+- `aiNative` 原生 AI 痕跡（未洗滌）：產生器宣告、**對話引用標記**（新增，`【4†source】`、
+  `citeturn0search3`、`[oaicite:2]`）、對話介面字型、**AI 搜尋導流連結**（新增，`utm_source=chatgpt.com`）
+- `concealment` 洗滌痕跡（新增四項）：RSID 未登記（D1）、編輯時長超過檔案存在時間（D2）、
+  批次數遠多於存檔次數（D3）、Quartz Producer 缺組建號或組建號與版本不符（P1）；既有的
+  `generatorMismatch` 也歸此族
+- `processAnomaly` 寫作歷程異常（既有，仍不推向 AI）；`informational`（C2PA）
+
+**計分**（併入 `IntegratedAssessment` 的文件來源軸，取代原本只看 `declaresAiGenerator` 的寫法）：
+- 作者特異性（產生器宣告、對話引用標記）+2.20，可單獨通過 AI 證據門檻
+- 其餘原生痕跡 +0.60；洗滌痕跡 強 +0.90／顯著 +0.45，合計上限 1.20。這兩類只加強方向，
+  不單獨形成結論（洗滌證明有人隱匿，不證明作者是 AI）
+- **否決權**：洗滌訊號皆為 notable／strong，既有規則「任何非 info 訊號即不構成人類證據」自動生效
+- 來源卡在偵測到洗滌時加一行說明（7 個新 l10n 鍵 × 14 語系）
+
+**門檻取捨**（寧可漏報）：D1 只在 settings.xml 有 `<w:rsids>` 登記表、且未登記 ≥ 5 個並過半時觸發
+（少量未登記可能來自複製別份文件的段落）；D2 要求超出存在時間 60 分鐘以上且達兩倍；D3 要求
+批次 ≥ 10 且 > 存檔次數 × 3 + 5；P1 只檢查 `macOS/iOS Version` 新式命名（舊式 `Mac OS X 10.x`
+本來就無組建號），組建號對照只收已發布版本（macOS 26 → 25、iOS 26 → 23）。
+
+**待驗證／後續**：D2、D3 的語意（「另存新檔」是否保留 created 與 TotalTime、每次存檔是否必開新
+RSID）依 Word 行為推論，尚未以真實語料校準，需收集一批真人 Word 檔確認誤報率。第②階段：
+settings.xml／fontTable.xml 內容層級的 Word 指紋（D5）、`app.xml` 統計欄位與正文比對（D6）、
+樣式表殘留（D7）、PDF 增量更新（P2）、Info／XMP 一致性（P3）；第③階段：碎形 Runs 切分（D4）、
+Quartz 物件結構指紋（P4）。
+
 ## 2026-10-22 — 長文件分析加速：參考文獻略過、兩階段篩檢、模型專屬 Worker、ORT 1.30、可批次模型
 
 使用者回報 5.4 萬字 docx 在 897 秒時只完成 2/4 引擎。原因：(1) INT8 動態量化模型為了分數一致只能
