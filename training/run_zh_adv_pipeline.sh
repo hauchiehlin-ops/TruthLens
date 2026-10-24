@@ -20,11 +20,11 @@ MODEL=artifacts/zh_adversarial
 ONNX=artifacts/zh_adversarial_onnx/model_int8.onnx
 
 echo "=== 0/5 環境檢查 ==="
-if [ ! -x "$PY" ]; then
-  echo "找不到 $PY：請先依 README「環境」一節建立 training/.venv" >&2
+if [ ! -x "${PY}" ]; then
+  echo "找不到 ${PY}：請先依 README「環境」一節建立 training/.venv" >&2
   exit 1
 fi
-$PY - <<'CHECK'
+${PY} - <<'CHECK'
 import importlib.util, sys
 missing = [m for m in ("torch", "transformers", "onnx", "onnxruntime", "tokenizers", "sklearn", "huggingface_hub")
            if importlib.util.find_spec(m) is None]
@@ -36,10 +36,10 @@ print("PyTorch", torch.__version__, "· MPS 可用" if torch.backends.mps.is_ava
 if importlib.util.find_spec("opencc") is None:
     print("提示：未安裝 opencc-python-reimplemented，不會做繁體轉換（建議安裝）")
 CHECK
-if [ ! -s "$HC3" ]; then
-  echo "找不到 $HC3，從 Hugging Face 下載 HC3-Chinese ..."
-  mkdir -p "$(dirname "$HC3")"
-  $PY - "$HC3" <<'FETCH'
+if [ ! -s "${HC3}" ]; then
+  echo "找不到 ${HC3}，從 Hugging Face 下載 HC3-Chinese ..."
+  mkdir -p "$(dirname "${HC3}")"
+  ${PY} - "${HC3}" <<'FETCH'
 import shutil, sys
 from huggingface_hub import hf_hub_download
 path = hf_hub_download(repo_id="Hello-SimpleAI/HC3-Chinese", filename="all.jsonl", repo_type="dataset")
@@ -49,25 +49,25 @@ FETCH
 fi
 
 echo "=== 1/5 準備資料 ==="
-$PY prepare_zh_adversarial.py --hc3 "$HC3" --out-dir "$DATA" \
-  ${HUMANIZED:+--llm-humanized "$HUMANIZED"}
+${PY} prepare_zh_adversarial.py --hc3 "${HC3}" --out-dir "${DATA}" \
+  ${HUMANIZED:+--llm-humanized "${HUMANIZED}"}
 
-echo "=== 2/5 微調（$BASE_MODEL）==="
-$PY -u train_zh_detector.py --base-model "$BASE_MODEL" --data-dir "$DATA" \
-  --out-dir "$MODEL" --max-train "${MAX_TRAIN:-40000}" --epochs "${EPOCHS:-1}"
+echo "=== 2/5 微調（${BASE_MODEL}）==="
+${PY} -u train_zh_detector.py --base-model "${BASE_MODEL}" --data-dir "${DATA}" \
+  --out-dir "${MODEL}" --max-train "${MAX_TRAIN:-40000}" --epochs "${EPOCHS:-1}"
 
 echo "=== 3/5 匯出 INT8 ONNX（與 App 相同的推論合約）==="
-mkdir -p "$(dirname "$ONNX")"
-$PY export_hf_sequence_classifier.py "$MODEL" "$ONNX"
+mkdir -p "$(dirname "${ONNX}")"
+${PY} export_hf_sequence_classifier.py "${MODEL}" "${ONNX}"
 
 echo "=== 4/5 依洗滌家族量測 ==="
-$PY evaluate_zh_adversarial.py --onnx "$ONNX" --test "$DATA/test.jsonl" \
-  --predictions "$DATA/predictions.jsonl" --report "$DATA/report.json"
+${PY} evaluate_zh_adversarial.py --onnx "${ONNX}" --test "${DATA}/test.jsonl" \
+  --predictions "${DATA}/predictions.jsonl" --report "${DATA}/report.json"
 
 echo "=== 5/5 發布前操作點報告 ==="
-$PY evaluate_operating_point.py --predictions "$DATA/predictions.jsonl" \
-  --target-fpr 0.01 --report "$DATA/operating_point.json" --required-language zh
+${PY} evaluate_operating_point.py --predictions "${DATA}/predictions.jsonl" \
+  --target-fpr 0.01 --report "${DATA}/operating_point.json" --required-language zh
 
-echo "=== 完成：$ONNX ==="
-echo "發布前請確認 $DATA/report.json 的 human_laundering_fpr_shift 接近 0，"
+echo "=== 完成：${ONNX} ==="
+echo "發布前請確認 ${DATA}/report.json 的 human_laundering_fpr_shift 接近 0，"
 echo "再把 operating_point.json 的門檻填入 catalog 的 ai_evidence_threshold。"
