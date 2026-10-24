@@ -1393,10 +1393,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               return ListView(
                 key: ValueKey('$modeKey-flow'),
                 children: [
-                  SizedBox(
-                    height: headerHeight,
-                    child: _workspaceCommandHeader(compact: true),
-                  ),
+                  // 捲動版面中讓標頭依內容決定高度：精簡標頭在寬度足夠時仍是
+                  // 兩列（指標＋操作），固定 84px 會溢出
+                  _workspaceCommandHeader(compact: true),
                   if (includeTimeline) ...[
                     const SizedBox(height: 10),
                     _timelineStrip(),

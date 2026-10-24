@@ -249,6 +249,52 @@ void main() {
     });
   });
 
+  testWidgets('篩檢提示的送模型句數與摘要的已量測一致（不含參考文獻）', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: const Scaffold(
+          body: SizedBox(
+            width: 600,
+            height: 600,
+            child: SentenceFindingsView(
+              rows: [
+                SentenceFindingRow(
+                  number: 1,
+                  text: 'a',
+                  score: 0.2,
+                  status: SentenceFindingStatus.belowEvidence,
+                ),
+                SentenceFindingRow(
+                  number: 2,
+                  text: 'b',
+                  score: null,
+                  status: SentenceFindingStatus.screenedOut,
+                ),
+                SentenceFindingRow(
+                  number: 3,
+                  text: 'Smith (2020). Journal.',
+                  score: null,
+                  status: SentenceFindingStatus.notSent,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.text(_l10n.workspaceFindingsSummary(1, 3, 0, 60)),
+      findsOneWidget,
+    );
+    expect(
+      find.text(_l10n.workspaceFindingsScreenedBanner(1, 3)),
+      findsOneWidget,
+    );
+  });
+
   group('判別力不足的原因與可行做法', () {
     DetectionResult result(List<EngineScore> scores) => DetectionResult(
       id: 'd',
