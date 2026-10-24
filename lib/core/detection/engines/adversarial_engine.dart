@@ -240,6 +240,9 @@ class AdversarialEngine
       return _unavailable(l10n);
     }
 
+    // 門檻依變體校準（catalog 的 ai_evidence_threshold）。不同語言的模型
+    // 分數尺度不同，中文模型的操作點由 evaluate_operating_point.py 另行選定。
+    final threshold = _resolveVariant()?.aiEvidenceThreshold ?? 0.60;
     List<double> perChunk;
     ChunkScreeningResult screening;
     try {
@@ -248,7 +251,7 @@ class AdversarialEngine
         chunks: text.analysisChunks,
         paragraphIndices: text.analysisChunkParagraphIndices,
         classifier: detector.classifySentences,
-        suspicionThreshold: ChunkScreening.suspicionThresholdFor(0.6),
+        suspicionThreshold: ChunkScreening.suspicionThresholdFor(threshold),
         enabled: fastScreeningEnabled,
         onProgress: (progress) =>
             onProgress?.call(0.12 + progress.clamp(0.0, 1.0) * 0.86),
@@ -272,11 +275,11 @@ class AdversarialEngine
         .where(PreprocessedText.isScoredSentence)
         .length;
     final avg = perChunk.reduce((a, b) => a + b) / perChunk.length;
-    final strongChunks = perChunk.where((score) => score >= 0.6).toList();
+    final strongChunks = perChunk.where((score) => score >= threshold).toList();
     final strongChunkCount = strongChunks.length;
     final strongChunkRatio = strongChunkCount / perChunk.length;
     final strongSentenceCount = perSentence
-        .where((score) => score >= 0.6)
+        .where((score) => score >= threshold)
         .length;
     final strongSentenceRatio = scoredSentenceCount == 0
         ? 0.0

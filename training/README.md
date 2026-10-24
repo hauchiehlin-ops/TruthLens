@@ -372,6 +372,49 @@ cd training
 只輸出分數與檔名，不寫原文；逐句 JSONL 可直接交給 `evaluate_operating_point.py`
 重新選門檻。新模型必須讓上述探針跨過門檻，且真人學術文件誤報上界仍 ≤ 1%。
 
+## 中文改寫偵測模型（對抗模組 D 的中文變體，2026-10-24 建立流程，尚未訓練）
+
+**為什麼需要**：目錄中唯一的改寫偵測模型 `omnitrace-adversarial-distil-int8` 只支援英文。中文文件
+送進去會被判為「語言不支援」，對抗模組整個不參與，而洗滌工具（去八股、拉高句長變異、偽造編輯歷程）
+正是針對中文使用者在賣。
+
+**資料設計**（`prepare_zh_adversarial.py`）：
+
+| 家族 | 來源 | 標籤 |
+|---|---|---|
+| `original` | HC3-Chinese 真人／ChatGPT 答案；`--corpus` 的其他語料；LLM 產生的非人類化語域 | 依來源 |
+| `rule_laundered` | `zh_laundering.py` 規則式洗滌：去八股過渡詞、拆排比、拉高句長變異（平均 CV ≈ 0.67，對應洗滌工具宣稱的 > 0.65）、換口語、改標點 | **與原文相同** |
+| `llm_humanized` | `binoculars/generate_ai_corpus.py --register zh-proposal --styles humanized` 的輸出 | AI |
+
+防捷徑：真人與 AI **以相同次數**套用規則式洗滌，並**在每個家族內各自平衡兩類**——否則「被洗過」
+本身就會帶著標籤資訊，模型學到的是捷徑而不是洗滌後殘留的 AI 特徵。切分按題目（`group_id`）
+先做、增強後做，同一題的所有版本落在同一側。繁體轉換兩類同比例套用。
+
+**限制（必須寫進發布紀錄）**：規則式洗滌比不上真實的 LLM 人類化；HC3 的 AI 樣本是 2022 年
+ChatGPT。沒有 `--llm-humanized` 的模型對現代洗滌工具的代表性有限，`prepare_zh_adversarial.py`
+會在缺少時警告。
+
+**執行**（需能下載 `hfl/chinese-roberta-wwm-ext` 與 HC3-Chinese 的機器）：
+
+```bash
+# （建議）先產生 LLM 人類化語料，需要 API 金鑰
+.venv/bin/python binoculars/generate_ai_corpus.py --register zh-proposal \
+    --styles standard,humanized --topics-file <題目清單> --out-dir binoculars/data/ai_generated
+
+HUMANIZED=binoculars/data/ai_generated/manifest.jsonl ./run_zh_adv_pipeline.sh
+```
+
+流程：準備資料 → `train_zh_detector.py` 微調 → `export_hf_sequence_classifier.py` 匯出 INT8 ONNX
+（與 App 相同的推論合約）→ `evaluate_zh_adversarial.py` 依家族量測 → `evaluate_operating_point.py`。
+
+**發布條件**（`data/zh_adversarial/report.json`）：
+- `ai/rule_laundered`、`ai/llm_humanized` 在 1% 誤報率下的召回率；`laundering_recall_gap`
+  （洗滌讓召回掉多少）越接近 0 越好
+- `human_laundering_fpr_shift` 必須接近 0：真人文章洗過之後誤報上升，代表模型學了捷徑，不能發布
+- 通過後把 `operating_point.json` 的門檻填入 catalog 的 `ai_evidence_threshold`，並填 `sha256`、
+  `size_bytes`、`languages: ["zh"]`。App 端已改為依文件語言路由改寫偵測變體（中文文件自動用
+  中文模型），門檻也改讀各變體的 `ai_evidence_threshold`。
+
 ## 擴充到其他語言（現況：資料擋住了，不是流程擋住了）
 
 `export_detectrl_zh_char_svm.py` 本身與語言無關，加上 `--no-script-augment`

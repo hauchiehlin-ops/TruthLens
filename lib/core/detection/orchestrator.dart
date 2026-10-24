@@ -64,14 +64,11 @@ class EnsembleOrchestrator extends ChangeNotifier {
     // 3. 風格特徵模型 (Stylometry)
     discovered.add(StylometryEngine());
 
-    // 4. 對抗防禦同樣只跑使用中變體，避免同 role 多 session 競爭。
-    final activeAdversarial = mm.activeVariant('adversarial');
-    discovered.add(
-      AdversarialEngine(
-        modelManager: mm,
-        variantId: activeAdversarial?.variantId,
-      ),
-    );
+    // 4. 對抗防禦與 Transformer 相同：一次只跑一顆，但每次分析依文件語言
+    //    從已安裝變體挑選（中文文件用中文改寫偵測模型）。原本在建構時鎖定
+    //    使用中變體，裝了中文模型後中文文件仍會送進純英文模型。使用者在
+    //    模型管理手動鎖定時，路由仍會尊重該選擇。
+    discovered.add(AdversarialEngine(modelManager: mm));
 
     return discovered;
   }
