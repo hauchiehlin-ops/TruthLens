@@ -88,6 +88,9 @@ class EnsembleOrchestrator extends ChangeNotifier {
     CalibrationService? calibration,
     bool eslCorrectionEnabled = true,
     PreferencesService? prefs,
+    // 只對這一次分析覆寫長文件快速篩檢（例如使用者要求完整逐句分析），
+    // 不改動已儲存的設定
+    bool? fastScreening,
     AppLocalizations? l10n,
     void Function(String engineId)? onEngineStarted,
     void Function(String engineId)? onEngineDone,
@@ -101,7 +104,7 @@ class EnsembleOrchestrator extends ChangeNotifier {
     for (final engine in engines) {
       if (engine is ChunkScreeningOption) {
         (engine as ChunkScreeningOption).fastScreeningEnabled =
-            prefs?.fastScreeningEnabled ?? true;
+            fastScreening ?? prefs?.fastScreeningEnabled ?? true;
       }
     }
 
@@ -293,6 +296,19 @@ class EnsembleOrchestrator extends ChangeNotifier {
           ),
         )
         .toList();
+    // 實測值：凡是適用此語言、有產出逐句分數的神經模型都算，不論本次是否
+    // 投票。不適用語言的模型（例如純英文模型讀中文）的輸出沒有意義，排除。
+    final measuringScores = scores
+        .where(
+          (s) =>
+              s.available &&
+              s.applicability != EngineApplicability.unsupported &&
+              s.sentenceScores != null &&
+              s.sentenceScores!.isNotEmpty &&
+              s.weight > 0,
+        )
+        .map((s) => (values: s.sentenceScores!, weight: s.weight))
+        .toList();
 
     final result = <SentenceScore>[];
     for (var i = 0; i < text.sentences.length; i++) {
@@ -342,6 +358,31 @@ class EnsembleOrchestrator extends ChangeNotifier {
           ..clear()
           ..add(l10n.patternNotAnalyzable);
       }
+
+      var measuredSum = 0.0;
+      var measuredWeight = 0.0;
+      for (final measuring in measuringScores) {
+        if (i < measuring.values.length &&
+            PreprocessedText.isScoredSentence(measuring.values[i])) {
+          measuredSum += measuring.values[i] * measuring.weight;
+          measuredWeight += measuring.weight;
+        }
+      }
+      final measured = measuredWeight > 0
+          ? (measuredSum / measuredWeight).clamp(0.0, 1.0)
+          : null;
+      final status = !analyzable
+          ? SentenceScoreStatus.notAnalyzable
+          : modelBacked
+          ? SentenceScoreStatus.voted
+          : measured != null
+          ? SentenceScoreStatus.measuredBelowEvidence
+          : measuringScores.isEmpty
+          ? SentenceScoreStatus.noNeuralModel
+          : i < text.sentenceAnalysisChunkIndices.length &&
+                text.sentenceAnalysisChunkIndices[i].isEmpty
+          ? SentenceScoreStatus.notSentToModel
+          : SentenceScoreStatus.screenedOut;
       result.add(
         SentenceScore(
           index: i,
@@ -349,6 +390,8 @@ class EnsembleOrchestrator extends ChangeNotifier {
           aiProbability: p.clamp(0.0, 1.0),
           patterns: patterns,
           modelBacked: modelBacked,
+          measuredProbability: analyzable ? measured : null,
+          status: status,
         ),
       );
     }

@@ -13,6 +13,7 @@ library;
 import '../detection/analysis_profile.dart';
 import '../detection/variant_router.dart';
 import '../models/detection_result.dart';
+import '../utils/language_id.dart';
 
 /// 判別力不足的已知原因
 enum DiscriminabilityGap {
@@ -47,6 +48,15 @@ class TextDiscriminability {
   /// 不適用或未安裝的文字引擎數
   final int unavailableEngines;
 
+  /// 模型不支援本文語言的引擎角色（如 `adversarial`）。重新下載救不了。
+  final List<String> languageUnsupportedRoles;
+
+  /// 未安裝或載入失敗的引擎角色。可在模型管理重新下載。
+  final List<String> notInstalledRoles;
+
+  /// 偵測到的文件語言代碼；未判定時為 null
+  final String? language;
+
   const TextDiscriminability({
     required this.textEnginesSilent,
     required this.gaps,
@@ -54,6 +64,9 @@ class TextDiscriminability {
     this.probeDocuments = 0,
     this.probeDetected = 0,
     this.unavailableEngines = 0,
+    this.languageUnsupportedRoles = const [],
+    this.notInstalledRoles = const [],
+    this.language,
   });
 
   /// 需要在報告上警示：文字引擎全部沉默，而且有已知原因說明它們為何分辨不了
@@ -105,15 +118,21 @@ class TextDiscriminability {
       gaps.add(DiscriminabilityGap.perplexityOutdated);
     }
 
-    final unavailable = scores.values
-        .where(
-          (score) =>
-              !score.available ||
-              score.applicability == EngineApplicability.unsupported,
-        )
-        .length;
+    // 「語言不支援」與「沒裝好」的解法完全不同，分開記錄
+    final languageUnsupported = [
+      for (final entry in scores.entries)
+        if (entry.value.available &&
+            entry.value.applicability == EngineApplicability.unsupported)
+          entry.key,
+    ];
+    final notInstalled = [
+      for (final entry in scores.entries)
+        if (!entry.value.available) entry.key,
+    ];
+    final unavailable = languageUnsupported.length + notInstalled.length;
     if (unavailable > 0) gaps.add(DiscriminabilityGap.enginesUnavailable);
 
+    final detected = detectLanguage(result.inputText);
     return TextDiscriminability(
       textEnginesSilent: silent,
       gaps: gaps,
@@ -121,6 +140,9 @@ class TextDiscriminability {
       probeDocuments: probeDocuments,
       probeDetected: probeDetected,
       unavailableEngines: unavailable,
+      languageUnsupportedRoles: languageUnsupported,
+      notInstalledRoles: notInstalled,
+      language: detected.isUndetermined ? null : detected.code,
     );
   }
 

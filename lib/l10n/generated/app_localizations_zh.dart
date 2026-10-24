@@ -2739,7 +2739,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      '此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。';
+      '此百分比是「這一句」自己的模型分數，不是整份文件的判定。數字越高代表用字模式越接近 AI 生成；低分只代表模型在此句未見 AI 特徵，不代表由人撰寫。標示「不計入」的數字來自本次未達證據門檻的引擎。最終報告會依各引擎權重綜合判讀。';
 
   @override
   String get workspaceSentenceSignalHeader => '逐句 AI 訊號';
@@ -3725,6 +3725,97 @@ class AppLocalizationsZh extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count 個文字引擎不適用此語言或未安裝';
   }
+
+  @override
+  String get reportEngineResolutionLanguage => '此引擎的模型不支援本文語言；重新下載或更新都無法解決。';
+
+  @override
+  String get gapRemedyLabel => '可行做法：';
+
+  @override
+  String get gapRemedyDomain => '這類文件請以文件來源、引用核實與寫作過程等證據為主，文字分數僅供參考。';
+
+  @override
+  String get gapRemedyLanguageUnvalidated => '可在模型管理改用已驗證此語言的分類器；若沒有，文字分數僅供參考。';
+
+  @override
+  String get gapRemedyPerplexity =>
+      '這是方法本身的限制：現代 AI 長文的困惑度與真人寫作重疊，換模型或改設定都無法改善。請以文件來源、引用核實與寫作過程判讀。';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      '這是模型涵蓋範圍的限制：模型目錄目前沒有支援此語言的同類模型，重新下載或更新都無法解決。';
+
+  @override
+  String get gapRemedyEngineInstall => '在模型管理重新下載此模型後再分析一次。';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine：模型不支援$language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine：未安裝或載入失敗';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '已由模型量測 $measured/$total 句 · 達 $threshold% 門檻 $flagged 句';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => '依分數';
+
+  @override
+  String get workspaceFindingsSortOrder => '依原文順序';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => '只看已量測';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return '長文件快速篩檢：$total 句中只有 $measured 句送入模型，其餘標示「未抽樣」。';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => '完整逐句分析';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      '這是模型對此句的實測分數。本次該引擎未達證據門檻，此數字不計入判讀；低分只代表模型在此句未見 AI 特徵，不代表由人撰寫。';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => '不計入';
+
+  @override
+  String get sentenceStatusScreenedOut => '未抽樣';
+
+  @override
+  String get sentenceStatusScreenedOutHint => '長文件快速篩檢沒有抽到這一句。按「完整逐句分析」即可取得分數。';
+
+  @override
+  String get sentenceStatusNotSent => '未送模型';
+
+  @override
+  String get sentenceStatusNotSentHint => '參考文獻、標題等不送入模型。';
+
+  @override
+  String get sentenceStatusNoModel => '無模型';
+
+  @override
+  String get sentenceStatusNoModelHint => '本次沒有適用此語言的神經模型產出逐句分數。';
+
+  @override
+  String get sentenceStatusNotAnalyzable => '不分析';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint => '太短或不是完整句子，不做分析。';
 
   @override
   String get textDiscriminabilityClosing =>
@@ -6481,7 +6572,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      '此百分比是「这一句」自己的 AI 信号强度，不是整份文件的最终判定。数字越高代表这句的用字模式越接近 AI 生成；越低则越接近一般人类写作习惯。最终报告会依各引擎权重综合所有句子后得出。';
+      '此百分比是“这一句”自己的模型分数，不是整份文档的判定。数字越高代表用字模式越接近 AI 生成；低分只代表模型在此句未见 AI 特征，不代表由人撰写。标示“不计入”的数字来自本次未达到证据阈值的引擎。最终报告会依各引擎权重综合判断。';
 
   @override
   String get workspaceSentenceSignalHeader => '逐句 AI 信号';
@@ -7467,6 +7558,97 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String gapEnginesUnavailable(int count) {
     return '$count 个文字引擎不适用此语言或未安装';
   }
+
+  @override
+  String get reportEngineResolutionLanguage => '此引擎的模型不支持本文语言；重新下载或更新都无法解决。';
+
+  @override
+  String get gapRemedyLabel => '可行做法：';
+
+  @override
+  String get gapRemedyDomain => '这类文档请以文件来源、引用核实与写作过程等证据为主，文字分数仅供参考。';
+
+  @override
+  String get gapRemedyLanguageUnvalidated => '可在模型管理改用已验证此语言的分类器；若没有，文字分数仅供参考。';
+
+  @override
+  String get gapRemedyPerplexity =>
+      '这是方法本身的限制：现代 AI 长文的困惑度与真人写作重叠，换模型或改设置都无法改善。请以文件来源、引用核实与写作过程判断。';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      '这是模型覆盖范围的限制：模型目录目前没有支持此语言的同类模型，重新下载或更新都无法解决。';
+
+  @override
+  String get gapRemedyEngineInstall => '在模型管理重新下载此模型后再分析一次。';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine：模型不支持$language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine：未安装或加载失败';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '已由模型测量 $measured/$total 句 · 达到 $threshold% 阈值 $flagged 句';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => '按分数';
+
+  @override
+  String get workspaceFindingsSortOrder => '按原文顺序';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => '只看已测量';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return '长文档快速筛查：$total 句中只有 $measured 句送入模型，其余标示“未抽样”。';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => '完整逐句分析';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      '这是模型对此句的实测分数。本次该引擎未达到证据阈值，此数字不计入判断；低分只代表模型在此句未见 AI 特征，不代表由人撰写。';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => '不计入';
+
+  @override
+  String get sentenceStatusScreenedOut => '未抽样';
+
+  @override
+  String get sentenceStatusScreenedOutHint => '长文档快速筛查没有抽到这一句。点“完整逐句分析”即可取得分数。';
+
+  @override
+  String get sentenceStatusNotSent => '未送模型';
+
+  @override
+  String get sentenceStatusNotSentHint => '参考文献、标题等不送入模型。';
+
+  @override
+  String get sentenceStatusNoModel => '无模型';
+
+  @override
+  String get sentenceStatusNoModelHint => '本次没有适用此语言的神经模型产出逐句分数。';
+
+  @override
+  String get sentenceStatusNotAnalyzable => '不分析';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint => '太短或不是完整句子，不做分析。';
 
   @override
   String get textDiscriminabilityClosing =>
@@ -10223,7 +10405,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      '此百分比是「這一句」自己的 AI 訊號強度，不是整份文件的最終判定。數字越高代表這句的用字模式越接近 AI 生成；越低則越接近一般人類寫作習慣。最終報告會依各引擎權重綜合所有句子後得出。';
+      '此百分比是「這一句」自己的模型分數，不是整份文件的判定。數字越高代表用字模式越接近 AI 生成；低分只代表模型在此句未見 AI 特徵，不代表由人撰寫。標示「不計入」的數字來自本次未達證據門檻的引擎。最終報告會依各引擎權重綜合判讀。';
 
   @override
   String get workspaceSentenceSignalHeader => '逐句 AI 訊號';
@@ -11209,6 +11391,97 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String gapEnginesUnavailable(int count) {
     return '$count 個文字引擎不適用此語言或未安裝';
   }
+
+  @override
+  String get reportEngineResolutionLanguage => '此引擎的模型不支援本文語言；重新下載或更新都無法解決。';
+
+  @override
+  String get gapRemedyLabel => '可行做法：';
+
+  @override
+  String get gapRemedyDomain => '這類文件請以文件來源、引用核實與寫作過程等證據為主，文字分數僅供參考。';
+
+  @override
+  String get gapRemedyLanguageUnvalidated => '可在模型管理改用已驗證此語言的分類器；若沒有，文字分數僅供參考。';
+
+  @override
+  String get gapRemedyPerplexity =>
+      '這是方法本身的限制：現代 AI 長文的困惑度與真人寫作重疊，換模型或改設定都無法改善。請以文件來源、引用核實與寫作過程判讀。';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      '這是模型涵蓋範圍的限制：模型目錄目前沒有支援此語言的同類模型，重新下載或更新都無法解決。';
+
+  @override
+  String get gapRemedyEngineInstall => '在模型管理重新下載此模型後再分析一次。';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine：模型不支援$language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine：未安裝或載入失敗';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '已由模型量測 $measured/$total 句 · 達 $threshold% 門檻 $flagged 句';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => '依分數';
+
+  @override
+  String get workspaceFindingsSortOrder => '依原文順序';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => '只看已量測';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return '長文件快速篩檢：$total 句中只有 $measured 句送入模型，其餘標示「未抽樣」。';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => '完整逐句分析';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      '這是模型對此句的實測分數。本次該引擎未達證據門檻，此數字不計入判讀；低分只代表模型在此句未見 AI 特徵，不代表由人撰寫。';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => '不計入';
+
+  @override
+  String get sentenceStatusScreenedOut => '未抽樣';
+
+  @override
+  String get sentenceStatusScreenedOutHint => '長文件快速篩檢沒有抽到這一句。按「完整逐句分析」即可取得分數。';
+
+  @override
+  String get sentenceStatusNotSent => '未送模型';
+
+  @override
+  String get sentenceStatusNotSentHint => '參考文獻、標題等不送入模型。';
+
+  @override
+  String get sentenceStatusNoModel => '無模型';
+
+  @override
+  String get sentenceStatusNoModelHint => '本次沒有適用此語言的神經模型產出逐句分數。';
+
+  @override
+  String get sentenceStatusNotAnalyzable => '不分析';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint => '太短或不是完整句子，不做分析。';
 
   @override
   String get textDiscriminabilityClosing =>

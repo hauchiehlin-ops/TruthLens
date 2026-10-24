@@ -2881,7 +2881,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'Dieser Prozentsatz ist das eigene KI-Signal dieses Satzes, nicht das Gesamturteil des Dokuments. Höher bedeutet, dass das Formulierungsmuster eher KI-generiert wirkt; niedriger bedeutet, dass es eher wie typisches menschliches Schreiben klingt. Der endgültige Bericht kombiniert jeden Satz mit der Engine-Gewichtung.';
+      'Der Prozentwert ist der eigene Modellwert dieses Satzes, nicht das Urteil über das Dokument. Höher heißt: Die Formulierung wirkt eher KI-generiert. Ein niedriger Wert bedeutet nur, dass das Modell in diesem Satz keine KI-Merkmale sah; er ist kein Beleg für menschliches Schreiben. Mit „nicht gewertet“ markierte Zahlen stammen von einer Engine, die ihre Beweisschwelle nicht erreicht hat. Der Abschlussbericht kombiniert die Engines nach ihren Gewichten.';
 
   @override
   String get workspaceSentenceSignalHeader => 'KI-Signal pro Satz';
@@ -3906,6 +3906,105 @@ class AppLocalizationsDe extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count Text-Engine(s) unterstützen diese Sprache nicht oder sind nicht installiert';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'Das Modell dieser Engine unterstützt die Sprache des Dokuments nicht; erneutes Herunterladen oder Aktualisieren behebt das nicht.';
+
+  @override
+  String get gapRemedyLabel => 'Was hilft: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'Stützen Sie sich bei dieser Dokumentart auf Dateiherkunft, Quellenprüfung und Schreibprozess; der Textwert dient nur als Anhaltspunkt.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Wechseln Sie in der Modellverwaltung zu einem für diese Sprache validierten Klassifikator, falls vorhanden; andernfalls dient der Textwert nur als Anhaltspunkt.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'Das ist eine Grenze der Methode selbst: Die Perplexität moderner KI-Langtexte überschneidet sich mit menschlichem Schreiben, kein Modell- oder Einstellungswechsel ändert das. Stützen Sie sich auf Dateiherkunft, Quellenprüfung und Schreibprozess.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'Das ist eine Grenze der Modellabdeckung: Der Modellkatalog enthält noch kein solches Modell für diese Sprache; erneutes Herunterladen oder Aktualisieren behebt das nicht.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Laden Sie das Modell in der Modellverwaltung erneut herunter und analysieren Sie dann noch einmal.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: Modell unterstützt $language nicht';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: nicht installiert oder Laden fehlgeschlagen';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '$measured/$total Sätze von einem Modell bewertet · $flagged auf oder über der Schwelle von $threshold %';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'Nach Wert';
+
+  @override
+  String get workspaceFindingsSortOrder => 'Dokumentreihenfolge';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Nur bewertete';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Schnellprüfung langer Dokumente: Nur $measured von $total Sätzen wurden an das Modell gesendet. Die übrigen sind als „nicht geprüft“ markiert.';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'Jeden Satz analysieren';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'Der eigene Modellwert für diesen Satz. Die Engine hat in dieser Analyse ihre Beweisschwelle nicht erreicht, daher fließt die Zahl nicht in das Urteil ein. Ein niedriger Wert bedeutet nur, dass das Modell hier keine KI-Merkmale sah; er ist kein Beleg für menschliches Schreiben.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'nicht gewertet';
+
+  @override
+  String get sentenceStatusScreenedOut => 'nicht geprüft';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'Die Schnellprüfung langer Dokumente hat diesen Satz nicht erfasst. Mit „Jeden Satz analysieren“ erhält er einen Wert.';
+
+  @override
+  String get sentenceStatusNotSent => 'nicht gesendet';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'Literaturangaben, Überschriften und Ähnliches werden nicht an das Modell gesendet.';
+
+  @override
+  String get sentenceStatusNoModel => 'kein Modell';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'Für diese Sprache hat in dieser Analyse kein neuronales Modell Satzwerte geliefert.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'übersprungen';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Zu kurz oder kein vollständiger Satz, daher nicht analysiert.';
 
   @override
   String get textDiscriminabilityClosing =>

@@ -2845,7 +2845,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workspaceSentenceSignalTooltip =>
-      'This percentage is this sentence\'s own AI signal, not the overall document verdict. Higher means the wording pattern looks more AI-generated; lower means it reads more like typical human writing. The final report combines every sentence with engine weighting.';
+      'The percentage is this sentence\'s own model score, not the document verdict. Higher means the wording looks more AI-generated. A low score only means the model saw no AI traits in this sentence; it is not evidence of human writing. Numbers marked “not counted” come from an engine that did not reach its evidence threshold. The final report combines the engines with their weights.';
 
   @override
   String get workspaceSentenceSignalHeader => 'AI signal per sentence';
@@ -3866,6 +3866,105 @@ class AppLocalizationsEn extends AppLocalizations {
   String gapEnginesUnavailable(int count) {
     return '$count text engine(s) do not support this language or are not installed';
   }
+
+  @override
+  String get reportEngineResolutionLanguage =>
+      'This engine\'s model does not support the document\'s language; re-downloading or updating will not fix it.';
+
+  @override
+  String get gapRemedyLabel => 'What helps: ';
+
+  @override
+  String get gapRemedyDomain =>
+      'For this kind of document, rely on file provenance, reference checks and the writing process; treat the text score as reference only.';
+
+  @override
+  String get gapRemedyLanguageUnvalidated =>
+      'Switch to a classifier validated for this language in Model management if one is available; otherwise treat the text score as reference only.';
+
+  @override
+  String get gapRemedyPerplexity =>
+      'This is a limit of the method itself: the perplexity of modern AI long-form text overlaps with human writing, so no model or setting change will fix it. Rely on file provenance, reference checks and the writing process.';
+
+  @override
+  String get gapRemedyEngineLanguage =>
+      'This is a limit of model coverage: the model catalog has no model of this kind for this language yet, so re-downloading or updating will not fix it.';
+
+  @override
+  String get gapRemedyEngineInstall =>
+      'Re-download the model in Model management, then analyse again.';
+
+  @override
+  String gapEngineLanguageUnsupported(String engine, String language) {
+    return '$engine: its model does not support $language';
+  }
+
+  @override
+  String gapEngineNotInstalled(String engine) {
+    return '$engine: not installed or failed to load';
+  }
+
+  @override
+  String workspaceFindingsSummary(
+    int measured,
+    int total,
+    int flagged,
+    int threshold,
+  ) {
+    return '$measured/$total sentences scored by a model · $flagged at or above the $threshold% threshold';
+  }
+
+  @override
+  String get workspaceFindingsSortScore => 'By score';
+
+  @override
+  String get workspaceFindingsSortOrder => 'Document order';
+
+  @override
+  String get workspaceFindingsMeasuredOnly => 'Scored only';
+
+  @override
+  String workspaceFindingsScreenedBanner(int measured, int total) {
+    return 'Long-document fast screening: only $measured of $total sentences were sent to the model. The rest show “not sampled”.';
+  }
+
+  @override
+  String get workspaceFindingsFullAnalysis => 'Analyse every sentence';
+
+  @override
+  String get sentenceScoreBelowEvidenceHint =>
+      'The model\'s own score for this sentence. The engine did not reach its evidence threshold in this analysis, so this number is not counted in the verdict. A low score only means the model saw no AI traits here; it is not evidence of human writing.';
+
+  @override
+  String get sentenceScoreBelowEvidenceLabel => 'not counted';
+
+  @override
+  String get sentenceStatusScreenedOut => 'not sampled';
+
+  @override
+  String get sentenceStatusScreenedOutHint =>
+      'Fast screening of long documents did not sample this sentence. Use “Analyse every sentence” to score it.';
+
+  @override
+  String get sentenceStatusNotSent => 'not sent';
+
+  @override
+  String get sentenceStatusNotSentHint =>
+      'References, headings and similar lines are not sent to the model.';
+
+  @override
+  String get sentenceStatusNoModel => 'no model';
+
+  @override
+  String get sentenceStatusNoModelHint =>
+      'No neural model for this language produced sentence scores in this analysis.';
+
+  @override
+  String get sentenceStatusNotAnalyzable => 'skipped';
+
+  @override
+  String get sentenceStatusNotAnalyzableHint =>
+      'Too short or not a complete sentence, so it is not analysed.';
 
   @override
   String get textDiscriminabilityClosing =>
