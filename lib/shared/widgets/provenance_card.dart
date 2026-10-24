@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/services/artifact_trace.dart';
 import '../../core/services/document_provenance.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -56,6 +57,28 @@ class ProvenanceCard extends StatelessWidget {
         signal.label == null
             ? l10n.provenanceSignalC2paUnknown
             : l10n.provenanceSignalC2pa(signal.label!),
+      ProvenanceSignalKind.chatCitationArtifact =>
+        l10n.provenanceSignalChatCitation(v['count'] ?? 0),
+      ProvenanceSignalKind.aiReferralLink => l10n.provenanceSignalAiReferral(
+        v['count'] ?? 0,
+      ),
+      ProvenanceSignalKind.unregisteredRsids =>
+        l10n.provenanceSignalUnregisteredRsids(
+          v['count'] ?? 0,
+          v['total'] ?? 0,
+        ),
+      ProvenanceSignalKind.editingTimeExceedsLifetime =>
+        l10n.provenanceSignalTimeExceedsLifetime(
+          v['minutes'] ?? 0,
+          v['lifetime'] ?? 0,
+        ),
+      ProvenanceSignalKind.sessionsExceedRevisions =>
+        l10n.provenanceSignalSessionsExceedRevisions(
+          v['sessions'] ?? 0,
+          v['revisions'] ?? 0,
+        ),
+      ProvenanceSignalKind.forgedPdfProducer =>
+        l10n.provenanceSignalForgedProducer(signal.label ?? '—'),
     };
   }
 
@@ -180,6 +203,21 @@ class ProvenanceCard extends StatelessWidget {
                     ),
                   ),
                 ),
+            ],
+            // 洗滌痕跡的意義與其他訊號不同：它說明有人動過手腳，且讓
+            // 編輯歷程失去作為「由人撰寫」證據的資格，因此單獨點出
+            if (ArtifactTraceReport.evaluate(
+              provenance,
+            ).concealmentDetected) ...[
+              const SizedBox(height: 10),
+              Text(
+                l10n.provenanceConcealmentDetected,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  height: 1.5,
+                  fontWeight: FontWeight.w600,
+                  color: accent,
+                ),
+              ),
             ],
             if (provenance.signals.isNotEmpty) ...[
               const SizedBox(height: 10),

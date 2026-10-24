@@ -3621,6 +3621,40 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Teks mengandungi $count penanda petikan yang dihasilkan oleh perkhidmatan sembang AI (seperti “【4†source】”, “citeturn0search3” atau “[oaicite:2]”). Hanya sistem petikan perkhidmatan sembang yang menghasilkan penanda ini; kandungan disalin daripada perbualan AI.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count pautan membawa tag rujukan carian AI “utm_source=chatgpt.com”: sumber-sumber ini ditemui melalui carian ChatGPT. Ia menunjukkan cara sumber dikumpul, bukan siapa yang menulis teks.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count daripada $total sesi suntingan (RSID) dalam kandungan tiada dalam daftar sesi yang disimpan Word dalam settings.xml: sesi suntingan kelihatan disuntik ke dalam kandungan kemudian.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Fail mendakwa $minutes minit suntingan, tetapi hanya $lifetime minit berlalu antara penciptaan dan simpanan terakhir. Masa suntingan tidak mungkin melebihi hayat fail; medan ini telah ditulis semula.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Kandungan mempunyai $sessions sesi suntingan, tetapi fail hanya disimpan $revisions kali. Word memulakan sesi baharu setiap kali menyimpan; salah satu daripada dua angka itu dipalsukan.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Producer PDF “$producer” mendakwa sebagai output sistem macOS/iOS, tetapi formatnya tidak sepadan dengan apa yang ditulis sistem (nombor binaan tiada, atau bukan milik versi tersebut): medan producer telah ditulis semula.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Kesan pencucian dikesan: medan-medan fail bercanggah antara satu sama lain dengan cara yang tidak pernah dihasilkan oleh simpanan biasa. Seseorang cuba memadam kesan AI atau memalsukan sejarah suntingan, jadi rekod suntingan fail ini tidak lagi dikira sebagai bukti tulisan manusia.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'Kandungan terbenam membawa Kelayakan Kandungan C2PA yang menamakan “$generator” sebagai penjana (tandatangan tidak disahkan secara setempat). Ia menerangkan asal imej atau media, bukan penulis teks.';
   }

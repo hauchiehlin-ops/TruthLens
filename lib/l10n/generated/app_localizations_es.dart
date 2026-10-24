@@ -3644,6 +3644,40 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'El texto contiene $count marcador(es) de cita generados por servicios de chat de IA (como «【4†source】», «citeturn0search3» o «[oaicite:2]»). Solo el sistema de citas de un servicio de chat emite estos marcadores; el contenido se copió de una conversación con IA.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count enlace(s) llevan la etiqueta de referencia de búsqueda IA «utm_source=chatgpt.com»: estas fuentes se encontraron mediante la búsqueda de ChatGPT. Indica cómo se reunieron las fuentes, no quién escribió el texto.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count de las $total sesiones de edición (RSID) usadas en el cuerpo no figuran en el registro de sesiones que Word guarda en settings.xml: las sesiones de edición parecen haberse inyectado en el cuerpo a posteriori.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'El archivo declara $minutes minuto(s) de edición, pero entre su creación y el último guardado solo pasaron $lifetime minuto(s). El tiempo de edición no puede superar la vida del archivo; este campo fue reescrito.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'El cuerpo tiene $sessions sesiones de edición, pero el archivo solo se guardó $revisions vez/veces. Word inicia una sesión nueva en cada guardado; una de las dos cifras fue falsificada.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'El productor del PDF «$producer» afirma ser salida del sistema macOS/iOS, pero su formato no coincide con lo que escribe el sistema (falta el número de compilación o no corresponde a esa versión): el campo productor fue reescrito.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Se detectaron rastros de lavado: los campos del archivo se contradicen de formas que un guardado normal nunca produce. Alguien intentó borrar rastros de IA o falsificar un historial de edición, por lo que el registro de edición de este archivo ya no cuenta como evidencia de escritura humana.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'El contenido incrustado lleva una credencial de contenido C2PA que nombra a «$generator» como generador (firma no verificada localmente). Describe el origen de la imagen o el medio, no quién escribió el texto.';
   }

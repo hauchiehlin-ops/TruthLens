@@ -3465,6 +3465,40 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return '內文帶有 $count 個 AI 對話服務的引用標記（如「【4†source】」、「citeturn0search3」、「[oaicite:2]」）。這類標記只由對話服務的引用系統產生，代表內容是從 AI 對話中複製出來的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 個連結帶有 AI 搜尋導流參數「utm_source=chatgpt.com」：這些參考資料是經 ChatGPT 搜尋取得。它說明資料怎麼找來，不說明正文由誰撰寫。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 個編輯批次（RSID）中，有 $count 個沒有登記在 Word 的 settings.xml 批次登記表：編輯批次疑似是事後注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '檔案宣稱編輯了 $minutes 分鐘，但從建立到最後存檔只經過 $lifetime 分鐘。編輯時長不可能超過檔案存在的時間，此欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 個編輯批次，檔案卻只存檔 $revisions 次。Word 每次存檔都會開新的批次，兩個數字其中之一是偽造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 產生器「$producer」宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符（缺組建號，或組建號不屬於該版本）：產生器欄位已被改寫。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '偵測到洗滌痕跡：檔案欄位之間出現正常存檔不會產生的矛盾，代表有人試圖抹除 AI 痕跡或偽造編輯歷程。這份檔案的編輯紀錄因此不再作為「由人撰寫」的證據。';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return '檔案內嵌的內容帶有 C2PA 內容憑證，記載的產生工具為「$generator」（本機未驗證數位簽章）。這說明的是圖片或媒體的來源，不代表內文由 AI 撰寫。';
   }
@@ -7028,6 +7062,40 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return '正文带有 $count 个 AI 对话服务的引用标记（如“【4†source】”“citeturn0search3”“[oaicite:2]”）。这类标记只由对话服务的引用系统产生，表示内容是从 AI 对话中复制出来的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 个链接带有 AI 搜索导流参数“utm_source=chatgpt.com”：这些参考资料是经 ChatGPT 搜索获得的。它说明资料怎么找来，不说明正文由谁撰写。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 个编辑批次（RSID）中，有 $count 个没有登记在 Word 的 settings.xml 批次登记表：编辑批次疑似是事后注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '文件声称编辑了 $minutes 分钟，但从创建到最后保存只经过 $lifetime 分钟。编辑时长不可能超过文件存在的时间，此字段已被改写。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 个编辑批次，文件却只保存了 $revisions 次。Word 每次保存都会开启新的批次，两个数字其中之一是伪造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 生成器“$producer”声称是 macOS／iOS 系统输出，格式却与系统实际写入的不符（缺少构建号，或构建号不属于该版本）：生成器字段已被改写。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '检测到洗稿痕迹：文件字段之间出现正常保存不会产生的矛盾，表示有人试图抹除 AI 痕迹或伪造编辑历程。这份文件的编辑记录因此不再作为“由人撰写”的证据。';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return '文件内嵌的内容带有 C2PA 内容凭证，记载的生成工具为“$generator”（本机未验证数字签名）。这说明的是图片或媒体的来源，不代表正文由 AI 撰写。';
   }
@@ -10589,6 +10657,40 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String provenanceSignalChatFont(String font) {
     return '內文帶有「$font」字型宣告，這是 AI 對話介面網頁使用的字型，常見於直接從對話視窗複製貼上。';
   }
+
+  @override
+  String provenanceSignalChatCitation(int count) {
+    return '內文帶有 $count 個 AI 對話服務的引用標記（如「【4†source】」、「citeturn0search3」、「[oaicite:2]」）。這類標記只由對話服務的引用系統產生，代表內容是從 AI 對話中複製出來的。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '有 $count 個連結帶有 AI 搜尋導流參數「utm_source=chatgpt.com」：這些參考資料是經 ChatGPT 搜尋取得。它說明資料怎麼找來，不說明正文由誰撰寫。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '正文使用的 $total 個編輯批次（RSID）中，有 $count 個沒有登記在 Word 的 settings.xml 批次登記表：編輯批次疑似是事後注入正文的。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '檔案宣稱編輯了 $minutes 分鐘，但從建立到最後存檔只經過 $lifetime 分鐘。編輯時長不可能超過檔案存在的時間，此欄位已被改寫。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '正文有 $sessions 個編輯批次，檔案卻只存檔 $revisions 次。Word 每次存檔都會開新的批次，兩個數字其中之一是偽造的。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 產生器「$producer」宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符（缺組建號，或組建號不屬於該版本）：產生器欄位已被改寫。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '偵測到洗滌痕跡：檔案欄位之間出現正常存檔不會產生的矛盾，代表有人試圖抹除 AI 痕跡或偽造編輯歷程。這份檔案的編輯紀錄因此不再作為「由人撰寫」的證據。';
 
   @override
   String provenanceSignalC2pa(String generator) {

@@ -3644,6 +3644,40 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Le texte contient $count marqueur(s) de citation produits par des services de chat IA (comme « 【4†source】 », « citeturn0search3 » ou « [oaicite:2] »). Seul le système de citation d’un service de chat émet ces marqueurs ; le contenu a été copié depuis une conversation IA.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count lien(s) portent l’étiquette de référence de recherche IA « utm_source=chatgpt.com » : ces sources ont été trouvées via la recherche ChatGPT. Cela montre comment les sources ont été réunies, pas qui a écrit le texte.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count des $total sessions d’édition (RSID) utilisées dans le corps sont absentes du registre de sessions que Word tient dans settings.xml : des sessions d’édition semblent avoir été injectées après coup dans le corps.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Le fichier déclare $minutes minute(s) d’édition, mais seules $lifetime minute(s) se sont écoulées entre sa création et son dernier enregistrement. Le temps d’édition ne peut dépasser la durée de vie du fichier ; ce champ a été réécrit.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Le corps compte $sessions sessions d’édition, mais le fichier n’a été enregistré que $revisions fois. Word ouvre une nouvelle session à chaque enregistrement ; l’un des deux chiffres a été falsifié.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Le producteur PDF « $producer » se présente comme une sortie système macOS/iOS, mais son format ne correspond pas à ce qu’écrit le système (numéro de build absent, ou qui n’appartient pas à cette version) : le champ producteur a été réécrit.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Traces de blanchiment détectées : les champs du fichier se contredisent d’une manière qu’un enregistrement normal ne produit jamais. Quelqu’un a tenté d’effacer des traces d’IA ou de falsifier un historique d’édition ; l’historique d’édition de ce fichier ne compte donc plus comme preuve d’écriture humaine.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'Le contenu intégré porte un identifiant de contenu C2PA indiquant « $generator » comme générateur (signature non vérifiée localement). Il décrit l’origine de l’image ou du média, pas l’auteur du texte.';
   }

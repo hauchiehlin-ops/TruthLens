@@ -5,9 +5,10 @@
 /// 並以 [pointEstimateAvailable] 告知呈現層不得輸出數字判定。
 ///
 /// 這裡刻意採不對稱證據規則：缺少引用、整段貼上或檔案中繼資料異常，
-/// 都不是 AI 特異性證據，不能把文件推向 AI。唯一的例外是產生軟體直接宣告
-/// 為 AI 寫作工具（[DocumentProvenance.declaresAiGenerator]）：那不是「過程
-/// 異常」，而是檔案自己說明了作者身分。它們仍會在
+/// 都不是 AI 特異性證據，不能把文件推向 AI。檔案層的 AI 訊號一律經由
+/// [ArtifactTraceReport]（文件載體 AI 訊號核實引擎）計入：作者特異性的原生
+/// 痕跡（產生器宣告為 AI 工具、對話引用標記）可單獨形成方向；其餘原生痕跡與
+/// 洗滌偽造痕跡只加強既有方向。它們仍會在
 /// [ForensicEvidenceMatrix] 中列為待核查事項。AI 方向必須由文字引擎的直接訊號
 /// 提供方向；最低共識門檻另外標示該方向是否已有足夠獨立證據。真人寫作過程與
 /// 完整來源紀錄則可以提供反向佐證。
@@ -18,6 +19,7 @@ import 'dart:math' as math;
 import '../models/detection_result.dart';
 import '../detection/analysis_profile.dart';
 import '../detection/evidence_fusion.dart';
+import 'artifact_trace.dart';
 import 'citation_evidence.dart';
 import 'claim_audit.dart';
 import 'forensic_evidence.dart';
@@ -166,10 +168,11 @@ class IntegratedAssessment {
       eslAdjusted: result.eslAdjusted,
     );
     final calibratedAiOutlier = result.calibration.isFlagged;
+    final artifacts = ArtifactTraceReport.evaluate(result.provenance);
     final passesAiEvidenceGate =
         fusion.passesAiEvidenceGate ||
         calibratedAiOutlier ||
-        result.provenance.declaresAiGenerator;
+        artifacts.hasIdentityTrace;
     final hasAssistantArtifact = fusion.hasDirectTrace;
     final textReliability = hasAssistantArtifact
         ? 0.95
@@ -210,14 +213,21 @@ class IntegratedAssessment {
     }
 
     final provenance = result.provenance;
-    final provenanceSupportsAi = provenance.declaresAiGenerator;
+    final provenanceSupportsAi = artifacts.hasIdentityTrace;
+    // 洗滌痕跡會讓 indicatesHumanAuthorship 為 false：偽造過的編輯歷程
+    // 不能再拿來抵銷 AI 嫌疑
     if (provenance.indicatesHumanAuthorship) {
       add(EvidenceAxisKind.documentOrigin, -1.35, information: 1.0);
     }
-    if (provenanceSupportsAi) {
-      // 與出版紀錄同等級的身分證據，但方向相反。文字引擎沉默時，它仍足以
-      // 單獨形成方向；文字引擎若強烈指向人類，兩者會以衝突呈現。
-      add(EvidenceAxisKind.documentOrigin, 2.20, information: 2.0);
+    if (artifacts.aiLogOdds > 0) {
+      // 身分證據與出版紀錄同等級但方向相反：文字引擎沉默時仍足以單獨形成
+      // 方向；文字引擎若強烈指向人類，兩者會以衝突呈現。洗滌痕跡與非身分的
+      // 原生痕跡只加強方向，hasAuthorshipEvidence 不因它們成立。
+      add(
+        EvidenceAxisKind.documentOrigin,
+        artifacts.aiLogOdds,
+        information: artifacts.information,
+      );
     }
     if (publication.supportsHumanAuthorship) {
       // DOI、篇名與出版年代共同吻合，表示這份出版品早於現代生成式 AI。

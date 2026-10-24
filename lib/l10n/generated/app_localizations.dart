@@ -5686,6 +5686,48 @@ abstract class AppLocalizations {
   /// **'The text declares the font “{font}”, used by AI chat web interfaces; this usually comes from copying straight out of a chat window.'**
   String provenanceSignalChatFont(String font);
 
+  /// No description provided for @provenanceSignalChatCitation.
+  ///
+  /// In en, this message translates to:
+  /// **'The text contains {count} citation marker(s) produced by AI chat services (such as “【4†source】”, “citeturn0search3” or “[oaicite:2]”). Only a chat service’s citation system emits these markers, so the text was copied out of an AI conversation.'**
+  String provenanceSignalChatCitation(int count);
+
+  /// No description provided for @provenanceSignalAiReferral.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} link(s) carry the AI-search referral tag “utm_source=chatgpt.com”: these references were found through ChatGPT search. This shows how sources were gathered, not who wrote the text.'**
+  String provenanceSignalAiReferral(int count);
+
+  /// No description provided for @provenanceSignalUnregisteredRsids.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of the {total} editing sessions (RSIDs) used in the body are missing from the session registry Word keeps in settings.xml: editing sessions appear to have been injected into the body after the fact.'**
+  String provenanceSignalUnregisteredRsids(int count, int total);
+
+  /// No description provided for @provenanceSignalTimeExceedsLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'The file claims {minutes} minute(s) of editing, but only {lifetime} minute(s) passed between its creation and last save. Editing time cannot exceed the file’s lifetime, so this field was rewritten.'**
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime);
+
+  /// No description provided for @provenanceSignalSessionsExceedRevisions.
+  ///
+  /// In en, this message translates to:
+  /// **'The body has {sessions} editing sessions but the file was saved only {revisions} time(s). Word starts a new session at each save, so one of the two figures was fabricated.'**
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions);
+
+  /// No description provided for @provenanceSignalForgedProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF producer “{producer}” claims to be macOS/iOS system output, but its format does not match what the system writes (missing build number, or a build number that does not belong to that version): the producer field was rewritten.'**
+  String provenanceSignalForgedProducer(String producer);
+
+  /// No description provided for @provenanceConcealmentDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Signs of laundering detected: the file’s fields contradict each other in ways normal saving never produces. Someone tried to remove AI traces or fake an editing history, so this file’s editing record no longer counts as evidence of human writing.'**
+  String get provenanceConcealmentDetected;
+
   /// No description provided for @provenanceSignalC2pa.
   ///
   /// In en, this message translates to:

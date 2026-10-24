@@ -5,6 +5,10 @@
 /// - 產生器直接寫著 AI 產品 → 作者身分證據
 /// - 程式庫產生、封裝與宣稱軟體不符、網頁貼上 → 只說明寫作過程，不推向 AI
 /// - 內嵌圖片的 C2PA → 說明的是圖片來源，與內文作者無關
+/// - 對話引用標記、AI 搜尋導流連結 → 未經洗滌的原生 AI 痕跡
+/// - RSID 登記表、Quartz Producer 格式 → 洗滌工具改寫欄位時留下的矛盾
+///
+/// 各訊號如何計入作者判讀，由 `ArtifactTraceReport`（artifact_trace.dart）統一歸族。
 ///
 /// 全部以位元組／字串比對完成，不需要網路，也不需要額外套件。
 library;
@@ -312,5 +316,127 @@ class C2paFinding {
     } catch (_) {
       return raw.trim();
     }
+  }
+}
+
+/// AI 對話介面在輸出中留下的引用標記。這些標記由對話服務的引用系統產生，
+/// 一般文書軟體與人類寫作不會出現，因此屬於**作者特異性**的原生 AI 痕跡：
+/// - `【4†source】`、`【12†L34-L40】`：ChatGPT 瀏覽／檔案檢索的引用格式
+/// - `citeturn0search3`（常夾帶 U+E200–U+E202 私用區字元）：ChatGPT 搜尋引用
+/// - `:contentReference[oaicite:2]{index=2}`：ChatGPT 複製輸出時的引用佔位符
+class ChatCitationArtifacts {
+  static final RegExp pattern = RegExp(
+    r'【\d+†[^】\n]{0,40}】|'
+    r'cite[-\s]*turn\d+(?:search|news|view|fetch|file|image)\d+|'
+    r'(?::contentReference)?\[oaicite:\d+\](?:\{index=\d+\})?',
+  );
+
+  /// 命中的標記數
+  static int count(String text) => pattern.allMatches(text).length;
+}
+
+/// 帶 AI 搜尋服務導流參數的連結（ChatGPT 搜尋附加的 `utm_source=chatgpt.com`）。
+/// 說明參考資料是經 AI 搜尋取得，不直接說明正文由誰撰寫，因此只作佐證。
+class AiReferralLinks {
+  static final RegExp pattern = RegExp(
+    r'utm_source=chatgpt\.com',
+    caseSensitive: false,
+  );
+
+  /// 在所有來源（正文、超連結目標、PDF 原始位元組）中命中的連結數
+  static int count(Iterable<String> sources) =>
+      sources.fold(0, (sum, s) => sum + pattern.allMatches(s).length);
+}
+
+/// DOCX `word/settings.xml` 的 RSID 登記表。
+///
+/// Word 把本文件經歷過的每一個編輯工作階段登記在 `<w:rsids>`（ECMA-376
+/// §17.15.1.72），正文段落與文字執行區上的 `w:rsid*` 屬性引用的就是這些值。
+/// 只改寫正文而沒有同步登記表，是事後注入偽造編輯批次的典型破綻。
+class RsidRegistry {
+  /// settings.xml 有 `<w:rsids>` 區塊。沒有時不做比對：無從判斷是格式差異
+  /// 還是被清除，寧可漏報。
+  final bool present;
+  final Set<String> registered;
+
+  const RsidRegistry({this.present = false, this.registered = const {}});
+
+  static RsidRegistry parse(String settings) {
+    final block = RegExp(
+      r'<w:rsids\b[^>]*>(.*?)</w:rsids>',
+      dotAll: true,
+    ).firstMatch(settings);
+    if (block == null) return const RsidRegistry();
+    return RsidRegistry(
+      present: true,
+      registered: {
+        for (final m in RegExp(
+          r'<w:rsid(?:Root)?\s+w:val="([0-9A-Fa-f]+)"',
+        ).allMatches(block.group(1)!))
+          m.group(1)!.toUpperCase(),
+      },
+    );
+  }
+
+  /// 正文用到、卻沒登記的 RSID
+  Set<String> unregistered(Set<String> bodyRsids) =>
+      present ? bodyRsids.difference(registered) : const {};
+}
+
+/// macOS／iOS「Quartz PDFContext」Producer 字串的格式核對。
+///
+/// 系統列印或匯出 PDF 時寫入 `macOS Version 12.6 (Build 21G115) Quartz PDFContext`：
+/// 版本號後一定帶 `(Build …)`，且組建號開頭的數字對應作業系統主版本
+/// （macOS 12 → 21、15 → 24）。洗滌工具改寫 Producer 時常只換版本號，
+/// 留下沒有組建號或組建號與版本對不上的字串。
+///
+/// 舊式 `Mac OS X 10.x Quartz PDFContext` 本來就不帶組建號，不在檢查範圍。
+enum QuartzProducerCheck {
+  notApplicable,
+  consistent,
+  missingBuild,
+  buildMismatch,
+}
+
+class QuartzProducer {
+  /// 作業系統主版本 → 組建號開頭數字。只收已發布、可查證的版本；
+  /// 不在表內的版本只檢查有沒有組建號，不比對數字。
+  static const Map<String, Map<String, int>> _buildPrefix = {
+    'macos': {
+      '10.12': 16,
+      '10.13': 17,
+      '10.14': 18,
+      '10.15': 19,
+      '11': 20,
+      '12': 21,
+      '13': 22,
+      '14': 23,
+      '15': 24,
+      '26': 25,
+    },
+    'ios': {'14': 18, '15': 19, '16': 20, '17': 21, '18': 22, '26': 23},
+  };
+
+  static QuartzProducerCheck check(String? producer) {
+    if (producer == null) return QuartzProducerCheck.notApplicable;
+    final match = RegExp(
+      r'^\s*(macOS|iOS|iPadOS) Version ([0-9]+(?:\.[0-9]+)*)\s*(.*?)\s*Quartz PDFContext',
+    ).firstMatch(producer);
+    if (match == null) return QuartzProducerCheck.notApplicable;
+    final build = RegExp(
+      r'^\(Build ([0-9]+)[A-Za-z][0-9A-Za-z]*\)$',
+    ).firstMatch(match.group(3)!);
+    if (build == null) return QuartzProducerCheck.missingBuild;
+
+    final os = match.group(1) == 'macOS' ? 'macos' : 'ios';
+    final parts = match.group(2)!.split('.');
+    final key = parts.first == '10' && parts.length > 1
+        ? '10.${parts[1]}'
+        : parts.first;
+    final expected = _buildPrefix[os]![key];
+    if (expected == null) return QuartzProducerCheck.consistent;
+    return int.parse(build.group(1)!) == expected
+        ? QuartzProducerCheck.consistent
+        : QuartzProducerCheck.buildMismatch;
   }
 }

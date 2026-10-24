@@ -63,6 +63,34 @@ enum ProvenanceSignalKind {
   /// 檔案或內嵌圖片帶有 C2PA 內容憑證。說明的是媒體來源，
   /// 不是內文作者，因此只列出、不計入風險。
   embeddedC2pa,
+
+  // ── 原生 AI 痕跡：未經洗滌時留在檔案裡的對話服務產物 ──
+
+  /// 正文帶有 AI 對話服務的引用標記（`【4†source】`、`citeturn0search3`、
+  /// `[oaicite:2]`）。這些標記只由對話服務的引用系統產生，屬作者特異性證據。
+  chatCitationArtifact,
+
+  /// 連結帶有 AI 搜尋導流參數（`utm_source=chatgpt.com`）
+  /// → 參考資料經 AI 搜尋取得；不直接說明正文作者，只作佐證。
+  aiReferralLink,
+
+  // ── 洗滌痕跡：抹除 AI 訊號、偽造編輯歷程時留下的欄位矛盾 ──
+
+  /// 正文引用的 RSID 大量未登記在 settings.xml 的 `<w:rsids>`
+  /// → 編輯批次是事後注入正文，沒有同步登記表
+  unregisteredRsids,
+
+  /// 宣稱的編輯總時長超過「最後修改 − 建立」的檔案存在時間
+  /// → 編輯時長被改寫（邏輯上不可能）
+  editingTimeExceedsLifetime,
+
+  /// 編輯批次數遠多於存檔次數。Word 每次存檔開新的 RSID，
+  /// 批次數應與存檔次數同量級 → 批次或存檔次數其中之一被偽造
+  sessionsExceedRevisions,
+
+  /// PDF Producer 宣稱是 macOS／iOS 系統輸出，格式卻與系統實際寫入的不符
+  /// （缺組建號，或組建號與版本對不上）→ 產生器欄位被改寫
+  forgedPdfProducer,
 }
 
 /// 訊號強度。刻意不叫「有罪程度」——這只描述證據本身有多不尋常。
@@ -336,6 +364,7 @@ class DocumentProvenance {
         modifiedAt: info.modifiedAt,
         application: info.application,
         declaredWordCount: info.wordCount,
+        fileSignals: _textArtifacts(bodyText, const []),
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
       ),
@@ -385,6 +414,11 @@ class DocumentProvenance {
       if (value != null && value.isNotEmpty) rsids.add(value.toUpperCase());
     }
 
+    final registry = RsidRegistry.parse(
+      _read(archive, 'word/settings.xml') ?? '',
+    );
+    final unregistered = registry.unregistered(rsids);
+
     final package = DocxPackage({for (final f in archive.files) f.name});
     final claimsWord = (application ?? '').toLowerCase().contains('microsoft');
     final paste = WebPasteResidue.scan(
@@ -419,6 +453,18 @@ class DocumentProvenance {
           kind: ProvenanceSignalKind.chatInterfaceFont,
           severity: ProvenanceSeverity.notable,
           label: paste.chatInterfaceFont,
+        ),
+      ..._textArtifacts(bodyText, [
+        document,
+        _read(archive, 'word/_rels/document.xml.rels') ?? '',
+      ]),
+      // 少量未登記可能來自從別份文件複製的段落；過半且達一定數量才算
+      if (unregistered.length >= minUnregisteredRsids &&
+          unregistered.length * 2 >= rsids.length)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.unregisteredRsids,
+          severity: ProvenanceSeverity.notable,
+          values: {'count': unregistered.length, 'total': rsids.length},
         ),
     ];
 
@@ -471,12 +517,62 @@ class DocumentProvenance {
           for (final value in values)
             if (value != application) value,
         ],
-        fileSignals: _libraryAndC2pa(values, [bytes]),
+        fileSignals: [
+          ..._libraryAndC2pa(values, [bytes]),
+          ..._textArtifacts(bodyText, [
+            latin1.decode(bytes, allowInvalid: true),
+          ]),
+          ?_quartzSignal(metadata.producer),
+        ],
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
       ),
     );
   }
+
+  /// 原生 AI 痕跡：正文裡的對話引用標記，以及正文或 [rawSources]
+  /// （超連結目標、PDF 原始位元組）中的 AI 搜尋導流連結。各格式共用。
+  static List<ProvenanceSignal> _textArtifacts(
+    String bodyText,
+    List<String> rawSources,
+  ) {
+    final citations = ChatCitationArtifacts.count(bodyText);
+    // 正文與原始來源會重複出現同一個連結，取兩者較大者而非相加
+    final referrals = [
+      AiReferralLinks.count([bodyText]),
+      AiReferralLinks.count(rawSources),
+    ].reduce((a, b) => a > b ? a : b);
+    return [
+      if (citations > 0)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.chatCitationArtifact,
+          severity: ProvenanceSeverity.strong,
+          values: {'count': citations},
+        ),
+      if (referrals > 0)
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.aiReferralLink,
+          severity: ProvenanceSeverity.notable,
+          values: {'count': referrals},
+        ),
+    ];
+  }
+
+  static ProvenanceSignal? _quartzSignal(String? producer) =>
+      switch (QuartzProducer.check(producer)) {
+        QuartzProducerCheck.missingBuild => ProvenanceSignal(
+          kind: ProvenanceSignalKind.forgedPdfProducer,
+          severity: ProvenanceSeverity.notable,
+          label: producer,
+        ),
+        // 組建號與版本對不上：不是格式差異，是兩個欄位各自被填寫
+        QuartzProducerCheck.buildMismatch => ProvenanceSignal(
+          kind: ProvenanceSignalKind.forgedPdfProducer,
+          severity: ProvenanceSeverity.strong,
+          label: producer,
+        ),
+        _ => null,
+      };
 
   /// 程式庫產生與 C2PA 內容憑證，DOCX 與 PDF 共用
   static List<ProvenanceSignal> _libraryAndC2pa(
@@ -533,6 +629,7 @@ class DocumentProvenance {
             ? null
             : generator,
         // ODT 沒有 RSID 這種逐批次標記，維持 null
+        fileSignals: _textArtifacts(bodyText, const []),
         bodyWordCount: countWords(bodyText),
         sourceFormat: ext,
       ),
@@ -581,6 +678,16 @@ class DocumentProvenance {
   /// 寧可漏報也不要誤報。
   static const int implausibleWordsPerMinute = 120;
 
+  /// 編輯時長超過檔案存在時間的容許量。時鐘誤差、跨時區存檔都遠小於此值；
+  /// 另要求超過存在時間的兩倍，長壽檔案不會因幾十分鐘的差距被標記。
+  static const int lifetimeToleranceMinutes = 60;
+
+  /// 未登記 RSID 至少要有這麼多個才判定為注入
+  static const int minUnregisteredRsids = 5;
+
+  /// 批次數少於此值時不比對存檔次數（[ProvenanceSignalKind.fewRevisions] 已涵蓋）
+  static const int minSessionsForRevisionCheck = 10;
+
   /// 依已填入的中繼資料推導訊號
   static DocumentProvenance _withSignals(DocumentProvenance base) {
     final signals = <ProvenanceSignal>[...base.fileSignals];
@@ -595,6 +702,42 @@ class DocumentProvenance {
           kind: ProvenanceSignalKind.aiGeneratorDeclared,
           severity: ProvenanceSeverity.strong,
           label: aiGenerator,
+        ),
+      );
+    }
+
+    // 欄位一致性檢查與字數無關：洗滌工具一欄一欄獨立偽造，欄位之間的
+    // 因果關係對不上，這在短文件上同樣成立。
+    // 缺任一個日期就無從得知存在時間，不能當成 0
+    final created = base.createdAt;
+    final lifetime = created == null
+        ? null
+        : base.modifiedAt?.difference(created);
+    if (minutes != null &&
+        lifetime != null &&
+        !lifetime.isNegative &&
+        minutes > lifetime.inMinutes + lifetimeToleranceMinutes &&
+        minutes > lifetime.inMinutes * 2) {
+      signals.add(
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.editingTimeExceedsLifetime,
+          severity: ProvenanceSeverity.strong,
+          values: {'minutes': minutes, 'lifetime': lifetime.inMinutes},
+        ),
+      );
+    }
+    final sessions = base.distinctBodyRsids;
+    final saves = base.revisionCount;
+    if (sessions != null &&
+        saves != null &&
+        saves >= 1 &&
+        sessions >= minSessionsForRevisionCheck &&
+        sessions > saves * 3 + 5) {
+      signals.add(
+        ProvenanceSignal(
+          kind: ProvenanceSignalKind.sessionsExceedRevisions,
+          severity: ProvenanceSeverity.notable,
+          values: {'sessions': sessions, 'revisions': saves},
         ),
       );
     }

@@ -1,5 +1,41 @@
 # OmniTrace 開發日誌（DEVLOG）
 
+## 2026-10-24 — 文件載體 AI 訊號核實引擎（第①階段）：洗不洗都留痕
+
+**起因**：使用者提供某「AI 痕跡消除」工具（NonAI）的 PDF／DOCX 洗滌作業鏈截圖：注入 20–40 組隨機
+RSID、偽造編輯時長（截圖 218 分鐘）、補上 Word「3 項標準組件」、改寫 PDF Producer
+（`macOS Version 15.3.1 Quartz PDFContext`）、清除 XMP。比對程式碼後確認這些手法**正好越過**
+`indicatesHumanAuthorship` 的自動納入門檻（RSID ≥ 5、時長 ≥ 20 分、存檔 ≥ 3）與
+`generatorMismatch`（只檢查 settings.xml／fontTable.xml 是否存在）。後果不只是漏報：洗滌過的
+AI 文件會拿到 −1.35 的「由人撰寫」證據，還可能被自動收進校準基準集，污染人類分布。
+
+**設計**：新增 `ArtifactTraceReport`（`lib/core/services/artifact_trace.dart`），與四個文字子模型
+獨立，只讀檔案本身，把所有來源訊號歸為四族：
+- `aiNative` 原生 AI 痕跡（未洗滌）：產生器宣告、**對話引用標記**（新增，`【4†source】`、
+  `citeturn0search3`、`[oaicite:2]`）、對話介面字型、**AI 搜尋導流連結**（新增，`utm_source=chatgpt.com`）
+- `concealment` 洗滌痕跡（新增四項）：RSID 未登記（D1）、編輯時長超過檔案存在時間（D2）、
+  批次數遠多於存檔次數（D3）、Quartz Producer 缺組建號或組建號與版本不符（P1）；既有的
+  `generatorMismatch` 也歸此族
+- `processAnomaly` 寫作歷程異常（既有，仍不推向 AI）；`informational`（C2PA）
+
+**計分**（併入 `IntegratedAssessment` 的文件來源軸，取代原本只看 `declaresAiGenerator` 的寫法）：
+- 作者特異性（產生器宣告、對話引用標記）+2.20，可單獨通過 AI 證據門檻
+- 其餘原生痕跡 +0.60；洗滌痕跡 強 +0.90／顯著 +0.45，合計上限 1.20。這兩類只加強方向，
+  不單獨形成結論（洗滌證明有人隱匿，不證明作者是 AI）
+- **否決權**：洗滌訊號皆為 notable／strong，既有規則「任何非 info 訊號即不構成人類證據」自動生效
+- 來源卡在偵測到洗滌時加一行說明（7 個新 l10n 鍵 × 14 語系）
+
+**門檻取捨**（寧可漏報）：D1 只在 settings.xml 有 `<w:rsids>` 登記表、且未登記 ≥ 5 個並過半時觸發
+（少量未登記可能來自複製別份文件的段落）；D2 要求超出存在時間 60 分鐘以上且達兩倍；D3 要求
+批次 ≥ 10 且 > 存檔次數 × 3 + 5；P1 只檢查 `macOS/iOS Version` 新式命名（舊式 `Mac OS X 10.x`
+本來就無組建號），組建號對照只收已發布版本（macOS 26 → 25、iOS 26 → 23）。
+
+**待驗證／後續**：D2、D3 的語意（「另存新檔」是否保留 created 與 TotalTime、每次存檔是否必開新
+RSID）依 Word 行為推論，尚未以真實語料校準，需收集一批真人 Word 檔確認誤報率。第②階段：
+settings.xml／fontTable.xml 內容層級的 Word 指紋（D5）、`app.xml` 統計欄位與正文比對（D6）、
+樣式表殘留（D7）、PDF 增量更新（P2）、Info／XMP 一致性（P3）；第③階段：碎形 Runs 切分（D4）、
+Quartz 物件結構指紋（P4）。
+
 ## 2026-10-22 — 長文件分析加速：參考文獻略過、兩階段篩檢、模型專屬 Worker、ORT 1.30、可批次模型
 
 使用者回報 5.4 萬字 docx 在 897 秒時只完成 2/4 引擎。原因：(1) INT8 動態量化模型為了分數一致只能

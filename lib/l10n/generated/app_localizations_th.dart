@@ -3596,6 +3596,40 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'ข้อความมีเครื่องหมายอ้างอิงจากบริการแชต AI จำนวน $count จุด (เช่น “【4†source】”, “citeturn0search3” หรือ “[oaicite:2]”) เครื่องหมายเหล่านี้สร้างโดยระบบอ้างอิงของบริการแชตเท่านั้น แสดงว่าเนื้อหาถูกคัดลอกมาจากบทสนทนากับ AI';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return 'มีลิงก์ $count รายการที่มีแท็กอ้างอิงการค้นหา AI “utm_source=chatgpt.com”: แหล่งข้อมูลเหล่านี้ได้มาจากการค้นหาของ ChatGPT ซึ่งบอกวิธีรวบรวมแหล่งข้อมูล ไม่ได้บอกว่าใครเขียนเนื้อความ';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return 'เซสชันการแก้ไข (RSID) $count จาก $total รายการที่ใช้ในเนื้อหา ไม่มีอยู่ในทะเบียนเซสชันที่ Word เก็บไว้ใน settings.xml: ดูเหมือนว่าเซสชันการแก้ไขถูกแทรกเข้าไปในเนื้อหาภายหลัง';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'ไฟล์อ้างว่าใช้เวลาแก้ไข $minutes นาที แต่ตั้งแต่สร้างจนถึงบันทึกครั้งสุดท้ายผ่านไปเพียง $lifetime นาที เวลาแก้ไขไม่อาจเกินอายุของไฟล์ ช่องข้อมูลนี้จึงถูกเขียนทับ';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'เนื้อหามีเซสชันการแก้ไข $sessions รายการ แต่ไฟล์ถูกบันทึกเพียง $revisions ครั้ง Word เริ่มเซสชันใหม่ทุกครั้งที่บันทึก ตัวเลขหนึ่งในสองตัวนี้จึงถูกปลอมแปลง';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'ผู้สร้าง PDF “$producer” อ้างว่าเป็นผลลัพธ์จากระบบ macOS/iOS แต่รูปแบบไม่ตรงกับที่ระบบเขียนจริง (ไม่มีหมายเลขบิลด์ หรือหมายเลขบิลด์ไม่ใช่ของเวอร์ชันนั้น): ช่องผู้สร้างถูกเขียนทับ';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'ตรวจพบร่องรอยการฟอก: ช่องข้อมูลในไฟล์ขัดแย้งกันในแบบที่การบันทึกตามปกติไม่มีทางเกิดขึ้น มีผู้พยายามลบร่องรอย AI หรือปลอมประวัติการแก้ไข บันทึกการแก้ไขของไฟล์นี้จึงไม่นับเป็นหลักฐานว่ามนุษย์เขียน';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'เนื้อหาที่ฝังอยู่มีข้อมูลรับรองเนื้อหา C2PA ระบุผู้สร้างเป็น “$generator” (ยังไม่ได้ตรวจลายเซ็นในเครื่อง) ซึ่งบอกแหล่งที่มาของภาพหรือสื่อ ไม่ใช่ผู้เขียนข้อความ';
   }

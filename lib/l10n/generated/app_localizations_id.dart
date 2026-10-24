@@ -3614,6 +3614,40 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Teks memuat $count penanda kutipan yang dihasilkan layanan obrolan AI (seperti “【4†source】”, “citeturn0search3”, atau “[oaicite:2]”). Hanya sistem kutipan layanan obrolan yang membuat penanda ini; konten disalin dari percakapan AI.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count tautan membawa tag rujukan pencarian AI “utm_source=chatgpt.com”: sumber-sumber ini ditemukan lewat pencarian ChatGPT. Ini menunjukkan cara sumber dikumpulkan, bukan siapa penulis teks.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count dari $total sesi penyuntingan (RSID) di isi dokumen tidak tercatat dalam registri sesi yang disimpan Word di settings.xml: sesi penyuntingan tampaknya disisipkan ke isi dokumen belakangan.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Berkas mengklaim $minutes menit penyuntingan, padahal antara pembuatan dan penyimpanan terakhir hanya berlalu $lifetime menit. Waktu penyuntingan tidak mungkin melebihi umur berkas; kolom ini telah ditulis ulang.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Isi dokumen memiliki $sessions sesi penyuntingan, tetapi berkas hanya disimpan $revisions kali. Word memulai sesi baru setiap kali menyimpan; salah satu dari dua angka itu dipalsukan.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Producer PDF “$producer” mengaku sebagai keluaran sistem macOS/iOS, tetapi formatnya tidak sesuai dengan yang ditulis sistem (nomor build hilang, atau bukan milik versi tersebut): kolom producer telah ditulis ulang.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Jejak pencucian terdeteksi: kolom-kolom berkas saling bertentangan dengan cara yang tidak pernah dihasilkan penyimpanan normal. Seseorang mencoba menghapus jejak AI atau memalsukan riwayat penyuntingan, sehingga catatan penyuntingan berkas ini tidak lagi dihitung sebagai bukti tulisan manusia.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'Konten tersemat membawa Content Credential C2PA yang menyebut “$generator” sebagai pembuat (tanda tangan tidak diverifikasi secara lokal). Ini menjelaskan asal gambar atau media, bukan penulis teks.';
   }

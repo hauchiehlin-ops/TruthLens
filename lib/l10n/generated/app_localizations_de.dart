@@ -3637,6 +3637,40 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'Der Text enthält $count Zitiermarker von KI-Chatdiensten (etwa „【4†source】“, „citeturn0search3“ oder „[oaicite:2]“). Nur das Zitiersystem eines Chatdienstes erzeugt solche Marker; der Inhalt wurde aus einer KI-Unterhaltung kopiert.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count Link(s) tragen den KI-Such-Referral „utm_source=chatgpt.com“: Diese Quellen wurden über die ChatGPT-Suche gefunden. Das zeigt, wie Quellen beschafft wurden, nicht wer den Text verfasst hat.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count der $total im Text verwendeten Bearbeitungssitzungen (RSIDs) fehlen im Sitzungsregister, das Word in settings.xml führt: Bearbeitungssitzungen wurden offenbar nachträglich in den Text eingefügt.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Die Datei gibt $minutes Minute(n) Bearbeitungszeit an, zwischen Erstellung und letzter Speicherung lagen aber nur $lifetime Minute(n). Die Bearbeitungszeit kann die Lebensdauer der Datei nicht übersteigen; dieses Feld wurde umgeschrieben.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'Der Text weist $sessions Bearbeitungssitzungen auf, die Datei wurde aber nur $revisions-mal gespeichert. Word beginnt bei jedem Speichern eine neue Sitzung; eine der beiden Zahlen ist gefälscht.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Der PDF-Producer „$producer“ gibt sich als macOS-/iOS-Systemausgabe aus, sein Format entspricht aber nicht dem, was das System schreibt (Build-Nummer fehlt oder gehört nicht zu dieser Version): das Producer-Feld wurde umgeschrieben.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Spuren einer Bereinigung erkannt: Die Felder der Datei widersprechen sich auf eine Weise, die normales Speichern nie erzeugt. Jemand hat versucht, KI-Spuren zu entfernen oder einen Bearbeitungsverlauf vorzutäuschen; der Bearbeitungsverlauf dieser Datei gilt daher nicht mehr als Beleg für menschliches Schreiben.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'Eingebettete Inhalte tragen ein C2PA-Content-Credential mit „$generator“ als Erzeuger (Signatur lokal nicht geprüft). Es beschreibt die Herkunft von Bild oder Medium, nicht den Verfasser des Textes.';
   }

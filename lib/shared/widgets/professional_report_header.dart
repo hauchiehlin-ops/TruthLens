@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/models/detection_result.dart';
+import '../../core/services/artifact_trace.dart';
 import '../../core/services/citation_evidence.dart';
 import '../../core/services/claim_audit.dart';
 import '../../core/services/forensic_evidence.dart';
@@ -735,8 +736,9 @@ class _VerdictSummaryCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         _DiscriminabilityNotice(
                           discriminability: discriminability,
-                          provenanceDriven:
-                              result.provenance.declaresAiGenerator,
+                          provenanceDriven: ArtifactTraceReport.evaluate(
+                            result.provenance,
+                          ).hasIdentityTrace,
                           l10n: l10n,
                         ),
                       ],

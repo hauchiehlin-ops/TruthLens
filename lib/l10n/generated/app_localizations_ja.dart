@@ -3505,6 +3505,40 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return '本文に AI 対話サービスの引用マーカーが $count 個あります（「【4†source】」「citeturn0search3」「[oaicite:2]」など）。これらは対話サービスの引用システムだけが生成するもので、内容が AI との対話からコピーされたことを示します。';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count 件のリンクに AI 検索の流入パラメータ「utm_source=chatgpt.com」が付いています：これらの参考資料は ChatGPT 検索で得られたものです。資料の集め方を示すもので、本文の書き手を示すものではありません。';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '本文で使われている $total 個の編集セッション（RSID）のうち $count 個が、Word が settings.xml に保持するセッション登録表にありません：編集セッションが後から本文に注入されたとみられます。';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'ファイルは $minutes 分の編集時間を申告していますが、作成から最終保存までは $lifetime 分しか経っていません。編集時間がファイルの存在期間を超えることはなく、この項目は書き換えられています。';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '本文には $sessions 個の編集セッションがありますが、保存は $revisions 回だけです。Word は保存のたびに新しいセッションを開始するため、どちらかの数値が偽造されています。';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF の作成ソフト「$producer」は macOS／iOS のシステム出力を名乗っていますが、形式がシステムの実際の書式と一致しません（ビルド番号がない、またはそのバージョンのものではない）：作成ソフト欄が書き換えられています。';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'ロンダリングの痕跡を検出しました：ファイルの各項目が、通常の保存では生じない形で互いに矛盾しています。AI の痕跡を消す、または編集履歴を偽装しようとした形跡があるため、このファイルの編集記録は「人が書いた」証拠として扱いません。';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return '埋め込みコンテンツに C2PA コンテンツクレデンシャルがあり、生成ツールは「$generator」と記録されています（署名はローカルで未検証）。画像やメディアの出所を示すもので、本文の作者を示すものではありません。';
   }

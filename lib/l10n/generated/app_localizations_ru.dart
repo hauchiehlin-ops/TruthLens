@@ -3622,6 +3622,40 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return 'В тексте $count маркер(ов) цитирования, созданных ИИ-чатами (например, «【4†source】», «citeturn0search3» или «[oaicite:2]»). Такие маркеры создаёт только система цитирования чат-сервиса: содержимое скопировано из диалога с ИИ.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '$count ссылка(ок) содержат метку перехода из ИИ-поиска «utm_source=chatgpt.com»: эти источники найдены через поиск ChatGPT. Это говорит о том, как собраны источники, а не о том, кто написал текст.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '$count из $total сеансов правки (RSID), используемых в тексте, отсутствуют в реестре сеансов, который Word ведёт в settings.xml: сеансы правки, по-видимому, внедрены в текст задним числом.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return 'Файл заявляет $minutes мин. правки, но между созданием и последним сохранением прошло лишь $lifetime мин. Время правки не может превышать срок существования файла; это поле было переписано.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return 'В тексте $sessions сеансов правки, но файл сохранялся лишь $revisions раз(а). Word начинает новый сеанс при каждом сохранении; одно из двух чисел подделано.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'Производитель PDF «$producer» выдаёт себя за системный вывод macOS/iOS, но формат не совпадает с тем, что записывает система (нет номера сборки или он не относится к этой версии): поле производителя переписано.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      'Обнаружены следы «отмывания»: поля файла противоречат друг другу так, как при обычном сохранении не бывает. Кто-то пытался удалить следы ИИ или подделать историю правки, поэтому история правки этого файла больше не считается доказательством написания человеком.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return 'Встроенное содержимое несёт учётные данные контента C2PA с генератором «$generator» (подпись локально не проверена). Это говорит о происхождении изображения или медиа, а не об авторе текста.';
   }

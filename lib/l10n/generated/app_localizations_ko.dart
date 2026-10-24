@@ -3516,6 +3516,40 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String provenanceSignalChatCitation(int count) {
+    return '본문에 AI 채팅 서비스의 인용 표식이 $count개 있습니다(예: “【4†source】”, “citeturn0search3”, “[oaicite:2]”). 이런 표식은 채팅 서비스의 인용 시스템만 만들어 내므로, 내용이 AI 대화에서 복사되었음을 뜻합니다.';
+  }
+
+  @override
+  String provenanceSignalAiReferral(int count) {
+    return '링크 $count개에 AI 검색 유입 태그 “utm_source=chatgpt.com”가 붙어 있습니다: 이 참고 자료는 ChatGPT 검색으로 찾은 것입니다. 자료를 어떻게 모았는지를 보여 줄 뿐, 본문 작성자를 말해 주지는 않습니다.';
+  }
+
+  @override
+  String provenanceSignalUnregisteredRsids(int count, int total) {
+    return '본문에 쓰인 편집 세션(RSID) $total개 중 $count개가 Word가 settings.xml에 유지하는 세션 등록표에 없습니다: 편집 세션이 나중에 본문에 주입된 것으로 보입니다.';
+  }
+
+  @override
+  String provenanceSignalTimeExceedsLifetime(int minutes, int lifetime) {
+    return '파일은 편집 시간이 $minutes분이라고 주장하지만, 생성부터 마지막 저장까지 $lifetime분밖에 지나지 않았습니다. 편집 시간은 파일의 존재 기간을 넘을 수 없으므로 이 항목은 다시 쓰였습니다.';
+  }
+
+  @override
+  String provenanceSignalSessionsExceedRevisions(int sessions, int revisions) {
+    return '본문에는 편집 세션이 $sessions개 있지만 파일은 $revisions번만 저장되었습니다. Word는 저장할 때마다 새 세션을 시작하므로 두 숫자 중 하나는 위조된 것입니다.';
+  }
+
+  @override
+  String provenanceSignalForgedProducer(String producer) {
+    return 'PDF 생성기 “$producer”는 macOS/iOS 시스템 출력이라고 주장하지만, 형식이 시스템이 실제로 기록하는 것과 다릅니다(빌드 번호가 없거나 해당 버전의 것이 아님): 생성기 항목이 다시 쓰였습니다.';
+  }
+
+  @override
+  String get provenanceConcealmentDetected =>
+      '세탁 흔적이 감지되었습니다: 파일 항목들이 정상적인 저장으로는 생기지 않는 방식으로 서로 모순됩니다. 누군가 AI 흔적을 지우거나 편집 이력을 위조하려 했으므로, 이 파일의 편집 기록은 더 이상 ‘사람이 썼다’는 증거로 쓰지 않습니다.';
+
+  @override
   String provenanceSignalC2pa(String generator) {
     return '내장 콘텐츠에 C2PA 콘텐츠 자격 증명이 있으며 생성 도구는 “$generator”로 기록되어 있습니다(서명은 로컬에서 미검증). 이미지·미디어의 출처를 뜻하며 본문 작성자를 뜻하지 않습니다.';
   }
